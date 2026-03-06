@@ -552,7 +552,8 @@ input[type="search"]::-webkit-search-cancel-button {
     padding-right: 30px;
     padding-left: 30px;
     padding-bottom: 8px;
-    max-height: 100dvh; 
+    max-height: calc(100dvh - env(safe-area-inset-bottom) - 20px) !important; 
+    -webkit-overflow-scrolling: touch;
 }
 
 /* --- EFECTO FADE-IN DE CONTENIDO INTERNO --- */
@@ -759,7 +760,7 @@ details.config-accordion {
 details.config-accordion summary {
     font-weight: bold;
     cursor: pointer;
-    padding: 10px 15px;
+    padding: 6px 15px;
     list-style: none; /* Oculta la flecha nativa estándar */
     display: flex;
     justify-content: space-between;
@@ -774,7 +775,6 @@ details.config-accordion summary::-webkit-details-marker {
 
 details.config-accordion summary::after {
     content: '▼';
-    font-size: 0.8em;
     color: #0078d4;
     transition: transform 0.3s ease;
 }
@@ -785,12 +785,12 @@ details.config-accordion[open] summary::after {
 
 details.config-accordion .accordion-content {
     padding: 0px 7px 12px 10px;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    /* border-top: 1px solid rgba(0, 0, 0, 0.1); */
     margin-top: 0px;
     padding-top: 10px;
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Espacio uniforme entre los checkboxes */
+    gap: 4px;
 }
 
 .linea-con-bt-info {
@@ -1063,6 +1063,38 @@ td div.texto-multilinea-2 {
     /* El ancho de tu cabecera JS es 100px. Le damos 94px para dejar aire a los lados */
     max-width: 94px; 
     margin: 0 auto;
+}
+
+td div.nombre-despegue-limitado {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important; /* Máximo 2 líneas */
+    line-clamp: 2 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important; /* Añade los puntos suspensivos (...) */
+    
+    white-space: normal !important; 
+    word-break: break-word; 
+    
+    line-height: 1.2 !important; 
+    width: 100%;
+    /* Ajustamos el ancho para que quepa dentro de los 110px de la columna menos los márgenes */
+    max-width: 105px; 
+    margin: 0 auto;
+}
+
+/* --- Reglas para el Modo Edición --- */
+
+/* 1. Cambiamos el ancho de la columna de despegue */
+body.modo-edicion-tabla .columna-despegue {
+    width: 135px !important;
+    min-width: 135px !important;
+    max-width: 135px !important;
+}
+
+/* 2. Cambiamos el comportamiento del texto dentro */
+body.modo-edicion-tabla td div.texto-multilinea-2 {
+    max-width: none !important; /* Quitamos la restricción de 94px */
 }
 
 /* --------------------------------------------------- */

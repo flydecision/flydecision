@@ -1100,6 +1100,7 @@ function activarEdicionFavoritos() {
 	modoEdicionFavoritos = true;
     soloFavoritos = false;
 
+    document.body.classList.add('modo-edicion-tabla');
     document.getElementById('div-menu').classList.add('mode-editing');
     document.getElementById('div-menu2-edicion-favoritos').classList.add('mode-editing');
 
@@ -1593,6 +1594,7 @@ function finalizarEdicionFavoritos() {
 		
 	}
 
+    document.body.classList.remove('modo-edicion-tabla');
     document.getElementById('div-menu').classList.remove('mode-editing');
     document.getElementById('div-menu2-edicion-favoritos').classList.remove('mode-editing');
     document.getElementById('btn-filtro-favoritos-toggle').classList.remove('filtro-aplicado');
@@ -3676,7 +3678,7 @@ async function construir_tabla(forzarRecarga = false) {
 			tdDespegue.innerHTML = `
                 ${botonMapaHTML}
                 <b>${d.Provincia.toUpperCase()}</b><br>
-				${d.Despegue}<br>
+                <div class="texto-multilinea-2" title="${d.Despegue}">${d.Despegue}</div>
 				${svgOrientaciones}
             `;
 			// ROWSPAN DINÁMICO
