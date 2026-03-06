@@ -1,0 +1,2597 @@
+/* áéíóú - Forzando UTF-8 */
+html, body {
+    height: 100dvh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Para que no haya doble barra de scroll. Evita que la página entera haga scroll. El scroll solo debe existir en la tabla */
+	display: flex;
+    flex-direction: column; /* Organiza elementos uno debajo de otro */
+	font-size: 16px !important;
+    background-color: #F3F4F6;
+    box-sizing: border-box;
+
+    /* Esto impide que Android infle el texto arbitrariamente para móviles con cambios en tamaño predeterminado de letra (accesibilidad) */
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+
+    /* Pila de fuentes del sistema moderna. Android usará Roboto y iOS usará San Francisco */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    
+    /* Mejora la renderización del texto */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+input, button, textarea, select {
+    font-size: inherit;  /* Hereda del body/html, e.g. 16px */
+}
+button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent; 
+    border: none;
+}
+.button-custom {
+    width: 40px;
+    /* margin-left: auto; */
+    /* flex-shrink: 0; */
+    /* min-width: 36px; */
+    /* min-height: 27px; */
+    margin-left: 4px;
+    font-size: 1.3em;
+    /* font-weight: bold; */
+    cursor: pointer;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
+    transition: background-color 0.2s, border-color 0.2s, box-shadow 0.1s, padding-top 0.1s;
+    height: 30px;
+    padding-bottom: 30px;
+}
+
+/* 🔴 Solución al tapado del área de notificaciones en algunos móviles -------------------------------- */ 
+
+:root {
+    --android-sb-height: 0px;
+}
+
+/* Solo aplicamos esto cuando detectamos Android por JS */
+/* Solo aplicamos esto cuando detectamos Android por JS */
+body.modo-android-manual {
+    /* 1. PARTE SUPERIOR (Tu lógica manual) */
+    /* IMPORTANTE: En Android ignoramos env(). Usamos SOLO lo que diga el plugin. */
+    padding-top: max(25px, var(--android-sb-height)) !important;
+
+    /* 2. PARTE INFERIOR (CRÍTICO PARA EDGE-TO-EDGE) */
+    /* Usamos env() nativo porque el WebView de Android sabe perfectamente cuánto mide la barra de gestos */
+    /* padding-bottom: env(safe-area-inset-bottom) !important;  */
+
+    /* 3. LATERALES (Por si hay muescas/notches en horizontal o pantallas curvas) */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+
+    /* Tu degradado para que el fondo de la barra se vea bonito */
+    background: linear-gradient(to bottom, #d9ebf9 0%, #d9ebf9 100px, #F3F4F6 100px) !important;
+    background-size: 100% 100%;
+}
+
+/* A veces Capacitor tarda unos milisegundos en cargar el plugin, y durante ese tiempo la app se ve mal. En tu CSS global, puedes añadir esto para que los elementos fixed (como tu cabecera) tengan una transición suave si cambian de altura: */
+body, header, .offline-badge {
+    transition: padding-top 0.3s ease, top 0.3s ease;
+}
+
+/* 🔴 Mensaje "Esperando conexión..."  -------------------------------- */ 
+
+.offline-badge {
+    position: fixed;
+    white-space: nowrap;
+    width: fit-content;
+    top: 50%;
+    left: 50%;
+    min-height: 37px;
+    transform: translate(-50%, -50%);
+    z-index: 99999;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 2px solid #ff0000;
+    border-radius: 19px;
+    padding: 1px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #ff0000;
+    /* font-family: sans-serif; */
+    font-weight: 800;
+    font-size: 18px;
+    /* letter-spacing: 0.5px; */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: latido-centrado 3s infinite;
+}
+
+/* Ajuste para que el icono no se deforme */
+.offline-badge svg {
+    flex-shrink: 0;
+}
+
+/* ⚠️ LA ANIMACIÓN DEBE INCLUIR EL CENTRADO */
+/* Si no ponemos translateX(-50%) aquí, al animarse saltará a la derecha */
+@keyframes latido-centrado {
+    0% { 
+        transform: translateX(-50%) scale(1); 
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+    }
+    50% { 
+        transform: translateX(-50%) scale(1.05); 
+        box-shadow: 0 6px 12px rgba(255, 68, 0, 0.3); 
+    }
+    100% { 
+        transform: translateX(-50%) scale(1); 
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+    }
+}
+
+/* box-sizing: border-box; FUNDAMENTAL. Reset básico recomendado para evitar problemas de márgenes. Evita desbordes y hace el layout predecible. El tamaño final del elemento no crece al añadir padding o borde. */
+
+/* 🔴🔴 BLUR PARA: Menú, filtros y tabla al abrirse configuraciones*/
+
+.elemento-desenfocado {
+    filter: blur(0.7px) grayscale(50%); /* Borroso y en blanco y negro */
+    opacity: 0.7;       /* Semitransparente */
+    pointer-events: none; /* IMPORTANTE: Evita clics accidentales en la tabla */
+    transition: all 0.3s ease; /* Transición suave */
+    user-select: none;  /* No deja seleccionar texto */
+}
+
+/* 🔴🔴 CONTENEDOR PRINCIPAL CONTROLES (Menú + Filtro horario + Configuración filtros + Configuración) */
+
+.contenedor-principal-controles {
+    max-width: 727px;
+    width: 100%;
+    margin: 0 auto;
+    /* position: sticky; */
+    /* top: 0; */
+    /* z-index: 1000; */
+    /* background-color: #c28e8e; */
+    /* display: flex; */
+    justify-content: space-between;
+    /* align-items: center; */
+    /* padding: 10px 0; */
+    /* box-shadow: 0 2px 20px 8px rgba(0, 0, 0, 0.05); */
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.05); */
+    box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
+    /* padding-bottom: 5px; */
+}
+
+/* 🔴 MENÚ  -------------------------------- */ 
+
+.div-menu {
+    display: flex;
+    padding: 4px;
+    flex-shrink: 0; 
+    width: 100%;
+    box-sizing: border-box; 
+}
+
+/* 🟡 BOTONES -------------------------------- */
+
+#btn-div-filtro-distancia-toggle,
+#btn-div-filtro-condiciones-toggle,
+#btn-mapa-despegues,
+#btn-div-configuracion-toggle,
+#btn-filtro-favoritos-toggle,
+#btn-desmarcar-favoritos,
+#btn-abrir-favoritos,
+#btn-guardar-favoritos,
+#btn-guia-edicion-favoritos,
+#btn-guia-principal,
+#btn-activar-edicion-favoritos {
+    width: 40px;
+    height: 30px;
+    /* display: flex; */
+    justify-content: center; 
+    align-items: center;     
+    padding: 0;
+    
+    margin-left: 4px;
+    font-size: 1.3em;
+    cursor: pointer;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
+	transition: background-color 0.2s, border-color 0.2s, box-shadow 0.1s, padding-top 0.1s;
+}
+
+#btn-activar-edicion-favoritos {
+    margin-left: auto; /* Diferente para que se alinee él y el resto a su derecha a la derecha*/
+}
+#btn-guia-edicion-favoritos {
+    margin-left: auto; /* Diferente para que se alinee él y el resto a su derecha a la derecha*/
+}
+
+#btn-div-filtro-distancia-toggle.activo,
+#btn-filtro-favoritos-toggle.activo,
+#btn-div-filtro-condiciones-toggle.activo,
+#btn-activar-edicion-favoritos.activo,
+#btn-div-configuracion-toggle.activo {
+    background-color: #ff000042;
+	box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+    padding-top: 2px;
+    border-color: #999;
+}
+
+/* Para borde rojo en los filtros Condiciones y Distancia Y Favoritos cuando estén activos */
+.borde-rojo-externo {
+    box-shadow: 0 0 0 3px #ff0000 !important; /* !important por si acaso colisiona con otra sombra */
+    /* Opcional: si tu panel tiene bordes redondeados, asegúrate de que esto coincida */
+    /* border-radius: 8px; */ 
+	transition: box-shadow 0.3s ease;
+}
+
+/* Clase que aplicaremos por JS cuando el filtro sea distinto al valor por defecto */
+#btn-div-filtro-distancia-toggle.filtro-aplicado,
+#btn-filtro-favoritos-toggle.filtro-aplicado,
+#btn-div-filtro-condiciones-toggle.filtro-aplicado {
+    /* 1. Cambiamos el color del borde real, pero MANTENEMOS el grosor de 1px */
+    border-color: #ff0000 !important;
+    border-width: 1px !important;  /* Importante forzar 1px para evitar el salto */
+
+    /* 2. Añadimos 2px de sombra ROJA sólida para completar los 3px visuales
+       + Mantenemos la sombra original separada por coma */
+    box-shadow: 
+        inset 0 0 0 2px #ff0000,          /* Los 2px extra de "borde falso" */
+        inset 1px 1px 3px rgba(0,0,0,0.4) !important; /* Tu sombra original */
+}
+
+/* 🟡 Lógica de visibilidad de botones--- */
+
+.div-menu .group-edit {
+    display: none;
+}
+
+/* 2. Cuando el menú tiene la clase 'mode-editing'... */
+
+/* ...ocultamos los botones normales */
+.div-menu.mode-editing .group-normal {
+    display: none !important;
+}
+/* ...mostramos los botones de edición */
+.div-menu.mode-editing .group-edit {
+    display: flex;  
+}
+
+/* --- Estilos Visuales del "Modo Edición" --- */
+
+/* Cambiamos el fondo de la barra para dar feedback visual */
+.div-menu.mode-editing {
+    transition: background-color 0.3s ease;
+}
+
+
+/* 🟡 BUSCADOR -------------------------------- */
+
+#buscador-wrapper {
+    display: flex;
+	/* align-items: center; */
+	position: relative;
+}
+
+#buscador-despegues-provincias {
+    padding: 5px;
+	border: 1px solid black;
+    border-radius: 4px;
+    width: 80px; 
+	padding-right: 30px; /* Deja espacio para el botón de borrado */
+	transition: background-color 0.2s, border-color 0.2s;
+    background-color: #FFFFFF;
+}
+#buscador-despegues-provincias.filtrado {
+    /* background-color: #ff000042; */
+    border-color: #ff0000;
+    color: #1e293b;
+    /* border-width: 1px; */
+	box-shadow: inset 0 0 0 3px red, inset 1px 1px 3px rgba(0, 0, 0, .4) !important;
+    border: none;
+}
+.buscador-despegues-sin-resultados {
+    color: #ff0000  !important;    /* Rojo (tu variable --tag-fix) */
+    font-weight: bold !important; /* Negrita */
+    transition: color 0.2s ease;
+}
+/* Badge indicador */
+/* .buscador-despegues-provincias-badge {
+    display: none;
+	cursor: default;
+    user-select: none;
+    position: absolute;
+    top: 5px;
+    right: -70px;
+    background-color: #f0b400;
+    color: #000;
+    font-size: 1rem;
+    padding: 2px 4px;
+    border-radius: 10px;
+    font-weight: bold;
+} */
+
+/* Quita los estilos nativos de iOS para inputs de búsqueda */
+input[type="search"] {
+  -webkit-appearance: none; /* Elimina sombras y bordes nativos de Apple */
+  appearance: none;
+  border-radius: 0; /* O el radius que tú quieras, pero quita el defecto */
+}
+
+/* Quitar la "X" automática que sale en Chrome/Safari */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+/* Necesario para posicionar la 'X' dentro del contenedor */
+.buscador-con-boton {
+    position: relative; 
+}
+
+/* Estilo de la X (el botón de limpiar) */
+#limpiar-buscador {
+    position: absolute;
+    right: -1px; /* Ajusta la posición desde la derecha */
+    top: 50%; /* Centrado vertical */
+    transform: translateY(-50%);
+	display: none;  /* se muestra solo si hay texto */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 35px;
+    /* line-height: 1; */
+    /* padding: 0 5px; */
+    outline: none;
+    
+    /* Estilo de la "X" gris suave */
+    color: #999; 
+    z-index: 10; /* Asegura que está por encima del input */
+}
+
+#limpiar-buscador:hover {
+    color: #555; /* Un poco más oscuro al pasar el ratón */
+}
+
+/* 🔴 FILTRO HORARIO -------------------------------- */
+
+.div-filtro-horario {
+    display: flex;
+	justify-content: space-around;
+	flex-shrink: 0;
+    width: 100%;
+	box-sizing: border-box;
+	flex-wrap: wrap;
+}
+
+.div-slider-filtro-horario {
+    display: flex;
+    justify-content: center;
+    background-color: #0404ff1f;
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding-bottom: 5px;
+    z-index: 50;
+}
+
+/* 🔴 FILTRO CONDICIONES Y DISTANCIA -------------------------------- */
+
+.div-filtro-condiciones, 
+.div-filtro-distancia {
+    display: flex; 
+    flex-wrap: wrap;
+    justify-content: space-around;
+    flex-shrink: 0;
+    width: 100%;
+    margin: 0 auto;
+    max-width: 780px;
+    box-sizing: border-box;
+
+    /* ESTADO OCULTO: Altura, opacidad y márgenes a cero */
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0 4px; /* Padding lateral se mantiene, pero no el vertical */
+    /* Le dice al navegador que prepare la GPU para cambios */
+    will-change: max-height, opacity;
+    /* Truco para activar aceleración de hardware */
+    transform: translateZ(0);
+
+    /* LA TRANSICIÓN */
+    transition: 
+        max-height 0.3s ease-in-out, 
+        opacity 0.2s ease, 
+        margin-top 0.3s ease, 
+        margin-bottom 0.3s ease,
+        padding 0.3s ease;
+}
+
+.div-filtro-condiciones.activo, 
+.div-filtro-distancia.activo {
+    max-height: 120px; /* Un valor superior al contenido real */
+    opacity: 1;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    padding: 4px;
+}
+
+/* 🔴 CONFIGURACIÓN -------------------------------- */
+
+.panel-titulo {
+    width: 100%;
+    text-align: center;
+    flex-shrink: 0;
+    font-weight: bold;
+    margin-top: -16px;
+    margin-bottom: 6px;
+    /* border-bottom: 1px solid #eee; */
+    padding-left: 30px;
+    padding-right: 30px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 370px) {
+    .panel-titulo {
+        font-size: 1.3rem;
+        margin-top: -20px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+.btn-cerrar-modal {
+    /* 1. Posicionamiento */
+    position: absolute;
+    top: 5px;    /* Ajustado a 5px para igualar al otro */
+    right: 5px;  /* Ajustado a 5px para igualar al otro */
+    z-index: 20;
+
+    /* 2. Tamaño y Forma (El círculo) */
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+
+    /* 3. Centrado Perfecto (Flexbox) */
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;     /* Centra verticalmente */
+    padding: 0;              /* Importante quitar el padding antiguo */
+    margin: 0;
+
+    /* 4. Estilo Visual (Fondo, sombra, blur) */
+    background: rgba(255, 255, 255, 0.9); /* Fondo casi blanco semitransparente */
+    backdrop-filter: blur(2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border: none;
+
+    /* 5. Texto (La X) */
+    color: #444;       /* Gris oscuro para mejor contraste */
+    font-size: 28px;   /* Reducido de 33 a 28 para que quepa bien en el círculo */
+    line-height: 1;
+    cursor: pointer;
+    
+    /* 6. Truco para que la X quede centrada verticalmente en Android */
+    font-family: Arial, sans-serif; 
+}
+
+/* Opcional: Efecto al pasar el ratón (si se usa en PC) */
+.btn-cerrar-modal:hover {
+    background-color: #ffffff;
+    color: #000;
+}
+
+.div-configuracion {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    position: fixed; 
+
+    top: max(20px, env(safe-area-inset-top)) !important;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999 !important; /* Asegura que quede encima de todo (filtros, tabla, etc.) */
+
+    /* TAMAÑO Y FORMA DE "TARJETA" */
+    /* width: 90%;  */         /* En móviles ocupa casi todo el ancho */
+    max-width: 400px;    /* En PC se queda como una ventana modal elegante */
+    
+    background: #ffffff !important; 
+    background-color: #ffffff !important;
+    backdrop-filter: none !important; 
+    -webkit-backdrop-filter: none !important;
+    filter: none !important;
+
+    border-radius: 10px; 
+    box-shadow: 0px 0px 40px 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid #ccc;
+
+    /* ESTADO CERRADO */
+    overflow: hidden;
+    overflow-y: hidden;
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0 4px; 
+
+    pointer-events: none;
+    
+    /* TRANSICIÓN CONSISTENTE */
+    transition: 
+        max-height 0.3s ease-in-out, 
+        opacity 0.2s ease,
+        margin 0.3s ease,
+        padding 0.3s ease;
+}
+
+.div-configuracion.activo {
+    opacity: 1 !important;
+    overflow-y: auto; 
+    /* scrollbar-gutter: stable; */
+    pointer-events: auto; 
+    padding-top: 26px;
+    padding-right: 30px;
+    padding-left: 30px;
+    padding-bottom: 8px;
+    max-height: 100dvh; 
+}
+
+/* --- EFECTO FADE-IN DE CONTENIDO INTERNO --- */
+/* Hace que el contenido interno espere un poco a que el panel baje */
+.div-configuracion > * {
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+.div-configuracion.activo > * {
+    opacity: 1;
+}
+
+/* AJUSTE PARA PANTALLAS SUPERESTRECHAS (< 370px) */
+@media (max-width: 370px) {
+
+    /* 1. Anulamos el estilo "tarjeta flotante" para que ocupe todo el ancho */
+    .div-configuracion {
+        width: 100% !important;      /* Ocupar el 100% de la pantalla */
+        max-width: none !important;  /* Quitar límite de anchura */
+        left: 0 !important;          /* Pegado a la izquierda */
+        transform: none !important;  /* Quitar el centrado matemático */
+        
+        border-radius: 0 !important; /* Quitar esquinas redondeadas */
+        border: none !important;     /* Quitar bordes grises */
+    }
+
+    /* 2. Reducimos drásticamente el padding interno al abrirse */
+    .div-configuracion.activo {
+        /* Pasamos de 25px a solo 5px laterales. Ganamos 40px de espacio para el slider */
+        padding-right: 5px !important; 
+        padding-left: 5px !important;
+        
+        /* Opcional: Subirlo un poco más arriba para aprovechar altura */
+        /* top: 10% !important; */ 
+    }
+    
+    /* 3. Ajuste extra para el botón de cerrar (la X) */
+    .btn-cerrar-modal {
+        right: 2px !important; /* Pegarlo más a la esquina */
+        top: 2px !important;
+    }
+}
+
+/* 🟡 PANEL TERCIARIO. Divs -------------------------------- */
+
+.div-configuracion-subpanel {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Agrupar los botones y hacerlos flexibles dentro de su columna */
+.div-botones {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-top: 4px;
+    padding-bottom: 3px;
+
+    align-items: center; /* Centra verticalmente los enlaces con el botón */
+    gap: 15px; /* Espacio entre los enlaces y el botón */
+}
+.enlaces-legales {
+    color: #666;
+    /* margin-right: -11px; */
+}
+
+.enlaces-legales a {
+    color: #0078d4; /* El azul fuerte de tu nuevo icono */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.enlaces-legales a:hover {
+    text-decoration: underline;
+}
+
+.enlaces-legales .separador {
+    color: #9a9a9a;
+}
+
+.btn-accion {
+    width: 170px;
+    height: 30px;
+    text-align: center;
+    box-sizing: border-box;
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+    cursor: pointer;
+    background-color: #f0f0f0;
+	border: 1px solid #333;
+    border-radius: 5px;
+}
+.btn-accion:hover {
+  background-color: #0078d4;
+  color: #ffffff !important;
+}
+
+/* 🔴 DIVs dentro de los paneles -------------------------------- */
+
+.div-paneles-controles-sin-pips {
+	position: relative; 
+	border: 1px solid rgb(51, 51, 51);
+	padding-top: 7px;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    margin-bottom: 8px;
+    border-radius: 10px;
+	box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
+	/* background-color: #ffffff; */
+    border-width: 1px;
+	max-width: 365px;
+	min-width: 365px;
+	min-height: 90px;
+	background-color: #d9ebf9;
+}
+
+.div-paneles-controles-sin-pips label {
+	display: block;
+	text-align: center;
+    font-weight: bold;
+	height: 23px;
+	margin-top: -3px;
+    margin-bottom: 3px;
+}
+
+.div-paneles-controles {
+	position: relative; 
+	border: 1px solid rgb(51, 51, 51);
+	padding-top: 5px;
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-bottom: 8px;
+	border-radius: 10px;
+	box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
+	/* background-color: #ffffff; */
+    border-width: 1px;
+	max-width: 365px;
+	min-width: 365px;
+	min-height: 100px;
+	background-color: #d9ebf9;
+}
+
+.div-paneles-controles label {
+	display: block;
+	text-align: center;
+    font-weight: bold;
+	height: 23px;
+	margin-top: -3px;
+    margin-bottom: 3px;
+}
+
+.div-paneles-controles-transparente {
+    /* padding-right: 1px;
+	padding-left: 5px; */
+    padding-bottom: 12px;
+    /* padding-left: 7px; */
+	border-radius: 2px;
+	/* background-color: #ffffff; */
+    border-width: 1px;
+	max-width: 365px;
+	min-width: 365px;
+	height: 78px;
+	position: relative;
+	border: 0px solid #000;
+	/* margin-left: 7px; */
+	/* background-color: #d9ebf9; */
+    margin-bottom: 5px;
+}
+
+.div-paneles-controles-botones {
+	position: relative; /* <--- IMPRESCINDIBLE para que el botón no se salga de la caja */
+	border: 1px solid transparent;
+	/* padding-top: 7px; */
+    padding-right: 2px;
+    /* padding-bottom: 5px; */
+    padding-left: 7px;
+	border-radius: 4px;
+	/* box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, .3); */
+	/* background-color: #ffffff; */
+    border-width: 1px;
+	max-width: 365px;
+	min-width: 365px;
+    margin-bottom: 10px;
+    margin-top: 3px;
+}
+
+/* 🔴 PANELES DESPLEGABLES (ACORDEONES) EN CONFIGURACIÓN */
+details.config-accordion {
+    position: relative;
+    border: 1px solid rgb(51, 51, 51);
+    border-radius: 10px;
+    box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
+    max-width: 365px;
+    min-width: 365px;
+    background-color: #d9ebf9;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+}
+
+details.config-accordion summary {
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px 15px;
+    list-style: none; /* Oculta la flecha nativa estándar */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    outline: none;
+}
+
+details.config-accordion summary::-webkit-details-marker {
+    display: none; /* Oculta la flecha nativa en WebKit (Safari/Chrome) */
+}
+
+details.config-accordion summary::after {
+    content: '▼';
+    font-size: 0.8em;
+    color: #0078d4;
+    transition: transform 0.3s ease;
+}
+
+details.config-accordion[open] summary::after {
+    transform: rotate(-180deg);
+}
+
+details.config-accordion .accordion-content {
+    padding: 0px 7px 12px 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-top: 0px;
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Espacio uniforme entre los checkboxes */
+}
+
+.linea-con-bt-info {
+    /* position: relative;
+    display: block;    
+    margin-bottom: 6px; */
+    display: flex;
+    align-items: center; /* Centra verticalmente checkbox, texto y botón */
+    justify-content: flex-start; /* Alinea todo a la izquierda */
+    gap: 8px; /* Espacio automático entre el texto y el botón */
+    
+    /* Opcional: si quieres que toda la fila tenga un poco de aire */
+    width: 100%;             /* Asegura que ocupa el ancho para poder centrar si se pide */
+}
+
+#titulo-condiciones-slider {
+    position: absolute !important;
+    top: 62px; 
+    left: 0 !important;    /* Pegado a la izquierda del contenedor */
+    width: 100%;           /* Forzamos que la caja ocupe el 100% de ancho */
+    
+    /* ALINEACIÓN INTERNA (Flexbox): */
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;               /* Espacio entre texto e icono */
+
+    padding: 0 !important;
+    z-index: 15;             /* Asegura que quede por encima si roza algo */
+}
+#titulo-distancia-slider {
+    position: absolute !important;
+    top: 60px; 
+    left: 0 !important;    /* Pegado a la izquierda del contenedor */
+    width: 100%;           /* Forzamos que la caja ocupe el 100% de ancho */
+    
+    /* ALINEACIÓN INTERNA (Flexbox): */
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;               /* Espacio entre texto e icono */
+
+    padding: 0 !important;
+    z-index: 15;             /* Asegura que quede por encima si roza algo */
+}
+
+.div-paneles-controles-transparente img {
+    width: 20px;
+    height: 20px;
+}
+
+
+/* 🔴 MENÚ 2 EDICIÓN FAVORITOS -------------------------------- */
+
+.div-menu2-edicion-favoritos {
+    display: none;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    padding: 4px;
+    flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 18px;
+}
+
+.div-menu2-edicion-favoritos.mode-editing {
+    display: flex;
+    align-items: center;            /* Centrado vertical */
+    justify-content: space-between; /* Texto a la izq, Botón a la der */
+}
+
+#btn-finalizar-edicion-favoritos {
+    width: 180px;
+    margin-left: auto;
+    transition: background-color 0.2s, border-color 0.2s, box-shadow 0.1s, padding-top 0.1s;
+    align-self: center;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+    box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
+    border: 1px solid #333;
+    margin-bottom: 4px;
+    /* margin-right: 4px; */
+}
+
+/* 🔴🔴 CONTENEDOR PRINCIPAL TABLA (Contador despegues + Tabla) */
+
+.contenedor-principal-tabla {
+    flex-grow: 1;               /* Ocupa TODO el espacio restante verticalmente */
+    display: flex;              /* Flexbox interno para organizar contador y tabla */
+    flex-direction: column;     /* Pone contador arriba y tabla abajo */
+    overflow: hidden;           /* Contiene el scroll dentro de este bloque */
+    min-height: 0;              /* Truco vital de Flexbox para permitir el scroll interno en hijos */
+    margin: 0 auto;             /* Centrado horizontal */
+    max-width: 100%;            /* NUNCA permitas que el contenedor sea más ancho que la ventana */
+    /* min-width: min(100%, 760px); *//* "si es pequeña, alineada con el menú (760px)" Si la tabla es pequeñita, forzamos al contenedor a medir al menos lo mismo que tu menú. Al tener margin: 0 auto, esos 800px se centran, y la tabla pequeña queda alineada visualmente con el inicio del menú (a la izquierda dentro de la caja centrada)*/
+    /* margin-bottom: 5px; */
+}
+
+/* 🔴 CONTADOR DESPEGUES -------------------------------- */
+
+.contador-despegues {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    line-height: 1.4;
+    margin-bottom: 1px;
+    margin-top: 1px;
+    color: #666;
+    font-style: italic;
+    gap: 4px;
+
+    /* text-align: center;
+	flex-shrink: 0;
+	width: 100%;
+	box-sizing: border-box;*/
+}
+
+/* Borde y fondo cuando la tabla está filtrada */
+
+.contador-badge-filtro {
+    background-color: #d9ebf9;
+    border: 3px solid #ff0000;
+    color: #333333;
+    border-radius: 4px;
+
+    /* Quitamos el height fijo para que se adapte, o lo ajustamos bien al borde */
+    /* Si quieres 22px totales: 22 - 6 (bordes) = 16px de contenido/padding */
+    height: 24px; 
+    box-sizing: border-box;
+    padding: 0 5px; /* Ajuste lateral */
+
+    /* Alineación interna (del icono y el número dentro del badge) */
+    display: inline-flex; 
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    
+    /* Quitamos los hacks de posicionamiento manual */
+    vertical-align: middle; /* Ya no es estrictamente necesario con flex padre, pero ayuda si falla */
+}
+/* 3. EL ICONO (Para evitar espacios fantasma) */
+.contador-badge-filtro img {
+    display: block; /* Importante: elimina el espacio reservado para la "descendiente" de la letra */
+}
+
+/* 🔴 TABLA -------------------------------- */
+
+.tabla-wrapper {
+    flex: 1; /* Ocupa todo el espacio vertical restante */
+    /* max-height: 90vh; */
+	margin-left: 3px;
+    margin-bottom: 0px; 
+    margin-right: 3px;
+	margin-top: 3px;
+	flex-grow: 1;       /* Se estira para llenar el hueco dejado por el contador */
+    overflow: auto;     /* Aquí aparecen las barras de scroll si hace falta */
+	height: 100%;       /* Asegura que ocupe el contenedor */
+    width: 100%;
+	margin: 0;           /* Quitamos márgenes que resten espacio */
+	box-sizing: border-box;
+    
+    /* Ajustes para móviles */
+    -webkit-overflow-scrolling: touch;
+    /* El '+ 10px' es un margen extra para que la última fila respire un poco 
+       y no se pegue totalmente a la raya de gestos de Android */
+    padding-bottom: calc(env(safe-area-inset-bottom) + 10px) !important;
+}
+
+#tabla { /* table afecta a todas las tablas del documento. #tabla afecta solo a esa tabla. */
+ 	border-collapse: separate;
+	border-spacing: 0;
+    margin-left: auto;
+    margin-right: auto;
+/*	Prueba para iphone 7 */
+	
+	border-right: 2px solid #000;
+	table-layout: fixed;
+	width: max-content;	/* Usamos max-content para que la tabla crezca lo necesario horizontalmente */
+	margin-bottom: 0; /* Añadimos margen inferior para asegurar que la última fila no roce el scrollbar horizontal */
+	
+/*	Prueba para iphone 7 */
+	white-space: nowrap;
+/*  	overflow: hidden;
+ */ 
+}
+
+th, td {
+	padding: 0; /* CAMBIO: Quito padding general para controlar altura exacta */
+	text-align: center;
+	vertical-align: middle;
+	box-sizing: border-box; /* CAMBIO: Importante para que los bordes no sumen tamaño extra */
+
+	/* CAMBIO: Defino el ancho de TODAS las celdas a 20px por defecto */
+	width: 20px;
+	min-width: 20px;
+	max-width: 20px;
+	overflow: hidden; /* Corta el contenido si se pasa */
+	
+/*	Prueba para iphone 7 */
+	white-space: nowrap;
+/*	Problema tamaño letra accesibilidad */
+	overflow: hidden;
+    -webkit-text-size-adjust: none !important;
+    text-size-adjust: none !important;
+}
+
+/* Ajustamos el Z-index de todas las celdas de la cabecera (incluida la fila de Días) a un valor muy alto para que NADA se monte encima. */
+th {
+	position: sticky;
+	background-color: #ffffff;	
+	z-index: 10; /* Subimos a 11 para mayor seguridad */
+}
+
+td {
+	height: 18px;
+    font-size: 16px !important;
+    line-height: 18px !important; /* Fuerza a que la línea mida exactamente lo mismo que la celda */
+}
+
+th.day-start {
+	border-left: 2px solid #000;	
+}
+td div {
+	display: flex;
+	flex-direction: column;
+	justify-content: center; /* Centrado vertical */
+	align-items: center; /* Centrado horizontal */
+	height: 100%; /* El div debe ocupar toda la altura del td */
+}
+/* CLASE PARA FILAS DE DATOS NORMALES (20px) */
+.celda-altura-20px {
+    height: 20px !important;
+    line-height: 20px !important;
+    font-size: 16px !important;
+}
+
+/* CLASE PARA FILAS FINAS (4px) */
+.celda-altura-4px {
+    height: 8px !important;
+    line-height: 0 !important;
+    font-size: 0 !important;
+    padding: 0 !important;
+}
+
+/* Nuevo estilo para truncar Región y Provincia en Edición de Favoritos */
+td div.texto-multilinea-2 {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;   /* estándar */
+    overflow: hidden !important;
+    
+    /* Permite saltar de línea anulando el nowrap global de la tabla */
+    white-space: normal !important; 
+    word-break: break-word; 
+    
+    /* Ajustes visuales de centrado */
+    line-height: 1.2 !important; 
+    height: auto !important; /* Anula el 100% genérico para que se centre verticalmente */
+    width: 100%;
+    
+    /* El ancho de tu cabecera JS es 100px. Le damos 94px para dejar aire a los lados */
+    max-width: 94px; 
+    margin: 0 auto;
+}
+
+/* --------------------------------------------------- */
+/* Reset de estilos para tablas dentro de los tooltips */
+/* --------------------------------------------------- */
+
+/* 1. Reseteo de la tabla contenedora */
+table.tabla-tooltip-desglose {
+    table-layout: auto !important; /* CLAVE: Deja que las columnas se adapten al texto */
+    white-space: normal !important;
+}
+
+/* 2. Reseteo de las celdas */
+.tabla-tooltip-desglose th,
+.tabla-tooltip-desglose td {
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    line-height: 1.4 !important;
+    overflow: visible !important;
+    white-space: nowrap !important; /* Evita que la hora se parta en dos líneas */
+    padding-left: 4px !important;   /* Un poco de aire para que no se peguen los números */
+    padding-right: 4px !important;
+}
+
+/* 🟡 TABLA. Fijado de filas y columnas -------------------------------- */
+
+/* Aplicamos estilo base a todos los TH de la cabecera para asegurar el contexto */
+#tabla thead th {
+    /* Esto ayuda a asegurar que el sticky se aplica a un elemento con un contexto de caja claro */
+    display: table-cell; 
+    background-color: #ffffff; /* Aseguramos que siempre hay fondo blanco */
+    box-sizing: border-box; /* Aseguramos que padding y borde no afecten la altura total para el cálculo del 'top' */
+}
+
+/* --- FILAS SUPERIORES (DÍAS Y HORAS) --- */
+
+/* Fila 1: Días */
+#tabla thead tr:nth-child(1) th {
+    position: sticky;
+    top: 0;
+    height: 30px; /* FIJO: Definimos altura exacta para que la siguiente fila sepa dónde pegarse */
+    z-index: 25;
+    /* Correcciones visuales */
+    background-clip: padding-box; 
+    border-top: 0;
+}
+
+/* Fila 2: Horas */
+/* Su posición 'top' debe ser IGUAL a la altura de la fila 1 (30px) */
+#tabla thead tr:nth-child(2) th {
+    position: sticky;
+    top: 30px; /* Se pega justo debajo de la fila 1 */
+    z-index: 20; 
+    height: 20px; /* Altura de la fila de horas */
+    background-clip: padding-box;
+}
+
+/* --- COLUMNAS IZQUIERDAS (FAV, DESPEGUE, METEO) --- */
+
+/* Columna 1: Favoritos */
+.columna-favoritos {	
+	left: 0px;	
+	width: 30px !important;	
+	min-width: 30px !important;	
+	max-width: 30px !important;
+    z-index: 15; /* Por encima de las celdas de datos normales */
+    background-color: #ffffff; /* Necesario para tapar el contenido al hacer scroll lateral */
+}
+
+.columna-provincia-region {	
+    background-color: #ffffff; /* Necesario para tapar el contenido al hacer scroll lateral */
+}
+
+
+/* Columna 2: Despegue */
+.columna-despegue {	
+	position: sticky;
+	left: 0px; /* Se pega después de la columna favoritos (0 + 30px) */
+	width: 110px !important;	
+	min-width: 110px !important;	
+	max-width: 110px !important;
+	padding-left: 3px;
+    z-index: 15;
+    background-color: #ffffff;
+}
+
+/* Columna 3 y 4: Meteo (Iconos y Cabecera) */
+.columna-meteo, .columna-simbolo-fija {	
+	position: sticky;
+    left: 110px !important; /* Se pega después de despegue (30 + 110 = 140px) */
+	width: 33px !important;	
+	min-width: 33px !important;	
+	max-width: 33px !important;	
+    z-index: 15 !important;
+    background-color: #ffffff;
+}	
+
+/* Columna Condiciones */
+.columna-condiciones {	
+	position: sticky;
+    right: -31px !important;
+	width: 27px !important;	
+	min-width: 27px !important;	
+	max-width: 27px !important;	
+    z-index: 15 !important;
+    background-color: #ffffff;
+}	
+
+/* --- LA ESQUINA INTERSECCIÓN --- */
+/* Las celdas que son A LA VEZ cabecera superior y columna izquierda */
+/* Deben tener el Z-Index más alto para tapar todo lo demás */
+
+thead .columna-favoritos,
+thead .columna-despegue,
+thead .columna-meteo {
+    position: sticky;
+    top: 0 !important; /* Fuerzan top 0 porque son parte de la primera fila */
+    z-index: 30 !important; /* El nivel más alto: tapan filas y columnas al cruzar */
+    background-color: #ffffff;
+    border-bottom: 2px solid #000 !important;
+}
+
+/* Corrección específica para los iconos de meteo (fila 2, 3 y 4 en la zona izquierda) */
+/* Los iconos de meteo (viento, racha, dir) NO son th, son td, pero queremos que floten sobre los datos */
+.columna-simbolo-fija {
+    position: sticky;
+    left: 110px !important;
+    z-index: 15 !important;
+    background-color: #ffffff;
+}
+
+/* 🟡 TABLA. Estilos especiales -------------------------------- */
+
+/* FUERZA el color gris para las horas nocturnas fijas */
+/* Usamos !important para anular la regla general `th { background-color: #ffffff; }` */
+#tabla tr:nth-child(2) th.celda-noche {
+    background-color: rgb(214, 214, 214) !important;
+}
+
+/* Para ocultar con js celdas que son true en el resultado de la función esCeldaNoche(Date), que son la fila de horas de cabecera y las 3 filas de datos (velocidad, racha y direccion) */
+body.solo-dia .celda-noche {
+    display: none !important;
+}
+
+ /* Para las celdas que necesiten o no que se muestre mano al pasar encima */
+tbody td.cursor-pointer {
+    cursor: pointer;
+}
+tbody td.no-cursor-pointer {
+    user-select: none;
+	cursor: default;
+}
+tbody td.cursor-pointer:hover {
+    background-color: #f0f0f0;
+}
+
+/* Estilos para la línea gruesa de separación */
+.borde-grueso-izquierda { border-left: 2px solid #000 !important; }	
+.borde-grueso-derecha { border-right: 2px solid #000 !important; }	
+.borde-grueso-abajo { border-bottom: 2px solid #000 !important; }
+.borde-grueso-arriba { border-top: 2px solid #000 !important; }
+tr.fila-separador td, tr.fila-separador th { border-bottom: 2px solid #000 !important; }
+
+/* Fechas */
+/* .orientaciones-svg {
+    font-size: 0;
+	line-height: 0; 
+    white-space: nowrap; 
+} */
+.orientaciones-svg {
+    display: flex; /* Convierte el contenedor en un Flex Container */
+    gap: 0; /* Clave: Asegura 0 separación entre los items */
+    padding: 0; /* Asegura que el contenedor no añada espacio */
+    margin: 0; /* Asegura que el contenedor no añada espacio */
+    align-items: center;
+    justify-content: center;
+}
+.orientaciones-svg svg {
+    width: 20px;
+    height: 20px;
+
+    /* Aumentar el tamaño visual sin afectar el flujo de la celda */
+    transform: scale(1.5); 
+    transform-origin: center; 
+	
+    margin-right: -4.7px;;
+	margin-left: 0;
+    padding: 0;
+    vertical-align: top; 
+}
+.flecha-viento {
+    width: 20px;
+    height: 20px;
+
+    /* Aumentar el tamaño visual sin afectar el flujo de la celda */
+    /* transform: scale(1.5); Comento porque veo que no cambia nada*/ 
+    transform-origin: center; 
+
+    /* Margen negativo para compacidad si fuera necesario, o para centrado */
+    margin-top: -4px;
+    margin-bottom: -4px; 
+    padding: 0;
+}
+
+span.grados {
+	font-size: 10px;
+}
+
+
+/* Opcional: Un poco de especio vertical, pero no horizontal. Mejora la alineación vertical si el texto es más grande. Problema: aumenta ligeramente altura de fila */
+/* .orientaciones-svg svg {
+    vertical-align: middle;
+} */
+ 
+.fondo-verde { background-color: #19ed86; }
+.fondo-naranja { background-color: #ffa500; }
+.fondo-rojo { background-color: #ff5243; }
+
+/* 🔴 SUGERENCIAS GLOBALES -------------------------------- */
+
+/* Contenedor principal */
+#sugerencias-globales {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f3f4f6;
+    border-radius: 8px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 400px;   
+    margin-left: auto;
+    margin-right: auto;
+}
+/* El texto de "No hay favoritos..." */
+.sugerencia-aviso {
+    margin: 0 0 10px 0;
+    color: #555;
+    text-align: center;
+}
+
+/* La lista (ul) */
+.sugerencia-lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Asegura que los items (li) se centren */
+}
+
+/* Cada tarjeta de despegue (li) */
+.sugerencia-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    
+    /* Control de anchura */
+    width: 100%; 
+    max-width: 400px; /* No pasará de este ancho, pero en móvil se adaptará */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* El texto del despegue */
+.sugerencia-texto {
+    flex: 1;
+    margin-right: 10px;
+    line-height: 1.2;
+    text-align: left; /* El texto dentro de la tarjeta sí lo queremos a la izquierda */
+}
+
+/* El botón de añadir */
+.sugerencia-btn {
+    flex: 0 0 auto;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #333;
+    transition: background 0.2s;
+    background-color: #f0f0f0;
+    border: 1px solid #333;
+    border-radius: 5px;
+    width: 170px;
+    height: 30px;
+    box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
+}
+
+.sugerencia-btn:hover {
+    background-color: #0078d4;
+    color: #ffffff !important;
+}
+
+/* 🔴 SLIDERS -------------------------------- */
+
+/* 🟡 SLIDERS. Modificación clases generales noUi -------------------------------- */
+
+.noUi-horizontal {
+    margin-top: 44px !important;
+    height: 17px !important;
+    margin-left: 18px !important;
+    margin-right: 18px !important;
+}
+.noUi-horizontal .noUi-handle {
+	width: 20px !important;
+	height: 24px !important;
+	top: -5px !important;
+	right: -9px !important;
+    border: 1px solid #999 !important;
+}
+.noUi-handle:after, .noUi-handle:before {
+    left: 8px !important;
+    top: 4px !important;
+    width: 2px !important;
+}
+.noUi-horizontal .noUi-tooltip {
+    cursor: grab !important;
+    /* border-radius: 3px; */
+	font-weight: bold;
+	/* ESTILOS DE ALINEACIÓN */
+    display: flex;
+    /* flex-direction: row; *//* Obliga que los elementos vayan uno al lado del otro */
+    align-items: baseline; /* Alinea la base del número con la base de la "h" */
+    justify-content: center;
+    /* white-space: nowrap; */ /* Prohíbe terminantemente que se parta la línea */
+}
+.noUi-touch-area {
+    cursor: grab !important;
+}
+.noUi-handle .noUi-tooltip {
+    display: flex !important;
+    /* flex-direction: column !important; */
+    align-items: center !important;
+	padding: 3px;
+}
+/* .noUi-touch-area:hover {
+    background-color: #0078d4;
+    color: #ffffff !important;
+} */
+
+/* 🟡 SLIDERS. Personalizados. Horario -------------------------------- */
+#horario-slider.noUi-horizontal {
+    margin-top: 33px !important;
+}
+#horario-slider .noUi-tooltip {
+	background: transparent;
+	border: none !important;
+	align-items: baseline !important;
+}
+/* Añadimos la "h" automáticamente detrás del número */
+#horario-slider.noUi-horizontal .noUi-tooltip::after {
+    content: "h";
+    font-weight: normal;
+    font-size: 0.85em;
+    margin-left: 2px;
+	color: #555;
+}
+#horario-slider .noUi-pips-horizontal {
+    padding: 0px !important;
+    height: 45px !important;
+    top: 130% !important;
+    left: -4px !important;
+    width: 100% !important;
+}
+#horario-slider .noUi-value {
+    /* Mantenemos tu estilo visual básico */
+    margin-top: 5px;
+    color: black;
+    font-weight: bold;
+    
+    /* 1. CLAVE: Anular el centrado automático de noUiSlider. */
+    /* Esto hace que la caja comience exactamente en la marca vertical del pip. */
+    transform: none !important; 
+    
+    /* 2. Extender el área de clic hacia la derecha */
+    width: 71px; /* Un tamaño fijo generoso. Debería cubrir sobradamente el espacio de un día. */
+    height: 25px; /* Antes 100%. Asegura que la altura del área de pips sea clicable */
+    cursor: pointer; 
+    
+    /* 4. Aseguramos que el elemento esté encima de todo para recibir el clic */
+    z-index: 3; 
+	transition: background-color 0.15s ease, box-shadow 0.15s ease;
+	background-color: #f0f0f0;
+    border-radius: 5px;
+    border: 1px solid #999 !important;
+
+    width: 70px !important;
+    /* CENTRADO: Desplazamos a la izquierda la mitad del ancho */
+    margin-left: 9px !important;
+    text-align: center;
+
+    display: flex;             /* Convierte la caja en flexible */
+    align-items: center;       /* Centra VERTICALMENTE */
+    justify-content: center;   /* Centra HORIZONTALMENTE (reemplaza a text-align) */
+    padding: 0;                /* Resetea rellenos internos que los móviles a veces añaden */
+    line-height: 1;            /* Evita que la altura de línea herede valores extraños */
+}
+#horario-slider .noUi-value:hover {
+	background-color: #0078d4;
+	color: #ffffff;
+	font-weight: bold;
+}
+#horario-slider .noUi-connect {
+	background: #0078d4;
+}
+/* Hide the first and last pip markers while keeping labels */
+#horario-slider .noUi-pips .noUi-marker:first-of-type,
+#horario-slider .noUi-pips .noUi-marker:last-of-type {
+  display: none !important;
+}
+#horario-slider .noUi-marker-horizontal.noUi-marker-large {
+    height: 6px;
+    margin-top: -27px;  
+}
+
+/* 🟡 SLIDERS. Personalizados. Configuración Horario -------------------------------- */
+#configuracion-horario-slider.noUi-horizontal {
+    margin-top: 30px !important;
+}
+#configuracion-horario-slider .noUi-tooltip {
+	background: transparent;
+	border: none !important;
+	align-items: baseline !important;
+}
+/* Añadimos la "h" automáticamente detrás del número */
+#configuracion-horario-slider.noUi-horizontal .noUi-tooltip::after {
+    content: "h";
+    font-weight: normal;
+    font-size: 0.85em;
+    margin-left: 2px;
+	color: #555;
+}
+#configuracion-horario-slider .noUi-pips-horizontal {
+    padding: 0px !important;
+    height: 45px !important;
+    top: 113% !important;
+    left: 0 !important;
+    width: 100% !important;
+}
+#configuracion-horario-slider .noUi-connect {
+	background: #0078d4;
+}
+#configuracion-horario-slider .noUi-marker-horizontal.noUi-marker-large {
+    height: 8px;
+}
+#configuracion-horario-slider .noUi-value-horizontal {
+	transform: translate(-50%, 20%);
+}
+
+/* 🟡 SLIDERS. Personalizados. Condiciones -------------------------------- */
+
+/* connect está definido como: 'upper' Tramo conectado (parte derecha)*/
+#condiciones-slider .noUi-connect {
+	background: #0078d4;
+}
+#condiciones-slider.noUi-horizontal {
+    margin-top: 33px !important;
+}
+#condiciones-slider .noUi-pips-horizontal {
+    padding: 0px !important;
+    height: 45px !important;
+    top: 100% !important;
+    left: 0 !important;
+    width: 100% !important;
+}
+#condiciones-slider .noUi-value {
+    margin-top: -62px;   /* separación pips y su texto*/
+	color: black;
+	padding-left: 0px;
+}
+#condiciones-slider {
+    border: none;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+/* #condiciones-slider .noUi-handle {
+    border: 1px solid #666;
+    background: #FFF;
+    cursor: grab;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+ */
+#condiciones-slider .noUi-marker,
+#condiciones-slider .noUi-marker-large {
+    height: 6px;
+}
+#condiciones-slider .noUi-tooltip {
+	background: transparent;
+	border: none;
+}
+
+/* 🟡 SLIDERS. Personalizados. Distancia -------------------------------- */
+
+/* connect está definido como: 'upper' Tramo conectado (parte derecha)*/
+#distancia-slider .noUi-connect {
+	background: #0078d4;
+}
+#distancia-slider.noUi-horizontal {
+    margin-top: 33px !important;
+}
+#distancia-slider .noUi-pips-horizontal {
+    padding: 0px !important;
+    height: 45px !important;
+    top: 100% !important;
+    left: 0 !important;
+    width: 100% !important;
+}
+#distancia-slider .noUi-value {
+    margin-top: -62px;   /* separación pips y su texto*/
+	color: black;
+	padding-left: 0px;
+}
+#distancia-slider {
+    border: none;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+/* #distancia-slider .noUi-handle {
+    border: 1px solid #666;
+    background: #FFF;
+    cursor: grab;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+ */
+#distancia-slider .noUi-marker,
+#distancia-slider .noUi-marker-large {
+    height: 6px;
+}
+#distancia-slider .noUi-tooltip {
+	background: transparent;
+	border: none;
+}
+/* Añadimos la "km" automáticamente detrás del número */
+#distancia-slider.noUi-horizontal .noUi-tooltip::after {
+    content: " km";
+    font-weight: normal;
+    font-size: 0.85em;
+    margin-left: 2px;
+	color: #555;
+	position: relative;
+    top: 1px;
+}
+/* Que desaparezca el cuadro y también el "km" cuando la función devuelve "" */
+#distancia-slider.noUi-horizontal .noUi-tooltip:empty {
+    display: none !important;
+}
+
+
+/* 🟡 SLIDERS. Personalizados. Distancia. Botones localización origen -------------------------------- */
+
+/* 1. Botón configuración origen */
+.btn-icon-trigger {
+    /* border: 1px solid #ccc; */
+    border-radius: 20%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 24px;
+    /* margin-left: 8px; */
+    padding: 0;
+    transition: all 0.2s;
+    display: inline-block;
+    vertical-align: middle;
+    text-align: center;
+    /* width: 170px; */
+    /* height: 30px; */
+    /* text-align: center; */
+    /* box-sizing: border-box; */
+    /* font-weight: bold; */
+    box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
+    /* cursor: pointer; */
+    background-color: #f0f0f0;
+    /* border-width: 1px !important; */
+    /* border-radius: 5px; */
+	border: 1px solid #333;
+}
+.btn-icon-trigger:hover {
+	background-color: #0078d4;
+	color: #ffffff !important;
+    border-color: #999;
+    /* transform: scale(1.1); */
+}
+
+/* 2. Fondo Oscuro (Overlay) - Compartido por Menu y Mapa */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+	left: 0;
+	width: 100%;
+	height: 100dvh;
+    background: rgba(0,0,0,0.6); /* Fondo negro semitransparente */
+    z-index: 2147483647 !important; /* El número más alto para ganar a todo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px); /* Efecto borroso elegante */
+}
+
+/* 3. Caja Blanca del Modal */
+.modal-content {
+    background: white;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease; /* Pequeña animación de entrada */
+}
+
+/* Tamaños específicos */
+.small-modal { width: 360px; }
+.map-modal-size {
+
+	/* width: 90%;
+	max-width: 600px; */
+	width: 80vw;
+    height: 60vh;
+    
+    /* limitar que no se vea gigante en monitores muy grandes */
+    /* max-width: 1200px; 
+    max-height: 1000px; */
+
+    /* Asegura que si hay contenido dentro (como un mapa), se comporte bien */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Cabecera del modal */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0px;
+    padding-bottom: 10px;
+}
+.modal-header h3 { margin: 0; font-size: 1.1rem; color: #333; }
+
+/* Botón X de cerrar */
+.close-x {
+    background: none; border: none; font-size: 35px; 
+    cursor: pointer; color: #888; line-height: 1; padding: 0 5px;
+}
+.close-x:hover { color: #000; }
+
+/* Caja de Estado (Coordenadas actuales) */
+.geo-status-box {
+    background: #f1f3f5;
+    padding: 5px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 20px;
+    border: 1px solid #e9ecef;
+    color: #495057;
+}
+
+/* Grid de botones del menú (GPS, Manual, Mapa) */
+.geo-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.btn-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 5px 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #333;
+}
+.btn-option:hover {
+    background: #e7f5ff;
+    border-color: #74c0fc;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.btn-option .emoji { font-size: 28px; margin-bottom: 8px; }
+/* .btn-option span { font-size: 0.85rem; font-weight: 500; } */
+
+/* 4. Botones de acción del Mapa (Aceptar / Cancelar) */
+.modal-footer {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+.btn-aceptar, .btn-cancelar {
+    flex: 1;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+	max-width: 150px;
+}
+.btn-aceptar { background-color: #007bff; color: white; }
+
+.btn-cancelar { background-color: #999; color: white; }
+
+/* Animación */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🟡 SLIDERS. Personalizados. Velocidad -------------------------------- */
+
+/* velocidad-slider. Colores de los 4 segmentos */
+#velocidad-slider .noUi-connects .noUi-connect:nth-child(1) {
+    background: #ffa500; 
+}
+#velocidad-slider .noUi-connects .noUi-connect:nth-child(2) {
+    background: #19ed86; /* Verde */
+}
+/* Entre Ideal y Máxima (2/3 Verde, 1/3 Naranja). 66.6% es Verde (Ideal), el resto 33.3% es Naranja (Tolerable) */
+#velocidad-slider .noUi-connects .noUi-connect:nth-child(3) {
+    background: linear-gradient(to right, #19ed86 66.6%, #ffa500 66.6%);
+}
+#velocidad-slider .noUi-connects .noUi-connect:nth-child(4) {
+    background: #ff5243;
+}
+/* #velocidad-slider .noUi-tooltip:hover {
+    background-color: #0078d4;
+    color: #ffffff !important;
+} */
+#velocidad-slider .tooltip-label {
+    font-size: 0.8em;
+    font-weight: normal;
+    margin-top: 2px;
+    opacity: 0.8;
+	
+	display: block !important;         /* Que no se oculte */
+    margin-top: 0px;                   /* Ajuste fino */
+}
+
+/* 🟡 SLIDERS. Personalizados. Racha -------------------------------- */
+
+/* Antes de RachaMax: Degradado de Verde a Naranja en el punto dinámico --racha-tolerable-pct. rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3; */
+#racha-slider .noUi-connects .noUi-connect:nth-child(1) {
+    /* Usamos la variable calculada en JS para el punto de cambio */
+    background: linear-gradient(to right, #19ed86 var(--racha-tolerable-pct), #ffa500 var(--racha-tolerable-pct));
+}
+#racha-slider .noUi-connects .noUi-connect:nth-child(2) {
+    background: #ff5243;
+}
+#racha-slider .tooltip-label {
+    font-size: 0.8em;
+    font-weight: normal;
+    margin-top: 2px;
+    opacity: 0.8;
+}
+
+/* 🟡 SLIDERS. Personalizados. Velocidad y Racha. Etiquetas tootips ----------- */
+
+/* 1. Configuración del Contenedor (Tooltip) */
+#velocidad-slider .noUi-tooltip,
+#racha-slider .noUi-tooltip {
+    /* Fondo transparente forzoso */
+    background: transparent !important; 
+    border: none !important;
+    box-shadow: none !important;
+
+    /* Magia Flexbox para ordenar elementos */
+    display: flex !important;
+    flex-direction: row !important; /* En fila horizontal */
+    flex-wrap: wrap !important;     /* Permitir que elementos bajen de línea */
+    align-items: baseline !important;
+    justify-content: center !important;
+    
+    /* Ajustes de tamaño y fuente base (Negrita para el número) */
+    font-weight: bold; 
+    color: #000;
+    min-width: 60px;
+    line-height: 1.1;
+    z-index: 5;
+}
+
+/* 2. LA UNIDAD "km/h" (Usamos ::after para ponerlo a la derecha) */
+#velocidad-slider .noUi-tooltip::after,
+#racha-slider .noUi-tooltip::after {
+    content: "";
+    font-weight: normal;
+    font-size: 0.85em;
+    color: #555;
+    margin-left: 2px;
+    
+    /* Orden visual: El número es orden 0, esto va después */
+    order: 2; 
+}
+
+/* 3. LA ETIQUETA "Mín/Ideal/Máx" (Usamos ::before y lo mandamos abajo) */
+#velocidad-slider .noUi-tooltip::before,
+#racha-slider .noUi-tooltip::before {
+    /* Estilos de texto */
+    font-weight: normal;
+    font-size: 0.8em;
+    color: #333;
+    opacity: 0.9;
+    
+    /* TRUCO: Forzar que ocupe 100% de ancho para caer a la siguiente línea */
+    width: 100%; 
+    text-align: center;
+    
+    /* Orden visual: Lo mandamos al final (abajo) */
+    order: 3; 
+}
+
+/* 4. ASIGNACIÓN DE TEXTOS A LAS ETIQUETAS (Usando ::before esta vez) */
+
+/* Velocidad */
+#velocidad-slider .noUi-handle[data-handle="0"] .noUi-tooltip::before { content: "Mín"; }
+#velocidad-slider .noUi-handle[data-handle="1"] .noUi-tooltip::before { content: "Ideal"; }
+#velocidad-slider .noUi-handle[data-handle="2"] .noUi-tooltip::before { content: "Máx"; }
+
+/* Racha */
+#racha-slider .noUi-handle[data-handle="0"] .noUi-tooltip::before { content: "Máx"; }
+
+
+/* ----------------------------------------------------------- */
+/* 5. ESTILOS DE ERROR (CONFLICTO) - SOLUCIÓN POR ID */
+/* ----------------------------------------------------------- */
+
+/* Usamos los IDs para tener máxima prioridad sobre la librería */
+#velocidad-slider .noUi-tooltip.tooltip-error-conflict,
+#racha-slider .noUi-tooltip.tooltip-error-conflict {
+    background: #ff4444 !important;       /* Fondo Rojo */
+    border: 1px solid #ff4444 !important; /* Borde Rojo */
+    color: white !important;              /* Texto Blanco */
+    box-shadow: 0 2px 8px rgba(255, 68, 68, 0.5); /* Resplandor */
+}
+
+/* Asegurar que el texto interior y etiquetas también sean blancos */
+#velocidad-slider .noUi-tooltip.tooltip-error-conflict *,
+#racha-slider .noUi-tooltip.tooltip-error-conflict * {
+    color: white !important;
+    background: transparent; /* Por si hay spans con fondo */
+}
+
+/* Para pintar la flechita de abajo (si tu tema la tiene) */
+#velocidad-slider .noUi-tooltip.tooltip-error-conflict::after,
+#racha-slider .noUi-tooltip.tooltip-error-conflict::after {
+    border-top-color: #ff4444 !important;
+	color: white !important;
+}
+
+/* 🟡 SLIDERS. Otros CSS -------------------------------- */
+
+.noUi-tooltip.flash {
+  animation: flash-sombra 300ms ease-in-out;
+}
+@keyframes flash {
+  0%   { background-color: var(--tooltip-bg); transform: scale(1); }
+  50%  { background-color: #ff0; transform: scale(1); }
+  100% { background-color: var(--tooltip-bg); transform: scale(1); }
+}
+@keyframes flash-sombra {
+    0%   { 
+        /* Estado inicial: Fondo por defecto, box-shadow original */
+        background-color: var(--tooltip-bg, #FFF);
+        box-shadow: inset 0 0 1px #FFF, inset 0 1px 7px #EBEBEB, 0 3px 6px -3px #BBB; 
+    }
+    
+    50%  { 
+        /* Punto medio: Fondo rojo brillante y box-shadow rojo intenso */
+        background-color: #FF4136; /* Rojo brillante, puedes usar 'red' si prefieres */
+        /* Añadimos un box-shadow de propagación (spread) rojo para el efecto de brillo */
+        box-shadow: 0 0 10px 4px #FF4136, 0 3px 6px -3px #BBB; 
+    } 
+    
+    100% { 
+        /* Estado final: Vuelve al estado inicial */
+        background-color: var(--tooltip-bg, #FFF);
+        box-shadow: inset 0 0 1px #FFF, inset 0 1px 7px #EBEBEB, 0 3px 6px -3px #BBB;
+    }
+}
+
+/* La clase que activa la animación sigue siendo la misma */
+.noUi-tooltip.flash {
+    animation: flash-sombra 300ms ease-in-out; 
+}
+
+/* 🔴 MENSAJES -------------------------------- */
+
+.mensaje-modal {
+	display:flex;
+	visibility: hidden;   /* oculto inicialmente */
+    opacity: 0;
+	transition: opacity 0.3s;
+    z-index: 9999999 !important;	
+	position:fixed;
+	top:0;
+	left:0;
+	width:100vw;
+	height:100dvh;
+	
+	justify-content:center;
+	align-items:center;
+	flex-direction:column;
+	text-align: left;
+	font-size: 1em;
+
+	background: rgb(237 237 237 / 75%);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.mensaje-modal.visible {
+    visibility: visible;
+    opacity: 1;
+}
+.mensaje-modal .mensaje-modal-contenido {
+	padding: 15px;
+    max-width: 415px;
+    margin: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: -1px 4px 16px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mensaje-no-modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    
+	background: #ffffff;
+	border-radius: 8px;
+	box-shadow: 4px 4px 14px 5px rgba(0, 0, 0, 0.33);
+    padding-bottom: 7px;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-top: 5px;
+    font-size: 1em;
+    z-index: 9999;
+
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+
+    /* COMPORTAMIENTO 1: ESCRITORIO (Por defecto) --- */
+    position: fixed;
+    top: 75%;
+    left: 50%;
+	transform: translate(-50%, -50%);   
+    width: auto; 
+    max-width: 120px;
+    max-height: 90vh;
+    overflow-y: auto;
+	border: 6px solid #ff0000;
+}
+
+/* 🟡 MENSAJES. Móvil -------------------------------- */
+/* @media (max-width: 900px) {
+    .mensaje-no-modal {
+		left: auto;
+		transform: translateY(-50%);
+        right: 8px;
+
+        width: auto;
+        max-width: 34vw; 
+        min-width: 143px;
+        
+        align-items: flex-end;
+    }
+} */
+
+/* 🟡 MENSAJES. Móvil horizontal -------------------------------- */
+/* @media (max-width: 900px) and (orientation: landscape) {
+    .mensaje-no-modal {
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);       
+
+        position: fixed;
+        
+        max-height: 85vh;
+        overflow-y: auto; 
+		
+        padding: 15px; 
+        font-size: 1em;
+    }
+}
+ */
+.mensaje-no-modal p:not(:last-child) {  /* Solo distancia mayor entre párrafos */
+    margin-bottom: 0em;
+}
+
+.mensaje-no-modal.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* 🟡 MENSAJES. Clases auxiliares para el generador de mensajes js -------------------------------- */
+
+/* Forzar centrado absoluto (para avisos informativos no modales) */
+
+/* .mensaje-no-modal.posicion-centro {
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+}
+ */
+
+/* Forzar posición derecha (para permitir interactuar con la lista) */
+/* Usamos la lógica que ya tenías para móviles/landscape pero forzada */
+/* .mensaje-no-modal.posicion-derecha {
+    top: 50% !important;
+    left: auto !important;
+    right: 20px !important; 
+    transform: translateY(-50%) !important;
+    align-items: flex-end;
+} */
+
+/* Botón gris (estilo secundario para Cancelar) */
+.boton-mensajes.btn-secundario {
+    background-color: #999;
+    margin-left: 10px; /* Separación si hay varios botones */
+}
+
+.boton-mensajes-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center; 
+    align-items: center;     
+    
+    /* EXTRA: Mejor comportamiento en móviles */
+    flex-wrap: wrap;         /* Si no caben, bajan a la siguiente línea */
+    gap: 10px;               /* Espacio entre botones (sustituye a tu margin-left manual) */
+    margin-top: 20px;        /* Un poco de aire arriba respecto al texto */
+}
+
+.boton-mensajes {
+	margin-top: 5px;
+	align-self: center;     /* centra horizontalmente dentro del flex */
+	padding: 5px 10px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-weight: bold;
+	font-size: 1em;
+    box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
+    border: 1px solid #333;
+}
+
+/* 🔴 GUÍAS CON DRIVER.JS -------------------------------- */
+
+/* :root {
+    --meteo-azul-oscuro: #1a2a3a;   
+    --meteo-azul-claro: #007bff;    
+    --meteo-texto: #333333;
+    --meteo-blanco: #ffffff;
+} */
+
+/* Permite que los clics pasen a través del fondo oscuro */
+.driver-overlay {
+  pointer-events: auto !important;
+  cursor: default; /* Evita que salga la manito de interactuar */
+}
+
+/* Para evitar que el usuario pueda hacer clic, escribir o interactuar con el elemento que está resaltado (el que Driver.js pone en foco), */
+.driver-active-element {
+  pointer-events: none !important;
+}
+
+.driver-popover {
+    background-color: var(--meteo-blanco);
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    background-color: #fde047 !important;
+    max-width: 300px !important;
+    pointer-events: auto !important; /* IMPORTANTE: Asegúrate de que el popover (los botones de la guía) SÍ sigan funcionando */
+    color: black !important;
+    /* Usa la variable de entorno segura, con un fallback de 20px si no existe */
+    margin-top: max(20px, env(safe-area-inset-top)) !important;
+}
+
+/* .driver-popover-arrow {
+    border-color: var(--meteo-blanco);
+} */
+
+.driver-popover-title {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    /* font-size: 1.1rem; */
+    font-weight: 700;
+    /* color: var(--meteo-azul-oscuro); */
+    /* margin-bottom: 10px; */
+    /* border-bottom: 2px solid #f0f0f0; */
+    /* padding-bottom: 5px; */
+}
+
+.driver-popover-description {
+    font-size: 16px !important;
+    color: var(--meteo-texto);
+    line-height: 1.4;
+}
+
+/* .driver-popover-progress-text {
+    color: #999;
+    font-size: 0.8rem;
+    font-weight: 600;
+} */
+
+.driver-popover-footer {
+    margin-top: 10px !important;
+}
+
+.driver-popover-footer button {
+    font-size: 16px !important;
+    line-height: 1 !important;
+}
+
+.driver-popover-footer button.driver-popover-next-btn:hover,
+.driver-popover-footer button.driver-popover-prev-btn:hover {
+    background-color: #007bff !important;
+}
+
+.driver-popover-footer button.driver-popover-next-btn {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: #007bff;
+    color: white;
+    font-size: 16px !important;
+    text-shadow: none;
+    border-radius: 5px !important;
+
+    padding: 5px 10px !important;
+    cursor: pointer !important;
+    font-weight: bold !important;
+    box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2) !important;
+    border: 1px solid #333 !important;    
+}
+
+.driver-popover-footer button.driver-popover-next-btn:hover,
+.driver-popover-footer button.driver-popover-prev-btn:hover {
+    background-color: #007bff !important;
+}
+
+.driver-popover-footer button.driver-popover-prev-btn {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    background-color: #999;
+    color: white;
+    font: 16px !important;
+    font-weight: bold !important;
+    border: 1px solid #333 !important;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-shadow: none;
+}
+
+.driver-popover-close-btn {
+    font-size: 25px !important;
+    color: #000000 !important;
+}
+
+.driver-popover-close-btn:hover {
+    color: var(--meteo-azul-oscuro);
+}
+
+/* 🔴 CHECKBOX -------------------------------- */
+
+/* Checkbox estilos (sin cambios). Selector descendente: apunta al input que es hijo del label.custom-checkbox */
+label.custom-checkbox input[type="checkbox"] {
+    transform-origin: center;
+    /* Aplicamos el zoom SÓLO al elemento input */
+    transform: scale(1.2); 
+	margin-right: 8px;
+	margin-left: 0;
+    cursor: pointer;
+}
+/* contenedor (Label) */
+label.custom-checkbox {
+    /* Estilos de espaciado para el área clickeable */
+    padding-top: 0px;
+    padding-right: 2px;
+    padding-bottom: 0px;
+    padding-left: 6px;
+    display: inline-flex; /* IMPORTANTE: Hacemos que el label se comporte como un bloque para que el hover funcione bien */
+    align-items: center; /* Centra verticalmente el checkbox y el texto */
+	margin-left: 4px;
+	cursor: pointer;
+	font-weight: bold
+}
+/* hover para el contenedor (Label) */
+/* label.custom-checkbox:hover {
+    background-color: #f0f0f0;
+}
+ */
+
+/* 🔴 BOTONES RESET FILTRO -------------------------------- */
+
+.btn-reset-filtro {
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 20px;
+    cursor: pointer;
+    display: inline-flex;
+    /* align-items: center; */
+    /* justify-content: center; */
+    /* margin-left: 5px; */
+    transition: background-color 0.2s;
+    padding-left: 4px;
+}
+/* Solo aplica el hover si el dispositivo tiene un puntero que puede "flotar" (ratón) */
+@media (min-width: 1025px) {
+  .btn-reset-filtro:hover {
+    background-color: #0078d4;
+    color: #ffffff !important;
+	/* transform: scale(1.1); */
+  }
+}
+
+/* 🔴 BOTONES AYUDA -------------------------------- */
+/* Icono ayuda (popover) */
+.btn-info {
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* margin-left: 5px; */
+  transition: background-color 0.2s;
+}
+
+/* Solo aplica el hover si el dispositivo tiene un puntero que puede "flotar" (ratón) */
+@media (min-width: 1025px) {
+  .btn-info:hover {
+    background-color: #0078d4;
+    color: #000;
+	/* transform: scale(1.1); */
+  }
+}
+
+/* Para móviles, usa :active para que cambie SOLO mientras tienes el dedo puesto */
+.btn-info:active {
+    background-color: #0078d4;
+    color: #000;
+}
+/* para situar el botón necesita que tenga en su clase position: relative; */
+.btn-arriba-izquierda {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 20;
+}
+.btn-arriba-derecha {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 20;
+}
+.btn-abajo-derecha {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 20;
+}
+.btn-abajo-izquierda {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 20;
+}
+.btn-inline {
+    display: flex;           /* Para que la imagen dentro del botón no cree espacios extraños */
+    transform: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+}  
+
+/* 🟡 Tema de los globos personalizado */
+
+.tippy-box[data-theme~='meteo-custom'] {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  box-shadow: 5px 4px 13px 3px rgba(0, 0, 0, 0.44);
+  border-radius: 8px;
+  font-size: 16px;
+  position: relative;
+}
+
+/* Color de la flecha del globo */
+.tippy-box[data-theme~='meteo-custom'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: #2c3e50;
+}
+.tippy-box[data-theme~='meteo-custom'][data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color: #2c3e50;
+}
+.tippy-box[data-theme~='meteo-custom'][data-placement^='left'] > .tippy-arrow::before {
+  border-left-color: #2c3e50;
+}
+.tippy-box[data-theme~='meteo-custom'][data-placement^='right'] > .tippy-arrow::before {
+  border-right-color: #2c3e50;
+}
+
+/* Estilo para los enlaces dentro de este tema oscuro */
+.tippy-box[data-theme~='meteo-custom'] a {
+  color: #3498db;
+  font-weight: bold;
+}
+
+/* 🟡 Ventana de tippy */
+/* --- BLOQUE DE ESTRUCTURA (CRÍTICO) --- */
+
+/* 1. La caja externa: Define el límite máximo en pantalla */
+.tippy-box {
+    box-sizing: border-box;
+    max-width: 400px !important;
+    /* Límite vertical: 80% de la altura de la pantalla */
+    max-height: 80vh !important; 
+    
+    /* Flexbox para gestionar al hijo */
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+@media (max-width: 600px) {
+    .tippy-box {
+        max-width: calc(100vw - 20px) !important;
+        max-height: 85vh !important;
+    }
+}
+
+/* 2. El contenedor intermedio de Tippy: 
+   Debe dejar de crecer automáticamente y adaptarse al padre */
+.tippy-content {
+    /* flex: 1 obliga a ocupar el espacio del padre y NO MÁS */
+    flex: 1 !important; 
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 0 !important; /* El padding lo ponemos dentro */
+    overflow: hidden !important; /* Cortamos lo que sobre aquí */
+}
+
+/* 3. La zona que realmente hace scroll (TU NUEVA CLASE) */
+.tippy-scroll-area {
+    /* Ocupa todo el espacio disponible debajo de la X */
+    flex: 1; 
+    overflow-y: auto !important; /* Fuerza la barra si no cabe */
+    padding: 15px 15px 15px 15px;
+    padding-right: 20px; /* Espacio extra para que el texto no toque la barra */
+    
+    /* Scroll suave en móviles */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+/* --- ESTILOS DE LA BARRA DE DESPLAZAMIENTO (Corregido) --- */
+/* Apuntamos a .tippy-scroll-area en vez de .tippy-content */
+
+/* Configuración para Chrome, Safari, Edge y Móviles */
+.tippy-scroll-area::-webkit-scrollbar {
+  width: 15px; /* Ancho cómodo para el dedo */
+}
+
+/* El "carril" o fondo de la barra */
+.tippy-scroll-area::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 4px;
+}
+
+/* La barra que se mueve (el "pulgar") */
+.tippy-scroll-area::-webkit-scrollbar-thumb {
+  background: #666; /* Gris oscuro */
+  border-radius: 4px;
+  border: 2px solid #f1f1f1; /* Efecto de espacio */
+}
+
+/* Cuando tocas la barra */
+.tippy-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: #444; 
+}
+
+/* --- BLOQUE DE BOTÓN DE CERRAR --- */
+/* Header falso para que la X no tape texto pero se mantenga arriba */
+.tippy-header {
+    width: 100%;
+    height: 0; /* Truco: no ocupa espacio visual pero posiciona la X */
+    flex-shrink: 0;
+    position: sticky; /* Se queda pegado arriba */
+    top: 0;
+    z-index: 50;
+}
+
+.tippy-close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    
+    /* --- EL CENTRADO FLEX (Matemático) --- */
+    display: flex;
+    justify-content: center; /* Centrado horizontal */
+    align-items: center;     /* Centrado vertical */
+    
+    /* Reseteos importantes para que la fuente no empuje */
+    line-height: 1;          
+    padding: 0;
+    margin: 0;
+    
+    cursor: pointer;
+    font-size: 28px;
+    
+    /* Truco: Forzar una fuente estándar (Arial/sans-serif) para la X.
+       Algunas fuentes de Android dibujan la X muy arriba. Arial suele ser centrada. */
+    font-family: Arial, sans-serif; 
+
+    /* Tus estilos visuales */
+    color: #444;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(2px);
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    
+    /* Opcional: Si en tu móvil concreto la X se ve 1px muy arriba, 
+       descomenta esto para empujarla visualmente: */
+    /* padding-bottom: 2px; */ 
+}
+
+/* 🔴 MENSAJE CARGANDO... Estado base: Oculto y transparente */
+
+/* Contenedor principal: El "Telón" */
+.loader-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    
+    /* Z-index alto para tapar paneles, pero transparente por defecto */
+    z-index: 2147483647; 
+    
+    display: flex; /* Siempre flex, jugamos con opacidad/visibilidad */
+    align-items: center; 
+    justify-content: center;
+    
+    /* ESTADO INACTIVO (Invisible y no bloquea) */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    
+    /* TRANSICIÓN DE SALIDA (Cuando se oculta): 
+       Queremos que desaparezca RÁPIDO sin retardo */
+    transition: opacity 0.2s ease, visibility 0s 0.2s;
+}
+
+.loader-activo {
+    /* ESTADO ACTIVO (Bloquea clicks inmediatamente) */
+    visibility: visible;
+    pointer-events: all; /* ESCUDO ACTIVADO: Ya no se puede clicar nada */
+    
+    /* EL TRUCO VISUAL: Retardo en la opacidad */
+    /* Solo empieza a verse si la carga dura más de 0.3s (300ms) */
+    opacity: 1;
+    /* transition: opacity 0.3s ease 0.3s, visibility 0s 0s; */
+    transition: opacity 0.6s ease 0.3s, visibility 0s 0s;
+    
+    /* CAMBIO DE CURSOR: Feedback inmediato aunque sea invisible */
+    cursor: wait; 
+}
+
+/* El fondo sutil (Glass Pane) */
+/* Lo aplicamos con un pseudo-elemento para poder animarlo si quisiéramos independientemente */
+.loader-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    /* Blanco semitransparente: baja el contraste de lo de atrás, 
+       parece que la app está "congelada" pero se ve todo */
+    /* background: rgba(255, 255, 255, 0.5);  */
+    /* OPCIONAL: Si prefieres que se oscurezca un poco en vez de blanquearse, usa negro muy sutil: */
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.loader-box {
+    position: relative; /* Para estar encima del ::before */
+    background: #fff;
+    color: #333;
+    padding: 10px 20px; /* Un poco más pequeño y elegante */
+    border-radius: 50px;
+    font-size: 1.1em; /* Texto más pequeño */
+    font-weight: 500;
+    
+    /* Sombra suave para separarlo del fondo */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0,0,0,0.05);
+    
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Spinner ajustado (un poco más pequeño) */
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 2px solid #f3f3f3; /* Borde más fino */
+    border-top: 2px solid #0078d4;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
