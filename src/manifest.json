@@ -1,0 +1,23 @@
+{
+  "name": "Fly Decision",
+  "short_name": "Fly Decision",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#d9ebf9",
+  "description": "Análisis automático del pronóstico para despegues de parapente.",
+  "orientation": "portrait", 
+  "icons": [
+    {
+      "src": "icons/logo_192px.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/logo_512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

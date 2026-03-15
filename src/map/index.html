@@ -1,0 +1,3753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+	
+<meta property="og:description" content="Mapa con zonas de vuelo de parapente. Despegues, aterrizajes y mapa de calor de despegues registrados en parapente en España, Portugal, Pirineos, Alpes y Marruecos. En cada zona de despegue se muestra enlaces a meteorología Windy, Meteo-Parapente, mapas topográficos y más información sobre algunos despegues. Filtro por orientaciones de viento">
+<title>Mapa de despegues en parapente. España, Portugal, Pirineos, Alpes y Marruecos</title>
+
+<link rel="icon" type="image/png" sizes="512x512" href="https://flydecision.com/icons/logo_512px.png">
+<link rel="shortcut icon" href="https://flydecision.com/icons/logo_192px.png">
+<link rel="apple-touch-icon" href="https://flydecision.com/icons/logo_192px.png">
+<link rel="canonical" href="https://flydecision.com/">
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<!-- Plugin Fullscreen CSS -->
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+<!-- Plugin Choices.js. Personalización de desplegables,.. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<!-- Plugin Leaflet Control Geocoder -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<!-- Plugin noUiSlider -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css" />
+
+<style>
+body, html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	font-family: Arial, sans-serif;
+	overflow: hidden;
+}
+#map {
+	height: 100dvh;
+	width: 100%;
+}
+
+.label-large-despegues {
+	position: relative;
+	font-size: 1.2em;
+	padding: 2px 3px 4px 3px;
+	border-radius: 5px;
+	white-space: nowrap;
+	background-color: #ffffff;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
+	border: 1.8px solid #007AFF;
+}
+@media (max-width: 768px) {
+.label-large-despegues {
+	font-size: 1.4em;
+}
+}
+.label-large-despegues::after {
+  content: '';
+  position: absolute;
+  left: 0.1em;          /* controla desplazamiento horizontal de la flecha */
+  bottom: -14px;        /* saca la punta fuera del cuadro */
+  width: 0;
+  height: 0;
+  border-left: 13px solid transparent; /* dimensiones: Ancho del triángulo = border-left + border-right. Altura del triángulo = border-top  */
+  border-right: 13px solid transparent;
+  border-top: 13px solid #007AFF; /* color del borde */
+}
+
+.label-large-despeguesmundo {
+	position: relative;
+	font-size: 1.2em;
+	padding: 2px 3px 4px 3px;
+	border-radius: 5px;
+	white-space: nowrap;
+	background-color: #dadada;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
+	border: 1.8px solid #007AFF;
+}
+@media (max-width: 768px) {
+.label-large-despeguesmundo {
+	font-size: 1.4em;
+}
+}
+.label-large-despeguesmundo::after {
+  content: '';
+  position: absolute;
+  left: 0.1em;          /* controla desplazamiento horizontal de la flecha */
+  bottom: -14px;        /* saca la punta fuera del cuadro */
+  width: 0;
+  height: 0;
+  border-left: 13px solid transparent; /* dimensiones: Ancho del triángulo = border-left + border-right. Altura del triángulo = border-top  */
+  border-right: 13px solid transparent;
+  border-top: 13px solid #007AFF; /* color del borde */
+}
+
+
+.dot {
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  display:inline-block;
+  margin-right:6px;
+  vertical-align:middle;
+  box-shadow: 0 0 1px rgba(0,0,0,0.4);
+  border:1px solid #888
+}	
+.leaflet-marker-icon.custom-div-icon {
+	margin-left: -12px !important;
+	margin-top: -33px !important;	
+}
+.info-panel {
+	background: rgb(255 255 255);
+	padding-left: 10px;
+	/* box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); */
+	z-index: 2000; 
+	width: 340px;
+	width: 262px;
+	max-width: 500px;
+	display: none; /* Ocultar por defecto. Si este index.html se está mostrando en el iframe de la página /mapa no quiero que se muestre este infopanel (el enlace a hikefly.es del mapa). Hay un javascript al final(document.addEventListener) que lo oculta si la URL no contiene https://hikefly.es/mapa/ */
+	transition: all 0.2s ease;
+	font-size: 1.2em;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 8px;
+	padding-top: 8px;
+}	
+@media (max-width: 768px) {
+	.info-panel {
+		width: 302px;
+		font-size: 1.4em !important;
+	}
+}
+
+.info-panel.retraido {
+	width: 124px;
+	height: 23px;
+	font-size: 1.2em;
+	padding-top: 4.4px;
+	padding-bottom: 2.6px;
+	cursor: pointer;
+}
+@media (max-width: 768px) {
+	.info-panel.retraido {
+		font-size: 1.4em !important;
+        padding-top: 2.4px !important;
+		padding-bottom: 4.6px !important;
+	}
+}
+<!--Antes de integrarlo en los controles leaflet
+#divOpciones {
+  max-height: 500px; /* altura máxima cuando está desplegado */
+  overflow: hidden;
+  transition: max-height 0.6s ease; /* transición suave */
+  position: relative;
+  font-size: 1.2em
+}
+-->	
+#divOpciones {
+	overflow: hidden;
+}
+#divOpciones.oculto {
+  max-height: 0; /* se retrae hasta 0 */
+}
+
+
+.legend-item {
+	display: block;
+	align-items: center;
+	margin-bottom: 0px;
+}
+.legend-color {
+	width: 20px;
+	height: 20px;
+	margin-right: 10px;
+	border-radius: 50%;
+}
+.legend { 
+	background: white;
+	padding: 6px 8px 0px 6px; 
+	line-height: 1;
+	background: rgba(255, 255, 255, 1);
+}
+.legend-header {
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.triangle {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	margin-left: 6px;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 6px solid #333; /* apunta hacia abajo inicialmente */
+	transition: transform 0.2s;
+}
+.legend.collapsed .triangle {
+	transform: rotate(180deg); /* apunta hacia arriba cuando está plegado */
+}
+.legend-content {
+	margin-top: 6px;
+	font-size: medium;
+}
+.legend.collapsed .legend-content {
+	display: none;
+}
+.leaflet-right .leaflet-control {
+margin-right: 5px;
+}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 5px;
+}
+.layer-controls {
+	margin-top: 15px;
+}
+.layer-control {
+	margin-bottom: 10px;
+}
+h3 {
+	margin-top: 0;
+	border-bottom: 1px solid #ddd;
+	padding-bottom: 8px;
+}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 30px;
+	height: 30px;
+}
+.leaflet-control-locate {
+	margin-top: 8px;
+}
+.leaflet-control-locate a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	cursor: pointer;
+}
+.leaflet-left .leaflet-control {
+	margin-left: 3px;
+}
+.leaflet-top .leaflet-control {
+	margin-top: 3px;
+}		
+.leaflet-bar button {
+	background-color: white !important;
+}
+.leaflet-control-attribution {
+	display: block !important;
+	font-size: 11px;
+	white-space: normal;
+}
+.info {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: #FC6668;
+	color: #333;
+	padding: 1em;
+	z-index: 1000;
+	font-size: 1.5em;
+	border-radius: 4px;
+	font-weight: bold;
+	display: flex;
+}
+.choices {
+	width: 270px; 
+	margin-bottom: 5px;
+	margin-top: 3px;
+}
+.choices.is-focused.is-open {
+	font-size: medium !important;
+}	
+.choices__item { 
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  hyphens: none;
+}		
+.choices__inner {
+  padding: 0px 0px; /* alto */
+  padding-bottom: 0px;
+  min-height: auto; /* evita altura mínima forzada */
+  font-size: medium;
+}
+.choices__inner,
+.choices__list--dropdown,
+.choices__list--dropdown .choices__item {
+	font-size: medium !important;
+}
+.choices__list {
+	font-size: medium;
+}	
+.choices:last-child {
+	margin-bottom: 5px;
+}		
+.choices__list--dropdown, .choices__list[aria-expanded] {
+	word-break: auto-phrase;
+}			
+.choices__list--dropdown .choices__list, .choices__list[aria-expanded] .choices__list {
+	max-height: unset;										
+}
+.choices__list--single {
+	display: inline-block !important;
+	padding: 0px 0px 0px 3px !important;
+	width: 88% !important;
+}		
+.leaflet-popup-content {
+	font-size: 1.2em;
+	width: 203px;
+	line-height: 1;
+	margin: 5px 10px 5px 10px;
+}
+@media (max-width: 768px) {
+.leaflet-popup-content {
+	font-size: 1.4em;
+	width: 235px;
+}
+}
+/* 	.leaflet-popup{
+	bottom: 28px !important;
+	left: -114px !important;
+}
+*/	.choices[data-type*=select-one]::after {
+	right: 0.2em !important;
+	top:45%  !important;
+	border-width: 10px !important;
+}
+.choices[data-type*=select-one] .choices__inner {
+	padding-bottom: 1.5px;
+}	
+.leaflet-popup-content-wrapper.popup-despegues {
+	background-color: #ffffff !important;
+	border: 2px solid #007AFF;
+}
+.leaflet-popup-tip.popup-despegues {
+	background-color: #007AFF !important;
+}
+.leaflet-popup.popup-despegues.leaflet-zoom-animated {
+	bottom: 28px !important;
+}		
+.leaflet-popup-content-wrapper.popup-despeguesmundo {
+	background-color: #dadada !important;
+	border: 2px solid #007AFF;
+}
+.leaflet-popup-tip.popup-despeguesmundo {
+	background-color: #007AFF !important;
+}
+.leaflet-popup.popup-despeguesmundo.leaflet-zoom-animated {
+	bottom: 28px !important;
+}		
+	
+.leaflet-popup-content-wrapper.popup-despegueindividual {
+	background-color: #eddff5 !important;
+	border: 2px solid #007AFF;
+}
+.leaflet-popup-tip.popup-despegueindividual {
+	background-color: #007AFF !important;
+}
+.leaflet-popup.popup-despegueindividual.leaflet-zoom-animated {
+  bottom: 42px !important;
+}	
+.estilobase-custom-cluster-mapadecalor {
+	/* Define la forma general del contenedor */
+	background-clip: padding-box;
+	border-radius: 50%; /* Para hacerlo circular */
+	text-align: center;
+	line-height: 1; /* Necesario para centrar el texto verticalmente */
+	color: white; /* Color del número */
+	font-weight: bold;
+	font-size: 12px; /* Ajusta según el tamaño */
+}
+.estilobase-custom-cluster-mapadecalor div {
+	/* Estilo para el div interno que contiene el número.
+	   El color de fondo se establecerá dinámicamente en JavaScript */
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.flash-llamativo {
+	/* Define la sombra de inicio (invisible pero lista) */
+	box-shadow: 0 0 0px rgba(255, 69, 0, 0); 
+	/* Aplica la animación */
+	animation: flashPulso 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+	/* Asegura que el borde original (legend) no moleste */
+	border: none !important; 
+}
+
+/* 2. KEYFRAMES para la animación */
+@keyframes flashPulso {
+	0%   { 
+		box-shadow: 0 0 0px rgba(255, 69, 0, 0); 
+	}
+	30%  { 
+		/* Máxima visibilidad: sombra roja/naranja grande y brillante */
+		box-shadow: 0 0 15px 5px rgba(255, 69, 0, 0.8), /* Sombra exterior */
+					0 0 3px 1px rgba(255, 255, 255, 0.8); /* Borde interior blanco */
+	}
+	100% { 
+		box-shadow: 0 0 0px rgba(255, 69, 0, 0); /* Vuelve a cero */
+	}
+}
+
+.leaflet-text-search-input {
+	font-size: 1.2em;
+	border: none;
+	width: 140px;
+	outline: none;
+	padding-top: 6.5px;
+	padding-bottom: 6.6px;
+	padding-left: 10px;
+	font-weight: bold;
+}
+.leaflet-text-search-input::placeholder {
+	color: black;
+}
+/* Por defecto, si el dispositivo no es móvil, hereda el 1.2em de input.style.fontSize */
+@media (max-width: 768px) {
+	.leaflet-text-search-input {
+		font-size: 1.4em !important;
+		padding-bottom: 4px !important;
+	}
+}
+@media (max-width: 768px) {
+	.autocomplete-list {
+		font-size: 1.4em !important;
+	}
+}
+
+/* CONTENEDOR ROSA DE LOS VIENTOS (3x3 Grid) */
+#rosaDeLosVientos {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr); 
+	grid-template-rows: repeat(3, 1fr);
+	width: 80px; 
+	height: 80px;
+	border-radius: 5px;
+	margin-left: 22px;
+	/* overflow: hidden; Esto es clave para que los hijos respeten el radio del padre */
+}
+
+/* 2. Estilo del contenedor de cada dirección (LABEL) */
+.filtro-orientacion {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* font-weight: bold; */
+	cursor: pointer;
+	position: relative;
+	border: 1px solid #00000000;
+	border-radius: 12px;
+}
+/* 🚀 NUEVA REGLA: Estilo del SPAN interno (El contenido visible que será el botón) */
+.filtro-orientacion span {
+	padding: 0; /* Ya no necesitamos padding aquí, el flex lo centrará */
+	width: 100%; /* Ocupa todo el ancho disponible */
+	height: 100%; /* Ocupa todo el alto disponible */
+	display: flex; /* Centra el texto dentro del span */
+	justify-content: center;
+	align-items: center;
+	
+	/* 🛑 APLICAR BORDES Y RADIOS AQUÍ para la forma del botón 🛑 */
+	border: 1px solid #ccc; /* Borde del botón */
+	border-radius: 3px; /* Bordes redondeados */
+	background-color: white; /* Fondo blanco por defecto */
+	color: black;
+	
+	transition: all 0.2s ease; /* Transición suave para el cambio de estado */
+	box-sizing: border-box; /* Asegura que el padding/border no desborde el 100% */
+}
+
+/* 3. Posicionamiento en la Rejilla (Áreas de Grid existentes) */
+/* ... (sigue igual) ... */
+/* 4. Ocultar el checkbox nativo */
+.filtro-orientacion input[type="checkbox"] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+/* 5. Efecto al pasar el ratón */
+.filtro-orientacion:hover span { /* Aplica el hover al span */
+	background-color: #f0f0f0;
+}
+
+/* 🛑 ESTADO ACTIVO (HUNDIDO): Aplica el estilo al SPAN adyacente al INPUT:CHECKED */
+.filtro-orientacion input:checked + span { 
+	background-color: #007aff; 
+	color: white; 
+	/* Efecto "hundido" */
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4); 
+	border-color: #007aff; /* Cambiar el color del borde para que coincida con el fondo */
+}
+.centro-rosa {
+	visibility: hidden; 	
+	display: flex;         /* Usa Flexbox */
+	align-items: center;   /* Centrado vertical */		
+	justify-content: center;
+	grid-area: 2 / 2; /* Su posición en la rejilla */
+	/* Hereda las propiedades de flex, cursor, etc., del LABEL */
+	border: 1px solid #ccc; 
+	border-radius: 3px;
+	cursor: pointer;
+	position: relative;
+	/* Estilo del contenido del centro (el 🧭) */
+	font-size: 1.2em;
+}
+/* 🛑 ESTADO ACTIVO DEL CENTRO 🛑 */
+/* Cuando el checkbox maestro está marcado, aplica el estilo "hundido" al SPAN interno */
+.filtro-maestro input:checked + span { 
+	background-color: #007aff; 
+	color: white; 
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4); 
+	border-color: #007aff;
+}	
+
+/* Estilo para el botón de fijar cuando está activo (hundido) */
+#buttonFijar.activo-fijado {
+	background-color: #f0f0f0; /* Color un poco más oscuro que el fondo normal */
+	box-shadow: 
+		inset 0 3px 6px rgba(0, 0, 0, 0.6), /* Sombra interior principal (más oscura) */
+		inset 0 0 10px rgba(0, 0, 0, 0.1); /* Ligero desenfoque para dar más profundidad */		
+	border-color: #555;
+	transform: translateY(1px);
+}
+/* Asegura que el texto del icono se mantenga centrado y sin cambios de tamaño */
+#buttonFijar #iconoFijar {
+	display: inline-block;
+	font-size: 1em; 
+	line-height: 1;
+	cursor: pointer;
+}	
+#buttonFijar {
+	font-size: 1.2em;
+	float: right;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	cursor: pointer;
+}
+#buttonCerrar {
+	font-size: 1.2em;
+	float: right;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+.custom-checkbox {
+	transform-origin: center;
+	transform: scale(1.2);
+	margin: 2px;
+	cursor: pointer;
+}
+.custom-checkbox:hover {
+	background-color: #f0f0f0;
+}
+/* Solo para los label con esa clase */
+label.custom-checkbox {
+	padding-top: 4px;
+    padding-right: 4px;
+    padding-bottom: 1px;
+    padding-left: 2px;}
+
+#filtroMaestroOrientacion {
+	transform-origin: center;
+	transform: scale(1.2);
+	margin: 2px;
+}
+.labelMostrarOpciones {
+	font-weight: bold;
+	display: none;	
+	padding-left: 5px;
+}
+/* Ajuste fino posición del la clase original para que coincida con el punto exacto.Original: -20px */
+.leaflet-popup-tip-container { 
+	margin-left: -18px !important;
+}	
+
+
+/* 🛑 CONTROL "Desplegable de otros controles" */
+
+/* 1. Estilo del Panel Desplegable (Caja Contenedora) */
+.custom-control-panel {
+	/* Hacemos el contenedor invisible */
+	background-color: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	padding: 0 !important;
+
+	/* Mantenemos la organización vertical */
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start; /* Alinea a la izquierda (donde están los otros controles) */
+	
+	/* Posicionamiento */
+	position: relative;
+	margin-top: 0px; 
+}
+
+/* 2. Estilo para el Wrapper (intermediario) */
+.custom-control-panel .custom-control-wrapper {
+	width: auto; /* Dejar que se ajuste al contenido */
+	margin: 0;
+	padding: 0;
+	padding-top: 1px;
+	border: none;
+}
+
+/* 3. Estilo para los CONTROLES DE LEAFLET dentro del panel */
+/* Aquí está la clave: Restauramos el 'look' de botón individual */
+.custom-control-panel .leaflet-control-fullscreen,
+.custom-control-panel .leaflet-control-locate,
+.custom-control-panel .leaflet-control-filelayer,
+.custom-control-panel .leaflet-control-geocoder,
+.custom-control-panel .leaflet-bar {
+	
+	/* Restaurar la sombra estándar de Leaflet para que parezcan botones flotantes */
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65) !important; 
+	
+	/* Margen entre botones (estándar suele ser 10px, pero en grupo puede ser 5px) */
+	margin-top: 5px !important; 
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	
+	/* Bordes redondeados estándar */
+	border-radius: 4px !important;
+	border: none !important; /* Leaflet usa boxShadow, no border sólido usualmente */
+	
+	/* Fondo blanco puro */
+	background-color: #fff !important;
+}
+
+.control-orientacion-container {  
+    margin-bottom: 5px;
+	padding-bottom: 4px;
+}	
+@media (max-width: 768px) {
+	.control-orientacion-container {
+		padding-bottom: 8px;
+	}
+}
+
+.control-vuelos-container {
+    
+    /* Asegura que el padding no aumente el ancho total */
+    box-sizing: border-box; 
+	
+	display: block; /* La convierte en un elemento de bloque que ocupa toda la línea */
+    margin-bottom: 5px; /* Opcional: añade un pequeño espacio entre el texto y el slider */	
+}
+.control-ultimovuelo-container {  
+    margin-bottom: 5px;
+}	
+/* Ajuste fino posición del la clase original para que coincida con el punto exacto.Original: -20px */
+.leaflet-popup-tip-container { 
+	margin-left: -18px !important;
+}	
+
+	
+</style>
+</head>
+
+<body>
+
+<div id="mensajeCargaMapaDeCalorPeninsulaIberica" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;">
+	⏳ Cargando mapa de calor Península Ibérica...<br><br>(309.157 despegues registrados)
+</div>
+<div id="mensajeCargaMapaDeCalorAlpes" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;">
+	⏳ Cargando mapa de calor Alpes...<br><br>(967.477 despegues registrados)
+</div>
+<div id="mensajeCargaMapaDeCalorMarruecos" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;">
+	⏳ Cargando mapa de calor Marruecos...<br><br>(11.006 despegues registrados)
+</div>
+
+<div id="map"></div>
+
+<div id="infoPanel" class="info-panel">
+
+	<span id="labelMostrarOpciones" class="labelMostrarOpciones">
+		Capas y filtros
+	</span>
+				
+	<div id="divOpciones">
+	
+		<button id="buttonCerrar" title="Cerrar Panel">
+				<span>❌</span>
+		</button>			 
+	
+		<button id="buttonFijar" title="Fijar Panel (anula su ocultación al mover mapa)">
+				<span id="iconoFijar">📌</span>
+		</button>			 
+			
+		<div style="font-weight: bold">
+			<a href="https://hikefly.es/despegues-ayuda/" style="color: #fc6668; text-decoration: underline; float: right; padding-right: 33px;" target="_blank"><span style="font-weight: bold;">Ayuda</span></a>
+		</div>
+		
+		<div style="font-weight: bold; margin-bottom: 5px;">
+			<br>Capas:
+		</div>
+	
+		<div class="legend-item" title="Despegues de parapente">
+			<label for="checkboxDespegues" class="custom-checkbox">
+			<input type="checkbox" id="checkboxDespegues" class="custom-checkbox" checked>
+			🪂 Despegues
+			</label>
+		</div>
+		<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+			<label for="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
+			<input type="checkbox" id="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
+			🔥 Mapa de calor Península Ibérica
+			</label>
+		</div>
+		<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+			<label for="checkboxMapaDeCalorAlpes" class="custom-checkbox">
+			<input type="checkbox" id="checkboxMapaDeCalorAlpes" class="custom-checkbox">
+			🔥 Mapa de calor Alpes
+			</label>
+		</div>
+		<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+			<label for="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
+			<input type="checkbox" id="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
+			🔥 Mapa de calor Marruecos
+			</label>
+		</div>
+		<div class="legend-item" title="Notas personales tomadas sobre despegues y aterrizajes">
+			<label for="checkboxNotasPersonales" class="custom-checkbox">
+			<input type="checkbox" id="checkboxNotasPersonales" class="custom-checkbox">
+			✏️ Notas
+			</label>
+		</div>
+		<div class="legend-item" title="Despegues de Paraglidingearth.com">
+			<label for="checkboxDespeguesMundo" class="custom-checkbox">
+			<input type="checkbox" id="checkboxDespeguesMundo" class="custom-checkbox">
+			🪂 Despegues de Paraglidingearth
+			</label>
+		</div>
+		
+		<div class="control-orientacion-container">
+			<div style="font-weight: bold; margin-bottom: 5px;">
+				Orientación:
+			</div>
+
+			<div id="rosaDeLosVientos">
+				
+				<label class="filtro-orientacion" data-orientacion="NO" title="Noroeste">
+					<input type="checkbox" class="filtro-orientacion-checkbox" value="NO"> 
+					<span>NO</span>
+				</label>
+				<label class="filtro-orientacion" data-orientacion="N" title="Norte">
+					<input type="checkbox" class="filtro-orientacion-checkbox" value="N"> 
+					<span>N</span>
+				</label>
+				<label class="filtro-orientacion" data-orientacion="NE" title="Noreste">
+					<input type="checkbox" class="filtro-orientacion-checkbox" value="NE"> 
+					<span>NE</span>
+				</label>
+
+				<label class="filtro-orientacion" data-orientacion="O" title="Oeste">
+					<input type="checkbox" class="filtro-orientacion-checkbox" value="O"> 
+					<span>O</span>
+				</label>
+				
+				<label class="centro-rosa filtro-maestro" title="Hay filtros de orientación activos. Haz clic para desactivarlos todos.">
+					<input type="checkbox" id="filtroMaestroOrientacion" class="filtro-orientacion-checkbox" value="TODOS">
+				</label>	
+				
+				<label class="filtro-orientacion" data-orientacion="E" title="Este">
+					<input type="checkbox" class="filtro-orientacion-checkbox" value="E"> 
+					<span>E</span>
+				</label>
+
+				<label class="filtro-orientacion" data-orientacion="SO" title="Suroeste">
+					<input type="checkbox" class="filtro-orientacion-checkbox" value="SO"> 
+					<span>SO</span>
+				</label>
+				<label class="filtro-orientacion" data-orientacion="S" title="Sur">
+					<input type="checkbox" class="filtro-orientacion-checkbox" value="S"> 
+					<span>S</span>
+				</label>
+				<label class="filtro-orientacion" data-orientacion="SE" title="Sureste">
+					<input type="checkbox" class="filtro-orientacion-checkbox" value="SE"> 
+					<span>SE</span>
+				</label>
+				
+			</div>	
+		</div>	
+				
+		<div class="control-vuelos-container" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
+			<label for="sliderVuelos" style="font-weight: bold;">
+				Mínimo de vuelos registrados = <span id="valorVuelosTexto">0</span>
+			</label>
+			<br>
+			<input type="range" id="sliderVuelos" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
+		</div>
+		
+		<div class="control-ultimovuelo-container" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
+			<label for="sliderUltimoVuelo" style="font-weight: bold; display: block;">
+				Año del último vuelo >= <span id="valorUltimoVueloTexto">Todos</span>
+			</label>
+			<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 88%; margin-left: 22px;">
+		</div>
+					
+		<div class="control-KmMedia-container" title="Mostrar solo los despegues con una media de distancia recorrida en los últimos vuelos registrados mayor o igual a los km seleccionados. El valor de referencia está tomado en nov-2025 usando los últimos vuelos disponibles (hasta un máximo de 50). Por el momento, este filtro solo aplica a 'Despegues' y no a la capa 'Despegues de Paraglidingearth'">
+			<label for="sliderKmMedia" style="font-weight: bold;">
+				Mínimo de km medios recorridos = <span id="valorKmMediaTexto">0</span>
+			</label>
+			<br>
+			<input type="range" id="sliderKmMedia" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
+		</div>
+		
+			
+	</div>
+						
+</div>
+
+<div id="configuracionPanel" class="info-panel">
+
+	<span style="font-weight: bold; display: block;">
+		Configuración inicial:<br><br>
+				
+	<div id="divOpcionesconfiguracionPanel">
+
+		<div class="configuracion-control-vuelos-container">
+			<label for="sliderVuelos" style="font-weight: bold;">
+				Mínimo de vuelos registrados: <span id="valorConfigFiltroNumeroMinimoVuelosTexto">0</span>
+			</label>
+			<br>
+			<input type="range" id="sliderValorInicialFiltroNumeroMinimoVuelos" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
+		</div>
+				
+		<div class="configuracion-control-ultimovuelo-container">
+			<label for="sliderUltimoVuelo" style="font-weight: bold;">
+				Año último vuelo >= <span id="valorConfigFiltroUltimoVueloTexto">Todos</span>
+			</label>
+			<br>
+			<input type="range" id="sliderValorInicialFiltroUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 88%; margin-left: 22px;">
+		</div>
+				
+		<div>
+			<a href="https://hikefly.es/despegues-ayuda/" style="color: #fc6668; text-decoration: underline;" target="_blank"><span style="font-weight: bold;">Ayuda</span></a>
+		</div>	
+									
+	</div>
+						
+</div>
+
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Heatmap Plugin -->
+<script src="https://cdn.jsdelivr.net/gh/Leaflet/Leaflet.heat@gh-pages/dist/leaflet-heat.js"></script>
+<!-- Flullscreen Plugin -->
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+<!-- Markercluster Plugin -->
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<!-- Plugin Choices.js. Personalización de desplegables,.. -->
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<!-- Plugin Leaflet Control Geocoder -->
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<!-- Plugin Leaflet Parseo .CSV -->
+<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+<!-- Plugin Leaflet Cargar .GPX -->
+<script src="https://unpkg.com/togeojson"></script>
+<script src="https://unpkg.com/leaflet-filelayer"></script>
+<!-- Plugin Leaflet Glyfy (carga asíncrona de puntos) -->
+<script src="https://unpkg.com/leaflet.glify@0.3.0/dist/leaflet.glify.min.js"></script>
+<!-- Plugin NoUiSlider -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.js"></script>
+
+
+<script>
+
+// 🛑 Capas
+const OpenStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	maxZoom: 20,
+	attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a>'
+});
+//El original Opentopomap es https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png, pero éste funciona mejor
+const OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+	maxZoom: 20,
+	attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://opentopomap.org/" target="_blank">Style OpenTopoMap</a>'
+});
+const ThunderforestOutdoors = L.tileLayer('https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=e1471451f7e14439b50318fc72185ef8', {
+	maxZoom: 20,
+	attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://www.thunderforest.com/maps/" target="_blank">Style by Thunderforest</a>'
+});
+const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	maxZoom: 20,
+	attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>'
+});
+const WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+	maxZoom: 20,
+	attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>'
+});
+const IGNspaintopo = L.tileLayer('https://tms-mapa-raster.ign.es/1.0.0/mapa-raster/{z}/{x}/{-y}.jpeg', {
+	maxZoom: 20,
+	attribution: '© <a href="https://www.ign.es" target="_blank">IGN</a>'
+});
+const IGNspainbase = L.tileLayer('https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg', {
+	maxZoom: 20,
+	attribution: '© <a href="https://www.ign.es" target="_blank">IGN</a>'
+});
+const IGNPNOA = L.tileLayer('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg', {
+	maxZoom: 20,
+	attribution: '© <a href="https://www.ign.es" target="_blank">IGN</a>'
+});
+const Hipsometrico = L.tileLayer('https://maps-for-free.com/layer/relief/z{z}/row{y}/{z}_{x}-{y}.jpg', {
+	maxZoom: 20,
+	attribution: '<a href="https://maps-for-free.com" target="_blank">Maps-for-Free</a>'
+});
+const TracesTrackTopo = L.tileLayer('https://tile.tracestrack.com/topo_es/{z}/{x}/{y}.webp?key=ee3505af4fce6e78424768ba6c9d81f2', {
+	maxZoom: 20,
+	attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://tracestrack.com/" target="_blank">Tracestrack</a>'
+});
+const CyclOSM = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+	maxZoom: 20,
+	attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" target="_blank">CyclOSM</a>'
+});
+const ICGC = L.tileLayer('https://geoserveis.icgc.cat/servei/catalunya/mapa-base/wmts/topografic/{z}/{x}/{y}.png', {
+	maxZoom: 20,
+	attribution: '<a href="https://www.icgc.cat/" target="_blank">© ICGC</a>'
+});
+const KK7SkyWays = L.tileLayer('https://thermal.kk7.ch/tiles/skyways_all/{z}/{x}/{y}.png?src=' + window.location.hostname, {
+    pane: 'overlayPane',
+	maxNativeZoom: 13,
+    maxZoom: 20, // 👈 Aumentado a 20 para que no desaparezca de repente
+    zIndex: 10,  // 👈 Fuerza a que se dibuje por encima del mapa base
+    tms: true,
+    attribution: 'thermal.kk7.ch <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY-NC-SA></a>'
+});
+const KK7Thermals = L.tileLayer('https://thermal.kk7.ch/tiles/thermals_all/{z}/{x}/{y}.png?src=' + window.location.hostname, {
+    pane: 'overlayPane',
+	maxNativeZoom: 12,
+    maxZoom: 20, // 👈 Añadido para igualar al resto
+    zIndex: 10,  // 👈 Fuerza a que se dibuje por encima del mapa base
+    tms: true,
+    attribution: 'thermal.kk7.ch <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY-NC-SA></a>'
+});
+
+const capaMezcladaWorldTopoMapKK7SkyWays = L.layerGroup([WorldTopoMap, KK7SkyWays]);
+const capaMezcladaWorldTopoMapKK7Thermals = L.layerGroup([WorldTopoMap, KK7Thermals]);
+const capaMezcladaWorldTopoMapKK7SkyWaysThermals = L.layerGroup([WorldTopoMap, KK7SkyWays, KK7Thermals]);
+
+//Calcular antes el zoom, según sea móvil u ordenador
+//const isMobile = window.innerWidth < 768;
+//const zoom = isMobile ? 8 : 10;
+
+// 1. Obtener y definir las coordenadas y el zoom a USAR antes de cualquier inicialización
+
+const params = new URLSearchParams(window.location.search);
+
+// 🔍 Obtener los valores de la URL
+const urlLat = parseFloat(params.get('lat'));
+const urlLon = parseFloat(params.get('lon'));
+const urlZoom = parseInt(params.get('zoom'));
+
+// 💡 Definir valores por defecto (si no vienen en la URL)
+const defaultLat = 40.198579;
+const defaultLon = -2.285156;
+//Calcular antes el defaultZoom, según sea móvil u ordenador
+const isMobile = window.innerWidth < 768;
+const defaultZoom = isMobile ? 5 : 7;
+
+// 🎯 Asignar los valores a usar
+// Se asegura de que si el valor de la URL no es un número válido (NaN), se use el por defecto.
+const useLat = !isNaN(urlLat) ? urlLat : defaultLat;
+const useLon = !isNaN(urlLon) ? urlLon : defaultLon;
+const useZoom = !isNaN(urlZoom) ? urlZoom : defaultZoom;
+
+// 2. Inicializar el mapa de Leaflet
+
+// Inicializar el mapa con las coordenadas y el zoom a USAR
+const map = L.map('map', {
+    preferCanvas: true,
+    renderer: L.canvas(),
+    // 💡 IMPORTANTE: Inicializamos el centro y zoom del mapa DIRECTAMENTE aquí
+    center: [useLat, useLon],
+    zoom: useZoom,
+	zoomControl: false,
+	zoomAnimation: true,   // permite animación de zoom
+    zoomSnap: 0.5,          // opcional, suaviza pasos de zoom (lo estándar es 1)
+    layers: [WorldTopoMap] 
+});
+
+/**
+ * Función que inicializa el comportamiento de plegado/expansión.
+ * Al hacer clic, el contenido se expande y el encabezado desaparece.
+ */
+function initPopupToggle(popupContainer) {
+    // Buscamos el encabezado y el contenido dentro de ESTE popupContainer
+    const toggleHeader = popupContainer.querySelector('.popup-toggle-header');
+    const content = popupContainer.querySelector('.popup-collapsible-content');
+    
+    if (toggleHeader && content) {
+        // Aseguramos el estado inicial (para el caso de que el popup se reabra sin recargar la página)
+        toggleHeader.style.display = 'block'; 
+        toggleHeader.innerHTML = 'Más información ▼'; // Restauramos texto/icono
+        content.style.display = 'none'; // Aseguramos que el contenido esté oculto inicialmente
+        
+        // Añadir el listener al encabezado UNA SOLA VEZ
+        toggleHeader.addEventListener('click', function() {
+            // Solo actuamos si está contraído
+            if (content.style.display === 'none') {
+                
+                // LÓGICA DE EXPANSIÓN
+                content.style.display = 'block'; // Mostrar el contenido
+                
+                // Ocultar completamente la línea del encabezado (texto y borde), 
+                // eliminando la opción de colapsar
+                toggleHeader.style.display = 'none'; 
+                
+            } 
+            // NOTA: No hay 'else' ni lógica de colapso.
+        });
+    }
+}
+
+// 🛑 FUNCIONES DE ACTUALIZACIÓN DE LOS FILTROS, TANTO EJECUTIVO COMO VISUAL
+
+function actualizarFiltrosMapa() {
+    // A. OBTENER ESTADOS DE LOS FILTROS
+    // -------------------------------------------------------
+    // 1. Obtener orientaciones (Tu función existente)
+    const filtrosOrientacion = obtenerOrientacionesSeleccionadas();
+    
+    // 2. Obtener valor del slider de vuelos
+    const slider = document.getElementById('sliderVuelos');
+	
+	// El slider nos da el ÍNDICE (0, 1, 2...), no el valor real.
+    const indice = parseInt(slider.value, 10);
+    
+    // Buscamos el valor real en nuestra escala personalizada
+    // Si el índice falla por algo, usamos 0 como fallback
+    const minVuelos = ESCALA_VUELOS[indice] !== undefined ? ESCALA_VUELOS[indice] : 0;
+    
+    // Actualizamos el texto visual del slider
+    document.getElementById('valorVuelosTexto').textContent = minVuelos;
+
+    // 2. Obtener valor del sliderKmMedia de KmMedia
+    const sliderKmMedia = document.getElementById('sliderKmMedia');
+	
+	// El sliderKmMedia nos da el ÍNDICE (0, 1, 2...), no el valor real.
+    const indiceKmMedia = parseInt(sliderKmMedia.value, 10);
+    
+    // Buscamos el valor real en nuestra escala personalizada
+    // Si el índice falla por algo, usamos 0 como fallback
+    const minKmMedia = ESCALA_KMMEDIA[indiceKmMedia] !== undefined ? ESCALA_KMMEDIA[indiceKmMedia] : 0;
+    
+    // Actualizamos el texto visual del sliderKmMedia
+    document.getElementById('valorKmMediaTexto').textContent = minKmMedia;
+
+	// Filtro de Último Vuelo
+    const filtroAnioVuelo = obtenerMinAnioUltimoVuelo(); // { minAnio: YYYY | null, esTodos: boolean }
+
+    // B. COMPROBAR Y DEFINIR VISIBILIDAD DE CAPAS
+    // -------------------------------------------------------
+    
+    // Filtros de criterios
+    const hayFiltroOrientacion = filtrosOrientacion.length > 0;
+    const hayFiltroVuelos = minVuelos > 0;
+    const hayFiltroKmMedia = minKmMedia > 0;
+    const hayFiltroAnio = !filtroAnioVuelo.esTodos; // Si no está en 'Todos', hay filtro
+
+    // LECTURA CHECKBOX MUNDO (DespeguesMundo)
+    const chkDespeguesMundo = document.getElementById('checkboxDespeguesMundo');
+    const mostrarDespeguesMundo = chkDespeguesMundo && chkDespeguesMundo.checked;
+
+    // LECTURA CHECKBOX LOCAL 
+    const chkDespegues = document.getElementById('checkboxDespegues');
+    const mostrarDespegues = chkDespegues ? chkDespegues.checked : true;
+    
+    // C. PREPARAR PATRONES DE BÚSQUEDA (OPTIMIZACIÓN)
+    // -------------------------------------------------------
+    // Solo generamos los patrones si hay filtro de orientación activo
+    const patronesDeBusquedaUnicos = new Set();
+    if (hayFiltroOrientacion) {
+        filtrosOrientacion.forEach(filtroPrincipal => {
+            const rangos = MAPA_RANGO_ORIENTACION[filtroPrincipal];
+            if (rangos) {
+                rangos.forEach(patron => patronesDeBusquedaUnicos.add(`${patron}_`));  
+            }
+        });
+    }
+
+    // -----------------------------------------------------------------------
+    // FUNCIÓN AUXILIAR DE FILTRADO (Lógica central reutilizable)
+    // Se extrae la lógica de filtrado para aplicarla dos veces sin repetir código.
+    const pasaFiltros = (marker) => {
+        // --- 1. VALIDACIÓN DE VUELOS ---
+        const vuelosMarker = marker.metadata.vuelos || 0; 
+        if (vuelosMarker < minVuelos) return false;
+        
+        // --- 2. VALIDACIÓN DE VUELOS ---
+        const KmMediaMarker = marker.metadata.KmMedia || 0; 
+        if (KmMediaMarker < minKmMedia) return false;
+        
+        // --- 3. VALIDACIÓN DE FECHA ---
+        if (hayFiltroAnio) {
+            const fechaUltimoVueloStr = marker.metadata.ultimovuelo; 
+            if (!fechaUltimoVueloStr) return false;
+            const anioMarker = parseInt(fechaUltimoVueloStr.substring(fechaUltimoVueloStr.length - 4), 10);
+            if (anioMarker < filtroAnioVuelo.minAnio) return false; 
+        }       
+
+        // --- 4. VALIDACIÓN DE ORIENTACIÓN ---
+        if (!hayFiltroOrientacion) {
+            return true; // Pasa el filtro si no hay filtro de orientación
+        }
+        
+        // Comprobación de patrones de orientación...
+        const markerOrientaciones = marker.metadata.orientaciones; 
+        let markerOrientacionesDelimitada = (markerOrientaciones || '');
+        if (!markerOrientacionesDelimitada.endsWith('_')) {
+            markerOrientacionesDelimitada += '_';
+        }
+        
+        for (const patron of patronesDeBusquedaUnicos) {
+            if (markerOrientacionesDelimitada.includes(patron)) {
+                return true; 
+            }
+        }
+        return false; // No cumple orientación
+    };
+    // -----------------------------------------------------------------------
+
+    // D. FILTRADO BUCLE PRINCIPAL (¡DOS BUCLES SEPARADOS!)
+    // ----------------------------------------------------------------------
+    // 🚩 FLAG 5: SE ELIMINA LA FUSIÓN DE ARRAYS
+    // Se utilizan arrays de salida separados
+    const markersFiltradosDespegues = []; // Resultado para la capa Despegues (Local)
+    const markersFiltradosDespeguesMundo = []; // Resultado para la capa DespeguesMundo (Mundo)
+
+    // 1. FILTRAR MARCADORES LOCALES (Despegues)
+    if (mostrarDespegues) {
+        markersDespegues.forEach(marker => {
+            if (pasaFiltros(marker)) {
+                markersFiltradosDespegues.push(marker);
+            }
+        });
+    }
+
+    // 2. FILTRAR MARCADORES DEL MUNDO (DespeguesMundo)
+    if (mostrarDespeguesMundo) {
+        markersDespeguesMundo.forEach(marker => {
+            if (pasaFiltros(marker)) {
+                markersFiltradosDespeguesMundo.push(marker);
+            }
+        });
+    }
+
+
+    // E. ACTUALIZAR CAPAS DE FORMA INDEPENDIENTE
+    // -------------------------------------------------------
+    
+    // 1. Actualizar capa LOCAL (Despegues)
+    clustergroupDespegues.clearLayers();
+    clustergroupDespegues.addLayers(markersFiltradosDespegues);
+    
+    // 2. Actualizar capa MUNDO (DespeguesMundo)
+    // 🚩 FLAG 6: ACTUALIZACIÓN INDEPENDIENTE
+    clustergroupDespeguesMundo.clearLayers();
+    clustergroupDespeguesMundo.addLayers(markersFiltradosDespeguesMundo);
+    
+    // Nota: El 'if (typeof clustergroupDespeguesMundo !== 'undefined')' ya no es necesario aquí.
+}
+
+// FUNCIÓN PARA GESTIONAR EL ESTADO VISUAL DE LOS CONTROLES
+function actualizarEstadoVisualFiltros() {
+
+    // 1. COMPROBAR ESTADO DE LOS 4 FILTROS
+    // Orientación: Comprueba si hay al menos uno marcado
+    const hayFiltroOrientacion = obtenerOrientacionesSeleccionadas().length > 0;
+    
+    // 1. Vuelos: Comprueba si el valor es mayor que 0
+    const sliderVuelos = document.getElementById('sliderVuelos');
+    const indiceVuelos = parseInt(sliderVuelos.value, 10);
+    // Asume que ESCALA_VUELOS está disponible globalmente
+    const hayFiltroVuelos = (ESCALA_VUELOS[indiceVuelos] || 0) > 0; 
+	
+    function obtenerValorReal(indice) {
+        // La misma lógica de tu función actualizarFiltrosMapa
+        const indiceNumerico = parseInt(indice, 10);
+        return ESCALA_VUELOS[indiceNumerico] !== undefined ? ESCALA_VUELOS[indiceNumerico] : 0;
+    }
+	const hayConfiguracionInicialFiltroVuelos = (obtenerValorReal(localStorage.getItem('miMapa_minimoVuelos_preferido') || '0') > 0);
+	const hayConfiguracionInicialFiltroUltimoVuelo = (obtenerValorReal(localStorage.getItem('miMapa_minimoUltimoVuelo_preferido') || '0') > 0);
+ 
+    // 2. Último Vuelo: Comprueba si el valor no es 'Todos' (índice 0)
+    const sliderUltimoVuelo = document.getElementById('sliderUltimoVuelo');
+    const indiceUltimoVuelo = parseInt(sliderUltimoVuelo.value, 10);
+    const hayFiltroAnio = indiceUltimoVuelo !== 0;
+
+    // 3. KmMedia: Comprueba si el valor es mayor que 0
+    const sliderKmMedia = document.getElementById('sliderKmMedia');
+    const indiceKmMedia = parseInt(sliderKmMedia.value, 10);
+    // Asume que ESCALA_VUELOS está disponible globalmente
+    const hayFiltroKmMedia = (ESCALA_KMMEDIA[indiceKmMedia] || 0) > 0; 
+	
+    function obtenerValorReal(indice) {
+        // La misma lógica de tu función actualizarFiltrosMapa
+        const indiceNumerico = parseInt(indice, 10);
+        return ESCALA_KMMEDIA[indiceNumerico] !== undefined ? ESCALA_KMMEDIA[indiceNumerico] : 0;
+    }
+
+    // 2. DEFINIR COLORES Y ESTILOS
+    const ACTIVO_COLOR = '#0404ff30';
+    const INACTIVO_COLOR = '#ffffff';
+
+    // 3. ACTUALIZAR CONTENEDORES INDIVIDUALES
+    
+    // Contenedor Orientación
+    const contOrientacion = document.querySelector('.control-orientacion-container');
+    if (contOrientacion) {
+        contOrientacion.style.backgroundColor = hayFiltroOrientacion ? ACTIVO_COLOR : INACTIVO_COLOR;
+    }
+
+    // Contenedor Vuelos
+    const contVuelos = document.querySelector('.control-vuelos-container');
+    if (contVuelos) {
+        contVuelos.style.backgroundColor = hayFiltroVuelos ? ACTIVO_COLOR : INACTIVO_COLOR;
+    }
+
+    // Contenedor Último Vuelo
+    const contUltimoVuelo = document.querySelector('.control-ultimovuelo-container');
+    if (contUltimoVuelo) {
+        contUltimoVuelo.style.backgroundColor = hayFiltroAnio ? ACTIVO_COLOR : INACTIVO_COLOR;
+    }
+
+    // Contenedor KmMedia
+    const contKmMedia = document.querySelector('.control-KmMedia-container');
+    if (contKmMedia) {
+        contKmMedia.style.backgroundColor = hayFiltroKmMedia ? ACTIVO_COLOR : INACTIVO_COLOR;
+    }
+	
+    // Contenedor Configuración Vuelos
+	document.querySelector('.configuracion-control-vuelos-container').style.backgroundColor = hayConfiguracionInicialFiltroVuelos ? ACTIVO_COLOR : INACTIVO_COLOR;
+
+    // Contenedor Configuración Vuelos
+	document.querySelector('.configuracion-control-ultimovuelo-container').style.backgroundColor = hayConfiguracionInicialFiltroUltimoVuelo ? ACTIVO_COLOR : INACTIVO_COLOR;
+
+
+    // 4. ACTUALIZAR PANEL GLOBAL
+    const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroKmMedia;
+    const infoPanel = document.querySelector('.labelMostrarOpciones');
+    
+    if (infoPanel) {
+        infoPanel.style.backgroundColor = hayCualquierFiltro ? ACTIVO_COLOR : ''; // Deja el color predefinido de CSS si no hay filtros.
+    }
+}
+
+
+// 🛑 Listener que asegura que se pueda cambiar el estilo del popup original que ofrece Leaflet. Esa función no reemplaza clases, añade una clase adicional a los elementos internos del popup que Leaflet genera dinámicamente (.leaflet-popup-content-wrapper y .leaflet-popup-tip). Leaflet crea esos nodos cada vez que se abre un popup, por eso no puedes modificarlos con CSS global antes: no existen hasta que el popup se muestra. El map.on('popupopen', …) intercepta ese momento y añade tu clase personalizada (por ejemplo, popup-despegues). Se puede añadir más clases. Objetivo: aplicar un estilo distinto solo a ciertos popups sin afectar al resto.
+map.on('popupopen', function (e) {
+	
+	const popupNode = e.popup._container;
+	const clase = e.popup.options.className;
+
+	if (['popup-despegues', 'popup-despeguesmundo', 'popup-otraclase2'].includes(clase)) {
+		popupNode.querySelector('.leaflet-popup-content-wrapper')?.classList.add(clase);
+		popupNode.querySelector('.leaflet-popup-tip')?.classList.add(clase);
+	}
+  
+    // e.popup.getElement() obtiene el contenedor HTML del popup
+    const popupContainer = e.popup.getElement();
+    
+    // Verificamos si este popup tiene los elementos plegables (para no afectar a otros popups)
+    if (popupContainer && popupContainer.querySelector('.popup-toggle-header')) {
+        // Inicializamos la lógica de plegado para este popup
+        initPopupToggle(popupContainer);
+    }
+});
+
+
+// 3. Agregar el marcador si se usaron coordenadas de la URL solo si las coordenadas vinieron de la URL, agregamos el marcador y el popup
+//if (!isNaN(urlLat) && !isNaN(urlLon)) {
+//    L.marker([useLat, useLon]).addTo(map)
+        //.bindPopup(`Aquí está`)
+        //.openPopup();
+//}
+
+
+// 🛑 ACTUALIZAR LA URL AL MOVER O HACER ZOOM EN EL MAPA
+// ___________________________________________________________________________________
+
+function updateURL(mapInstance) {
+    // 1. Obtener la vista actual
+    const center = mapInstance.getCenter();
+    const zoom = mapInstance.getZoom();
+
+    // 2. Redondear los valores para una URL más limpia (e.g., a 6 decimales)
+    const lat = center.lat.toFixed(4);
+    const lon = center.lng.toFixed(4);
+
+    // 3. Crear el nuevo objeto URLSearchParams
+    const newParams = new URLSearchParams();
+    newParams.set('lat', lat);
+    newParams.set('lon', lon);
+    newParams.set('zoom', zoom);
+
+    // 4. Crear la nueva URL completa
+    const newUrl = `${window.location.pathname}?${newParams.toString()}${window.location.hash}`;
+
+    // 5. Actualizar la URL en el historial del navegador sin recargar la página
+    // Esto es vital para no interrumpir la experiencia del usuario.
+    window.history.replaceState(null, '', newUrl);
+}
+
+// Añadir listeners al mapa (después de 'const map = L.map(...)')
+// Escuchar cuando el usuario termina de moverse/arrastrar el mapa
+map.on('moveend', function() {
+    updateURL(map);
+});
+// Escuchar cuando el usuario termina de hacer zoom
+map.on('zoomend', function() {
+    updateURL(map);
+});
+
+// Variables para acceder a los mensajes de carga
+const mensajeCargaMapaDeCalorPeninsulaIberica = document.getElementById('mensajeCargaMapaDeCalorPeninsulaIberica');
+const mensajeCargaMapaDeCalorAlpes = document.getElementById('mensajeCargaMapaDeCalorAlpes');
+const mensajeCargaMapaDeCalorMarruecos = document.getElementById('mensajeCargaMapaDeCalorMarruecos');
+
+// 🛑 CONTROLES DEL MAPA
+// ___________________________________________________________________________________
+
+
+// 🟡 CONTROL Búsqueda nombres de despegues
+
+//Función auxiliar para normalizar texto (quitar acentos y minúsculas)
+const normalizeText = (text) => {
+	if (!text) return '';
+	return text
+		.normalize("NFD") // Descompone caracteres acentuados
+		.replace(/[\u0300-\u036f]/g, "") // Elimina los acentos (diacríticos)
+		.toLowerCase(); // Convierte a minúsculas
+};		
+
+L.Control.textSearch = L.Control.extend({
+    onAdd: function(map) {
+				
+        // --- Contenedor Principal (para la búsqueda y la lista) ---
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-text-search-container');
+/*         container.style.background = 'white';
+        container.style.padding = '0px';
+        container.style.minWidth = '107px';
+        container.style.position = 'relative'; // Necesario para posicionar la lista
+		height: '30px';
+ */
+        container.style.zIndex = '1000'; // Asegura que la lista esté por encima del mapa
+		container.style.height = '30px';
+
+        // --- Campo de Búsqueda (Input) ---
+        const input = L.DomUtil.create('input', 'leaflet-text-search-input', container);
+		const originalPlaceholder = '🔍 Despegue';
+        input.type = 'search';
+        input.placeholder = '🔍 Despegue';
+		input.title = 'Buscar despegue por su nombre';
+
+        // --- Lista de Autocompletado ---
+        const autocompleteList = L.DomUtil.create('div', 'autocomplete-list', container);
+        autocompleteList.style.position = 'absolute';
+        autocompleteList.style.top = '100%'; // Colocar debajo del input
+        autocompleteList.style.left = '0';
+        autocompleteList.style.width = 'max-content';
+        autocompleteList.style.background = 'white';
+        autocompleteList.style.border = '2px solid rgba(0, 0, 0, 0.2)';
+        autocompleteList.style.boxShadow = '2px 2px 3px rgba(0,0,0,0.2)';
+        autocompleteList.style.display = 'none';
+        autocompleteList.style.maxHeight = '300px';
+        autocompleteList.style.overflowY = 'auto';
+        autocompleteList.style.backgroundColor = '#eddff5';
+        autocompleteList.style.fontSize = '1.2em';
+        autocompleteList.style.padding = '6px 6px 3px 6px';
+
+        L.DomEvent.disableClickPropagation(container); // Evita que los clics en el control afecten al mapa
+
+        // Limpieza al Foco ---
+        L.DomEvent.addListener(input, 'focus', function() {
+            input.value = '';
+			input.placeholder = '';
+            // Oculta la lista al empezar a escribir/enfocar
+            autocompleteList.style.display = 'none'; 
+			retraerOpciones()
+        });
+		
+		// Evento BLUR (Al perder el foco/hacer clic fuera)
+		L.DomEvent.addListener(input, 'blur', function() {
+			input.placeholder = originalPlaceholder;
+		});
+
+        // Autocompletado (al presionar una tecla) ---
+        L.DomEvent.addListener(input, 'keyup', function() {
+			// Normalizamos la consulta de búsqueda
+            const q = input.value.trim();
+			const normalizedQ = normalizeText(q);
+            autocompleteList.innerHTML = ''; // Limpiar lista anterior
+
+            if (q.length < 2) { // Mostrar resultados solo si hay 2 o más caracteres
+                autocompleteList.style.display = 'none';
+                return;
+            }
+
+            const matches = [];
+            
+            // markersDespegues tiene todos los marcadores y cada uno tiene 'm.metadata.despegue'.
+            markersDespegues.forEach(m => {
+                const despegueNombre = (m.metadata && m.metadata.despegue) ? m.metadata.despegue : null;
+				// Normalizamos el nombre del despegue para la comparación
+				const normalizedDespegueNombre = normalizeText(despegueNombre);
+                
+                if (normalizedDespegueNombre && normalizedDespegueNombre.includes(normalizedQ)) {
+                    // Evitar duplicados si tu array markersDespegues no es de nombres únicos
+                    if (!matches.includes(despegueNombre)) {
+                         matches.push(despegueNombre);
+                    }
+                }
+            });
+
+            if (matches.length > 0) {
+                matches.sort((a, b) => a.localeCompare(b)); // Opcional: ordenar alfabéticamente
+                
+                matches.slice(0, 100).forEach(match => { // Limitar a los 100 primeros resultados
+                    const item = L.DomUtil.create('div', 'autocomplete-item');
+                    item.innerHTML = match;
+                    item.style.padding = '0px';
+                    item.style.cursor = 'pointer';
+                    item.style.borderBottom = '1px solid #D3D3D3';
+
+                    // Al hacer clic en un elemento de la lista
+                    L.DomEvent.addListener(item, 'click', function() {
+                        const selectedQuery = match;
+                        input.value = match; // Rellena el input con el nombre
+                        autocompleteList.style.display = 'none';
+                        
+						searchAndZoom(normalizeText(selectedQuery), map, clustergroupDespegues, markersDespegues);
+					});
+
+                    autocompleteList.appendChild(item);
+                });
+                autocompleteList.style.display = 'block';
+            } else {
+                autocompleteList.style.display = 'none';
+            }
+        });
+
+        // Búsqueda al Presionar Enter ---
+		L.DomEvent.addListener(input, 'keydown', function(e) {
+            if (e.key !== 'Enter') return;
+            e.preventDefault(); // Evita que se envíe un formulario o se ejecute el comportamiento por defecto
+
+            const q = input.value.trim();
+			const normalizedQ = normalizeText(q);
+            
+            // Intentar tomar el primer resultado de la lista de autocompletado
+            const firstMatchElement = autocompleteList.querySelector('.autocomplete-item');
+
+            if (firstMatchElement) {
+                // Hay coincidencias visibles: tomamos el texto del primer elemento
+                const selectedQuery = firstMatchElement.innerText.trim();
+                
+                // Ocultamos la lista
+                autocompleteList.style.display = 'none';
+                input.value = selectedQuery; // Opcional: Rellenar el input con la selección
+                
+                // Ejecutamos la búsqueda con la primera coincidencia
+                searchAndZoom(normalizeText(selectedQuery), map, clustergroupDespegues, markersDespegues);
+
+            } else {
+                // No hay coincidencias o la lista no está visible: usar el texto del input
+                if (!normalizedQ) return;
+                searchAndZoom(normalizedQ, map, clustergroupDespegues, markersDespegues);
+            }
+        });		
+		
+/*         L.DomEvent.addListener(input, 'keydown', function(e) {
+            if (e.key !== 'Enter') return;
+			e.preventDefault(); // Evita que se envíe un formulario o se ejecute el comportamiento por defecto
+            const q = input.value.trim().toLowerCase();
+            if (!q) return;
+
+            // Oculta la lista y ejecuta la búsqueda
+            autocompleteList.style.display = 'none';
+            searchAndZoom(q, map, clustergroupDespegues, markersDespegues);
+        });
+ */        
+ 
+        // Cerrar la lista al hacer clic fuera del control ---
+        L.DomEvent.on(map, 'click', function () {
+            autocompleteList.style.display = 'none';
+        });
+
+        return container;
+    }
+});
+
+/**
+ * Función auxiliar para centralizar la lógica de búsqueda y zoom.
+ * Se reutiliza al presionar Enter o al hacer clic en un elemento de la lista.
+ */
+function searchAndZoom(q, map, clustergroup, markers) {
+    
+    // 1. 🔍 INTENTAR PRIMERO LA COINCIDENCIA EXACTA
+    const foundExact = markers.find(m => {
+        const despegue = (m.metadata && (m.metadata.despegue || ''));
+        const normalizedDespegue = normalizeText(despegue);
+        
+        // Compara si el nombre normalizado del despegue es EXACTAMENTE igual a la consulta normalizada (q)
+        return normalizedDespegue === q;
+    });
+
+    let found = foundExact; // Inicializar con la coincidencia exacta
+    
+    // 2. 🔍 SI NO HAY COINCIDENCIA EXACTA, BUSCAR COINCIDENCIA PARCIAL
+    if (!found) {
+        // Buscar la primera coincidencia que contenga la consulta
+        found = markers.find(m => {
+            const despegue = (m.metadata && (m.metadata.despegue || ''));
+            const normalizedDespegue = normalizeText(despegue);
+            
+            // Busca si el nombre normalizado del despegue INCLUYE la consulta normalizada (q)
+            return normalizedDespegue.includes(q);		
+        });
+    }
+
+    // Si ni la coincidencia exacta ni la parcial encontraron algo, salimos.
+	if (!found) return;
+	
+	if (typeof clustergroupDespegues !== 'undefined') {
+        if (!clustergroupDespegues.hasLayer(found)) {
+            clustergroupDespegues.addLayer(found);
+        }
+    } 
+	
+    // Si existe el cluster group y tiene zoomToShowLayer, úsalo
+    if (typeof clustergroup !== 'undefined' && clustergroup.zoomToShowLayer) {
+        clustergroup.zoomToShowLayer(found, function() {
+            // callback: ya está visible individualmente
+            found.openPopup();
+            map.panTo(found.getLatLng()); // centrar exactamente		
+        });
+    }
+    // fallback si no existe clustering
+    else {
+        map.setView(found.getLatLng(), Math.max(map.getZoom(), 13));
+        found.openPopup();
+    }
+}
+
+map.addControl(new L.Control.textSearch({ position: 'topleft' }));
+
+
+// 🟡 CONTROL "infoPanel" (Capas y Filtros)
+const infoPanel = document.getElementById('infoPanel'); 
+
+const infopanelControl = L.Control.extend({
+
+    onAdd: function (map) {
+        // Retornar el elemento DOM que será el contenedor del control
+        // Usamos una copia de tu panel o creamos un div temporal
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control'); // Añade la clase estándar de Leaflet
+
+        // Mover tu infopanelControl DENTRO del nuevo contenedor de control. Esto lo coloca en la columna de controles
+        container.appendChild(infoPanel);
+
+        // Opcional: Evitar que los clics dentro del panel se propaguen al mapa y lo muevan o hagan zoom. Es esencial para la interacción.
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
+
+        // Devolver el contenedor
+        return container;
+    }
+});
+
+map.addControl(new infopanelControl({ position: 'topleft' }));
+
+
+// 🟡 CONTROL plegable leyenda escala de colores por Actividad
+const legend = L.control({ position: 'bottomleft' });
+
+legend.onAdd = function() {
+	const div = L.DomUtil.create('div', 'legend collapsed');
+
+	const header = L.DomUtil.create('div', 'legend-header', div);
+	header.style.fontSize = '11px';
+	header.style.setProperty('margin-bottom', '2px', 'important');
+	header.style.setProperty('margin-top', '-4px');
+	header.innerHTML = 'Leyenda nivel de Actividad <span class="triangle"></span>';
+
+	const content = L.DomUtil.create('div', 'legend-content', div);
+
+	const actividad = [
+		{ label: 'Normal (0-6 meses)', color: actividadToColor('verde') },
+		{ label: 'Media (6-12 meses)', color: actividadToColor('naranja') },
+		{ label: 'Baja (12-24 meses)', color: actividadToColor('amarillo') },
+		{ label: 'Muy baja o nula (>24 meses)', color: actividadToColor('blanco') }
+	];
+
+	actividad.forEach(d => {
+		const row = document.createElement('div');
+		row.style.display = 'flex';
+		row.style.alignItems = 'center';
+		row.style.marginTop = '6px';
+		row.innerHTML = `<span class="dot" style="background:${d.color};width:18px;height:18px;margin-right:8px"></span><span>${d.label}</span>`;
+		content.appendChild(row);
+	});
+
+	// Toggle al hacer clic en el encabezado
+	L.DomEvent.on(header, 'click', function() {
+		div.classList.toggle('collapsed');
+	});
+	
+	const extra = document.createElement('div');
+	extra.style.marginTop = '10px';
+	extra.style.marginBottom = '10px';
+	extra.style.fontSize = '16px';
+	extra.textContent = 'Nivel de actividad según fecha del último vuelo registrado (tomado como referencia en nov-2025):';
+	content.prepend(extra);
+
+	return div;
+};
+legend.addTo(map);
+
+
+// 🟡 CONTROL Escala
+L.control.scale({
+    position: 'bottomleft',
+    metric: true,
+    imperial: false,
+    maxWidth: 150
+}).addTo(map);
+
+
+// 🟡 CONTROL "Mi ubicación" (oculto inicialmente en el desplegable)
+ L.Control.Locate = L.Control.extend({
+onAdd: function(map) {
+  var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-locate');
+  var link = L.DomUtil.create('a', '', container);
+  link.title = 'Ir a mi ubicación';
+ link.innerHTML =
+  '<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+	'<circle cx="12" cy="12" r="6" stroke="#000" stroke-width="2" fill="none"/>' +
+	'<circle cx="12" cy="12" r="2" fill="#000"/>' +
+	'<path d="M12 0v4M12 20v4M0 12h4M20 12h4" stroke="#000" stroke-width="2"/>' +
+  '</svg>';
+  L.DomEvent.on(link, 'click', function(e) {
+	L.DomEvent.stopPropagation(e);
+	L.DomEvent.preventDefault(e);
+	map.locate({ setView: true, maxZoom: 16 });
+  });
+  return container;
+	}
+  });
+  //map.addControl(new L.Control.Locate({ position: 'topleft' }));
+  
+// Añadir marcador al obtener ubicación
+var currentLocationMarker = null;
+map.on('locationfound', function(e) {
+  if (currentLocationMarker) {
+	currentLocationMarker.setLatLng(e.latlng);
+	  } else {
+		currentLocationMarker = L.marker(e.latlng, {
+		  icon: L.icon({
+			iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+			iconSize: [25, 41],
+			iconAnchor: [12, 41],
+			popupAnchor: [1, -34],
+			shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+			shadowSize: [41, 41]
+		  })
+		}).addTo(map).bindPopup("<b style='font-size:16px;'>Esta es tu ubicación actual</b>").openPopup();
+	  }
+});
+
+// 🟡 CONTROL "cargar archivos GPX, KML, GeoJSON, etc. (oculto inicialmente en el desplegable)
+L.Control.FileLayerLoad.LABEL = '📂';
+
+const fileLoader = L.Control.fileLayerLoad({
+	fitBounds: true,
+	formats: ['.GPX','.KML'],
+	title: 'Cargar track (.GPX o .KML)',
+	layerOptions: {
+		style: { color: '#ff0000', weight: 3 },
+		onEachFeature: function (feature, layer) {
+		if (feature.properties && feature.properties.name) {
+		  layer.bindPopup(feature.properties.name);
+		} //añade un popup con el nombre si el elemento tiene un campo name válido.
+	  }
+	}
+});
+
+//fileLoader.addTo(map);
+
+// 🟡 CONTROL "Buscador general" (oculto inicialmente en el desplegable)
+var geocoderControl = L.Control.geocoder({
+    defaultMarkGeocode: false,
+    position: 'topleft'
+}).on('markgeocode', function(e) {
+    // Recuperar texto tal como lo escribió el usuario
+    var inputValue = geocoderControl._container.querySelector('input').value.trim();
+
+    var match = inputValue.match(/^\s*(-?\d+(?:\.\d+)?)[,\s]+(-?\d+(?:\.\d+)?)\s*$/);
+
+    if (match) {
+        var lat = parseFloat(match[1]);
+        var lon = parseFloat(match[2]);
+
+        map.setView([lat, lon], 15);
+        L.marker([lat, lon]).addTo(map);
+    } else {
+        map.fitBounds(e.geocode.bbox);
+        L.marker(e.geocode.center).addTo(map);
+    }
+})//.addTo(map)
+;
+
+
+// 🟡 CONTROL "Desplegable de otros controles"
+L.Control.CustomToggle = L.Control.extend({
+    options: {
+        position: 'topleft'
+    },
+
+    onAdd: function(map) {
+        // --- Contenedor Principal (lo que Leaflet mueve) ---
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+
+        // --- Contenedor para el Botón (Control que siempre se ve) ---
+        const buttonDiv = L.DomUtil.create('div', 'leaflet-control-button', container);
+        buttonDiv.style.cursor = 'pointer';
+        buttonDiv.title = 'Mostrar más controles del mapa';
+        
+        // El icono hamburguesa (tres líneas horizontales)
+		buttonDiv.innerHTML =  `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+								<line x1="3" y1="12" x2="21" y2="12"></line>
+								<line x1="3" y1="6" x2="21" y2="6"></line>
+								<line x1="3" y1="18" x2="21" y2="18"></line>
+								</svg>`;
+		buttonDiv.style.padding = '0'; // Quitar el padding para que el SVG ocupe todo el espacio del botón
+		buttonDiv.style.display = 'flex'; // Usar flexbox para centrar el SVG
+		buttonDiv.style.justifyContent = 'center';
+		buttonDiv.style.alignItems = 'center';  
+		buttonDiv.style.backgroundColor = 'white';		
+		buttonDiv.style.borderRadius = '4px';		
+		
+        // --- Contenedor Oculto (donde irán los otros controles) ---
+        this._controlPanel = L.DomUtil.create('div', 'custom-control-panel', container);
+        this._controlPanel.style.display = 'none'; // Oculto por defecto
+        
+        // Ocultar la lista si haces clic fuera del control
+        L.DomEvent.on(map, 'click', this._collapse, this);
+
+        // Prevenir que los clics en el panel afecten al mapa
+        L.DomEvent.disableClickPropagation(container);
+        
+        // Evento para expandir/colapsar al hacer clic en el botón
+        L.DomEvent.on(buttonDiv, 'click', this._togglePanel, this);
+
+        return container;
+    },
+    
+    // Método para alternar la visibilidad del panel
+    _togglePanel: function() {
+        const isVisible = this._controlPanel.style.display !== 'none';
+        if (isVisible) {
+            this._collapse();
+        } else {
+            this._expand();
+        }
+    },
+    
+    _expand: function() {
+        this._controlPanel.style.display = 'flex'; // Usamos flex para ordenar los controles
+    },
+    
+    _collapse: function() {
+        this._controlPanel.style.display = 'none';
+    },
+
+    // Permite añadir otros controles al panel desplegable
+    addControl: function(control) {
+        // Asegúrate de que el control se añade al DOM
+        const controlContainer = control.onAdd(this._map);
+        
+        // El nuevo control se añade al panel oculto
+        this._controlPanel.appendChild(controlContainer);
+        
+        // Wrap the control container in a div to ensure proper vertical stacking
+        const wrapper = L.DomUtil.create('div', 'custom-control-wrapper');
+        wrapper.appendChild(controlContainer);
+        this._controlPanel.appendChild(wrapper);
+    }
+});
+
+// Función de conveniencia para crear la instancia del control
+L.control.customToggle = function(options) {
+    return new L.Control.CustomToggle(options);
+};
+
+//------------------------------------------------------------
+// 1. Crear el control desplegable y añadirlo al mapa
+const toggleControl = L.control.customToggle({
+    position: 'topleft' // Elige dónde aparecerá el botón
+}).addTo(map);
+
+// Añadimos controles ocultos, que hemos definido antes de este código y en los que no hemos usado .addTo(map), para que no se muestren inicialmente
+
+// 🟡 CONTROL "Pantalla completa"
+toggleControl.addControl(new L.Control.Fullscreen({
+	title: {
+	'false': 'Pantalla completa',
+	'true': 'Salir de pantalla completa (o tecla ESC)'
+	}
+	}));
+	
+// 🟡 CONTROL "Mi localización"	
+toggleControl.addControl(new L.Control.Locate());
+
+// 🟡 CONTROL "cargar archivos GPX, KML, GeoJSON, etc.
+toggleControl.addControl(fileLoader);
+
+// Tras añadirlo al mapa, cambio el título del plugin a uno traducido
+    document.querySelector('.leaflet-control-filelayer.leaflet-control-zoom-in').setAttribute('title', 'Cargar track (GPX o KML)');
+
+// 🟡 CONTROL "Buscador general"
+toggleControl.addControl(geocoderControl);
+
+// Tras añadirlo al mapa, cambio el título del plugin a uno traducido
+    document.querySelector('.leaflet-control-geocoder.leaflet-bar').setAttribute('title', 'Buscador general (poblaciones, lugares y coordenadas)');
+    document.querySelector('.leaflet-control-geocoder-form input[type="search"]').setAttribute('placeholder', 'Buscar lugar o coordenadas...');
+	
+// 🟡 CONTROL "Configuración" (Despliega #configuracionPanel)
+L.Control.ConfigToggle = L.Control.extend({
+    options: { position: 'topright' },
+
+    onAdd: function(map) {
+        // --- 1. Contenedor Principal ---
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+
+        // --- 2. Botón del Engranaje (Siempre visible) ---
+        const buttonDiv = L.DomUtil.create('div', 'leaflet-control-button', container);
+        buttonDiv.style.cursor = 'pointer';
+        buttonDiv.title = 'Configuración'; // Tooltip
+        
+        // Icono de Engranaje (Gear) SVG
+        buttonDiv.innerHTML = `<svg width="30" height="30" viewBox="-3 -3 30 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                               </svg>`;
+                               
+        buttonDiv.style.padding = '0';
+        buttonDiv.style.display = 'flex';
+        buttonDiv.style.justifyContent = 'center';
+        buttonDiv.style.alignItems = 'center';  
+        buttonDiv.style.backgroundColor = 'white';      
+        buttonDiv.style.borderRadius = '4px';       
+        
+        // --- 3. Capturar el Panel de Configuración Existente por ID
+        this._configPanel = document.getElementById('configuracionPanel');
+        
+        container.appendChild(this._configPanel);
+
+        this._configPanel.style.display = 'none'; 
+        
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
+        
+        L.DomEvent.on(buttonDiv, 'click', this._togglePanel, this);
+        
+        L.DomEvent.on(map, 'click', this._collapse, this);
+        L.DomEvent.on(map, 'moveend', this._collapse, this);
+        
+        return container;
+    },
+    
+    // Alternar
+    _togglePanel: function(e) {
+        // Prevenimos que el evento se propague si es necesario
+        L.DomEvent.stopPropagation(e);
+        
+        if (this._configPanel.style.display === 'none') {
+            this._expand();
+        } else {
+            this._collapse();
+        }
+    },
+    
+    // Mostrar
+    _expand: function() {
+        // Usamos 'block' para divs normales. Si tu panel usa flex internamente, usa 'block' aquí 
+        // y deja que el CSS del panel maneje su interior, o usa 'flex' si el panel mismo es un flex container.
+        this._configPanel.style.display = 'block'; 
+    },
+    
+    // Ocultar
+    _collapse: function() {
+        this._configPanel.style.display = 'none';
+    }
+});
+
+// Función de conveniencia
+L.control.configToggle = function(options) {
+    return new L.Control.ConfigToggle(options);
+};
+
+L.control.configToggle({ 
+    position: 'topright' // O donde prefieras
+}).addTo(map);
+
+
+// 🟡 CONTROL "Capas"
+const baseMaps = {
+  "ESRI Mundial topográfico": WorldTopoMap,
+  "ESRI Mundial ortofotos": esri,	
+  "OpenStreetMap estilo OpenTopoMap": OpenTopoMap,
+  "OpenStreetMap estilo CyclOSM": CyclOSM,
+  "Thunderforest Outdoors": ThunderforestOutdoors,
+  "IGN España topográfico": IGNspaintopo,
+  "IGN España topográfico claro": IGNspainbase,
+  "IGN España ortofotos": IGNPNOA,
+  "OpenStreetMap estilo OpenStreetMap": OpenStreetMap,  
+  "Relieve Hipsométrico": Hipsometrico,
+  "Tracestrack Topo": TracesTrackTopo,
+  "Institut Cartogràfic i Geològic de Catalunya (ICGC)": ICGC,
+  "ESRI Topo + Skyways (KK7)": capaMezcladaWorldTopoMapKK7SkyWays,
+  "ESRI Topo + Thermals (KK7)": capaMezcladaWorldTopoMapKK7Thermals,
+  "ESRI Topo + Skyways+Thermals (KK7)": capaMezcladaWorldTopoMapKK7SkyWaysThermals
+};
+L.control.layers(baseMaps, {}, { position: 'topright' }).addTo(map);
+	
+//------------------------------------------------------------
+
+// 🔴 INICIO CAPA DESPEGUES
+//___________________________________________________________________________________
+
+
+const clustergroupDespegues = L.markerClusterGroup({
+	chunkedLoading: true,      	// Divide la carga en bloques
+	chunkDelay: 100,            // Tiempo entre bloques (ms)
+	showCoverageOnHover: false, // false mejora rendimiento. Muestra el área que ocupan los puntos
+	maxClusterRadius: 40,       // Con menos de este radio en px entre los puntos, se agrupan. Menor = menos agrupación, mayor = más agrupados
+	spiderfyOnMaxZoom: true,    // Con zoom máximo se expanden todos. False mejora rendimiento
+	spiderfyOnEveryClick: true,
+	zoomToBoundsOnClick: true, // Por defecto es true
+	disableClusteringAtZoom: 11, //A zoom >= 12, los marcadores se muestran individualmente, aunque estén cerca
+	
+	//Redefinimos la función incorporada en el plugin Leaflet.markercluster llamada iconCreateFunction. Al crear un L.markerClusterGroup() el plugin la ejecuta automáticamente cada vez que genera un icono de clúster, pasándole como argumento el objeto cluster, que contiene todos los marcadores agrupados.
+	iconCreateFunction: function (cluster) {
+		const count = cluster.getChildCount();
+		const clusterTitle = `Grupo de ${count} lugares de despegue`;
+		return L.divIcon({
+			html: `
+				<div title="${clusterTitle}" style="
+					position: relative;
+					background-color: white;
+					color: black;
+					border: 1.8px solid #007aff;
+					border-radius: 50%;
+					width: 35px;
+					height: 35px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: 1.5em;
+					box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
+				">
+					${count}
+				</div>`,
+			className: 'custom-cluster',
+			iconSize: L.point(40, 40)
+		});
+	}
+});	
+// escala de color por Actividad: 
+function actividadToColor(actividad) {
+	if (!actividad) return '#FFFFFF'; // blanco por defecto si no hay valor
+
+	if (actividad === 'verde') return 'green';
+	if (actividad === 'naranja') return 'orange';
+	if (actividad === 'amarillo') return 'yellow';
+	if (actividad === 'blanco') return 'white';
+
+	return '#FFFFFF'; // color blanco por defecto si no coincide
+}
+
+// crea icono compuesto (dot + etiqueta) usando L.divIcon
+function createIconDespegue(despegue, actividad, orientacionesMetadata) {
+    // 1. 🧭 Generar el círculo de orientación (NUEVO)
+    const orientacionHTML = createOrientationSVG(orientacionesMetadata);
+
+    // 2. Círculo de Actividad (Existente)
+    const color = actividadToColor(actividad);
+    const dot = `<span class="dot" style="background:${color}"></span>`;
+
+    // 3. Combinar todo en la etiqueta
+    const labelHTML = `<span class='label-large-despegues'>${orientacionHTML}${dot}${escapeHtml(despegue)}</span>`;
+
+    return L.divIcon({
+        html: labelHTML,
+        className: 'custom-div-icon',
+        iconAnchor: [0, 40] // ajusta según dimensiones reales
+    });
+}
+
+// escape para html en popup/label. Esa función convierte caracteres especiales de HTML en sus entidades seguras, evitando que el texto insertado en el DOM se interprete como código HTML (previene inyección de HTML o XSS)
+function escapeHtml(str){
+if (!str && str !== 0) return '';
+return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+const markersDespegues = [];
+
+Papa.parse('despegues.csv', {
+download: true,
+header: true, // Usa la primera fila como nombres de columnas
+//dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
+skipEmptyLines: true,
+delimiter: ';',
+encoding: 'utf8',
+complete: function(results) {
+  results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
+    
+	const lat = parseFloat(row.Latitud);
+	const lon = parseFloat(row.Longitud);
+	const altitud = row.Altitud || '';	
+	const region = row.Región || ''; //asigna el contenido de la columna “Nombre_clásico” si existe; si no existe, deja la variable como cadena vacía. || → operador lógico “o”: devuelve el primer valor existente y no vacío.
+	const provincia = row.Provincia || '';
+	const despegue = row.Despegue || '';
+	const SVGorientaciones = createOrientationSVG(row.Orientaciones);
+	const orientacion = row.Orientación || '';
+	const orientaciones = row.Orientaciones || '';
+	const OrientacionesGrados = row.Orientaciones_Grados || '';
+	const actividad = row.Actividad || '';
+	const color = actividadToColor(row.Actividad);
+    const dot = `<span class="dot" style="background:${color}"></span>`;
+	const CIRCULOactividad = row.Actividad || '';
+
+	// Guardamos el valor numérico real para el filtro (si es vacío o 0, será 0)
+	const KmMediaValor = parseFloat(row.Km_media) || 0;
+
+	// Creamos el texto que se verá en el popup
+	const KmMediaDisplay = (KmMediaValor === 0) ? "-" : KmMediaValor;
+
+	const kmmax = row.Km_máx || '';
+	const vuelos = row.Vuelos || '';
+	const ultimovuelo = row.Último_vuelo || '';
+	const info = row.Más_información || '';
+
+	const icon = createIconDespegue(despegue, actividad, orientaciones);
+	const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
+			
+	const popupHtml = `<div style="line-height: 1.2;">
+	
+			<div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
+			<div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">Orientación: ${SVGorientaciones} <b>${escapeHtml(orientacion)}</b></div>
+			<div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
+			<div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
+			<div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
+			
+			<div class="popup-toggle-header" 
+				 style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
+				 Más información: ▼
+			</div>
+			
+			<div class="popup-collapsible-content" style="display: none; overflow-wrap: break-word; ">
+
+				<div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
+				<div style="margin-bottom: 5px;">Altitud: <b>${escapeHtml(altitud)} m</b></div>
+				<div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="Nivel de uso del despegue según fecha del último vuelo registrado (referencia: nov-2025): Verde 0–6 meses, Naranja 6–12, Amarillo 12–24, Blanco >24 meses sin vuelos">Nivel de actividad: ${dot}</div>
+				<div style="margin-bottom: 5px;">Nº de vuelos en XContest: <b>${escapeHtml(vuelos)}</b></div>
+				<div style="margin-bottom: 5px;">Nº de km medios recorridos: <b>${escapeHtml(KmMediaDisplay)}</b></div>
+				<div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
+				<div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
+				<div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
+				<div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
+				<div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
+				
+			</div>
+			
+			</div>`;		
+
+	marker.bindPopup(popupHtml, { className: 'popup-despegues', maxWidth: 300 });
+	marker.metadata = { despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, KmMedia: KmMediaValor, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
+	markersDespegues.push(marker); //inserta marker al grupo markersDespegues
+	clustergroupDespegues.addLayer(marker);
+  });
+
+	map.addLayer(clustergroupDespegues);
+  
+	// Comprobar si hay petición de apertura externa en la URL (?q=...) (link desde Meteo)
+    // --- LÓGICA DE APERTURA AUTOMÁTICA (NOMBRE -> COORDENADAS) ---
+	const params = new URLSearchParams(window.location.search);
+	const busquedaURL = params.get('q');
+	const urlLat = parseFloat(params.get('lat'));
+	const urlLon = parseFloat(params.get('lon'));
+
+	let despegueEncontrado = null;
+
+	// 1. PRIMER INTENTO: Buscar por NOMBRE (parámetro 'q')
+	if (busquedaURL) {
+		const textoNormalizado = normalizeText(decodeURIComponent(busquedaURL));
+		
+		// Intento coincidencia exacta por nombre
+		despegueEncontrado = markersDespegues.find(m => 
+			normalizeText(m.metadata.despegue) === textoNormalizado
+		);
+
+		// Si no hay exacta, intento coincidencia parcial
+		if (!despegueEncontrado) {
+			despegueEncontrado = markersDespegues.find(m => 
+				normalizeText(m.metadata.despegue).includes(textoNormalizado)
+			);
+		}
+	}
+
+	// 2. SEGUNDO INTENTO: Si no hay nombre o el nombre falló, buscar por COORDENADAS
+	if (!despegueEncontrado && !isNaN(urlLat) && !isNaN(urlLon)) {
+		despegueEncontrado = markersDespegues.find(m => {
+			const mLat = m.getLatLng().lat;
+			const mLon = m.getLatLng().lng;
+			// Margen de error de 0.0001 grados (aprox 10 metros)
+			return Math.abs(mLat - urlLat) < 0.0001 && Math.abs(mLon - urlLon) < 0.0001;
+		});
+	}
+
+	// 3. EJECUCIÓN: Si cualquiera de los dos métodos encontró un despegue, abrirlo
+	if (despegueEncontrado) {		
+		setTimeout(() => {
+			// Usamos zoomToShowLayer por si el despegue está dentro de un grupo (cluster)
+			clustergroupDespegues.zoomToShowLayer(despegueEncontrado, function() {
+				despegueEncontrado.openPopup();
+				map.panTo(despegueEncontrado.getLatLng()); // Centrado exacto
+			});
+		}, 600); // Pequeña pausa para asegurar que los clusters están dibujados
+	}
+  
+	actualizarFiltrosMapa();
+},
+
+error: function(error) {
+console.error('Error cargando CSV:', error.message || error);
+alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
+}
+
+});
+
+
+// 🔴 INICIO CAPA MAPA DE CALOR PENÍNSULA IBÉRICA
+//___________________________________________________________________________________
+
+const clustergroupMapaDeCalorPeninsulaIberica = L.markerClusterGroup({
+	chunkedLoading: true,      	// Divide la carga en bloques
+	chunkDelay: 100,            // Tiempo entre bloques (ms)
+	showCoverageOnHover: false, // false mejora rendimiento. Muestra el área que ocupan los puntos
+	maxClusterRadius: 80,       // Con menos de este radio en px entre los puntos, se agrupan. Menor = menos agrupación, mayor = más agrupados
+	spiderfyOnMaxZoom: true,    // Con zoom máximo se expanden todos. False mejora rendimiento
+	zoomToBoundsOnClick: false, // Por defecto es true
+	//disableClusteringAtZoom: 15, //A zoom mayor, los marcadores se muestran individualmente, aunque estén cerca. Desactivado porque si no, con 300.000 puntos se bloquea bastante el navegador
+	
+	//Redefinimos la función incorporada en el plugin Leaflet.markercluster llamada iconCreateFunction. Al crear un L.markerClusterGroup() el plugin la ejecuta automáticamente cada vez que genera un icono de clúster, pasándole como argumento el objeto cluster, que contiene todos los marcadores agrupados.
+	
+	iconCreateFunction: function (cluster) {
+		var count = cluster.getChildCount();
+		
+		const clusterTitle = `Grupo de ${count} despegues registrados en XContest`;
+
+		// Escala de color según número de marcadores
+		var max = 1000; 
+		var ratio = 1 - Math.min(count / max, 1); //ratio = 0 → rojo intenso, ratio = 1 → rojo claro
+
+		// Conversión hex a RGB
+		function hexToRGB(hex) {
+			return [
+				parseInt(hex.substr(1,2),16),
+				parseInt(hex.substr(3,2),16),
+				parseInt(hex.substr(5,2),16)
+			];
+		}
+
+		var darkRGB = hexToRGB("#a91311");   // rojo oscuro
+		var lightRGB = hexToRGB("#f7bd7e");  // rojo claro
+
+		// Interpolación lineal en RGB
+		var r = Math.round(darkRGB[0] + (lightRGB[0]-darkRGB[0])*ratio);
+		var g = Math.round(darkRGB[1] + (lightRGB[1]-darkRGB[1])*ratio);
+		var b = Math.round(darkRGB[2] + (lightRGB[2]-darkRGB[2])*ratio);
+
+		var color = `rgb(${r},${g},${b})`;
+
+		return new L.DivIcon({
+			html: `<div title="${clusterTitle}" style="background:${color}"><span>${count}</span></div>`,
+			className: 'estilobase-custom-cluster-mapadecalor',
+			iconSize: new L.Point(40, 40),
+			iconAnchor: L.point(20, 20) //Centra el icono en el punto
+		});
+	}
+		
+});
+
+//Popup al hacer click en un cluster: Coordenadas del centro del cluster		
+clustergroupMapaDeCalorPeninsulaIberica.on('clusterclick', function (e) {
+	// 1. Obtener los datos del clúster
+	const childCount = e.layer.getChildCount(); // Cuántos marcadores (despegues) hay en el clúster
+	const clusterLatLng = e.layer.getLatLng(); // Coordenadas del centro del clúster
+
+	const popupHtml = `<div style="line-height: 1.2;">
+
+			<div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${childCount} Despegues en XContest</b></div>
+			<div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}</b></div>
+			<div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/wind?${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},14' target='_blank'>Windy</a></div>
+			<div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
+			<div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${clusterLatLng.lat.toFixed(4)}N${clusterLatLng.lng.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+			<div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)}' target='_blank'>Google Maps</a></div>
+			<div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/OpenTopoMap&pois=${clusterLatLng.lng.toFixed(4)},${clusterLatLng.lat.toFixed(4)}' target='_blank'>Brouter</a></div>
+			<div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}' target='_blank'>Nakarte</a></div>
+			<div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${clusterLatLng.lng.toFixed(4)}%20${clusterLatLng.lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
+			</div>`
+
+	// 3. Enlazar el popup al clúster y abrirlo
+	// Esto crea un popup dinámicamente solo para este clic
+	e.layer.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 })
+	.openPopup();
+});	
+
+const heatpointsMapaDeCalorPeninsulaIberica = []; // array para puntos del heatmap //heatPointsWebGL
+
+let heatlayerMapaDeCalorPeninsulaIberica;
+
+// escape para html en popup/label. Esa función convierte caracteres especiales de HTML en sus entidades seguras, evitando que el texto insertado en el DOM se interprete como código HTML (previene inyección de HTML o XSS)
+function escapeHtml(str){
+if (!str && str !== 0) return '';
+return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+const iconoDespegueIndividualPeninsulaIberica = L.divIcon({
+className: 'custom-point-circle', // Una clase CSS para estilizar el círculo
+html: '<div style="background:#ff0000; border-radius:50%; width:10px; height:10px;"></div>', // El círculo dentro del div
+iconSize: [10, 10], // Tamaño del icono (igual al div de arriba)
+iconAnchor: [5, 5] // Centro del icono
+});
+
+// Flag para controlar la carga única del CSV
+let csvCargadoMapaDeCalorPeninsulaIberica = false; // Usamos un nombre específico para evitar conflictos.
+
+// Muestra el mensaje de carga en la pantalla
+function mostrarMensajeCargaMapaDeCalorPeninsulaIberica() {
+    if (mensajeCargaMapaDeCalorPeninsulaIberica) {
+        mensajeCargaMapaDeCalorPeninsulaIberica.style.display = 'block';
+    }
+}
+
+//Oculta el mensaje de carga en la pantalla
+function ocultarmensajeCargaMapaDeCalorPeninsulaIberica() {
+    if (mensajeCargaMapaDeCalorPeninsulaIberica) {
+        setTimeout(function() {mensajeCargaMapaDeCalorPeninsulaIberica.style.display = 'none'}, 2000);
+    }
+}
+
+// Carga los datos del CSV y crea los marcadores/capas de calor. Se ejecuta solo la primera vez
+function cargarDatosMapaDeCalorPeninsulaIberica() {
+    if (csvCargadoMapaDeCalorPeninsulaIberica) {
+        return; // Detener si ya se cargó
+    }
+
+    mostrarMensajeCargaMapaDeCalorPeninsulaIberica();	// Mostramos el mensaje de carga antes de la operación asíncrona
+
+	Papa.parse('mapadecalorpeninsulaiberica.csv', {
+
+		download: true,
+		header: true, // Usa la primera fila como nombres de columnas
+		//dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
+		skipEmptyLines: true,
+		delimiter: ';',
+		encoding: 'utf8',
+
+		complete: function(results) {
+			results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
+			
+				const lat = parseFloat(row.Latitud);
+				const lon = parseFloat(row.Longitud);
+				const fecha = row.Fecha || '';
+				const hora = row.Hora || '';
+				const distanciarecorrida = row.DistanciaRecorrida || '';
+				const urlvuelo = row.URLVuelo || '';
+				
+				const marker = L.marker([lat, lon], { icon: iconoDespegueIndividualPeninsulaIberica, riseOnHover: true, title: 'Despegue individual registrado en XContest' });
+				
+				const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
+					<div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂<br>Despegue en XContest</b></div>
+					<div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
+					<div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(fecha)}</b></div>
+					<div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(hora)}</b></div>
+					<div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(distanciarecorrida)} km</b></div>
+					<div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(urlvuelo)}' target='_blank'>Vuelo en XContest</a></div>
+					</div>`;
+
+				marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }); //de momento no he creado esa clase
+				clustergroupMapaDeCalorPeninsulaIberica.addLayer(marker);
+				// Añadir al array de puntos de calor
+				heatpointsMapaDeCalorPeninsulaIberica.push([lat, lon, 1]); // intensidad = 1
+			});
+		  
+		  // Crear capa de calor
+			heatlayerMapaDeCalorPeninsulaIberica = L.heatLayer(heatpointsMapaDeCalorPeninsulaIberica, {
+				radius: 18, blur: 22, maxZoom: 19, minOpacity: 0.3,
+				gradient: { 0.2: 'yellow', 0.4: 'orange', 0.6: 'red', 1.0: 'darkred' }
+			});//.addTo(map); //No la mostramos inicialmente
+
+			//map.addLayer(clustergroupMapaDeCalorPeninsulaIberica); //No la mostramos inicialmente
+			
+			// Marcar como cargado exitosamente
+			csvCargadoMapaDeCalorPeninsulaIberica = true;
+            ocultarmensajeCargaMapaDeCalorPeninsulaIberica(); // Ocultamos el mensaje si la carga fue exitosa
+			
+			// LLAMADA ADICIONAL: Ya que el usuario marcó el checkbox antes de que se completara la carga,
+			// debemos añadirlas al mapa una vez que estén listas.
+			const checkbox = document.getElementById('checkboxMapaDeCalorPeninsulaIberica');
+			if (checkbox && checkbox.checked) {
+				 if (!map.hasLayer(clustergroupMapaDeCalorPeninsulaIberica)) {
+					map.addLayer(clustergroupMapaDeCalorPeninsulaIberica);
+				}
+				if (!map.hasLayer(heatlayerMapaDeCalorPeninsulaIberica)) {
+					map.addLayer(heatlayerMapaDeCalorPeninsulaIberica);
+				}
+			}
+
+		},
+
+		error: function(error) {
+		console.error('Error cargando CSV:', error.message || error);
+		alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
+		ocultarmensajeCargaMapaDeCalorPeninsulaIberica(); // Ocultamos el mensaje si hubo un error en la carga
+		}
+
+	});
+}
+
+
+// 🔴 INICIO CAPA MAPA DE CALOR ALPES
+//___________________________________________________________________________________
+
+const clustergroupMapaDeCalorAlpes = L.markerClusterGroup({
+	chunkedLoading: true,      	// Divide la carga en bloques
+	chunkDelay: 100,            // Tiempo entre bloques (ms)
+	showCoverageOnHover: false, // false mejora rendimiento. Muestra el área que ocupan los puntos
+	maxClusterRadius: 80,       // Con menos de este radio en px entre los puntos, se agrupan. Menor = menos agrupación, mayor = más agrupados
+	spiderfyOnMaxZoom: true,    // Con zoom máximo se expanden todos. False mejora rendimiento
+	zoomToBoundsOnClick: false, // Por defecto es true
+	//disableClusteringAtZoom: 15, //A zoom mayor, los marcadores se muestran individualmente, aunque estén cerca. Desactivado porque si no, con 300.000 puntos se bloquea bastante el navegador
+	
+	//Redefinimos la función incorporada en el plugin Leaflet.markercluster llamada iconCreateFunction. Al crear un L.markerClusterGroup() el plugin la ejecuta automáticamente cada vez que genera un icono de clúster, pasándole como argumento el objeto cluster, que contiene todos los marcadores agrupados.
+	
+	iconCreateFunction: function (cluster) {
+		var count = cluster.getChildCount();
+		
+		const clusterTitle = `Grupo de ${count} despegues registrados en XContest`;
+
+		// Escala de color según número de marcadores
+		var max = 1000; 
+		var ratio = 1 - Math.min(count / max, 1); //ratio = 0 → rojo intenso, ratio = 1 → rojo claro
+
+		// Conversión hex a RGB
+		function hexToRGB(hex) {
+			return [
+				parseInt(hex.substr(1,2),16),
+				parseInt(hex.substr(3,2),16),
+				parseInt(hex.substr(5,2),16)
+			];
+		}
+
+		var darkRGB = hexToRGB("#a91311");   // rojo oscuro
+		var lightRGB = hexToRGB("#f7bd7e");  // rojo claro
+
+		// Interpolación lineal en RGB
+		var r = Math.round(darkRGB[0] + (lightRGB[0]-darkRGB[0])*ratio);
+		var g = Math.round(darkRGB[1] + (lightRGB[1]-darkRGB[1])*ratio);
+		var b = Math.round(darkRGB[2] + (lightRGB[2]-darkRGB[2])*ratio);
+
+		var color = `rgb(${r},${g},${b})`;
+
+		return new L.DivIcon({
+			html: `<div title="${clusterTitle}" style="background:${color}"><span>${count}</span></div>`,
+			className: 'estilobase-custom-cluster-mapadecalor',
+			iconSize: new L.Point(40, 40),
+			iconAnchor: L.point(20, 20) //Centra el icono en el punto
+		});
+	}
+		
+});
+
+//Popup al hacer click en un cluster: Coordenadas del centro del cluster		
+clustergroupMapaDeCalorAlpes.on('clusterclick', function (e) {
+	// 1. Obtener los datos del clúster
+	const childCount = e.layer.getChildCount(); // Cuántos marcadores (despegues) hay en el clúster
+	const clusterLatLng = e.layer.getLatLng(); // Coordenadas del centro del clúster
+
+	const popupHtml = `<div style="line-height: 1.2;">
+
+			<div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${childCount} Despegues en XContest</b></div>
+			<div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}</b></div>
+			<div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/wind?${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},14' target='_blank'>Windy</a></div>
+			<div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
+			<div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${clusterLatLng.lat.toFixed(4)}N${clusterLatLng.lng.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+			<div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)}' target='_blank'>Google Maps</a></div>
+			<div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/OpenTopoMap&pois=${clusterLatLng.lng.toFixed(4)},${clusterLatLng.lat.toFixed(4)}' target='_blank'>Brouter</a></div>
+			<div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}' target='_blank'>Nakarte</a></div>
+			<div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${clusterLatLng.lng.toFixed(4)}%20${clusterLatLng.lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
+			</div>`
+
+	// 3. Enlazar el popup al clúster y abrirlo
+	// Esto crea un popup dinámicamente solo para este clic
+	e.layer.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 })
+	.openPopup();
+});	
+
+const heatpointsMapaDeCalorAlpes = []; // array para puntos del heatmap //heatPointsWebGL
+
+let heatlayerMapaDeCalorAlpes;
+
+// escape para html en popup/label. Esa función convierte caracteres especiales de HTML en sus entidades seguras, evitando que el texto insertado en el DOM se interprete como código HTML (previene inyección de HTML o XSS)
+function escapeHtml(str){
+if (!str && str !== 0) return '';
+return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+const iconoDespegueIndividualAlpes = L.divIcon({
+className: 'custom-point-circle', // Una clase CSS para estilizar el círculo
+html: '<div style="background:#ff0000; border-radius:50%; width:10px; height:10px;"></div>', // El círculo dentro del div
+iconSize: [10, 10], // Tamaño del icono (igual al div de arriba)
+iconAnchor: [5, 5] // Centro del icono
+});
+
+// Flag para controlar la carga única del CSV
+let csvCargadoMapaDeCalorAlpes = false; // Usamos un nombre específico para evitar conflictos.
+
+// Muestra el mensaje de carga en la pantalla
+function mostrarMensajeCargaMapaDeCalorAlpes() {
+    if (mensajeCargaMapaDeCalorAlpes) {
+        mensajeCargaMapaDeCalorAlpes.style.display = 'block';
+    }
+}
+
+//Oculta el mensaje de carga en la pantalla
+function ocultarmensajeCargaMapaDeCalorAlpes() {
+    if (mensajeCargaMapaDeCalorAlpes) {
+        setTimeout(function() {mensajeCargaMapaDeCalorAlpes.style.display = 'none'}, 4000);
+    }
+}
+
+// Carga los datos del CSV y crea los marcadores/capas de calor. Se ejecuta solo la primera vez
+
+const isMobileDevice = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+};
+
+function cargarDatosMapaDeCalorAlpes() {
+    if (csvCargadoMapaDeCalorAlpes) {
+        return; // Detener si ya se cargó
+    }
+	
+	const message = "ℹ️ Cargar la capa 'Mapa de calor Alpes' puede fallar en muchos dispositivos móviles debido a que son casi 1 millón de puntos. \n\nSi necesitas verla en un móvil, con el navegador Firefox tendrás más posibilidades. Si no es posible, tendrás que usar un ordenador.\n\nEn cualquier caso, puedes pulsar Aceptar para probarlo, aunque tardará un rato.";
+	
+	let proceed = true;
+	
+	if (isMobileDevice()) {
+        proceed = confirm(message);
+    }
+	
+	if (proceed) {
+        mostrarMensajeCargaMapaDeCalorAlpes(); // Mostramos el mensaje de carga antes de la operación asíncrona
+
+		Papa.parse('mapadecaloralpes.csv', {
+
+			download: true,
+			header: true, // Usa la primera fila como nombres de columnas
+			//dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
+			skipEmptyLines: true,
+			delimiter: ';',
+			encoding: 'utf8',
+
+			complete: function(results) {
+				results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
+				
+					const lat = parseFloat(row.Latitud);
+					const lon = parseFloat(row.Longitud);
+					const fecha = row.Fecha || '';
+					const hora = row.Hora || '';
+					const distanciarecorrida = row.DistanciaRecorrida || '';
+					const urlvuelo = row.URLVuelo || '';
+					
+					const marker = L.marker([lat, lon], { icon: iconoDespegueIndividualAlpes, riseOnHover: true, title: 'Despegue individual registrado en XContest' });
+					
+					const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
+						<div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂<br>Despegue en XContest</b></div>
+						<div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
+						<div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(fecha)}</b></div>
+						<div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(hora)}</b></div>
+						<div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(distanciarecorrida)} km</b></div>
+						<div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(urlvuelo)}' target='_blank'>Vuelo en XContest</a></div>
+						</div>`;
+
+					marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }); //de momento no he creado esa clase
+					clustergroupMapaDeCalorAlpes.addLayer(marker);
+					// Añadir al array de puntos de calor
+					heatpointsMapaDeCalorAlpes.push([lat, lon, 1]); // intensidad = 1
+				});
+			  
+			  // Crear capa de calor
+				heatlayerMapaDeCalorAlpes = L.heatLayer(heatpointsMapaDeCalorAlpes, {
+					radius: 18, blur: 22, maxZoom: 19, minOpacity: 0.3,
+					gradient: { 0.2: 'yellow', 0.4: 'orange', 0.6: 'red', 1.0: 'darkred' }
+				});//.addTo(map); //No la mostramos inicialmente
+
+				//map.addLayer(clustergroupMapaDeCalorAlpes); //No la mostramos inicialmente
+				
+				// Marcar como cargado exitosamente
+				csvCargadoMapaDeCalorAlpes = true;
+				ocultarmensajeCargaMapaDeCalorAlpes(); // Ocultamos el mensaje si la carga fue exitosa
+				
+				// LLAMADA ADICIONAL: Ya que el usuario marcó el checkbox antes de que se completara la carga,
+				// debemos añadirlas al mapa una vez que estén listas.
+				const checkbox = document.getElementById('checkboxMapaDeCalorAlpes');
+				if (checkbox && checkbox.checked) {
+					 if (!map.hasLayer(clustergroupMapaDeCalorAlpes)) {
+						map.addLayer(clustergroupMapaDeCalorAlpes);
+					}
+					if (!map.hasLayer(heatlayerMapaDeCalorAlpes)) {
+						map.addLayer(heatlayerMapaDeCalorAlpes);
+					}
+				}
+
+			},
+
+			error: function(error) {
+				console.error('Error cargando CSV:', error.message || error);
+				alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
+				ocultarmensajeCargaMapaDeCalorAlpes(); // Ocultamos el mensaje si hubo un error en la carga
+				
+				// Si falla la carga, también desmarcamos
+                if (checkboxMapaDeCalorAlpes) {
+                    checkboxMapaDeCalorAlpes.checked = false;
+                }
+			}
+
+		});
+		
+		} else {
+        // La usuaria pulsó CANCELAR
+        if (checkboxMapaDeCalorAlpes) {
+            checkboxMapaDeCalorAlpes.checked = false;
+        }
+    }		
+}
+
+
+// 🔴 INICIO CAPA MAPA DE CALOR MARRUECOS
+//___________________________________________________________________________________
+
+const clustergroupMapaDeCalorMarruecos = L.markerClusterGroup({
+	chunkedLoading: true,      	// Divide la carga en bloques
+	chunkDelay: 100,            // Tiempo entre bloques (ms)
+	showCoverageOnHover: false, // false mejora rendimiento. Muestra el área que ocupan los puntos
+	maxClusterRadius: 80,       // Con menos de este radio en px entre los puntos, se agrupan. Menor = menos agrupación, mayor = más agrupados
+	spiderfyOnMaxZoom: true,    // Con zoom máximo se expanden todos. False mejora rendimiento
+	zoomToBoundsOnClick: false, // Por defecto es true
+	//disableClusteringAtZoom: 15, //A zoom mayor, los marcadores se muestran individualmente, aunque estén cerca. Desactivado porque si no, con 300.000 puntos se bloquea bastante el navegador
+	
+	//Redefinimos la función incorporada en el plugin Leaflet.markercluster llamada iconCreateFunction. Al crear un L.markerClusterGroup() el plugin la ejecuta automáticamente cada vez que genera un icono de clúster, pasándole como argumento el objeto cluster, que contiene todos los marcadores agrupados.
+	
+	iconCreateFunction: function (cluster) {
+		var count = cluster.getChildCount();
+		
+		const clusterTitle = `Grupo de ${count} despegues registrados en XContest`;
+
+		// Escala de color según número de marcadores
+		var max = 1000; 
+		var ratio = 1 - Math.min(count / max, 1); //ratio = 0 → rojo intenso, ratio = 1 → rojo claro
+
+		// Conversión hex a RGB
+		function hexToRGB(hex) {
+			return [
+				parseInt(hex.substr(1,2),16),
+				parseInt(hex.substr(3,2),16),
+				parseInt(hex.substr(5,2),16)
+			];
+		}
+
+		var darkRGB = hexToRGB("#a91311");   // rojo oscuro
+		var lightRGB = hexToRGB("#f7bd7e");  // rojo claro
+
+		// Interpolación lineal en RGB
+		var r = Math.round(darkRGB[0] + (lightRGB[0]-darkRGB[0])*ratio);
+		var g = Math.round(darkRGB[1] + (lightRGB[1]-darkRGB[1])*ratio);
+		var b = Math.round(darkRGB[2] + (lightRGB[2]-darkRGB[2])*ratio);
+
+		var color = `rgb(${r},${g},${b})`;
+
+		return new L.DivIcon({
+			html: `<div title="${clusterTitle}" style="background:${color}"><span>${count}</span></div>`,
+			className: 'estilobase-custom-cluster-mapadecalor',
+			iconSize: new L.Point(40, 40),
+			iconAnchor: L.point(20, 20) //Centra el icono en el punto
+		});
+	}
+		
+});
+
+//Popup al hacer click en un cluster: Coordenadas del centro del cluster		
+clustergroupMapaDeCalorMarruecos.on('clusterclick', function (e) {
+	// 1. Obtener los datos del clúster
+	const childCount = e.layer.getChildCount(); // Cuántos marcadores (despegues) hay en el clúster
+	const clusterLatLng = e.layer.getLatLng(); // Coordenadas del centro del clúster
+
+	const popupHtml = `<div style="line-height: 1.2;">
+
+			<div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${childCount} Despegues en XContest</b></div>
+			<div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}</b></div>
+			<div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/wind?${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},14' target='_blank'>Windy</a></div>
+			<div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
+			<div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${clusterLatLng.lat.toFixed(4)}N${clusterLatLng.lng.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+			<div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)}' target='_blank'>Google Maps</a></div>
+			<div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/OpenTopoMap&pois=${clusterLatLng.lng.toFixed(4)},${clusterLatLng.lat.toFixed(4)}' target='_blank'>Brouter</a></div>
+			<div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}' target='_blank'>Nakarte</a></div>
+			<div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${clusterLatLng.lng.toFixed(4)}%20${clusterLatLng.lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
+			</div>`
+
+	// 3. Enlazar el popup al clúster y abrirlo
+	// Esto crea un popup dinámicamente solo para este clic
+	e.layer.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 })
+	.openPopup();
+});	
+
+const heatpointsMapaDeCalorMarruecos = []; // array para puntos del heatmap //heatPointsWebGL
+
+let heatlayerMapaDeCalorMarruecos;
+
+// escape para html en popup/label. Esa función convierte caracteres especiales de HTML en sus entidades seguras, evitando que el texto insertado en el DOM se interprete como código HTML (previene inyección de HTML o XSS)
+function escapeHtml(str){
+if (!str && str !== 0) return '';
+return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+const iconoDespegueIndividualMarruecos = L.divIcon({
+className: 'custom-point-circle', // Una clase CSS para estilizar el círculo
+html: '<div style="background:#ff0000; border-radius:50%; width:10px; height:10px;"></div>', // El círculo dentro del div
+iconSize: [10, 10], // Tamaño del icono (igual al div de arriba)
+iconAnchor: [5, 5] // Centro del icono
+});
+
+// Flag para controlar la carga única del CSV
+let csvCargadoMapaDeCalorMarruecos = false; // Usamos un nombre específico para evitar conflictos.
+
+// Muestra el mensaje de carga en la pantalla
+function mostrarMensajeCargaMapaDeCalorMarruecos() {
+    if (mensajeCargaMapaDeCalorMarruecos) {
+        mensajeCargaMapaDeCalorMarruecos.style.display = 'block';
+    }
+}
+
+//Oculta el mensaje de carga en la pantalla
+function ocultarmensajeCargaMapaDeCalorMarruecos() {
+    if (mensajeCargaMapaDeCalorMarruecos) {
+        setTimeout(function() {mensajeCargaMapaDeCalorMarruecos.style.display = 'none'}, 2000);
+    }
+}
+
+// Carga los datos del CSV y crea los marcadores/capas de calor. Se ejecuta solo la primera vez
+function cargarDatosMapaDeCalorMarruecos() {
+    if (csvCargadoMapaDeCalorMarruecos) {
+        return; // Detener si ya se cargó
+    }
+
+    mostrarMensajeCargaMapaDeCalorMarruecos();	// Mostramos el mensaje de carga antes de la operación asíncrona
+
+	Papa.parse('mapadecalormarruecos.csv', {
+
+		download: true,
+		header: true, // Usa la primera fila como nombres de columnas
+		//dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
+		skipEmptyLines: true,
+		delimiter: ';',
+		encoding: 'utf8',
+
+		complete: function(results) {
+			results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
+			
+				const lat = parseFloat(row.Latitud);
+				const lon = parseFloat(row.Longitud);
+				const fecha = row.Fecha || '';
+				const hora = row.Hora || '';
+				const distanciarecorrida = row.DistanciaRecorrida || '';
+				const urlvuelo = row.URLVuelo || '';
+				
+				const marker = L.marker([lat, lon], { icon: iconoDespegueIndividualMarruecos, riseOnHover: true, title: 'Despegue individual registrado en XContest' });
+				
+				const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
+					<div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂<br>Despegue en XContest</b></div>
+					<div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
+					<div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(fecha)}</b></div>
+					<div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(hora)}</b></div>
+					<div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(distanciarecorrida)} km</b></div>
+					<div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(urlvuelo)}' target='_blank'>Vuelo en XContest</a></div>
+					</div>`;
+
+				marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }); //de momento no he creado esa clase
+				clustergroupMapaDeCalorMarruecos.addLayer(marker);
+				// Añadir al array de puntos de calor
+				heatpointsMapaDeCalorMarruecos.push([lat, lon, 1]); // intensidad = 1
+			});
+		  
+		  // Crear capa de calor
+			heatlayerMapaDeCalorMarruecos = L.heatLayer(heatpointsMapaDeCalorMarruecos, {
+				radius: 18, blur: 22, maxZoom: 19, minOpacity: 0.3,
+				gradient: { 0.2: 'yellow', 0.4: 'orange', 0.6: 'red', 1.0: 'darkred' }
+			});//.addTo(map); //No la mostramos inicialmente
+
+			//map.addLayer(clustergroupMapaDeCalorMarruecos); //No la mostramos inicialmente
+			
+			// Marcar como cargado exitosamente
+			csvCargadoMapaDeCalorMarruecos = true;
+            ocultarmensajeCargaMapaDeCalorMarruecos(); // Ocultamos el mensaje si la carga fue exitosa
+			
+			// LLAMADA ADICIONAL: Ya que el usuario marcó el checkbox antes de que se completara la carga,
+			// debemos añadirlas al mapa una vez que estén listas.
+			const checkbox = document.getElementById('checkboxMapaDeCalorMarruecos');
+			if (checkbox && checkbox.checked) {
+				 if (!map.hasLayer(clustergroupMapaDeCalorMarruecos)) {
+					map.addLayer(clustergroupMapaDeCalorMarruecos);
+				}
+				if (!map.hasLayer(heatlayerMapaDeCalorMarruecos)) {
+					map.addLayer(heatlayerMapaDeCalorMarruecos);
+				}
+			}
+
+		},
+
+		error: function(error) {
+		console.error('Error cargando CSV:', error.message || error);
+		alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
+		ocultarmensajeCargaMapaDeCalorMarruecos(); // Ocultamos el mensaje si hubo un error en la carga
+		}
+
+	});
+}
+
+// 🔴 INICIO CAPA NOTAS PERSONALES
+//___________________________________________________________________________________
+
+
+const clustergroupNotasPersonales = L.markerClusterGroup({
+	chunkedLoading: true,      	// Divide la carga en bloques
+	chunkDelay: 100,            // Tiempo entre bloques (ms)
+	showCoverageOnHover: false, // false mejora rendimiento. Muestra el área que ocupan los puntos
+	maxClusterRadius: 100,       // Con menos de este radio en px entre los puntos, se agrupan. Menor = menos agrupación, mayor = más agrupados
+	spiderfyOnMaxZoom: true,    // Con zoom máximo se expanden todos. False mejora rendimiento
+	zoomToBoundsOnClick: true, // Por defecto es true
+	disableClusteringAtZoom: 13, //A zoom >=, los marcadores se muestran individualmente, aunque estén cerca
+	
+	//Redefinimos la función incorporada en el plugin Leaflet.markercluster llamada iconCreateFunction. Al crear un L.markerClusterGroup() el plugin la ejecuta automáticamente cada vez que genera un icono de clúster, pasándole como argumento el objeto cluster, que contiene todos los marcadores agrupados.
+	iconCreateFunction: function (cluster) {
+		const count = cluster.getChildCount();
+		
+		const clusterTitle = `Grupo de ${count} notas sobre despegues y aterrizajes`;
+		
+		return L.divIcon({
+			html: `
+				<div title="${clusterTitle}" style="
+					position: relative;
+					background-color: white;
+					color: black;
+					border: 1.8px solid #007aff;
+					border-radius: 50%;
+					width: 35px;
+					height: 35px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: 1.5em;
+					box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
+				">
+					✏️
+				</div>`,
+			className: 'custom-cluster',
+			iconSize: L.point(40, 40)
+		});
+	}
+
+});
+
+const aterrizajesIcon = L.icon({
+	iconUrl: 'aterrizajes.png',
+	iconSize: [28, 28],
+	iconAnchor: [16, 16]
+});
+const despeguesIcon = L.icon({
+	iconUrl: 'despegues.png',
+	iconSize: [28, 28],
+	iconAnchor: [16, 16]
+});
+const despeguesainvestigarIcon = L.icon({
+	iconUrl: 'despegues-a-investigar.png',
+	iconSize: [28, 28],
+	iconAnchor: [16, 16]
+});
+const customIcon = L.divIcon({ className: 'circle-icon', html: '●', iconSize:[16,16] }); //Icono estándar si no hay "tipo" (Despegues/Aterrizajes/..)
+
+const markersNotasPersonales = []; 
+
+Papa.parse('personal.csv', {
+
+download: true,
+header: true, // Usa la primera fila como nombres de columnas
+//dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
+skipEmptyLines: true,
+delimiter: ';',
+encoding: 'utf8',
+
+complete: function(results) {
+  results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
+    
+	const lat = parseFloat(row.Latitud);
+	const lon = parseFloat(row.Longitud);
+	const tipo = row.Tipo || ''; 
+	const nombre = row.Nombre || '';
+	const notas = row.Notas || '';
+	
+	if (isNaN(lat) || isNaN(lon)) return; // Filtra filas con coordenadas no válidas
+
+	let icon;
+
+	if (tipo === "Aterrizajes") {
+	  icon = aterrizajesIcon;
+	} else if (tipo === "Despegues") {
+	  icon = despeguesIcon;
+	} else if (tipo === "Despegues a investigar") {
+	  icon = despeguesainvestigarIcon;
+	} else {
+	  icon = customIcon;
+	}
+
+	const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Notas sobre despegues y aterrizajes' });
+
+	const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
+		<div style="font-size: 1.3em; margin-bottom: 5px;"><b>✏️ ${escapeHtml(nombre)}</b></div>
+		<div style="margin-bottom: 5px;">Tipo: <b>${escapeHtml(tipo)}</b></div> 
+		<div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  		
+		<div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
+		<div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
+		<div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
+		<div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
+		<div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
+		<div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(nombre)} (${escapeHtml(tipo)})' target='_blank'>Nakarte</a></div>
+		<div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
+		<div style="margin-bottom: 5px;">Notas: <b>${escapeHtml(notas)}</b></div>  
+		</div>`;
+
+	marker.bindPopup(popupHtml, { className: 'popup-notaspersonales', maxWidth: 300 }); //por ahora no existe así que sale el popup estándar
+	markersNotasPersonales.push(marker); //inserta marker al grupo markersNotasPersonales
+	clustergroupNotasPersonales.addLayer(marker);
+  });
+
+  //map.addLayer(clustergroupNotasPersonales); //No la mostramos inicialmente
+},
+
+error: function(error) {
+console.error('Error cargando CSV:', error.message || error);
+alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
+}
+
+});
+
+
+// 🔴 INICIO CAPA DESPEGUES MUNDO
+//___________________________________________________________________________________
+
+
+const clustergroupDespeguesMundo = L.markerClusterGroup({
+	chunkedLoading: true,      	// Divide la carga en bloques
+	chunkDelay: 100,            // Tiempo entre bloques (ms)
+	showCoverageOnHover: false, // false mejora rendimiento. Muestra el área que ocupan los puntos
+	maxClusterRadius: 40,       // Con menos de este radio en px entre los puntos, se agrupan. Menor = menos agrupación, mayor = más agrupados
+	spiderfyOnMaxZoom: true,    // Con zoom máximo se expanden todos. False mejora rendimiento
+	spiderfyOnEveryClick: true,
+	zoomToBoundsOnClick: true, // Por defecto es true
+	disableClusteringAtZoom: 11, //A zoom >= 12, los marcadores se muestran individualmente, aunque estén cerca
+	
+	//Redefinimos la función incorporada en el plugin Leaflet.markercluster llamada iconCreateFunction. Al crear un L.markerClusterGroup() el plugin la ejecuta automáticamente cada vez que genera un icono de clúster, pasándole como argumento el objeto cluster, que contiene todos los marcadores agrupados.
+	iconCreateFunction: function (cluster) {
+		const count = cluster.getChildCount();
+		const clusterTitle = `Grupo de ${count} lugares de despegue`;
+		return L.divIcon({
+			html: `
+				<div title="${clusterTitle}" style="
+					position: relative;
+					background-color: white;
+					color: black;
+					border: 1.8px solid #007aff;
+					border-radius: 50%;
+					width: 35px;
+					height: 35px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-size: 1.5em;
+					box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
+				">
+					${count}
+				</div>`,
+			className: 'custom-cluster',
+			iconSize: L.point(40, 40)
+		});
+	}
+});	
+// escala de color por Actividad: 
+function actividadToColor(actividad) {
+	if (!actividad) return '#FFFFFF'; // blanco por defecto si no hay valor
+
+	if (actividad === 'verde') return 'green';
+	if (actividad === 'naranja') return 'orange';
+	if (actividad === 'amarillo') return 'yellow';
+	if (actividad === 'blanco') return 'white';
+
+	return '#FFFFFF'; // color blanco por defecto si no coincide
+}
+
+// crea icono compuesto (dot + etiqueta) usando L.divIcon
+function createIconDespeguesMundo(despegue, actividad, orientacionesMetadata) {
+    // 1. 🧭 Generar el círculo de orientación (NUEVO)
+    const orientacionHTML = createOrientationSVG(orientacionesMetadata);
+
+    // 2. Círculo de Actividad (Existente)
+    const color = actividadToColor(actividad);
+    const dot = `<span class="dot" style="background:${color}"></span>`;
+
+    // 3. Combinar todo en la etiqueta
+    const labelHTML = `<span class='label-large-despeguesmundo'>${orientacionHTML}${dot}${escapeHtml(despegue)}</span>`;
+
+    return L.divIcon({
+        html: labelHTML,
+        className: 'custom-div-icon',
+        iconAnchor: [0, 40] // ajusta según dimensiones reales
+    });
+}
+
+// escape para html en popup/label. Esa función convierte caracteres especiales de HTML en sus entidades seguras, evitando que el texto insertado en el DOM se interprete como código HTML (previene inyección de HTML o XSS)
+function escapeHtml(str){
+if (!str && str !== 0) return '';
+return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+const markersDespeguesMundo = []; 
+
+// Flag para controlar la carga única del CSV
+let csvCargadoDespeguesMundo = false; // Usamos un nombre específico para evitar conflictos.
+
+// Carga los datos del CSV y crea los marcadores. Se ejecuta solo la primera vez
+function cargarDatosDespeguesMundo() {
+    if (csvCargadoDespeguesMundo) {
+        return; // Detener si ya se cargó
+    }
+
+	Papa.parse('despeguesmundo.csv', {
+	download: true,
+	header: true, // Usa la primera fila como nombres de columnas
+	//dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
+	skipEmptyLines: true,
+	delimiter: ';',
+	encoding: 'utf8',
+	complete: function(results) {
+	  results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
+		
+		const lat = parseFloat(row.Latitud);
+		const lon = parseFloat(row.Longitud);
+		const region = row.Región || ''; //asigna el contenido de la columna “Nombre_clásico” si existe; si no existe, deja la variable como cadena vacía. || → operador lógico “o”: devuelve el primer valor existente y no vacío.
+		const provincia = row.Provincia || '';
+		const despegue = row.Despegue || '';
+		const SVGorientaciones = createOrientationSVG(row.Orientaciones);
+		const orientacion = row.Orientación || '';
+		const orientaciones = row.Orientaciones || '';
+		const actividad = row.Actividad || '';
+		const color = actividadToColor(row.Actividad);
+		const dot = `<span class="dot" style="background:${color}"></span>`;
+		const CIRCULOactividad = row.Actividad || '';
+		const kmmax = row.Km_máx || '';
+		const vuelos = row.Vuelos || '';
+		const ultimovuelo = row.Último_vuelo || '';
+		const info = row.Más_información || '';
+
+		const icon = createIconDespeguesMundo(despegue, actividad, orientaciones);
+		const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
+				
+		const popupHtml = `<div style="line-height: 1.2;">
+		
+				<div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
+				<div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">Orientación: ${SVGorientaciones} <b>${escapeHtml(orientacion)}</b></div>
+				<div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
+				<div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
+				<div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
+				
+				<div class="popup-toggle-header" 
+					 style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
+					 Más información: ▼
+				</div>
+				
+				<div class="popup-collapsible-content" style="display: none; overflow-wrap: break-word; ">
+
+					<div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
+					<div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="Nivel de uso del despegue según fecha del último vuelo registrado (referencia: nov-2025): Verde 0–6 meses, Naranja 6–12, Amarillo 12–24, Blanco >24 meses sin vuelos">Nivel de actividad: ${dot}</div>
+					<div style="margin-bottom: 5px;">Nº de vuelos en XContest: <b>${escapeHtml(vuelos)}</b></div>
+					<div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
+					<div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
+					<div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
+					<div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
+					<div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
+					
+				</div>
+				
+				</div>`;		
+
+		marker.bindPopup(popupHtml, { className: 'popup-despeguesmundo', maxWidth: 300 });
+		marker.metadata = { despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
+		markersDespeguesMundo.push(marker); //inserta marker al grupo markersDespegues
+		//clustergroupDespeguesMundo.addLayer(marker);
+	  });
+
+	  //map.addLayer(clustergroupDespeguesMundo); No la mostramos inicialmente
+	  
+		// Marcar como cargado exitosamente
+		csvCargadoDespeguesMundo = true;
+		
+		actualizarFiltrosMapa();
+		
+		// LLAMADA ADICIONAL: Ya que el usuario marcó el checkbox antes de que se completara la carga,
+		// debemos añadirlas al mapa una vez que estén listas.
+		const checkbox = document.getElementById('checkboxDespeguesMundo');
+		if (checkbox && checkbox.checked) {
+			 if (!map.hasLayer(clustergroupDespeguesMundo)) {
+				map.addLayer(clustergroupDespeguesMundo);
+			}
+		}
+	  
+	},
+
+	error: function(error) {
+	console.error('Error cargando CSV:', error.message || error);
+	alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
+	}
+
+	});
+	
+}	
+
+//___________________________________________________________________________________
+
+// 🔴 PANEL CAPAS Y FILTROS
+//___________________________________________________________________________________
+
+
+let isFijado = false; // Estado inicial
+let buttonFijar;
+let buttonCerrar;
+let iconoFijar;
+
+// =================================================================
+// CÓDIGO DOMContentLoaded
+// =================================================================
+document.addEventListener('DOMContentLoaded', function() {
+    //  1. Inicialización de variables locales 
+    var infoPanel = document.getElementById('infoPanel');
+    var buttonFijar = document.getElementById('buttonFijar');
+	var buttonCerrar = document.getElementById('buttonCerrar');
+    var iconoFijar = document.getElementById('iconoFijar');
+    var divOpciones = document.getElementById('divOpciones');
+    var labelMostrarOpciones = document.getElementById('labelMostrarOpciones'); 
+    
+    // Reasignación (opcional, pero asegura el scope)
+    buttonFijar = buttonFijar; 
+	buttonCerrar = buttonCerrar; 
+    iconoFijar = iconoFijar;
+    
+    //  2. Lógica de Inicialización y Listeners DOM/LEAFLET 
+    if (infoPanel && labelMostrarOpciones && buttonFijar && buttonCerrar && divOpciones && typeof L !== 'undefined' && typeof map !== 'undefined') {
+        
+        // --- 2.1 ESTADO INICIAL ---
+        infoPanel.style.display = 'block'; 
+		retraerOpciones();
+        //expandirOpciones(); // Inicialmente expandido
+        
+        // --- 2.2 LISTENERS DE CONTROLES ---
+        
+        // 📌 Listener del Botón FIJAR
+        L.DomEvent.on(buttonFijar, 'click', function (event) {
+            L.DomEvent.stopPropagation(event);
+            isFijado = !isFijado;
+            
+            if (isFijado) {
+                buttonFijar.classList.add('activo-fijado');
+                iconoFijar.textContent = '📍';
+                //infoPanel.removeEventListener('mouseenter', expandirOpciones);
+                expandirOpciones();
+            } else {
+                buttonFijar.classList.remove('activo-fijado');
+                iconoFijar.textContent = '📌';
+                retraerOpciones(); 
+            }
+        }); 
+		
+        // ❌ Listener del Botón CERRAR
+        L.DomEvent.on(buttonCerrar, 'click', function (event) {
+            L.DomEvent.stopPropagation(event);
+			
+			// 1. Restablecer el estado "Fijado"
+			if (isFijado) {
+				isFijado = false; // Desactiva el modo fijado
+				buttonFijar.classList.remove('activo-fijado');
+				iconoFijar.textContent = '📌';
+			}
+			
+			retraerOpciones();
+        }); 
+                
+        // --- 2.3 LISTENERS DEL MAPA ---
+        
+        // Tras mover el mapa: Retraer el panel
+        map.on('moveend', function() {
+            // Limpieza del campo de búsqueda de despegues
+            const input = document.querySelector('.leaflet-text-search-input');
+            const autocompleteList = document.querySelector('.autocomplete-list');
+        
+            if (input) {
+                input.value = '';
+            }
+            if (autocompleteList) {
+                autocompleteList.style.display = 'none';
+            }		
+            
+            // Retraer el panel de opciones al terminar de mover el mapa
+            retraerOpciones();
+        });
+        
+/*         // Tras hacer clic en el mapa, retraer el panel de opciones. Comentado porque bloqueaba parcialmente la expansión
+        map.on('click', function(e) {
+            retraerOpciones();
+        });
+ */
+    }
+});
+
+// Función auxiliar para manejar la expansión por clic
+function expandirAlClicar(event) {
+	const infoPanel = document.getElementById('infoPanel');
+    // Si el panel está retraído Y NO fijado, se expande
+    if (infoPanel.classList.contains('retraido') && !isFijado) {
+        L.DomEvent.stopPropagation(event);
+        expandirOpciones();
+    }
+}
+
+// Función para retraer infoPanel
+function retraerOpciones() {
+    const infoPanel = document.getElementById('infoPanel');
+    const divOpciones = document.getElementById('divOpciones');
+    const labelMostrarOpciones = document.getElementById('labelMostrarOpciones');
+
+	if (isFijado) {return;} // Si está fijado, no hacemos nada.
+	
+    if (!infoPanel || !divOpciones || !labelMostrarOpciones) return;
+
+	divOpciones.classList.add('oculto');
+	infoPanel.classList.add('retraido');
+	//  Mostrar el texto "Opciones" 
+	labelMostrarOpciones.style.display = 'block';
+	//  Añadir listener de Clic/Toque 
+    L.DomEvent.on(infoPanel, 'click', expandirAlClicar);
+	//  Expandir en el PC al pasar el ratón 
+    //infoPanel.addEventListener('mouseenter', expandirOpciones); 
+}
+
+// Función para expandir infoPanel
+function expandirOpciones() {
+    const infoPanel = document.getElementById('infoPanel');
+    const divOpciones = document.getElementById('divOpciones');
+    const labelMostrarOpciones = document.getElementById('labelMostrarOpciones');
+    
+    if (!infoPanel || !divOpciones || !labelMostrarOpciones) return;
+
+	divOpciones.classList.remove('oculto');
+	infoPanel.classList.remove('retraido');
+	labelMostrarOpciones.style.display = 'none';
+    
+    //  DESACTIVAR MOUSEENTER 
+	// infoPanel.removeEventListener('mouseenter', expandirOpciones);
+	//  DESACTIVAR CLICK/TOQUE 
+    L.DomEvent.off(infoPanel, 'click', expandirAlClicar);	
+}
+
+// Listener para gestionar la configuración inicial
+document.addEventListener("DOMContentLoaded", function() {
+    
+    // 1. Filtro Real (Vuelos)
+    const sliderVuelosFiltro = document.getElementById('sliderVuelos');
+    const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
+    
+    // 2. Filtro Real (Último Vuelo)
+    const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
+    const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
+
+    // 1. Filtro Real (KmMedia)
+    const sliderKmMediaFiltro = document.getElementById('sliderKmMedia');
+    const textoKmMediaFiltro = document.getElementById('valorKmMediaTexto');
+    
+    // 3. Configuración (Vuelos)
+    const sliderVuelosConfig = document.getElementById('sliderValorInicialFiltroNumeroMinimoVuelos');
+    // 🚩 IMPORTANTE: ID en el HTML para el texto del config de Vuelos
+    const textoVuelosConfig = document.getElementById('valorConfigFiltroNumeroMinimoVuelosTexto'); 
+    
+    // 4. Configuración (Último Vuelo)
+    const sliderUltimoVueloConfig = document.getElementById('sliderValorInicialFiltroUltimoVuelo');
+    // 🚩 IMPORTANTE: ID en el HTML para el texto del config de Último Vuelo
+    const textoUltimoVueloConfig = document.getElementById('valorConfigFiltroUltimoVueloTexto'); 
+    
+    // --- CLAVES DE ALMACENAMIENTO ---
+    const STORAGE_KEY_VUELOS = 'miMapa_minimoVuelos_preferido';
+    const STORAGE_KEY_ULTIMO_VUELO = 'miMapa_minimoUltimoVuelo_preferido';
+
+    // Función auxiliar para obtener el valor real según la escala
+    function obtenerValorReal(indice, escala) {
+        const indiceNumerico = parseInt(indice, 10);
+        // Si el índice no existe o la escala no está definida, devuelve el valor más bajo (0 o 'Todos')
+        return escala && escala[indiceNumerico] !== undefined ? escala[indiceNumerico] : escala[0];
+    }
+
+    // --- FUNCIÓN DE INICIALIZACIÓN (Carga) ---
+    function iniciarConfiguracion() {
+        
+        // 1. VUELOS: Lectura y Conversión
+        const indiceVuelosGuardado = localStorage.getItem(STORAGE_KEY_VUELOS) || '0';
+        const valorRealVuelos = obtenerValorReal(indiceVuelosGuardado, ESCALA_VUELOS);
+        
+        // 2. ÚLTIMO VUELO: Lectura y Conversión
+        const indiceUltimoVueloGuardado = localStorage.getItem(STORAGE_KEY_ULTIMO_VUELO) || '0';
+        const valorRealUltimoVuelo = obtenerValorReal(indiceUltimoVueloGuardado, ESCALA_ULTIMO_VUELO); 
+
+        // B. Aplicar a Sliders de CONFIGURACIÓN (Visual)
+        if(sliderVuelosConfig && textoVuelosConfig) {
+            sliderVuelosConfig.value = indiceVuelosGuardado;
+            textoVuelosConfig.innerText = valorRealVuelos;
+        }
+        if(sliderUltimoVueloConfig && textoUltimoVueloConfig) {
+            sliderUltimoVueloConfig.value = indiceUltimoVueloGuardado;
+            textoUltimoVueloConfig.innerText = valorRealUltimoVuelo;
+        }
+
+        // C. Aplicar a Sliders de FILTRO REAL (Funcional)
+        if(sliderVuelosFiltro && textoVuelosFiltro) {
+            sliderVuelosFiltro.value = indiceVuelosGuardado;
+            textoVuelosFiltro.innerText = valorRealVuelos;
+        }
+        if(sliderUltimoVueloFiltro && textoUltimoVueloFiltro) {
+            sliderUltimoVueloFiltro.value = indiceUltimoVueloGuardado;
+            textoUltimoVueloFiltro.innerText = valorRealUltimoVuelo;
+        }
+
+        // D. Disparar el filtro del mapa.
+        // Se asume que actualizarFiltrosMapa() está disponible globalmente.
+        actualizarFiltrosMapa(); 
+    }
+
+    // --- LISTENERS PARA GUARDAR LA CONFIGURACIÓN ---
+    
+    // Listener Vuelos (Guarda y actualiza el texto de configuración)
+    if (sliderVuelosConfig) {
+        sliderVuelosConfig.addEventListener('input', function() {
+            const indiceActual = this.value;
+            const valorReal = obtenerValorReal(indiceActual, ESCALA_VUELOS);
+            
+            if(textoVuelosConfig) textoVuelosConfig.innerText = valorReal;
+            localStorage.setItem(STORAGE_KEY_VUELOS, indiceActual);
+            actualizarEstadoVisualFiltros();
+        });
+    }
+    
+    // Listener Último Vuelo (Guarda y actualiza el texto de configuración)
+    if (sliderUltimoVueloConfig) {
+        sliderUltimoVueloConfig.addEventListener('input', function() {
+            const indiceActual = this.value;
+            const valorReal = obtenerValorReal(indiceActual, ESCALA_ULTIMO_VUELO);
+            
+            if(textoUltimoVueloConfig) textoUltimoVueloConfig.innerText = valorReal;
+            localStorage.setItem(STORAGE_KEY_ULTIMO_VUELO, indiceActual);
+            actualizarEstadoVisualFiltros();
+        });
+    }
+
+    // Ejecutar la carga inicial
+    iniciarConfiguracion();
+    actualizarEstadoVisualFiltros();
+});
+ 
+// 🔴 CAPAS:
+//___________________________________________________________________________________
+
+ 
+//Checkbox para ocultar/mostrar Despegues
+document.getElementById('checkboxDespegues').addEventListener('change', function () {
+	if (this.checked) {
+		map.addLayer(clustergroupDespegues);
+	} else {
+		map.removeLayer(clustergroupDespegues);
+	}	
+	//retraerOpciones()
+	actualizarFiltrosMapa()
+});
+
+//Checkbox para ocultar/mostrar Mapa de calor Península Ibérica
+document.addEventListener('DOMContentLoaded', () => {
+    const checkbox = document.getElementById('checkboxMapaDeCalorPeninsulaIberica');
+
+    if (checkbox) {
+        checkbox.addEventListener('change', function () {
+            if (this.checked) {
+                // 1. Si los datos no están cargados, iniciar la carga (la carga los añade al mapa al finalizar)
+                if (!csvCargadoMapaDeCalorPeninsulaIberica) {
+                    cargarDatosMapaDeCalorPeninsulaIberica();
+                } 
+                // 2. Si ya están cargados, simplemente añadir las capas (instantáneamente)
+                else {
+                    if (!map.hasLayer(clustergroupMapaDeCalorPeninsulaIberica)) {
+                        map.addLayer(clustergroupMapaDeCalorPeninsulaIberica);
+                    }
+                    if (heatlayerMapaDeCalorPeninsulaIberica && !map.hasLayer(heatlayerMapaDeCalorPeninsulaIberica)) {
+                        map.addLayer(heatlayerMapaDeCalorPeninsulaIberica);
+                    }
+                }
+            } else {
+                // Ocultar las capas al desmarcar (solo si existen)
+                if (map.hasLayer(clustergroupMapaDeCalorPeninsulaIberica)) {
+                    map.removeLayer(clustergroupMapaDeCalorPeninsulaIberica);
+                }
+                if (heatlayerMapaDeCalorPeninsulaIberica && map.hasLayer(heatlayerMapaDeCalorPeninsulaIberica)) {
+                    map.removeLayer(heatlayerMapaDeCalorPeninsulaIberica);
+                }
+            }
+            //retraerOpciones() 
+        });
+    } 
+});
+
+//Checkbox para ocultar/mostrar Mapa de calor Alpes
+document.addEventListener('DOMContentLoaded', () => {
+    const checkbox = document.getElementById('checkboxMapaDeCalorAlpes');
+
+    if (checkbox) {
+        checkbox.addEventListener('change', function () {
+            if (this.checked) {
+                // 1. Si los datos no están cargados, iniciar la carga (la carga los añade al mapa al finalizar)
+                if (!csvCargadoMapaDeCalorAlpes) {
+                    cargarDatosMapaDeCalorAlpes();
+                } 
+                // 2. Si ya están cargados, simplemente añadir las capas (instantáneamente)
+                else {
+                    if (!map.hasLayer(clustergroupMapaDeCalorAlpes)) {
+                        map.addLayer(clustergroupMapaDeCalorAlpes);
+                    }
+                    if (heatlayerMapaDeCalorAlpes && !map.hasLayer(heatlayerMapaDeCalorAlpes)) {
+                        map.addLayer(heatlayerMapaDeCalorAlpes);
+                    }
+                }
+            } else {
+                // Ocultar las capas al desmarcar (solo si existen)
+                if (map.hasLayer(clustergroupMapaDeCalorAlpes)) {
+                    map.removeLayer(clustergroupMapaDeCalorAlpes);
+                }
+                if (heatlayerMapaDeCalorAlpes && map.hasLayer(heatlayerMapaDeCalorAlpes)) {
+                    map.removeLayer(heatlayerMapaDeCalorAlpes);
+                }
+            }
+            //retraerOpciones() // Tu llamada opcional
+        });
+    } 
+});
+
+//Checkbox para ocultar/mostrar Mapa de calor Marruecos
+document.addEventListener('DOMContentLoaded', () => {
+    const checkbox = document.getElementById('checkboxMapaDeCalorMarruecos');
+
+    if (checkbox) {
+        checkbox.addEventListener('change', function () {
+            if (this.checked) {
+                // 1. Si los datos no están cargados, iniciar la carga (la carga los añade al mapa al finalizar)
+                if (!csvCargadoMapaDeCalorMarruecos) {
+                    cargarDatosMapaDeCalorMarruecos();
+                } 
+                // 2. Si ya están cargados, simplemente añadir las capas (instantáneamente)
+                else {
+                    if (!map.hasLayer(clustergroupMapaDeCalorMarruecos)) {
+                        map.addLayer(clustergroupMapaDeCalorMarruecos);
+                    }
+                    if (heatlayerMapaDeCalorMarruecos && !map.hasLayer(heatlayerMapaDeCalorMarruecos)) {
+                        map.addLayer(heatlayerMapaDeCalorMarruecos);
+                    }
+                }
+            } else {
+                // Ocultar las capas al desmarcar (solo si existen)
+                if (map.hasLayer(clustergroupMapaDeCalorMarruecos)) {
+                    map.removeLayer(clustergroupMapaDeCalorMarruecos);
+                }
+                if (heatlayerMapaDeCalorMarruecos && map.hasLayer(heatlayerMapaDeCalorMarruecos)) {
+                    map.removeLayer(heatlayerMapaDeCalorMarruecos);
+                }
+            }
+            //retraerOpciones() // Tu llamada opcional
+        });
+    } 
+});
+
+//Checkbox para ocultar/mostrar Notas personales
+document.getElementById('checkboxNotasPersonales').addEventListener('change', function () {
+	if (this.checked) {
+		map.addLayer(clustergroupNotasPersonales);
+	} else {
+		map.removeLayer(clustergroupNotasPersonales);
+	}
+	//retraerOpciones()
+});
+
+//Checkbox para ocultar/mostrar Mapa Despegues Mundo
+document.addEventListener('DOMContentLoaded', () => {
+    const checkbox = document.getElementById('checkboxDespeguesMundo');
+
+    if (checkbox) {
+        checkbox.addEventListener('change', function () {
+            
+            if (this.checked) {
+                // 1. Si no están cargados, cargamos y luego filtramos
+                if (!csvCargadoDespeguesMundo) {
+                    cargarDatosDespeguesMundo(); 
+                    // NOTA: Asegúrate de que cargarDatosDespeguesMundo() llame a 
+                    // la función de filtrar al terminar el parseo (en el 'complete' de PapaParse).
+                } 
+                // 2. Si ya están cargados, simplemente relanzamos el filtro
+                else {
+                    actualizarFiltrosMapa(); 
+                }
+            } else {
+                actualizarFiltrosMapa();
+            }
+        });
+    } 
+});
+
+// 🔴 FILTRO ORIENTACIONES Y Nº DE VUELOS:
+//___________________________________________________________________________________
+
+const ESCALA_VUELOS = [
+    // Parte detallada (pasos de 10 hasta 100)
+    0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 
+
+    // Transición (pasos de 100 hasta 1000)
+    200, 300, 400, 500, 600, 700, 800, 900, 1000, 
+
+    // Parte rápida (pasos de 1000 hasta 10000)
+    2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000
+];
+
+const ESCALA_ULTIMO_VUELO = [
+    'Todos', // Índice 0: No filtra
+    2006, 2007, 2008, 2009, 2010, 
+    2011, 2012, 2013, 2014, 2015, 
+    2016, 2017, 2018, 2019, 2020, 
+    2021, 2022, 2023, 2024, 2025
+];
+
+const ESCALA_KMMEDIA = [
+    // 1. Zona de Precisión (0 a 20) - 14 pasos
+    // Aquí está tu promedio (12) y la gran mayoría de tus datos.
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20,
+
+    // 2. Zona Media (25 a 100) - 9 pasos
+    // Cubre la "cola" de la distribución hasta los valores altos frecuentes.
+    25, 30, 40, 50, 60, 70, 80, 90, 100,
+
+    // 3. Zona de Valores Extremos (120 a 250) - 5 pasos
+    // Cubre tus "Top 15" (máximo 200) con un pequeño margen extra.
+    120, 150, 180, 200, 250
+];
+
+
+function obtenerMinAnioUltimoVuelo() {
+    const slider = document.getElementById('sliderUltimoVuelo');
+    if (!slider) return { minAnio: null, esTodos: true };
+
+    const indice = parseInt(slider.value, 10);
+    const valor = ESCALA_ULTIMO_VUELO[indice];
+
+    // Si el valor es 'Todos' (índice 0), retornamos un estado de "no filtro"
+    if (valor === 'Todos') {
+        document.getElementById('valorUltimoVueloTexto').textContent = 'Todos';
+        return { minAnio: null, esTodos: true };
+    }
+
+    // Si es un año, lo usamos como filtro.
+    document.getElementById('valorUltimoVueloTexto').textContent = valor;
+    return { minAnio: valor, esTodos: false };
+}
+
+function actualizarEstadoMaestro() { 
+    // 1. Encontrar todos los checkboxes de orientación (los 8)
+    const orientaciones = document.querySelectorAll('.filtro-orientacion-checkbox:not(#filtroMaestroOrientacion)');
+    
+    // 2. Encontrar el checkbox maestro y su elemento contenedor (<label>)
+    const maestroCheckbox = document.getElementById('filtroMaestroOrientacion');
+    // Usamos .parentNode para encontrar la etiqueta <label> que queremos mostrar/ocultar
+    const maestroContenedor = maestroCheckbox.parentNode; 
+    
+    // 3. Comprobar si al menos uno está marcado
+    const algunoActivo = Array.from(orientaciones).some(checkbox => checkbox.checked);
+
+    // 4. Actualizar la visibilidad y el estado del checkbox maestro
+    if (algunoActivo) {
+        // Mostrar el botón maestro si hay filtros activos
+        maestroContenedor.style.visibility = 'visible'; 
+        // Marcar el checkbox (modo indicador)
+        maestroCheckbox.checked = true;
+    } else {
+        // Ocultar el botón maestro si no hay filtros activos
+        maestroContenedor.style.visibility = 'hidden'; 
+        // Desmarcar el checkbox (aunque no se vea)
+        maestroCheckbox.checked = false;
+    }
+}
+
+function limpiarFiltrosOrientacion() {
+    const maestroCheckbox = document.getElementById('filtroMaestroOrientacion');
+    
+    // Si el filtro maestro se acaba de marcar (es decir, el usuario hizo clic cuando estaba inactivo),
+    // no hacemos nada, solo actualizamos el mapa. 
+    // Si estaba inactivo, se marcará automáticamente con actualizarEstadoMaestro()
+    
+    // Solo actuamos si el usuario lo desmarca (limpia) o si ya estaba marcado y el usuario quiere limpiar.
+    if (maestroCheckbox.checked === false) { 
+        // 1. Encontrar todos los checkboxes de orientación (los 8)
+        const orientaciones = document.querySelectorAll('.filtro-orientacion-checkbox:not(#filtroMaestroOrientacion)');
+        
+        // 2. Desmarcar todos los filtros
+        orientaciones.forEach(checkbox => {
+            checkbox.checked = false;
+        });
+
+        actualizarEstadoMaestro();
+		actualizarFiltrosMapa();
+		actualizarEstadoVisualFiltros();
+    }
+}
+
+function adjuntarListenersFiltros() {
+    // 1. Escucha los 8 botones de orientación (Igual que antes)
+    const botonesOrientacion = document.querySelectorAll('.filtro-orientacion-checkbox:not(#filtroMaestroOrientacion)');
+    botonesOrientacion.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            actualizarEstadoMaestro(); 
+            actualizarFiltrosMapa();
+			actualizarEstadoVisualFiltros();			
+        });
+    });
+
+    // 2. Escucha el botón central (Igual que antes)
+    const maestroBtn = document.getElementById('filtroMaestroOrientacion');
+    if(maestroBtn) { // Pequeña seguridad por si acaso
+        maestroBtn.addEventListener('change', function() {
+            limpiarFiltrosOrientacion(); 
+            // Nota: limpiarFiltrosOrientacion ya llama a actualizarFiltrosMapa() al final
+        });
+    }
+
+    // 3. NUEVO: Escucha el Slider de Vuelos
+    const sliderVuelos = document.getElementById('sliderVuelos');
+    if(sliderVuelos) {
+        // Usamos 'input' para que filtre en tiempo real mientras arrastras
+        // Si va muy lento el mapa, cámbialo por 'change' (filtra al soltar el ratón)
+        sliderVuelos.addEventListener('input', function() {
+            actualizarFiltrosMapa();
+			actualizarEstadoVisualFiltros();
+        });
+    }
+	
+	// 4. NUEVO: Escucha el Slider de Último Vuelo
+    const sliderUltimoVuelo = document.getElementById('sliderUltimoVuelo');
+    if(sliderUltimoVuelo) {
+        sliderUltimoVuelo.addEventListener('input', function() {
+            // Se actualiza el texto y se llama al filtro principal
+            obtenerMinAnioUltimoVuelo(); 
+            actualizarFiltrosMapa();
+			actualizarEstadoVisualFiltros();
+        });
+    }	
+	
+    // 5. NUEVO: Escucha el Slider de sliderKmMedia
+    const sliderKmMedia = document.getElementById('sliderKmMedia');
+    if(sliderKmMedia) {
+        // Usamos 'input' para que filtre en tiempo real mientras arrastras
+        // Si va muy lento el mapa, cámbialo por 'change' (filtra al soltar el ratón)
+        sliderKmMedia.addEventListener('input', function() {
+            actualizarFiltrosMapa();
+			actualizarEstadoVisualFiltros();
+        });
+    }
+	
+}
+
+adjuntarListenersFiltros();
+actualizarEstadoVisualFiltros();
+
+function obtenerOrientacionesSeleccionadas() {
+    // 1. Encontrar todos los checkboxes de orientación (los 8)
+    const checkboxes = document.querySelectorAll('.filtro-orientacion-checkbox:not(#filtroMaestroOrientacion)');
+    const orientacionesActivas = [];
+
+    // 2. Iterar sobre ellos y recoger los valores de los marcados
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            // Recogemos el valor (N, S, NE, etc.)
+            orientacionesActivas.push(checkbox.value); 
+        }
+    });
+
+    return orientacionesActivas; // Retorna un array, e.g., ['N', 'NE']
+}
+
+// Este mapa define el RANGO de 16 orientaciones que cubre cada una de las 8 selecciones del usuario.
+// Usamos el formato '_ORIENTACION' para coincidir con la metadata.
+const MAPA_RANGO_ORIENTACION = {
+    'N': ['_N', '_NNE', '_NNO'],
+    'NE': ['_NE', '_NNE', '_ENE'],
+    'E': ['_E', '_ENE', '_ESE'],
+    'SE': ['_SE', '_ESE', '_SSE'],
+    'S': ['_S', '_SSE', '_SSO'],
+    'SO': ['_SO', '_SSO', '_OSO'],
+    'O': ['_O', '_OSO', '_ONO'],
+    'NO': ['_NO', '_ONO', '_NNO']
+};
+
+
+/**
+ * Mapa de conversión: 
+ * Asigna las 16 orientaciones de la metadata (ej. 'NNE') 
+ * a los 8 segmentos del icono (ej. 'N' y 'NE').
+ */
+const METADATA_TO_ICON_MAP = {
+    'N':   ['N'],
+    'NNE': ['N', 'NE'], // NNE está entre N y NE
+    'NE':  ['NE'],
+    'ENE': ['NE', 'E'],
+    'E':   ['E'],
+    'ESE': ['E', 'SE'],
+    'SE':  ['SE'],
+    'SSE': ['SE', 'S'],
+    'S':   ['S'],
+    'SSO': ['S', 'SO'],
+    'SO':  ['SO'],
+    'OSO': ['SO', 'O'],
+    'O':   ['O'],
+    'ONO': ['O', 'NO'],
+    'NO':  ['NO'],
+    'NNO': ['N', 'NO']  // NNO está entre N y NO
+};
+
+
+/**
+ * Crea un icono SVG de rosa de los vientos con 16 segmentos visuales.
+ * Cada segmento ocupa 45 grados y está centrado en su ángulo de orientación.
+ * @param {string} orientacionesStr - El string de metadata (ej: "_N_NNE_S").
+ */
+function createOrientationSVG(orientacionesStr) {
+    // 1. Definir los 16 segmentos en orden
+    const ALL_SEGMENTS = [
+        'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+        'S', 'SSO', 'SO', 'OSO', 'O', 'ONO', 'NO', 'NNO'
+    ];
+    
+    // 2. Colores y dimensiones
+    const size = 20;
+    const radius = 7.5; // Radio (7.5 + 0.5 de borde = 8)
+    const strokeWidth = 1; // Borde de 1px
+    const colorBorde = "#666"; // Color del contorno
+    const colorFondoInactivo = "white"; // Fondo general blanco
+    const colorSegmentoActivo = "black"; // Quesitos activos negros
+
+    // 3. Parsear metadata
+    // Convierte "_N_NNE_S" en un Set: {'N', 'NNE', 'S'}
+    const activeOrientations = new Set(
+        (orientacionesStr || '').split('_').filter(o => o)
+    );
+
+    // 4. Iniciar el SVG (16x16, viewBox centrado)
+    let svg = `<svg width="${size}" height="${size}" viewBox="-8 -8 16 16" style="vertical-align: middle; margin-right: 4px; transform: rotate(-90deg);">`;
+    
+    // 5. Añadir el círculo de fondo blanco con contorno
+    svg += `<circle cx="0" cy="0" r="${radius}" fill="${colorFondoInactivo}" stroke="${colorBorde}" stroke-width="${strokeWidth}" />`;
+
+    // 6. Generar los 16 segmentos (polígonos de 45°)
+    
+    // El ángulo de separación entre los ejes de las 16 orientaciones es de 22.5°
+    const AXIS_ANGLE = 360 / ALL_SEGMENTS.length; // 22.5°
+    
+    // El tamaño del quesito que quieres es 45°
+    const SEGMENT_WIDTH = 45; 
+    
+    // El offset para centrar el quesito (45/2 = 22.5°)
+    const HALF_SEGMENT = SEGMENT_WIDTH / 2; // 22.5°
+
+    const toRadians = (angle) => angle * Math.PI / 180;
+
+    ALL_SEGMENTS.forEach((segmentName, index) => {
+        
+        if (activeOrientations.has(segmentName)) {
+            // Ángulo central de la orientación (0, 22.5, 45, 67.5, ...)
+            const centerAngle = index * AXIS_ANGLE;
+            
+            // Ángulo de inicio y fin (45° centrados en el eje)
+            const startAngle = centerAngle - HALF_SEGMENT; // N (índice 0) va de -22.5° a 22.5°
+            const endAngle = centerAngle + HALF_SEGMENT;
+            
+            // Calcular puntos del polígono
+            const x1 = radius * Math.cos(toRadians(startAngle));
+            const y1 = radius * Math.sin(toRadians(startAngle));
+            const x2 = radius * Math.cos(toRadians(endAngle));
+            const y2 = radius * Math.sin(toRadians(endAngle));
+            
+            // Dibuja el quesito (Centro, Punto1, Punto2)
+            svg += `<polygon points="0,0 ${x1},${y1} ${x2},${y2}" fill="${colorSegmentoActivo}" />`;
+        }
+    });
+
+    svg += `</svg>`;
+    return svg;
+}
+
+//___________________________________________________________________________________
+// FIN filtro orientaciones
+//___________________________________________________________________________________
+
+</script>
+</body>
+</html>

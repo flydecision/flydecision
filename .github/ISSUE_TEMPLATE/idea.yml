@@ -1,0 +1,10 @@
+name: Idea / proposal
+description: Propose an improvement or idea
+title: "[IDEA] "
+labels: ["idea"]
+
+body:
+  - type: textarea
+    attributes:
+      label: Idea
+      description: Explain your idea

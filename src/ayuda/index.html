@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ayuda Fly Decision | Análisis meteorológico automático del pronóstico para despegues de parapente.</title>
+<meta name="description" content="Ayuda para la web y app Fly Decision. Análisis automático del pronóstico y orientaciones para despegues de parapente. Tabla con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente.">
+<meta property="og:description" content="Análisis automático del pronóstico y orientaciones para despegues de parapente. Tabla con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente.">
+<meta property="og:image" content="https://flydecision.com/icons/logo_192px.png">
+<meta property="og:type" content="website">
+
+<link rel="canonical" href="https://flydecision.com/ayuda" />
+<link rel="icon" type="image/png" sizes="512x512" href="https://flydecision.com/icons/logo_512px.png">
+<link rel="shortcut icon" href="https://flydecision.com/icons/logo_192px.png">
+<link rel="apple-touch-icon" href="https://flydecision.com/icons/logo_192px.png">
+<meta name="theme-color" content="#d9ebf9"> <!-- Antes content="#cfe5fa" (#0078d4 azul oscuro para otros temas; #0086f4 es el azul fuerte fondo logo) -->
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+
+<style>
+
+html, body {
+    /* Pila de fuentes del sistema moderna. Android usará Roboto y iOS usará San Francisco */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    
+    /* Mejora la renderización del texto */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+:root {
+    --accent: #3498db;
+    --bg: #1a1a1a;
+    --card: #2d2d2d;
+    --text: #e0e0e0;
+    --success: #2ecc71;
+    --warning: #f1c40f;
+    --danger: #e74c3c;
+}
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    /* background: #fff; */
+    /* padding: 22px; */
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin: 0;       /* ELIMINA el margen por defecto (el culpable principal) */
+    padding: 0;
+    font-size: 1.2rem; 
+}
+
+.faq-answer li {
+        margin-bottom: 15px; /* Aquí controlas la separación */
+}
+
+.center {
+    display: flex;
+    align-items: center;      /* centrado vertical */
+    justify-content: center;  /* centrado horizontal */
+    gap: 16px;                 /* separación imagen-texto */
+    max-height: 50px;
+}
+/* 1. Quitamos la "grasa" extra del H2 */
+.center h2 {
+    margin: 0;       /* ELIMINA el margen por defecto (el culpable principal) */
+    padding: 0;
+    line-height: 1;  /* Ajusta la altura de la caja al tamaño real de la letra */
+    
+    /* Opcional: Ajusta el tamaño si es muy grande */
+    font-size: 1.2rem; 
+}
+
+/* 2. Ajustamos el enlace que envuelve la imagen */
+.center a {
+    display: flex;   /* Elimina el espacio fantasma debajo de la imagen */
+    line-height: 0;  /* Asegura que el enlace mida exactamente lo que la imagen */
+}
+
+/* 1. El padre que centra todo el bloque y apila H1 y H3 */
+.header-seccion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;    /* Centra horizontalmente los bloques */
+    text-align: center;     /* Centra el texto del H3 */
+    gap: 10px;              /* Espacio entre el bloque del título y el H3 */
+    margin-bottom: 32px;
+}
+
+/* 2. El hijo que mantiene Logo + H1 en la misma línea */
+.titulo-fila h2 {
+    display: flex;
+    align-items: center;    /* Centra verticalmente logo y texto */
+    justify-content: center; /* Centra horizontalmente el conjunto */
+    margin: 0;       /* Elimina los márgenes por defecto del navegador */
+    padding: 0;      /* Por si acaso */
+    line-height: 1;  /* Hace que la caja mida casi lo mismo que la letra */
+    font-size: 20px;
+}
+.header-seccion h1,  
+.header-seccion h3 {
+    margin: 0;
+}
+
+/* Opcional: ajustar el tamaño del H3 para que no compita con el H1 */
+.header-seccion h3 {
+    display: flex;
+    align-items: center;    /* Centra verticalmente logo y texto */
+    justify-content: center; /* Centra horizontalmente el conjunto */
+    gap: 12px;
+    font-weight: normal;
+    font-size: 1.1rem;
+    color: #4b5563; /* Un gris para dar jerarquía */
+}
+.section {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--accent);
+}
+
+.section h2 {
+    margin: 0px;
+}
+
+.status-box {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+.badge {
+    padding: 4px 10px; 
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+.bg-success { background: var(--success); color: #000; }
+.bg-warning { background: var(--warning); color: #000; }
+.bg-danger { background: var(--danger); color: #000; }
+
+.faq-item { margin-bottom: 15px; }
+.faq-item strong { color: var(--accent); display: block; margin-bottom: 5px; }
+
+footer {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: 29px;
+    padding-bottom: 0px;
+}
+code { background: #444; padding: 2px 5px; border-radius: 3px; }
+.imagen-centrada {
+    display: block;       /* Permite que margin: auto funcione */
+    margin-bottom: 27px;    
+    width: 80%;           /* Ocupa el 80% en pantallas pequeñas */
+    max-width: 800px;     /* No crece más allá de 800px en pantallas grandes */
+    height: auto;         /* Mantiene la proporción de la imagen */
+    
+    border-radius: 8px;   /* Opcional: bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Opcional: sombra suave */
+}
+a,
+a:link,
+a:visited,
+a:hover,
+a:active,
+a:focus {
+    color: #3498db !important;
+    text-decoration: underline !important;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+/* --- ESTILOS DEL ACORDEÓN DE FAQS --- */
+.faq-container {
+    max-width: 800px; /* Mismo ancho max que el banner */
+    margin: 0 auto 30px auto;
+    margin-top: 10px;
+}
+
+details.faq-card {
+    background-color: var(--card);
+    margin-bottom: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    border-left: 4px solid var(--accent); /* Borde azul a la izquierda como tus secciones */
+    transition: background-color 0.3s ease;
+    scroll-margin-top: 10px;
+}
+
+details.faq-card:hover {
+    background-color: #363636; /* Un poco más claro al pasar el ratón */
+}
+
+summary.faq-question {
+    padding: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none; /* Oculta el triángulo por defecto */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+/* Eliminar marcador por defecto en Safari/Chrome antiguos */
+summary.faq-question::-webkit-details-marker {
+    display: none;
+}
+
+/* Icono personalizado (+ / -) */
+summary.faq-question::after {
+    content: '+'; 
+    font-size: 2.2rem;
+    color: var(--accent);
+    font-weight: normal;
+    transition: transform 0.2s ease;
+    line-height: 1;
+}
+
+details[open] summary.faq-question::after {
+    transform: rotate(45deg); /* Rota el + para que parezca una X */
+    color: var(--danger); /* Cambia a rojo al estar abierto (opcional) */
+}
+
+details[open] summary.faq-question {
+    border-bottom: 1px solid #444; /* Línea separadora cuando se abre */
+    margin-bottom: 10px;
+}
+
+.faq-answer {
+    padding: 0 16px 16px 16px;
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Animación suave de aparición */
+details[open] .faq-answer {
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cuando una FAQ es seleccionada por URL */
+details.faq-card:target {
+    border: 2px solid var(--accent); /* Borde azul más grueso */
+    background-color: #2c3e50; /* Un fondo ligeramente distinto */
+    animation: highlight 1s ease;
+}
+
+@keyframes highlight {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* Botón de compartir en FAQs */
+.share-btn-container {
+    margin-top: 15px;
+    text-align: right; /* Alineado a la derecha */
+    border-top: 1px solid #444; /* Línea separadora sutil */
+    padding-top: 8px;
+}
+
+.share-btn {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.share-btn:hover {
+    background: rgba(52, 152, 219, 0.15); /* Azul muy suave */
+}
+
+.share-btn:active {
+    transform: scale(0.95);
+}
+
+/* Estado cuando se ha copiado el enlace */
+.share-btn.copied {
+    background: var(--success);
+    border-color: var(--success);
+    color: #000; /* Texto negro para contraste con verde */
+}
+
+/* Icono SVG */
+.share-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.badge-google-play {
+    display: inline-block;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    /* Evita que el enlace subraye la imagen en tu web (por tu CSS global) */
+    text-decoration: none !important; 
+}
+
+.badge-google-play:hover {
+    transform: scale(1.05); /* Pequeño zoom al pasar el ratón */
+    opacity: 0.95;
+}
+
+.badge-google-play:active {
+    transform: scale(0.95); /* Efecto de hundimiento al pulsar en móvil */
+}
+
+.splide__slide img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: block;
+    background-color: #333;
+}
+
+@media (max-width: 640px) {
+    /* 1. Hacemos que cada "caja" del carrusel sea más estrecha */
+    .splide__slide {
+        max-width: 45% !important; /* Prueba 40% si las quieres aún más juntas */
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* 2. La imagen ocupa casi todo el espacio de su caja, eliminando el aire */
+    .splide__slide img {
+        max-width: 95% !important; 
+        margin: 0 auto;
+    }
+    
+    /* 3. Ajuste fino del espacio del track */
+    .splide__track {
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+        min-height: 0px !important;
+    }
+}
+
+.splide__slide a {
+    display: block; /* Para que el enlace cubra toda la imagen */
+}
+/* Altura mínima para que el carrusel no colapse a 0px antes de cargar la primera foto */
+.splide__track {
+    min-height: 200px; 
+}
+
+</style>
+
+<script>
+    // 1. Script para abrir FAQ si viene por URL (el que ya tenías)
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.location.hash) {
+            const targetDetails = document.querySelector(window.location.hash);
+            if (targetDetails && targetDetails.tagName === 'DETAILS') {
+                targetDetails.open = true;
+                setTimeout(() => {
+                    targetDetails.scrollIntoView({ behavior: "smooth", block: "start" });
+                }, 100);
+            }
+        }
+    });
+
+    // 2. NUEVA FUNCIÓN: Copiar enlace
+    function copyFaqLink(btn) {
+        // Busca el elemento <details> más cercano hacia arriba
+        const details = btn.closest('details');
+        
+        if (!details || !details.id) {
+            alert("Error: Esta pregunta no tiene un ID asignado.");
+            return;
+        }
+
+        // Crea el enlace completo
+        const url = window.location.origin + window.location.pathname + '#' + details.id;
+
+        // Copia al portapapeles
+        navigator.clipboard.writeText(url).then(() => {
+            // Feedback visual (Cambia texto y color)
+            const originalText = btn.innerHTML;
+            btn.classList.add('copied');
+            btn.innerHTML = '¡Enlace Copiado!';
+
+            // Vuelve a la normalidad en 2 segundos
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.innerHTML = originalText;
+            }, 2000);
+        }).catch(err => {
+            console.error('Error al copiar: ', err);
+        });
+    }
+</script>
+
+</head>
+<body>
+
+<div class="container">
+
+<div class="center">
+    <a href="https://flydecision.com/" target="_blank" rel="noopener"><img src="https://flydecision.com/icons/logo_192px.png" width="40" height="40" alt="Logo"></a>
+    <p style="font-size: 22px; font-weight: bold;">Ayuda Fly Decision</p>
+</div>
+
+<h2 style="color:#fff; font-size:1rem; text-align:center;">
+    Pronóstico, análisis automático y mapas de despegues de parapente
+</h2><br>
+
+<a href="https://flydecision.com/" target="_blank" rel="noopener"><img src="https://flydecision.com/icons/banner.webp" style="display:block; width:100%; max-width:800px; height:auto; margin-bottom: 22px;" alt="Banner Fly Decision"></a>
+
+<!-- 🟩🟩🟩 Carrousel -->
+<section class="splide" aria-label="Galería de capturas Fly Decision" style="margin-bottom: 15px;">
+  <div class="splide__track">
+    <ul class="splide__list">
+      <li class="splide__slide"><a href="01.webp" target="_blank"><img src="01mini.webp" loading="lazy" alt="App 01"></a></li>
+      <li class="splide__slide"><a href="02.webp" target="_blank"><img src="02mini.webp" loading="lazy" alt="App 02"></a></li>
+      <li class="splide__slide"><a href="03.webp" target="_blank"><img src="03mini.webp" loading="lazy" alt="App 03"></a></li>
+      <li class="splide__slide"><a href="04.webp" target="_blank"><img src="04mini.webp" loading="lazy" alt="App 04"></a></li>
+      <li class="splide__slide"><a href="05.webp" target="_blank"><img src="05mini.webp" loading="lazy" alt="App 05"></a></li>
+      <li class="splide__slide"><a href="06.webp" target="_blank"><img src="06mini.webp" loading="lazy" alt="App 06"></a></li>
+      <li class="splide__slide"><a href="07.webp" target="_blank"><img src="07mini.webp" loading="lazy" alt="App 07"></a></li>
+      <li class="splide__slide"><a href="08.webp" target="_blank"><img src="08mini.webp" loading="lazy" alt="App 08"></a></li>
+      <li class="splide__slide"><a href="09.webp" target="_blank"><img src="09mini.webp" loading="lazy" alt="App 09"></a></li>
+      <li class="splide__slide"><a href="10.webp" target="_blank"><img src="10mini.webp" loading="lazy" alt="App 10"></a></li>
+      <li class="splide__slide"><a href="11.webp" target="_blank"><img src="11mini.webp" loading="lazy" alt="App 11"></a></li>
+      <li class="splide__slide"><a href="12.webp" target="_blank"><img src="12mini.webp" loading="lazy" alt="App 12"></a></li>
+      <li class="splide__slide"><a href="13.webp" target="_blank"><img src="13mini.webp" loading="lazy" alt="App 13"></a></li>
+      <li class="splide__slide"><a href="14.webp" target="_blank"><img src="14mini.webp" loading="lazy" alt="App 14"></a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 🟩🟩🟩 Google Play -->
+<div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
+    <a href="https://play.google.com/store/apps/details?id=com.flydecision" target="_blank" rel="noopener" class="badge-google-play">
+        <img alt="Disponible en Google Play" src="https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png" width="180">
+    </a>
+</div>
+
+<!-- 🟥🟥🟥 INICIO SECCIÓN FAQs ACORDEÓN -->
+<div class="faq-container">
+    <!-- <p style="font-size: 22px; font-weight: bold; text-align:center; margin-top: 0px; margin-bottom: 20px;">Preguntas Frecuentes</p> -->
+
+    <details class="faq-card" id="utilidad">
+        <summary class="faq-question">🤔 ¿Para qué sirve?</summary>
+        <div class="faq-answer">
+
+            <p><b>Para ayudarte a decidir dónde ir a volar.</b></p>
+            <p>Muestra una tabla con tus despegues favoritos, sus pronósticos y analiza automáticamente esas condiciones meteorológicas.</p>
+            <p>Hace automáticamente de forma general parte del análisis que haces cuando quieres ir a volar, cotejando la meteo general, precipitación, intensidades de viento, límites tolerables y orientaciones de viento y de los despegues. Con esa información general por colores o puntuación, tendrás que hacer tu análisis "humano" más fino y del resto de condiciones.</p>
+            <p>Tiene muchas más funciones y un <a href="https://flydecision.com/map/" target="_blank"> mapa de despegues</a> con información interesante y filtros de diverso tipo (número de vuelos, distancia media,...). Te interesará explorarlo 😉.</p>
+
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="ventajas">
+        <summary class="faq-question">✨ ¿Qué ventajas tiene para que me pueda interesar?</summary>
+        <div class="faq-answer">
+
+            <p>✅ <b>Ayuda rápida para tu elección de dónde ir a volar</b>, ordenando los despegues automáticamente por puntuación de condiciones. Esto te permite filtrar en segundos qué zonas merecen la pena mirar en detalle y cuáles descartar.</p>
+            <p>✅ Pronóstico actualizado 8 veces al día, hora a hora y para 4 días.</p>
+            <p>✅ <b>Usa el modelo meteorológico <a href="https://hikefly.es/comparativa-predicciones/" target="_blank" rel="noopener">estadísticamente más fiable para viento</a></b> (Arome-HD 1.3km) en el ámbito del sur de Europa y de meteo general (ECMWF IRF HIRES 9km).</p>
+            <p>✅ Filtrado de datos por rango de tiempo (días/horas), recalculando la puntuación de condiciones para ese intervalo concreto.</p>
+            <p>✅ <b>Filtro de despegues por condiciones mínimas o por distancia al despegue</b>.</p>
+            <p>✅ Búsqueda de despegues por nombre o provincia.</p>
+            <p>✅ <b><a href="https://flydecision.com/map/" target="_blank">Mapa de despegues</a></b>, a su vez con otras muchas posibilidades: filtros por número de vuelos registrados en XContest, año del último vuelo, mínimo de distancia media recorrida en vuelo, mapa de calor de más de 1 millón de puntos de despegues (Península Ibérica, Alpes y Marruecos), despegues de todo el mundo, etc.</p>
+            <p>✅ Enlaces a otros pronósticos para cada despegue: Windy, Meteo-parapente y Meteoblue, para tener todos los datos a mano.</p>
+            <p>✅ Puedes personalizar los valores límites de viento medio (mínimo, ideal y máximo) y racha máxima, para que el sistema calcule la puntuación adaptada a tus preferencias.</p>
+            <p>✅ Puedes personalizar tu horario habitual, para seleccionar con un toque el día y ver directamente la puntuación para ese rango horario.</p>
+            <p>✅ Línea de análisis visual del nivel de Cizalladura de Bajo Nivel (LLWS - Low-Level Wind Shear) y también el grado de Fiabilidad del pronóstico de viento medio a 10 m de altura.</p>
+            <p>✅ Puedes añadir una línea visual que calcula por ti el nivel de Rafagosidad, para analizar gráficamente de forma general el grado de turbulencia esperado.</p>
+            <p>✅ Puedes activar la función de <i>Calibración</i> para afinar el pronóstico en base a las correcciones estadísticas del modelo para las orografías concretas de los despegues de parapente.</p>
+            
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="precio">
+        <summary class="faq-question">🆓 ¿Es gratis?. ¿Se recogen datos personales?</summary>
+        <div class="faq-answer">
+
+            <p><b>Resumen: Es gratis y no se recoge ningún dato ni personal ni del dispositivo.</b></p>
+            <ul>
+                <li>No requiere ningún tipo de registro ni suscripción. No hay publicidad, ni cookies de rastreo, ni telemetría, etc..</li>
+                <li>Tanto el acceso a la web como la aplicación para Android son de libre acceso y tienen funcionalidad sin limitaciones. Aunque la app tiene alguna ventaja, como el modo offline o verla a pantalla completa, no es necesaria. Elige la que quieras porque ambas aplicaciones funcionan igual.</li>
+                <li>Tus configuraciones se guardan en tu navegador o en tu app de forma privada.</li>
+                <li>No vendemos tus datos porque, sencillamente, no los necesitamos, no nos interesa y además tampoco los tenemos. Este es un proyecto abierto desarrollado en colaboración con la comunidad, como ejercicio práctico, de conocimiento y de entretenimiento. No hay nada oculto que se te escape.</li>
+            </ul>
+            
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="android">
+        <summary class="faq-question">📱 ¿Hay App para Android?</summary>
+        <div class="faq-answer">
+
+            <p>Sí.</b></p>
+            <a href="https://play.google.com/store/apps/details?id=com.flydecision" target="_blank" rel="noopener" class="badge-google-play">
+                <img alt="Disponible en Google Play" src="https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png" width="180">
+            </a>
+            <p>La web <b><a href="https://flydecision.com/" target="_blank" rel="noopener">flydecision.com</a></b> y la app funcionan igual. Puedes usar la que más te convenga, aunque la app tiene la pequeña ventaja de que mantiene los datos offline si pierdes la cobertura en algún momento y de que se ve a pantalla completa.</p>
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="iphone">
+        <summary class="faq-question">📱 ¿Hay app para iPhone (iOS)?</summary>
+        <div class="faq-answer">
+
+            <p>Aunque actualmente no hay una aplicación nativa en la App Store, <b>sí puedes instalarla como una Progressive Web App (PWA)</b>.</p>
+            <p>Aunque no es exactamente igual, una PWA es aplicación web que usa APIs modernas del navegador para comportarse bastante similar a una app nativa.</p>
+            <p>Las ventajas de una PWA son que se muestra a pantalla completa, soporta mejor la desconexión (modo offline) y el arranque es algo más rápido.</p>
+            <p>Para instalarla como PWA:</p>
+            <ul>
+                <li>Abre la web <a href="https://flydecision.com/" target="_blank" rel="noopener noreferrer">Fly Decision</a> en <b>Safari</b>.</li>
+                <li>Pulsa el botón <b>"Compartir"</b> (el cuadrado con la flecha hacia arriba); según la versión, quizá tengas que ir al menú a buscar la siguiente opción.</li>
+                <li>Busca y selecciona la opción <b>"Añadir a la pantalla de inicio"</b> y ya tendrás el icono en tu escritorio como una app más.</li>
+            </ul>
+
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="ordenador">
+        <summary class="faq-question">🖥️ ¿Hay aplicación para ordenador (Windows o Mac)?</summary>
+        <div class="faq-answer">
+
+            <p>No hay como una aplicación nativa de escritorio, pero sí como PWA (Progressive Web App). Una PWA es una forma más "inmersiva" de verla que en la web (sin barra de direcciones ni todos los menús y botones del navegador). Tiene además un comportamiento bastante similar a una aplicación de ordenador.</p>
+            <p>Para instalarla como PWA:</p>
+            <ul>
+                <li>Abre la web <a href="https://flydecision.com/" target="_blank" rel="noopener noreferrer">Fly Decision</a> en Chrome o Edge (no se admiten PWAs en otros navegadores por el momento).</li>
+                <li>En el menú, busca la opción "Instalar app" o similar y se instalará como una aplicación más. También puede estar en opciones similares a "Enviar" o "Guardar".</li>
+                <li>Para eliminar la aplicación y volver al modo "Web", desinstálala como cualquier aplicación mediante la configuración del ordenador.</li>
+            </ul>
+
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="meteo">
+        <summary class="faq-question">📊 ¿Qué datos meteorológicos ofrece?</summary>
+        <div class="faq-answer">
+
+            <ul>
+                <li>Ofrece pronóstico por horas para 4 días (96h).</li>
+                <li>Los datos son: icono de meteo general (nubosidad/precipitación), precipitación, probabilidad de precipitación, velocidad media a 10 m, racha máxima a 10 m, dirección a 10 m, velocidad media a 80, 120 y 180 m, Techo AGL, CAPE y CIN. Los metros son referidos a la altura sobre el suelo del despegue.</li>
+                <li>Se actualiza automáticamente (Météo-France 8 veces al día y ECMWF 4 veces al día).</li>
+                <li>Los datos originales provienen del servicio público que ofrecen Météo-France y ECMWF. Los modelos meteorológicos de viento son Arome-HD 1.3km (para las primeras 0-48h), Arpege 7km (para las siguientes 48-96h) y los del resto de meteo son ECMWF IFS HIRES 9km. Se usa la pasarela de <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo.com</a></li>
+                <li>⚠️ Faltaría el dato esencial de la base de nube (CBH = Cloud Base Height) para completar la meteo en el despegue. Por el momento, tendrás que consultar en otros servicios meteorológicos si el despegue puede estar cubierto por nube. Es un valor que ofrece el ECMWF pero no está actualmente disponible en la pasarela meteo (lo hemos solicitado en marzo-2026 pero está pendiente y sin fecha prevista).</li>
+                <li>Por el momento, solo analiza <b>pronósticos en los puntos de despegue (no en cualquier lugar al azar)</b> y el ámbito es España y Pirineos (incluyendo la parte francesa). Es un proyecto en expansión ⌛.</li>
+            </ul>
+            
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="analisis">
+        <summary class="faq-question">🤖 ¿Qué tipo de análisis automático hace?</summary>
+        <div class="faq-answer">
+
+            <ul>
+                <li>Analiza el pronóstico de viento y lo compara con los límites de viento medio y racha máxima configurados y con la orientación de cada despegue. Internamente procesa un algoritmo que, aproximadamente, sería lo que harías con esos datos, pero para cada despegue, teniendo en cuenta que tienen una posición y orientación u orientaciones fijas.</li>
+                <li>También coteja la previsión de precipitación de cada hora.</li>
+                <li>Con toda la información, puntúa de 0 a 10 cada despegue para el rango horario o días que elijas. También facilita tu análisis manual coloreando automáticamente 🟩 🟨 🟥 los datos.</li>
+                <li>El algoritmo interno analiza las previsiones meteorológicas hora por hora para calcular una puntuación final para el rango horario que selecciones. Si seleccionas otra hora de inicio o fin la puntuación total para ese despegue cambiará.</li>
+                <li>En Configuración ⚙️ puedes personalizar todos esos límites para que el análisis tenga en cuenta tus preferencias y la puntuación sea algo más realista para tus condiciones deseadas.</li>
+                <li>Además, analiza la diferencia en las velocidades medias de viento a 10, 80, 120 y 180 m de altura sobre el suelo, ofreciendo un semáforo de colores para indicar el grado de Cizalladura y de Fiabilidad del pronóstico de velocidad de viento a 10 m.</li>
+            </ul>
+            
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="algoritmo">
+        <summary class="faq-question">🧑‍🎓 Quiero conocer más sobre ese algoritmo de puntuación automática</summary>
+        <div class="faq-answer">
+
+            <ul>
+                <p>Lo primero es tener claro que pretender "puntuar" unas condiciones de 0-10 y que sea algo totalmente fiable es algo muy atrevido y pretencioso, dada la gran cantidad de factores que intervienen, así que hay que entender esta puntuación como una "visión general" que luego habrá que analizar según otras circunstancias. Hay muchos factores limitantes como, por supuesto, todo el resto de meteo (aquí sólo se analiza viento, al menos por el momento); otros factores son la variabilidad de las predicciones, la exactitud de la base de datos de despegues y sus orientaciones, la cualificación de la idoneidad del grado de orientación (u orientaciones) ideal de cada despegue, etc.</p>
+                <p>Teniendo en cuenta todas esas limitaciones y otras muchas, veamos cómo funciona el algoritmo:</p>
+                <li>Cada hora tiene 100 posibles puntos.</li>
+                <li>La dirección es el factor más importante (hasta 50 puntos). Compara de dónde viene el viento con la orientación u orientaciones posibles del despegue (aquí habría mucho margen de mejora cualificando con un índice ponderado de diversas orientaciones ideales en grados, ya que hay despegues que ofrecen mucho rango de ángulos y otros un rango estrecho). Si el viento viene totalmente de frente (menos de 10º de desvío), da la máxima puntuación. A medida que el viento se cruza, la puntuación baja y aplica una penalización al resto de factores. Línea roja (Veto): Si el viento viene con más de 120º de desviación (viento de cola o cruzado extremo), la hora se marca como "No apta" y recibe 0 puntos.</li>
+                <li>Racha máxima (hasta 30 puntos). Si las rachas superan tu límite máximo configurado, los puntos bajan drásticamente y se aplican penalizaciones. Línea roja (Veto): Si las rachas superan en un 50% tu límite máximo fijado, se considera peligroso y la hora recibe 0 puntos.</li>
+                <li>Velocidad media (Hasta 20 puntos). Revisa que el viento sea suficientemente fuerte, pero no demasiado. La zona "ideal" (entre tu mínimo y tu máximo configurado) otorga los 20 puntos. Si el viento es flojo (menor que el mínimo) da 15 puntos. Si supera tu máximo, los puntos bajan rápidamente. Línea roja (Veto): Si la velocidad media duplica tu límite máximo, se bloquea la hora con 0 puntos.</li>
+                <li>Cálculo final: si salta cualquier "Veto" (por precipitación, dirección muy mala, racha peligrosa o velocidad extrema), la puntuación final de esa hora es 0. Si no hay vetos, el sistema suma los puntos (Dirección + Rachas + Velocidad) y los reduce proporcionalmente si la dirección está un poco cruzada o si la racha es algo fuerte. Finalmente, va acumulando los puntos de todas las horas válidas para darte una nota global de ese rango horario, normalizada a valores de 0-10.</li>
+            </ul>
+            
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="dificultad">
+        <summary class="faq-question">🤯 ¿Es fácil de usar?</summary>
+        <div class="faq-answer">
+
+            <p><b>Sí. Está pensada para que sea intuitiva y sencilla.</b> Te recomendamos que empieces sin leer nada, intentando usarla simplemente "trasteando". No vas a romper nada y luego siempre puedes restaurarla a la situación inicial.</p>
+            <p>Cuando te hayas hecho una idea general puedes consultar las <b>guías rápidas</b>, que te explican de forma visual para qué sirve cada botón de las dos pantallas principales. Si tienes más dudas, siempre puedes consultar esta página de ayuda para acabar de sacarle toda la funcionalidad.</p>  
+            <p>Dispones de varias opciones de personalización y configuración que puedes ir explorando poco a poco pero, al comienzo, no son imprescindibles.</p>
+            
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="funcionamiento-basico">
+        <summary class="faq-question">👉 De forma resumida, ¿cómo funcionaría en un uso normal "básico"?</summary>
+        <div class="faq-answer">
+
+                <ul>
+                    <li><b>La primera vez</b> verás la lista completa de despegues. Tienes que marcar tus despegues favoritos. Fin de la configuración mínima.</li>
+                    <li>En el uso normal <b>tocas el día de la semana que quieras y te muestra su pronóstico por horas y su puntuación</b></li>
+                    <li>Los despegues se ordenan automáticamente por su puntuación, así que, con ver los primeros ya puedes hacerte una idea de si es posible despegar por las condiciones de viento.</li>
+                </ul>
+
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="funcionamiento-avanzado">
+        <summary class="faq-question">👩‍🎓 ¿Qué opciones más "avanzadas" tengo?</summary>
+        <div class="faq-answer">
+
+                <ul>
+                    <li><b>Selección de rango horario:</b> siempre hay visible un selector de rango horario de 98h (4 días). Si afinas el rango horario para el que quieres consultar el pronóstico, la puntuación de condiciones se recalcula automáticamente y, como siempre, los despegues se reordenan por puntuación.</li>
+                    <li><b>Configuración del rango horario habitual diario:</b> en ⚙️ Configuración accedes a varias opciones y una de ellas es configurar la hora de inicio y fin de tu actividad normal de vuelo. Esto facilita la selección automática de ese rango horario cuando pulsas los botones de día de la semana.</li>
+                    <li><b>Filtro de distancia:</b> Muestra solo despegues en el radio de distancia que selecciones. Este filtro está disponible en la pantalla principal y en la de edición de favoritos. Si lo usas en la edición de favoritos, te facilita elegir fácilmente los despegues cercanos a una zona de viaje poco habitual y guardarlos temporalmente como favoritos.</li>
+                    <li><b>Personalización de límites:</b> en Configuración ⚙️ puedes cambiar los límites predeterminados de viento medio (mínimo, ideal y máximo) y rachas máximas. Tus preferencias se usarán para el análisis, coloreado y puntuación de las condiciones.</li>
+                    <li><b>XC: Techo AGL, CAPE y CIN:</b> en Configuración ⚙️ puedes activar una casilla para mostrar datos enfocados al vuelo de Cross Country (XC).</li>
+                    <li><b>Cizalladura y Fiabilidad:</b> en Configuración ⚙️ puedes activar una casilla para mostrar una fila coloreada con el nivel de Cizalladura de Bajo Nivel, que es un valor concurrente con la Fiabilidad de la predicción de velocidad media a 10 m.</li>
+                    <li><b>Rafagosidad:</b> en Configuración ⚙️ puedes activar una casilla para mostrar una fila coloreada con la rafagosidad (tienes allí un botón con su explicación).</li>
+                    <li><b>Calibración estadística:</b> en Configuración ⚙️ puedes activar una casilla para aplicar calibraciones estadísticas automáticas para adaptar el pronóstico a la situación orográfica especial de los despegues (tienes allí un botón con su explicación). Es una opción en fase de estudio (beta).</li>
+                </ul>
+
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="soluciones">
+        <summary class="faq-question">🛠️ Solución de problemas habituales</summary>
+        <div class="faq-answer">
+
+                <ul>
+                    <li><b>Tengo un móvil con Android 13 y con la capa MIUI 14 de Xiaomi. No me deja verlo bien, ni acceder a Configuración y ni desplazar la lista de despegues:</b> tienes que instalar la última versión de <a href="https://play.google.com/store/apps/details?id=com.google.android.webview.dev" target="_blank" rel="noopener">Android System Webview desde Google Play</a>. Tras la instalación, ábrelo y te ofrecerá usar esa versión en lugar de la desactualizada que vendrá en tu móvil.</li> 
+                </ul>
+
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="limitaciones">
+        <summary class="faq-question">🛑 Limitaciones actuales a tener en cuenta</summary>
+        <div class="faq-answer">
+
+            <ul>
+                    <li>Lógicamente, la meteorología no son matemáticas exactas, así que puntuar de 0-10 unas condiciones, con el nivel de variables que hay, hay que asumirlo como una "pista general".</li> 
+                    <li>Por el momento, solo se muestra y analiza meteo en los lugares de despegue. No se analiza todo el resto de factores meteorológicos ni del despegue ni del vuelo en si.</li> 
+                    <li>Los despegues tienen una o varias orientaciones y algunos ángulos son más perfectos que otros para poder despegar. Actualmente todas las orientaciones tienen igual valor. Aquí hay una posibilidad (y un trabajo) grande de mejora, indicando el valor ponderado de los ángulos posibles para compararla con la diferencia angular con el pronóstico.</li> 
+                    <li>¿Se puede ampliar a otras zonas, con más datos meteo,..?. Sí y no. La pasarela que se usa para obtener los datos meteorológicos tiene límites de llamadas al servidor. Hay niveles de suscripción que deslimitan el acceso, pero la idea es mantener el proyecto de forma gratuita con unos gastos asumibles y no usar publicidad, ni suscripciones, ni subvenciones, patrocinios ni nada relacionado con gastos y complicaciones.</li> 
+                    <li>⚠️ Faltaría en el pronóstico el dato esencial de la base de nube (CBH = Cloud Base Height) para completar la meteo en el despegue. Por el momento, tendrás que consultar en otros servicios meteorológicos si el despegue puede estar cubierto por nube. Es un valor que ofrece el ECMWF pero no está actualmente disponible en la pasarela meteo (lo hemos solicitado en marzo-2026 pero está pendiente y sin fecha prevista).</li> 
+            </ul>
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="desarrollo">
+        <summary class="faq-question">💡 Posible desarrollo futuro</summary>
+        <div class="faq-answer">
+
+            <ul>
+                    <li>Para poder ofrecer los despegues de Alpes, se necesita añadir el modelo más fiable en esa zona: ICON-D2. Mezclar modelos es complejo y, además, existen las limitaciones económicas comentadas de la pasarela meteo, por lo que está en estudio este tema.</li> 
+                    <li>Añadir al mapa el filtro de rango horario para que se coloreen automáticamente los despegues en función de las condiciones. Igualmente añadir un filtro de condiciones (0-10).</li> 
+                    <li>Añadir despegues del resto de Francia, de Portugal y Alpes.</li> 
+                    <li>Posibilidad de obtener estos mismos datos pero para cualquier punto, no solo para los puntos fijos de los despegues disponibles en la base de datos. Realmente esto ya está implementado internamente pero no es posible hacerlo público ya que chocaría con las limitaciones del servicio gratuito de Open-Meteo indicadas anteriormente.</li> 
+            </ul>
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+</div>
+<!-- 🟩🟩🟩 FIN SECCIÓN FAQs -->
+
+<div style="text-align: center; margin-top: 30px; margin-bottom: 10px;">
+    <a href="https://play.google.com/store/apps/details?id=com.flydecision" target="_blank" rel="noopener" class="badge-google-play">
+        <img alt="Disponible en Google Play" src="https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png" width="180">
+    </a>
+</div>
+
+<footer>
+    <b><a href="https://flydecision.com/" target="_blank" rel="noopener">FlyDecision.com</a></b> © Fly Decision 2026 | <a href="https://flydecision.com/changelog/" target="_blank" rel="noopener">Historial de cambios</a> | <a href="https://flydecision.com/privacidad" target="_blank" rel="noopener">Aviso Legal y Política de privacidad</a>
+</footer>
+
+</div> <!-- <div class="container"> -->
+
+<script>
+  document.addEventListener( 'DOMContentLoaded', function() {
+    new Splide( '.splide', {
+      type   : 'loop',
+      perPage: 5,
+      gap    : '20px',      // Gap por defecto (escritorio)
+      focus  : 'center',
+      autoplay: true,
+      interval: 3000,
+      pagination: true,
+      breakpoints: {
+        1024: { perPage: 5, gap: '8px' }, 
+        768:  { perPage: 4, gap: '6px' },  
+        480:  { perPage: 3, gap: '10px' }   // GAP MÁS PEQUEÑO EN MÓVIL
+      },
+    }).mount();
+  });
+</script>
+
+</body>
+</html>

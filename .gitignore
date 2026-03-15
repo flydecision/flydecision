@@ -1,0 +1,33 @@
+# Dependencias 
+node_modules/
+package-lock.json
+sftp.json
+
+# Carpetas de compilación y temporales
+dist/
+build/
+temp/
+tmp/
+.cache/
+
+# Archivos del sistema operativo 
+.DS_Store
+Thumbs.db
+
+# Logs y errores
+*.log
+*.tmp
+npm-debug.log*
+
+# Configuraciones de editor 
+.vscode/
+.idea/
+
+# Si usas Cordova/Ionic/Capacitor
+platforms/
+plugins/
+www/
+# --- Archivos sensibles o grandes ---
+.env
+.vscode/
+*.csv

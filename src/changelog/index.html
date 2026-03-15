@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fly Decision | Historial de Cambios (changelog)</title>
+<meta name="description" content="Historial de cambios de la web y app Fly Decision.">
+<meta property="og:image" content="https://flydecision.com/icons/logo_192px.png">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" sizes="102x192" href="https://flydecision.com/icons/logo_192px.png">
+<link rel="icon" type="image/png" sizes="512x512" href="https://flydecision.com/icons/logo_512px.png">
+<link rel="shortcut icon" href="https://flydecision.com/icons/logo_192px.png">
+<link rel="apple-touch-icon" href="https://flydecision.com/icons/logo_192px.png">
+<meta name="theme-color" content="#d9ebf9"> 
+
+<style>
+:root {
+    --primary: #2563eb;
+    --bg: #f8fafc;
+    --text: #1e293b;
+    --border: #cbd5e1;
+    --tag-new: #10b981;
+    --tag-fix: #ef4444;
+    --tag-imp: #3b82f6;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.3;
+    margin: 0;
+    padding: 20px;
+    overflow-x: hidden; /* ESTO ELIMINA LA BARRA HORIZONTAL A LA FUERZA */
+    width: 100vw;       /* Asegura que el ancho sea exactamente la ventana */
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 10px; /* Añade el padding aquí en lugar de en el body */
+    box-sizing: border-box; /* Fundamental: el padding no suma ancho */
+}
+
+html, body {
+    min-height: 100vh; width: 100%; margin: 0; padding: 0;
+    display: flex; flex-direction: column; font-size: 16px !important;
+    background-color: #F3F4F6; box-sizing: border-box;
+    -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+
+footer { text-align: center; font-size: 0.8rem; color: #777; margin-top: 20px; margin-bottom: 20px; padding-bottom: 0px; }
+.center { display: flex; align-items: center; justify-content: center; gap: 16px; max-height: 68px; }
+.center h2 { margin: 0; padding: 0; line-height: 1; font-size: 1.2rem; }
+.center a { display: flex; line-height: 0; }
+
+.release {
+    background: white; border-radius: 12px; padding: 18px; margin-bottom: 30px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border);
+}
+
+.v-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid var(--bg); padding-bottom: 15px; margin-bottom: 20px;
+}
+
+.v-number { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+.v-date { color: #64748b; font-weight: 500; }
+
+.platform-group { margin-bottom: 20px; }
+.platform-group:last-child { margin-bottom: 0; }
+
+.platform-label {
+    display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700;
+    color: #475569; background: #f1f5f9; padding: 4px 12px; border-radius: 20px;
+    width: fit-content; margin-bottom: 12px;
+}
+
+/* --- CLASES UNIFICADAS Y SIMPLIFICADAS --- */
+.lista { list-style: none; padding: 0; margin: 0 0 0 10px; }
+
+/* Apuntamos directamente a los LI dentro de .lista */
+.lista li { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; }
+
+.badge {
+    font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 4px;
+    color: white; margin-top: 3px; min-width: 55px; text-align: center; flex-shrink: 0; /* Evita que el badge se aplaste */
+}
+
+.novedad { background: var(--tag-new); }
+.correccion { background: var(--tag-fix); }
+.cambio { background: var(--tag-imp); }
+.descripcion { font-size: 0.95rem; line-height: 1.4; }
+
+.badge-google-play {
+    display: inline-block;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    /* Evita que el enlace subraye la imagen en tu web (por tu CSS global) */
+    text-decoration: none !important; 
+}
+
+.badge-google-play:hover {
+    transform: scale(1.05); /* Pequeño zoom al pasar el ratón */
+    opacity: 0.95;
+}
+
+.badge-google-play:active {
+    transform: scale(0.95); /* Efecto de hundimiento al pulsar en móvil */
+}
+
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="center">
+    <a href="https://flydecision.com/" target="_blank" rel="noopener"><img src="https://flydecision.com/icons/logo_192px.png" width="40" height="40" alt="Logo"></a>
+    <h2>Fly Decision</h2>
+</div>
+
+<h3 style="font-size:1rem; text-align:center;">
+    Historial de cambios (changelog)
+</h3>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<!-- <div class="release">
+<div class="v-header"><span class="v-number">vXXXXXXXXXXXXXXXXXXXX</span><span class="v-date">XXXXXXXXXXXXXXXXXXXX Feb, 2026</span></div>
+
+<div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
+<ul class="lista">
+<li><span class="badge novedad">Novedad</span><span class="desc">XXXXXXXXXXXXXXXXXXXX</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">XXXXXXXXXXXXXXXXXXXX</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">XXXXXXXXXXXXXXXXXXXX</span></li>
+</ul>
+</div>
+<div class="platform-group"><div class="platform-label">🌐 Web</div>
+<ul class="lista">
+<li><span class="badge novedad">Novedad</span><span class="desc">XXXXXXXXXXXXXXXXXXXX</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">XXXXXXXXXXXXXXXXXXXX</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">XXXXXXXXXXXXXXXXXXXX</span></li>
+</ul>
+</div>
+<div class="platform-group"><div class="platform-label">📱 App</div>
+<ul class="lista">
+<li><span class="badge novedad">Novedad</span><span class="desc">XXXXXXXXXXXXXXXXXXXX</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">XXXXXXXXXXXXXXXXXXXX</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">XXXXXXXXXXXXXXXXXXXX</span></li>
+</ul>
+</div>
+</div> -->
+
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v2.0</span><span class="v-date">13 Mar, 2026</span></div>
+
+    <div class="platform-group">
+
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                6 nuevos datos meteorológicos del ECMWF: Icono significativo (nubes+precipitación), Precipitación, Probabilidad de precipitación, Techo AGL, CAPE y CIN.
+            </span></li>
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Añadidas capas Skyways y Thermal KK7 al mapa topográfico.
+            </span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">
+                Mejora legibilidad nombre despegue con el doble de espacio vertical. 
+            </span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">
+                Eliminación de geocoding de servicios externos para maximizar privacidad. 
+            </span></li>
+        </ul>
+    </div>
+
+    <div class="platform-label">📱 App</div>
+        <ul class="lista">
+            <li><span class="badge cambio">Cambio</span><span class="desc">
+                Migración de sistema de almacenamiento interno a IndexedDB para poder guardar en caché datos de Météo-France y ECMWF sin la limitación del sistema anterior (Local storage).
+            </span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">
+                Al buscar despegues y desplegarse el teclado, si el resultado era menor que la vertical de la pantalla había un posible desplazamiento ocultando botones de control. 
+            </span></li>
+        </ul>
+    
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.7</span><span class="v-date">2 Mar, 2026</span></div>
+
+    <div class="platform-group">
+
+        <div class="platform-label">📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Publicada en abierto esta primera versión como pública en Google Play Store.
+            </span></li>
+        </ul>
+
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Añadidos algunos despegues de Alpes (prueba previa de concepto).
+            </span></li>
+            <li><span class="badge cambio">Cambio</span><span class="desc">
+                Ligero cambio de colores rojo y verde para mejor legibilidad.
+            </span></li>
+            <li><span class="badge cambio">Cambio</span><span class="desc">
+                Agrupación de despegues cercanos en la base de datos para optimización de meteo. En el mapa se mantienen originales las variantes de despegues, coordenadas y orientaciones. Ejemplo: Liri (Castejón de Sos) ahora es un único "despegue" en la base de datos de despegues para meteo, pero en el mapa tiene sus 4 despegues habituales.
+            </span></li>
+            <li><span class="badge cambio">Cambio</span><span class="desc">
+                Despegues nuevos y actualizaciones de otros en mapa y tabla meteo.
+            </span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">
+                 Corregido algoritmo para que tenga en cuenta múltiples orientaciones continuas y un pronóstico con ángulo entre ellas. 
+            </span></li>
+        </ul>
+    </div>
+    
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.6.2</span><span class="v-date">1 Mar, 2026</span></div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Botón de "Desmarcar favoritos" para facilitar la edición masiva de favoritos.
+            </span></li>
+            <li><span class="badge cambio">Cambio</span><span class="desc">
+                Cambios estéticos y de optimización de UI.
+            </span></li>
+        </ul>
+    </div>
+    
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.6</span><span class="v-date">1 Mar, 2026</span></div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Nueva línea de información para cada despegue, indicando el nivel de Cizalladura y de  Fiabilidad de la predicción. La Cizalladura de Bajo Nivel (LLWS - Low-Level Wind Shear) por velocidad es relativa a los vientos a baja altitud. La fiabilidad es un valor correlativo: menos LLWS = más fiabilidad.
+            </span></li>
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Seleccionando la cifra de Puntuación de condiciones se muestra la información desglosada del cálculo.
+            </span></li>
+            <li><span class="badge cambio">Cambio</span><span class="desc">
+                Eliminado por simplicidad el botón "Filtro de Condiciones". Razón: poca operatividad dada la ordenación automática de los despegues por la puntuación de Condiciones.
+            </span></li>
+            <li><span class="badge cambio">Cambio</span><span class="desc">
+                Movida la Guía visual de la Pantalla principal al panel de Configuración, al lado del enlace Ayuda.
+            </span></li>
+        </ul>
+    </div>
+
+    <div class="platform-group">
+        <div class="platform-label">📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Implementación completa Edge-to-Edge de Android, para visualizar el máximo de información, compatibilidad con Android 15 y con navegación por gestos.
+            </span></li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.5</span><span class="v-date">24 Feb, 2026</span></div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge cambio">Cambio</span><span class="desc">
+                Reajuste del algoritmo para un mayor realismo de la puntuación de la condiciones para el despegue.
+            </span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">
+                Mejora de estabilidad con detección automática de bloqueos al cargar la tabla que ocurrían en dispositivos móviles con pocos recursos y muchos favoritos marcados, con recuperación automática al modo edición de favoritos. 
+            </span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">
+                En caso de falta de conexión, en algunos casos no se mostraba el tiempo de antigüedad de los datos actuales. 
+            </span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">
+                En instalaciones nuevas no se mostraban de forma predeterminada los vientos a 80, 120 y 180 m. 
+            </span></li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.4</span><span class="v-date">13 Feb, 2026</span></div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Datos de viento medio a 80, 120 y 180 m del suelo, complementando el dato actual de viento medio a 10 m. Si se desea, hay un ckeckbox en Configuración para desactivarlos.
+            </span></li>
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Coloreado automático 🟩🟨 🟥 de esas velocidades para analizar visualmente el "gradiente cercano al despegue", que determina la previsión del grado de turbulencia y del grado de fiabilidad de la predicción de la velocidad a nivel del suelo. 
+            </span></li>
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Al seleccionar (ratón o tocar) el dato de Viento a 10 m, se ofrece un cuadro con las velocidades a las 4 alturas y con el mismo coloreado automático. Útil si se quiere, por simplicidad visual, tener desactivadas esa 3 nuevas líneas de viento por alturas. 
+            </span></li>
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Contador de despegues favoritos actuales en la pantalla de Edición de favoritos. 
+            </span></li>
+            <li><span class="badge cambio">Cambio</span><span class="desc">
+                Ajuste en timming de refresco de datos.
+            </span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">
+                Mejora de estabilidad con detección automática de bloqueos al cargar la tabla que ocurrían en dispositivos móviles con pocos recursos y muchos favoritos marcados, con recuperación automática al modo edición de favoritos. 
+            </span></li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.36</span><span class="v-date">12 Feb, 2026</span></div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Botón "Mapa de despegues". El mapa contiene búsqueda de despegues, filtros por orientación, por nº de vuelos, mapa de calor y mucha otra información.
+            </span></li>
+            <li><span class="badge novedad">Novedad</span><span class="desc">
+                Datos de viento a 80, 120 y 180 m de altura suelo. Por el momento, indicados únicamente en el tootip (al pasar el ratón). El plan de desarrollo siguiente es integrarlos en la tabla y que pertenezcan a la lógica de puntuación y coloreado automático de condiciones, ya que es una valiosa información para calcular la fiabilidad de la predicción y el grado de turbulencia esperable.
+            </span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">
+                Recarga de recarga de datos al volver a primer plano optimizada en velocidad.
+            </span></li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.32</span><span class="v-date">11 Feb, 2026</span></div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc">Nueva web de <b>ayuda con Preguntas frecuentes (FAQ)</b>.</span></li>
+            <li><span class="badge novedad">Novedad</span><span class="desc">Al guardar favoritos ahora ofrece la opción de cambiar el nombre del archivo. Esto facilita tener diferentes listas de favoritos por zonas de vuelo habituales o temporales por viajes.</span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">Solucionado error que impedía compartir favoritos por Telegram con la nueva versión Telegram.</span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">Mejora en la detección de desconexión de Internet y recarga automática ante conexión o tras despertar móvil o app de suspensión, para que siempre haya datos frescos y no se use el caché en esos casos.</span></li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.3</span><span class="v-date">09 Feb, 2026</span></div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc"><b>Nuevo algoritmo v1.5 de cálculo de puntuación</b>.Tolerancia Dinámica: La exigencia de la dirección ahora se adapta a la velocidad (más permisivo con viento flojo, estricto con viento fuerte). Factor de Turbulencia: Nueva lógica que penaliza la diferencia entre viento medio y racha (laminaridad) en lugar de solo el máximo absoluto. Curvas de cálculo suaves: Se eliminan los "escalones" bruscos de nota mediante fórmulas matemáticas continuas (Campana de Gauss) alrededor de la velocidad ideal.</span></li>
+            <li><span class="badge novedad">Novedad</span><span class="desc"><b>Guías de ayuda</b> para la pantalla principal y para la pantalla de edición de favoritos, explicando cada funcionalidad en forma de tour guiado. Pruébalas para entender mejor las posibilidades de la aplicación. Las guías se ofrecen automáticamente la primera vez y luego son accesibles siempre con los botones "?".</span></li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.27</span><span class="v-date">06 Feb, 2026</span></div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge cambio">Cambio</span><span class="desc">Optimización de la velocidad de redibujado de la tabla (por filtros, opciones,..).</span></li>
+        </ul>
+    </div>
+
+    <div class="platform-group">
+        <div class="platform-label">📱 App</div>
+        <ul class="lista">
+            <li><span class="badge correccion">Corrección</span><span class="desc">Solucionado error al compartir favoritos vía Telegram (y otras aplicaciones similares que precisaban permisos explícitos).</span></li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.26</span><span class="v-date">06 Feb, 2026</span></div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge cambio">Cambio</span><span class="desc">Pequeño cambio estético en el modo edición de favoritos.</span></li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.25</span><span class="v-date">05 Feb, 2026</span></div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc">Rediseño de la gestión de despegues favoritos: flujo simplificado y nuevas opciones de filtrado (por distancia a un punto y Mostrar todos / Mostrar favoritos) para facilitar el marcado y desmarcado de favoritos </span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">Optimización del rendimiento en la carga de la tabla y los filtros.</span></li>
+        </ul>
+    </div>
+
+    <div class="platform-group">
+        <div class="platform-label">📱 App</div>
+        <ul class="lista">
+            <li><span class="badge correccion">Corrección</span><span class="desc">Mejora en la gestión de la conectividad (conexión y desconexión a Internet).</span></li>
+        </ul>
+    </div>
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header"><span class="v-number">v1.24</span><span class="v-date">04 Feb, 2026</span></div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web y 📱 App</div>
+        <ul class="lista">
+            <li><span class="badge correccion">Corrección</span><span class="desc">Optimizado sistema gestión de tiempos de refresco/carga al elegir o cambiar opciones.</span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">Solucionado error de indicación de "Esperando conexión..." que se mostraba innecesariamente en ocasiones.</span></li>
+            <li><span class="badge correccion">Corrección</span><span class="desc">Solucionado error de falta de actualización automática de los días de la semana del selector de rango horario si la app se había quedado en memoria.</span></li>
+        </ul>
+    </div>
+
+    <div class="platform-group">
+        <div class="platform-label">📱 App</div>
+        <ul class="lista">
+            <li><span class="badge cambio">Cambio</span><span class="desc">Los enlaces externos (ayuda, mapa,..) ahora se abren en el WebView estándar de Android (visor web interno), para simplicidad y evitar salidas indeseadas de la app.</span></li>
+            <li><span class="badge cambio">Cambio</span><span class="desc">Implementado feedback táctil por vibración (háptico) al mover controles deslizantes.</span></li>
+        </ul>
+    </div>
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header">
+        <span class="v-number">v1.23</span>
+        <span class="v-date">03 Feb, 2026</span>
+    </div>
+
+    <div class="platform-group">
+        <div class="platform-label">📱 App</div>
+        <ul class="lista">
+            <li>
+                <span class="badge novedad">Novedad</span>
+                <span class="desc">Habilitado el zoom mediante gestos.</span>
+            </li>
+            <li>
+                <span class="badge correccion">Corrección</span>
+                <span class="desc">Solucionado el error de visualización del texto (solapamiento) debido a la modificación de tamaño de letra estándar en la configuración de Accesibilidad del móvil. Ahora se aumenta por zoom con gestos.</span>
+            </li>
+            <li>
+                <span class="badge correccion">Corrección</span>
+                <span class="desc">Solucionado el error que impedía cerrar con la "X" los mensajes de ayuda en algunos móviles.</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
+    <div class="v-header">
+        <span class="v-number">v1.22</span>
+        <span class="v-date">02 Feb, 2026</span>
+    </div>
+
+    <div class="platform-group">
+        <div class="platform-label">📱 App</div>
+        <ul class="lista">
+            <li><span class="badge novedad">Novedad</span><span class="desc">Versión inicial publicada sin historial previo.</span></li>
+            <li>
+                <span class="badge cambio">Cambio</span>
+                <span class="desc">Ajustada el área segura (Safe Area) para móviles con notch pronunciado.</span>
+            </li>
+            <li>
+                <span class="badge correccion">Corrección</span>
+                <span class="desc">Corregido solapamiento con el área de notificaciones Android en algunos móviles con notch pronunciado o con alguna capa de fabricante.</span>
+            </li>
+            <li>
+                <span class="badge correccion">Corrección</span>
+                <span class="desc">Corregido tiempo erróneo en la indicación de "Próxima actualización" que ocurría justo tras actualizar.</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="platform-group">
+        <div class="platform-label">🌐 Web</div>
+        <ul class="lista">
+            <li>
+                <span class="badge novedad">Novedad</span>
+                <span class="desc">Versión inicial publicada sin historial previo.</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 30px; margin-bottom: 10px;">
+    <a href="https://play.google.com/store/apps/details?id=com.flydecision" target="_blank" rel="noopener" class="badge-google-play">
+        <img alt="Disponible en Google Play" src="https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png" width="180">
+    </a>
+</div>
+
+<footer>
+    <b><a href="https://flydecision.com/" target="_blank" rel="noopener">FlyDecision.com</a></b> © Fly Decision 2026 | <a href="https://flydecision.com/changelog/" target="_blank" rel="noopener">Historial de cambios</a> | <a href="https://flydecision.com/privacidad" target="_blank" rel="noopener">Aviso Legal y Política de privacidad</a>
+</footer>
+
+</div>
+</body>
+</html>
