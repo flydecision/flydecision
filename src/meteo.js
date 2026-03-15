@@ -3726,7 +3726,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             <div>
                                 🟩 <b>Cizalladura baja y Fiabilidad alta</b><br>
                             </div>
-                            <br>Puedes seleccionar la casilla de la hora que quieras para ver el desglose del cálculo.
                         </div>
                     `;
                     tdIconoCiz.setAttribute("data-tippy-content", tooltipHTML);
