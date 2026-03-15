@@ -6,6 +6,12 @@ A Web / Android mobile / WPA application for automatic weather forecast analysis
 > 🌱 **A brief note on our history:**
 > Before making its official debut here on GitHub as Free Software on March 2026, this project had already been in active development for **a full year**. While it was built with an open philosophy from the start, this repository marks the first time the codebase is officially published and structured for public access and community collaboration.
 
+---
+
+## 📱 Download
+
+[![Get it on Google Play](src/icons/GetItOnGooglePlay_Badge_Web_color_Spanish.png)](https://play.google.com/store/apps/details?id=com.flydecision)
+
 ## Features
 
 - **Weather forecast**: 
