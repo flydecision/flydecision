@@ -31,3 +31,4 @@ www/
 .env
 .vscode/
 *.csv
+*.gpx

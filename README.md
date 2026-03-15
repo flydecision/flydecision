@@ -167,3 +167,18 @@ For full details, please check the [LICENSE.md](LICENSE.md) file included in the
 * [Legal Notice and Privacy Policy](https://flydecision.com/privacidad/)
 
 *Fly Decision* - Automatic analysis of the weather forecast for paragliding flights. Launch site map.
+
+## 🌤️ Special Acknowledgement: Open-Meteo
+
+This project is powered by the weather data provided by **[Open-Meteo](https://open-meteo.com/)**. We want to express our deepest gratitude for their service, their unwavering commitment to the free software community, and for generously granting us a license to access their comprehensive weather data.
+
+**About Open-Meteo:**
+Open-Meteo is an open-source weather API that delivers highly accurate and reliable forecasts worldwide. Their platform is an invaluable resource for developers due to its key features:
+
+* **High-Resolution Open Data:** They partner with national weather services to provide data with a resolution ranging from 1 to 11 kilometers.
+* **Intelligent Routing:** Their powerful APIs automatically select the most suitable weather models for any specific location, ensuring maximum precision.
+* **Seamless Integration:** They offer a highly accessible, user-friendly JSON API that makes retrieving complex weather information effortless.
+
+Thank you, Open-Meteo, for supporting developers and making high-quality weather data accessible to everyone!
+
+> **Note:** This extended acknowledgement is a personal initiative to show our appreciation. Open-Meteo does not require this level of praise; their only official requirement for using their free API is a simple attribution, which is clearly detailed on their [License page](https://open-meteo.com/en/licence).
