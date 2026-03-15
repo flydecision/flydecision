@@ -16,6 +16,16 @@ let VelocidadIdeal = Number(localStorage.getItem("METEO_VELOCIDAD_IDEAL")) || 12
 let VelocidadMax = Number(localStorage.getItem("METEO_VELOCIDAD_MAXIMA")) || 20;  
 let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 25;
 
+// Valores límite para puntuación XC y colores en tabla
+// Techo AGL: 800m ya permite volar, 1500m AGL es un día excelente (se suma a la montaña).
+let XCTechoLims = JSON.parse(localStorage.getItem("METEO_XC_TECHO_LIMS")) || { rojo: 800, verde: 1500 };
+
+// CAPE: 0-400 es ideal (desde día azul hasta cúmulos bonitos). >800 peligro de tormenta.
+let XCCapeLims = JSON.parse(localStorage.getItem("METEO_XC_CAPE_LIMS")) || { idealMin: 0, idealMax: 400, riesgo: 800 };
+
+// CIN: Inhibición convectiva. 0-50 el aire fluye bien. >150 actúa como tapón.
+let XCCinLims = JSON.parse(localStorage.getItem("METEO_XC_CIN_LIMS")) || { verde: 50, rojo: 150 };
+
 // Valores iniciales para que se vea la puntuación al seleccionar día de la semana
 if (localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO') === null) {
     localStorage.setItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO', '10');
@@ -2939,13 +2949,30 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		thCondiciones.classList.add("columna-condiciones", "borde-grueso-izquierda", "borde-grueso-arriba", "borde-grueso-abajo");	
 		thCondiciones.style.userSelect = "none";
         const tooltipContent = 
-            "<b style='font-size:20px;'>⭐ Puntuación (0-10)</b><br><br>" +
-            "Es la puntuación de condiciones que calcula el sistema para cada despegue teniendo en cuenta el rango de tiempo seleccionado.<br><br>" +
-            "La puntuación valora los datos del pronóstico para cada hora (viento, racha, orientación y precipitación) y los coteja con los siguientes datos:<ul><li>Límites de viento medio configurado (mínimo, ideal y máximo).</li><li>Límite de racha máxima configurada.</li><li>Orientación u orientaciones del despegue.</li><li>Lluvia (veto automático y 0 puntos a la hora afectada).</li></ul>" + 
-            "⚠️ Faltaría el dato esencial de la base de nube (CBH = Cloud Base Height) para completar la meteo en el despegue. Por el momento, tendrás que consultar en otros servicios meteorológicos si el despegue puede estar cubierto por nube. Es un valor que ofrece el ECMWF pero no está actualmente disponible en la pasarela meteo (lo hemos solicitado en marzo-2026 pero está pendiente y sin fecha prevista).<br><br>" +
-            "Los valores de estos límites se pueden personalizar en ⚙️ <i>Configuración</i> para que el sistema de puntuación tenga en cuenta tus preferencias.<br><br>" +
-            "La puntuación de 0-10 se muestra coloreada con gradación de rojo a verde. Puedes seleccionar una puntuación concreta para ver el desglose de la puntuación por horas y el cálculo matemático realizado.<br><br>" +
-            "Los despegues de la tabla se reordenan siempre automáticamente por la puntuación, de mayor a menor.";
+            "<b style='font-size:20px;'>⭐ Puntuaciones (0-10)</b><br><br>" +
+            "El sistema calcula automáticamente dos puntuaciones para cada despegue teniendo en cuenta el rango de tiempo seleccionado. Ambas se muestran coloreadas con una gradación de rojo a verde.<br><br>" +
+            
+            "<b>1. Condiciones del despegue (fila superior):</b><br>" +
+            "Valora la viabilidad de despegar analizando el pronóstico de cada hora frente a las preferencias indicadas en ⚙️ Configuración:" +
+            "<ul style='margin-top: 4px; margin-bottom: 12px;'>" +
+            "<li>Límites de viento medio (mínimo, ideal y máximo).</li>" +
+            "<li>Límite de racha máxima.</li>" +
+            "<li>Orientación u orientaciones del despegue.</li>" +
+            "<li>Lluvia (veto automático y 0 puntos a la hora afectada).</li>" +
+            "</ul>" +
+            
+            "<b>2. Condiciones para XC (fila inferior):</b><br>" +
+            "Valora la puntuación de Condiciones del despegue y el potencial térmico para vuelos de distancia (Cross Country) usando los datos del modelo ECMWF:" +
+            "<ul style='margin-top: 4px; margin-bottom: 8px;'>" +
+            "<li><b>Techo AGL:</b> Premia techos altos sobre el relieve y penaliza los bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li>" +
+            "<li><b>CAPE:</b> Premia los días azules o de cúmulos inofensivos, y penaliza los valores extremos por riesgo de sobredesarrollo o tormenta (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li>" +
+            "<li><b>CIN:</b> Penaliza la inhibición convectiva alta (inversión) que actúa como tapón frenando la formación de térmicas (🟩 &le; 50 | 🟥 > 150 J/kg).</li>" +
+            "</ul>" +
+            "<i style='color: #555;'>Nota: La puntuación XC se reduce progresivamente o se anula de forma automática si las condiciones base del despegue (viento cruzado, racha excesiva o lluvia) son malas.</i><br><br>" +
+            
+            "⚠️ <b>Aviso:</b> Faltaría el dato esencial de la base de nube (CBH = Cloud Base Height) para saber si el despegue estará metido en nube. Es un valor del ECMWF no disponible aún en la pasarela (solicitado en marzo-2026, pendiente y sin fecha prevista). Deberás consultarlo en otros servicios.<br><br>" +
+            
+            "<b>Los despegues de la tabla se reordenan siempre automáticamente por la primera puntuación</b> (Condiciones del despegue), de mayor a menor.";        
         thCondiciones.setAttribute("data-tippy-content", tooltipContent);
         thCondiciones.setAttribute("tabindex", "0"); 
         thCondiciones.style.cursor = "help"; // Cambia el cursor para indicar que hay info
@@ -3112,6 +3139,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			let horasValidas = 0; 
             let puntosAcumulados = 0;  
 
+            let notaFinalXC = 0;
+            let horasValidasXC = 0;
+            let puntosAcumuladosXC = 0;
+
             const MODO_DEBUG = false; // 🟢 'false' cuando no necesitemos log
             
             if (hayDatosMeteo) {
@@ -3230,7 +3261,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                         }
 
                         // =========================================================
-                        // 🟢 ALGORITMO
+                        // 🟢 ALGORITMO CONDICIONES DESPEGUE
                         // =========================================================
 
                         let ptsHora = 0;
@@ -3326,6 +3357,47 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                         
                         puntosAcumulados += ptsHora;
 
+                        // ---------------------------------------------------------
+                        // 🟢 ALGORITMO XC
+                        // ---------------------------------------------------------
+                        if (chkMostrarXC && hourlyEcmwf) {
+                            let ptsXC_hora = 0;
+                            // Si el viento base está vetado (lluvia, viento extremo), el XC es 0.
+                            if (!vetoActivado) {
+                                let techo = (hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[i] != null) ? Number(hourlyEcmwf.boundary_layer_height[i]) : 0;
+                                let cape = (hourlyEcmwf.cape && hourlyEcmwf.cape[i] != null) ? Number(hourlyEcmwf.cape[i]) : 0;
+                                let cin = (hourlyEcmwf.convective_inhibition && hourlyEcmwf.convective_inhibition[i] != null) ? Math.max(0, Number(hourlyEcmwf.convective_inhibition[i])) : 0;
+
+                                // Techo AGL (0-40 pts)
+                                let ptsTecho = 0;
+                                if (techo >= XCTechoLims.verde) ptsTecho = 40;
+                                else if (techo > XCTechoLims.rojo) ptsTecho = 10 + 30 * ((techo - XCTechoLims.rojo) / (XCTechoLims.verde - XCTechoLims.rojo));
+                                else ptsTecho = 10 * (techo / XCTechoLims.rojo);
+
+                                // CAPE (0-40 pts) - ¡Corregido para no penalizar días azules!
+                                let ptsCape = 0;
+                                if (cape >= XCCapeLims.idealMin && cape <= XCCapeLims.idealMax) {
+                                    ptsCape = 40; // Día azul o con cúmulos inofensivos (Perfecto)
+                                } else if (cape > XCCapeLims.idealMax && cape <= XCCapeLims.riesgo) {
+                                    // Penaliza progresivamente por riesgo de sobredesarrollo
+                                    ptsCape = 40 - 40 * ((cape - XCCapeLims.idealMax) / (XCCapeLims.riesgo - XCCapeLims.idealMax));
+                                } else {
+                                    ptsCape = 0; // Tormentas garantizadas
+                                }
+
+                                // CIN (0-20 pts)
+                                let ptsCin = 0;
+                                if (cin <= XCCinLims.verde) ptsCin = 20;
+                                else if (cin < XCCinLims.rojo) ptsCin = 20 * (1 - (cin - XCCinLims.verde) / (XCCinLims.rojo - XCCinLims.verde));
+                                else ptsCin = 0;
+
+                                // Puntuación total de la hora (penalizada si el viento/racha general no es ideal)
+                                ptsXC_hora = (ptsTecho + ptsCape + ptsCin) * ratioCorreccionPorDireccion * ratioCorreccionPorRacha;
+                            }
+                            puntosAcumuladosXC += ptsXC_hora;
+                            horasValidasXC++;
+                        }
+
                         // --- 🐛 INICIO DEBUG (Desglose por hora) ---
                         if (MODO_DEBUG) {
                             console.log(`⏱ %c${horaStr}`, 'font-weight: bold; color: #1d4ed8;');
@@ -3351,10 +3423,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 					if (horasValidas > 0) {
                         const maximosPuntosPosibles = horasValidas * 100;
                         
-                        // 1. CÁLCULO NOTA ORIGINAL
+                        // Cálculo nota final Condiciones despegue
                         let ratio = puntosAcumulados / maximosPuntosPosibles;
                         notaFinal = ratio * 10;
-                        // notaFinal = Math.round(notaFinal * 100) / 100; 
+                        
+                        // Cálculo nota final XC
+                        if (horasValidasXC > 0) {
+                            const maximosPuntosPosiblesXC = horasValidasXC * 100;
+                            notaFinalXC = (puntosAcumuladosXC / maximosPuntosPosiblesXC) * 10;
+                        }
 
 						if (nivelFiltro > 0) {
 							// El filtro actúa sobre la nota ORIGINAL para no cambiar el comportamiento esperado
@@ -4290,7 +4367,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                         // Techo AGL
                         renderEcmwfData(filaTecho, hourlyEcmwf.boundary_layer_height, 
                             v => v == null ? "" : ((Number(v) / 1000).toFixed(1) === "0.0" ? "0" : (Number(v) / 1000).toFixed(1)), "12px",
-                            v => v == null ? "" : (Number(v) < 1000 ? "fondo-rojo" : (Number(v) <= 2000 ? "fondo-naranja" : "fondo-verde")),
+                            v => v == null ? "" : (Number(v) < XCTechoLims.rojo ? "fondo-rojo" : (Number(v) >= XCTechoLims.verde ? "fondo-verde" : "fondo-naranja")),
                             "0px",
                             v => v == null ? "" : "Techo AGL: " + Math.round(Number(v)) + " m sobre el suelo"
                         );
@@ -4300,11 +4377,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             v => {
                                 if (v == null || v === "") return "";
                                 let n = Number(v);
-                                if (n < 50) return "fondo-rojo";       // Muy estable, térmicas nulas o débiles
-                                if (n < 150) return "fondo-naranja";   // Térmicas flojas/marginales
-                                if (n <= 500) return "fondo-verde";    // Óptimo para XC
-                                if (n <= 800) return "fondo-naranja";  // Energía alta, riesgo de sobredesarrollo
-                                return "fondo-rojo";                   // Peligro de tormentas
+                                if (n <= XCCapeLims.idealMax) return "fondo-verde";    // 0 a 400
+                                if (n <= XCCapeLims.riesgo) return "fondo-naranja";    // 400 a 800
+                                return "fondo-rojo";                                   // > 800
                             },
                             "0px",
                             v => v == null ? "" : "CAPE: " + Math.round(Number(v)) + " J/kg"
@@ -4321,7 +4396,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             v => { 
                                 let n = (v === null || v === "null" || v === "") ? 0 : Number(v);
                                 if (n < 0) n = 0;
-                                return n < 50 ? "fondo-verde" : (n <= 150 ? "fondo-naranja" : "fondo-rojo");  
+                                return n <= XCCinLims.verde ? "fondo-verde" : (n <= XCCinLims.rojo ? "fondo-naranja" : "fondo-rojo");  
                             },
                             "0px",
                             v => {
@@ -4362,7 +4437,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             //tdCondiciones.style.cursor = "help"; 
 
             if (horasValidas > 0) {
-                tdCondiciones.title = `Nota: ${notaFinal.toFixed(1)} puntos`;
+                tdCondiciones.title = `Nota Condiciones despegue: ${notaFinal.toFixed(1)} puntos`;
             } else {
                 tdCondiciones.title = "Sin datos suficientes para puntuar";
             }
@@ -4396,14 +4471,25 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 // Añadimos la NUEVA puntuación en la misma columna vertical, pero para el bloque del Grupo 2 (XC)
                 if (rowsGroup2.length > 0) {
                     const tdCondicionesXC = document.createElement("td");
-                    tdCondicionesXC.textContent = "-"; // Dejamos en guión temporalmente mientras defines el algoritmo XC
+                    
+                    let valorVisualXC = horasValidasXC > 0 ? Math.round(notaFinalXC) : "-";
+                    
+                    tdCondicionesXC.textContent = valorVisualXC;
                     tdCondicionesXC.rowSpan = rowsGroup2.length;
                     tdCondicionesXC.style.fontWeight = "bold";
-                    tdCondicionesXC.style.backgroundColor = "#f0f0f0";
-                    tdCondicionesXC.style.color = "#888";
                     tdCondicionesXC.style.textAlign = "center";
                     tdCondicionesXC.classList.add("borde-grueso-izquierda", "borde-grueso-abajo");
-                    tdCondicionesXC.title = "Puntuación XC (próximamente)";
+                    
+                    if (valorVisualXC !== "-") {
+                        tdCondicionesXC.style.backgroundColor = coloresNota[valorVisualXC];
+                        tdCondicionesXC.style.color = "#000";
+                        tdCondicionesXC.title = `Nota XC: ${notaFinalXC.toFixed(1)} puntos`;
+                    } else {
+                        tdCondicionesXC.style.backgroundColor = "#f0f0f0";
+                        tdCondicionesXC.style.color = "#888";
+                        tdCondicionesXC.title = "Sin datos suficientes para puntuar XC";
+                    }
+
                     rowsGroup2[0].appendChild(tdCondicionesXC);
                 }
 			}
