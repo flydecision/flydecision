@@ -3709,26 +3709,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     //tdIconoCiz.style.cursor = "help";
 
 				    filaCizalladura.appendChild(tdIconoCiz);
-
-                    const tooltipHTML = `
-                        <div style="text-align: left; line-height: 1.4;">
-                            <div style="color:#0078d4; font-size:1.05em; margin-bottom:6px; font-weight:bold;">Cizalladura de Bajo Nivel / Fiabilidad</div>
-                            <hr style="margin: 5px 0; border: 0; border-top: 1px solid rgba(0,0,0,0.2);"><br>
-                            
-                            <div style="margin-top: 4px; margin-bottom: 6px;">
-                                🟥 <b>Cizalladura alta y Fiabilidad baja</b><br>
-                            </div>
-
-                            <div style="margin-bottom: 6px;">
-                                🟧 <b>Cizalladura media y Fiabilidad media</b><br>
-                            </div>
-
-                            <div>
-                                🟩 <b>Cizalladura baja y Fiabilidad alta</b><br>
-                            </div>
-                        </div>
-                    `;
-                    tdIconoCiz.setAttribute("data-tippy-content", tooltipHTML);
 				}
 
                 // Iconos Grupo 2: XC
