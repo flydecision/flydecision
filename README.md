@@ -8,9 +8,11 @@ A Web / Android mobile / WPA application for automatic weather forecast analysis
 
 ---
 
-## 📱 Download
+## 📱 Download Android app
 
-[![Get it on Google Play](src/icons/GetItOnGooglePlay_Badge_Web_color_Spanish.png)](https://play.google.com/store/apps/details?id=com.flydecision)
+<a href="https://play.google.com/store/apps/details?id=com.flydecision">
+  <img src="src/icons/GetItOnGooglePlay_Badge_Web_color_Spanish.png" alt="Get it on Google Play" width="200">
+</a>
 
 ## Features
 
