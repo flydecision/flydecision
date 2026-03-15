@@ -160,6 +160,7 @@ In short, this means you are free to use, modify, and distribute this software. 
 For full details, please check the [LICENSE.md](LICENSE.md) file included in the root of this repository.
 
 ---
+
 ## Links & Resources
 
 * [Help](https://flydecision.com/ayuda/)
@@ -167,6 +168,25 @@ For full details, please check the [LICENSE.md](LICENSE.md) file included in the
 * [Legal Notice and Privacy Policy](https://flydecision.com/privacidad/)
 
 *Fly Decision* - Automatic analysis of the weather forecast for paragliding flights. Launch site map.
+
+---
+
+## 🕊️ Philosophy: Why Free Software?
+
+While the terms are often used interchangeably, there is a fundamental difference between *Open Source* and *Free Software*. This project is licensed under **AGPLv3** because we are deeply aligned with the ethical and social values of the **Free Software movement**: promoting social solidarity, sharing, and cooperation.
+
+For us, keeping software free is an ethical imperative to protect users from abuse and ensure that collective work is never hijacked by large corporations for exclusive profit. 
+
+Here is why we stand by Free Software over purely permissive Open Source models:
+
+* **The Open Source Approach (Pragmatic):** Focuses mainly on technical benefits (making better, more secure software). Permissive licenses (like MIT) essentially say: *"Do whatever you want with this code, even close it and sell it; just put my name in the credits."* This allows big tech companies to take community-built code, integrate it into proprietary products, and profit enormously without giving anything back.
+* **The Free Software Approach (Ethical):** Focuses on user freedom and equitable redistribution. Copyleft licenses (like GPL/AGPL) declare: *"You are free to use and modify this code, but you are forbidden from taking that freedom away from others."* **Our Commitment:**
+By using the AGPLv3 license, we guarantee that this work will always belong to the people. If anyone—including corporations with vast resources—benefits from this community project and improves it, they cannot privatize the code. They are legally obligated to return their improvements to the community under the same free terms.
+
+> *"For the free software movement, free software is an ethical imperative, essential respect for the users' freedom. By contrast, the philosophy of open source considers issues in terms of how to make software ‘better’—in a practical sense only."*
+> — Read more: [Why Open Source misses the point of Free Software](https://www.gnu.org/philosophy/open-source-misses-the-point.html)
+
+---
 
 ## 🌤️ Special Acknowledgement: Open-Meteo
 
