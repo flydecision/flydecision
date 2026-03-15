@@ -2736,6 +2736,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		thDespegue.rowSpan = 2; // Ocupa las dos filas de la cabecera
 		thDespegue.style.fontSize = "18px";
 		thDespegue.classList.add("borde-grueso-izquierda", "columna-despegue", "borde-grueso-abajo", "borde-grueso-arriba");
+        if (modoEdicionFavoritos) {
+            thDespegue.classList.add("borde-grueso-derecha");
+        }
 
         // ---------------------------------------------------------------
         // 🟡 CONSTRUCCIÓN DE LA TABLA. Cabecera. Meteo
@@ -3418,7 +3421,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			const filaDir = document.createElement("tr");	
 
             let filaCizalladura; 
-			if (chkMostrarCizalladura) filaCizalladura = document.createElement("tr");
+			if (chkMostrarCizalladura) {
+                filaCizalladura = document.createElement("tr");
+                filaCizalladura.classList.add("fila-cizalladura");
+            }
 
             // GRUPO 2: XC
             let filaTecho, filaCape, filaCin;
@@ -3440,11 +3446,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             
             // Si hay un Grupo 2 activo, ponemos una línea fina sutil entre el Grupo 1 y el Grupo 2
             if (rowsGroup2.length > 0 && rowsGroup1.length > 0) {
-                rowsGroup1[rowsGroup1.length - 1].style.borderBottom = "1px solid #999";
+                rowsGroup1[rowsGroup1.length - 1].style.borderBottom = "1px solid #c3ccd9";
             }
             
             // La ultimísima fila del despegue recibe la separación grande principal
-            if (todasLasFilas.length > 0) todasLasFilas[todasLasFilas.length - 1].classList.add("fila-separador");
+            if (todasLasFilas.length > 0) {
+                todasLasFilas[0].classList.add("fila-inicio-despegue");
+                todasLasFilas[todasLasFilas.length - 1].classList.add("fila-separador", "fila-fin-despegue");
+            }
 
 			// Clase para el filtrado
 			if (esFavorito) {
@@ -3589,6 +3598,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			// ROWSPAN DINÁMICO
             tdDespegue.rowSpan = totalFilasRowSpan;	
 			tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda");
+            if (modoEdicionFavoritos) {
+                tdDespegue.classList.add("borde-grueso-derecha");
+            }
 			
 			filaPrincipal.appendChild(tdDespegue);
 				
@@ -3701,11 +3713,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				    const tdIconoCiz = document.createElement("td");	
 				    //tdIconoCiz.innerHTML = '<span style="font-size:4px;">🌪️🎯</span>';
                     tdIconoCiz.innerHTML = '';
-                    tdIconoCiz.style.background = "linear-gradient(to right, #19ed86 33.3%, #ffa500 33.3%, #ffa500 66.6%, #ff5243 66.6%)";
+                    tdIconoCiz.style.background = "linear-gradient(to right, #9fe4b5 33.3%, #ffe1a8 33.3%, #ffe1a8 66.6%, #ffb1a9 66.6%)";
 				    tdIconoCiz.setAttribute("title", "Cizalladura de Bajo Nivel por velocidad / Fiabilidad del pronóstico de viento medio");	
 				    tdIconoCiz.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda", "celda-altura-4px");
-                    tdIconoCiz.style.borderTop = "1px solid #000";
-                    tdIconoCiz.style.borderBottom = "1px solid #000";
+                    tdIconoCiz.style.borderTop = "1px solid #93a1b5";
+                    tdIconoCiz.style.borderBottom = "1px solid #93a1b5";
                     //tdIconoCiz.style.cursor = "help";
 
 				    filaCizalladura.appendChild(tdIconoCiz);
@@ -3973,12 +3985,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
                         // Borde superior para separar visualmente de la meteo general
                         Array.from(fila180.children).forEach(td => {
-                            td.style.borderTop = "1px solid #000"; 
+                            td.style.borderTop = "1px solid #93a1b5";
                         });
                         
                         // Borde inferior para separar visualmente
                         Array.from(fila80.children).forEach(td => {
-                            td.style.borderBottom = "1px solid #000"; 
+                            td.style.borderBottom = "1px solid #93a1b5";
                         });
                     }
 
@@ -4245,14 +4257,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 					        if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
 
 					        const td = document.createElement("td");
-                            td.classList.add("celda-altura-4px");
-                            //td.style.cursor = "help";
-                            td.style.borderTop = "1px solid #000";
-                            td.style.borderBottom = "1px solid #000";
-                            // Solo ponemos la línea derecha si NO es la última celda visible
-                            if (i !== indiceFinRangoHorario) {
-                                td.style.borderRight = "1px solid #000";
-                            }
+                                td.classList.add("celda-altura-4px");
+                                //td.style.cursor = "help";
+                                td.style.borderTop = "1px solid #93a1b5";
+                                td.style.borderBottom = "1px solid #93a1b5";
+                                // Solo ponemos la línea derecha si NO es la última celda visible
+                                if (i !== indiceFinRangoHorario) {
+                                    td.style.borderRight = "1px solid #93a1b5";
+                                }
 					        if (cacheEsNoche[i]) td.classList.add("celda-noche");
 					        if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
 
@@ -4359,7 +4371,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     }
                     if (!chkMostrarCizalladura && chkMostrarXC && filaTecho) {
                         Array.from(filaTecho.children).forEach(td => {
-                            td.style.borderTop = "1px solid #000";
+                            td.style.borderTop = "1px solid #93a1b5";
                         });
                     }
 				}
@@ -4379,7 +4391,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             tdCondiciones.rowSpan = rowsGroup1.length; 	
             
             tdCondiciones.style.fontWeight = "bold";
-			tdCondiciones.classList.add("borde-grueso-izquierda", "borde-grueso-abajo");
+            tdCondiciones.classList.add("borde-grueso-izquierda", "borde-grueso-abajo", "celda-condiciones", "celda-condiciones-inicio");
             //tdCondiciones.style.cursor = "help"; 
 
             if (horasValidas > 0) {
@@ -4423,9 +4435,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     tdCondicionesXC.style.backgroundColor = "#f0f0f0";
                     tdCondicionesXC.style.color = "#888";
                     tdCondicionesXC.style.textAlign = "center";
-                    tdCondicionesXC.classList.add("borde-grueso-izquierda", "borde-grueso-abajo");
+                    tdCondicionesXC.classList.add("borde-grueso-izquierda", "borde-grueso-abajo", "celda-condiciones", "celda-condiciones-final");
                     tdCondicionesXC.title = "Puntuación XC (próximamente)";
                     rowsGroup2[0].appendChild(tdCondicionesXC);
+                } else {
+                    tdCondiciones.classList.add("celda-condiciones-final");
                 }
 			}
 
@@ -4442,7 +4456,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			// 1. Ordenamos el array de mayor a menor nota
 			listaFilasParaOrdenar.sort((a, b) => b.nota - a.nota);
 		}
-		
+
 		// 2. Ahora que están ordenados, los metemos en la tabla uno a uno
 		listaFilasParaOrdenar.forEach(item => {
 			item.elementos.forEach(fila => {

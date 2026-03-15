@@ -807,7 +807,7 @@ details.config-accordion .accordion-content {
     gap: 8px; /* Espacio automático entre el texto y el botón */
     
     /* Opcional: si quieres que toda la fila tenga un poco de aire */
-    width: 100%;             /* Asegura que ocupa el ancho para poder centrar si se pide */
+    width: 100%;             /* Asegura que ocupe el ancho para poder centrar si se pide */
 }
 
 #titulo-condiciones-slider {
@@ -953,16 +953,18 @@ details.config-accordion .accordion-content {
 .tabla-wrapper {
     flex: 1; /* Ocupa todo el espacio vertical restante */
     /* max-height: 90vh; */
-	margin-left: 3px;
-    margin-bottom: 0px; 
-    margin-right: 3px;
-	margin-top: 3px;
 	flex-grow: 1;       /* Se estira para llenar el hueco dejado por el contador */
     overflow: auto;     /* Aquí aparecen las barras de scroll si hace falta */
 	height: 100%;       /* Asegura que ocupe el contenedor */
     width: 100%;
 	margin: 0;           /* Quitamos márgenes que resten espacio */
 	box-sizing: border-box;
+    background-color: #f5f8fc;
+    border: 1px solid #d3dce8;
+    border-radius: 12px;
+    box-shadow: 0 1px 8px rgba(15, 23, 42, 0.05);
+    background-clip: padding-box;
+    scrollbar-gutter: stable both-edges;
     
     /* Ajustes para móviles */
     -webkit-overflow-scrolling: touch;
@@ -971,17 +973,25 @@ details.config-accordion .accordion-content {
     padding-bottom: calc(env(safe-area-inset-bottom) + 10px) !important;
 }
 
+.tabla-wrapper::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
 #tabla { /* table afecta a todas las tablas del documento. #tabla afecta solo a esa tabla. */
  	border-collapse: separate;
 	border-spacing: 0;
     margin-left: auto;
     margin-right: auto;
-/*	Prueba para iphone 7 */
-	
-	border-right: 2px solid #000;
+
+    border: 0;
+    border-radius: 0;
 	table-layout: fixed;
 	width: max-content;	/* Usamos max-content para que la tabla crezca lo necesario horizontalmente */
 	margin-bottom: 0; /* Añadimos margen inferior para asegurar que la última fila no roce el scrollbar horizontal */
+    background-color: #ffffff;
+    --tabla-delim-color: #7f8ea5;
+    --tabla-delim-width: 1px;
+    --tabla-bloque-gap: 8px;
 	
 /*	Prueba para iphone 7 */
 	white-space: nowrap;
@@ -989,11 +999,15 @@ details.config-accordion .accordion-content {
  */ 
 }
 
-th, td {
+#tabla th,
+#tabla td {
 	padding: 0; /* CAMBIO: Quito padding general para controlar altura exacta */
 	text-align: center;
 	vertical-align: middle;
+    color: #111827;
+    font-variant-numeric: tabular-nums;
 	box-sizing: border-box; /* CAMBIO: Importante para que los bordes no sumen tamaño extra */
+    border-right: 0;
 
 	/* CAMBIO: Defino el ancho de TODAS las celdas a 20px por defecto */
 	width: 20px;
@@ -1004,33 +1018,81 @@ th, td {
 /*	Prueba para iphone 7 */
 	white-space: nowrap;
 /*	Problema tamaño letra accesibilidad */
-	overflow: hidden;
     -webkit-text-size-adjust: none !important;
     text-size-adjust: none !important;
 }
 
+/* Más separación visual entre días (cabecera + datos horarios) */
+#tabla thead tr:nth-child(1) th.borde-grueso-izquierda,
+#tabla thead tr:nth-child(2) th.borde-grueso-izquierda,
+#tabla tbody td.borde-grueso-izquierda:not(.columna-favoritos):not(.columna-provincia-region):not(.columna-despegue):not(.columna-meteo):not(.columna-simbolo-fija):not(.columna-condiciones) {
+    border-left: var(--tabla-delim-width) solid var(--tabla-delim-color) !important;
+    box-shadow: none;
+}
+
 /* Ajustamos el Z-index de todas las celdas de la cabecera (incluida la fila de Días) a un valor muy alto para que NADA se monte encima. */
-th {
+#tabla th {
 	position: sticky;
-	background-color: #ffffff;	
+    background-color: #f8fafd;	
 	z-index: 10; /* Subimos a 11 para mayor seguridad */
 }
 
-td {
+#tabla td {
 	height: 18px;
-    font-size: 16px !important;
+    font-size: 13px !important;
     line-height: 18px !important; /* Fuerza a que la línea mida exactamente lo mismo que la celda */
 }
 
-th.day-start {
-	border-left: 2px solid #000;	
+#tabla th.day-start {
+    border-left: var(--tabla-delim-width) solid var(--tabla-delim-color);	
 }
-td div {
+#tabla td div {
 	display: flex;
 	flex-direction: column;
 	justify-content: center; /* Centrado vertical */
 	align-items: center; /* Centrado horizontal */
 	height: 100%; /* El div debe ocupar toda la altura del td */
+}
+
+/* Mini-tablas por despegue */
+#tabla tbody tr.fila-inicio-despegue:first-child td {
+    border-top: var(--tabla-delim-width) solid var(--tabla-delim-color) !important;
+}
+
+#tabla tbody td.celda-condiciones-inicio {
+    border-top-right-radius: 10px;
+}
+
+#tabla tbody td.celda-condiciones-final {
+    border-bottom-right-radius: 10px;
+}
+
+body.modo-edicion-tabla #tabla tbody tr.fila-inicio-despegue td.columna-favoritos {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-despegue {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+/* Cabecera redondeada (contorno superior) */
+#tabla thead tr:nth-child(1) th:first-child {
+    border-top-left-radius: 10px;
+}
+
+#tabla thead tr:nth-child(1) th:last-child {
+    border-top-right-radius: 10px;
+}
+
+/* Cabecera redondeada (contorno inferior) */
+#tabla thead tr:nth-child(1) th[rowspan="2"]:first-child {
+    border-bottom-left-radius: 10px;
+}
+
+#tabla thead tr:nth-child(1) th:last-child[rowspan="2"] {
+    border-bottom-right-radius: 10px;
 }
 /* CLASE PARA FILAS DE DATOS NORMALES (20px) */
 .celda-altura-20px {
@@ -1048,7 +1110,7 @@ td div {
 }
 
 /* Nuevo estilo para truncar Región y Provincia en Edición de Favoritos */
-td div.texto-multilinea-2 {
+#tabla td div.texto-multilinea-2 {
     display: -webkit-box !important;
     -webkit-box-orient: vertical !important;
     -webkit-line-clamp: 2 !important;
@@ -1069,7 +1131,7 @@ td div.texto-multilinea-2 {
     margin: 0 auto;
 }
 
-td div.nombre-despegue-limitado {
+#tabla td div.nombre-despegue-limitado {
     display: -webkit-box !important;
     -webkit-box-orient: vertical !important;
     -webkit-line-clamp: 2 !important; /* Máximo 2 líneas */
@@ -1094,6 +1156,18 @@ body.modo-edicion-tabla .columna-despegue {
     width: 135px !important;
     min-width: 135px !important;
     max-width: 135px !important;
+}
+
+/* En edición de favoritos, la columna Despegue es la última visible: pintamos su borde derecho exterior */
+body.modo-edicion-tabla #tabla th.columna-despegue,
+body.modo-edicion-tabla #tabla td.columna-despegue {
+    border-right: var(--tabla-delim-width) solid var(--tabla-delim-color) !important;
+    box-shadow: none;
+}
+
+body.modo-edicion-tabla #tabla tbody td.columna-despegue {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
 /* 2. Cambiamos el comportamiento del texto dentro */
@@ -1131,7 +1205,8 @@ table.tabla-tooltip-desglose {
 #tabla thead th {
     /* Esto ayuda a asegurar que el sticky se aplica a un elemento con un contexto de caja claro */
     display: table-cell; 
-    background-color: #ffffff; /* Aseguramos que siempre hay fondo blanco */
+    background-color: #f8fafd;
+    color: #0f172a;
     box-sizing: border-box; /* Aseguramos que padding y borde no afecten la altura total para el cálculo del 'top' */
 }
 
@@ -1143,6 +1218,10 @@ table.tabla-tooltip-desglose {
     top: 0;
     height: 30px; /* FIJO: Definimos altura exacta para que la siguiente fila sepa dónde pegarse */
     z-index: 25;
+    background-color: #eef2f7;
+    border-bottom: 1px solid #cdd7e4;
+    font-size: 16px !important;
+    font-weight: 700;
     /* Correcciones visuales */
     background-clip: padding-box; 
     border-top: 0;
@@ -1155,6 +1234,11 @@ table.tabla-tooltip-desglose {
     top: 30px; /* Se pega justo debajo de la fila 1 */
     z-index: 20; 
     height: 20px; /* Altura de la fila de horas */
+    background-color: #f8fafd;
+    border-bottom: 1px solid #d8e0ea;
+    font-size: 14px !important;
+    font-weight: 600;
+    color: #1f2937;
     background-clip: padding-box;
 }
 
@@ -1167,11 +1251,11 @@ table.tabla-tooltip-desglose {
 	min-width: 30px !important;	
 	max-width: 30px !important;
     z-index: 15; /* Por encima de las celdas de datos normales */
-    background-color: #ffffff; /* Necesario para tapar el contenido al hacer scroll lateral */
+    background-color: #fcfdff; /* Necesario para tapar el contenido al hacer scroll lateral */
 }
 
 .columna-provincia-region {	
-    background-color: #ffffff; /* Necesario para tapar el contenido al hacer scroll lateral */
+    background-color: #fcfdff; /* Necesario para tapar el contenido al hacer scroll lateral */
 }
 
 
@@ -1184,7 +1268,8 @@ table.tabla-tooltip-desglose {
 	max-width: 110px !important;
 	padding-left: 3px;
     z-index: 15;
-    background-color: #ffffff;
+    background-color: #fcfdff;
+    box-shadow: 1px 0 0 #cfd8e3;
 }
 
 /* Columna 3 y 4: Meteo (Iconos y Cabecera) */
@@ -1195,18 +1280,21 @@ table.tabla-tooltip-desglose {
 	min-width: 33px !important;	
 	max-width: 33px !important;	
     z-index: 15 !important;
-    background-color: #ffffff;
+    background-color: #fcfdff;
+    box-shadow: 1px 0 0 #d4dde8;
 }	
 
 /* Columna Condiciones */
 .columna-condiciones {	
 	position: sticky;
-    right: -31px !important;
+    right: 0 !important;
 	width: 27px !important;	
 	min-width: 27px !important;	
 	max-width: 27px !important;	
     z-index: 15 !important;
-    background-color: #ffffff;
+    background-color: #fcfdff;
+    box-shadow: none;
+    border-right: var(--tabla-delim-width) solid var(--tabla-delim-color) !important;
 }	
 
 /* --- LA ESQUINA INTERSECCIÓN --- */
@@ -1219,8 +1307,8 @@ thead .columna-meteo {
     position: sticky;
     top: 0 !important; /* Fuerzan top 0 porque son parte de la primera fila */
     z-index: 30 !important; /* El nivel más alto: tapan filas y columnas al cruzar */
-    background-color: #ffffff;
-    border-bottom: 2px solid #000 !important;
+    background-color: #eef2f7;
+    border-bottom: var(--tabla-delim-width) solid var(--tabla-delim-color) !important;
 }
 
 /* Corrección específica para los iconos de meteo (fila 2, 3 y 4 en la zona izquierda) */
@@ -1229,7 +1317,7 @@ thead .columna-meteo {
     position: sticky;
     left: 110px !important;
     z-index: 15 !important;
-    background-color: #ffffff;
+    background-color: #fcfdff;
 }
 
 /* 🟡 TABLA. Estilos especiales -------------------------------- */
@@ -1237,7 +1325,7 @@ thead .columna-meteo {
 /* FUERZA el color gris para las horas nocturnas fijas */
 /* Usamos !important para anular la regla general `th { background-color: #ffffff; }` */
 #tabla tr:nth-child(2) th.celda-noche {
-    background-color: rgb(214, 214, 214) !important;
+    background-color: #e3e8f0 !important;
 }
 
 /* Para ocultar con js celdas que son true en el resultado de la función esCeldaNoche(Date), que son la fila de horas de cabecera y las 3 filas de datos (velocidad, racha y direccion) */
@@ -1246,23 +1334,44 @@ body.solo-dia .celda-noche {
 }
 
  /* Para las celdas que necesiten o no que se muestre mano al pasar encima */
-tbody td.cursor-pointer {
+#tabla tbody td.cursor-pointer {
     cursor: pointer;
 }
-tbody td.no-cursor-pointer {
+#tabla tbody td.no-cursor-pointer {
     user-select: none;
 	cursor: default;
 }
-tbody td.cursor-pointer:hover {
+#tabla tbody td.cursor-pointer:hover {
     background-color: #f0f0f0;
 }
 
 /* Estilos para la línea gruesa de separación */
-.borde-grueso-izquierda { border-left: 2px solid #000 !important; }	
-.borde-grueso-derecha { border-right: 2px solid #000 !important; }	
-.borde-grueso-abajo { border-bottom: 2px solid #000 !important; }
-.borde-grueso-arriba { border-top: 2px solid #000 !important; }
-tr.fila-separador td, tr.fila-separador th { border-bottom: 2px solid #000 !important; }
+.borde-grueso-izquierda { border-left: var(--tabla-delim-width) solid var(--tabla-delim-color) !important; }	
+.borde-grueso-derecha { border-right: var(--tabla-delim-width) solid var(--tabla-delim-color) !important; }	
+.borde-grueso-abajo { border-bottom: var(--tabla-delim-width) solid var(--tabla-delim-color) !important; }
+.borde-grueso-arriba { border-top: var(--tabla-delim-width) solid var(--tabla-delim-color) !important; }
+#tabla tr.fila-separador td,
+#tabla tr.fila-separador th { border-bottom: var(--tabla-delim-width) solid var(--tabla-delim-color) !important; }
+
+#tabla tbody td.borde-grueso-abajo.columna-favoritos,
+#tabla tbody td.borde-grueso-abajo.columna-provincia-region,
+#tabla tbody td.borde-grueso-abajo.columna-despegue,
+#tabla tbody td.borde-grueso-abajo.celda-condiciones {
+    border-bottom: var(--tabla-delim-width) solid var(--tabla-delim-color) !important;
+}
+
+/* Separación blanca limpia entre despegues, sin doble línea */
+#tabla tbody tr.fila-fin-despegue td,
+#tabla tbody td.borde-grueso-abajo.columna-favoritos,
+#tabla tbody td.borde-grueso-abajo.columna-provincia-region,
+#tabla tbody td.borde-grueso-abajo.columna-despegue,
+#tabla tbody td.borde-grueso-abajo.celda-condiciones {
+    box-shadow: 0 var(--tabla-bloque-gap) 0 #ffffff;
+}
+
+#tabla tbody td.celda-condiciones {
+    border-right: var(--tabla-delim-width) solid var(--tabla-delim-color) !important;
+}
 
 /* Fechas */
 /* .orientaciones-svg {
@@ -1286,7 +1395,7 @@ tr.fila-separador td, tr.fila-separador th { border-bottom: 2px solid #000 !impo
     transform: scale(1.5); 
     transform-origin: center; 
 	
-    margin-right: -4.7px;;
+    margin-right: -4.7px;
 	margin-left: 0;
     padding: 0;
     vertical-align: top; 
@@ -1315,9 +1424,11 @@ span.grados {
     vertical-align: middle;
 } */
  
-.fondo-verde { background-color: #19ed86; }
-.fondo-naranja { background-color: #ffa500; }
-.fondo-rojo { background-color: #ff5243; }
+.fondo-verde { background-color: transparent; }
+.fondo-naranja { background-color: #ffe1a8; }
+.fondo-rojo { background-color: #ffb1a9; }
+
+.fila-cizalladura td.fondo-verde { background-color: #9fe4b5; }
 
 /* 🔴 SUGERENCIAS GLOBALES -------------------------------- */
 
