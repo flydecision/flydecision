@@ -2771,7 +2771,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
             "<b>Techo AGL</b>: Altura (km) de la capa límite sobre el suelo (BLH = Boundary Layer Height)<br>" +
             "<b>CAPE</b>: Energía Potencial Convectiva Disponible (J/kg)<br>" +
-            "<b>CIN</b>: Inhibición Convectiva (J/kg)<br>" +
+            "<b>CIN</b>: Inhibición Convectiva (J/kg en valor absoluto)<br>" +
             "<i>Nota: No está disponible el dato esencial de la base de nube ☁️↓ (CBH = Cloud Base Height) para completar la meteo en el despegue (está solicitado en marzo-2026 a la pasarela meteo)</i><br>";
         thMeteo.setAttribute("data-tippy-content", tooltipContentMeteo);
         thMeteo.setAttribute("tabindex", "0"); 
