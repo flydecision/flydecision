@@ -527,10 +527,38 @@ details.faq-card:target {
 
             <p><b>Resumen: Es gratis y no se recoge ningún dato ni personal ni del dispositivo.</b></p>
             <ul>
-                <li>No requiere ningún tipo de registro ni suscripción. No hay publicidad, ni cookies de rastreo, ni telemetría, etc..</li>
+                <li>No requiere ningún tipo de registro ni suscripción. En la filosofía del proyecto está el respeto a la privacidad: no hay publicidad, ni cookies de rastreo, ni telemetría, etc..</li>
                 <li>Tanto el acceso a la web como la aplicación para Android son de libre acceso y tienen funcionalidad sin limitaciones. Aunque la app tiene alguna ventaja, como el modo offline o verla a pantalla completa, no es necesaria. Elige la que quieras porque ambas aplicaciones funcionan igual.</li>
                 <li>Tus configuraciones se guardan en tu navegador o en tu app de forma privada.</li>
-                <li>No vendemos tus datos porque, sencillamente, no los necesitamos, no nos interesa y además tampoco los tenemos. Este es un proyecto abierto desarrollado en colaboración con la comunidad, como ejercicio práctico, de conocimiento y de entretenimiento. No hay nada oculto que se te escape.</li>
+                <li>No vendemos tus datos porque, sencillamente, no los necesitamos, no nos interesa y además tampoco los tenemos. Este es un proyecto abierto de software libre (filosofía "free software") desarrollado en colaboración con la comunidad, como ejercicio práctico, de conocimiento y de entretenimiento. No hay nada oculto que se te escape.</li>
+                <li>Puedes revisar todo el código fuente original, hacer contribuciones, reportar errores o sugerir funcionalidades en nuestro proyecto abierto <a href="https://github.com/flydecision/flydecision" target="_blank" rel="noopener noreferrer">Fly Decision en GitHub</a>.
+                </li>
+                
+            </ul>
+            
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="software-libre">
+        <summary class="faq-question">🕊️ ¿Por qué este proyecto es Software Libre y no solo Open Source?</summary>
+        <div class="faq-answer">
+
+            <p><b>Resumen: Elegimos el Software Libre (Free Software) como una filosofía ética para proteger la libertad de las usuarias y evitar que el trabajo colectivo sea privatizado.</b></p>
+            <p>Nota: "usuarias", "creadoras",.. se usa aquí por economía del lenguaje, refiriendo a "personas usuarias,...".</p>
+            <ul>
+                <li><b>Dos filosofías distintas:</b> Mientras que el <i>Open Source</i> (Código Abierto) tiene un enfoque puramente práctico para "hacer un software mejor", el <b>Software Libre</b> se basa en valores éticos y sociales. Promueve la solidaridad, la cooperación y el respeto fundamental a la libertad de las usuarias.</li>
+                <li><b>El problema del Open Source permisivo:</b> Las grandes corporaciones suelen preferir licencias de código abierto permisivas (como MIT) porque el trato es: <i>"Haz lo que quieras, incluso cierra el código y véndelo"</i>. Esto permite que empresas con grandes recursos se apropien del trabajo de la comunidad, lo privaticen y se lucren de forma abusiva sin devolver sus mejoras a las creadoras originales.</li>
+                <li><b>La protección del Software Libre (Copyleft):</b> Las licencias de Software Libre (como la familia GPL) dicen: <i>"Eres libre de usar y modificar este código, pero no puedes quitarle esa misma libertad a las demás"</i>. Si alguien modifica el código y lo distribuye, debe seguir siendo libre.</li>
+                <li><b>Nuestro compromiso con AGPLv3:</b> Utilizamos la licencia GNU AGPLv3 porque es la más alineada con la redistribución equitativa. Garantiza que este proyecto siempre pertenecerá a la gente y nunca podrá ser secuestrado. Si alguien se beneficia de la comunidad y lo mejora, está legalmente obligado a devolver esas mejoras a la comunidad.</li>
+                <li><i>Para profundizar en este tema, te recomendamos leer: <a href="https://www.gnu.org/philosophy/open-source-misses-the-point.html" target="_blank" rel="noopener noreferrer">Por qué el «código abierto» pierde el punto del Software Libre</a>.</i></li>
             </ul>
             
             <div class="share-btn-container">
@@ -548,7 +576,7 @@ details.faq-card:target {
         <summary class="faq-question">📱 ¿Hay App para Android?</summary>
         <div class="faq-answer">
 
-            <p>Sí.</b></p>
+            <p><b>Sí.</b></p>
             <a href="https://play.google.com/store/apps/details?id=com.flydecision" target="_blank" rel="noopener" class="badge-google-play">
                 <img alt="Disponible en Google Play" src="https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png" width="180">
             </a>
@@ -802,6 +830,37 @@ details.faq-card:target {
                     <li>Añadir despegues del resto de Francia, de Portugal y Alpes.</li> 
                     <li>Posibilidad de obtener estos mismos datos pero para cualquier punto, no solo para los puntos fijos de los despegues disponibles en la base de datos. Realmente esto ya está implementado internamente pero no es posible hacerlo público ya que chocaría con las limitaciones del servicio gratuito de Open-Meteo indicadas anteriormente.</li> 
             </ul>
+            <div class="share-btn-container">
+                <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
+                    <svg class="share-icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+            </div>
+        </div>
+    </details>
+
+    <details class="faq-card" id="responsabilidad">
+        <summary class="faq-question">⚠️ Aviso importante: Funcionamiento y Exención de Responsabilidad</summary>
+        <div class="faq-answer">
+
+            <p><b>Resumen: Esta aplicación es una herramienta de apoyo informativo. Los pronósticos meteorológicos pueden fallar, la puntuación de condiciones puede ser incorrecta y quien pilota es la única persona responsable de evaluar las condiciones reales y tomar la decisión final antes de volar.</b></p>
+            
+            <p><b>¿Cómo funciona el sistema? (Uso previsto)</b></p>
+            <ul>
+                <li>Fly Decision es una herramienta de apoyo a la decisión final de la persona, ofreciendo el pronóstico y realizando un <b>análisis automático de las condiciones generales</b> para zonas de despegue de parapente.</li>
+                <li>El sistema evalúa parámetros previstos (como la precipitación, velocidad del viento, las rachas y la dirección) comparándolos con <b>límites de seguridad configurables</b> definidos por ti.</li>
+                <li>Ofrece predicciones por horas y clasifica cada franja horaria mediante una <b>escala visual de colores</b> para facilitar la comprensión de un vistazo.</li>
+            </ul>
+
+            <p><b>🛑 Exención de responsabilidad (Disclaimer)</b></p>
+            <ul>
+                <li><b>Solo para fines informativos:</b> Este software se proporciona exclusivamente con fines informativos y <b>bajo ninguna circunstancia debe utilizarse como un sistema de seguridad de vuelo</b> ni como la única base para tomar decisiones que afecten a tu seguridad.</li>
+                <li><b>Limitaciones de los pronósticos:</b> Los datos meteorológicos provienen de modelos numéricos. Estos pronósticos <b>pueden contener errores significativos</b> y es posible que no representen correctamente los efectos locales reales o la aerología de la zona.</li>
+                <li><b>Responsabilidad exclusiva de quien pilota, que requiere evaluar las condiciones reales y actuales en el lugar de despegue y de tomar la decisión final de si es seguro volar o no.</li>
+            </ul>
+            
             <div class="share-btn-container">
                 <button class="share-btn" onclick="copyFaqLink(this)" title="Copiar enlace directo">
                     <svg class="share-icon" viewBox="0 0 24 24">
