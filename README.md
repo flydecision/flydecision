@@ -3,6 +3,8 @@
 
 A Web / Android mobile / WPA application for automatic weather forecast analysis tailored for paragliding launch sites. Provides visual evaluations using a color-coded system to help paragliders make informed decisions about flying conditions. It has many more features and a launch site map with useful information and various filters (number of flights, average distance, etc.).
 
+> 🌱 **A brief note on our history:**
+> Before making its official debut here on GitHub as Free Software on March 2026, this project had already been in active development for **a full year**. While it was built with an open philosophy from the start, this repository marks the first time the codebase is officially published and structured for public access and community collaboration.
 
 ## Features
 
