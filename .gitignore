@@ -8,6 +8,7 @@ build/
 temp/
 tmp/
 .cache/
+android/build/
 
 # Archivos del sistema operativo 
 .DS_Store
@@ -31,3 +32,4 @@ www/
 **/sftp.json
 *.csv
 *.gpx
+config.js

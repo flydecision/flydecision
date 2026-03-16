@@ -1,14 +1,27 @@
 {
-  "name": "desarrollo",
-  "version": "1.0.0",
-  "description": "",
+  "name": "flydecision",
+  "version": "2.1.0",
+  "description": "Análisis automático del pronóstico meteorológico para puntos de despegue de parapente. Puntuación de condiciones y mapa de despegues.",
   "main": "index.js",
   "scripts": {
+    "start": "echo 'Usa un servidor local para probar la web o ejecuta: npx cap serve'",
+    "sync": "npx cap sync",
+    "open:android": "npx cap open android",
+    "build:android": "npx cap build android",
+    "generate-icons": "capacitor-assets generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["paragliding", "forecast", "analysis", "parapente", "pronóstico", "meteorología", "despegues", "paragliding launch sites", "free software", "android", "open-source", "free flight", "paragliding takeoff", "paragliding map", "thermal activity", "XC", "Cross Country", "soaring"],
+  "author": "Fly Decision <flydecision@flydecision.com> (https://flydecision.com)",
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flydecision/flydecision.git"
+  },
+  "bugs": {
+    "url": "https://github.com/flydecision/flydecision/issues"
+  },
+  "homepage": "https://flydecision.com",
   "type": "commonjs",
   "dependencies": {
     "@capacitor/android": "^8.1.0",
