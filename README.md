@@ -16,18 +16,18 @@ A Web / Android mobile / WPA application for automatic weather forecast analysis
 
 <table align="center">
   <tr>
-    <td><img src="src/ayuda/01mini.webp" alt="Pantalla 01"></td>
-    <td><img src="src/ayuda/02mini.webp" alt="Pantalla 02"></td>
-    <td><img src="src/ayuda/03mini.webp" alt="Pantalla 03"></td>
-    <td><img src="src/ayuda/04mini.webp" alt="Pantalla 04"></td>
-    <td><img src="src/ayuda/05mini.webp" alt="Pantalla 05"></td>
+    <td><img src="src/ayuda/screenshots/01mini.webp" alt="Pantalla 01"></td>
+    <td><img src="src/ayuda/screenshots/02mini.webp" alt="Pantalla 02"></td>
+    <td><img src="src/ayuda/screenshots/03mini.webp" alt="Pantalla 03"></td>
+    <td><img src="src/ayuda/screenshots/04mini.webp" alt="Pantalla 04"></td>
+    <td><img src="src/ayuda/screenshots/05mini.webp" alt="Pantalla 05"></td>
   </tr>
   <tr>
-    <td><img src="src/ayuda/06mini.webp" alt="Pantalla 06"></td>
-    <td><img src="src/ayuda/07mini.webp" alt="Pantalla 07"></td>
-    <td><img src="src/ayuda/08mini.webp" alt="Pantalla 08"></td>
-    <td><img src="src/ayuda/09mini.webp" alt="Pantalla 09"></td>
-    <td><img src="src/ayuda/10mini.webp" alt="Pantalla 10"></td>
+    <td><img src="src/ayuda/screenshots/06mini.webp" alt="Pantalla 06"></td>
+    <td><img src="src/ayuda/screenshots/07mini.webp" alt="Pantalla 07"></td>
+    <td><img src="src/ayuda/screenshots/08mini.webp" alt="Pantalla 08"></td>
+    <td><img src="src/ayuda/screenshots/09mini.webp" alt="Pantalla 09"></td>
+    <td><img src="src/ayuda/screenshots/10mini.webp" alt="Pantalla 10"></td>
   </tr>
 </table>
 
