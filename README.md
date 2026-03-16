@@ -241,9 +241,9 @@ The system evaluates predicted weather parameters (such as rain, wind speed, gus
 
 ---
 
-## 🌤️ Special Acknowledgement: Open-Meteo
+## 🤝 Special Acknowledgement: Open-Meteo
 
-This project is powered by the weather data provided by **[Open-Meteo](https://open-meteo.com/)**. We want to express our deepest gratitude for their service, their unwavering commitment to the free software community, and for generously granting us a license to access their comprehensive weather data.
+This project is powered by the public weather forecast services of Météo-France and ECMWF via **[Open-Meteo](https://open-meteo.com/)**. We want to express our deepest gratitude for their service, their unwavering commitment to the free software community, and for generously granting us a license to access their comprehensive weather data.
 
 **About Open-Meteo:**
 Open-Meteo is an open-source weather API that delivers highly accurate and reliable forecasts worldwide. Their platform is an invaluable resource for developers due to its key features:
