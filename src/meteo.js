@@ -76,6 +76,8 @@ const HorariosMediosActualizacionEcmwf =["00:30", "06:55", "12:25", "18:55"]; //
 
 let esModoOffline = false; // Nueva variable para controlar el estado de red
 
+const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
+
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
 // Asegúrate de que Capacitor está disponible
 // if (window.Capacitor && window.Capacitor.Plugins.StatusBar) {
@@ -86,193 +88,72 @@ let esModoOffline = false; // Nueva variable para controlar el estado de red
 // }
 
 // ===============================================================
-// 🔴 FILTRO DISTANCIA. GESTIÓN DE UBICACIÓN (GPS, MANUAL, MAPA)
+// 🔴 FILTRO DISTANCIA. GESTIÓN DE UBICACIÓN (MAPA Y GPS UNIFICADO)
 // ===============================================================
 
 // 1. VARIABLES GLOBALES Y CONFIGURACIÓN
-// ---------------------------------------------------------------
-
-let centroLat = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) || 40.4168; // coordenadas "dummy" Madrid, para que no falle si no hay coordenadas
+let centroLat = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) || 40.4168; // dummy Madrid
 let centroLon = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL')) || -3.7038;
 
-// Elementos del Menú Modal Principal
-const modalGeoMenu = document.getElementById('modal-geo-menu');
-const btnAbrirGeo  = document.getElementById('btn-abrir-geo-menu');
-const btnCerrarGeo = document.getElementById('btn-cerrar-menu');
+// Elementos del Modal Mapa unificado
+const modalMapa = document.getElementById('modal-mapa');
+const btnAbrirGeo = document.getElementById('btn-abrir-geo-menu');
+const btnCancelarMapa = document.getElementById('btn-cancelar-mapa');
+const btnCerrarMapa = document.getElementById('btn-cerrar-mapa');
+const btnGpsMapa = document.getElementById('btn-gps-mapa');
+const chkIncNoFavsDistancia = document.getElementById('chk-incluir-no-favs-distancia');
 
-// 2. FUNCIÓN CENTRAL (Modifica variables, guarda, cierra menú y recarga tabla)
-// ---------------------------------------------------------------
+let mapaLeaflet = null;
+let marcadorActual = null;
+
+// 2. FUNCIÓN PARA ACTUALIZAR Y GUARDAR CUALQUIER CAMBIO
 function actualizarOrigenGlobal(lat, lon, metodo) {
     centroLat = lat;
     centroLon = lon;
     
-    // Guardar en memoria con tus claves personalizadas
     localStorage.setItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
     localStorage.setItem('METEO_FILTRO_DISTANCIA_LON_INICIAL', lon);
-
-    actualizarTextoVisual();
-    
-    if(modalGeoMenu) modalGeoMenu.style.display = 'none';
-
-    // 🐛 DEBUG Log en consola
-    //console.log(`✅ Origen actualizado a ${lat.toFixed(4)}, ${lon.toFixed(4)} vía ${metodo}`);
 
     construir_tabla();
 }
 
-function actualizarTextoVisual() {
-    const display = document.getElementById('coords-display');
+// 3. FUNCIÓN COMPARTIDA (CLIC EN EL MAPA O AL LOCALIZAR GPS)
+function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
+    ponerMarcador(lat, lng);
     
-    if(display) {
-        // Solo muestra el icono de ubicación y las coordenadas actuales
-        display.innerHTML = `📍 ${centroLat.toFixed(4)}, ${centroLon.toFixed(4)}`;
+    // Si el slider estaba en "Todo" (9999), lo bajamos a 100km automáticamente
+    const sliderDistElem = document.getElementById('distancia-slider');
+    if (sliderDistElem && sliderDistElem.noUiSlider) {
+        const currentIdx = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
+        if (currentIdx === CORTES_DISTANCIA_GLOBAL.length - 1) {
+            const idx100km = CORTES_DISTANCIA_GLOBAL.indexOf(100);
+            sliderDistElem.noUiSlider.set(idx100km);
+            ultimaDistanciaConfirmada = idx100km;
+            
+            // Si el panel de distancia estaba cerrado, lo abrimos para que el usuario vea qué ha pasado
+            const divDistancia = document.getElementById("div-filtro-distancia");
+            const btnToggle = document.getElementById("btn-div-filtro-distancia-toggle");
+            if (divDistancia && !divDistancia.classList.contains("activo")) {
+                divDistancia.classList.add("activo");
+                if (btnToggle) btnToggle.classList.add("activo");
+            }
+        }
     }
+
+    actualizarOrigenGlobal(lat, lng, metodo);
+    if(modalMapa) modalMapa.style.display = 'none';
 }
 
-// 3. LÓGICA DE APERTURA/CIERRE DEL MENÚ DE OPCIONES
-// ---------------------------------------------------------------
+// 4. LÓGICA DE APERTURA DEL MAPA DIRECTAMENTE
 if (btnAbrirGeo) {
     btnAbrirGeo.addEventListener('click', () => {
-		actualizarTextoVisual();
-        modalGeoMenu.style.display = 'flex';
-    });
-}
+        if (modalMapa) modalMapa.style.display = 'flex';
 
-if (btnCerrarGeo) {
-    btnCerrarGeo.addEventListener('click', () => {
-        modalGeoMenu.style.display = 'none';
-    });
-}
-
-// Cerrar si clic fuera
-window.addEventListener('click', (e) => {
-    if (e.target === modalGeoMenu) {
-        modalGeoMenu.style.display = 'none';
-    }
-});
-
-// 4. LÓGICA DE LOS BOTONES DE OPCIÓN
-// ---------------------------------------------------------------
-
-// --- OPCIÓN A: GPS AUTOMÁTICO ---
-const btnGps = document.getElementById('btn-gps');
-
-if (btnGps) {
-    btnGps.addEventListener('click', async function() {
-        const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
-        const textoOriginal = btnGps.innerHTML;
-
-        btnGps.innerHTML = "<span>⏳ Buscando...</span>";
-
-        if (isApp) {
-            try {
-                const Geolocation = Capacitor.Plugins.Geolocation;
-
-                // 1. COMPROBACIÓN INICIAL
-                let check = await Geolocation.checkPermissions();
-
-                // Si no tenemos permiso claro, lo pedimos
-                if (check.location !== 'granted' && check.location !== 'coarse') {
-                    // Pedimos el permiso y AQUI ESTA LA MAGIA:
-                    // No comprobamos el resultado con un 'if'. 
-                    // Asumimos que el usuario ha elegido algo válido y probamos.
-                    await Geolocation.requestPermissions();
-                }
-
-                // 2. INTENTAR OBTENER POSICIÓN DIRECTAMENTE
-                // Si el usuario eligió "Aproximada", esto funcionará.
-                // Si el usuario rechazó todo, esto fallará y se irá al 'catch'.
-                const pos = await Geolocation.getCurrentPosition({
-                    enableHighAccuracy: false, // Clave para que funcione con "Aproximada"
-                    timeout: 10000
-                });
-
-                actualizarOrigenGlobal(pos.coords.latitude, pos.coords.longitude, "GPS");
-                
-            } catch (err) {
-                console.error("Error GPS:", err);
-                // Solo si falla REALMENTE al obtener la posición, mostramos el error
-                if (err.message.includes("disabled")) {
-                    alert("Por favor, activa el GPS/Ubicación en tu móvil.");
-                } else {
-                    // Si llegamos aquí es que el usuario rechazó totalmente o hubo error técnico
-                    alert("No se pudo obtener la ubicación. Asegúrate de dar permiso (aunque sea aproximado).");
-                }
-            } finally {
-                btnGps.innerHTML = textoOriginal;
-            }
-        } else { 
-            // --- MODO WEB (PC) ---
-            if (!navigator.geolocation) {
-                alert("Tu navegador no soporta GPS.");
-                btnGps.innerHTML = textoOriginal;
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    actualizarOrigenGlobal(pos.coords.latitude, pos.coords.longitude, "GPS");
-                    btnGps.innerHTML = textoOriginal;
-                },
-                (err) => {
-                    console.error(err);
-                    alert("Error GPS Web.");
-                    btnGps.innerHTML = textoOriginal;
-                },
-                { enableHighAccuracy: false, timeout: 10000 }
-            );
+        if (chkIncNoFavsDistancia) {
+            chkIncNoFavsDistancia.checked = localStorage.getItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV') === 'true';
         }
-    });
-}
 
-// --- OPCIÓN B: MANUAL (Escribir) ---
-/* const btnManual = document.getElementById('btn-manual');
-if (btnManual) {
-    btnManual.addEventListener('click', function() {
-        const input = prompt(
-			"Introduce coordenadas (Latitud, Longitud)", 
-			`${centroLat.toFixed(4)}, ${centroLon.toFixed(4)}`
-		);
-        
-        if (input) {
-            const partes = input.split(',');
-            if (partes.length === 2) {
-                const lat = parseFloat(partes[0].trim());
-                const lon = parseFloat(partes[1].trim());
-                
-                if (!isNaN(lat) && !isNaN(lon)) {
-                    actualizarOrigenGlobal(lat, lon, "Manual");
-                } else {
-                    alert("⚠️ Coordenadas numéricas no válidas.");
-                }
-            } else {
-                alert("⚠️ Formato incorrecto. Usa: 42.123, -2.555");
-            }
-        }
-    });
-}
- */
-// --- OPCIÓN C: MAPA (Leaflet) ---
-const btnMapa = document.getElementById('btn-mapa');
-const modalMapa = document.getElementById('modal-mapa');
-const btnCancelarMapa = document.getElementById('btn-cancelar-mapa');
-const btnGuardarMapa = document.getElementById('btn-aceptar-mapa');
-
-let mapaLeaflet = null;
-let marcadorActual = null;
-let coordsTemporales = { lat: centroLat, lon: centroLon };
-
-if (btnMapa) {
-    btnMapa.addEventListener('click', function() {
-        // 1. Ocultar menú anterior
-        if(modalGeoMenu) modalGeoMenu.style.display = 'none';
-
-        // 2. Mostrar modal
-        modalMapa.style.display = 'flex';
-
-        // 3. Inicializar o Recalibrar
         if (!mapaLeaflet) {
-            // CREACIÓN INICIAL
-            // Pequeño retardo para asegurar que el DIV ya existe visualmente
             setTimeout(() => {
                 mapaLeaflet = L.map('mapa-selector').setView([centroLat, centroLon], 9);
                 
@@ -281,14 +162,12 @@ if (btnMapa) {
                 }).addTo(mapaLeaflet);
 
                 mapaLeaflet.on('click', function(e) {
-                    ponerMarcador(e.latlng.lat, e.latlng.lng);
+                    seleccionarUbicacionYFiltrar(e.latlng.lat, e.latlng.lng, "Mapa");
                 });
 
                 ponerMarcador(centroLat, centroLon);
-            }, 50); // 50ms de cortesía
-            
+            }, 50);
         } else {
-            // YA EXISTÍA: Recalibrar
             mapaLeaflet.setView([centroLat, centroLon], 8);
             setTimeout(() => { 
                 mapaLeaflet.invalidateSize(); 
@@ -299,38 +178,95 @@ if (btnMapa) {
 }
 
 function ponerMarcador(lat, lng) {
-    coordsTemporales = { lat: lat, lon: lng };
-
     const iconoRojo = L.icon({
         iconUrl: 'icons/marker-icon-2x-red.png',
         shadowUrl: 'icons/marker-shadow.png',
-        iconSize: [35, 55],    // Un poco más grande
-        iconAnchor: [17, 55],  // La punta del marcador
-        popupAnchor: [1, -34],
-        shadowSize: [55, 55]
+        iconSize:[35, 55],    
+        iconAnchor:[17, 55],  
+        popupAnchor:[1, -34],
+        shadowSize:[55, 55]
     });
 
     if (marcadorActual) mapaLeaflet.removeLayer(marcadorActual);
-    marcadorActual = L.marker([lat, lng], { icon: iconoRojo }).addTo(mapaLeaflet)
-        //.bindPopup(`Ubicación de origen<br>seleccionada`)
-        .openPopup();
+    marcadorActual = L.marker([lat, lng], { icon: iconoRojo }).addTo(mapaLeaflet).openPopup();
 }
 
-// Botones internos del Mapa
+// 5. EVENTO CHECKBOX (INCLUIR NO FAVORITOS)
+if (chkIncNoFavsDistancia) {
+    chkIncNoFavsDistancia.addEventListener('change', (e) => {
+        localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', e.target.checked);
+        
+        // Si hay un filtro de distancia aplicado (< 9999), reconstruimos la tabla ya.
+        const sliderDistElem = document.getElementById('distancia-slider');
+        if (sliderDistElem && sliderDistElem.noUiSlider) {
+            const currentIdx = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
+            if (currentIdx < CORTES_DISTANCIA_GLOBAL.length - 1) {
+                construir_tabla(false, true);
+            }
+        }
+    });
+}
+
+// 6. EVENTO UBICACIÓN DEL MÓVIL (GPS) EN EL MAPA
+if (btnGpsMapa) {
+    btnGpsMapa.addEventListener('click', async function() {
+        const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
+        const textoOriginal = btnGpsMapa.innerHTML;
+        btnGpsMapa.innerHTML = "<span>⏳ Buscando...</span>";
+
+        const onLocationFound = (lat, lon) => {
+            btnGpsMapa.innerHTML = textoOriginal;
+            seleccionarUbicacionYFiltrar(lat, lon, "GPS");
+        };
+
+        const onLocationError = (errMsg) => {
+            console.error("Error GPS:", errMsg);
+            alert("No se pudo obtener la ubicación. " + errMsg);
+            btnGpsMapa.innerHTML = textoOriginal;
+        };
+
+        if (isApp) {
+            try {
+                const Geolocation = Capacitor.Plugins.Geolocation;
+                let check = await Geolocation.checkPermissions();
+                if (check.location !== 'granted' && check.location !== 'coarse') {
+                    await Geolocation.requestPermissions();
+                }
+                const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 10000 });
+                onLocationFound(pos.coords.latitude, pos.coords.longitude);
+            } catch (err) {
+                onLocationError(err.message.includes("disabled") ? "Asegúrate de tener el GPS activado." : "Revisa los permisos.");
+            }
+        } else { 
+            if (!navigator.geolocation) {
+                onLocationError("Tu navegador no soporta GPS.");
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (pos) => onLocationFound(pos.coords.latitude, pos.coords.longitude),
+                (err) => onLocationError(err.message),
+                { enableHighAccuracy: false, timeout: 10000 }
+            );
+        }
+    });
+}
+
+// 7. BOTONES DE CERRAR/CANCELAR MAPA
 if (btnCancelarMapa) {
     btnCancelarMapa.addEventListener('click', () => {
-        modalMapa.style.display = 'none';
-        // Volver a abrir el menú anterior si se cancela
-        if(modalGeoMenu) modalGeoMenu.style.display = 'flex'; 
+        if(modalMapa) modalMapa.style.display = 'none';
     });
 }
-
-if (btnGuardarMapa) {
-    btnGuardarMapa.addEventListener('click', () => {
-        actualizarOrigenGlobal(coordsTemporales.lat, coordsTemporales.lon, "Mapa");
-        modalMapa.style.display = 'none';
+if (btnCerrarMapa) {
+    btnCerrarMapa.addEventListener('click', () => {
+        if(modalMapa) modalMapa.style.display = 'none';
     });
 }
+window.addEventListener('click', (e) => {
+    if (e.target === modalMapa) {
+        modalMapa.style.display = 'none';
+    }
+});
 
 // ---------------------------------------------------------------
 // 🔴 MENSAJES
@@ -2627,14 +2563,24 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // 🔴 LÓGICA DE FILTRADO O NO DE FAVORITOS
         // ---------------------------------------------------------------
 
+		// Primero calculamos si el filtro de distancia está activo para ver si el check de favoritos debe aplicar
+        const sliderDistElemParaFavs = document.getElementById('distancia-slider');
+        let distanciaLimiteParaFavs = 9999;
+        if (sliderDistElemParaFavs && sliderDistElemParaFavs.noUiSlider) {
+            const idxDist = Math.round(parseFloat(sliderDistElemParaFavs.noUiSlider.get()));
+            distanciaLimiteParaFavs = CORTES_DISTANCIA_GLOBAL[idxDist];
+        }
+        
+        const incluirNoFavs = localStorage.getItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV') === 'true';
+        const ignorarFiltroFavoritos = (distanciaLimiteParaFavs < 9999 && incluirNoFavs);
+
 		// Está activo filtro favoritos Y hay favoritos --> hacemos que los array despegues y respuestas contengan solo los datos de los despegues que haya en favoritos 
-		if (soloFavoritos && favoritos.length > 0) {
+		if (soloFavoritos && favoritos.length > 0 && !ignorarFiltroFavoritos) {
 			
 			// 1. Crear un mapa temporal para relacionar Despegue con sus respuestas
 			const respuestasMap = new Map();
             const respuestasEcmwfMap = new Map();
 			data.despegues.forEach((d, index) => { 
-				// Usamos data.despegues y data.respuestas originales para el mapa
 				respuestasMap.set(d.Despegue, data.respuestas[index]); 
                 respuestasEcmwfMap.set(d.Despegue, dataEcmwf.respuestas[index]); 
 			});
@@ -2648,9 +2594,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			
 		}
 		 // Está activo filtro favoritos pero no hay favoritos
-		 else if (soloFavoritos && favoritos.length === 0) {
-					respuestas = [];
-                    respuestasEcmwf =[];
+		 else if (soloFavoritos && favoritos.length === 0 && !ignorarFiltroFavoritos) {
+			respuestas = [];
+            respuestasEcmwf =[];
 		}
 	
 		// ---------------------------------------------------------------
@@ -3045,19 +2991,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // 🟡 CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Bucle principal despegues.forEach que recorre cada despegue para mostrar o no sus X líneas (la primera celda unida con provincia+despegue+orientacion+opcionales
         // ---------------------------------------------------------------
 
-        // 1. Array de referencia (MISMOS VALORES QUE EN EL SLIDER). Este bloque de lógica "traduce" la posición del slider a kilómetros reales usando el array, para hacer pasos secuenciales en apariencia, pero exponenciales en valor
-        const CORTES_DISTANCIA = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
-
+        // -----------------------------------------------------------
+        // 📍📍📍 ️LÓGICA DE FILTRADO DE CONSTRUCCIÓN DE FILAS POR DESPEGUE POR DISTANCIA
+        // -----------------------------------------------------------
         const sliderDistElem = document.getElementById('distancia-slider');
-        // 2. Obtener valor del slider (que será un ÍNDICE, ej: 18)
-        let indiceSeleccionado = CORTES_DISTANCIA.length - 1;
-        // 3. Traducir índice a Kilómetros reales
-        // Si el índice corresponde a 9999 (el último), es "Todo"
+        let indiceSeleccionado = CORTES_DISTANCIA_GLOBAL.length - 1;
         let distanciaLimite = 9999;
-
+        
         if (sliderDistElem && sliderDistElem.noUiSlider) {
             indiceSeleccionado = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
-            distanciaLimite = CORTES_DISTANCIA[indiceSeleccionado];
+            distanciaLimite = CORTES_DISTANCIA_GLOBAL[indiceSeleccionado];
         }
 		
 		const sliderCondiciones = document.getElementById('condiciones-slider');
@@ -4865,40 +4808,51 @@ function filtrarDespeguesProvincias() {
     if (divContador) {
         if (modoEdicionFavoritos) {
 
-            // Comprobamos si hay algún filtro aplicado (ya sea el botón de favoritos, buscador o distancia)
-            // Si los visibles son menos que el total, es que hay un filtro.
             if (visibles < totalDespeguesDisponibles) {
-                
-                // Reutilizamos el diseño del BADGE ROJO
                 const htmlNumeroFiltrado = `
                     <span class="contador-badge-filtro" title="Filtro activo">
                         <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
                         <b>${visibles}</b>
                     </span>`;
-                
                 divContador.innerHTML = `Mostrando ${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles`;
-                
             } else {
-                // Sin filtros (se ven todos)
                 divContador.innerHTML = `Mostrando <b>${visibles}</b> de <b>${totalDespeguesDisponibles}</b> despegues disponibles`;
             }
 
-        } else if (totalFavoritos === 0) {
-            divContador.innerHTML = `Total de despegues disponibles: ${totalDespeguesDisponibles}`;
         } else {
-            if (visibles < totalFavoritos) {
-                // CASO A: Hay filtros activos (Visibles es menor que Total) -> APLICAR ESTILO ROJO E ICONO
+            // Revisamos si el filtro de "Incluir no favoritos" con distancia está activo
+            const incluirNoFavs = localStorage.getItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV') === 'true';
+            const sliderDistElemParaTabla = document.getElementById('distancia-slider');
+            let distanciaLimiteParaFavs = 9999;
+            if (sliderDistElemParaTabla && sliderDistElemParaTabla.noUiSlider) {
+                const idxDist = Math.round(parseFloat(sliderDistElemParaTabla.noUiSlider.get()));
+                distanciaLimiteParaFavs = CORTES_DISTANCIA_GLOBAL[idxDist];
+            }
+            const ignorarFiltroFavoritos = (distanciaLimiteParaFavs < 9999 && incluirNoFavs);
+
+            if (ignorarFiltroFavoritos) {
                 const htmlNumeroFiltrado = `
                     <span class="contador-badge-filtro" title="Filtro activo">
                         <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
                         <b>${visibles}</b>
                     </span>`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} despegues en ${distanciaLimiteParaFavs} km (incluye no favoritos)`;
                 
-                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalFavoritos}</b> despegues favoritos (disponibles: ${totalDespeguesDisponibles})`;
-                
+            } else if (totalFavoritos === 0) {
+                divContador.innerHTML = `Total de despegues disponibles: ${totalDespeguesDisponibles}`;
+
             } else {
-                // CASO B: No hay filtros (Se ven todos) -> ESTILO NORMAL
-                divContador.innerHTML = `<b>${visibles}</b> de <b>${totalFavoritos}</b> despegues favoritos (disponibles: ${totalDespeguesDisponibles})`;
+                if (visibles < totalFavoritos) {
+                    const htmlNumeroFiltrado = `
+                        <span class="contador-badge-filtro" title="Filtro activo">
+                            <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
+                            <b>${visibles}</b>
+                        </span>`;
+                    
+                    divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalFavoritos}</b> despegues favoritos (disponibles: ${totalDespeguesDisponibles})`;
+                } else {
+                    divContador.innerHTML = `<b>${visibles}</b> de <b>${totalFavoritos}</b> despegues favoritos (disponibles: ${totalDespeguesDisponibles})`;
+                }
             }
         }
     }
@@ -5280,25 +5234,19 @@ document.addEventListener('DOMContentLoaded', function() {
 	// ---------------------------------------------------------------
     const distanciaSlider = document.getElementById('distancia-slider');
 
-    const CORTES_DISTANCIA = [
-        5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 
-        60, 70, 80, 90, 100, 150, 200, 250, 300, 9999
-    ];
-
     // Índice máximo (para el slider): 0 es el primero, N es el último
-    const MAX_INDEX = CORTES_DISTANCIA.length - 1;
+    const MAX_INDEX = CORTES_DISTANCIA_GLOBAL.length - 1;
     let ultimaDistanciaConfirmada = MAX_INDEX;
 
     if (distanciaSlider) {
         noUiSlider.create(distanciaSlider, {
-            start: MAX_INDEX,    // Empieza en el índice más alto (Todo)
-            direction: 'rtl',    // ⬅️ Izquierda = Índice Máximo ("Todo")
-            step: 1,             // Nos movemos de 1 en 1 por los índices del array
+            start: MAX_INDEX,    
+            direction: 'rtl',    
+            step: 1,             
             connect: 'lower',    
-            tooltips: [{
+            tooltips:[{
                 to: function (index) {
-                    // Convertimos el índice del slider (0, 1, 2...) al valor real en km
-                    const val = CORTES_DISTANCIA[Math.round(index)];
+                    const val = CORTES_DISTANCIA_GLOBAL[Math.round(index)];
                     if (val >= 9999) return "";
                     return `${val}`; 
                 }

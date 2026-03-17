@@ -1705,7 +1705,7 @@ span.grados {
     transform: translateY(var(--vv-offset-top, 0px));
 }
 
-/* 3. Caja Blanca del Modal */
+/* Caja Blanca del Modal */
 .modal-content {
     background: white;
     padding: 8px;
@@ -1720,17 +1720,8 @@ span.grados {
 /* Tamaños específicos */
 .small-modal { width: 360px; }
 .map-modal-size {
-
-	/* width: 90%;
-	max-width: 600px; */
 	width: 80vw;
-    height: 60vh;
-    
-    /* limitar que no se vea gigante en monitores muy grandes */
-    /* max-width: 1200px; 
-    max-height: 1000px; */
-
-    /* Asegura que si hay contenido dentro (como un mapa), se comporte bien */
+    height: 70vh; /* Subimos un poco para dar cabida al nuevo layout */
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1742,18 +1733,16 @@ span.grados {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0px;
+    padding: 5px;
 }
 .modal-header h3 { margin: 0; font-size: 1.1rem; color: #333; }
 
-/* Botón X de cerrar (Estilo redondo Tooltip/Configuración) */
+/* Botón X de cerrar */
 .close-x {
-    /* --- Magia para anclarlo a la esquina --- */
     position: absolute;
     top: 5px;
     right: 5px;
     z-index: 20;
-
-    /* --- Resto del diseño redondo --- */
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -1778,33 +1767,11 @@ span.grados {
     color: #000;
 }
 
-/* Caja de Estado (Coordenadas actuales) */
-.geo-status-box {
-    /* background: #f1f3f5; */
-    padding: 5px;
-    /* border-radius: 6px; */
-    text-align: center;
-    margin-bottom: 20px;
-    /* border: 1px solid #e9ecef; */
-    /* color: #495057; */
-}
-
-/* Grid de botones del menú (GPS, Manual, Mapa) */
-.geo-options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
+/* Estilo botón auxiliar (ahora usado para el GPS) */
 .btn-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     background: white;
     border: 2px solid #dee2e6;
     border-radius: 8px;
-    padding: 5px 5px;
     cursor: pointer;
     transition: all 0.2s;
     color: #333;
@@ -1815,28 +1782,18 @@ span.grados {
     transform: translateY(-3px);
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-.btn-option .emoji { font-size: 28px; margin-bottom: 8px; }
-/* .btn-option span { font-size: 0.85rem; font-weight: 500; } */
 
-/* 4. Botones de acción del Mapa (Aceptar / Cancelar) */
 .modal-footer {
-    margin-top: 15px;
     display: flex;
     justify-content: space-between;
-    gap: 10px;
 }
 .btn-aceptar, .btn-cancelar {
-    flex: 1;
-    padding: 10px;
     border-radius: 6px;
     border: none;
     font-weight: bold;
     cursor: pointer;
     font-size: 14px;
-	max-width: 150px;
 }
-.btn-aceptar { background-color: #007bff; color: white; }
-
 .btn-cancelar { background-color: #999; color: white; }
 
 /* Animación */
