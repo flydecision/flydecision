@@ -98,10 +98,14 @@ let centroLon = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INIC
 // Elementos del Modal Mapa unificado
 const modalMapa = document.getElementById('modal-mapa');
 const btnAbrirGeo = document.getElementById('btn-abrir-geo-menu');
-const btnCancelarMapa = document.getElementById('btn-cancelar-mapa');
 const btnCerrarMapa = document.getElementById('btn-cerrar-mapa');
 const btnGpsMapa = document.getElementById('btn-gps-mapa');
 const chkIncNoFavsDistancia = document.getElementById('chk-incluir-no-favs-distancia');
+
+// 1.5 Inicializar estado del checkbox al cargar
+if (chkIncNoFavsDistancia) {
+    chkIncNoFavsDistancia.checked = localStorage.getItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV') === 'true';
+}
 
 let mapaLeaflet = null;
 let marcadorActual = null;
@@ -121,22 +125,31 @@ function actualizarOrigenGlobal(lat, lon, metodo) {
 function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
     ponerMarcador(lat, lng);
     
-    // Si el slider estaba en "Todo" (9999), lo bajamos a 100km automáticamente
     const sliderDistElem = document.getElementById('distancia-slider');
     if (sliderDistElem && sliderDistElem.noUiSlider) {
         const currentIdx = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
+        
+        // Si el slider estaba en "Todo" (9999), lo bajamos a 100km automáticamente
         if (currentIdx === CORTES_DISTANCIA_GLOBAL.length - 1) {
             const idx100km = CORTES_DISTANCIA_GLOBAL.indexOf(100);
             sliderDistElem.noUiSlider.set(idx100km);
             ultimaDistanciaConfirmada = idx100km;
             
-            // Si el panel de distancia estaba cerrado, lo abrimos para que el usuario vea qué ha pasado
             const divDistancia = document.getElementById("div-filtro-distancia");
             const btnToggle = document.getElementById("btn-div-filtro-distancia-toggle");
+            
+            // 1. Abrir panel si estaba cerrado
             if (divDistancia && !divDistancia.classList.contains("activo")) {
                 divDistancia.classList.add("activo");
                 if (btnToggle) btnToggle.classList.add("activo");
             }
+
+            // 2. FORZAR ESTILOS VISUALES DEL FILTRO ACTIVO
+            if (btnToggle) btnToggle.classList.add('filtro-aplicado');
+            const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
+            if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
+            const btnReset = document.getElementById('btn-reset-filtro-distancia');
+            if (btnReset) btnReset.style.display = 'block';
         }
     }
 
@@ -148,10 +161,6 @@ function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
 if (btnAbrirGeo) {
     btnAbrirGeo.addEventListener('click', () => {
         if (modalMapa) modalMapa.style.display = 'flex';
-
-        if (chkIncNoFavsDistancia) {
-            chkIncNoFavsDistancia.checked = localStorage.getItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV') === 'true';
-        }
 
         if (!mapaLeaflet) {
             setTimeout(() => {
@@ -196,11 +205,51 @@ if (chkIncNoFavsDistancia) {
     chkIncNoFavsDistancia.addEventListener('change', (e) => {
         localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', e.target.checked);
         
-        // Si hay un filtro de distancia aplicado (< 9999), reconstruimos la tabla ya.
         const sliderDistElem = document.getElementById('distancia-slider');
         if (sliderDistElem && sliderDistElem.noUiSlider) {
             const currentIdx = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
-            if (currentIdx < CORTES_DISTANCIA_GLOBAL.length - 1) {
+            
+            // --- NUEVO: Si activa el check y el slider está en "Todo", salta a 100km ---
+            if (e.target.checked && currentIdx === CORTES_DISTANCIA_GLOBAL.length - 1) {
+                
+                // Seguridad: Verificar si hay origen configurado
+                if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
+                    e.target.checked = false; // Revertir visualmente
+                    localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', false);
+                    
+                    GestorMensajes.mostrar({
+                        tipo: 'modal',
+                        htmlContenido: `
+                            <p>Para buscar despegues no favoritos necesitas configurar una ubicación de origen.</p>
+                            <p>Usa el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
+                        `,
+                        botones:[
+                            { texto: 'Configurar origen', onclick: function() { GestorMensajes.ocultar(); if (modalMapa) modalMapa.style.display = 'flex'; } },
+                            { texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } }
+                        ]
+                    });
+                    return;
+                }
+
+                // Fijar a 100km
+                const idx100km = CORTES_DISTANCIA_GLOBAL.indexOf(100);
+                sliderDistElem.noUiSlider.set(idx100km);
+                ultimaDistanciaConfirmada = idx100km;
+                
+                // FORZAR ESTILOS VISUALES DEL FILTRO ACTIVO
+                const btnToggle = document.getElementById("btn-div-filtro-distancia-toggle");
+                if (btnToggle) btnToggle.classList.add('filtro-aplicado');
+                
+                const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
+                if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
+                
+                const btnReset = document.getElementById('btn-reset-filtro-distancia');
+                if (btnReset) btnReset.style.display = 'block';
+
+                construir_tabla(false, true);
+            } 
+            // Si el checkbox se toca y ya había un filtro de distancia aplicado (< 9999)
+            else if (currentIdx < CORTES_DISTANCIA_GLOBAL.length - 1) {
                 construir_tabla(false, true);
             }
         }
@@ -251,12 +300,7 @@ if (btnGpsMapa) {
     });
 }
 
-// 7. BOTONES DE CERRAR/CANCELAR MAPA
-if (btnCancelarMapa) {
-    btnCancelarMapa.addEventListener('click', () => {
-        if(modalMapa) modalMapa.style.display = 'none';
-    });
-}
+// 7. BOTÓN CERRAR MAPA (LA "X")
 if (btnCerrarMapa) {
     btnCerrarMapa.addEventListener('click', () => {
         if(modalMapa) modalMapa.style.display = 'none';
