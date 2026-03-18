@@ -132,8 +132,10 @@ function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
         // Si el slider estaba en "Todo" (9999), lo bajamos a 100km automáticamente
         if (currentIdx === CORTES_DISTANCIA_GLOBAL.length - 1) {
             const idx100km = CORTES_DISTANCIA_GLOBAL.indexOf(100);
-            sliderDistElem.noUiSlider.set(idx100km);
+            
+            // Actualizar variable ANTES de mover el slider para evitar repeticiones en el evento 'set'
             ultimaDistanciaConfirmada = idx100km;
+            sliderDistElem.noUiSlider.set(idx100km);
             
             const divDistancia = document.getElementById("div-filtro-distancia");
             const btnToggle = document.getElementById("btn-div-filtro-distancia-toggle");
@@ -215,7 +217,7 @@ if (chkIncNoFavsDistancia) {
                 // Seguridad: Verificar si hay origen configurado
                 if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
                     e.target.checked = false; // Revertir visualmente
-                    localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', false);
+                    localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', 'false');
                     
                     GestorMensajes.mostrar({
                         tipo: 'modal',
@@ -224,18 +226,17 @@ if (chkIncNoFavsDistancia) {
                             <p>Usa el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
                         `,
                         botones:[
-                            { texto: 'Configurar origen', onclick: function() { GestorMensajes.ocultar(); if (modalMapa) modalMapa.style.display = 'flex'; } },
+                            { texto: 'Configurar origen', onclick: function() { 
+                                GestorMensajes.ocultar(); 
+                                const btnGeo = document.getElementById('btn-abrir-geo-menu');
+                                if (btnGeo) btnGeo.click(); // Simulamos un clic en el botón 📍
+                            } },
                             { texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } }
                         ]
                     });
                     return;
                 }
 
-                // Fijar a 100km
-                const idx100km = CORTES_DISTANCIA_GLOBAL.indexOf(100);
-                sliderDistElem.noUiSlider.set(idx100km);
-                ultimaDistanciaConfirmada = idx100km;
-                
                 // FORZAR ESTILOS VISUALES DEL FILTRO ACTIVO
                 const btnToggle = document.getElementById("btn-div-filtro-distancia-toggle");
                 if (btnToggle) btnToggle.classList.add('filtro-aplicado');
@@ -246,11 +247,16 @@ if (chkIncNoFavsDistancia) {
                 const btnReset = document.getElementById('btn-reset-filtro-distancia');
                 if (btnReset) btnReset.style.display = 'block';
 
-                construir_tabla(false, false); // <--- CAMBIO: activa el spinner
+                // Fijar a 100km. Actualizamos variable ANTES de mover para evitar rebotes del evento 'set'
+                const idx100km = CORTES_DISTANCIA_GLOBAL.indexOf(100);
+                ultimaDistanciaConfirmada = idx100km; 
+                sliderDistElem.noUiSlider.set(idx100km); 
+                
+                construir_tabla(false, false); 
             } 
             // Si el checkbox se toca y ya había un filtro de distancia aplicado (< 9999)
             else if (currentIdx < CORTES_DISTANCIA_GLOBAL.length - 1) {
-                construir_tabla(false, false); // <--- CAMBIO: activa el spinner
+                construir_tabla(false, false); 
             }
         }
     });
@@ -5362,8 +5368,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 
 		// 🔴 ACCIÓN PESADA (Datos): Construcción de tabla
-		// Solo se ejecuta UNA VEZ al soltar el dedo.
-		distanciaSlider.noUiSlider.on('change', function(values) {
+		// Usamos el evento 'set' para burlar un bug interno de la librería
+		distanciaSlider.noUiSlider.on('set', function(values) {
 			const valorNuevo = Math.round(values[0]);
 
 			if (valorNuevo !== ultimaDistanciaConfirmada) {
@@ -5396,7 +5402,11 @@ document.addEventListener('DOMContentLoaded', function() {
 							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
 						`,
 						botones:[
-							{ texto: 'Configurar origen', onclick: function() { GestorMensajes.ocultar(); if (modalMapa) modalMapa.style.display = 'flex'; } },
+							{ texto: 'Configurar origen', onclick: function() { 
+                                GestorMensajes.ocultar(); 
+                                const btnGeo = document.getElementById('btn-abrir-geo-menu');
+                                if (btnGeo) btnGeo.click(); // Simulamos un clic en el botón 📍
+                            } },
 							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } }
 						]
 					});
@@ -5405,7 +5415,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 				// B. Si todo es correcto, guardamos y actualizamos
 				ultimaDistanciaConfirmada = valorNuevo;
-				construir_tabla(false, false); // <--- CAMBIO: `false` activa el spinner
+				construir_tabla(false, false); 
 			}
 		});
 	}
@@ -6217,13 +6227,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	window.resetFiltroDistancia = function(reconstruir = true) { //flag para que, si le hemos llamado desde activarEdicionFavoritos(), que ya tiene construir_tabla, no se llame otra vez aquí, ya que ya se hace desde esa función (bloquearía navegador)
 
-        // A. Resetear valor del slider (asegúrate de que distanciaSlider es accesible aquí)
+        // Actualizamos variable de control ANTES de mover el slider
+        ultimaDistanciaConfirmada = MAX_INDEX;
+
+        // A. Resetear valor del slider
         if (typeof distanciaSlider !== 'undefined' && distanciaSlider.noUiSlider) {
             distanciaSlider.noUiSlider.set(MAX_INDEX);
         }
-
-        // B. Actualizar variable de control
-        ultimaDistanciaConfirmada = MAX_INDEX;
 
         // --- NUEVO: Desmarcar checkbox de "incluir no favoritos" al resetear ---
         const chkIncNoFavs = document.getElementById('chk-incluir-no-favs-distancia');
