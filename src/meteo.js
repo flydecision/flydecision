@@ -100,16 +100,11 @@ const modalMapa = document.getElementById('modal-mapa');
 const btnAbrirGeo = document.getElementById('btn-abrir-geo-menu');
 const btnCerrarMapa = document.getElementById('btn-cerrar-mapa');
 const btnGpsMapa = document.getElementById('btn-gps-mapa');
-const btnIncNoFavsDistancia = document.getElementById('btn-incluir-no-favs-distancia'); // <--- NUEVA VARIABLE
+const btnIncNoFavsDistancia = document.getElementById('btn-incluir-no-favs-distancia');
 
-// 1.5 Inicializar estado del botón al cargar
+// Siempre empezamos desactivado al recargar la página
 if (btnIncNoFavsDistancia) {
-    const isActivo = localStorage.getItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV') === 'true';
-    if (isActivo) {
-        btnIncNoFavsDistancia.classList.add('activo', 'filtro-aplicado');
-    } else {
-        btnIncNoFavsDistancia.classList.remove('activo', 'filtro-aplicado');
-    }
+    btnIncNoFavsDistancia.classList.remove('activo', 'filtro-aplicado');
 }
 
 let mapaLeaflet = null;
@@ -242,9 +237,6 @@ if (btnIncNoFavsDistancia) {
             }
         }
 
-        // 2. Guardamos en memoria
-        localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', nuevoEstado);
-        
         // 3. Pintamos el botón hundido (activo) y con el borde rojo (filtro-aplicado)
         if (nuevoEstado) {
             btnIncNoFavsDistancia.classList.add('activo', 'filtro-aplicado');
@@ -2649,7 +2641,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             distanciaLimiteParaFavs = CORTES_DISTANCIA_GLOBAL[idxDist];
         }
         
-        const incluirNoFavs = localStorage.getItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV') === 'true';
+        const btnIncNoFavsDistancia = document.getElementById('btn-incluir-no-favs-distancia');
+        const incluirNoFavs = btnIncNoFavsDistancia ? btnIncNoFavsDistancia.classList.contains('activo') : false;
         
         // Si estamos en modo edición de favoritos, el checkbox está oculto y NO debe interferir
         const ignorarFiltroFavoritos = (!modoEdicionFavoritos && distanciaLimiteParaFavs < 9999 && incluirNoFavs);
@@ -4885,6 +4878,11 @@ function filtrarDespeguesProvincias() {
 
     // 3. ACTUALIZAR CONTADOR
     const divContador = document.getElementById('contador-despegues');
+
+    const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
+    // Verificamos si el botón existe y si tiene la clase 'activo'
+    const incluirNoFavs = btnIncNoFavs ? btnIncNoFavs.classList.contains('activo') : false;
+
     if (divContador) {
         if (modoEdicionFavoritos) {
 
@@ -4912,8 +4910,6 @@ function filtrarDespeguesProvincias() {
             }
 
         } else {
-            // Revisamos si el filtro de "Incluir no favoritos" con distancia está activo
-            const incluirNoFavs = localStorage.getItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV') === 'true';
             const sliderDistElemParaTabla = document.getElementById('distancia-slider');
             let distanciaLimiteParaFavs = 9999;
             if (sliderDistElemParaTabla && sliderDistElemParaTabla.noUiSlider) {
@@ -5399,7 +5395,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (btnIncNoFavs) {
                         btnIncNoFavs.classList.remove('activo', 'filtro-aplicado');
                     }
-                    localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', 'false');
                 }
 
 				// A. Verificación de coordenadas (Seguridad)
@@ -6261,7 +6256,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (btnIncNoFavs) {
             btnIncNoFavs.classList.remove('activo', 'filtro-aplicado');
         }
-        localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', 'false');
 
         // C. Limpieza Visual (Quitar clases de activo y rojo)
         const btnToggle = document.getElementById('btn-div-filtro-distancia-toggle');
