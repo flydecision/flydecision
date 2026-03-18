@@ -246,11 +246,11 @@ if (chkIncNoFavsDistancia) {
                 const btnReset = document.getElementById('btn-reset-filtro-distancia');
                 if (btnReset) btnReset.style.display = 'block';
 
-                construir_tabla(false, true);
+                construir_tabla(false, false); // <--- CAMBIO: activa el spinner
             } 
             // Si el checkbox se toca y ya había un filtro de distancia aplicado (< 9999)
             else if (currentIdx < CORTES_DISTANCIA_GLOBAL.length - 1) {
-                construir_tabla(false, true);
+                construir_tabla(false, false); // <--- CAMBIO: activa el spinner
             }
         }
     });
@@ -5358,8 +5358,8 @@ document.addEventListener('DOMContentLoaded', function() {
 							<p>Como es la primera vez, se necesita configurar una ubicación de origen.</p>
 							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
 						`,
-						botones: [
-							{ texto: 'Configurar origen', onclick: function() { GestorMensajes.ocultar(); if (modalGeoMenu) modalGeoMenu.style.display = 'flex'; } },
+						botones:[
+							{ texto: 'Configurar origen', onclick: function() { GestorMensajes.ocultar(); if (modalMapa) modalMapa.style.display = 'flex'; } },
 							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } }
 						]
 					});
@@ -5368,7 +5368,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 				// B. Si todo es correcto, guardamos y actualizamos
 				ultimaDistanciaConfirmada = valorNuevo;
-				construir_tabla(false, true); 
+				construir_tabla(false, false); // <--- CAMBIO: `false` activa el spinner
 			}
 		});
 	}
