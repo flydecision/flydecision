@@ -1099,10 +1099,16 @@ function desmarcarFavoritos() {
             },
             {
                 texto: 'Sí, desmarcar',
-                estilo: 'background-color: #d32f2f; color: white;', // Color rojo destructivo (como en confirmarSalidaApp)
                 onclick: function() {
                     // 1. Sobrescribimos el localStorage con un array vacío
                     localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify([]));
+
+                    // Resetear estado del filtro "Ver solo favoritos" 
+                    soloFavoritos = false;
+                    const btn = document.getElementById('btn-filtro-favoritos-toggle');
+                    if (btn) {
+                        btn.classList.remove("activo", "filtro-aplicado");
+                    }
                     
                     // 2. Actualizamos el contador visual ("❤️ 0")
                     actualizarContadorVisualFavoritos();
@@ -1530,7 +1536,7 @@ function finalizarEdicionFavoritos() {
 	if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { // Ha pulsado Finalizar pero no existe la key "METEO_FAVORITOS_LISTA" en localstorage o los favoritos están vacíos 
 		
         mensajeModalAceptar('', 
-            '<p>Es necesario marcar al menos un despegue favorito ♥️.</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
+            '<p>Es necesario marcar al menos un despegue favorito ♥️</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
         );
 		
 		return false; // <--- IMPORTANTE: No hemos podido cerrar correctamente la edición porque no ha elegido favoritos
@@ -4736,7 +4742,7 @@ function btnRestablecerConfiguración() {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2em; margin: 0;">🔄</p>
-                <p><b>⚠️ ATENCIÓN:</b> Esta acción eliminará la configuración y desmarcará todos los despegues favoritos.</p><p>Si quieres conservar tus despegues favoritos, cancela este mensaje, vete a 🪂❤️<i>Editar favoritos</i> y guárdalos con 💾 <i>Guardar favoritos</i>.</p>
+                <p><b>⚠️ ATENCIÓN:</b> Esta acción eliminará la configuración y desmarcará todos los despegues favoritos.</p><p>Si quieres conservar tus despegues favoritos, cancela este mensaje, vete a 🪂❤️<i>Editar favoritos</i> y guárdalos con 💾<i>Guardar favoritos</i>.</p>
             </div>
         `,
         botones: [            
