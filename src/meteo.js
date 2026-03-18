@@ -164,9 +164,17 @@ if (btnAbrirGeo) {
     btnAbrirGeo.addEventListener('click', () => {
         if (modalMapa) modalMapa.style.display = 'flex';
 
+        // Comprobamos si la usuaria ya tiene un origen guardado
+        const tieneOrigenGuardado = localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL') !== null;
+
         if (!mapaLeaflet) {
             setTimeout(() => {
-                mapaLeaflet = L.map('mapa-selector').setView([centroLat, centroLon], 9);
+                // Si no hay origen, centramos en España (Lat 40.0, Lon -4.0) con un zoom general (6)
+                const latInicial = tieneOrigenGuardado ? centroLat : 40.0;
+                const lonInicial = tieneOrigenGuardado ? centroLon : -4.0;
+                const zoomInicial = tieneOrigenGuardado ? 9 : 6;
+
+                mapaLeaflet = L.map('mapa-selector').setView([latInicial, lonInicial], zoomInicial);
                 
                 L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
                     attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://opentopomap.org/" target="_blank">Style OpenTopoMap</a>'
@@ -176,13 +184,29 @@ if (btnAbrirGeo) {
                     seleccionarUbicacionYFiltrar(e.latlng.lat, e.latlng.lng, "Mapa");
                 });
 
-                ponerMarcador(centroLat, centroLon);
+                // Solo ponemos el marcador si ya tenía un origen
+                if (tieneOrigenGuardado) {
+                    ponerMarcador(centroLat, centroLon);
+                }
             }, 50);
         } else {
-            mapaLeaflet.setView([centroLat, centroLon], 8);
+            // Si el mapa ya estaba creado en la memoria
+            const latInicial = tieneOrigenGuardado ? centroLat : 40.0;
+            const lonInicial = tieneOrigenGuardado ? centroLon : -4.0;
+            const zoomInicial = tieneOrigenGuardado ? 8 : 6;
+
+            mapaLeaflet.setView([latInicial, lonInicial], zoomInicial);
+            
             setTimeout(() => { 
                 mapaLeaflet.invalidateSize(); 
-                ponerMarcador(centroLat, centroLon);
+                
+                if (tieneOrigenGuardado) {
+                    ponerMarcador(centroLat, centroLon);
+                } else if (marcadorActual) {
+                    // Si no tiene origen (p.ej. acaba de resetear) pero había un marcador de antes, lo borramos
+                    mapaLeaflet.removeLayer(marcadorActual);
+                    marcadorActual = null;
+                }
             }, 100);
         }
     });
