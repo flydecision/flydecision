@@ -1148,6 +1148,7 @@ function abrirFavoritos() {
 
                     if (nuevosFavoritos.length > 0) {
                         localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(nuevosFavoritos));
+                        localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
                         
                         // Si tienes la función mensajeAvisoRecarga definida:
                         if (typeof mensajeAvisoRecarga === 'function') {
