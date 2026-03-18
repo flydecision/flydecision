@@ -5367,6 +5367,16 @@ document.addEventListener('DOMContentLoaded', function() {
 			const valorNuevo = Math.round(values[0]);
 
 			if (valorNuevo !== ultimaDistanciaConfirmada) {
+                
+                // --- NUEVO: Si volvemos a "Todo" (distancia infinita), desactivamos el checkbox ---
+                if (valorNuevo === MAX_INDEX) {
+                    const chkIncNoFavs = document.getElementById('chk-incluir-no-favs-distancia');
+                    if (chkIncNoFavs) {
+                        chkIncNoFavs.checked = false;
+                    }
+                    localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', 'false');
+                }
+
 				// A. Verificación de coordenadas (Seguridad)
 				if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
 					// Revertimos todo si no hay GPS configurado
@@ -6214,6 +6224,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // B. Actualizar variable de control
         ultimaDistanciaConfirmada = MAX_INDEX;
+
+        // --- NUEVO: Desmarcar checkbox de "incluir no favoritos" al resetear ---
+        const chkIncNoFavs = document.getElementById('chk-incluir-no-favs-distancia');
+        if (chkIncNoFavs) {
+            chkIncNoFavs.checked = false;
+        }
+        localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', 'false');
 
         // C. Limpieza Visual (Quitar clases de activo y rojo)
         const btnToggle = document.getElementById('btn-div-filtro-distancia-toggle');
