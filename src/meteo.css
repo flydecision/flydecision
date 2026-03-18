@@ -2617,3 +2617,8 @@ label.custom-checkbox {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Ocultar el checkbox de incluir no favoritos cuando estamos en modo edición */
+body.modo-edicion-tabla #label-chk-incluir-no-favs {
+    display: none !important;
+}

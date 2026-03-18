@@ -1023,11 +1023,20 @@ function activarEdicionFavoritos() {
 }
 
 function filtroVerSoloFavoritos() {
-
-    soloFavoritos = true;
-
+    
+    const favoritosActuales = obtenerFavoritos();
     const btn = document.getElementById('btn-filtro-favoritos-toggle');
-    btn.classList.toggle("activo"); // alterna activo/no activo en función de cómo esté el botón
+
+    // --- NUEVO: Comprobar si se va a activar el filtro pero NO hay favoritos ---
+    if (!btn.classList.contains("activo") && favoritosActuales.length === 0) {
+        mensajeModalAceptar('', 
+            '<p>No funciona el filtro <i>Ver solo favoritos</i> porque es necesario marcar al menos un despegue favorito ♥️.</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
+        );
+        return; // Salimos de la función sin aplicar el filtro ni recargar la tabla
+    }
+
+    // Lógica normal de alternar el botón
+    btn.classList.toggle("activo"); 
     const estaHundido = btn.classList.contains("activo");
     
     if (estaHundido) {
@@ -2616,7 +2625,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         }
         
         const incluirNoFavs = localStorage.getItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV') === 'true';
-        const ignorarFiltroFavoritos = (distanciaLimiteParaFavs < 9999 && incluirNoFavs);
+        
+        // Si estamos en modo edición de favoritos, el checkbox está oculto y NO debe interferir
+        const ignorarFiltroFavoritos = (!modoEdicionFavoritos && distanciaLimiteParaFavs < 9999 && incluirNoFavs);
 
 		// Está activo filtro favoritos Y hay favoritos --> hacemos que los array despegues y respuestas contengan solo los datos de los despegues que haya en favoritos 
 		if (soloFavoritos && favoritos.length > 0 && !ignorarFiltroFavoritos) {
@@ -4852,15 +4863,27 @@ function filtrarDespeguesProvincias() {
     if (divContador) {
         if (modoEdicionFavoritos) {
 
-            if (visibles < totalDespeguesDisponibles) {
+            if (soloFavoritos) {
+                // CASO A: Filtro "ver solo favoritos" activo (y posiblemente otros como buscador/distancia)
                 const htmlNumeroFiltrado = `
                     <span class="contador-badge-filtro" title="Filtro activo">
                         <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
                         <b>${visibles}</b>
                     </span>`;
-                divContador.innerHTML = `Mostrando ${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} despegues favoritos (❤️) de <b>${totalDespeguesDisponibles}</b> disponibles`;
+                
+            } else if (visibles < totalDespeguesDisponibles) {
+                // CASO B: Otros filtros activos (distancia, buscador), pero NO "solo favoritos"
+                const htmlNumeroFiltrado = `
+                    <span class="contador-badge-filtro" title="Filtro activo">
+                        <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
+                        <b>${visibles}</b>
+                    </span>`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles`;
+                
             } else {
-                divContador.innerHTML = `Mostrando <b>${visibles}</b> de <b>${totalDespeguesDisponibles}</b> despegues disponibles`;
+                // CASO C: Ningún filtro activo (Se ven todos)
+                divContador.innerHTML = `<b>${totalDespeguesDisponibles}</b> despegues disponibles`;
             }
 
         } else {
@@ -4875,17 +4898,20 @@ function filtrarDespeguesProvincias() {
             const ignorarFiltroFavoritos = (distanciaLimiteParaFavs < 9999 && incluirNoFavs);
 
             if (ignorarFiltroFavoritos) {
+                // Modo Normal + Checkbox "Incluir no favoritos" ACTIVO
                 const htmlNumeroFiltrado = `
                     <span class="contador-badge-filtro" title="Filtro activo">
                         <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
                         <b>${visibles}</b>
                     </span>`;
-                divContador.innerHTML = `${htmlNumeroFiltrado} despegues en ${distanciaLimiteParaFavs} km (incluye no favoritos)`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles (🤍+❤️)`;
                 
             } else if (totalFavoritos === 0) {
+                // Modo Normal pero sin favoritos añadidos aún
                 divContador.innerHTML = `Total de despegues disponibles: ${totalDespeguesDisponibles}`;
 
             } else {
+                // Modo Normal mostrando favoritos (con Checkbox "Incluir no favoritos" DESACTIVADO)
                 if (visibles < totalFavoritos) {
                     const htmlNumeroFiltrado = `
                         <span class="contador-badge-filtro" title="Filtro activo">
@@ -4893,9 +4919,10 @@ function filtrarDespeguesProvincias() {
                             <b>${visibles}</b>
                         </span>`;
                     
-                    divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalFavoritos}</b> despegues favoritos (disponibles: ${totalDespeguesDisponibles})`;
+                    divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalFavoritos}</b> despegues favoritos (❤️)`;
                 } else {
-                    divContador.innerHTML = `<b>${visibles}</b> de <b>${totalFavoritos}</b> despegues favoritos (disponibles: ${totalDespeguesDisponibles})`;
+                    // Modo Normal sin ningún filtro extra aplicado (ej: buscador o distancia vacíos)
+                    divContador.innerHTML = `<b>${visibles}</b> despegues favoritos (❤️)`;
                 }
             }
         }
