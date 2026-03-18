@@ -123,39 +123,18 @@ function actualizarOrigenGlobal(lat, lon, metodo) {
 
 // 3. FUNCIÓN COMPARTIDA (CLIC EN EL MAPA O AL LOCALIZAR GPS)
 function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
+    // 1. GUARDAR EN LOCALSTORAGE INMEDIATAMENTE. 
+    // Así evitamos que cualquier evento del slider que se dispare a continuación 
+    // crea erróneamente que no hay origen configurado.
+    centroLat = lat;
+    centroLon = lng;
+    localStorage.setItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
+    localStorage.setItem('METEO_FILTRO_DISTANCIA_LON_INICIAL', lng);
+
     ponerMarcador(lat, lng);
     
-    const sliderDistElem = document.getElementById('distancia-slider');
-    if (sliderDistElem && sliderDistElem.noUiSlider) {
-        const currentIdx = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
-        
-        // Si el slider estaba en "Todo" (9999), lo bajamos a 100km automáticamente
-        if (currentIdx === CORTES_DISTANCIA_GLOBAL.length - 1) {
-            const idx100km = CORTES_DISTANCIA_GLOBAL.indexOf(100);
-            
-            // Actualizar variable ANTES de mover el slider para evitar repeticiones en el evento 'set'
-            ultimaDistanciaConfirmada = idx100km;
-            sliderDistElem.noUiSlider.set(idx100km);
-            
-            const divDistancia = document.getElementById("div-filtro-distancia");
-            const btnToggle = document.getElementById("btn-div-filtro-distancia-toggle");
-            
-            // 1. Abrir panel si estaba cerrado
-            if (divDistancia && !divDistancia.classList.contains("activo")) {
-                divDistancia.classList.add("activo");
-                if (btnToggle) btnToggle.classList.add("activo");
-            }
-
-            // 2. FORZAR ESTILOS VISUALES DEL FILTRO ACTIVO
-            if (btnToggle) btnToggle.classList.add('filtro-aplicado');
-            const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
-            if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
-            const btnReset = document.getElementById('btn-reset-filtro-distancia');
-            if (btnReset) btnReset.style.display = 'block';
-        }
-    }
-
-    actualizarOrigenGlobal(lat, lng, metodo);
+    construir_tabla(false, false);
+    
     if(modalMapa) modalMapa.style.display = 'none';
 }
 
@@ -5398,7 +5377,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			if (valorNuevo !== ultimaDistanciaConfirmada) {
                 
-                // --- NUEVO: Si volvemos a "Todo" (distancia infinita), desactivamos el checkbox ---
+                // Si volvemos a "Todo" (distancia infinita), desactivamos el checkbox
                 if (valorNuevo === MAX_INDEX) {
                     const chkIncNoFavs = document.getElementById('chk-incluir-no-favs-distancia');
                     if (chkIncNoFavs) {
@@ -5409,9 +5388,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 				// A. Verificación de coordenadas (Seguridad)
 				if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
-					// Revertimos todo si no hay GPS configurado
-					distanciaSlider.noUiSlider.set(MAX_INDEX);
+					
+                    // --- CORRECCIÓN BUG: Actualizamos la variable ANTES de mover el slider
+                    // para evitar que la librería entre en un bucle y lance el mensaje 2 veces.
 					ultimaDistanciaConfirmada = MAX_INDEX;
+                    distanciaSlider.noUiSlider.set(MAX_INDEX);
 					
 					// Limpieza visual inmediata
 					document.getElementById('btn-div-filtro-distancia-toggle').classList.remove('filtro-aplicado');

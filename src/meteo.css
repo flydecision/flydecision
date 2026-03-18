@@ -1720,11 +1720,12 @@ span.grados {
 /* Tamaños específicos */
 .small-modal { width: 360px; }
 .map-modal-size {
-	width: 80vw;
-    height: 70vh; /* Subimos un poco para dar cabida al nuevo layout */
+	width: 90vw;
+    height: 85vh; /* Subimos un poco para dar cabida al nuevo layout */
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: auto;
+    box-sizing: border-box;
 }
 
 /* Cabecera del modal */
