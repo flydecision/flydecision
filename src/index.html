@@ -139,9 +139,7 @@
 				<span style="cursor: pointer;">Filtro de distancia desde</span>
 				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" title="Cambiar ubicación de origen">📍</button>
 				
-				<label id="label-chk-incluir-no-favs" class="custom-checkbox" style="font-weight: normal; margin-left: 15px;" title="Incluir despegues no favoritos en el filtro">
-					<input type="checkbox" id="chk-incluir-no-favs-distancia"> <span style="font-size: 16px;">🤍+❤️</span>
-				</label>
+				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; padding: 0 8px; margin-left: 15px; margin-right: 15px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" title="Incluir despegues no favoritos en el filtro">🤍+❤️</button>
 			</div>	
 			
 			<div id="distancia-slider" role="slider" aria-labelledby="titulo-distancia-slider"></div>
@@ -155,7 +153,8 @@
 					data-tippy-content="
 						<b>Filtro de distancia al despegue:</b><br><br>
 						Muestra solo despegues dentro del radio de distancia que selecciones.<br><br>
-						Usa el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span> para establecer la posición de origen directamente en el mapa o mediante el GPS del móvil. La distancia se calculará y aplicará automáticamente.
+						Usa el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span> para establecer la posición de origen directamente en el mapa o mediante el GPS del móvil.<br><br>
+						Usa el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>🤍+❤️</span> para incluir despegues no favoritos en el filtro, es decir, para incluir TODOS los despegues disponibles en la base de datos. Al activarlo, se activará inicialmente un filtro de 100 km para no saturar la tabla, pero puedes cambiarlo según tus necesidades y potencia de tu dispositivo.
 					">
 				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 			</button>
@@ -343,7 +342,7 @@
 		<div id="mapa-selector" style="height: 100%; width: 100%; margin-top: 10px; margin-bottom: 15px;"></div>
 
 		<div class="modal-footer" style="margin-top: 0; display: flex; justify-content: center;">
-            <button id="btn-gps-mapa" class="btn-option" style="width: 170px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 0px;">
+            <button id="btn-gps-mapa" class="btn-option" style="width: 170px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; margin-bottom: 7px; padding: 0px;">
 				<span style="font-size: 1.8rem; margin: 0;">🛰️</span>
 				<span style="font-size: 0.9rem; font-weight: bold; text-align: center; line-height: 1.2;">Ubicación del móvil</span>
 			</button>

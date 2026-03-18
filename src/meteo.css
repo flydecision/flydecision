@@ -1689,6 +1689,44 @@ span.grados {
     /* transform: scale(1.1); */
 }
 
+/* Estilos para cuando el botón de "🤍+❤️" está activo (hundido) */
+/* 1. Estilo base del botón (hereda de .btn-icon-trigger pero con ajustes) */
+#btn-incluir-no-favs-distancia {
+    border-radius: 4px !important;
+    width: auto !important;
+    height: 24px !important; /* Igualamos altura a los botones del menú superior */
+    padding: 0 8px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #333 !important;
+    background-color: #f0f0f0 !important;
+    box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2) !important;
+    transition: all 0.2s;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* 2. Hover (cuando pasas el ratón) */
+#btn-incluir-no-favs-distancia:hover {
+    background-color: #0078d4 !important;
+    color: #ffffff !important;
+    border-color: #999 !important;
+}
+
+/* 3. ESTADO ACTIVO/FILTRO APLICADO (La clave) 
+   Copiamos exactamente la lógica de los botones de filtro del menú principal 
+   para que se vea igual */
+#btn-incluir-no-favs-distancia.filtro-aplicado {
+    border-color: #ff0000 !important;
+    border-width: 1px !important;
+    /* La sombra roja que crea el borde grueso visualmente */
+    box-shadow: 
+        inset 0 0 0 2px #ff0000, 
+        inset 1px 1px 3px rgba(0,0,0,0.4) !important;
+    background-color: #ff000042 !important;
+}
+
 /* 2. Fondo Oscuro (Overlay) - Compartido por Menu y Mapa */
 .modal-overlay {
     position: fixed;
@@ -2619,7 +2657,8 @@ label.custom-checkbox {
     100% { transform: rotate(360deg); }
 }
 
-/* Ocultar el checkbox de incluir no favoritos cuando estamos en modo edición */
-body.modo-edicion-tabla #label-chk-incluir-no-favs {
+/* Ocultar el botón de incluir no favoritos cuando estamos en modo edición */
+body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     display: none !important;
 }
+

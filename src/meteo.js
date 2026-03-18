@@ -100,11 +100,16 @@ const modalMapa = document.getElementById('modal-mapa');
 const btnAbrirGeo = document.getElementById('btn-abrir-geo-menu');
 const btnCerrarMapa = document.getElementById('btn-cerrar-mapa');
 const btnGpsMapa = document.getElementById('btn-gps-mapa');
-const chkIncNoFavsDistancia = document.getElementById('chk-incluir-no-favs-distancia');
+const btnIncNoFavsDistancia = document.getElementById('btn-incluir-no-favs-distancia'); // <--- NUEVA VARIABLE
 
-// 1.5 Inicializar estado del checkbox al cargar
-if (chkIncNoFavsDistancia) {
-    chkIncNoFavsDistancia.checked = localStorage.getItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV') === 'true';
+// 1.5 Inicializar estado del botón al cargar
+if (btnIncNoFavsDistancia) {
+    const isActivo = localStorage.getItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV') === 'true';
+    if (isActivo) {
+        btnIncNoFavsDistancia.classList.add('activo', 'filtro-aplicado');
+    } else {
+        btnIncNoFavsDistancia.classList.remove('activo', 'filtro-aplicado');
+    }
 }
 
 let mapaLeaflet = null;
@@ -205,59 +210,70 @@ function ponerMarcador(lat, lng) {
     marcadorActual = L.marker([lat, lng], { icon: iconoRojo }).addTo(mapaLeaflet).openPopup();
 }
 
-// 5. EVENTO CHECKBOX (INCLUIR NO FAVORITOS)
-if (chkIncNoFavsDistancia) {
-    chkIncNoFavsDistancia.addEventListener('change', (e) => {
-        localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', e.target.checked);
+/// 5. EVENTO BOTÓN INCLUIR NO FAVORITOS (🤍+❤️)
+if (btnIncNoFavsDistancia) {
+    btnIncNoFavsDistancia.addEventListener('click', (e) => {
+        e.preventDefault(); 
+        
+        const estabaActivo = btnIncNoFavsDistancia.classList.contains('activo');
+        const nuevoEstado = !estabaActivo;
+
+        // 1. Lógica para cuando se quiere ACTIVAR
+        if (nuevoEstado) {
+            // Seguridad: Verificar si hay origen configurado
+            if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
+                
+                GestorMensajes.mostrar({
+                    tipo: 'modal',
+                    htmlContenido: `
+                        <p>Para usar esta función necesitas configurar primero una ubicación de origen.</p>
+                        <p>Usa el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
+                    `,
+                    botones:[
+                        { texto: 'Configurar origen', onclick: function() { 
+                            GestorMensajes.ocultar(); 
+                            const btnGeo = document.getElementById('btn-abrir-geo-menu');
+                            if (btnGeo) btnGeo.click(); // <--- ¡AQUÍ ESTABA EL DETALLE QUE FALTABA!
+                        } },
+                        { texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } }
+                    ]
+                });
+                return;
+            }
+        }
+
+        // 2. Guardamos en memoria
+        localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', nuevoEstado);
+        
+        // 3. Pintamos el botón hundido (activo) y con el borde rojo (filtro-aplicado)
+        if (nuevoEstado) {
+            btnIncNoFavsDistancia.classList.add('activo', 'filtro-aplicado');
+        } else {
+            btnIncNoFavsDistancia.classList.remove('activo', 'filtro-aplicado');
+        }
         
         const sliderDistElem = document.getElementById('distancia-slider');
         if (sliderDistElem && sliderDistElem.noUiSlider) {
             const currentIdx = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
             
-            // --- NUEVO: Si activa el check y el slider está en "Todo", salta a 100km ---
-            if (e.target.checked && currentIdx === CORTES_DISTANCIA_GLOBAL.length - 1) {
+            // --- Si se activa el botón y el slider estaba en "Todo", salta a 100km ---
+            if (nuevoEstado && currentIdx === CORTES_DISTANCIA_GLOBAL.length - 1) {
                 
-                // Seguridad: Verificar si hay origen configurado
-                if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
-                    e.target.checked = false; // Revertir visualmente
-                    localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', 'false');
-                    
-                    GestorMensajes.mostrar({
-                        tipo: 'modal',
-                        htmlContenido: `
-                            <p>Para buscar despegues no favoritos necesitas configurar una ubicación de origen.</p>
-                            <p>Usa el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
-                        `,
-                        botones:[
-                            { texto: 'Configurar origen', onclick: function() { 
-                                GestorMensajes.ocultar(); 
-                                const btnGeo = document.getElementById('btn-abrir-geo-menu');
-                                if (btnGeo) btnGeo.click(); // Simulamos un clic en el botón 📍
-                            } },
-                            { texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } }
-                        ]
-                    });
-                    return;
-                }
-
-                // FORZAR ESTILOS VISUALES DEL FILTRO ACTIVO
+                const idx100km = CORTES_DISTANCIA_GLOBAL.indexOf(100);
+                ultimaDistanciaConfirmada = idx100km;
+                sliderDistElem.noUiSlider.set(idx100km);
+                
+                // Forzar estilos del filtro principal
                 const btnToggle = document.getElementById("btn-div-filtro-distancia-toggle");
                 if (btnToggle) btnToggle.classList.add('filtro-aplicado');
-                
                 const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
                 if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
-                
                 const btnReset = document.getElementById('btn-reset-filtro-distancia');
                 if (btnReset) btnReset.style.display = 'block';
 
-                // Fijar a 100km. Actualizamos variable ANTES de mover para evitar rebotes del evento 'set'
-                const idx100km = CORTES_DISTANCIA_GLOBAL.indexOf(100);
-                ultimaDistanciaConfirmada = idx100km; 
-                sliderDistElem.noUiSlider.set(idx100km); 
-                
-                construir_tabla(false, false); 
+                construir_tabla(false, false);
             } 
-            // Si el checkbox se toca y ya había un filtro de distancia aplicado (< 9999)
+            // Si el botón se toca y ya había un filtro de distancia aplicado (< 9999)
             else if (currentIdx < CORTES_DISTANCIA_GLOBAL.length - 1) {
                 construir_tabla(false, false); 
             }
@@ -5377,11 +5393,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 			if (valorNuevo !== ultimaDistanciaConfirmada) {
                 
-                // Si volvemos a "Todo" (distancia infinita), desactivamos el checkbox
+                // Si volvemos a "Todo" (distancia infinita), desactivamos el botón
                 if (valorNuevo === MAX_INDEX) {
-                    const chkIncNoFavs = document.getElementById('chk-incluir-no-favs-distancia');
-                    if (chkIncNoFavs) {
-                        chkIncNoFavs.checked = false;
+                    const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
+                    if (btnIncNoFavs) {
+                        btnIncNoFavs.classList.remove('activo', 'filtro-aplicado');
                     }
                     localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', 'false');
                 }
@@ -6240,10 +6256,10 @@ document.addEventListener('DOMContentLoaded', function() {
             distanciaSlider.noUiSlider.set(MAX_INDEX);
         }
 
-        // --- NUEVO: Desmarcar checkbox de "incluir no favoritos" al resetear ---
-        const chkIncNoFavs = document.getElementById('chk-incluir-no-favs-distancia');
-        if (chkIncNoFavs) {
-            chkIncNoFavs.checked = false;
+        // --- NUEVO: Desmarcar botón de "incluir no favoritos" al resetear ---
+        const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
+        if (btnIncNoFavs) {
+            btnIncNoFavs.classList.remove('activo', 'filtro-aplicado');
         }
         localStorage.setItem('METEO_FILTRO_DISTANCIA_INCLUIR_NO_FAV', 'false');
 
