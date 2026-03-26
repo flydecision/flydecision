@@ -71,8 +71,9 @@ const LIMITES_CIZALLADURA = {
 }
 
 //const HorariosMediosActualizacion = ["01:27", "03:07", "06:00", "11:21", "13:31", "16:10", "19:08", "23:18"]; // en UTC-0
-const HorariosMediosActualizacion = ["01:31", "03:08", "06:02", "11:21", "13:31", "16:12", "19:11", "23:21"]; // en UTC-0
-const HorariosMediosActualizacionEcmwf =["00:30", "06:55", "12:25", "18:55"]; // en UTC-0
+//const HorariosMediosActualizacion = ["01:31", "03:08", "06:02", "11:21", "13:31", "16:12", "19:11", "23:21"]; // en UTC-0
+const HorariosMediosActualizacion = ["01:32", "03:02", "05:52", "08:02", "11:22", "13:32", "16:12", "19:12", "23:22"]; // en UTC-0
+const HorariosMediosActualizacionEcmwf =["00:25", "06:45", "12:25", "18:45"]; // en UTC-0
 
 let esModoOffline = false; // Nueva variable para controlar el estado de red
 
