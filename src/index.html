@@ -185,7 +185,21 @@
 				<span><b>↺</b></span>
 			</button>
 
-			<button class="btn-info btn-abajo-derecha" style="right: 7px; bottom: 8px;" data-tippy-content="<b>Filtro de condiciones en el despegue:</b><br><br>Muestra solo despegues con una puntuación de condiciones igual o mayor a la seleccionada.">
+			<button class="btn-info btn-abajo-derecha"
+					style="right: 7px; bottom: 8px;"
+					data-tippy-content="<b>Filtro de condiciones en el despegue:</b><br><br>
+					
+					Muestra solo despegues con una puntuación de condiciones igual o mayor a la seleccionada.<br><br>
+					Puedes personalizar los límites de condiciones con el botón de <i>Configuración de condiciones en el despegue</i>. El algoritmo de cálculo de puntuaciones y el coloreado de la tabla tendrá en cuenta tus preferencias.<br><br>
+					<b>🧮 Resumen del algoritmo de cálculo de puntuación:</b></p>
+					Se evalúa cada hora del rango horario seleccionado y se calcula una suma ponderada sobre 100 puntos máximos/hora, normalizando la puntuación final a una escala de 0 a 10 puntos.<br><br>
+					<ul style='margin-top:5px; padding-left:20px;'>
+						<li><b>Diferencia mínima en grados entre el pronóstico de dirección del viento y la orientación u orientaciones del despegue (0-50 puntos):</b> Óptimo &lt;10°. Penaliza progresivamente fuerte si &gt;22°.</li>
+						<li><b>Racha máxima (0-30 puntos):</b> Penaliza progresivamente fuerte según el límite máximo configurado.</li>
+						<li><b>Velocidad media (0-20 puntos):</b> Pondera positivamente estar en rango ideal configurado y penaliza su alejamiento.</li>
+					</ul>
+					<b>✖️ Correctores:</b><br>
+					Precipitación, Dirección y Racha actúan como modificadores del ratio de puntuación. Si son factores negativos, reducen la ponderación progresiva y porcentualmente de la nota total de esa hora o, incluso, califican con 0 puntos finales ante valores extremos.">
 				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 			</button>
 
@@ -216,18 +230,60 @@
 	<div class="div-configuracion-subpanel">
 		<div class="div-paneles-controles-sin-pips">
 			<div class="linea-con-bt-info" style="justify-content: center;">
+
 				<div id="titulo-velocidad-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
 					<img src="icons/icono_viento_60.webp" width="20" height="20" style="display: block;"><span>Viento medio</span>
 				</div>
+
+				<button class="btn-info btn-arriba-derecha" 
+					data-tippy-content="
+						<b>Viento medio mínimo, ideal y máximo:</b><br><br>
+						
+						El sistema automático de puntuación de condiciones tendrá en cuenta estos valores.<br><br>
+						
+						El color del dato en la tabla indica visualmente el análisis de las condiciones para estos valores que configures aquí (Mín, Ideal y Máx).<br><br>
+
+						🟧 Naranja: viento flojo por debajo de tu viento Mínimo (normalmente será 0, salvo que precises cierto viento para vuelo dinámico u otra razón).<br> 
+						🟩 Verde: viento Ideal, desde mínimo hasta un margen de seguridad antes del Máximo.<br> 
+						🟧 Naranja: viento más fuerte acercándose al Máximo (último tercio antes del Máximo).<br>
+						🟥 Rojo: viento muy fuerte que supera tu viento Máximo.<br><br>
+						
+						<b>Definición técnica estándar OMM (Organización Meteorológica Mundial) de la Velocidad media 10 m</b>:<br><br>
+
+						Es la velocidad promedio del viento sostenido durante los últimos 10 minutos antes de la hora indicada. Se mide a una altura estándar de 10 metros sobre el suelo (evitando el rozamiento inmediato del terreno). Representa el flujo laminar o base.
+					">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+
 			</div>
 			<div id="velocidad-slider" role="slider" aria-labelledby="titulo-velocidad-slider"></div>
 		</div>
 
 		<div class="div-paneles-controles-sin-pips">
 			<div class="linea-con-bt-info" style="justify-content: center;">
+
 				<div id="titulo-racha-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
 					<img src="icons/icono_racha_60.webp" width="20" style="display: block;"><span>Racha máxima</span>
 				</div>
+
+				<button class="btn-info btn-arriba-derecha" 
+					data-tippy-content="
+						<b>Racha máxima:</b><br><br>
+						
+						El sistema automático de puntuación de condiciones tendrá en cuenta estos valores.<br><br>
+						
+						El color del dato en la tabla indica visualmente el análisis de las condiciones para el valor que configures aquí.<br><br>
+
+						🟩 Verde: racha máxima segura, lejos del límite.<br>
+						🟧 Naranja: racha máxima acercándose a tu racha Máxima.<br> 
+						🟥 Rojo: racha superando tu racha Máxima.<br><br>
+						
+						<b>Definición técnica estándar OMM (Organización Meteorológica Mundial) de la Racha máxima 10 m</b>:<br><br>
+
+						Es el pico máximo de velocidad instantánea (con una duración de 3 segundos) registrado en cualquier momento dentro del periodo de la hora anterior. Representa las fluctuaciones breves e intensas superpuestas al viento medio, asociada a turbulencia mecánica o térmica (convección).">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+
 			</div>
 			<div id="racha-slider" role="slider" aria-labelledby="titulo-racha-slider"></div>
 		</div>
@@ -236,10 +292,25 @@
 	<div class="div-configuracion-subpanel">
 		<div class="div-paneles-controles">
 			<div class="linea-con-bt-info" style="justify-content: center;">
+
 				<div id="titulo-configuracion-horario-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
 					<span style="font-size:1.2em; display: block;">🕜</span>
 					<span>Horario de vuelo preferido</span>
 				</div>
+
+				<button class="btn-info btn-arriba-derecha" 
+					data-tippy-content='
+						<b>Horario de vuelo preferido:</b><br><br>
+						Los valores que se configuren aquí, harán que se seleccionen automáticamente estas horas de inicio y fin al elegir un día de la semana (lunes, martes,..) en el selector de rango horario que está siempre encima de la tabla.<br><br>
+						
+						Siempre puedes mover ese selector de rango horario a tu gusto; esta configuración es solo una automatización para facilitar la selección automática de un rango horario habitual.<br><br>
+						
+						Lo hagas manual o automáticamente, el rango de tiempo finalmente seleccionado es el único que se tiene en cuenta en el cálculo de la puntuación de <i>Condiciones</i>; así, la puntuación de cada despegue sera más realista para ese rango.<br><br>
+						
+						Si está activada la opción <i>Mostrar horas diurnas</i>, el rango horario seleccionado automáticamente con esta opción se ajustará a los límites de horas diurnas.'>
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+
 			</div>
 			<div id="configuracion-horario-slider" role="slider" aria-labelledby="titulo-configuracion-horario-slider"></div>
 		</div>
@@ -251,16 +322,25 @@
 					<label for="chkMostrarProbPrecipitacion" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarProbPrecipitacion" onclick="alternarMostrarProbPrecipitacion()"> Probabilidad de Precipitación
 					</label>
+					<button class="btn-info btn-inline" data-tippy-content="<b>Probabilidad de Precipitación (%)</b><br><br>Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²).<br><br>Dato original del modelo ECMWF.">
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
 				</div>
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarVientoAlturas" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarVientoAlturas" onclick="alternarMostrarVientoAlturas()"> Viento a 80, 120 y 180 m
 					</label>
+					<button class="btn-info btn-inline" data-tippy-content='<b>Viento a 80, 120 y 180 m (km/h)</b><br><br>Muestra 3 filas con los pronósticos de velocidad de viento medio a 80, 120 y 180 m de altura sobre el suelo. Estas 3 filas se muestran por encima de la fila estándar de velocidad de viento medio a 10 m del suelo.<br><br>Estos valores ofrecen la posibilidad de evaluar el grado de turbulencia por cizalla y también el grado de fiabilidad del pronóstico de viento medio.<br><br>Datos originales del modelo Arome/Arpege (Météo-France).'>
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
 				</div>
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarXC" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarXC" onclick="alternarMostrarXC()"> XC: Techo AGL, CAPE y CIN
 					</label>
+					<button class="btn-info btn-inline" data-tippy-content="<b>XC: Techo AGL, CAPE, CIN</b><br><br>Muestra un grupo de 3 filas con datos enfocados al vuelo de Cross Country (XC):<ul><li><b>Techo de vuelo AGL (km):</b> Altura sobre el suelo de la capa límite (BLH = Boundary Layer Height)</li><li><b>CAPE (J/kg):</b> Energía Potencial Convectiva Disponible (Convective Available Potential Energy)</li><li><b>CIN (J/kg):</b> Inhibición Convectiva (Convective INhibition)</li></ul>Datos originales del modelo ECMWF.">
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
 				</div>
 			</div>
 		</details>
@@ -272,21 +352,33 @@
 					<label for="chkMostrarSoloHorasDiurnas" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarSoloHorasDiurnas" onclick="alternarHorasNoche()"> Solo horas diurnas
 					</label>
+					<button class="btn-info btn-inline" data-tippy-content='<b>Solo horas diurnas</b><br><br>Muestra solo las horas diurnas. Si se desactiva, se muestran las 24 horas del día.<br><br>Se incluye un margen de ±1h al amanecer y atardecer.<br><br>Cambia automáticamente cada mes. En los meses de cambios horarios, además, estas horas se ajustarán automáticamente al cambio de hora oficial (DST).'>
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
 				</div>
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarCizalladura" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarCizalladura" onclick="alternarMostrarCizalladura()"> Cizalladura / Fiabilidad
 					</label>
+					<button class="btn-info btn-inline" data-tippy-content='<b>Cizalladura / Fiabilidad</b><br><br>Muestra una fina fila debajo de la fila de orientación que muestra un valor calculado: el nivel de Cizalladura de Bajo Nivel (LLWS - Low-Level Wind Shear) y también el grado de Fiabilidad del pronóstico de viento medio a 10 m de altura.<br><br>El sistema analiza los valores de viento medio a 10, 80, 120 y 180 m de altura sobre el suelo y, mediante un algoritmo, muestra un semáforo de colores.<br><br>🟩 Verde: Baja cizalladura por velocidad y alta fiabilidad del pronóstico de velocidad a 10 m.<br>🟧 Naranja: Valores medios de cizalladura y fiabilidad.<br>🟥 Rojo: Alta cizalladura por velocidad y baja fiabilidad del pronóstico de velocidad a 10 m.<br><br>Esta cizalladura ocurre cuando hay un gradiente alto de velocidades cerca del suelo. Ese nivel también es correlativo a la fiabilidad de la velocidad de viento a 10 m del suelo.<br><br>La razón es que, si la masa de aire se mueve a velocidades similares, el grado de turbulencia por cizalladura de velocidad será pequeña y, además, el pronóstico de viento a nivel del suelo será más fiable y viceversa.'>
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
 				</div>
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarRafagosidad" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarRafagosidad" onclick="alternarMostrarRafagosidad()"> Rafagosidad
 					</label>
+					<button class="btn-info btn-inline" data-tippy-content='<b>Rafagosidad:</b><br><br>Muestra una fina línea con colores entre la fila de Velocidad media y la fila de Racha máxima. Esa línea indica visualmente para cada hora un valor calculado: la <i>Rafagosidad (Factor de racha, de ráfaga o Gust Factor)</i>.<br><br>La Rafagosidad es la relación entre la racha y la velocidad media. Es uno de los varios factores que indican el grado de turbulencia del aire. Se calcula dividiendo la racha máxima entre la velocidad media del viento (Racha/Media) y se muestra un código de colores como indicación general del grado de turbulencia:<br><br>🟩 Verde: baja (relación < 1.5)<br>🟧 Naranja: media (relación < 2.1)<br>🟥 Rojo: alta (relación >= 2.1)<br><br>Hay umbrales de ráfaga máxima por debajo de los cuales se considera que el viento es laminar, independientemente de la relación. Si la racha es inferior a 10 km/h, se considera una situación poco peligrosa, aunque la relación sea alta (esto ocurre cuando el viento es muy flojo).<br><br>Otra forma de cálculo de este factor de ráfaga es la diferencia aritmética entre la velocidad media y la ráfaga máxima. Como indicación general, una diferencia superior a 10 km/h entre la velocidad media y la ráfaga, o una ráfaga que duplique la velocidad media, son indicadores de turbulencia alta.<br><br>Como referencias, las más interesantes encontradas son en sitios específicos como Aspen, en que se establece como límite de seguridad que el viento medio no exceda las 12 mph (19 km/h) con ráfagas no mayores a 18 mph (29 km/h), lo que implica una ráfaga máxima de 1.5 veces la media (cifra conservadora que correspondería a una situación "naranja" aquí). Algunas estaciones meteorológicas (como las de Holfuy) consideran que un factor de ráfaga de 2.1 veces la velocidad media es una señal de aviso. Una relación tan alta suele indicar térmicas rotas o más cizalladuras. Es la cifra media de referencia que coincide con otras y que hemos tomado aquí.'>
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
 				</div>
 				<div class="linea-con-bt-info">
 					<label for="chkAplicarCalibracion" class="custom-checkbox">
 						<input type="checkbox" id="chkAplicarCalibracion" onclick="alternarAplicarCalibracion()"> Aplicar calibración (beta)
 					</label>
+					<button class="btn-info btn-inline" data-tippy-content='<b>Aplicar calibración:</b><br><br><b><i>Ene-2026: ⚠️ Opción experimental en fase de desarrollo. Úsalo según tu criterio. Si tienes dudas, no lo actives y se mostrará el dato original del modelo.</i></b><br><br><b>Aplicar calibración estadística (beta):</b><br><br>Activa un factor de corrección a los datos meteorológicos de velocidad, racha y dirección.<br><br>La corrección está basada en el análisis comparativo (en curso) de miles de registros reales tomados en balizas meteorológicas frente a los pronósticos del modelo para esos mismos puntos.<br><br>Si está activado, los datos mostrados serán un <i>"dato ajustado"</i>. Si está desactivado (opción predeterminada) los datos mostrados serán los originales del modelo.<br><br>Como apoyo a estos resultados y en cuanto al parámetro de viento medio a 10 m, las estadísticas de otros diversos estudios indican que los modelos meteorológicos tienden a subestimar la velocidad del viento en superficie en zonas de montaña, que es el principal escenario del parapente. Esto es lógico, entre otras causas, porque la resolución de la malla de puntos y del modelo digital de terreno no son tan finos como extrapolar datos a la realidad del terreno.<br><br>Aunque los modelos de mesoescala tienen resolución de 1-10 km (Arome-HD tiene 1,3 km) y resuelven la dinámica y la convección térmica general, lo hacen a una resolución "baja" comparada con el relieve real de los puntos concretos de despegue, que muchas veces están en divisorias, afectados por venturis, vientos anabáticos o convección térmica general local.<br><br>Nota: técnicamente es posible que en los datos brutos (RAW) de modelos meteorológicos aparezca una racha inferior a la velocidad media. Esto suele ocurrir por procesos de interpolación del proveedor de datos. A veces suavizan la curva de viento medio y la de racha de forma independiente, y en momentos de viento muy bajo o transiciones rápidas, las curvas se cruzan matemáticamente, aunque físicamente sea imposible. Es un error de los datos originales y no de este sistema de calibración ni de la web. En estos casos, al aplicar la calibración estadística, se fuerza a que la racha igual a la velocidad media para evitar esas incoherencias visuales.<br><br>Nota: el análisis estadístico sigue en curso y en desarrollo durante 2026 y se irán aplicando automáticamente a esta opción las mejoras de calibración de velocidad, racha y dirección específicas para los despegues de la base de datos a medida que sean estadísticamente significativas.'>
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
 				</div>
 			</div>
 		</details>
@@ -296,6 +388,23 @@
 		<div class="div-paneles-controles" style="min-height: initial; padding-top: 5px; padding-bottom: 5px;">
 			<span style="font-weight: bold; display: block; text-align: left; padding-bottom: 5px; padding-left: 15px;">Actualizaciones modelos meteo</span>
 			<span id="data_generation_time"></span>
+			<button class="btn-info btn-arriba-derecha" 
+				data-tippy-content="
+					<b>Modelos meteorológicos:</b><br>
+					<ul style='margin-top:5px; padding-left:20px;'>
+						<li><b>Météo-France Arome-HD 1.3km</b>: para datos de viento en las primeras 0-48h. Cubre casi toda Europa, incluyendo península ibérica, salvo el sur de Andalucía (en esa zona se usa Arpege Europe 7km de 0-96h).</li>
+						<li><b>Météo-France Arpege Europe 7km</b>: para datos de viento en las siguientes 48-96h. Cubre Europa y norte de África.</li>
+						<li><b>ECMWF IFS HRES 9km</b>: para resto de datos meteorológicos de 0-96h. Cubre todo el mundo.</li>
+					</ul>
+					<b>Frecuencia de actualización automática:</b> Météo-France cada 3 horas aproximadamente (8 veces al día) y ECMWF cada 6 horas aproximadamente (4 veces al día).<br><br>
+					<b>Pasarela de datos meteorológicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>
+					
+					El valor <i>Ref. HHZ</i> indica la hora UTC±0 (Z) correspondiente al último ciclo de ejecución del modelo en el servidor meteorológico de origen. A partir de ese momento, hay varias horas de cálculo computacional antes de la distribución final y su disponibilidad pública.<br><br>
+					
+					Los tiempos indicados como <i>Próxima actualización</i> son una aproximación estadística general y variable sobre los horarios de actualización que ofrece Météo-France.
+				">
+				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+			</button>
 			<div id="proxima-actualizacion-contenedor" style="padding-left:15px;">	
 				<span id="proxima-actualizacion"></span><br>
 			</div>
