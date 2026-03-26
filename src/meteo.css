@@ -1411,19 +1411,29 @@ span.grados {
     margin-right: 18px !important;
 }
 .noUi-horizontal .noUi-handle {
-	width: 20px !important;
-	height: 24px !important;
-	top: -5px !important;
-	right: -9px !important;
+    width: 28px !important;   /* Antes 20px */
+    height: 28px !important;  /* Antes 24px */
+    top: -7px !important;     /* Antes -5px (lo centramos verticalmente) */
+    right: -14px !important;  /* Antes -9px (mitad exacta del width para centrarlo) */
     border: 1px solid #999 !important;
+    border-radius: 6px !important; /* Esquinas ligeramente más suaves */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; /* Ligera sombra para darle volumen */
 }
+
 .noUi-handle:after, .noUi-handle:before {
-    left: 8px !important;
-    top: 4px !important;
+    top: 6px !important;      /* Antes 4px */
+    height: 14px !important;  /* Altura de la raya */
     width: 2px !important;
 }
+.noUi-handle:before {
+    left: 10px !important;    /* Rayita izquierda */
+}
+.noUi-handle:after {
+    left: 15px !important;    /* Rayita derecha (5px de separación) */
+}
+
 .noUi-horizontal .noUi-tooltip {
-    cursor: grab !important;
+    cursor:pointer !important;
     /* border-radius: 3px; */
 	font-weight: bold;
 	/* ESTILOS DE ALINEACIÓN */
@@ -1434,8 +1444,27 @@ span.grados {
     /* white-space: nowrap; */ /* Prohíbe terminantemente que se parta la línea */
 }
 .noUi-touch-area {
-    cursor: grab !important;
+    cursor: pointer !important;
+    position: absolute !important;
+    
+    /* 1. Ponemos el punto de anclaje en el centro exacto del botón blanco */
+    top: 50% !important;
+    left: 50% !important;
+    
+    /* 2. Desplazamos la caja hacia atrás para que su centro coincida con el anclaje */
+    transform: translate(-50%, -50%) !important;
+    
+    /* 3. Forzamos el tamaño táctil ideal (Fat Finger) ignorando el 100% nativo */
+    width: 44px !important;
+    height: 44px !important;
+    
+    /* 4. Limpieza de seguridad */
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important; 
+    border: none !important;
 }
+
 .noUi-handle .noUi-tooltip {
     display: flex !important;
     /* flex-direction: column !important; */
@@ -1467,7 +1496,7 @@ span.grados {
 #horario-slider .noUi-pips-horizontal {
     padding: 0px !important;
     height: 45px !important;
-    top: 130% !important;
+    top: 145% !important;
     left: -4px !important;
     width: 100% !important;
 }
@@ -1518,8 +1547,8 @@ span.grados {
   display: none !important;
 }
 #horario-slider .noUi-marker-horizontal.noUi-marker-large {
-    height: 6px;
-    margin-top: -27px;  
+    height: 9px;
+    margin-top: -32px;  
 }
 
 /* 🟡 SLIDERS. Personalizados. Configuración Horario -------------------------------- */

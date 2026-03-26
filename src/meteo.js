@@ -2003,7 +2003,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 			if (haCambiado) {
                 // Actualizamos la variable global YA
 				window.sliderHorasValues = valoresNuevos;
-				construir_tabla(false, true);
+				construir_tabla(false, false);
 			}
 		});
 
