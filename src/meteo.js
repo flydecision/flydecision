@@ -781,7 +781,7 @@ function iniciarGuiaPrincipal(forzar = false) {
             },
 
             { element: '#btn-incluir-no-favs-distancia',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;"><img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">+<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></span> Incluir despegues no favoritos en el filtro', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>Esto es útil cuando viajamos y buscamos las mejores condiciones fuera de nuestra zona de favoritos.' , side: 'bottom', align: 'end'},
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></span> Incluir despegues no favoritos en el filtro', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>Esto es útil cuando viajamos y buscamos las mejores condiciones fuera de nuestra zona de favoritos.' , side: 'bottom', align: 'end'},
             },
 
             { element: '#distancia-slider',
@@ -920,7 +920,7 @@ function iniciarGuiaFavoritos(forzar = false) {
                     description: 'Muestra solo los despegues alrededor de un punto.<br><br>Ejemplo: te puede servir para seleccionar rápidamente como favoritos (y ver así su pronóstico en la pantalla principal) los despegues que estén en un radio de 50 km alrededor de un punto.<br><br>Voy a pulsar ese botón para que lo veas.' } },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen.<br><br>Te ofrecerá usar un mapa o la propia localización del móvil.' },
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.' },
                 
                 onHighlighted: (element) => {
                     // 1. Forzamos el clic en el botón que despliega el menú
@@ -4721,7 +4721,7 @@ function btnRestablecerConfiguración() {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2em; margin: 0;">🔄</p>
-                <p><b>⚠️ ATENCIÓN:</b> Esta acción eliminará la configuración y desmarcará todos los despegues favoritos.</p><p>Si quieres conservar tus despegues favoritos, cancela este mensaje, vete a 🪂<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"><i>Editar favoritos</i> y guárdalos con 💾<i>Guardar favoritos</i>.</p>
+                <p><b>⚠️ ATENCIÓN:</b> Esta acción eliminará la configuración y desmarcará todos los despegues favoritos.</p><p>Si quieres conservar tus favoritos, cancela este mensaje y guárdalos con 💾<i>Guardar favoritos</i>.</p>
             </div>
         `,
         botones: [            
@@ -4911,7 +4911,7 @@ function filtrarDespeguesProvincias() {
                         <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
                         <b>${visibles}</b>
                     </span>`;
-                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles (<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">+<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">)`;
                 
             } else if (totalFavoritos === 0) {
                 // Modo Normal pero sin favoritos añadidos aún
