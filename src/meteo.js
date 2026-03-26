@@ -205,7 +205,7 @@ function ponerMarcador(lat, lng) {
     marcadorActual = L.marker([lat, lng], { icon: iconoRojo }).addTo(mapaLeaflet).openPopup();
 }
 
-/// 5. EVENTO BOTÓN INCLUIR NO FAVORITOS (🤍+❤️)
+/// 5. EVENTO BOTÓN INCLUIR NO FAVORITOS (<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">+<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)
 if (btnIncNoFavsDistancia) {
     btnIncNoFavsDistancia.addEventListener('click', (e) => {
         e.preventDefault(); 
@@ -572,7 +572,7 @@ function mostrarConfirmacionMasiva(cantidad) {
         tipo: 'modal',
         htmlContenido: `
             <div style="text-align: center;">
-                <p style="font-size: 2em; margin: 0;">❤️</p>
+                <p style="font-size: 2em; margin: 0;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></p>
                 <p>¿Quieres marcar <span style="font-weight:bold;">${cantidad}</span> despegues como favoritos?</p>
             </div>
         `,
@@ -781,7 +781,7 @@ function iniciarGuiaPrincipal(forzar = false) {
             },
 
             { element: '#btn-incluir-no-favs-distancia',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">🤍+❤️</span> Incluir despegues no favoritos en el filtro', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>Esto es útil cuando viajamos y buscamos las mejores condiciones fuera de nuestra zona de favoritos.' , side: 'bottom', align: 'end'},
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;"><img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">+<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></span> Incluir despegues no favoritos en el filtro', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>Esto es útil cuando viajamos y buscamos las mejores condiciones fuera de nuestra zona de favoritos.' , side: 'bottom', align: 'end'},
             },
 
             { element: '#distancia-slider',
@@ -798,7 +798,7 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_tierra_60.webp" width="20" height="20" style="display: block;"><span>Mapa de despegues</span></div>', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1 millón de puntos exactos de despegues y mucha otra información.<br><br>La información más completa es de España y Pirineos (incluyendo la parte francesa), pero hay información de todo el mundo.' , side: 'bottom', align: 'center' } },
 
             { element: '#btn-activar-edicion-favoritos',
-                popover: { title: '♥️/🤍 Edición de favoritos', description: 'Abre la <i>Pantalla de edición de favoritos</i>.<br><br>En esa pantalla tienes todos los despegues disponibles y es donde se marcan o desmarcan los favoritos que se mostrarán en esta <i>Pantalla principal</i>.' } },
+                popover: { title: '♥️/<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Edición de favoritos', description: 'Abre la <i>Pantalla de edición de favoritos</i>.<br><br>En esa pantalla tienes todos los despegues disponibles y es donde se marcan o desmarcan los favoritos que se mostrarán en esta <i>Pantalla principal</i>.' } },
 
             { element: '#btn-div-configuracion-toggle',
                 popover: { title: '⚙️ Configuración', description: 'Te lleva al panel de configuración, donde podrás personalizar parámetros, activar opciones interesantes y ver información de los datos meteorológicos.<br><br>👉🏽 Para cada opción o dato, tienes un botón de información <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;">.' } }
@@ -904,10 +904,10 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '🪂 Tabla de todos los despegues', description: 'Esta pantalla de edición de favoritos sirve para seleccionar los despegues que usas habitualmente. La pantalla normal de la aplicación mostrará solo los despegues favoritos.<br><br>En esta tabla tienes todos disponibles.<br><br>Por el momento solo hay despegues de España y Pirineos (incluyendo la parte francesa). Esta aplicación es un proyecto en desarrollo.', side: 'right', align: 'start'} },
 
             { element: '#tabla tbody tr:nth-child(1) td:first-child', 
-                popover: { title: '❤️ Favoritos', description: 'Marca (o desmarca) aquí tus despegues favoritos.<br><br>Se van guardando automáticamente.', side: 'bottom', align: 'end'} },
+                popover: { title: '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos', description: 'Marca (o desmarca) aquí tus despegues favoritos.<br><br>Se van guardando automáticamente.', side: 'bottom', align: 'end'} },
 
             { element: '#tabla thead tr:first-child th:first-child', 
-                popover: { title: '🤍 Cabecera favoritos', description: 'Permite marcar (o desmarcar) de una sola vez todos los despegues visibles actualmente en la tabla.<br><br>Ejemplo: buscas todos los de "Huesca" y los marcas todos.' } },
+                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Cabecera favoritos', description: 'Permite marcar (o desmarcar) de una sola vez todos los despegues visibles actualmente en la tabla.<br><br>Ejemplo: buscas todos los de "Huesca" y los marcas todos.' } },
 
             { element: '.btn-info.btn-abajo-izquierda', 
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>👉🏽  El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
@@ -958,7 +958,7 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_filtro_60.webp" width="20" height="20" style="display: block;"><span>Ver solo favoritos</span></div>', description: 'Alterna entre ver solo los despegues favoritos o ver todos los despegues.<br><br>Si tenías ya favoritos, puede servirte para verlos juntos fácilmente y desmarcar alguno o también para desmarcar todos a la vez.' } },
 
             { element: '#btn-desmarcar-favoritos',
-                popover: { title: '🤍 Desmarcar todos los favoritos', description: 'Desmarca todos los favoritos actuales.' } },
+                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Desmarcar todos los favoritos', description: 'Desmarca todos los favoritos actuales.' } },
 
             { element: '#btn-abrir-favoritos',
                 popover: { title: '📂 Abrir favoritos', description: 'Abre un archivo con una lista de despegues favoritos guardados previamente.' } },
@@ -1065,7 +1065,7 @@ function desmarcarFavoritos() {
         tipo: 'modal',
         htmlContenido: `
             <div style="text-align: center;">
-                <p style="font-size: 2em; margin: 0;">🤍</p>
+                <p style="font-size: 2em; margin: 0;"><img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></p>
                 <p>¿Quieres desmarcar todos tus favoritos?</p>
             </div>
         `,
@@ -1090,13 +1090,13 @@ function desmarcarFavoritos() {
                         btn.classList.remove("activo", "filtro-aplicado");
                     }
                     
-                    // 2. Actualizamos el contador visual ("❤️ 0")
+                    // 2. Actualizamos el contador visual ("<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> 0")
                     actualizarContadorVisualFavoritos();
                     
                     // 3. Restauramos el icono de la cabecera de la tabla a desmarcado
                     const thFavorito = document.getElementById('id-thFavorito');
                     if (thFavorito) {
-                        thFavorito.innerHTML = "🤍";
+                        thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
                         thFavorito.title = "Marcar todos los despegues visibles como favoritos";
                     }
 
@@ -1307,9 +1307,9 @@ function actualizarContadorVisualFavoritos() {
         let texto = "";
 
         if (num === 1) {
-            texto = `<b>${num}</b> ❤️ Favorito`;
+            texto = `<b>${num}</b> <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favorito`;
         } else {
-            texto = `<b>${num}</b> ❤️ Favoritos`;
+            texto = `<b>${num}</b> <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos`;
         }
         
         el.innerHTML = texto;
@@ -1342,7 +1342,7 @@ let estadoPendienteDeAplicar = false; // true = marcar, false = desmarcar
 function gestionarClickMasivoFavoritos() {
     
     if (!modoEdicionFavoritos) {
-		mensajeModalAceptar('','<p>Para marcar o desmarcar un grupo de favoritos, utiliza la opción:</p><p>Menú ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [❤️ Favoritos]</p>');
+		mensajeModalAceptar('','<p>Para marcar o desmarcar un grupo de favoritos, utiliza la opción:</p><p>Menú ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos]</p>');
         return;
     }
 
@@ -1424,7 +1424,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     // --- Actualización visual (DOM) ---
     const thFavorito = document.getElementById('id-thFavorito');
     if (thFavorito) {
-        thFavorito.innerHTML = nuevoEstadoEsFavorito ? "❤️" : "🤍";
+        thFavorito.innerHTML = nuevoEstadoEsFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
         thFavorito.title = nuevoEstadoEsFavorito 
             ? "Desmarcar todos los despegues visibles como favoritos" 
             : "Marcar todos los despegues visibles como favoritos";
@@ -1460,7 +1460,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
         // Verificamos si esta fila es una de las afectadas
         if (celda && celda.dataset.id && setAfectados.has(celda.dataset.id)) {
             
-            celda.innerHTML = nuevoEstadoEsFavorito ? "❤️" : "🤍";
+            celda.innerHTML = nuevoEstadoEsFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
             celda.title = nuevoEstadoEsFavorito ? "Quitar de favoritos" : "Añadir a favoritos";
             
             const action = nuevoEstadoEsFavorito ? 'add' : 'remove';
@@ -2703,7 +2703,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // ---------------------------------------------------------------
 
 		const thFavorito = document.createElement("th");
-		thFavorito.textContent = "🤍";
+		thFavorito.textContent = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
 		thFavorito.id = "id-thFavorito";
 		thFavorito.rowSpan = 2; // Ocupa las dos filas de la cabecera
 		thFavorito.style.fontSize = "18px";
@@ -3553,14 +3553,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     tdFavorito.title = "Despegue favorito";
                 }
                 
-                //tdFavorito.innerHTML = esFavorito ? "❤️" : "🤍";
-                tdFavorito.innerHTML = esFavorito ? "❤️" : "🤍";
+                //tdFavorito.innerHTML = esFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+                tdFavorito.innerHTML = esFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
                 
                 tdFavorito.onclick = function() {
                     
                     const nuevoEstado = toggleFavorito(idDespegue);
 
-                    tdFavorito.innerHTML = nuevoEstado ? "❤️" : "🤍";
+                    tdFavorito.innerHTML = nuevoEstado ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
                     tdFavorito.title = nuevoEstado ? "Quitar de favoritos" : "Añadir a favoritos";
 
                     todasLasFilas.forEach(f => f.classList.toggle("favorito", nuevoEstado));
@@ -4721,7 +4721,7 @@ function btnRestablecerConfiguración() {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2em; margin: 0;">🔄</p>
-                <p><b>⚠️ ATENCIÓN:</b> Esta acción eliminará la configuración y desmarcará todos los despegues favoritos.</p><p>Si quieres conservar tus despegues favoritos, cancela este mensaje, vete a 🪂❤️<i>Editar favoritos</i> y guárdalos con 💾<i>Guardar favoritos</i>.</p>
+                <p><b>⚠️ ATENCIÓN:</b> Esta acción eliminará la configuración y desmarcará todos los despegues favoritos.</p><p>Si quieres conservar tus despegues favoritos, cancela este mensaje, vete a 🪂<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"><i>Editar favoritos</i> y guárdalos con 💾<i>Guardar favoritos</i>.</p>
             </div>
         `,
         botones: [            
@@ -4879,7 +4879,7 @@ function filtrarDespeguesProvincias() {
                         <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
                         <b>${visibles}</b>
                     </span>`;
-                divContador.innerHTML = `${htmlNumeroFiltrado} despegues favoritos (❤️) de <b>${totalDespeguesDisponibles}</b> disponibles`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">) de <b>${totalDespeguesDisponibles}</b> disponibles`;
                 
             } else if (visibles < totalDespeguesDisponibles) {
                 // CASO B: Otros filtros activos (distancia, buscador), pero NO "solo favoritos"
@@ -4911,7 +4911,7 @@ function filtrarDespeguesProvincias() {
                         <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
                         <b>${visibles}</b>
                     </span>`;
-                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles (🤍+❤️)`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles (<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">+<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)`;
                 
             } else if (totalFavoritos === 0) {
                 // Modo Normal pero sin favoritos añadidos aún
@@ -4926,10 +4926,10 @@ function filtrarDespeguesProvincias() {
                             <b>${visibles}</b>
                         </span>`;
                     
-                    divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalFavoritos}</b> despegues favoritos (❤️)`;
+                    divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalFavoritos}</b> despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)`;
                 } else {
                     // Modo Normal sin ningún filtro extra aplicado (ej: buscador o distancia vacíos)
-                    divContador.innerHTML = `<b>${visibles}</b> despegues favoritos (❤️)`;
+                    divContador.innerHTML = `<b>${visibles}</b> despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)`;
                 }
             }
         }
@@ -4937,7 +4937,7 @@ function filtrarDespeguesProvincias() {
 
     if (modoEdicionFavoritos) {
         const thFavorito = document.getElementById('id-thFavorito'); 
-        if(thFavorito) thFavorito.innerHTML = "🤍";
+        if(thFavorito) thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
     }
 
     // =========================================================
@@ -4989,7 +4989,7 @@ function filtrarDespeguesProvincias() {
 
 						<button class="sugerencia-btn" 
 								onclick="agregarDespegueDesdeBuscador('${d.Despegue.replace(/'/g, "\\'")}')">
-						+ Añadir favorito ❤️
+						+ Añadir favorito <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">
 						</button>
 					</li>`;
 			});

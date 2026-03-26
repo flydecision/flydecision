@@ -841,10 +841,10 @@ details.config-accordion .accordion-content {
     z-index: 15;             /* Asegura que quede por encima si roza algo */
 }
 
-.div-paneles-controles-transparente img {
+/* .div-paneles-controles-transparente img {
     width: 20px;
     height: 20px;
-}
+} */
 
 
 /* 🔴 MENÚ 2 EDICIÓN FAVORITOS -------------------------------- */
@@ -1682,7 +1682,7 @@ span.grados {
     /* border-radius: 5px; */
 	border: 1px solid #333;
 }
-/* Estilos para cuando el botón de "🤍+❤️" está activo (hundido) */
+/* Estilos para cuando el botón de "<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">+❤️" está activo (hundido) */
 /* 1. Estilo base del botón (hereda de .btn-icon-trigger pero con ajustes) */
 #btn-incluir-no-favs-distancia {
     border-radius: 4px !important;
@@ -1697,6 +1697,8 @@ span.grados {
     transition: all 0.2s;
     font-size: 16px;
     cursor: pointer;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 /* 3. ESTADO ACTIVO/FILTRO APLICADO (La clave) 
@@ -2638,5 +2640,22 @@ label.custom-checkbox {
 /* Ocultar el botón de incluir no favoritos cuando estamos en modo edición */
 body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     display: none !important;
+}
+
+.icono-emoji {
+  /* Usar 1em hace que mida exactamente lo mismo que el texto (16px).
+     La gran ventaja es que si mañana cambias el texto a 20px, 
+     el corazón crecerá automáticamente a 20px sin tocar el CSS. */
+  height: 1em;
+  width: 1em;
+  
+  /* Los emojis por defecto no se apoyan exactamente en la línea base del texto, 
+     sino que bajan un poquito. Este valor negativo imita ese comportamiento. */
+  vertical-align: -0.15em; 
+  
+  /* Propiedades de seguridad para evitar comportamientos raros del navegador */
+  display: inline-block;
+  border: none;
+  margin: 0 0.05em; /* Un margen minúsculo a los lados para que respire como un emoji */
 }
 
