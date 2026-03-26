@@ -2351,16 +2351,16 @@ label.custom-checkbox {
 .btn-reset-filtro {
     border-radius: 50%;
     /* width: 25px; */
-    height: 25px;
-    font-weight: bold;
-    font-size: 23px;
+    /* height: 25px; */
+    /* font-weight: bold; */
+    font-size: 25px;
     cursor: pointer;
     display: inline-flex;
     /* align-items: center; */
     /* justify-content: center; */
     /* margin-left: 5px; */
-    transition: background-color 0.2s;
-    padding-left: 0px;
+    /* transition: background-color 0.2s; */
+    /* padding-left: 0px; */
 }
 
 /* 🔴 BOTONES AYUDA -------------------------------- */
