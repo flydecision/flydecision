@@ -2319,24 +2319,17 @@ label.custom-checkbox {
 
 .btn-reset-filtro {
     border-radius: 50%;
-    width: 25px;
+    /* width: 25px; */
     height: 25px;
-    font-size: 20px;
+    font-weight: bold;
+    font-size: 23px;
     cursor: pointer;
     display: inline-flex;
     /* align-items: center; */
     /* justify-content: center; */
     /* margin-left: 5px; */
     transition: background-color 0.2s;
-    padding-left: 4px;
-}
-/* Solo aplica el hover si el dispositivo tiene un puntero que puede "flotar" (ratón) */
-@media (min-width: 1025px) {
-  .btn-reset-filtro:hover {
-    background-color: #0078d4;
-    color: #ffffff !important;
-	/* transform: scale(1.1); */
-  }
+    padding-left: 0px;
 }
 
 /* 🔴 BOTONES AYUDA -------------------------------- */

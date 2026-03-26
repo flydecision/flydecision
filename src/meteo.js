@@ -5332,16 +5332,6 @@ document.addEventListener('DOMContentLoaded', function() {
             range: {
                 'min': 0,        // Índice del primer elemento (5 km)
                 'max': MAX_INDEX // Índice del último elemento (Todo)
-            },
-            pips: {
-                mode: 'steps',   // Una marca por cada paso (cada valor del array tendrá su marca)
-                density: 100,    // Forzamos alta densidad para que pinte todos
-                filter: function (value, type) {
-                    return 1;    // 1 = Marca grande (todas iguales)
-                },
-                format: {
-                    to: function() { return ""; } // Sin textos, solo las rayitas
-                }
             }
         });
 
