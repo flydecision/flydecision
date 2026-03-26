@@ -222,7 +222,7 @@ if (btnIncNoFavsDistancia) {
                     tipo: 'modal',
                     htmlContenido: `
                         <p>Para usar esta función necesitas configurar primero una ubicación de origen.</p>
-                        <p>Usa el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
+                        <p>Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
                     `,
                     botones:[
                         { texto: 'Configurar origen', onclick: function() { 
@@ -713,7 +713,7 @@ function iniciarGuiaPrincipal(forzar = false) {
 
         steps: [
             { element: '#tabla', //'#tabla thead' apuntaría a la cabecera, '#tabla tbody tr:nth-child(7)' a la fila 3
-                popover: { title: '🪂 Tabla de despegues favoritos', description: 'Esta tabla muestra tus despegues favoritos, su pronóstico de viento para 4 días por horas y su puntuación de condiciones de viento.<br><br>Los despegues siempre se ordenan automáticamente, de mayor a menor puntuación.', side: 'bottom', align: 'center'} },
+                popover: { title: '🪂 Tabla de despegues favoritos', description: 'Muestra tus despegues favoritos, su pronóstico y sus puntuaciones (despegue y XC).<br><br>Los despegues se ordenan automáticamente, de mayor a menor puntuación de despegue.', side: 'top', align: 'center'} },
 
             { element: '.div-paneles-controles-transparente', 
                 popover: { title: 'Selector de rango horario', description: 'Ajusta este deslizador desde ambos extremos para seleccionar el rango horario que te interese.<br><br>La tabla mostrará solo esas horas y la puntuación de condiciones se recalculará para ese intervalo de tiempo concreto.' , side: 'bottom', align: 'center'} },
@@ -736,38 +736,14 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: '🗓️ Día seleccionado', description: 'Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>👉🏽  Puedes mover los deslizadores hora a hora para elegir tu rango horario concreto y también puedes personalizar ese rango horario diario "automático" en ⚙️ Configuración.', side: 'bottom', align: 'center'} },
             
             { element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>👉🏽 Voy a seleccionar el icono para que veas como muestra una explicación sobre lo que significa cada dato.', side: 'bottom', align: 'start'},
-
-                onDeselected: () => {
-                    // querySelectorAll devuelve una lista (array) de todos los elementos
-                    const elementos = document.querySelectorAll('.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda');
-                    
-                    // [0] es el primero, [1] el segundo, etc.
-                    if (elementos[0]) { 
-                        elementos[0].click(); // Clic en el segundo elemento
-                    }
-                }
-            },
-
-            { element: '#tippy-2', 
-                popover: { title: '', description: 'Explicación sobre cada dato meteorológico.' , side: 'bottom', align: 'center' },
-
-                onDeselected: () => {
-                    // querySelectorAll devuelve una lista (array) de todos los elementos
-                    const elementos = document.querySelectorAll('.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda');
-                    
-                    // [0] es el primero, [1] el segundo, etc.
-                    if (elementos[0]) { 
-                        elementos[0].click(); // Clic en el segundo elemento
-                    }
-                }
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>Si seleccionas el icono muestra información sobre cada parámetro meteorológico.', side: 'bottom', align: 'start'},
             },
 
             { element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
                 popover: { title: '🟩🟧🟥 Fila de Cizalladura / Fiabilidad', description: 'Esta fila especial muestra mediante un semáforo de colores el nivel de Cizalladura de Bajo Nivel (LLWS - Low-Level Wind Shear) y también el grado de Fiabilidad del pronóstico de viento medio a 10 m de altura.' , side: 'bottom', align: 'center' } },
 
             { element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
-                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula automáticamente una puntuación de 0 a 10 para cada despegue y para el rango horario seleccionado.<br><br>Los despegues siempre se reordenan automáticamente por puntuación (de mayor a menor).<br><br>En la pantalla de ⚙️ Configuración puedes personalizar los límites que se tienen en cuenta en el cálculo y dispones de información adicional.' } },
+                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula automáticamente dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse o iniciar Cross Country (XC).<br><br>Los despegues siempre se reordenan automáticamente por puntuación de Condiciones para despegar (de mayor a menor).<br><br>En la pantalla de ⚙️ Configuración puedes personalizar los límites que se tienen en cuenta en el cálculo y dispones de información adicional.' } },
 
             { element: '.btn-info.btn-abajo-izquierda', 
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>👉🏽  El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
@@ -777,10 +753,10 @@ function iniciarGuiaPrincipal(forzar = false) {
 
             { element: '#btn-div-filtro-distancia-toggle',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_filtro_60.webp" width="20" height="20" style="display: block;"><span>Filtro de distancia</span></div>', 
-                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>Voy a pulsar ahora ese botón para que lo veas.'}, },
+                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para que lo veas.'}, },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Te ofrecerá usar un mapa o la propia localización del móvil para elegirlo.' , side: 'bottom', align: 'end'},
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.' , side: 'bottom', align: 'end'},
                 
                 onHighlighted: (element) => {
                     // 1. Forzamos el clic en el botón que despliega el menú
@@ -802,6 +778,10 @@ function iniciarGuiaPrincipal(forzar = false) {
                         }, 300); // Aumentado a 300ms para dar tiempo a posibles animaciones CSS
                     }
                 },
+            },
+
+            { element: '#btn-incluir-no-favs-distancia',
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">🤍+❤️</span> Incluir despegues no favoritos en el filtro', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>Esto es útil cuando viajamos y buscamos las mejores condiciones fuera de nuestra zona de favoritos.' , side: 'bottom', align: 'end'},
             },
 
             { element: '#distancia-slider',
@@ -940,7 +920,7 @@ function iniciarGuiaFavoritos(forzar = false) {
                     description: 'Muestra solo los despegues alrededor de un punto.<br><br>Ejemplo: te puede servir para seleccionar rápidamente como favoritos (y ver así su pronóstico en la pantalla principal) los despegues que estén en un radio de 50 km alrededor de un punto.<br><br>Voy a pulsar ese botón para que lo veas.' } },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen.<br><br>Te ofrecerá usar un mapa o la propia localización del móvil.' },
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen.<br><br>Te ofrecerá usar un mapa o la propia localización del móvil.' },
                 
                 onHighlighted: (element) => {
                     // 1. Forzamos el clic en el botón que despliega el menú
@@ -1160,7 +1140,6 @@ function abrirFavoritos() {
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga('', `<div style="text-align: center;">
                             <p>✅ Se han importado ${nuevosFavoritos.length} despegues favoritos.</p>
-                            <p>La página se va a recargar.</p>
                         </div>`);
                         } else {
                             location.reload();
@@ -2987,7 +2966,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             "<li>Lluvia (veto automático y 0 puntos a la hora afectada).</li>" +
             "</ul>" +
             
-            "<b>2. Condiciones para XC (fila inferior):</b><br>" +
+            "<b>2. Condiciones para mantenerse o iniciar XC (fila inferior):</b><br>" +
             "Valora la puntuación de Condiciones del despegue y el potencial térmico para vuelos de distancia (Cross Country) usando los datos del modelo ECMWF:" +
             "<ul style='margin-top: 4px; margin-bottom: 8px;'>" +
             "<li><b>Techo AGL:</b> Premia techos altos sobre el relieve y penaliza los bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li>" +
@@ -5422,7 +5401,7 @@ document.addEventListener('DOMContentLoaded', function() {
 						tipo: 'modal',
 						htmlContenido: `
 							<p>Como es la primera vez, se necesita configurar una ubicación de origen.</p>
-							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
+							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
 						`,
 						botones:[
 							{ texto: 'Configurar origen', onclick: function() { 

@@ -1682,20 +1682,12 @@ span.grados {
     /* border-radius: 5px; */
 	border: 1px solid #333;
 }
-.btn-icon-trigger:hover {
-	background-color: #0078d4;
-	color: #ffffff !important;
-    border-color: #999;
-    /* transform: scale(1.1); */
-}
-
 /* Estilos para cuando el botón de "🤍+❤️" está activo (hundido) */
 /* 1. Estilo base del botón (hereda de .btn-icon-trigger pero con ajustes) */
 #btn-incluir-no-favs-distancia {
     border-radius: 4px !important;
     width: auto !important;
     height: 24px !important; /* Igualamos altura a los botones del menú superior */
-    padding: 0 8px !important;
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
@@ -1705,13 +1697,6 @@ span.grados {
     transition: all 0.2s;
     font-size: 16px;
     cursor: pointer;
-}
-
-/* 2. Hover (cuando pasas el ratón) */
-#btn-incluir-no-favs-distancia:hover {
-    background-color: #0078d4 !important;
-    color: #ffffff !important;
-    border-color: #999 !important;
 }
 
 /* 3. ESTADO ACTIVO/FILTRO APLICADO (La clave) 
