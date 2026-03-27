@@ -1113,9 +1113,6 @@ function desmarcarFavoritos() {
 }
 
 function abrirFavoritos() {
-    
-    // 1. Definimos la acción de cargar el archivo y la "pegamos" a window
-    // para que tu modal pueda encontrarla por su nombre.
     window.accionCargarFavoritos = function() {
         const input = document.createElement('input');
         input.type = 'file';
@@ -1128,16 +1125,31 @@ function abrirFavoritos() {
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const nuevosFavoritos = e.target.result
+                    let nuevosFavoritos = e.target.result
                         .split('\n')
                         .map(l => l.trim())
                         .filter(l => l.length > 0); 
+
+                    // --- MIGRACIÓN AL VUELO SI ES UN ARCHIVO ANTIGUO (CON NOMBRES) ---
+                    if (nuevosFavoritos.length > 0 && isNaN(Number(nuevosFavoritos[0]))) {
+                        const bd = window.bdGlobalDespegues ||[];
+                        const favsMigrados =[];
+                        nuevosFavoritos.forEach(nombre => {
+                            const match = bd.find(d => d.Despegue === nombre);
+                            if (match && match.ID) {
+                                favsMigrados.push(Number(match.ID));
+                            }
+                        });
+                        nuevosFavoritos = favsMigrados;
+                    } else {
+                        // Son IDs numéricos nuevos
+                        nuevosFavoritos = nuevosFavoritos.map(Number).filter(n => !isNaN(n));
+                    }
 
                     if (nuevosFavoritos.length > 0) {
                         localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(nuevosFavoritos));
                         localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
                         
-                        // Si tienes la función mensajeAvisoRecarga definida:
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga('', `<div style="text-align: center;">
                             <p>✅ Se han importado ${nuevosFavoritos.length} despegues favoritos.</p>
@@ -1152,7 +1164,6 @@ function abrirFavoritos() {
                     alert('⚠️ Error al procesar el archivo.');
                 }
                 
-                // Limpieza: borramos la función temporal de la memoria
                 delete window.accionCargarFavoritos; 
             };
             reader.readAsText(file);
@@ -1160,7 +1171,6 @@ function abrirFavoritos() {
         input.click();
     };
 
-    // 2. Llamamos al modal pasando el NOMBRE de la función que acabamos de crear
     mensajeModalAceptarCancelar(
         '', 
         '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📂</p><p><b>⚠️ ATENCIÓN:</b> Abrir favoritos sustituirá los actuales.</b><br><br>Si los quieres conservar, cancela este mensaje y usa el botón 💾 <i>Guardar favoritos</i>.</p>', 
@@ -1169,70 +1179,56 @@ function abrirFavoritos() {
 }
 
 async function guardarFavoritos() {
-
-    const favoritos = obtenerFavoritos();
+    // Aseguramos que guardamos un txt con puros números
+    const favoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
         
     if (favoritos.length === 0) {
         GestorMensajes.mostrar({
-            tipo: 'modal', // o 'no-modal' si lo prefieres menos invasivo
+            tipo: 'modal',
             htmlContenido: '<p style="text-align: center;">No hay despegues favoritos para guardar</p>',
             botones: ['ACEPTAR']
         });
         return;
     }
 
-    // 1. Generamos contenido y un nombre por defecto
     const ahora = new Date();
-    const fecha = ahora.toISOString().split('T')[0]; // 2023-10-27
-    const hora = ahora.toTimeString().split(' ')[0].replace(/:/g, '-').slice(0, 5); // 16-45
+    const fecha = ahora.toISOString().split('T')[0];
+    const hora = ahora.toTimeString().split(' ')[0].replace(/:/g, '-').slice(0, 5);
     
-    // Este será el nombre sugerido, pero el usuario podrá cambiarlo
-    //let nombreArchivo = `flydecision_favoritos_${fecha}_${hora}.txt`;
     let nombreArchivo = `FavoritosFlyDecision.txt`;
     const contenido = favoritos.join('\n');
 
-    // --- ESCUDO DE SEGURIDAD ---
     const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
 
     if (isApp) {
-        // MODO APP
         try {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
 
-            // --- NUEVO: PREGUNTAR NOMBRE AL USUARIO ---
             const { value, cancelled } = await Dialog.prompt({
                 title: '💾 Guardar favoritos',
                 message: '\nCambia el nombre del archivo o acepta éste:',
-                inputText: nombreArchivo, // Muestra el nombre automático por defecto
+                inputText: nombreArchivo,
                 okButtonTitle: 'Guardar',
                 cancelButtonTitle: 'Cancelar'
             });
 
-            // Si el usuario pulsa cancelar, salimos de la función sin hacer nada
             if (cancelled) return;
 
-            // Si el usuario borró el nombre o lo dejó vacío, usamos el original.
-            // Si escribió algo, actualizamos la variable nombreArchivo.
             if (value && value.trim() !== '') {
                 nombreArchivo = value.trim();
-                // Asegurarnos de que termina en .txt
                 if (!nombreArchivo.toLowerCase().endsWith('.txt')) {
                     nombreArchivo += '.txt';
                 }
             }
-            // ------------------------------------------
 
-            
-            // PASO 1: Guardar copia permanente
             await Filesystem.writeFile({
-                path: nombreArchivo, // Usamos el nombre decidido por el usuario
+                path: nombreArchivo, 
                 data: contenido,
                 directory: 'DATA', 
                 encoding: 'utf8',
                 recursive: true
             });
 
-            // PASO 2: Guardar copia temporal en CACHÉ (para compartir). (Esta es la clave para que Telegram no se bloquee)
             const resultCache = await Filesystem.writeFile({
                 path: nombreArchivo, 
                 data: contenido,
@@ -1241,7 +1237,6 @@ async function guardarFavoritos() {
                 recursive: true
             });
 
-            // 3. Diálogo de éxito
             const confirmResult = await Dialog.confirm({
                 title: '✅ Favoritos guardados con éxito.',
                 text: 'Aquí tienes mis despegues favoritos de Fly Decision:',
@@ -1250,18 +1245,13 @@ async function guardarFavoritos() {
                 cancelButtonTitle: 'No'
             });
 
-            // 4. Compartir
             if (confirmResult.value) {
-                
-                // 1. Verificamos si el dispositivo permite compartir archivos antes de lanzar
                 const canShare = await Share.canShare();
-                
                 if (canShare.value) {
                     try {
                         await Share.share({
                             title: 'Mis despegues favoritos de Fly Decision',
                             text: 'Aquí tienes mis despegues favoritos:',
-                            // 💡 TRUCO: A veces la URI necesita ser decodificada si Capacitor la codificó doblemente
                             files: [resultCache.uri], 
                             dialogTitle: 'Compartir con...',
                         });
@@ -1270,7 +1260,6 @@ async function guardarFavoritos() {
                         alert("No se pudo abrir el menú de compartir. Intenta usar otro método.");
                     }
                 } else {
-                    // Fallback si el dispositivo no soporta compartir archivos nativamente
                     alert("Tu dispositivo no permite compartir archivos directamente. Asegúrate de tener Telegram instalado.");
                 }
             }
@@ -1280,7 +1269,6 @@ async function guardarFavoritos() {
             alert("Vaya, algo ha fallado: " + error.message);
         }
     } else {
-        // MODO WEB (Aquí el navegador suele preguntar o guardar en descargas directamente)
         const blob = new Blob([contenido], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1297,7 +1285,13 @@ async function guardarFavoritos() {
 
 function obtenerFavoritos() {
     const data = localStorage.getItem("METEO_FAVORITOS_LISTA");
-    return data ? JSON.parse(data) : [];
+    if (!data) return[];
+    try {
+        const parsed = JSON.parse(data);
+        return Array.isArray(parsed) ? parsed :[];
+    } catch(e) {
+        return[];
+    }
 }
 
 function actualizarContadorVisualFavoritos() {
@@ -1318,7 +1312,8 @@ function actualizarContadorVisualFavoritos() {
 }
 
 function toggleFavorito(id) {
-    const favoritos = obtenerFavoritos();
+    id = Number(id); // Aseguramos que es un número
+    const favoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
     const indice = favoritos.indexOf(id);
     let esNuevoFavorito = false;
 
@@ -1377,14 +1372,14 @@ function gestionarClickMasivoFavoritos() {
             let celda = filaPrincipal.querySelector('.columna-favoritos');
             
             if (celda && celda.dataset.id) {
-                idsVisibles.push(celda.dataset.id);
+                idsVisibles.push(Number(celda.dataset.id)); // Guardamos como número
             }
         }
     }
 
     if (idsVisibles.length === 0) return;
 
-    let listaFavoritos = obtenerFavoritos(); 
+    let listaFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n)); 
     const todosSonFavoritos = idsVisibles.every(id => listaFavoritos.includes(id));
     const nuevoEstadoEsFavorito = !todosSonFavoritos; // true = añadir, false = quitar
 
@@ -1403,15 +1398,15 @@ function gestionarClickMasivoFavoritos() {
 function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     
     // 1. Usamos Set para máxima velocidad y gestión automática de duplicados
-    let listaFavoritos = obtenerFavoritos();
+    let listaFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
     let setFavoritos = new Set(listaFavoritos);
 
     if (nuevoEstadoEsFavorito) {
         // Añadimos todos (el Set ignora duplicados automáticamente)
-        idsAfectados.forEach(id => setFavoritos.add(id));
+       idsAfectados.forEach(id => setFavoritos.add(Number(id)));
     } else {
         // Borramos todos
-        idsAfectados.forEach(id => setFavoritos.delete(id));
+        idsAfectados.forEach(id => setFavoritos.delete(Number(id)));
     }
 
     // Convertimos de vuelta a Array
@@ -1437,7 +1432,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     const tabla = document.getElementById('tabla');
     const tbody = tabla.tBodies[0];
     const filas = tbody.rows;
-    const setAfectados = new Set(idsAfectados); // Búsqueda O(1)
+    const setAfectados = new Set(idsAfectados.map(Number)); // Búsqueda O(1)
 
     // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
     let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
@@ -1459,7 +1454,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
         if (!celda) celda = filaPrincipal.cells[0];
 
         // Verificamos si esta fila es una de las afectadas
-        if (celda && celda.dataset.id && setAfectados.has(celda.dataset.id)) {
+        if (celda && celda.dataset.id && setAfectados.has(Number(celda.dataset.id))) {
             
             celda.innerHTML = nuevoEstadoEsFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
             celda.title = nuevoEstadoEsFavorito ? "Quitar de favoritos" : "Añadir a favoritos";
@@ -2223,6 +2218,143 @@ async function exportarFavoritos(contenidoTexto) {
     }
 }
 
+async function exportarPerfilCompleto() {
+    // 1. Recopilamos todas las configuraciones de la app
+    const perfilUsuario = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        // Solo cogemos las variables de la app para no mezclar con otras cosas
+        if (key && key.startsWith("METEO_")) {
+            perfilUsuario[key] = localStorage.getItem(key);
+        }
+    }
+
+    // 2. Convertimos el objeto a un texto con formato (fácil de leer)
+    const contenido = JSON.stringify(perfilUsuario, null, 2);
+    
+    // 3. Generamos el nombre del archivo
+    const ahora = new Date();
+    const fecha = ahora.toISOString().split('T')[0];
+    let nombreArchivo = `FlyDecision_CopiaSeguridad_${fecha}.json`;
+
+    // 4. Lógica de guardado (Idéntica a la que usas en favoritos)
+    const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
+
+    if (isApp) {
+        try {
+            const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
+            const { value, cancelled } = await Dialog.prompt({
+                title: '💾 Exportar Perfil Completo',
+                message: '\nSe guardarán tus favoritos y TODA tu configuración (límites de viento, opciones visuales, etc.).',
+                inputText: nombreArchivo,
+                okButtonTitle: 'Guardar',
+                cancelButtonTitle: 'Cancelar'
+            });
+
+            if (cancelled) return;
+            if (value && value.trim() !== '') nombreArchivo = value.trim();
+
+            await Filesystem.writeFile({
+                path: nombreArchivo, 
+                data: contenido,
+                directory: 'DATA', 
+                encoding: 'utf8',
+                recursive: true
+            });
+
+            const resultCache = await Filesystem.writeFile({
+                path: nombreArchivo, 
+                data: contenido,
+                directory: 'CACHE', 
+                encoding: 'utf8',
+                recursive: true
+            });
+
+            const confirmResult = await Dialog.confirm({
+                title: '✅ Copia de seguridad guardada.',
+                message: `\n${nombreArchivo}\n\n¿Quieres compartirla / guardarla en la nube ahora?`,
+                okButtonTitle: 'Sí',
+                cancelButtonTitle: 'No'
+            });
+
+            if (confirmResult.value) {
+                const canShare = await Share.canShare();
+                if (canShare.value) {
+                    await Share.share({
+                        title: 'Copia de seguridad Fly Decision',
+                        files: [resultCache.uri], 
+                        dialogTitle: 'Guardar en...',
+                    });
+                }
+            }
+        } catch (error) {
+            alert("Error al guardar en Android: " + error.message);
+        }
+    } else {
+        // Modo Web PC
+        const blob = new Blob([contenido], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nombreArchivo; 
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(url); }, 100);
+    }
+}
+
+function importarPerfilCompleto() {
+    window.accionCargarPerfil = function() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json'; 
+        
+        input.onchange = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const perfilImportado = JSON.parse(e.target.result);
+                    
+                    // Verificamos de forma básica que es un backup válido de la app
+                    let keysImportadas = 0;
+                    for (const key in perfilImportado) {
+                        if (key.startsWith("METEO_")) {
+                            localStorage.setItem(key, perfilImportado[key]);
+                            keysImportadas++;
+                        }
+                    }
+
+                    if (keysImportadas > 0) {
+                        if (typeof mensajeAvisoRecarga === 'function') {
+                            mensajeAvisoRecarga('✅ Restauración completada', `<p>Se han restaurado ${keysImportadas} configuraciones y favoritos con éxito.</p><p>La aplicación se va a recargar para aplicar los cambios.</p>`);
+                        } else {
+                            alert("Perfil restaurado con éxito. La página se va a recargar.");
+                            location.reload();
+                        }
+                    } else {
+                        alert('⚠️ El archivo no parece ser una copia de seguridad válida de Fly Decision.');
+                    }
+                } catch (error) {
+                    alert('⚠️ Error al leer el archivo. Asegúrate de que es el archivo .json correcto.');
+                }
+                
+                delete window.accionCargarPerfil; 
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    };
+
+    mensajeModalAceptarCancelar(
+        '', 
+        '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📥</p><p><b>⚠️ ATENCIÓN:</b> Importar una copia de seguridad sobrescribirá TODOS tus favoritos y configuraciones actuales.</b></p>', 
+        'accionCargarPerfil'
+    );
+}
+
 //*********************************************************************
 // 💽 BASE DE DATOS INDEXEDDB (Modo Offline sin límite de 5MB)
 //*********************************************************************
@@ -2601,7 +2733,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             }
         }
 
-		// Guardamos todos los despegues en la variable global para el buscador
+        // Guardamos todos los despegues en la variable global para el buscador
 		window.bdGlobalDespegues = data.despegues;
 		
 		totalDespeguesDisponibles = data.despegues.length;
@@ -2609,6 +2741,29 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		let despegues = data.despegues;
 		let respuestas = data.respuestas;
         let respuestasEcmwf = dataEcmwf.respuestas;
+
+        // ---------------------------------------------------------------
+        // 🔴 MIGRACIÓN AUTOMÁTICA DE FAVORITOS (De Nombres a ID)
+        // ---------------------------------------------------------------
+        let favoritosActuales = obtenerFavoritos();
+        
+        // Si hay favoritos guardados, y comprobamos que no son números puros...
+        if (favoritosActuales.length > 0 && isNaN(Number(favoritosActuales[0]))) {
+            console.log("🔄 Migrando favoritos de Nombres a IDs numéricos...");
+            let nuevosFavs =[];
+            favoritosActuales.forEach(nombreViejo => {
+                let match = despegues.find(d => d.Despegue === nombreViejo);
+                if (match && match.ID) {
+                    nuevosFavs.push(Number(match.ID));
+                }
+            });
+            localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(nuevosFavs));
+            favoritosActuales = nuevosFavs;
+        } else {
+            // Aseguramos que siempre filtramos y devolvemos arrays de Number
+            favoritosActuales = favoritosActuales.map(Number).filter(n => !isNaN(n));
+        }
+        favoritos = favoritosActuales; // Actualizamos la variable global principal
 
 		if (!respuestas || respuestas.length === 0) {
 			console.error("El JSON no contiene datos meteorológicos.");
@@ -2634,23 +2789,23 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // Si estamos en modo edición de favoritos, el checkbox está oculto y NO debe interferir
         const ignorarFiltroFavoritos = (!modoEdicionFavoritos && distanciaLimiteParaFavs < 9999 && incluirNoFavs);
 
-		// Está activo filtro favoritos Y hay favoritos --> hacemos que los array despegues y respuestas contengan solo los datos de los despegues que haya en favoritos 
+        // Está activo filtro favoritos Y hay favoritos --> hacemos que los array despegues y respuestas contengan solo los datos de los despegues que haya en favoritos 
 		if (soloFavoritos && favoritos.length > 0 && !ignorarFiltroFavoritos) {
 			
-			// 1. Crear un mapa temporal para relacionar Despegue con sus respuestas
+			// 1. Crear un mapa temporal para relacionar el ID con sus respuestas
 			const respuestasMap = new Map();
             const respuestasEcmwfMap = new Map();
 			data.despegues.forEach((d, index) => { 
-				respuestasMap.set(d.Despegue, data.respuestas[index]); 
-                respuestasEcmwfMap.set(d.Despegue, dataEcmwf.respuestas[index]); 
+				respuestasMap.set(Number(d.ID), data.respuestas[index]); 
+                respuestasEcmwfMap.set(Number(d.ID), dataEcmwf.respuestas[index]); 
 			});
 			
 			// 2. Filtrar el array de despegues
-			despegues = despegues.filter(d => favoritos.includes(d.Despegue));
+			despegues = despegues.filter(d => favoritos.includes(Number(d.ID)));
 			
 			// 3. Crear el nuevo array de respuestas solo con los datos filtrados
-			respuestas = despegues.map(d => respuestasMap.get(d.Despegue)).filter(r => r !== undefined);
-            respuestasEcmwf = despegues.map(d => respuestasEcmwfMap.get(d.Despegue)).filter(r => r !== undefined);
+			respuestas = despegues.map(d => respuestasMap.get(Number(d.ID))).filter(r => r !== undefined);
+            respuestasEcmwf = despegues.map(d => respuestasEcmwfMap.get(Number(d.ID))).filter(r => r !== undefined);
 			
 		}
 		 // Está activo filtro favoritos pero no hay favoritos
@@ -3470,7 +3625,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // 🟩🟧🟥 FIN LÓGICA DE FILTRADO POR Slider condiciones / Puntuación
             // -----------------------------------------------------------
 
-			const idDespegue = d.Despegue; // Usamos el nombre como ID
+			const idDespegue = Number(d.ID); // Usamos el ID numérico
 			const latitud = d.Latitud; 
 			const longitud = d.Longitud;
 			const esFavorito = favoritos.includes(idDespegue);
@@ -4794,7 +4949,7 @@ function filtrarDespeguesProvincias() {
 
     const filas = tbody.rows;
     let visibles = 0;
-    const favoritos = obtenerFavoritos(); 
+    const favoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n)); // Seguro Numérico
     const totalFavoritos = favoritos.length;
 
     // Normalización
@@ -4965,7 +5120,7 @@ function filtrarDespeguesProvincias() {
             // Unimos nombre y provincia para buscar
             const nombreSoloDespegue = normalizar(d.Despegue);
             
-            const yaEsFavorito = favoritos.includes(d.Despegue); // d.Despegue es el ID
+            const yaEsFavorito = favoritos.includes(Number(d.ID)); // d.ID
             
             // Queremos los que coincidan con el texto Y NO sean favoritos
             return !yaEsFavorito && nombreSoloDespegue.includes(filtroLimpio);
@@ -4980,7 +5135,7 @@ function filtrarDespeguesProvincias() {
 				<ul class="sugerencia-lista">`;
 
 			coincidenciasGlobales.slice(0, 3).forEach(d => {
-				// Fíjate qué limpio queda el HTML ahora usando las clases CSS
+				// AQUÍ ES DONDE PASAMOS EL d.ID directamente en el onclick
 				html += `
 					<li class="sugerencia-item">
 						<span class="sugerencia-texto">
@@ -4989,7 +5144,7 @@ function filtrarDespeguesProvincias() {
 						</span>
 
 						<button class="sugerencia-btn" 
-								onclick="agregarDespegueDesdeBuscador('${d.Despegue.replace(/'/g, "\\'")}')">
+								onclick="agregarDespegueDesdeBuscador(${d.ID})">
 						+ Añadir favorito <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">
 						</button>
 					</li>`;
@@ -5011,7 +5166,8 @@ function filtrarDespeguesProvincias() {
 
 // Función auxiliar para el botón del buscador
 function agregarDespegueDesdeBuscador(idDespegue) {
-    const misFavoritos = obtenerFavoritos();
+    idDespegue = Number(idDespegue); // Aseguramos que sea un número
+    const misFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
     
     if (!misFavoritos.includes(idDespegue)) {
         misFavoritos.push(idDespegue);
@@ -5027,11 +5183,14 @@ function agregarDespegueDesdeBuscador(idDespegue) {
         const divSugerencias = document.getElementById('sugerencias-globales');
         if (divSugerencias) divSugerencias.style.display = 'none';
 
-        // Feedback visual
+        // Intentar encontrar el nombre en la BD global para mostrarlo en el mensaje
+        const despegueObj = window.bdGlobalDespegues.find(d => Number(d.ID) === idDespegue);
+        const nombreDespegue = despegueObj ? despegueObj.Despegue : idDespegue;
+
         if (typeof GestorMensajes !== 'undefined') {
             GestorMensajes.mostrar({
                 tipo: 'modal',
-                htmlContenido: `<p>✅ <b>${idDespegue}</b> añadido</p>`,
+                htmlContenido: `<p>✅ <b>${nombreDespegue}</b> añadido</p>`,
                 botones: [] // Sin botones, porque se cerrará solo
             });
 
@@ -5047,7 +5206,7 @@ function agregarDespegueDesdeBuscador(idDespegue) {
 
         } else {
             // Fallback por si no existe el gestor
-            alert(`✅ ${idDespegue} añadido a favoritos`);
+            alert(`✅ ${nombreDespegue} añadido a favoritos`);
             construir_tabla();
         }
     }
