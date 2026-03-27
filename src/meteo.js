@@ -5790,7 +5790,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // --- 2. TEXTOS DE FUTURO O ACTUALIZANDO ---
                 const MARGEN_TOLERANCIA_MS = 45 * 60 * 1000; 
-                const OFFSET_MS = 6 * 60 * 1000;
+                const OFFSET_MS = 1 * 60 * 1000;
 
                 // Futuro Météo-France
                 let textoFuturoMF = "";
