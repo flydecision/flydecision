@@ -2217,7 +2217,7 @@ async function exportarFavoritos(contenidoTexto) {
     }
 }
 
-async function exportarPerfilCompleto() {
+async function exportarConfiguracion() {
     // 1. Recopilamos todas las configuraciones de la app
     const perfilUsuario = {};
     for (let i = 0; i < localStorage.length; i++) {
@@ -2302,7 +2302,7 @@ async function exportarPerfilCompleto() {
     }
 }
 
-function importarPerfilCompleto() {
+function importarConfiguracion() {
     window.accionCargarPerfil = function() {
         const input = document.createElement('input');
         input.type = 'file';
@@ -2645,7 +2645,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             texto: 'Importar configuración guardada →',
                             onclick: function() {
                                 GestorMensajes.ocultar();
-                                importarPerfilCompleto();
+                                importarConfiguracion();
                                 return;
                             }
                         }
