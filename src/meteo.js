@@ -220,20 +220,24 @@ if (btnIncNoFavsDistancia) {
             if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
                 
                 GestorMensajes.mostrar({
-                    tipo: 'modal',
-                    htmlContenido: `
-                        <p>Para usar esta función necesitas configurar primero una ubicación de origen.</p>
-                        <p>Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
-                    `,
-                    botones:[
-                        { texto: 'Configurar origen', onclick: function() { 
-                            GestorMensajes.ocultar(); 
-                            const btnGeo = document.getElementById('btn-abrir-geo-menu');
-                            if (btnGeo) btnGeo.click(); // <--- ¡AQUÍ ESTABA EL DETALLE QUE FALTABA!
-                        } },
-                        { texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } }
-                    ]
-                });
+						tipo: 'modal',
+						htmlContenido: `
+                            <div style="text-align: center;">
+                            <p style="font-size: 2.5em; margin: 0 0 10px 0;">📍</p>
+							<p>Como es la primera vez, necesitas configurar una ubicación de origen.</p>
+							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
+                            </div>
+						`,
+						botones:[
+							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
+                            { texto: 'Configurar origen', onclick: function() { 
+                                GestorMensajes.ocultar(); 
+                                const btnGeo = document.getElementById('btn-abrir-geo-menu');
+                                if (btnGeo) btnGeo.click(); // Simulamos un clic en el botón 📍
+                            } }
+						],
+                        anchoBotones: 160
+					});
                 return;
             }
         }
@@ -352,28 +356,28 @@ const GestorMensajes = {
      * @param {Array} botones - Lista de botones. Ej: botones: ['ACEPTAR', 'CANCELAR'] o botones ['ACEPTAR'] u objetos personalizados.
      */
 	 
-/* 	Ejemplo de mensaje puntual:
-	 
-	GestorMensajes.mostrar({
-        tipo: 'modal',
-        htmlContenido: '<p>❌ Error: El resultado no puede ser negativo.</p>',
-        botones: ['ACEPTAR']
-    });
- */	
+    /* 	Ejemplo de mensaje puntual:
+        
+        GestorMensajes.mostrar({
+            tipo: 'modal',
+            htmlContenido: '<p>❌ Error: El resultado no puede ser negativo.</p>',
+            botones: ['ACEPTAR']
+        });
+    */	
+    
+    /* 	Ejemplo de mensaje reutilizable (encapsulado en una función). Se usa para el onclick=avisoencapsuladoenfuncionquesea(); para mensajes puntuales recurrentes en un if,.... ; para mensajes que requieren parámetros, se puede crear una función que reciba el texto y llame al gestor function CON_PARAMETROS(texto). Si tiene que salir al inicio, se llama idealmente en un bloque que se ejecute una vez que la página esté lista, una vez que el DOM (la estructura de la página) se haya cargado. Ejemplo: document.addEventListener('DOMContentLoaded', (event) => {
+                mostrar..Configuracion..Inicial();
+                
+            function mostrarSaludo() {
+                GestorMensajes.mostrar({
+                    tipo: 'modal',
+                    htmlContenido: '<p>Hola, bienvenido al sistema</p>',
+                    botones: ['ACEPTAR']
+                });
+            }
+    */
  
-/* 	Ejemplo de mensaje reutilizable (encapsulado en una función). Se usa para el onclick=avisoencapsuladoenfuncionquesea(); para mensajes puntuales recurrentes en un if,.... ; para mensajes que requieren parámetros, se puede crear una función que reciba el texto y llame al gestor function CON_PARAMETROS(texto). Si tiene que salir al inicio, se llama idealmente en un bloque que se ejecute una vez que la página esté lista, una vez que el DOM (la estructura de la página) se haya cargado. Ejemplo: document.addEventListener('DOMContentLoaded', (event) => {
-			mostrar..Configuracion..Inicial();
-			
-		function mostrarSaludo() {
-			GestorMensajes.mostrar({
-				tipo: 'modal',
-				htmlContenido: '<p>Hola, bienvenido al sistema</p>',
-				botones: ['ACEPTAR']
-			});
-		}
- */
- 
-    mostrar: function({ tipo = 'modal', posicion = 'centro', htmlContenido = '', botones = [] }) {
+    mostrar: function({ tipo = 'modal', posicion = 'centro', htmlContenido = '', botones =[], anchoBotones = null }) {
         
         // 1. Limpiar mensaje previo si existe
         this.ocultar();
@@ -428,9 +432,13 @@ const GestorMensajes = {
                     btn.onclick = btnConfig.onclick || (() => this.ocultar());
                     if (btnConfig.estilo === 'secundario') btn.classList.add('btn-secundario');
                 }
+
+                if (anchoBotones) {
+                    // Si pasan un número (ej: 120), le añade 'px'. Si pasan un texto (ej: '120px' o '50%'), lo usa tal cual.
+                    btn.style.width = typeof anchoBotones === 'number' ? `${anchoBotones}px` : anchoBotones;
+                }
                 
-                // Pequeño margen entre botones si hay más de uno
-                if (wrapperBotones.children.length > 0) btn.style.marginLeft = "10px";
+                btn.style.marginLeft = "10px";
                 
                 wrapperBotones.appendChild(btn);
             });
@@ -630,61 +638,55 @@ function mensajeAvisoRecarga(titulo = '', contenido = '') { // Opcional, puede s
 
 function sugerirGuiaPrincipal(forzar = false) {
 
-    // 1. Si es automático (!forzar) y ya se vio, no hacemos nada.
     if (!forzar && localStorage.getItem('METEO_GUIA_PRINCIPAL_VISTA') === 'true') {
         return; 
     }
 
-    // Si ES forzado, dejamos la cadena vacía ('').
-    // ---------------------------------------------------------
     const htmlAyuda = !forzar 
-        ? `<br><br>Siempre podrás verla en:<br><i>⚙️ Configuración</i> > <i>Guía visual</i>`
+        ? `<p style="color: #555; margin-top: 10px;">Siempre podrás verla en:<br><i>⚙️ Configuración</i> > <i>Guía visual</i></p>
+           <label style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; color: #555; cursor: pointer;">
+               <input type="checkbox" id="chkNoVolverGuiaPrinc" style="transform: scale(1.2);"> No volver a mostrar esta sugerencia
+           </label>`
         : ''; 
 
-    // 2. Preparamos los botones básicos (los que siempre salen)
-    const botonesModal = [
+    const botonesModal =[
+        {
+            texto: forzar ? 'Cancelar' : 'Ahora no', 
+            estilo: 'secundario',
+            onclick: function() {
+                // Comprobamos si el usuario marcó la casilla antes de darle a "Ahora no"
+                const chk = document.getElementById('chkNoVolverGuiaPrinc');
+                if (chk && chk.checked) {
+                    localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
+                }
+                GestorMensajes.ocultar();
+            }
+        },
         {
             texto: 'Ver guía',
             onclick: function() {
                 GestorMensajes.ocultar();
-                localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
+                localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true'); // Si la ve, ya no la sugerimos más
                 const panelConfig = document.getElementById("div-configuracion");
                 if (panelConfig && panelConfig.classList.contains("activo")) {
                     alternardivConfiguracion(); 
                 }
                 setTimeout(() => iniciarGuiaPrincipal(true), 300);
             }
-        },
-        {
-            texto: forzar ? 'Cancelar' : 'Ahora no', 
-            estilo: 'secundario',
-            onclick: function() {
-                GestorMensajes.ocultar();
-            }
         }
     ];
 
-    // 3. Solo si NO es forzado (es decir, es la sugerencia automática), añadimos el botón de "No volver a mostrar"
-    if (!forzar) {
-        botonesModal.push({
-            texto: 'No volver a mostrar',
-            estilo: 'secundario', 
-            onclick: function() {
-                GestorMensajes.ocultar();
-                localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
-            }
-        });
-    }
-
-    // 4. Mostramos el mensaje pasando la lista de botones dinámica
     GestorMensajes.mostrar({
         tipo: 'modal',
         htmlContenido: `
             <div style="text-align: center;">
-                <b>¿Quieres ver una guía visual sobre la<br><i>Pantalla principal</i>?</b>${htmlAyuda}
+                <p style="font-size: 2.5em; margin: 0 0 10px 0;">💡</p>
+                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">¿Quieres ver una guía visual sobre la<br>Pantalla principal?</p>
+                ${htmlAyuda}
             </div>
         `,
-        botones: botonesModal // <--- Aquí pasamos la variable que hemos construido arriba
+        botones: botonesModal,
+        anchoBotones: '130px'
     });
 }
 
@@ -820,59 +822,50 @@ function iniciarGuiaPrincipal(forzar = false) {
 
 function sugerirGuiaFavoritos(forzar = false) {
     
-    // 1. Si es automático (!forzar) y ya se vio, no hacemos nada.
     if (!forzar && localStorage.getItem('METEO_GUIA_FAVORITOS_VISTA') === 'true') {
         return; 
     }
 
-    // Si ES forzado, dejamos la cadena vacía ('').
-    // ---------------------------------------------------------
     const htmlAyuda = !forzar 
-        ? `<br><br>Siempre podrás verla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía">`
+        ? `<p style="color: #555; margin-top: 10px;">Siempre podrás verla con el botón <img src="icons/icono_ayuda_60.webp" width="18" height="18" style="vertical-align:middle;" alt="Guía"></p>
+           <label style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; color: #555; cursor: pointer;">
+               <input type="checkbox" id="chkNoVolverGuiaFavs" style="transform: scale(1.2);"> No volver a mostrar esta sugerencia
+           </label>`
         : ''; 
 
-
-    // 2. Preparamos los botones básicos (los que siempre salen)
-    const botonesModal = [
+    const botonesModal =[
+        {
+            texto: forzar ? 'Cancelar' : 'Ahora no',
+            estilo: 'secundario',
+            onclick: function() {
+                const chk = document.getElementById('chkNoVolverGuiaFavs');
+                if (chk && chk.checked) {
+                    localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
+                }
+                GestorMensajes.ocultar();
+            }
+        },
         {
             texto: 'Ver guía',
             onclick: function() {
                 GestorMensajes.ocultar();
-                // Si acepta verla, marcamos que ya la ha visto
                 localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
                 setTimeout(() => iniciarGuiaFavoritos(true), 300);
-            }
-        },
-        {
-            texto: forzar ? 'Cancelar' : 'Ahora no', // Pequeño detalle: si es forzado queda mejor "Cerrar"
-            estilo: 'secundario',
-            onclick: function() {
-                GestorMensajes.ocultar();
             }
         }
     ];
 
-    // 3. Solo si NO es forzado (es decir, es la sugerencia automática), añadimos el botón de "No volver a mostrar"
-    if (!forzar) {
-        botonesModal.push({
-            texto: 'No volver a mostrar',
-            estilo: 'secundario', 
-            onclick: function() {
-                GestorMensajes.ocultar();
-                localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
-            }
-        });
-    }
-
-    // 4. Mostramos el mensaje pasando la lista de botones dinámica
     GestorMensajes.mostrar({
         tipo: 'modal',
         htmlContenido: `
             <div style="text-align: center;">
-                <b>¿Quieres ver una guía visual sobre esta<br><i>Pantalla de edición de favoritos</i> ♥️?</b>${htmlAyuda}
+                <p style="font-size: 2.5em; margin: 0 0 10px 0;">💡</p>
+                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">¿Quieres ver una guía visual sobre esta<br>Pantalla de edición de despegues favoritos ❤️?</p>
+                ${htmlAyuda}
             </div>
         `,
-        botones: botonesModal // <--- Aquí pasamos la variable que hemos construido arriba
+        botones: botonesModal,
+        anchoBotones: '130px'
     });
 }
 
@@ -965,7 +958,7 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '📂 Importar favoritos', description: 'Abre un archivo con una lista de despegues favoritos guardados previamente.' } },
 
             { element: '#btn-guardar-favoritos',
-                popover: { title: '💾 Exportar favoritos', description: 'Exporta un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrece compartirlo.<br><br>Los favoritos ya se van guardando automáticamente en la aplicación cuando los marcas; este botón solo sirve para hacer una copia en otro lugar.<br><br>👉🏽  Si te mueves por varias zonas diferentes de vuelo, puedes tener varios archivos de favoritos exportados e importarlos cuando te interese.' } },
+                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrece compartirlo.<br><br>Los favoritos ya se van guardando automáticamente en la aplicación cuando los marcas; este botón solo sirve para hacer una copia en otro lugar.<br><br>👉🏽  Si te mueves por varias zonas diferentes de vuelo, puedes tener varios archivos de favoritos exportados e importarlos cuando te interese.' } },
 
             { element: '#btn-guia-edicion-favoritos',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_ayuda_60.webp" width="20" height="20" style="display: block;"><span>Guía rápida</span></div>', description: 'Muestra esta guía.' } },
@@ -2270,7 +2263,7 @@ async function exportarConfiguracion() {
             });
 
             const confirmResult = await Dialog.confirm({
-                title: '✅ Se ha guardado la configuración correctamente.',
+                title: '✅ Se ha guardado la configuración.',
                 message: `\n${nombreArchivo}\n\n¿Quieres compartirla ahora?`,
                 okButtonTitle: 'Sí, compartir',
                 cancelButtonTitle: 'No'
@@ -2328,10 +2321,10 @@ function importarConfiguracion() {
                     if (keysImportadas > 0) {
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga(``, `<div style="text-align: center;">
-                            <p>✅ Se ha importado la configuración correctamente.</p>
+                            <p>✅ Se ha importado la configuración.</p>
                         </div>`);
                         } else {
-                            alert("✅ Se ha importado la configuración correctamente.");
+                            alert("✅ Se ha importado la configuración.");
                             location.reload();
                         }
                     } else {
@@ -2625,15 +2618,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                         <p>Pronóstico y análisis automático de meteorología para despegues de parapente + Mapa de despegues.</p>`,
                     botones: [
                         {
-                            texto: 'Ver antes una guía general',
-                            estilo: 'secundario',
-                            onclick: function() {
-                                GestorMensajes.ocultar();
-                                mostrarPaso2();
-                            }
-                        },
-                        {
-                            texto: 'Ir a marcar favoritos →',
+                            texto: 'Marcar favoritos',
                             onclick: function() {
                                 GestorMensajes.ocultar();
                                 //modoEdicionFavoritos = true; 
@@ -2642,14 +2627,25 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             }
                         },
                         {
-                            texto: 'Importar configuración guardada →',
+                            texto: 'Ver la guía general',
+                            estilo: 'secundario',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                mostrarPaso2();
+                            }
+                        },
+                        
+                        {
+                            texto: 'Importar configuración',
+                            estilo: 'secundario',
                             onclick: function() {
                                 GestorMensajes.ocultar();
                                 importarConfiguracion();
                                 return;
                             }
                         }
-                    ]
+                    ],
+                    anchoBotones: 300
                 });
             };
 
@@ -2956,7 +2952,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
             "<b>Techo AGL</b>: Altura (km) de la capa límite sobre el suelo (BLH = Boundary Layer Height)<br>" +
             "<b>CAPE</b>: Energía Potencial Convectiva Disponible (J/kg)<br>" +
-            "<b>CIN</b>: Inhibición Convectiva (J/kg en valor absoluto)<br>" +
+            "<b>CIN</b>: Inhibición Convectiva (J/kg en valor absoluto)<br><br>" +
             "<i>Nota: No está disponible el dato esencial de la base de nube ☁️↓ (CBH = Cloud Base Height) para completar la meteo en el despegue (está solicitado en marzo-2026 a la pasarela meteo)</i><br>";
         thMeteo.setAttribute("data-tippy-content", tooltipContentMeteo);
         thMeteo.setAttribute("tabindex", "0"); 
@@ -5564,17 +5560,21 @@ document.addEventListener('DOMContentLoaded', function() {
 					GestorMensajes.mostrar({
 						tipo: 'modal',
 						htmlContenido: `
-							<p>Como es la primera vez, se necesita configurar una ubicación de origen.</p>
+                            <div style="text-align: center;">
+                            <p style="font-size: 2.5em; margin: 0 0 10px 0;">📍</p>
+							<p>Como es la primera vez, necesitas configurar una ubicación de origen.</p>
 							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
+                            </div>
 						`,
 						botones:[
-							{ texto: 'Configurar origen', onclick: function() { 
+							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
+                            { texto: 'Configurar origen', onclick: function() { 
                                 GestorMensajes.ocultar(); 
                                 const btnGeo = document.getElementById('btn-abrir-geo-menu');
                                 if (btnGeo) btnGeo.click(); // Simulamos un clic en el botón 📍
-                            } },
-							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } }
-						]
+                            } }
+						],
+                        anchoBotones: 160
 					});
 					return;
 				}

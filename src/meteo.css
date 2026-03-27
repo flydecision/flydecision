@@ -2168,7 +2168,6 @@ span.grados {
 /* Botón gris (estilo secundario para Cancelar) */
 .boton-mensajes.btn-secundario {
     background-color: #999;
-    margin-left: 10px; /* Separación si hay varios botones */
 }
 
 .boton-mensajes-wrapper {
