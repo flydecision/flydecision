@@ -962,10 +962,10 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Desmarcar todos los favoritos', description: 'Desmarca todos los favoritos actuales.' } },
 
             { element: '#btn-abrir-favoritos',
-                popover: { title: '📂 Abrir favoritos', description: 'Abre un archivo con una lista de despegues favoritos guardados previamente.' } },
+                popover: { title: '📂 Importar favoritos', description: 'Abre un archivo con una lista de despegues favoritos guardados previamente.' } },
 
             { element: '#btn-guardar-favoritos',
-                popover: { title: '💾 Guardar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras guardarlo, te ofrece compartirlo.<br><br>Los favoritos ya se van guardando automáticamente en la aplicación cuando los marcas; este botón solo sirve para hacer una copia en otro lugar.<br><br>👉🏽  Si te mueves por varias zonas diferentes de vuelo, puedes tener varios archivos de favoritos guardados y abrirlos cuando te interese.' } },
+                popover: { title: '💾 Exportar favoritos', description: 'Exporta un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrece compartirlo.<br><br>Los favoritos ya se van guardando automáticamente en la aplicación cuando los marcas; este botón solo sirve para hacer una copia en otro lugar.<br><br>👉🏽  Si te mueves por varias zonas diferentes de vuelo, puedes tener varios archivos de favoritos exportados e importarlos cuando te interese.' } },
 
             { element: '#btn-guia-edicion-favoritos',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_ayuda_60.webp" width="20" height="20" style="display: block;"><span>Guía rápida</span></div>', description: 'Muestra esta guía.' } },
@@ -1173,7 +1173,7 @@ function abrirFavoritos() {
 
     mensajeModalAceptarCancelar(
         '', 
-        '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📂</p><p><b>⚠️ ATENCIÓN:</b> Abrir favoritos sustituirá los actuales.</b><br><br>Si los quieres conservar, cancela este mensaje y usa el botón 💾 <i>Guardar favoritos</i>.</p>', 
+        '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📂</p><p><b>⚠️ ATENCIÓN:</b> Importar favoritos sustituirá los actuales.</b><br><br>Si los quieres conservar, cancela este mensaje y usa el botón 💾 <i>Exportar favoritos</i>.</p>', 
         'accionCargarFavoritos'
     );
 }
@@ -1185,7 +1185,7 @@ async function guardarFavoritos() {
     if (favoritos.length === 0) {
         GestorMensajes.mostrar({
             tipo: 'modal',
-            htmlContenido: '<p style="text-align: center;">No hay despegues favoritos para guardar</p>',
+            htmlContenido: '<p style="text-align: center;">No hay despegues favoritos para exportar</p>',
             botones: ['ACEPTAR']
         });
         return;
@@ -1194,8 +1194,7 @@ async function guardarFavoritos() {
     const ahora = new Date();
     const fecha = ahora.toISOString().split('T')[0];
     const hora = ahora.toTimeString().split(' ')[0].replace(/:/g, '-').slice(0, 5);
-    
-    let nombreArchivo = `FavoritosFlyDecision.txt`;
+    let nombreArchivo = `${fecha}_Fly_Decision_Favorites.txt`;
     const contenido = favoritos.join('\n');
 
     const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
@@ -1205,7 +1204,7 @@ async function guardarFavoritos() {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
 
             const { value, cancelled } = await Dialog.prompt({
-                title: '💾 Guardar favoritos',
+                title: '💾 Exportar favoritos',
                 message: '\nCambia el nombre del archivo o acepta éste:',
                 inputText: nombreArchivo,
                 okButtonTitle: 'Guardar',
@@ -2235,7 +2234,7 @@ async function exportarPerfilCompleto() {
     // 3. Generamos el nombre del archivo
     const ahora = new Date();
     const fecha = ahora.toISOString().split('T')[0];
-    let nombreArchivo = `FlyDecision_CopiaSeguridad_${fecha}.json`;
+    let nombreArchivo = `${fecha}_Fly_Decision_Configuration.json`;
 
     // 4. Lógica de guardado (Idéntica a la que usas en favoritos)
     const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
@@ -2244,8 +2243,8 @@ async function exportarPerfilCompleto() {
         try {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
             const { value, cancelled } = await Dialog.prompt({
-                title: '💾 Exportar Perfil Completo',
-                message: '\nSe guardarán tus favoritos y TODA tu configuración (límites de viento, opciones visuales, etc.).',
+                title: '💾 Exportar configuración',
+                message: '\nSe exportarán tus favoritos y toda tu configuración (límites de viento, opciones visuales, etc.).',
                 inputText: nombreArchivo,
                 okButtonTitle: 'Guardar',
                 cancelButtonTitle: 'Cancelar'
@@ -2271,9 +2270,9 @@ async function exportarPerfilCompleto() {
             });
 
             const confirmResult = await Dialog.confirm({
-                title: '✅ Copia de seguridad guardada.',
-                message: `\n${nombreArchivo}\n\n¿Quieres compartirla / guardarla en la nube ahora?`,
-                okButtonTitle: 'Sí',
+                title: '✅ Se ha guardado la configuración correctamente.',
+                message: `\n${nombreArchivo}\n\n¿Quieres compartirla ahora?`,
+                okButtonTitle: 'Sí, compartir',
                 cancelButtonTitle: 'No'
             });
 
@@ -2281,7 +2280,7 @@ async function exportarPerfilCompleto() {
                 const canShare = await Share.canShare();
                 if (canShare.value) {
                     await Share.share({
-                        title: 'Copia de seguridad Fly Decision',
+                        title: 'Configuración Fly Decision',
                         files: [resultCache.uri], 
                         dialogTitle: 'Guardar en...',
                     });
@@ -2326,12 +2325,13 @@ function importarPerfilCompleto() {
                             keysImportadas++;
                         }
                     }
-
                     if (keysImportadas > 0) {
                         if (typeof mensajeAvisoRecarga === 'function') {
-                            mensajeAvisoRecarga('✅ Restauración completada', `<p>Se han restaurado ${keysImportadas} configuraciones y favoritos con éxito.</p><p>La aplicación se va a recargar para aplicar los cambios.</p>`);
+                            mensajeAvisoRecarga(``, `<div style="text-align: center;">
+                            <p>✅ Se ha importado la configuración correctamente.</p>
+                        </div>`);
                         } else {
-                            alert("Perfil restaurado con éxito. La página se va a recargar.");
+                            alert("✅ Se ha importado la configuración correctamente.");
                             location.reload();
                         }
                     } else {
@@ -2348,11 +2348,17 @@ function importarPerfilCompleto() {
         input.click();
     };
 
-    mensajeModalAceptarCancelar(
+    const favoritosActuales = obtenerFavoritos();
+
+    if (favoritosActuales.length === 0) {
+        window.accionCargarPerfil();
+    } else {
+        mensajeModalAceptarCancelar(
         '', 
-        '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📥</p><p><b>⚠️ ATENCIÓN:</b> Importar una copia de seguridad sobrescribirá TODOS tus favoritos y configuraciones actuales.</b></p>', 
+        '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📂</p><p><b>⚠️ ATENCIÓN:</b> Importar un archivo de configuración sustituirá toda tu configuración actual y despegues favoritos.</b></p>', 
         'accionCargarPerfil'
-    );
+        );
+    }
 }
 
 //*********************************************************************
@@ -2632,6 +2638,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                                 GestorMensajes.ocultar();
                                 //modoEdicionFavoritos = true; 
                                 activarEdicionFavoritos();
+                                return;
+                            }
+                        },
+                        {
+                            texto: 'Importar configuración guardada →',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                importarPerfilCompleto();
                                 return;
                             }
                         }
@@ -4877,7 +4891,7 @@ function btnRestablecerConfiguración() {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2em; margin: 0;">🔄</p>
-                <p><b>⚠️ ATENCIÓN:</b> Esta acción eliminará la configuración y desmarcará todos los despegues favoritos.</p><p>Si quieres conservar tus favoritos, cancela este mensaje y guárdalos con 💾<i>Guardar favoritos</i>.</p>
+                <p><b>⚠️ ATENCIÓN:</b> Esta acción eliminará la configuración y desmarcará todos los despegues favoritos.</p><p>Si quieres conservar tus favoritos, cancela este mensaje y guárdalos con 💾<i>Exportar favoritos</i>.</p>
             </div>
         `,
         botones: [            

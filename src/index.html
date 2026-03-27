@@ -94,11 +94,11 @@
 			<span style="font-size: 20px;"><img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></span>
 		</button>
 
-		<button id="btn-abrir-favoritos" class="group-edit" title="Abrir favoritos" onclick="abrirFavoritos()" style="position: relative;">
+		<button id="btn-abrir-favoritos" class="group-edit" title="Importar favoritos" onclick="abrirFavoritos()" style="position: relative;">
 			<span style="font-size: 20px;">📂</span>
 		</button>
 
-		<button id="btn-guardar-favoritos" class="group-edit" title="Guardar favoritos" onclick="guardarFavoritos()" style="position: relative;">
+		<button id="btn-guardar-favoritos" class="group-edit" title="Exportar favoritos" onclick="guardarFavoritos()" style="position: relative;">
 			<span style="font-size: 20px;">💾</span>
 		</button>
 
@@ -412,11 +412,27 @@
 	</div>
 
 	<div class="div-configuracion-subpanel" style="display: flex; justify-content: center; align-items: center;">
-		<div class="div-paneles-controles" style="border: none; background-color: #ffffff; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: auto; box-sizing: border-box; box-shadow: none;">
-			<button class="btn-accion" onclick="btnRestablecerConfiguración()" style="color: #ff0000; border: 1px solid #ff0000; width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0;" title="Eliminar todas las configuraciones, favoritos y preferencias y volver a la configuración inicial">🔄</button>
+		<div class="div-paneles-controles" style="border: none; background-color: #ffffff; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: auto; box-sizing: border-box; box-shadow: none;">
+
+			<!-- Grupo de Gestión de Datos (Importar, Exportar, Reset) -->
+			<div style="display: flex; gap: 6px; flex-shrink: 0;">
+				<button class="btn-accion" onclick="importarPerfilCompleto()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Importar configuración y favoritos">
+					📂
+				</button>
+				<button class="btn-accion" onclick="exportarPerfilCompleto()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Exportar configuración y favoritos">
+					💾
+				</button>
+				<button class="btn-accion" onclick="btnRestablecerConfiguración()" style="color: #ff0000; border: 3px solid #ff0000; width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Restablecer la configuración (elimina toda la configuración y favoritos)">
+					🔄
+				</button>
+			</div>
+
+			<!-- Botón Google Play -->
 			<a href="https://play.google.com/store/apps/details?id=com.flydecision" target="_blank" rel="noopener" class="badge-google-play" style="display: flex; align-items: center; text-decoration: none !important; margin: 0; flex-shrink: 0;">
-				<img alt="Disponible en Google Play" src="https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png" style="height: 34px; width: auto; display: block;">
+				<img alt="Disponible en Google Play" src="icons/logo_google_play_34.webp" class="btn-accion" style="height: 34px; width: auto; display: block;" title="Descargar en Google Play">
 			</a>
+			
+			<!-- Enlaces legales y de ayuda (Fuerza salto de línea con width: 100%) -->
 			<div class="enlaces-legales" style="display: flex; align-items: center; gap: 5px; white-space: nowrap; margin: 0;">
 				<a href="#" onclick="sugerirGuiaPrincipal(true)">Guía</a>
 				<span class="separador" style="color: #ccc;">|</span>

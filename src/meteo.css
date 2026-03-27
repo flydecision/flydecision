@@ -653,10 +653,6 @@ input[type="search"]::-webkit-search-cancel-button {
 	border: 1px solid #333;
     border-radius: 5px;
 }
-.btn-accion:hover {
-  background-color: #0078d4;
-  color: #ffffff !important;
-}
 
 /* 🔴 DIVs dentro de los paneles -------------------------------- */
 
