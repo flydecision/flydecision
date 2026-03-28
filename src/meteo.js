@@ -2,66 +2,95 @@
 // 🔴 VARIABLES O CONSTANTES GLOBALES
 // ---------------------------------------------------------------
 
+const meteoRoot = window.FlyDecisionMeteo || {};
+const meteoState = meteoRoot.state || {};
+const meteoDomain = meteoRoot.domain || {};
+const meteoUi = meteoRoot.ui || {};
+const meteoConstants = meteoRoot.utils && meteoRoot.utils.constants ? meteoRoot.utils.constants : {};
+const METEO_DEFAULTS = meteoConstants.DEFAULTS || {};
+const METEO_STORAGE_KEYS = meteoConstants.STORAGE_KEYS || {};
+const meteoPreferencesStore = meteoState.preferencesStore;
+const meteoFavoritesStore = meteoState.favoritesStore;
+const meteoAppState = meteoState.appState;
+const meteoDistanceModule = meteoDomain.distance;
+const meteoOrientationModule = meteoDomain.orientation;
+const meteoMessageManager = meteoUi.messages ? meteoUi.messages.manager : null;
+const meteoDialogHelpers = meteoUi.messages ? meteoUi.messages.dialogHelpers : null;
+const meteoTableLayout = meteoUi.tableLayout;
+
+function syncPhase1State(key, value) {
+    if (meteoAppState) {
+        meteoAppState.set(key, value);
+    }
+
+    return value;
+}
+
+function obtenerFilasPorDespegueActuales() {
+    return meteoTableLayout.getRowsPerLaunch({
+        chkMostrarCizalladura,
+        chkMostrarProbPrecipitacion,
+        chkMostrarRafagosidad,
+        chkMostrarVientoAlturas,
+        chkMostrarXC,
+    });
+}
+
 // Aquí guardaremos los JSON
-let DATOS_METEO_CACHE = null;
-let DATOS_METEO_ECMWF_CACHE = null;
+let DATOS_METEO_CACHE = meteoAppState.get('DATOS_METEO_CACHE', null);
+let DATOS_METEO_ECMWF_CACHE = meteoAppState.get('DATOS_METEO_ECMWF_CACHE', null);
 let soloFavoritos;
 //let favoritos = [];
 let modoEdicionFavoritos = false;
 let totalFavoritos = 0;
 let totalDespeguesDisponibles = 0;
 
-let VelocidadMin = Number(localStorage.getItem("METEO_VELOCIDAD_MINIMA")) || 0; 
-let VelocidadIdeal = Number(localStorage.getItem("METEO_VELOCIDAD_IDEAL")) || 12;
-let VelocidadMax = Number(localStorage.getItem("METEO_VELOCIDAD_MAXIMA")) || 20;  
-let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 25;
+let VelocidadMin = meteoPreferencesStore.getNumber(METEO_STORAGE_KEYS.VELOCIDAD_MINIMA || 'METEO_VELOCIDAD_MINIMA', 0);
+let VelocidadIdeal = meteoPreferencesStore.getNumber(METEO_STORAGE_KEYS.VELOCIDAD_IDEAL || 'METEO_VELOCIDAD_IDEAL', 12);
+let VelocidadMax = meteoPreferencesStore.getNumber(METEO_STORAGE_KEYS.VELOCIDAD_MAXIMA || 'METEO_VELOCIDAD_MAXIMA', 20);
+let RachaMax = meteoPreferencesStore.getNumber(METEO_STORAGE_KEYS.RACHA_MAX || 'METEO_RACHA_MAX', 25);
 
 // Valores límite para puntuación XC y colores en tabla
 // Techo AGL: 800m ya permite volar, 1500m AGL es un día excelente (se suma a la montaña).
-let XCTechoLims = JSON.parse(localStorage.getItem("METEO_XC_TECHO_LIMS")) || { rojo: 800, verde: 1500 };
+let XCTechoLims = meteoPreferencesStore.getJSON(METEO_STORAGE_KEYS.XC_TECHO_LIMITS || 'METEO_XC_TECHO_LIMS', METEO_DEFAULTS.xcTechoLims || { rojo: 800, verde: 1500 });
 
 // CAPE: 0-400 es ideal (desde día azul hasta cúmulos bonitos). >800 peligro de tormenta.
-let XCCapeLims = JSON.parse(localStorage.getItem("METEO_XC_CAPE_LIMS")) || { idealMin: 0, idealMax: 400, riesgo: 800 };
+let XCCapeLims = meteoPreferencesStore.getJSON(METEO_STORAGE_KEYS.XC_CAPE_LIMITS || 'METEO_XC_CAPE_LIMS', METEO_DEFAULTS.xcCapeLims || { idealMin: 0, idealMax: 400, riesgo: 800 });
 
 // CIN: Inhibición convectiva. 0-50 el aire fluye bien. >150 actúa como tapón.
-let XCCinLims = JSON.parse(localStorage.getItem("METEO_XC_CIN_LIMS")) || { verde: 50, rojo: 150 };
+let XCCinLims = meteoPreferencesStore.getJSON(METEO_STORAGE_KEYS.XC_CIN_LIMITS || 'METEO_XC_CIN_LIMS', METEO_DEFAULTS.xcCinLims || { verde: 50, rojo: 150 });
 
 // Valores iniciales para que se vea la puntuación al seleccionar día de la semana
-if (localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO') === null) {
-    localStorage.setItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO', '10');
-}
+meteoPreferencesStore.ensureDefault(METEO_STORAGE_KEYS.PREFERRED_RANGE_START || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO', METEO_DEFAULTS.preferredRangeStart || '10');
+meteoPreferencesStore.ensureDefault(METEO_STORAGE_KEYS.PREFERRED_RANGE_END || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN', METEO_DEFAULTS.preferredRangeEnd || '20');
 
-if (localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN') === null) {
-    localStorage.setItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN', '20');
-}
-
-let sliderHorasValues = null; 
-let indicesHorasRangoHorario = []; // Contiene los índices válidos (ej: [5, 6, 7, 8, ...])
+let sliderHorasValues = meteoAppState.get('sliderHorasValues', null); 
+let indicesHorasRangoHorario = meteoAppState.get('indicesHorasRangoHorario', []); // Contiene los índices válidos (ej: [5, 6, 7, 8, ...])
 
 // Variable global para almacenar todos los despegues (sin filtrar)
-let bdGlobalDespegues = [];
+let bdGlobalDespegues = meteoAppState.get('bdGlobalDespegues', []);
 
-let chkAplicarCalibracion = localStorage.getItem("METEO_CHECKBOX_APLICAR_CALIBRACION") === "true";
+let chkAplicarCalibracion = meteoPreferencesStore.getBoolean(METEO_STORAGE_KEYS.APPLY_CALIBRATION || 'METEO_CHECKBOX_APLICAR_CALIBRACION', METEO_DEFAULTS.showApplyCalibration || false);
 
 const calibracionVelocidad = 1.36; // Factor de calibración por defecto
 const calibracionRacha = 1.07; // Factor de calibración por defecto
 const calibracionDireccion = 7; // Factor de calibración por defecto (Grados a añadir a la dirección)
 
-let chkMostrarRafagosidad = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_RAFAGOSIDAD") === "true";
+let chkMostrarRafagosidad = meteoPreferencesStore.getBoolean(METEO_STORAGE_KEYS.SHOW_RAFAGOSIDAD || 'METEO_CHECKBOX_MOSTRAR_RAFAGOSIDAD', METEO_DEFAULTS.showRafagosidad || false);
 // Límites rafagosidad: Verde (< 1.3): Viento laminar. La racha no supera en un 30% a la media. Aire estable. Naranja (1.3 a 1.6): Viento racheado. Rojo (> 1.6): Viento turbulento. La racha es más de un 60% superior a la media
 const rafagosidadUmbralNaranja = 1.5;
 const rafagosidadUmbralRojo = 2.1;
 
-let chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") === "true"; 
+let chkMostrarVientoAlturas = meteoPreferencesStore.getBoolean(METEO_STORAGE_KEYS.SHOW_VIENTO_ALTURAS || 'METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS', METEO_DEFAULTS.showVientoAlturas || false); 
 
-let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false"; // Por defecto true para que lo vean
+let chkMostrarCizalladura = meteoPreferencesStore.getInvertedBoolean(METEO_STORAGE_KEYS.SHOW_CIZALLADURA || 'METEO_CHECKBOX_MOSTRAR_CIZALLADURA', METEO_DEFAULTS.showCizalladura !== false); // Por defecto true para que lo vean
 
 // ECMWF
 //let chkMostrarPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PRECIPITACION") !== "false";
 const chkMostrarPrecipitacion = true; // Siempre activo
-let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION") !== "false";
+let chkMostrarProbPrecipitacion = meteoPreferencesStore.getInvertedBoolean(METEO_STORAGE_KEYS.SHOW_PROB_PRECIPITATION || 'METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION', METEO_DEFAULTS.showProbPrecipitacion !== false);
 //let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") !== "false";
-let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
+let chkMostrarXC = meteoPreferencesStore.getInvertedBoolean(METEO_STORAGE_KEYS.SHOW_XC || 'METEO_CHECKBOX_MOSTRAR_XC', METEO_DEFAULTS.showXC !== false); // true por defecto
 
 // UMBRALES DE CIZALLADURA (Factor multiplicador)
 const LIMITES_CIZALLADURA = {
@@ -75,7 +104,7 @@ const LIMITES_CIZALLADURA = {
 const HorariosMediosActualizacion = ["01:32", "03:02", "05:52", "08:02", "11:22", "13:32", "16:12", "19:12", "23:22"]; // en UTC-0
 const HorariosMediosActualizacionEcmwf =["00:25", "06:45", "12:25", "18:45"]; // en UTC-0
 
-let esModoOffline = false; // Nueva variable para controlar el estado de red
+let esModoOffline = meteoAppState.get('esModoOffline', false); // Nueva variable para controlar el estado de red
 
 const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
 
@@ -93,8 +122,8 @@ const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 8
 // ===============================================================
 
 // 1. VARIABLES GLOBALES Y CONFIGURACIÓN
-let centroLat = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) || 40.4168; // dummy Madrid
-let centroLon = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL')) || -3.7038;
+let centroLat = meteoPreferencesStore.getNumber(METEO_STORAGE_KEYS.DISTANCE_LATITUDE || 'METEO_FILTRO_DISTANCIA_LAT_INICIAL', METEO_DEFAULTS.initialLatitude || 40.4168); // dummy Madrid
+let centroLon = meteoPreferencesStore.getNumber(METEO_STORAGE_KEYS.DISTANCE_LONGITUDE || 'METEO_FILTRO_DISTANCIA_LON_INICIAL', METEO_DEFAULTS.initialLongitude || -3.7038);
 
 // Elementos del Modal Mapa unificado
 const modalMapa = document.getElementById('modal-mapa');
@@ -116,21 +145,18 @@ function actualizarOrigenGlobal(lat, lon, metodo) {
     centroLat = lat;
     centroLon = lon;
     
-    localStorage.setItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
-    localStorage.setItem('METEO_FILTRO_DISTANCIA_LON_INICIAL', lon);
-
+    meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LATITUDE || 'METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
+    meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LONGITUDE || 'METEO_FILTRO_DISTANCIA_LON_INICIAL', lon);
     construir_tabla();
 }
 
 // 3. FUNCIÓN COMPARTIDA (CLIC EN EL MAPA O AL LOCALIZAR GPS)
 function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
     // 1. GUARDAR EN LOCALSTORAGE INMEDIATAMENTE. 
-    // Así evitamos que cualquier evento del slider que se dispare a continuación 
-    // crea erróneamente que no hay origen configurado.
+    meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LATITUDE || 'METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
+    meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LONGITUDE || 'METEO_FILTRO_DISTANCIA_LON_INICIAL', lng);
     centroLat = lat;
     centroLon = lng;
-    localStorage.setItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
-    localStorage.setItem('METEO_FILTRO_DISTANCIA_LON_INICIAL', lng);
 
     ponerMarcador(lat, lng);
     
@@ -343,234 +369,21 @@ window.addEventListener('click', (e) => {
 // ---------------------------------------------------------------
 
 // Contenido alinenado a la izquierda (si no se codifica nada)
-const GestorMensajes = {
-    
-    // Referencia al elemento actual en el DOM
-    elementoActual: null,
-
-    /**
-     * Muestra un mensaje dinámico.
-     * @param {string} tipo - 'modal' (bloquea pantalla) o 'no-modal' (flotante). Ej: tipo: 'no-modal',
-     * @param {string} posicion - Solo para no-modal: 'centro' o 'derecha'. Ej: posicion: 'centro',
-     * @param {string} htmlContenido - Texto o HTML del mensaje. Ej: htmlContenido: '<p>✅ Importación realizada con éxito.</p>',
-     * @param {Array} botones - Lista de botones. Ej: botones: ['ACEPTAR', 'CANCELAR'] o botones ['ACEPTAR'] u objetos personalizados.
-     */
-	 
-    /* 	Ejemplo de mensaje puntual:
-        
-        GestorMensajes.mostrar({
-            tipo: 'modal',
-            htmlContenido: '<p>❌ Error: El resultado no puede ser negativo.</p>',
-            botones: ['ACEPTAR']
-        });
-    */	
-    
-    /* 	Ejemplo de mensaje reutilizable (encapsulado en una función). Se usa para el onclick=avisoencapsuladoenfuncionquesea(); para mensajes puntuales recurrentes en un if,.... ; para mensajes que requieren parámetros, se puede crear una función que reciba el texto y llame al gestor function CON_PARAMETROS(texto). Si tiene que salir al inicio, se llama idealmente en un bloque que se ejecute una vez que la página esté lista, una vez que el DOM (la estructura de la página) se haya cargado. Ejemplo: document.addEventListener('DOMContentLoaded', (event) => {
-                mostrar..Configuracion..Inicial();
-                
-            function mostrarSaludo() {
-                GestorMensajes.mostrar({
-                    tipo: 'modal',
-                    htmlContenido: '<p>Hola, bienvenido al sistema</p>',
-                    botones: ['ACEPTAR']
-                });
-            }
-    */
- 
-    mostrar: function({ tipo = 'modal', posicion = 'centro', htmlContenido = '', botones =[], anchoBotones = null }) {
-        
-        // 1. Limpiar mensaje previo si existe
-        this.ocultar();
-
-        // 2. Crear el contenedor principal
-        const div = document.createElement('div');
-       
-        // 3. Asignar clases y estructura según el tipo
-        let contenedorContenido;
-
-        if (tipo === 'modal') {
-            div.className = 'mensaje-modal visible';
-            // El modal necesita un wrapper interno para el recuadro blanco
-            contenedorContenido = document.createElement('div');
-            contenedorContenido.className = 'mensaje-modal-contenido';
-            div.appendChild(contenedorContenido);
-        } else {
-            // El no-modal es el recuadro en sí mismo
-            div.className = 'mensaje-no-modal visible';
-            
-            // Lógica de posición
-            //if (posicion === 'centro') div.classList.add('posicion-centro');
-            //else if (posicion === 'derecha') div.classList.add('posicion-derecha');
-			if (posicion === 'derecha') div.classList.add('posicion-derecha');
-            
-            contenedorContenido = div; // Escribimos directamente en el div principal
-        }
-
-        // 4. Inyectar contenido HTML
-        const divTexto = document.createElement('div');
-        divTexto.innerHTML = htmlContenido;
-        contenedorContenido.appendChild(divTexto);
-
-        // 5. Generar Botones
-        if (botones.length > 0) {
-            const wrapperBotones = document.createElement('div');
-            wrapperBotones.className = 'boton-mensajes-wrapper';
-
-            botones.forEach(btnConfig => {
-                const btn = document.createElement('button');
-                btn.className = 'boton-mensajes';
-                
-                // Mapeo de botones estándar (strings) a configuración
-                if (typeof btnConfig === 'string') {
-                    const estandar = this._obtenerBotonEstandar(btnConfig);
-                    btn.textContent = estandar.texto;
-                    btn.onclick = estandar.accion;
-                    if (estandar.claseExtra) btn.classList.add(estandar.claseExtra);
-                } else {
-                    // Configuración personalizada { texto, onclick, estilo }
-                    btn.textContent = btnConfig.texto;
-                    btn.onclick = btnConfig.onclick || (() => this.ocultar());
-                    if (btnConfig.estilo === 'secundario') btn.classList.add('btn-secundario');
-                }
-
-                if (anchoBotones) {
-                    // Si pasan un número (ej: 120), le añade 'px'. Si pasan un texto (ej: '120px' o '50%'), lo usa tal cual.
-                    btn.style.width = typeof anchoBotones === 'number' ? `${anchoBotones}px` : anchoBotones;
-                }
-                
-                btn.style.marginLeft = "10px";
-                
-                wrapperBotones.appendChild(btn);
-            });
-
-            contenedorContenido.appendChild(wrapperBotones);
-        }
-
-        // 6. Añadir al DOM
-        document.body.appendChild(div);
-        this.elementoActual = div;
-    },
-
-    ocultar: function() {
-        if (this.elementoActual) {
-            this.elementoActual.remove();
-            this.elementoActual = null;
-        }
-    },
-
-    // Definición de botones estándar para escribir menos código
-    _obtenerBotonEstandar: function(clave) {
-        switch(clave.toUpperCase()) {
-            case 'ACEPTAR':
-                return { texto: 'Aceptar', accion: () => this.ocultar() };
-            case 'SIGUIENTE':
-                return { texto: 'Siguiente', accion: () => this.ocultar() }; // Sobrescribir acción al llamar
-            case 'TERMINAR':
-                return { texto: 'Finalizar', accion: () => this.ocultar() };
-            case 'CANCELAR':
-                return { texto: 'Cancelar', accion: () => this.ocultar(), claseExtra: 'btn-secundario' };
-            default:
-                return { texto: clave, accion: () => this.ocultar() };
-        }
-    }
-};
+const GestorMensajes = meteoMessageManager;
 
 // ---------------------------------------------------------------
 // 🟡 MENSAJES. Reusable Modal Aceptar
 // ---------------------------------------------------------------
 
 // Contenido alinenado al centro
-function mensajeModalAceptar(titulo = '', contenido = '', accionesAceptar = '') { // accionesAceptar Nombres de funciones globales separadas por comas ('func1, func2') (acepta vacíos '')
-    
-    // Crear el HTML para el título, solo si se proporciona un valor (no nulo, no vacío)
-    const htmlTitulo = (titulo && titulo.trim() !== '') 
-        ? `<p style="font-size: 1.4em; font-weight: bold; text-align:center;">${titulo}</p>`
-        : '';
-		
-	const listaFunciones = accionesAceptar
-	.split(',') // Separar por comas
-	.map(nombre => nombre.trim()) // Limpiar espacios en blanco
-	.filter(nombre => nombre.length > 0); // Eliminar entradas vacías
-    
-    GestorMensajes.mostrar({
-        tipo: 'modal',
-        htmlContenido: `
-            <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center;">
-                ${htmlTitulo}
-                <div style="width: 100%;">${contenido || ''}</div>
-            </div>
-        `,
-        botones: [
-            {
-                texto: 'Aceptar',
-                onclick: function() {
-                    GestorMensajes.ocultar();
-					listaFunciones.forEach(nombreFuncion => {
-                        const func = window[nombreFuncion];
-                        
-                        if (typeof func === 'function') {
-                            func(); 
-                        } else {
-                            console.error(`Error: La función global "${nombreFuncion}" no fue encontrada.`);
-                        }
-                    });
-                }
-            },
-        ]
-    });
-}
+const mensajeModalAceptar = meteoDialogHelpers.mensajeModalAceptar;
 
 // ---------------------------------------------------------------
 // 🟡 MENSAJES. Reusable Modal Aceptar/Cancelar
 // ---------------------------------------------------------------
 
 // Contenido alinenado al centro
-function mensajeModalAceptarCancelar(titulo = '', contenido = '', accionesAceptar = '') { // accionesAceptar Nombres de funciones globales separadas por comas ('func1, func2') (acepta vacíos '')
-
-    const htmlTitulo = (titulo && titulo.trim() !== '') 
-        ? `<p style="font-size: 1.4em; font-weight: bold; text-align:center;">${titulo}</p>`
-        : '';
-        
-    const listaFunciones = accionesAceptar
-        .split(',') // Separar por comas
-        .map(nombre => nombre.trim()) // Limpiar espacios en blanco
-        .filter(nombre => nombre.length > 0); // Eliminar entradas vacías
-        
-    GestorMensajes.mostrar({
-        tipo: 'modal',
-        htmlContenido: `
-            <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center;">
-                ${htmlTitulo}
-                <div style="width: 100%;">${contenido || ''}</div>
-            </div>
-        `,
-        botones: [
-            {
-                texto: 'Cancelar',
-                estilo: 'secundario',
-                onclick: function() {
-                    GestorMensajes.ocultar();
-                }
-            },
-            {
-                texto: 'Aceptar',
-                onclick: function() {
-                    GestorMensajes.ocultar();
-                    
-                    listaFunciones.forEach(nombreFuncion => {
-                        const func = window[nombreFuncion];
-                        
-                        if (typeof func === 'function') {
-                            func(); 
-                        } else {
-                            console.error(`Error: La función global "${nombreFuncion}" no fue encontrada.`);
-                        }
-                    });
-                }
-            }
-        ]
-    });
-}
+const mensajeModalAceptarCancelar = meteoDialogHelpers.mensajeModalAceptarCancelar;
 
 // ---------------------------------------------------------------
 // 🟡 MENSAJES. Únicos
@@ -603,30 +416,7 @@ function mostrarConfirmacionMasiva(cantidad) {
     });
 }
 
-function mensajeAvisoRecarga(titulo = '', contenido = '') { // Opcional, puede ser '' o null
-    
-    // Crear el HTML para el título, solo si se proporciona un valor (no nulo, no vacío)
-    const htmlTitulo = (titulo && titulo.trim() !== '') 
-        ? `<p style="font-size: 1.4em; font-weight: bold; text-align:center;">${titulo}</p>`
-        : '';
-        
-    GestorMensajes.mostrar({
-        tipo: 'modal',
-        htmlContenido: `
-            ${htmlTitulo}
-            ${contenido || ''}
-        `,
-        botones: [
-            {
-                texto: 'Aceptar',
-                onclick: function() {
-                    GestorMensajes.ocultar();
-                    location.reload(); 
-                }
-            },
-        ]
-    });
-}
+const mensajeAvisoRecarga = meteoDialogHelpers.mensajeAvisoRecarga;
 
 // ---------------------------------------------------------------
 // 🔴 GUÍAS RÁPIDAS
@@ -1075,7 +865,7 @@ function desmarcarFavoritos() {
                 texto: 'Sí, desmarcar',
                 onclick: function() {
                     // 1. Sobrescribimos el localStorage con un array vacío
-                    localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify([]));
+                    meteoFavoritesStore.setFavorites([]);
 
                     // Resetear estado del filtro "Ver solo favoritos" 
                     soloFavoritos = false;
@@ -1140,7 +930,7 @@ function abrirFavoritos() {
                     }
 
                     if (nuevosFavoritos.length > 0) {
-                        localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(nuevosFavoritos));
+                        meteoFavoritesStore.setFavorites(nuevosFavoritos);
                         localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
                         
                         if (typeof mensajeAvisoRecarga === 'function') {
@@ -1276,14 +1066,7 @@ async function guardarFavoritos() {
 }
 
 function obtenerFavoritos() {
-    const data = localStorage.getItem("METEO_FAVORITOS_LISTA");
-    if (!data) return[];
-    try {
-        const parsed = JSON.parse(data);
-        return Array.isArray(parsed) ? parsed :[];
-    } catch(e) {
-        return[];
-    }
+    return meteoFavoritesStore.getFavorites();
 }
 
 function actualizarContadorVisualFavoritos() {
@@ -1304,28 +1087,16 @@ function actualizarContadorVisualFavoritos() {
 }
 
 function toggleFavorito(id) {
-    id = Number(id); // Aseguramos que es un número
-    const favoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
-    const indice = favoritos.indexOf(id);
-    let esNuevoFavorito = false;
-
-    if (indice === -1) {
-        favoritos.push(id);
-        esNuevoFavorito = true;
-    } else {
-        favoritos.splice(indice, 1);
-    }
-
-    localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(favoritos));
+    const resultado = meteoFavoritesStore.toggleFavorite(id);
 
     actualizarContadorVisualFavoritos();
 
-    return esNuevoFavorito;
+    return resultado.isFavorite;
 }
 
 // Marcar/Desmarcar favoritos masivamente mediante la columna Favoritos
-let idsPendientesDeConfirmacion = [];
-let estadoPendienteDeAplicar = false; // true = marcar, false = desmarcar
+let idsPendientesDeConfirmacion = meteoAppState.get('idsPendientesDeConfirmacion', []);
+let estadoPendienteDeAplicar = meteoAppState.get('estadoPendienteDeAplicar', false); // true = marcar, false = desmarcar
 
 function gestionarClickMasivoFavoritos() {
     
@@ -1341,15 +1112,7 @@ function gestionarClickMasivoFavoritos() {
     const filas = tbody.rows;
     let idsVisibles = [];
 
-    // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
-    let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
-    if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-    //if (chkMostrarBaseNube) filasPorDespegue++;
-    if (chkMostrarVientoAlturas) filasPorDespegue += 3;
-    if (chkMostrarXC) filasPorDespegue += 3;
-    if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarRafagosidad) filasPorDespegue++;
-    //if (chkMostrarPrecipitacion) filasPorDespegue++;
+    const filasPorDespegue = obtenerFilasPorDespegueActuales();
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
         
@@ -1377,8 +1140,8 @@ function gestionarClickMasivoFavoritos() {
 
     if (nuevoEstadoEsFavorito && idsVisibles.length > 100) {
         
-        idsPendientesDeConfirmacion = idsVisibles;
-        estadoPendienteDeAplicar = nuevoEstadoEsFavorito;
+        idsPendientesDeConfirmacion = syncPhase1State('idsPendientesDeConfirmacion', idsVisibles);
+        estadoPendienteDeAplicar = syncPhase1State('estadoPendienteDeAplicar', nuevoEstadoEsFavorito);
 
 		mostrarConfirmacionMasiva(idsVisibles.length); 
 		return;
@@ -1404,7 +1167,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     // Convertimos de vuelta a Array
     listaFavoritos = Array.from(setFavoritos);
 
-    localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(listaFavoritos));
+    listaFavoritos = meteoFavoritesStore.setFavorites(listaFavoritos);
     
     // Eliminamos la asignación a la variable global 'favoritos' si decides borrarla
     // favoritos = listaFavoritos; 
@@ -1426,15 +1189,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     const filas = tbody.rows;
     const setAfectados = new Set(idsAfectados.map(Number)); // Búsqueda O(1)
 
-    // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
-    let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
-    if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-    //if (chkMostrarBaseNube) filasPorDespegue++;
-    if (chkMostrarVientoAlturas) filasPorDespegue += 3;
-    if (chkMostrarXC) filasPorDespegue += 3;
-    if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarRafagosidad) filasPorDespegue++;
-    //if (chkMostrarPrecipitacion) filasPorDespegue++;
+    const filasPorDespegue = obtenerFilasPorDespegueActuales();
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
         
@@ -1470,7 +1225,7 @@ function confirmarSeleccionMasiva() {
         aplicarCambiosMasivos(idsPendientesDeConfirmacion, estadoPendienteDeAplicar);
         
         // Limpiar memoria
-        idsPendientesDeConfirmacion = [];
+        idsPendientesDeConfirmacion = syncPhase1State('idsPendientesDeConfirmacion', []);
 		
 		//mensajeFinalizarEdicionFavoritos();
     }, 50);
@@ -1500,7 +1255,7 @@ function finalizarEdicionFavoritos() {
 
 	favoritos = obtenerFavoritos();
 
-	if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { // Ha pulsado Finalizar pero no existe la key "METEO_FAVORITOS_LISTA" en localstorage o los favoritos están vacíos 
+    if (!meteoFavoritesStore.hasFavoritesKey() || favoritos.length === 0) { // Ha pulsado Finalizar pero no existe la key "METEO_FAVORITOS_LISTA" en localstorage o los favoritos están vacíos 
 		
         mensajeModalAceptar('', 
             '<p>Es necesario marcar al menos un despegue favorito ♥️</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
@@ -1571,7 +1326,7 @@ function alternarHorasNoche() {
     // Desactivado porque bloqueaba Firefox
     //document.body.classList.toggle("solo-dia", activo);
     
-    localStorage.setItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ", activo);
+    meteoPreferencesStore.setBoolean('METEO_CHECKBOX_SOLO_HORAS_DE_LUZ', activo);
 
 	sliderHorasValues = null; 
 		
@@ -1589,28 +1344,28 @@ function alternarHorasNoche() {
 function alternarMostrarVientoAlturas() {
 
     chkMostrarVientoAlturas = document.getElementById("chkMostrarVientoAlturas").checked;
-    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", chkMostrarVientoAlturas);
+    meteoPreferencesStore.setBoolean(METEO_STORAGE_KEYS.SHOW_VIENTO_ALTURAS || 'METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS', chkMostrarVientoAlturas);
 	construir_tabla(); 
 }
 
 function alternarMostrarRafagosidad() {
 
     chkMostrarRafagosidad = document.getElementById("chkMostrarRafagosidad").checked;
-    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_RAFAGOSIDAD", chkMostrarRafagosidad);
+    meteoPreferencesStore.setBoolean(METEO_STORAGE_KEYS.SHOW_RAFAGOSIDAD || 'METEO_CHECKBOX_MOSTRAR_RAFAGOSIDAD', chkMostrarRafagosidad);
 	construir_tabla(); 
 }
 
 function alternarAplicarCalibracion() {
 
-    chkAplicarCalibracion = document.getElementById("chkAplicarCalibracion").checked;
-    localStorage.setItem("METEO_CHECKBOX_APLICAR_CALIBRACION", chkAplicarCalibracion);
-	sliderHorasValues = null; 
+	chkAplicarCalibracion = document.getElementById("chkAplicarCalibracion").checked;
+	meteoPreferencesStore.setBoolean(METEO_STORAGE_KEYS.APPLY_CALIBRATION || 'METEO_CHECKBOX_APLICAR_CALIBRACION', chkAplicarCalibracion);
+	sliderHorasValues = syncPhase1State('sliderHorasValues', null); 
 	construir_tabla(); 
 }
 
 function alternarMostrarCizalladura() {
     chkMostrarCizalladura = document.getElementById("chkMostrarCizalladura").checked;
-    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA", chkMostrarCizalladura);
+    meteoPreferencesStore.setBoolean(METEO_STORAGE_KEYS.SHOW_CIZALLADURA || 'METEO_CHECKBOX_MOSTRAR_CIZALLADURA', chkMostrarCizalladura);
     construir_tabla(); 
 }
 
@@ -1622,7 +1377,7 @@ function alternarMostrarCizalladura() {
 
 function alternarMostrarProbPrecipitacion() {
     chkMostrarProbPrecipitacion = document.getElementById("chkMostrarProbPrecipitacion").checked;
-    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION", chkMostrarProbPrecipitacion);
+    meteoPreferencesStore.setBoolean(METEO_STORAGE_KEYS.SHOW_PROB_PRECIPITATION || 'METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION', chkMostrarProbPrecipitacion);
     construir_tabla();
 }
 
@@ -1634,7 +1389,7 @@ function alternarMostrarProbPrecipitacion() {
 
 function alternarMostrarXC() {
     chkMostrarXC = document.getElementById("chkMostrarXC").checked;
-    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_XC", chkMostrarXC);
+    meteoPreferencesStore.setBoolean(METEO_STORAGE_KEYS.SHOW_XC || 'METEO_CHECKBOX_MOSTRAR_XC', chkMostrarXC);
     construir_tabla();
 }
 
@@ -1670,8 +1425,8 @@ function clickOnPip(sliderElement) {
     let finalStart = startSliderIndex;
     let finalEnd = endSliderIndex;
 
-    const rawInicio = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
-    const rawFin = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
+    const rawInicio = meteoPreferencesStore.getRaw(METEO_STORAGE_KEYS.PREFERRED_RANGE_START || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
+    const rawFin = meteoPreferencesStore.getRaw(METEO_STORAGE_KEYS.PREFERRED_RANGE_END || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
 
     // Si el usuario HA movido el slider de configuración alguna vez (no es null)
     if (rawInicio !== null && rawFin !== null) {
@@ -1708,7 +1463,7 @@ function clickOnPip(sliderElement) {
     sliderElement.noUiSlider.set([finalStart, finalEnd]); 
     
     if (window.sliderHorasValues) {
-        window.sliderHorasValues = [finalStart, finalEnd];
+        window.sliderHorasValues = syncPhase1State('sliderHorasValues', [finalStart, finalEnd]);
     }
     
     construir_tabla();
@@ -1796,8 +1551,8 @@ window.calcularIndicesPreferencia = function(diaObjetivo) {
     // Si no encontramos el día solicitado, devolvemos rango completo (seguridad)
     if (indiceInicioDia === -1) return [0, maxSteps];
 
-    const rawInicio = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
-    const rawFin = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
+    const rawInicio = meteoPreferencesStore.getRaw(METEO_STORAGE_KEYS.PREFERRED_RANGE_START || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
+    const rawFin = meteoPreferencesStore.getRaw(METEO_STORAGE_KEYS.PREFERRED_RANGE_END || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
 
     // Convertimos a número, pero si es null, asignamos el rango completo por defecto (0-23)
     const prefInicio = (rawInicio === null) ? 0 : parseInt(rawInicio);
@@ -1885,7 +1640,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
     const horasCrudasRangoHorario = window.horasCrudasRangoHorario;
 
     // --- DETERMINAR ÍNDICES VÁLIDOS ---
-    window.indicesHorasRangoHorario = [];
+    window.indicesHorasRangoHorario = syncPhase1State('indicesHorasRangoHorario', []);
     if (horasCrudasRangoHorario.length > 0) {
         horasCrudasRangoHorario.forEach((h, i) => {
             const d = new Date(h.endsWith('Z') ? h : h + 'Z');
@@ -1976,7 +1731,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         
         // Inicializar variable global
         // Inicializar variable global (Esta actúa como nuestra "Variable de control externa")
-		window.sliderHorasValues = sliderHoras.noUiSlider.get().map(Number);
+        window.sliderHorasValues = syncPhase1State('sliderHorasValues', sliderHoras.noUiSlider.get().map(Number));
         
         // (Eliminamos 'valoresHorasAntes' y el evento 'start')
 
@@ -1989,7 +1744,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 
 			if (haCambiado) {
                 // Actualizamos la variable global YA
-				window.sliderHorasValues = valoresNuevos;
+                window.sliderHorasValues = syncPhase1State('sliderHorasValues', valoresNuevos);
 				construir_tabla(false, false);
 			}
 		});
@@ -2059,7 +1814,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 	// Sincronizar Slider de Configuración de rango horario preferido con el horario solar actual 
     const sliderConfig = document.getElementById('configuracion-horario-slider');
     
-    if (sliderConfig && sliderConfig.noUiSlider && localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO') === null) {
+    if (sliderConfig && sliderConfig.noUiSlider && meteoPreferencesStore.getRaw(METEO_STORAGE_KEYS.PREFERRED_RANGE_START || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO') === null) {
         
         // Obtenemos el rango del primer día (ya sea 0-23 o solar)
         const rangoActual = window.calcularIndicesPreferencia(null);
@@ -2077,68 +1832,10 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 // 🔴 FUNCIONES GLOBALES (hay otras más, pero éstas tienen que estar antes de construir la tabla)
 // ---------------------------------------------------------------
 
-function createOrientationSVG(orientacionesStr) {
-	
-    const ALL_SEGMENTS = [
-        'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
-        'S', 'SSO', 'SO', 'OSO', 'O', 'ONO', 'NO', 'NNO'
-    ];
-    
-    // 2. Colores y dimensiones
-    const size = 23; // Lo he subido un poco para que se vea mejor en la tabla
-    const radius = 8; 
-    const strokeWidth = 1; 
-    const colorBorde = "#666"; 
-    const colorFondoInactivo = "white"; 
-    const colorSegmentoActivo = "#19ed86"; 
-
-    // Parsear metadata formato "N, NO, S". Separamos por coma y quitamos espacios en blanco
-    const activeOrientations = new Set(
-        (orientacionesStr || '').split(',').map(s => s.trim())
-    );
-
-    let svg = `<svg width="${size}" height="${size}" viewBox="-10 -10 20 20" style="vertical-align: middle; display:inline-block; transform: rotate(-90deg);">`;
-    
-    // Círculo base
-    svg += `<circle cx="0" cy="0" r="${radius}" fill="${colorFondoInactivo}" stroke="${colorBorde}" stroke-width="${strokeWidth}" />`;
-
-    // Generar segmentos
-    const AXIS_ANGLE = 360 / ALL_SEGMENTS.length; 
-    const SEGMENT_WIDTH = 45; 
-    const HALF_SEGMENT = SEGMENT_WIDTH / 2; 
-    const toRadians = (angle) => angle * Math.PI / 180;
-
-    ALL_SEGMENTS.forEach((segmentName, index) => {
-        if (activeOrientations.has(segmentName)) {
-            const centerAngle = index * AXIS_ANGLE;
-            const startAngle = centerAngle - HALF_SEGMENT; 
-            const endAngle = centerAngle + HALF_SEGMENT; 
-            
-            const x1 = radius * Math.cos(toRadians(startAngle));
-            const y1 = radius * Math.sin(toRadians(startAngle));
-            const x2 = radius * Math.cos(toRadians(endAngle));
-            const y2 = radius * Math.sin(toRadians(endAngle));
-            
-            svg += `<polygon points="0,0 ${x1},${y1} ${x2},${y2}" fill="${colorSegmentoActivo}" />`;
-        }
-    });
-
-    svg += `</svg>`;
-    return svg;
-}
+const createOrientationSVG = meteoOrientationModule.createOrientationSVG;
 
 // FILTRO DISTANCIA. Fórmula de Haversine
-function obtenerDistanciaKm(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Radio de la Tierra en km
-    const dLat = (lat2 - lat1) * (Math.PI / 180);
-    const dLon = (lon2 - lon1) * (Math.PI / 180);
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distancia en km
-}
+const obtenerDistanciaKm = meteoDistanceModule.obtenerDistanciaKm;
 
 function gestionarMascarasScroll() { //Obsoleta en reserva
     const contenedor = document.getElementById("contenedor-paneles-scroll");
@@ -2422,8 +2119,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
         if (forzarRecarga) {
             //console.log(new Date().toLocaleString(), "♻️ Forzando recarga desde internet (Borrando caché RAM o Localstorage)...");
-            DATOS_METEO_CACHE = null; 
-            DATOS_METEO_ECMWF_CACHE = null; 
+            DATOS_METEO_CACHE = syncPhase1State('DATOS_METEO_CACHE', null); 
+            DATOS_METEO_ECMWF_CACHE = syncPhase1State('DATOS_METEO_ECMWF_CACHE', null); 
         }
 		
 		favoritos = obtenerFavoritos();
@@ -2434,17 +2131,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
         // CASO A: Primera visita (Usuaria nueva)
         if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") && 
-            !localStorage.getItem("METEO_FAVORITOS_LISTA") && 
+            !meteoFavoritesStore.hasFavoritesKey() && 
             !modoEdicionFavoritos) { 
             
             localStorage.setItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ", "true");
-            localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO", "10");
-            localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN", "20");
-            localStorage.setItem("METEO_CHECKBOX_MOSTRAR_RAFAGOSIDAD", "false");
-            localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", "true");
+            meteoPreferencesStore.setString(METEO_STORAGE_KEYS.PREFERRED_RANGE_START || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO', '10');
+            meteoPreferencesStore.setString(METEO_STORAGE_KEYS.PREFERRED_RANGE_END || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN', '20');
+            meteoPreferencesStore.setString(METEO_STORAGE_KEYS.SHOW_RAFAGOSIDAD || 'METEO_CHECKBOX_MOSTRAR_RAFAGOSIDAD', 'false');
+            meteoPreferencesStore.setString(METEO_STORAGE_KEYS.SHOW_VIENTO_ALTURAS || 'METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS', 'true');
             chkMostrarVientoAlturas = true;
             if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = true; //PARA FORZAR EL CHECKBOX VISUAL
-            localStorage.setItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA", "true");
+            meteoPreferencesStore.setString(METEO_STORAGE_KEYS.SHOW_CIZALLADURA || 'METEO_CHECKBOX_MOSTRAR_CIZALLADURA', 'true');
             chkMostrarCizalladura = true;
             if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = true; ////PARA FORZAR EL CHECKBOX VISUAL
             
@@ -2710,9 +2407,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 data = await res1.json();
                 dataEcmwf = await res2.json();
                 
-                DATOS_METEO_CACHE = data; 
-                DATOS_METEO_ECMWF_CACHE = dataEcmwf;
-                esModoOffline = false;
+                DATOS_METEO_CACHE = syncPhase1State('DATOS_METEO_CACHE', data); 
+                DATOS_METEO_ECMWF_CACHE = syncPhase1State('DATOS_METEO_ECMWF_CACHE', dataEcmwf);
+                esModoOffline = syncPhase1State('esModoOffline', false);
 
                 // Guardamos en la Base de Datos del navegador (Sin límite de espacio de 5MB y sin bloquear la pantalla)
                 guardarEnCacheIDB('METEO_DATOS_JSON_CACHE', data);
@@ -2728,9 +2425,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 if (cachedData && cachedDataEcmwf) {
                     data = cachedData; // En IndexedDB ya viene como objeto JS limpio, no hace falta JSON.parse
                     dataEcmwf = cachedDataEcmwf;
-                    DATOS_METEO_CACHE = data; 
-                    DATOS_METEO_ECMWF_CACHE = dataEcmwf;
-                    esModoOffline = true;
+                    DATOS_METEO_CACHE = syncPhase1State('DATOS_METEO_CACHE', data); 
+                    DATOS_METEO_ECMWF_CACHE = syncPhase1State('DATOS_METEO_ECMWF_CACHE', dataEcmwf);
+                    esModoOffline = syncPhase1State('esModoOffline', true);
                     
                     // Añadimos una marca para saber que estamos en "modo offline"
                     if(data.timestamp) lastDataGenerationTimestamp = new Date(data.timestamp).getTime();
@@ -2744,7 +2441,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         }
 
         // Guardamos todos los despegues en la variable global para el buscador
-		window.bdGlobalDespegues = data.despegues;
+        bdGlobalDespegues = syncPhase1State('bdGlobalDespegues', data.despegues);
+        window.bdGlobalDespegues = bdGlobalDespegues;
 		
 		totalDespeguesDisponibles = data.despegues.length;
 		
@@ -2767,7 +2465,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     nuevosFavs.push(Number(match.ID));
                 }
             });
-            localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(nuevosFavs));
+            meteoFavoritesStore.setFavorites(nuevosFavs);
             favoritosActuales = nuevosFavs;
         } else {
             // Aseguramos que siempre filtramos y devolvemos arrays de Number
@@ -4970,15 +4668,7 @@ function filtrarDespeguesProvincias() {
     const normalizar = (texto) => texto.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     const filtroLimpio = normalizar(filtro);
 
-    // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
-    let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
-    if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-    //if (chkMostrarBaseNube) filasPorDespegue++;
-    if (chkMostrarVientoAlturas) filasPorDespegue += 3;
-    if (chkMostrarXC) filasPorDespegue += 3;
-    if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarRafagosidad) filasPorDespegue++;
-    //if (chkMostrarPrecipitacion) filasPorDespegue++;
+    const filasPorDespegue = obtenerFilasPorDespegueActuales();
 
     // 2. FILTRADO VISUAL
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
@@ -5186,7 +4876,7 @@ function agregarDespegueDesdeBuscador(idDespegue) {
     if (!misFavoritos.includes(idDespegue)) {
         misFavoritos.push(idDespegue);
         
-        localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(misFavoritos));
+        meteoFavoritesStore.setFavorites(misFavoritos);
 		
 		limpiarBuscador();
         
@@ -5772,8 +5462,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!configuracionhorarioSlider || configuracionhorarioSlider.noUiSlider) return;
 
-    let start = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
-    let end   = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
+    let start = meteoPreferencesStore.getRaw(METEO_STORAGE_KEYS.PREFERRED_RANGE_START || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
+    let end   = meteoPreferencesStore.getRaw(METEO_STORAGE_KEYS.PREFERRED_RANGE_END || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
 	
 	// Si es la primera vez (null), el slider de configuración mostrará 0-23 pero no guardará nada en localStorage hasta que el usuario lo mueva.
     let startVal = (start === null) ? 0 : start;
@@ -5816,8 +5506,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Si el origen del cambio NO es el sistema (es decir, viene de un clic o arrastre)
         // noUiSlider por defecto manda argumentos adicionales cuando es interacción
         if (tap || arguments[3] !== undefined) { 
-             localStorage.setItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO', Math.round(values[0]));
-             localStorage.setItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN', Math.round(values[1]));
+             meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.PREFERRED_RANGE_START || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO', Math.round(values[0]));
+             meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.PREFERRED_RANGE_END || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN', Math.round(values[1]));
         }
     });
 
