@@ -88,6 +88,31 @@
   - `BROWSER_VALIDATION_OK`
   - `get_errors` sin errores en `src/meteo.js`, `src/index.html`, `src/js/meteo/domain/time-range.js`, `src/js/meteo/domain/scoring.js` y `scripts/validate-meteo-phase.js`
 
+## Fase 4
+
+- Estado validado: agrupación segura de flujos de favoritos y distancia como features, con servicios separados para geolocalización y mapa
+- Scripts añadidos antes de `meteo.js` en `src/index.html`:
+  - `js/meteo/services/geolocation-service.js`
+  - `js/meteo/services/map-service.js`
+  - `js/meteo/features/favorites/favorites-controller.js`
+  - `js/meteo/features/distance-filter/distance-filter-controller.js`
+- Módulos recolocados:
+  - `FlyDecisionMeteo.services.geolocationService`
+  - `FlyDecisionMeteo.services.mapService`
+  - `FlyDecisionMeteo.features.favorites.controller`
+  - `FlyDecisionMeteo.features.distanceFilter.controller`
+- Comandos ejecutados:
+  - `Get-ChildItem -Path src/js/meteo -Recurse -Filter *.js | ForEach-Object { node --check $_.FullName }`
+  - `node --check src/meteo.js`
+  - `node --check scripts/validate-meteo-phase.js`
+  - `node --check scripts/validate-meteo-browser.js`
+  - `node scripts/validate-meteo-phase.js phase4`
+  - `node scripts/validate-meteo-browser.js`
+- Resultado:
+  - `VALIDATION_OK phase4`
+  - `BROWSER_VALIDATION_OK`
+  - `get_errors` sin errores en `src/meteo.js`, `src/index.html`, `src/js/meteo/services/geolocation-service.js`, `src/js/meteo/services/map-service.js`, `src/js/meteo/features/favorites/favorites-controller.js`, `src/js/meteo/features/distance-filter/distance-filter-controller.js` y `scripts/validate-meteo-phase.js`
+
 ## Cobertura de esta validación
 
 - Presencia de funciones públicas principales usadas por HTML inline
@@ -99,8 +124,10 @@
 - Ejecución real en navegador local sin errores de consola, `pageerror` ni fallos de carga de recursos críticos
 - Cálculo estable del rango preferido, de índices visibles y de la caché temporal de horas tras reconstrucción
 - Cálculo estable del scoring puro de condiciones y XC sin mezclarlo con el fetch ni con el renderer
+- Disponibilidad de controladores de Favoritos y Distancia sin romper `onclick`, `window.*`, importación/exportación ni reset de filtro
+- Disponibilidad de servicios separados para GPS y mapa Leaflet sin romper la selección de origen ni el modal de distancia
 
 ## Riesgos residuales reconocidos
 
 - El harness es de smoke test con stubs, no sustituye pruebas manuales visuales reales en navegador o Android
-- No se ha extraído todavía el núcleo renderizador de `construir_tabla()`, los sliders DOM-dependientes completos ni el runtime híbrido completo
+- No se ha extraído todavía el núcleo renderizador de `construir_tabla()`, parte de los sliders DOM-dependientes ni el runtime híbrido completo

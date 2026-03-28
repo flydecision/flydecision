@@ -5,6 +5,7 @@
 const meteoRoot = window.FlyDecisionMeteo || {};
 const meteoState = meteoRoot.state || {};
 const meteoDomain = meteoRoot.domain || {};
+const meteoFeatures = meteoRoot.features || {};
 const meteoUi = meteoRoot.ui || {};
 const meteoConstants = meteoRoot.utils && meteoRoot.utils.constants ? meteoRoot.utils.constants : {};
 const METEO_DEFAULTS = meteoConstants.DEFAULTS || {};
@@ -15,10 +16,14 @@ const meteoAppState = meteoState.appState;
 const meteoCacheStore = meteoState.cacheStore;
 const meteoServices = meteoRoot.services || {};
 const meteoDataService = meteoServices.meteoDataService;
+const meteoGeolocationService = meteoServices.geolocationService;
+const meteoMapService = meteoServices.mapService;
 const meteoDistanceModule = meteoDomain.distance;
 const meteoOrientationModule = meteoDomain.orientation;
 const meteoTimeRangeModule = meteoDomain.timeRange;
 const meteoScoringModule = meteoDomain.scoring;
+const meteoFavoritesFeature = meteoFeatures.favorites ? meteoFeatures.favorites.controller : null;
+const meteoDistanceFilterFeature = meteoFeatures.distanceFilter ? meteoFeatures.distanceFilter.controller : null;
 const meteoMessageManager = meteoUi.messages ? meteoUi.messages.manager : null;
 const meteoDialogHelpers = meteoUi.messages ? meteoUi.messages.dialogHelpers : null;
 const meteoTableLayout = meteoUi.tableLayout;
@@ -133,6 +138,7 @@ const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 8
 // 1. VARIABLES GLOBALES Y CONFIGURACIÓN
 let centroLat = meteoPreferencesStore.getNumber(METEO_STORAGE_KEYS.DISTANCE_LATITUDE || 'METEO_FILTRO_DISTANCIA_LAT_INICIAL', METEO_DEFAULTS.initialLatitude || 40.4168); // dummy Madrid
 let centroLon = meteoPreferencesStore.getNumber(METEO_STORAGE_KEYS.DISTANCE_LONGITUDE || 'METEO_FILTRO_DISTANCIA_LON_INICIAL', METEO_DEFAULTS.initialLongitude || -3.7038);
+let ultimaDistanciaConfirmada = CORTES_DISTANCIA_GLOBAL.length - 1;
 
 // Elementos del Modal Mapa unificado
 const modalMapa = document.getElementById('modal-mapa');
@@ -146,227 +152,49 @@ if (btnIncNoFavsDistancia) {
     btnIncNoFavsDistancia.classList.remove('activo', 'filtro-aplicado');
 }
 
-let mapaLeaflet = null;
-let marcadorActual = null;
-
 // 2. FUNCIÓN PARA ACTUALIZAR Y GUARDAR CUALQUIER CAMBIO
 function actualizarOrigenGlobal(lat, lon, metodo) {
-    centroLat = lat;
-    centroLon = lon;
-    
-    meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LATITUDE || 'METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
-    meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LONGITUDE || 'METEO_FILTRO_DISTANCIA_LON_INICIAL', lon);
-    construir_tabla();
+    return distanceFilterController.updateOrigin(lat, lon, metodo);
 }
 
 // 3. FUNCIÓN COMPARTIDA (CLIC EN EL MAPA O AL LOCALIZAR GPS)
 function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
-    // 1. GUARDAR EN LOCALSTORAGE INMEDIATAMENTE. 
-    meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LATITUDE || 'METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
-    meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LONGITUDE || 'METEO_FILTRO_DISTANCIA_LON_INICIAL', lng);
-    centroLat = lat;
-    centroLon = lng;
-
-    ponerMarcador(lat, lng);
-    
-    construir_tabla(false, false);
-    
-    if(modalMapa) modalMapa.style.display = 'none';
+    return distanceFilterController.selectLocationAndFilter(lat, lng, metodo);
 }
 
 // 4. LÓGICA DE APERTURA DEL MAPA DIRECTAMENTE
 if (btnAbrirGeo) {
-    btnAbrirGeo.addEventListener('click', () => {
-        if (modalMapa) modalMapa.style.display = 'flex';
-
-        // Comprobamos si la usuaria ya tiene un origen guardado
-        const tieneOrigenGuardado = localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL') !== null;
-
-        if (!mapaLeaflet) {
-            setTimeout(() => {
-                // Si no hay origen, centramos en España (Lat 40.0, Lon -4.0) con un zoom general (6)
-                const latInicial = tieneOrigenGuardado ? centroLat : 40.0;
-                const lonInicial = tieneOrigenGuardado ? centroLon : -4.0;
-                const zoomInicial = tieneOrigenGuardado ? 9 : 6;
-
-                mapaLeaflet = L.map('mapa-selector').setView([latInicial, lonInicial], zoomInicial);
-                
-                L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                    attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://opentopomap.org/" target="_blank">Style OpenTopoMap</a>'
-                }).addTo(mapaLeaflet);
-
-                mapaLeaflet.on('click', function(e) {
-                    seleccionarUbicacionYFiltrar(e.latlng.lat, e.latlng.lng, "Mapa");
-                });
-
-                // Solo ponemos el marcador si ya tenía un origen
-                if (tieneOrigenGuardado) {
-                    ponerMarcador(centroLat, centroLon);
-                }
-            }, 50);
-        } else {
-            // Si el mapa ya estaba creado en la memoria
-            const latInicial = tieneOrigenGuardado ? centroLat : 40.0;
-            const lonInicial = tieneOrigenGuardado ? centroLon : -4.0;
-            const zoomInicial = tieneOrigenGuardado ? 8 : 6;
-
-            mapaLeaflet.setView([latInicial, lonInicial], zoomInicial);
-            
-            setTimeout(() => { 
-                mapaLeaflet.invalidateSize(); 
-                
-                if (tieneOrigenGuardado) {
-                    ponerMarcador(centroLat, centroLon);
-                } else if (marcadorActual) {
-                    // Si no tiene origen (p.ej. acaba de resetear) pero había un marcador de antes, lo borramos
-                    mapaLeaflet.removeLayer(marcadorActual);
-                    marcadorActual = null;
-                }
-            }, 100);
-        }
+    btnAbrirGeo.addEventListener('click', function() {
+        distanceFilterController.openMapModal();
     });
 }
 
 function ponerMarcador(lat, lng) {
-    const iconoRojo = L.icon({
-        iconUrl: 'icons/marker-icon-2x-red.png',
-        shadowUrl: 'icons/marker-shadow.png',
-        iconSize:[35, 55],    
-        iconAnchor:[17, 55],  
-        popupAnchor:[1, -34],
-        shadowSize:[55, 55]
-    });
-
-    if (marcadorActual) mapaLeaflet.removeLayer(marcadorActual);
-    marcadorActual = L.marker([lat, lng], { icon: iconoRojo }).addTo(mapaLeaflet).openPopup();
+    return distanceFilterController.putMarker(lat, lng);
 }
 
 /// 5. EVENTO BOTÓN INCLUIR NO FAVORITOS (<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">+<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)
 if (btnIncNoFavsDistancia) {
-    btnIncNoFavsDistancia.addEventListener('click', (e) => {
-        e.preventDefault(); 
-        
-        const estabaActivo = btnIncNoFavsDistancia.classList.contains('activo');
-        const nuevoEstado = !estabaActivo;
-
-        // 1. Lógica para cuando se quiere ACTIVAR
-        if (nuevoEstado) {
-            // Seguridad: Verificar si hay origen configurado
-            if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
-                
-                GestorMensajes.mostrar({
-						tipo: 'modal',
-						htmlContenido: `
-                            <div style="text-align: center;">
-                            <p style="font-size: 2.5em; margin: 0 0 10px 0;">📍</p>
-							<p>Como es la primera vez, necesitas configurar una ubicación de origen.</p>
-							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
-                            </div>
-						`,
-						botones:[
-							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
-                            { texto: 'Configurar origen', onclick: function() { 
-                                GestorMensajes.ocultar(); 
-                                const btnGeo = document.getElementById('btn-abrir-geo-menu');
-                                if (btnGeo) btnGeo.click(); // Simulamos un clic en el botón 📍
-                            } }
-						],
-                        anchoBotones: 160
-					});
-                return;
-            }
-        }
-
-        // 3. Pintamos el botón hundido (activo) y con el borde rojo (filtro-aplicado)
-        if (nuevoEstado) {
-            btnIncNoFavsDistancia.classList.add('activo', 'filtro-aplicado');
-        } else {
-            btnIncNoFavsDistancia.classList.remove('activo', 'filtro-aplicado');
-        }
-        
-        const sliderDistElem = document.getElementById('distancia-slider');
-        if (sliderDistElem && sliderDistElem.noUiSlider) {
-            const currentIdx = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
-            
-            // --- Si se activa el botón y el slider estaba en "Todo", salta a 100km ---
-            if (nuevoEstado && currentIdx === CORTES_DISTANCIA_GLOBAL.length - 1) {
-                
-                const idx100km = CORTES_DISTANCIA_GLOBAL.indexOf(100);
-                ultimaDistanciaConfirmada = idx100km;
-                sliderDistElem.noUiSlider.set(idx100km);
-                
-                // Forzar estilos del filtro principal
-                const btnToggle = document.getElementById("btn-div-filtro-distancia-toggle");
-                if (btnToggle) btnToggle.classList.add('filtro-aplicado');
-                const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
-                if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
-                const btnReset = document.getElementById('btn-reset-filtro-distancia');
-                if (btnReset) btnReset.style.display = 'block';
-
-                construir_tabla(false, false);
-            } 
-            // Si el botón se toca y ya había un filtro de distancia aplicado (< 9999)
-            else if (currentIdx < CORTES_DISTANCIA_GLOBAL.length - 1) {
-                construir_tabla(false, false); 
-            }
-        }
+    btnIncNoFavsDistancia.addEventListener('click', function(e) {
+        distanceFilterController.toggleIncludeNonFavorites(e);
     });
 }
 
 // 6. EVENTO UBICACIÓN DEL MÓVIL (GPS) EN EL MAPA
 if (btnGpsMapa) {
     btnGpsMapa.addEventListener('click', async function() {
-        const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
-        const textoOriginal = btnGpsMapa.innerHTML;
-        btnGpsMapa.innerHTML = "<span>⏳ Buscando...</span>";
-
-        const onLocationFound = (lat, lon) => {
-            btnGpsMapa.innerHTML = textoOriginal;
-            seleccionarUbicacionYFiltrar(lat, lon, "GPS");
-        };
-
-        const onLocationError = (errMsg) => {
-            console.error("Error GPS:", errMsg);
-            alert("No se pudo obtener la ubicación. " + errMsg);
-            btnGpsMapa.innerHTML = textoOriginal;
-        };
-
-        if (isApp) {
-            try {
-                const Geolocation = Capacitor.Plugins.Geolocation;
-                let check = await Geolocation.checkPermissions();
-                if (check.location !== 'granted' && check.location !== 'coarse') {
-                    await Geolocation.requestPermissions();
-                }
-                const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 10000 });
-                onLocationFound(pos.coords.latitude, pos.coords.longitude);
-            } catch (err) {
-                onLocationError(err.message.includes("disabled") ? "Asegúrate de tener el GPS activado." : "Revisa los permisos.");
-            }
-        } else { 
-            if (!navigator.geolocation) {
-                onLocationError("Tu navegador no soporta GPS.");
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(
-                (pos) => onLocationFound(pos.coords.latitude, pos.coords.longitude),
-                (err) => onLocationError(err.message),
-                { enableHighAccuracy: false, timeout: 10000 }
-            );
-        }
+        await distanceFilterController.handleGpsClick();
     });
 }
 
 // 7. BOTÓN CERRAR MAPA (LA "X")
 if (btnCerrarMapa) {
-    btnCerrarMapa.addEventListener('click', () => {
-        if(modalMapa) modalMapa.style.display = 'none';
+    btnCerrarMapa.addEventListener('click', function() {
+        distanceFilterController.closeMapModal();
     });
 }
-window.addEventListener('click', (e) => {
-    if (e.target === modalMapa) {
-        modalMapa.style.display = 'none';
-    }
+window.addEventListener('click', function(e) {
+    distanceFilterController.handleOutsideMapClick(e);
 });
 
 // ---------------------------------------------------------------
@@ -426,6 +254,62 @@ function mostrarConfirmacionMasiva(cantidad) {
 }
 
 const mensajeAvisoRecarga = meteoDialogHelpers.mensajeAvisoRecarga;
+
+const favoritesController = meteoFavoritesFeature.init({
+    buildTable: (...args) => construir_tabla(...args),
+    cleanSearch: () => limpiarBuscador(),
+    getEditingMode: () => modoEdicionFavoritos,
+    getFavorites: () => meteoFavoritesStore.getFavorites(),
+    getGlobalLaunches: () => window.bdGlobalDespegues || [],
+    getMessageManager: () => GestorMensajes,
+    getPendingFavoriteIds: () => meteoAppState.get('idsPendientesDeConfirmacion', []),
+    getPendingFavoriteState: () => meteoAppState.get('estadoPendienteDeAplicar', false),
+    getRowsPerLaunch: () => obtenerFilasPorDespegueActuales(),
+    hasFavoritesKey: () => meteoFavoritesStore.hasFavoritesKey(),
+    resetConditionsFilter: (...args) => window.resetFiltroCondiciones(...args),
+    resetDistanceFilter: (...args) => window.resetFiltroDistancia(...args),
+    setEditingMode: (value) => { modoEdicionFavoritos = value; return modoEdicionFavoritos; },
+    setFavorites: (favorites) => meteoFavoritesStore.setFavorites(favorites),
+    setFocusMode: (value) => setModoEnfoque(value),
+    setOnlyFavorites: (value) => { soloFavoritos = value; return soloFavoritos; },
+    setPendingFavoriteIds: (ids) => syncPhase1State('idsPendientesDeConfirmacion', ids),
+    setPendingFavoriteState: (value) => syncPhase1State('estadoPendienteDeAplicar', value),
+    showAcceptCancelModal: (...args) => mensajeModalAceptarCancelar(...args),
+    showCenteredAcceptModal: (...args) => mensajeModalAceptar(...args),
+    showReloadMessage: (...args) => mensajeAvisoRecarga(...args),
+    suggestFavoritesGuide: (...args) => sugerirGuiaFavoritos(...args),
+    suggestMainGuide: (...args) => sugerirGuiaPrincipal(...args),
+    toggleFavorite: (id) => meteoFavoritesStore.toggleFavorite(id),
+});
+
+const distanceFilterController = meteoDistanceFilterFeature.init({
+    buildTable: (...args) => construir_tabla(...args),
+    geolocationService: meteoGeolocationService,
+    getDistanceCuts: () => CORTES_DISTANCIA_GLOBAL,
+    getDistanceMaxIndex: () => CORTES_DISTANCIA_GLOBAL.length - 1,
+    getDistanceOrigin: () => ({ lat: centroLat, lon: centroLon }),
+    getDistanceSlider: () => document.getElementById('distancia-slider'),
+    getGpsMapButton: () => btnGpsMapa,
+    getIncludeNonFavoritesButton: () => btnIncNoFavsDistancia,
+    getLastConfirmedDistanceIndex: () => ultimaDistanciaConfirmada,
+    getMessageManager: () => GestorMensajes,
+    getModalMap: () => modalMapa,
+    mapService: meteoMapService,
+    setDistanceOrigin: (lat, lon) => {
+        centroLat = lat;
+        centroLon = lon;
+        return { lat: centroLat, lon: centroLon };
+    },
+    setFocusMode: (value) => setModoEnfoque(value),
+    setLastConfirmedDistanceIndex: (value) => {
+        ultimaDistanciaConfirmada = value;
+        return ultimaDistanciaConfirmada;
+    },
+    setStoredDistanceOrigin: (lat, lon) => {
+        meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LATITUDE || 'METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
+        meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LONGITUDE || 'METEO_FILTRO_DISTANCIA_LON_INICIAL', lon);
+    },
+});
 
 // ---------------------------------------------------------------
 // 🔴 GUÍAS RÁPIDAS
@@ -780,298 +664,23 @@ function iniciarGuiaFavoritos(forzar = false) {
 // ---------------------------------------------------------------
 
 function activarEdicionFavoritos() {
-	
-    resetFiltroCondiciones(false); //les pasamos false para que no reconstruyan la tabla
-    resetFiltroDistancia(false);
-
-    document.getElementById('btn-filtro-favoritos-toggle').classList.remove('filtro-aplicado');
-
-	modoEdicionFavoritos = true;
-    soloFavoritos = false;
-
-    document.body.classList.add('modo-edicion-tabla');
-    document.getElementById('div-menu').classList.add('mode-editing');
-    document.getElementById('div-menu2-edicion-favoritos').classList.add('mode-editing');
-
-	// Deshundo botones
-	document.getElementById("btn-div-configuracion-toggle").classList.remove("activo");
-    document.getElementById("btn-filtro-favoritos-toggle").classList.remove("activo");
-	
-	// Cierro paneles
-    document.querySelector('.div-filtro-horario').style.display = 'none';
-	document.getElementById("div-configuracion").classList.remove("activo");
-
-    if (typeof setModoEnfoque === "function") { setModoEnfoque(false); }
-
-	construir_tabla();
-
-    actualizarContadorVisualFavoritos(); 
-
-    setTimeout(() => {
-        sugerirGuiaFavoritos();
-    }, 500);
+    return favoritesController.activateEditMode();
 }
 
 function filtroVerSoloFavoritos() {
-    
-    const favoritosActuales = obtenerFavoritos();
-    const btn = document.getElementById('btn-filtro-favoritos-toggle');
-
-    // --- NUEVO: Comprobar si se va a activar el filtro pero NO hay favoritos ---
-    if (!btn.classList.contains("activo") && favoritosActuales.length === 0) {
-        mensajeModalAceptar('', 
-            '<p>No funciona el filtro <i>Ver solo favoritos</i> porque es necesario marcar al menos un despegue favorito ♥️.</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
-        );
-        return; // Salimos de la función sin aplicar el filtro ni recargar la tabla
-    }
-
-    // Lógica normal de alternar el botón
-    btn.classList.toggle("activo"); 
-    const estaHundido = btn.classList.contains("activo");
-    
-    if (estaHundido) {
-        soloFavoritos = true; 
-        btn.classList.add('filtro-aplicado');
-    } else {
-        soloFavoritos = false;
-        btn.classList.remove('filtro-aplicado');
-    }
-
-    construir_tabla();
+    return favoritesController.toggleOnlyFavoritesFilter();
 }
 
 function desmarcarFavoritos() {
-    const favoritosActuales = obtenerFavoritos();
-    
-    // Si ya está vacía, avisamos y no hacemos nada más
-    if (favoritosActuales.length === 0) {
-        GestorMensajes.mostrar({
-            tipo: 'modal', // o 'no-modal' si lo prefieres menos invasivo
-            htmlContenido: '<p style="text-align: center;">No hay despegues favoritos para desmarcar</p>',
-            botones: ['ACEPTAR']
-        });
-        return;
-    }
-
-    // Si hay favoritos, pedimos confirmación con tu Gestor de Mensajes
-    GestorMensajes.mostrar({
-        tipo: 'modal',
-        htmlContenido: `
-            <div style="text-align: center;">
-                <p style="font-size: 2em; margin: 0;"><img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></p>
-                <p>¿Quieres desmarcar todos tus favoritos?</p>
-            </div>
-        `,
-        botones:[
-            {
-                texto: 'Cancelar',
-                estilo: 'secundario',
-                onclick: function() {
-                    GestorMensajes.ocultar();
-                }
-            },
-            {
-                texto: 'Sí, desmarcar',
-                onclick: function() {
-                    // 1. Sobrescribimos el localStorage con un array vacío
-                    meteoFavoritesStore.setFavorites([]);
-
-                    // Resetear estado del filtro "Ver solo favoritos" 
-                    soloFavoritos = false;
-                    const btn = document.getElementById('btn-filtro-favoritos-toggle');
-                    if (btn) {
-                        btn.classList.remove("activo", "filtro-aplicado");
-                    }
-                    
-                    // 2. Actualizamos el contador visual ("<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> 0")
-                    actualizarContadorVisualFavoritos();
-                    
-                    // 3. Restauramos el icono de la cabecera de la tabla a desmarcado
-                    const thFavorito = document.getElementById('id-thFavorito');
-                    if (thFavorito) {
-                        thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
-                        thFavorito.title = "Marcar todos los despegues visibles como favoritos";
-                    }
-
-                    // 4. Reconstruimos la tabla para quitar el fondo verde/clases a todos de golpe
-                    construir_tabla();
-
-                    // 5. Cerramos el modal
-                    GestorMensajes.ocultar();
-                }
-            }
-        ]
-    });
+    return favoritesController.clearFavorites();
 }
 
 function abrirFavoritos() {
-    window.accionCargarFavoritos = function() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.txt'; 
-        
-        input.onchange = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    let nuevosFavoritos = e.target.result
-                        .split('\n')
-                        .map(l => l.trim())
-                        .filter(l => l.length > 0); 
-
-                    // --- MIGRACIÓN AL VUELO SI ES UN ARCHIVO ANTIGUO (CON NOMBRES) ---
-                    if (nuevosFavoritos.length > 0 && isNaN(Number(nuevosFavoritos[0]))) {
-                        const bd = window.bdGlobalDespegues ||[];
-                        const favsMigrados =[];
-                        nuevosFavoritos.forEach(nombre => {
-                            const match = bd.find(d => d.Despegue === nombre);
-                            if (match && match.ID) {
-                                favsMigrados.push(Number(match.ID));
-                            }
-                        });
-                        nuevosFavoritos = favsMigrados;
-                    } else {
-                        // Son IDs numéricos nuevos
-                        nuevosFavoritos = nuevosFavoritos.map(Number).filter(n => !isNaN(n));
-                    }
-
-                    if (nuevosFavoritos.length > 0) {
-                        meteoFavoritesStore.setFavorites(nuevosFavoritos);
-                        localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
-                        
-                        if (typeof mensajeAvisoRecarga === 'function') {
-                            mensajeAvisoRecarga('', `<div style="text-align: center;">
-                            <p>✅ Se han importado ${nuevosFavoritos.length} despegues favoritos.</p>
-                        </div>`);
-                        } else {
-                            location.reload();
-                        }
-                    } else {
-                        alert('⚠️ El archivo estaba vacío.');
-                    }
-                } catch (error) {
-                    alert('⚠️ Error al procesar el archivo.');
-                }
-                
-                delete window.accionCargarFavoritos; 
-            };
-            reader.readAsText(file);
-        };
-        input.click();
-    };
-
-    mensajeModalAceptarCancelar(
-        '', 
-        '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📂</p><p><b>⚠️ ATENCIÓN:</b> Importar favoritos sustituirá los actuales.</b><br><br>Si los quieres conservar, cancela este mensaje y usa el botón 💾 <i>Exportar favoritos</i>.</p>', 
-        'accionCargarFavoritos'
-    );
+    return favoritesController.openFavorites();
 }
 
 async function guardarFavoritos() {
-    // Aseguramos que guardamos un txt con puros números
-    const favoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
-        
-    if (favoritos.length === 0) {
-        GestorMensajes.mostrar({
-            tipo: 'modal',
-            htmlContenido: '<p style="text-align: center;">No hay despegues favoritos para exportar</p>',
-            botones: ['ACEPTAR']
-        });
-        return;
-    }
-
-    const ahora = new Date();
-    const fecha = ahora.toISOString().split('T')[0];
-    const hora = ahora.toTimeString().split(' ')[0].replace(/:/g, '-').slice(0, 5);
-    let nombreArchivo = `${fecha}_Fly_Decision_Favorites.txt`;
-    const contenido = favoritos.join('\n');
-
-    const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
-
-    if (isApp) {
-        try {
-            const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
-
-            const { value, cancelled } = await Dialog.prompt({
-                title: '💾 Exportar favoritos',
-                message: '\nCambia el nombre del archivo o acepta éste:',
-                inputText: nombreArchivo,
-                okButtonTitle: 'Guardar',
-                cancelButtonTitle: 'Cancelar'
-            });
-
-            if (cancelled) return;
-
-            if (value && value.trim() !== '') {
-                nombreArchivo = value.trim();
-                if (!nombreArchivo.toLowerCase().endsWith('.txt')) {
-                    nombreArchivo += '.txt';
-                }
-            }
-
-            await Filesystem.writeFile({
-                path: nombreArchivo, 
-                data: contenido,
-                directory: 'DATA', 
-                encoding: 'utf8',
-                recursive: true
-            });
-
-            const resultCache = await Filesystem.writeFile({
-                path: nombreArchivo, 
-                data: contenido,
-                directory: 'CACHE', 
-                encoding: 'utf8',
-                recursive: true
-            });
-
-            const confirmResult = await Dialog.confirm({
-                title: '✅ Favoritos guardados con éxito.',
-                text: 'Aquí tienes mis despegues favoritos de Fly Decision:',
-                message: `\n${nombreArchivo}\n\n¿Quieres compartirlo ahora?`,
-                okButtonTitle: 'Sí, compartir',
-                cancelButtonTitle: 'No'
-            });
-
-            if (confirmResult.value) {
-                const canShare = await Share.canShare();
-                if (canShare.value) {
-                    try {
-                        await Share.share({
-                            title: 'Mis despegues favoritos de Fly Decision',
-                            text: 'Aquí tienes mis despegues favoritos:',
-                            files: [resultCache.uri], 
-                            dialogTitle: 'Compartir con...',
-                        });
-                    } catch (shareError) {
-                        console.error("Error nativo al compartir:", shareError);
-                        alert("No se pudo abrir el menú de compartir. Intenta usar otro método.");
-                    }
-                } else {
-                    alert("Tu dispositivo no permite compartir archivos directamente. Asegúrate de tener Telegram instalado.");
-                }
-            }
-
-        } catch (error) {
-            console.error("Error al guardar en Android:", error);
-            alert("Vaya, algo ha fallado: " + error.message);
-        }
-    } else {
-        const blob = new Blob([contenido], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = nombreArchivo; 
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }, 100);
-    }
+    return favoritesController.saveFavorites();
 }
 
 function obtenerFavoritos() {
@@ -1079,165 +688,24 @@ function obtenerFavoritos() {
 }
 
 function actualizarContadorVisualFavoritos() {
-    const el = document.getElementById('contador-favoritos-texto');
-    
-    if (el) {
-        const num = obtenerFavoritos().length;
-        let texto = "";
-
-        if (num === 1) {
-            texto = `<b>${num}</b> <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favorito`;
-        } else {
-            texto = `<b>${num}</b> <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos`;
-        }
-        
-        el.innerHTML = texto;
-    }
+    return favoritesController.updateFavoritesCounter();
 }
 
 function toggleFavorito(id) {
-    const resultado = meteoFavoritesStore.toggleFavorite(id);
-
-    actualizarContadorVisualFavoritos();
-
-    return resultado.isFavorite;
+    return favoritesController.toggleFavorite(id);
 }
 
 // Marcar/Desmarcar favoritos masivamente mediante la columna Favoritos
-let idsPendientesDeConfirmacion = meteoAppState.get('idsPendientesDeConfirmacion', []);
-let estadoPendienteDeAplicar = meteoAppState.get('estadoPendienteDeAplicar', false); // true = marcar, false = desmarcar
-
 function gestionarClickMasivoFavoritos() {
-    
-    if (!modoEdicionFavoritos) {
-		mensajeModalAceptar('','<p>Para marcar o desmarcar un grupo de favoritos, utiliza la opción:</p><p>Menú ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos]</p>');
-        return;
-    }
-
-    const tabla = document.getElementById('tabla');
-    const tbody = tabla.tBodies[0];
-    if (!tbody) return;
-
-    const filas = tbody.rows;
-    let idsVisibles = [];
-
-    const filasPorDespegue = obtenerFilasPorDespegueActuales();
-
-    for (let i = 0; i < filas.length; i += filasPorDespegue) {
-        
-        const filaPrincipal = filas[i];
-
-        // Protección por si el cálculo falla o la tabla está incompleta
-        if (!filaPrincipal) break;
-        
-        if (filaPrincipal.style.display !== 'none') {
-            
-            // OPCIÓN MÁS SEGURA: Buscar por clase si la posición varía
-            let celda = filaPrincipal.querySelector('.columna-favoritos');
-            
-            if (celda && celda.dataset.id) {
-                idsVisibles.push(Number(celda.dataset.id)); // Guardamos como número
-            }
-        }
-    }
-
-    if (idsVisibles.length === 0) return;
-
-    let listaFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n)); 
-    const todosSonFavoritos = idsVisibles.every(id => listaFavoritos.includes(id));
-    const nuevoEstadoEsFavorito = !todosSonFavoritos; // true = añadir, false = quitar
-
-    if (nuevoEstadoEsFavorito && idsVisibles.length > 100) {
-        
-        idsPendientesDeConfirmacion = syncPhase1State('idsPendientesDeConfirmacion', idsVisibles);
-        estadoPendienteDeAplicar = syncPhase1State('estadoPendienteDeAplicar', nuevoEstadoEsFavorito);
-
-		mostrarConfirmacionMasiva(idsVisibles.length); 
-		return;
-    }
-
-    aplicarCambiosMasivos(idsVisibles, nuevoEstadoEsFavorito);
+    return favoritesController.handleMassFavoriteHeaderClick();
 }
 
 function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
-    
-    // 1. Usamos Set para máxima velocidad y gestión automática de duplicados
-    let listaFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
-    let setFavoritos = new Set(listaFavoritos);
-
-    if (nuevoEstadoEsFavorito) {
-        // Añadimos todos (el Set ignora duplicados automáticamente)
-       idsAfectados.forEach(id => setFavoritos.add(Number(id)));
-    } else {
-        // Borramos todos
-        idsAfectados.forEach(id => setFavoritos.delete(Number(id)));
-    }
-
-    // Convertimos de vuelta a Array
-    listaFavoritos = Array.from(setFavoritos);
-
-    listaFavoritos = meteoFavoritesStore.setFavorites(listaFavoritos);
-    
-    // Eliminamos la asignación a la variable global 'favoritos' si decides borrarla
-    // favoritos = listaFavoritos; 
-    
-    // --- Actualización visual (DOM) ---
-    const thFavorito = document.getElementById('id-thFavorito');
-    if (thFavorito) {
-        thFavorito.innerHTML = nuevoEstadoEsFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
-        thFavorito.title = nuevoEstadoEsFavorito 
-            ? "Desmarcar todos los despegues visibles como favoritos" 
-            : "Marcar todos los despegues visibles como favoritos";
-    }
-
-    // Usamos idsAfectados para buscar solo las filas necesarias, 
-    // en lugar de iterar toda la tabla de nuevo si es posible, 
-    // pero iterar la tabla es más seguro para asegurar sincronía visual.
-    const tabla = document.getElementById('tabla');
-    const tbody = tabla.tBodies[0];
-    const filas = tbody.rows;
-    const setAfectados = new Set(idsAfectados.map(Number)); // Búsqueda O(1)
-
-    const filasPorDespegue = obtenerFilasPorDespegueActuales();
-
-    for (let i = 0; i < filas.length; i += filasPorDespegue) {
-        
-        const filaPrincipal = filas[i];
-
-        if (!filaPrincipal) break;
-        
-        let celda = filaPrincipal.querySelector('.columna-favoritos');
-        if (!celda) celda = filaPrincipal.cells[0];
-
-        // Verificamos si esta fila es una de las afectadas
-        if (celda && celda.dataset.id && setAfectados.has(Number(celda.dataset.id))) {
-            
-            celda.innerHTML = nuevoEstadoEsFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
-            celda.title = nuevoEstadoEsFavorito ? "Quitar de favoritos" : "Añadir a favoritos";
-            
-            const action = nuevoEstadoEsFavorito ? 'add' : 'remove';
-            // Aplicamos la clase "favorito" a TODAS las filas del bloque dinámicamente
-            for (let j = 0; j < filasPorDespegue; j++) {
-                if (filas[i + j]) filas[i + j].classList[action]("favorito");
-            }
-        }
-    }
-
-    actualizarContadorVisualFavoritos();
+    return favoritesController.applyMassFavoriteChanges(idsAfectados, nuevoEstadoEsFavorito);
 }
 
 function confirmarSeleccionMasiva() {
-    
-	GestorMensajes.ocultar();
-    
-    setTimeout(() => {
-        aplicarCambiosMasivos(idsPendientesDeConfirmacion, estadoPendienteDeAplicar);
-        
-        // Limpiar memoria
-        idsPendientesDeConfirmacion = syncPhase1State('idsPendientesDeConfirmacion', []);
-		
-		//mensajeFinalizarEdicionFavoritos();
-    }, 50);
+    return favoritesController.confirmMassSelection();
 }
 
 
@@ -1258,42 +726,7 @@ function confirmarSeleccionMasiva() {
 
 
 function finalizarEdicionFavoritos() {
-
-    resetFiltroCondiciones(false); //les pasamos false para que no reconstruyan la tabla
-    resetFiltroDistancia(false);
-
-	favoritos = obtenerFavoritos();
-
-    if (!meteoFavoritesStore.hasFavoritesKey() || favoritos.length === 0) { // Ha pulsado Finalizar pero no existe la key "METEO_FAVORITOS_LISTA" en localstorage o los favoritos están vacíos 
-		
-        mensajeModalAceptar('', 
-            '<p>Es necesario marcar al menos un despegue favorito ♥️</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
-        );
-		
-		return false; // <--- IMPORTANTE: No hemos podido cerrar correctamente la edición porque no ha elegido favoritos
-		
-	}
-
-    document.body.classList.remove('modo-edicion-tabla');
-    document.getElementById('div-menu').classList.remove('mode-editing');
-    document.getElementById('div-menu2-edicion-favoritos').classList.remove('mode-editing');
-    document.getElementById('btn-filtro-favoritos-toggle').classList.remove('filtro-aplicado');
-
-    // Hacemos que el filtro horario vuelva a aparecer SIEMPRE al cerrar
-    document.querySelector('.div-filtro-horario').style.display = ''; // Quita el 'none' y vuelve al original (block/flex)
-	
-	localStorage.setItem("METEO_PRIMERA_VISITA_HECHA", "true");
-	modoEdicionFavoritos = false; 
-	limpiarBuscador();
-    //document.getElementById("btn-activar-edicion-favoritos").classList.remove("activo");
-    
-    construir_tabla(); 
-
-    setTimeout(() => {
-        sugerirGuiaPrincipal();
-    }, 500);
-
-    return true; // <--- IMPORTANTE: Cierre realizado con éxito
+    return favoritesController.finishEditMode();
 
 }
 
@@ -4227,32 +3660,7 @@ function alternardivCondiciones(event) {
 }
 
 function alternardivDistancia(event) {
-	
-    const divDistancia = document.getElementById("div-filtro-distancia");
-    const activo = divDistancia.classList.contains("activo");
-    const vamosAMostrar = !activo; 
-
-    // 1. Cerramos paneles de configuración (Viento y General)
-    document.getElementById("div-configuracion").classList.remove("activo");
-    // document.getElementById("btn-activar-edicion-favoritos").classList.remove("activo");
-    document.getElementById("btn-div-configuracion-toggle").classList.remove("activo");
-
-    setModoEnfoque(false);
-    
-    divDistancia.classList.toggle("activo", vamosAMostrar);
-    document.getElementById("btn-div-filtro-distancia-toggle").classList.toggle("activo", vamosAMostrar);
-    
-    /* EL FIX PARA EL SLIDER BLOQUEADO */
-    if (vamosAMostrar) {
-        setTimeout(() => {
-            const sliderElement = document.getElementById('distancia-slider');
-            
-            if (sliderElement && sliderElement.noUiSlider) {
-                sliderElement.noUiSlider.updateOptions({}, true); 
-                const forzarReflow = divDistancia.offsetHeight;
-            }
-        }, 50); 
-    }
+	return distanceFilterController.togglePanel(event);
 }
 
 function alternardivConfiguracion(event) {
@@ -4556,50 +3964,7 @@ function filtrarDespeguesProvincias() {
 
 // Función auxiliar para el botón del buscador
 function agregarDespegueDesdeBuscador(idDespegue) {
-    idDespegue = Number(idDespegue); // Aseguramos que sea un número
-    const misFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
-    
-    if (!misFavoritos.includes(idDespegue)) {
-        misFavoritos.push(idDespegue);
-        
-        meteoFavoritesStore.setFavorites(misFavoritos);
-		
-		limpiarBuscador();
-        
-        // Limpiamos el buscador visualmente ya
-        const input = document.getElementById('buscador-despegues-provincias');
-        if (input) input.value = "";
-        
-        const divSugerencias = document.getElementById('sugerencias-globales');
-        if (divSugerencias) divSugerencias.style.display = 'none';
-
-        // Intentar encontrar el nombre en la BD global para mostrarlo en el mensaje
-        const despegueObj = window.bdGlobalDespegues.find(d => Number(d.ID) === idDespegue);
-        const nombreDespegue = despegueObj ? despegueObj.Despegue : idDespegue;
-
-        if (typeof GestorMensajes !== 'undefined') {
-            GestorMensajes.mostrar({
-                tipo: 'modal',
-                htmlContenido: `<p>✅ <b>${nombreDespegue}</b> añadido</p>`,
-                botones: [] // Sin botones, porque se cerrará solo
-            });
-
-            // Metemos la construcción de la tabla DENTRO del timeout
-            // Así nos aseguramos de que el mensaje se gestiona antes de la carga pesada
-            setTimeout(function() {
-                // 1. Ocultamos mensaje
-                GestorMensajes.ocultar(); 
-                
-                // 2. Construimos la tabla justo después
-                construir_tabla(); 
-            }, 1300); // Espera 1,3 seg para que vea el mensaje
-
-        } else {
-            // Fallback por si no existe el gestor
-            alert(`✅ ${nombreDespegue} añadido a favoritos`);
-            construir_tabla();
-        }
-    }
+    return favoritesController.addLaunchFromSearch(idDespegue);
 }
 
 // Función global para limpiar el buscador, restaurar el placeholder. Antes estaba en el ...Listener ('DOMContentLoaded', function() {
@@ -4864,8 +4229,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Índice máximo (para el slider): 0 es el primero, N es el último
     const MAX_INDEX = CORTES_DISTANCIA_GLOBAL.length - 1;
-    let ultimaDistanciaConfirmada = MAX_INDEX;
-
     if (distanciaSlider) {
         noUiSlider.create(distanciaSlider, {
             start: MAX_INDEX,    
@@ -4888,81 +4251,13 @@ document.addEventListener('DOMContentLoaded', function() {
 		// 🟢 ACCIÓN VISUAL (Ligera): Borde rojo y botón reset
 		// Se ejecuta continuamente al arrastrar. NO toca la tabla.
 		distanciaSlider.noUiSlider.on('slide', function(values) {
-
-            // Si existe Capacitor (es la App), vibramos. Si es web, no hace nada.
-            if (typeof Capacitor !== 'undefined') { Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); }
-
-			const valorNuevo = Math.round(values[0]);
-			const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
-			const btnToggle = document.getElementById('btn-div-filtro-distancia-toggle');
-			const btnReset = document.getElementById('btn-reset-filtro-distancia');
-
-			if (valorNuevo < MAX_INDEX) {
-				btnToggle.classList.add('filtro-aplicado');
-				if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
-				if (btnReset) btnReset.style.display = 'block';
-			} else {
-				btnToggle.classList.remove('filtro-aplicado');
-				if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo');
-				if (btnReset) btnReset.style.display = 'none';
-			}
+            distanceFilterController.handleSliderSlide(values);
 		});
 
 		// 🔴 ACCIÓN PESADA (Datos): Construcción de tabla
 		// Usamos el evento 'set' para burlar un bug interno de la librería
 		distanciaSlider.noUiSlider.on('set', function(values) {
-			const valorNuevo = Math.round(values[0]);
-
-			if (valorNuevo !== ultimaDistanciaConfirmada) {
-                
-                // Si volvemos a "Todo" (distancia infinita), desactivamos el botón
-                if (valorNuevo === MAX_INDEX) {
-                    const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
-                    if (btnIncNoFavs) {
-                        btnIncNoFavs.classList.remove('activo', 'filtro-aplicado');
-                    }
-                }
-
-				// A. Verificación de coordenadas (Seguridad)
-				if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
-					
-                    // --- CORRECCIÓN BUG: Actualizamos la variable ANTES de mover el slider
-                    // para evitar que la librería entre en un bucle y lance el mensaje 2 veces.
-					ultimaDistanciaConfirmada = MAX_INDEX;
-                    distanciaSlider.noUiSlider.set(MAX_INDEX);
-					
-					// Limpieza visual inmediata
-					document.getElementById('btn-div-filtro-distancia-toggle').classList.remove('filtro-aplicado');
-					const panel = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
-					if (panel) panel.classList.remove('borde-rojo-externo');
-					document.getElementById('btn-reset-filtro-distancia').style.display = 'none';
-
-					GestorMensajes.mostrar({
-						tipo: 'modal',
-						htmlContenido: `
-                            <div style="text-align: center;">
-                            <p style="font-size: 2.5em; margin: 0 0 10px 0;">📍</p>
-							<p>Como es la primera vez, necesitas configurar una ubicación de origen.</p>
-							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
-                            </div>
-						`,
-						botones:[
-							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
-                            { texto: 'Configurar origen', onclick: function() { 
-                                GestorMensajes.ocultar(); 
-                                const btnGeo = document.getElementById('btn-abrir-geo-menu');
-                                if (btnGeo) btnGeo.click(); // Simulamos un clic en el botón 📍
-                            } }
-						],
-                        anchoBotones: 160
-					});
-					return;
-				}
-
-				// B. Si todo es correcto, guardamos y actualizamos
-				ultimaDistanciaConfirmada = valorNuevo;
-				construir_tabla(false, false); 
-			}
+            distanceFilterController.handleSliderSet(values);
 		});
 	}
 	
@@ -5772,36 +5067,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 	window.resetFiltroDistancia = function(reconstruir = true) { //flag para que, si le hemos llamado desde activarEdicionFavoritos(), que ya tiene construir_tabla, no se llame otra vez aquí, ya que ya se hace desde esa función (bloquearía navegador)
-
-        // Actualizamos variable de control ANTES de mover el slider
-        ultimaDistanciaConfirmada = MAX_INDEX;
-
-        // A. Resetear valor del slider
-        if (typeof distanciaSlider !== 'undefined' && distanciaSlider.noUiSlider) {
-            distanciaSlider.noUiSlider.set(MAX_INDEX);
-        }
-
-        // --- NUEVO: Desmarcar botón de "incluir no favoritos" al resetear ---
-        const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
-        if (btnIncNoFavs) {
-            btnIncNoFavs.classList.remove('activo', 'filtro-aplicado');
-        }
-
-        // C. Limpieza Visual (Quitar clases de activo y rojo)
-        const btnToggle = document.getElementById('btn-div-filtro-distancia-toggle');
-        const divPanel = document.getElementById('div-filtro-distancia');
-        const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
-		const btnReset = document.getElementById('btn-reset-filtro-distancia');
-
-        if (btnToggle) {
-            btnToggle.classList.remove("activo");         // Deshundir botón
-            btnToggle.classList.remove('filtro-aplicado'); // Quitar borde rojo botón
-        }
-        if (divPanel) divPanel.classList.remove("activo");          // Cerrar panel
-        if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo'); // Quitar borde panel
-		if (btnReset) btnReset.style.display = 'none'; // Ocultar botón de reset
-
-        if (reconstruir) { construir_tabla(); }
+        distanceFilterController.resetFilter(reconstruir);
     }
 
     // ---------------------------------------------------------------

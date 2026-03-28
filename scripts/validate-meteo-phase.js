@@ -72,6 +72,27 @@ const phaseScripts = {
         'js/meteo/ui/table/table-layout.js',
         'meteo.js',
     ],
+    phase4: [
+        'js/meteo/utils/constants.js',
+        'js/meteo/compat/public-api.js',
+        'js/meteo/state/preferences-store.js',
+        'js/meteo/state/favorites-store.js',
+        'js/meteo/state/app-state.js',
+        'js/meteo/state/cache-store.js',
+        'js/meteo/services/meteo-data-service.js',
+        'js/meteo/services/geolocation-service.js',
+        'js/meteo/services/map-service.js',
+        'js/meteo/domain/distance.js',
+        'js/meteo/domain/orientation.js',
+        'js/meteo/domain/time-range.js',
+        'js/meteo/domain/scoring.js',
+        'js/meteo/features/favorites/favorites-controller.js',
+        'js/meteo/features/distance-filter/distance-filter-controller.js',
+        'js/meteo/ui/messages/message-manager.js',
+        'js/meteo/ui/messages/dialog-helpers.js',
+        'js/meteo/ui/table/table-layout.js',
+        'meteo.js',
+    ],
 };
 
 const requiredRuntimeFunctions = [
@@ -713,6 +734,26 @@ function validatePhase3Modules(context) {
     assert(scoring.ptsHora > 0, 'scoring.calculateDespegueScoreHora no devuelve una puntuación válida');
 }
 
+function validatePhase4Modules(context) {
+    const root = context.window.FlyDecisionMeteo;
+
+    assert(root.services && root.services.geolocationService, 'No existe geolocationService');
+    assert(typeof root.services.geolocationService.getCurrentPosition === 'function', 'geolocationService.getCurrentPosition no está disponible');
+    assert(root.services && root.services.mapService, 'No existe mapService');
+    assert(typeof root.services.mapService.ensureMap === 'function', 'mapService.ensureMap no está disponible');
+    assert(typeof root.services.mapService.putMarker === 'function', 'mapService.putMarker no está disponible');
+
+    assert(root.features && root.features.favorites && root.features.favorites.controller, 'No existe favorites.controller');
+    assert(typeof root.features.favorites.controller.init === 'function', 'favorites.controller.init no está disponible');
+    assert(typeof root.features.favorites.controller.activateEditMode === 'function', 'favorites.controller.activateEditMode no está disponible');
+    assert(typeof root.features.favorites.controller.toggleFavorite === 'function', 'favorites.controller.toggleFavorite no está disponible');
+
+    assert(root.features && root.features.distanceFilter && root.features.distanceFilter.controller, 'No existe distanceFilter.controller');
+    assert(typeof root.features.distanceFilter.controller.init === 'function', 'distanceFilter.controller.init no está disponible');
+    assert(typeof root.features.distanceFilter.controller.togglePanel === 'function', 'distanceFilter.controller.togglePanel no está disponible');
+    assert(typeof root.features.distanceFilter.controller.resetFilter === 'function', 'distanceFilter.controller.resetFilter no está disponible');
+}
+
 function main() {
     const scripts = phaseScripts[phase];
     assert(Array.isArray(scripts), `Fase desconocida: ${phase}`);
@@ -722,16 +763,20 @@ function main() {
     runScripts(context, scripts);
     validateBaseline(context, meteoSource);
 
-    if (phase === 'phase1' || phase === 'phase2' || phase === 'phase25' || phase === 'phase3') {
+    if (phase === 'phase1' || phase === 'phase2' || phase === 'phase25' || phase === 'phase3' || phase === 'phase4') {
         validatePhase1Modules(context);
     }
 
-    if (phase === 'phase2' || phase === 'phase25' || phase === 'phase3') {
+    if (phase === 'phase2' || phase === 'phase25' || phase === 'phase3' || phase === 'phase4') {
         validatePhase2Modules(context);
     }
 
-    if (phase === 'phase3') {
+    if (phase === 'phase3' || phase === 'phase4') {
         validatePhase3Modules(context);
+    }
+
+    if (phase === 'phase4') {
+        validatePhase4Modules(context);
     }
 
     console.log(`VALIDATION_OK ${phase}`);
