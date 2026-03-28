@@ -55,6 +55,23 @@ const phaseScripts = {
         'js/meteo/ui/table/table-layout.js',
         'meteo.js',
     ],
+    phase3: [
+        'js/meteo/utils/constants.js',
+        'js/meteo/compat/public-api.js',
+        'js/meteo/state/preferences-store.js',
+        'js/meteo/state/favorites-store.js',
+        'js/meteo/state/app-state.js',
+        'js/meteo/state/cache-store.js',
+        'js/meteo/services/meteo-data-service.js',
+        'js/meteo/domain/distance.js',
+        'js/meteo/domain/orientation.js',
+        'js/meteo/domain/time-range.js',
+        'js/meteo/domain/scoring.js',
+        'js/meteo/ui/messages/message-manager.js',
+        'js/meteo/ui/messages/dialog-helpers.js',
+        'js/meteo/ui/table/table-layout.js',
+        'meteo.js',
+    ],
 };
 
 const requiredRuntimeFunctions = [
@@ -654,6 +671,48 @@ function validatePhase2Modules(context) {
     assert(typeof getGlobalValue(context, 'resolverRangoHorarioConstruccion') === 'function', 'No existe resolverRangoHorarioConstruccion');
 }
 
+function validatePhase3Modules(context) {
+    const root = context.window.FlyDecisionMeteo;
+
+    assert(root.domain && root.domain.timeRange, 'No existe timeRange');
+    assert(typeof root.domain.timeRange.toUtcDate === 'function', 'timeRange.toUtcDate no está disponible');
+    assert(typeof root.domain.timeRange.calculatePreferredRange === 'function', 'timeRange.calculatePreferredRange no está disponible');
+    assert(typeof root.domain.timeRange.buildHourCache === 'function', 'timeRange.buildHourCache no está disponible');
+
+    assert(root.domain && root.domain.scoring, 'No existe scoring');
+    assert(typeof root.domain.scoring.calculateMinimumOrientationAngle === 'function', 'scoring.calculateMinimumOrientationAngle no está disponible');
+    assert(typeof root.domain.scoring.calculateDespegueScoreHora === 'function', 'scoring.calculateDespegueScoreHora no está disponible');
+    assert(typeof root.domain.scoring.calculateXCScoreHora === 'function', 'scoring.calculateXCScoreHora no está disponible');
+    assert(typeof root.domain.scoring.calculateFinalScores === 'function', 'scoring.calculateFinalScores no está disponible');
+
+    const rango = root.domain.timeRange.calculatePreferredRange({
+        indices: [0, 1, 2, 3],
+        horas: [
+            '2026-03-28T08:00:00',
+            '2026-03-28T10:00:00',
+            '2026-03-28T12:00:00',
+            '2026-03-29T09:00:00',
+        ],
+        diaObjetivo: 28,
+        prefInicio: 9,
+        prefFin: 11,
+        usarDiaCompleto: false,
+        soloHorasDeLuz: false,
+    });
+    assert(Array.isArray(rango) && rango[0] === 0 && rango[1] === 1, 'timeRange.calculatePreferredRange no devuelve el rango esperado');
+
+    const scoring = root.domain.scoring.calculateDespegueScoreHora({
+        minimoAngulo: 5,
+        velocidad: 18,
+        rachaCorregida: 20,
+        precipitacion: 0,
+        rachaMax: 25,
+        velocidadMin: 0,
+        velocidadMax: 20,
+    });
+    assert(scoring.ptsHora > 0, 'scoring.calculateDespegueScoreHora no devuelve una puntuación válida');
+}
+
 function main() {
     const scripts = phaseScripts[phase];
     assert(Array.isArray(scripts), `Fase desconocida: ${phase}`);
@@ -663,12 +722,16 @@ function main() {
     runScripts(context, scripts);
     validateBaseline(context, meteoSource);
 
-    if (phase === 'phase1' || phase === 'phase2' || phase === 'phase25') {
+    if (phase === 'phase1' || phase === 'phase2' || phase === 'phase25' || phase === 'phase3') {
         validatePhase1Modules(context);
     }
 
-    if (phase === 'phase2' || phase === 'phase25') {
+    if (phase === 'phase2' || phase === 'phase25' || phase === 'phase3') {
         validatePhase2Modules(context);
+    }
+
+    if (phase === 'phase3') {
+        validatePhase3Modules(context);
     }
 
     console.log(`VALIDATION_OK ${phase}`);

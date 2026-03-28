@@ -67,6 +67,27 @@
   - `VALIDATION_OK phase25`
   - `BROWSER_VALIDATION_OK`
 
+## Fase 3
+
+- Estado validado: extracción segura de lógica pura de rango horario, caché temporal de horas y scoring de condiciones/XC
+- Scripts añadidos antes de `meteo.js` en `src/index.html`:
+  - `js/meteo/domain/time-range.js`
+  - `js/meteo/domain/scoring.js`
+- Módulos recolocados:
+  - `FlyDecisionMeteo.domain.timeRange`
+  - `FlyDecisionMeteo.domain.scoring`
+- Comandos ejecutados:
+  - `Get-ChildItem -Path src/js/meteo -Recurse -Filter *.js | ForEach-Object { node --check $_.FullName }`
+  - `node --check src/meteo.js`
+  - `node --check scripts/validate-meteo-phase.js`
+  - `node --check scripts/validate-meteo-browser.js`
+  - `node scripts/validate-meteo-phase.js phase3`
+  - `node scripts/validate-meteo-browser.js`
+- Resultado:
+  - `VALIDATION_OK phase3`
+  - `BROWSER_VALIDATION_OK`
+  - `get_errors` sin errores en `src/meteo.js`, `src/index.html`, `src/js/meteo/domain/time-range.js`, `src/js/meteo/domain/scoring.js` y `scripts/validate-meteo-phase.js`
+
 ## Cobertura de esta validación
 
 - Presencia de funciones públicas principales usadas por HTML inline
@@ -76,8 +97,10 @@
 - Carga secuencial compatible de scripts plain `defer` antes de `meteo.js`
 - Disponibilidad de la caché IndexedDB recolocada y del servicio de carga de datos en ejecución real
 - Ejecución real en navegador local sin errores de consola, `pageerror` ni fallos de carga de recursos críticos
+- Cálculo estable del rango preferido, de índices visibles y de la caché temporal de horas tras reconstrucción
+- Cálculo estable del scoring puro de condiciones y XC sin mezclarlo con el fetch ni con el renderer
 
 ## Riesgos residuales reconocidos
 
 - El harness es de smoke test con stubs, no sustituye pruebas manuales visuales reales en navegador o Android
-- No se ha extraído todavía el núcleo renderizador de `construir_tabla()` ni el runtime híbrido completo
+- No se ha extraído todavía el núcleo renderizador de `construir_tabla()`, los sliders DOM-dependientes completos ni el runtime híbrido completo

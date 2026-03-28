@@ -17,6 +17,8 @@ const meteoServices = meteoRoot.services || {};
 const meteoDataService = meteoServices.meteoDataService;
 const meteoDistanceModule = meteoDomain.distance;
 const meteoOrientationModule = meteoDomain.orientation;
+const meteoTimeRangeModule = meteoDomain.timeRange;
+const meteoScoringModule = meteoDomain.scoring;
 const meteoMessageManager = meteoUi.messages ? meteoUi.messages.manager : null;
 const meteoDialogHelpers = meteoUi.messages ? meteoUi.messages.dialogHelpers : null;
 const meteoTableLayout = meteoUi.tableLayout;
@@ -1526,37 +1528,6 @@ window.calcularIndicesPreferencia = function(diaObjetivo) {
 	
     const indices = window.indicesHorasRangoHorario || [];
     const horas = window.horasCrudasRangoHorario || [];
-    const maxSteps = indices.length - 1;
-
-    // Si no hay datos, devolvemos todo 0
-    if (indices.length === 0) return [0, 0];
-
-    // 1. Detectar qué día queremos analizar
-    // Si no nos pasan día, cogemos el día del primer dato disponible
-    if (!diaObjetivo) {
-        const fechaPrimerDato = new Date(horas[indices[0]].endsWith('Z') ? horas[indices[0]] : horas[indices[0]] + 'Z');
-        diaObjetivo = fechaPrimerDato.getDate();
-    }
-
-    // 2. Encontrar los límites (índices) de ESE día en concreto
-    let indiceInicioDia = -1;
-    let indiceFinDia = -1;
-
-    for (let i = 0; i < indices.length; i++) {
-        const idxReal = indices[i];
-        const fecha = new Date(horas[idxReal].endsWith('Z') ? horas[idxReal] : horas[idxReal] + 'Z');
-        
-        if (fecha.getDate() === diaObjetivo) {
-            if (indiceInicioDia === -1) indiceInicioDia = i; // Primer match
-            indiceFinDia = i; // Actualizamos hasta el último match
-        } else if (indiceInicioDia !== -1) {
-            // Si ya habíamos encontrado el día y cambia, paramos (ya tenemos el rango del día)
-            break;
-        }
-    }
-
-    // Si no encontramos el día solicitado, devolvemos rango completo (seguridad)
-    if (indiceInicioDia === -1) return [0, maxSteps];
 
     const rawInicio = meteoPreferencesStore.getRaw(METEO_STORAGE_KEYS.PREFERRED_RANGE_START || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
     const rawFin = meteoPreferencesStore.getRaw(METEO_STORAGE_KEYS.PREFERRED_RANGE_END || 'METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
@@ -1564,45 +1535,19 @@ window.calcularIndicesPreferencia = function(diaObjetivo) {
     // Convertimos a número, pero si es null, asignamos el rango completo por defecto (0-23)
     const prefInicio = (rawInicio === null) ? 0 : parseInt(rawInicio);
     const prefFin = (rawFin === null) ? 23 : parseInt(rawFin);
-    
-	// Si no hay configuración guardada O si la configuración es el rango total (0-23)
-    if (rawInicio === null || (prefInicio === 0 && prefFin === 23)) {
-        
-        const chkLuz = document.getElementById('solo-horas-luz');
-        const soloHorasDeLuz = chkLuz ? chkLuz.checked : false; 
 
-        // Si NO está activo el filtro de luz, devolvemos el día completo directamente.
-        // Esto evita procesar horas y soluciona el salto de la 01:00h en modo 24h.
-        if (!soloHorasDeLuz) {
-            return [indiceInicioDia, indiceFinDia];
-        }
-    }
+    const chkLuz = document.getElementById('solo-horas-luz');
+    const soloHorasDeLuz = chkLuz ? chkLuz.checked : false;
 
-    let resultadoInicio = indiceInicioDia;
-    let resultadoFin = indiceFinDia;
-
-    for (let i = indiceInicioDia; i <= indiceFinDia; i++) {
-        const idxReal = indices[i];
-        const fecha = new Date(horas[idxReal].endsWith('Z') ? horas[idxReal] : horas[idxReal] + 'Z');
-        const h = fecha.getHours();
-        
-        if (prefInicio === 0) {
-            // Si el usuario quiere empezar a las 00h, forzamos el primer índice del día
-            resultadoInicio = indiceInicioDia;
-        } else if (h < prefInicio) {
-            resultadoInicio = i + 1; 
-        }
-        
-        if (h <= prefFin) {
-            resultadoFin = i;
-        }
-    }
-
-    // 4. Correcciones finales de seguridad
-    if (resultadoInicio > indiceFinDia) resultadoInicio = indiceFinDia;
-    if (resultadoFin < resultadoInicio) resultadoFin = resultadoInicio;
-    
-    return [resultadoInicio, resultadoFin];
+    return meteoTimeRangeModule.calculatePreferredRange({
+        indices,
+        horas,
+        diaObjetivo,
+        prefInicio,
+        prefFin,
+        usarDiaCompleto: rawInicio === null || (prefInicio === 0 && prefFin === 23),
+        soloHorasDeLuz,
+    });
 };
 
 // ---------------------------------------------------------------
@@ -1618,92 +1563,30 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         window.horasCrudasRangoHorario = respuestas[0].hourly.time;
     }
 
-    // --- LÓGICA DE FILTRADO Y ZONA HORARIA (Idéntica a la original) ---
-    let horasFiltradasPermanentemente = window.horasCrudasRangoHorario;
-    if (horasFiltradasPermanentemente.length > 0) {
-        const ultimoIndice = horasFiltradasPermanentemente.length - 1;
-        if (ultimoIndice > 0) { 
-            const ultimaHora = horasFiltradasPermanentemente[ultimoIndice];
-            const penultimaHora = horasFiltradasPermanentemente[ultimoIndice - 1];
-            const ultimaFechaLocal = new Date(ultimaHora.endsWith('Z') ? ultimaHora : ultimaHora + 'Z');
-            const penultimaFechaLocal = new Date(penultimaHora.endsWith('Z') ? penultimaHora : penultimaHora + 'Z');
-            
-            if (ultimaFechaLocal.getDate() !== penultimaFechaLocal.getDate()) {
-                const diaCorte = penultimaFechaLocal.getDate();
-                let indiceCorte = -1;
-                for (let i = ultimoIndice; i >= 0; i--) {
-                    const h = horasFiltradasPermanentemente[i];
-                    const d = new Date(h.endsWith('Z') ? h : h + 'Z');
-                    if (d.getDate() === diaCorte) {
-                        indiceCorte = i + 1; 
-                        break;
-                    }
-                }
-                if (indiceCorte !== -1) horasFiltradasPermanentemente = horasFiltradasPermanentemente.slice(0, indiceCorte);
-            }
-        }
-    }
+    const horasFiltradasPermanentemente = meteoTimeRangeModule.trimTrailingDayRolloverHours(window.horasCrudasRangoHorario);
     window.horasCrudasRangoHorario = horasFiltradasPermanentemente;
     const horasCrudasRangoHorario = window.horasCrudasRangoHorario;
 
     // --- DETERMINAR ÍNDICES VÁLIDOS ---
-    window.indicesHorasRangoHorario = syncPhase1State('indicesHorasRangoHorario', []);
-    if (horasCrudasRangoHorario.length > 0) {
-        horasCrudasRangoHorario.forEach((h, i) => {
-            const d = new Date(h.endsWith('Z') ? h : h + 'Z');
-            const esNoche = esCeldaNoche(d);
-            if (soloHorasDeLuz && esNoche) return; 
-            window.indicesHorasRangoHorario.push(i);
-        });
-    }
+    window.indicesHorasRangoHorario = syncPhase1State('indicesHorasRangoHorario', meteoTimeRangeModule.buildVisibleHourIndices(horasCrudasRangoHorario, soloHorasDeLuz, esCeldaNoche));
 
     if (!sliderHoras || window.indicesHorasRangoHorario.length === 0) return; 
     
     const maxSteps = window.indicesHorasRangoHorario.length - 1;
 
     // --- CÁLCULO DE PIPS ---
-    const pipIndices = [];
-    pipIndices.push(0);
-    if (window.indicesHorasRangoHorario.length > 0) {
-        const primerIndiceReal = window.indicesHorasRangoHorario[0];
-        const primerDia = new Date(horasCrudasRangoHorario[primerIndiceReal].endsWith('Z') ? horasCrudasRangoHorario[primerIndiceReal] : horasCrudasRangoHorario[primerIndiceReal] + 'Z').getDate();
-        let diaActual = primerDia;
-        
-        for (let i = 1; i < window.indicesHorasRangoHorario.length; i++) {
-            const indiceReal = window.indicesHorasRangoHorario[i];
-            const d = new Date(horasCrudasRangoHorario[indiceReal].endsWith('Z') ? horasCrudasRangoHorario[indiceReal] : horasCrudasRangoHorario[indiceReal] + 'Z');
-            const diaNuevo = d.getDate();
-            if (diaNuevo !== diaActual) {
-                pipIndices.push(i);
-                diaActual = diaNuevo;
-            }
-        }
-    }
+    const pipIndices = meteoTimeRangeModule.buildDayStartPipIndices(horasCrudasRangoHorario, window.indicesHorasRangoHorario);
     
     const pipsFormatter = {
         to: function(val) {
-            const horas = window.horasCrudasRangoHorario;
-            const indices = window.indicesHorasRangoHorario;
-            const indiceReal = indices[Math.round(val)];
-            if (!horas || horas.length === 0 || indiceReal === undefined) return "";
-            const horaString = horas[indiceReal]; 
-            const d = new Date(horaString.endsWith('Z') ? horaString : horaString + 'Z');
-            const diasSemanaCorta = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-            return diasSemanaCorta[d.getDay()] + " " + d.getDate();
+            return meteoTimeRangeModule.formatDayPipLabel(val, window.horasCrudasRangoHorario, window.indicesHorasRangoHorario);
         },
         from: (v) => Number(v)
     };
     
     const tooltipFormatter = {
         to: function(val) {
-            const horas = window.horasCrudasRangoHorario;
-            const indices = window.indicesHorasRangoHorario;
-            const indiceReal = indices[Math.round(val)];
-            if (!horas || horas.length === 0 || indiceReal === undefined) return "";
-            const horaString = horas[indiceReal]; 
-            const d = new Date(horaString.endsWith('Z') ? horaString : horaString + 'Z');
-            const hora = String(d.getHours()).padStart(2, '0');
-            return `${hora}`;
+            return meteoTimeRangeModule.formatHourTooltip(val, window.horasCrudasRangoHorario, window.indicesHorasRangoHorario);
         }
     };
 
@@ -1718,7 +1601,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         
         // guardar la referencia del timestamp, para que la comparación funcione la próxima ve
         sliderHoras.dayStartTimestamp = window.horasCrudasRangoHorario.length > 0 
-        ? new Date(window.horasCrudasRangoHorario[0].endsWith('Z') ? window.horasCrudasRangoHorario[0] : window.horasCrudasRangoHorario[0] + 'Z').getTime() 
+        ? meteoTimeRangeModule.toUtcDate(window.horasCrudasRangoHorario[0]).getTime() 
         : 0;
         
         noUiSlider.create(sliderHoras, {
@@ -1774,7 +1657,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         // Comparamos el primer timestamp que tiene el slider guardado vs el nuevo
         const primerTimestampAntiguo = sliderHoras.dayStartTimestamp || 0;
         const primerTimestampNuevo = window.horasCrudasRangoHorario.length > 0 
-            ? new Date(window.horasCrudasRangoHorario[0].endsWith('Z') ? window.horasCrudasRangoHorario[0] : window.horasCrudasRangoHorario[0] + 'Z').getTime() 
+            ? meteoTimeRangeModule.toUtcDate(window.horasCrudasRangoHorario[0]).getTime() 
             : 0;
             
         const hanCambiadoFechas = primerTimestampAntiguo !== primerTimestampNuevo;
@@ -1826,8 +1709,8 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         // Obtenemos el rango del primer día (ya sea 0-23 o solar)
         const rangoActual = window.calcularIndicesPreferencia(null);
         
-        const hInicio = new Date(window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[0]]].endsWith('Z') ? window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[0]]] : window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[0]]] + 'Z').getHours();
-        const hFin = new Date(window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[1]]].endsWith('Z') ? window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[1]]] : window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[1]]] + 'Z').getHours();
+        const hInicio = meteoTimeRangeModule.toUtcDate(window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[0]]]).getHours();
+        const hFin = meteoTimeRangeModule.toUtcDate(window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[1]]]).getHours();
         
         // Movemos el slider de configuración al rango actual SIN disparar el guardado
         sliderConfig.noUiSlider.set([hInicio, hFin], false);
@@ -2884,25 +2767,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
         // ⚡ OPTIMIZACIÓN: Pre-cálculo de fechas y noches (Calculamos 1 vez en lugar de miles)
         // Creamos un array que ya sabe si la hora 'i' es de noche o no.
-        const cacheEsNoche = [];
-        const cacheFechas = [];
-        const cacheTextosFecha =[];
-
-        if (horas && horas.length > 0) {
-            horas.forEach(h => {
-                // Convertimos el texto a Objeto Fecha una sola vez
-                const d = new Date(h.endsWith('Z') ? h : h + 'Z');
-                cacheFechas.push(d);
-                // Calculamos si es noche una sola vez
-                cacheEsNoche.push(esCeldaNoche(d));
-
-                // --- PRECALCULAR EL TEXTO DEL TOOLTIP ---
-                const nombreDia = diasSemana[d.getDay()]; // Utiliza el array diasSemana que ya definiste arriba
-                const numeroDia = d.getDate();
-                const horaTexto = String(d.getHours()).padStart(2, '0') + ":00 h";
-                cacheTextosFecha.push(`${nombreDia} ${numeroDia}, ${horaTexto}`);
-            });
-        }
+        const hourCache = meteoTimeRangeModule.buildHourCache(horas, esCeldaNoche, diasSemana);
+        const cacheEsNoche = hourCache.cacheEsNoche;
+        const cacheFechas = hourCache.cacheFechas;
+        const cacheTextosFecha = hourCache.cacheTextosFecha;
 
 		// 🔃 Bucle principal que recorre cada despegue y sus datos por hora
 		despegues.forEach((d, idx) => {
@@ -3017,202 +2885,50 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                         }                        
 						
                         // 3. Ángulo mínimo (mejor orientación)
-                        let minimoAngulo = 180;
-                        
-                        if (orientaciones.length > 0) {
-                            // 🎯 A) CÁLCULO BASE: Distancia al punto fijo más cercano
-                            minimoAngulo = Math.min(...orientaciones.map(o => diferenciaAngular(dirCorregida, o)));
-                            
-                            // ⛰️ B) LÓGICA DE LADERA CONTINUA (Abanicos)
-                            // Si el despegue tiene más de una orientación, comprobamos si forman una ladera continua.
-                            if (orientaciones.length > 1) {
-                                
-                                // ¿Qué consideramos "contiguas"? En una rosa de 8 vientos (N, NE, E...), 
-                                // la separación estándar es de 45º. Ponemos 46º por si hay algún decimal suelto.
-                                // 💡 NOTA: Si en tu base de datos pusieras S (180) y W (270) y quisieras que
-                                // todo ese hueco de 90º fuera ladera continua, deberías subir este valor a 91.
-                                const UMBRAL_CONTIGUAS = 46; 
-                                
-                                // 1. Ordenamos de menor a mayor (ej:[0, 45, 315] -> [0, 45, 315])
-                                const oriOrdenadas = [...orientaciones].sort((a, b) => a - b);
-                                
-                                for (let j = 0; j < oriOrdenadas.length; j++) {
-                                    let o1 = oriOrdenadas[j];
-                                    let o2 = oriOrdenadas[(j + 1) % oriOrdenadas.length]; // El siguiente (y cierra el círculo al final)
-                                    
-                                    // Calculamos la distancia angular más corta entre estas dos orientaciones
-                                    let diff = (o2 - o1 + 360) % 360;
-                                    
-                                    // Si la distancia es > 180, el camino más corto cruza por el Norte (ej: de 315 a 0)
-                                    if (diff > 180) {
-                                        diff = 360 - diff;
-                                        // Intercambiamos para que o1 sea el inicio del arco en sentido horario
-                                        let temp = o1;
-                                        o1 = o2;
-                                        o2 = temp;
-                                    }
-                                    
-                                    // Si la separación entre ellas es menor o igual al umbral (ej: <= 46), forman ladera
-                                    if (diff <= UMBRAL_CONTIGUAS) {
-                                        // Calculamos qué tan lejos está el viento del punto de inicio de la ladera (o1)
-                                        let diffViento = (dirCorregida - o1 + 360) % 360;
-                                        
-                                        // Si esa distancia es menor que la amplitud de la ladera, ¡el viento está DENTRO!
-                                        if (diffViento <= diff) {
-                                            minimoAngulo = 0; // Viento perfecto
-                                            
-                                            // Solo para que lo veas en la consola si activas el debug
-                                            if (MODO_DEBUG && i === 0) { 
-                                                // (Solo lo pintamos la primera vez para no ensuciar la consola)
-                                            }
-                                            break; // Ya encontramos que está dentro, dejamos de buscar
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            minimoAngulo = 180; // Si no hay datos, asumimos lo peor
-                        }
+                        const minimoAngulo = meteoScoringModule.calculateMinimumOrientationAngle({
+                            orientaciones,
+                            dirCorregida,
+                            diferenciaAngular,
+                        });
 
-                        // =========================================================
-                        // 🟢 ALGORITMO CONDICIONES DESPEGUE
-                        // =========================================================
-
-                        let ptsHora = 0;
-                        let vetoActivado = false; 
-                        let motivoVeto = ""; // Variable de apoyo para el debug
-
-                        // ⛅ --- A. DIRECCIÓN (Máx 50 pts) ---
-                        let ptsDir = 0;
-						let ratioCorreccionPorDireccion = 1; 
-						let ratioCorreccionPorRacha = 1; 
-						
-                        if (minimoAngulo > 120) {
-                            ptsDir = 0;
-                            vetoActivado = true; // ⛔ VETO: Viento de cola o muy cruzado extremo
-                            motivoVeto = "Viento de cola/cruzado extremo (> 120º)";
-                        } else if (minimoAngulo > 100) { // 100-120
-                            ptsDir = 5;
-							ratioCorreccionPorDireccion = 0.2;
-                        } else if (minimoAngulo > 80) { // 80-100
-                            ptsDir = 10;
-							ratioCorreccionPorDireccion = 0.3;
-                        } else if (minimoAngulo > 45) { // 45-80
-                            ptsDir = 15;
-							ratioCorreccionPorDireccion = 0.4;
-                        } else if (minimoAngulo > 22) { // 22-45
-                            ptsDir = 35;
-							ratioCorreccionPorDireccion = 0.6;
-                        } else if (minimoAngulo > 10) { // 10-22
-                            ptsDir = 45;
-							ratioCorreccionPorDireccion = 0.9; 
-                        } else {
-                            ptsDir = 50; // < 10 grados
-							ratioCorreccionPorDireccion = 1;
-                        }
-
-                        // ⛅ --- B. RACHA (Máx 30 pts) ---
-                        let ptsRacha = 0;
-
-                        if (!vetoActivado) {
-                            if (rachaCorregida > RachaMax * 1.5) {
-                                ptsRacha = 0;
-                                vetoActivado = true; // ⛔ VETO: Racha muy peligrosa
-                                motivoVeto = `Racha Peligrosa (${rachaCorregida} > ${RachaMax * 1.5})`;
-                            } else if (rachaCorregida > RachaMax * 1.1) {
-                                ptsRacha = 0;
-								ratioCorreccionPorRacha = 0.2
-                            } else if (rachaCorregida > RachaMax) {
-                                ptsRacha = 5;
-								ratioCorreccionPorRacha = 0.5
-                            } else if (rachaCorregida > RachaMax * 0.8) { 
-                                ptsRacha = 20;
-								ratioCorreccionPorRacha = 0.8;
-                            } else {
-                                ptsRacha = 30; 
-                            }
-                        }
-
-                        // ⛅ --- C. VELOCIDAD (Máx 20 pts) ---
-                        let ptsVel = 0;
-
-                        if (!vetoActivado) {
-                            if (velocidad > VelocidadMax * 2) {
-                                ptsVel = 0;
-                                vetoActivado = true; // ⛔ VETO: Viento medio muy fuerte
-                                motivoVeto = `Viento muy fuerte (${velocidad} > ${VelocidadMax * 2})`;
-                            } else if (velocidad > VelocidadMax * 1.5) {
-                                ptsVel = 3;
-                            } else if (velocidad > VelocidadMax) {
-                                ptsVel = 5;
-                            } else if (velocidad > VelocidadMin) {
-                                ptsVel = 20; // Zona ideal
-                            } else {
-                                ptsVel = 15; // Menor que la mínima (flojo)
-                            }
-                        }
-
-                        // 💦 --- D. PRECIPITACIÓN (VETO SUPREMO) ---
                         let precipitacion = 0;
                         if (hourlyEcmwf && hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] !== null) {
                             precipitacion = Number(hourlyEcmwf.precipitation[i]);
                         }
-                        // Si hay más de 0mm, ignoramos cualquier otro cálculo y aplicamos veto
-                        if (precipitacion > 0) {
-                            vetoActivado = true;
-                            motivoVeto = `Lluvia prevista (${precipitacion.toFixed(1)} mm)`;
-                        }
 
-                        if (vetoActivado) {
-                            ptsHora = 0;
-                        } else {
-                            ptsHora = (ptsDir + ptsRacha + ptsVel) * ratioCorreccionPorDireccion * ratioCorreccionPorRacha;
-                        }
+                        const hourlyScore = meteoScoringModule.calculateDespegueScoreHora({
+                            minimoAngulo,
+                            velocidad,
+                            rachaCorregida,
+                            precipitacion,
+                            rachaMax: RachaMax,
+                            velocidadMin: VelocidadMin,
+                            velocidadMax: VelocidadMax,
+                        });
+
+                        const ptsHora = hourlyScore.ptsHora;
+                        const vetoActivado = hourlyScore.vetoActivado;
+                        const motivoVeto = hourlyScore.motivoVeto;
+                        const ptsDir = hourlyScore.ptsDir;
+                        const ptsRacha = hourlyScore.ptsRacha;
+                        const ptsVel = hourlyScore.ptsVel;
+                        const ratioCorreccionPorDireccion = hourlyScore.ratioCorreccionPorDireccion;
+                        const ratioCorreccionPorRacha = hourlyScore.ratioCorreccionPorRacha;
                         
                         puntosAcumulados += ptsHora;
 
-                        // ---------------------------------------------------------
-                        // 🟢 ALGORITMO XC
-                        // ---------------------------------------------------------
                         if (chkMostrarXC && hourlyEcmwf) {
-                            let ptsXC_hora = 0;
-                            // Si el viento base está vetado (lluvia, viento extremo), el XC es 0.
-                            if (!vetoActivado) {
-                                // 1. Obtener el dato crudo de la capa límite (AGL)
-                                let techoRaw = (hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[i] != null) ? Number(hourlyEcmwf.boundary_layer_height[i]) : 0;
-
-                                // 2. Aplicar el ratio global de realismo para parapente (0.85)
-                                let techoUtil = techoRaw * RATIO_TECHO_UTIL;
-
-                                let cape = (hourlyEcmwf.cape && hourlyEcmwf.cape[i] != null) ? Number(hourlyEcmwf.cape[i]) : 0;
-                                let cin = (hourlyEcmwf.convective_inhibition && hourlyEcmwf.convective_inhibition[i] != null) ? Math.max(0, Number(hourlyEcmwf.convective_inhibition[i])) : 0;
-
-                                // Techo Útil (0-40 pts) - Calculado sobre el valor corregido con el ratio
-                                let ptsTecho = 0;
-                                if (techoUtil >= XCTechoLims.verde) ptsTecho = 40;
-                                else if (techoUtil > XCTechoLims.rojo) ptsTecho = 10 + 30 * ((techoUtil - XCTechoLims.rojo) / (XCTechoLims.verde - XCTechoLims.rojo));
-                                else ptsTecho = 10 * (techoUtil / XCTechoLims.rojo);
-
-                                // CAPE (0-40 pts) - ¡Corregido para no penalizar días azules!
-                                let ptsCape = 0;
-                                if (cape >= XCCapeLims.idealMin && cape <= XCCapeLims.idealMax) {
-                                    ptsCape = 40; // Día azul o con cúmulos inofensivos (Perfecto)
-                                } else if (cape > XCCapeLims.idealMax && cape <= XCCapeLims.riesgo) {
-                                    // Penaliza progresivamente por riesgo de sobredesarrollo
-                                    ptsCape = 40 - 40 * ((cape - XCCapeLims.idealMax) / (XCCapeLims.riesgo - XCCapeLims.idealMax));
-                                } else {
-                                    ptsCape = 0; // Tormentas garantizadas
-                                }
-
-                                // CIN (0-20 pts)
-                                let ptsCin = 0;
-                                if (cin <= XCCinLims.verde) ptsCin = 20;
-                                else if (cin < XCCinLims.rojo) ptsCin = 20 * (1 - (cin - XCCinLims.verde) / (XCCinLims.rojo - XCCinLims.verde));
-                                else ptsCin = 0;
-
-                                // Puntuación total de la hora (penalizada si el viento/racha general no es ideal)
-                                ptsXC_hora = (ptsTecho + ptsCape + ptsCin) * ratioCorreccionPorDireccion * ratioCorreccionPorRacha;
-                            }
+                            const ptsXC_hora = meteoScoringModule.calculateXCScoreHora({
+                                vetoActivado,
+                                hourlyEcmwf,
+                                index: i,
+                                ratioCorreccionPorDireccion,
+                                ratioCorreccionPorRacha,
+                                ratioTechoUtil: RATIO_TECHO_UTIL,
+                                xcTechoLims: XCTechoLims,
+                                xcCapeLims: XCCapeLims,
+                                xcCinLims: XCCinLims,
+                            });
                             puntosAcumuladosXC += ptsXC_hora;
                             horasValidasXC++;
                         }
@@ -3240,17 +2956,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     let pasaFiltro = true; 
 
 					if (horasValidas > 0) {
-                        const maximosPuntosPosibles = horasValidas * 100;
-                        
-                        // Cálculo nota final Condiciones despegue
-                        let ratio = puntosAcumulados / maximosPuntosPosibles;
-                        notaFinal = ratio * 10;
-                        
-                        // Cálculo nota final XC
-                        if (horasValidasXC > 0) {
-                            const maximosPuntosPosiblesXC = horasValidasXC * 100;
-                            notaFinalXC = (puntosAcumuladosXC / maximosPuntosPosiblesXC) * 10;
-                        }
+                        const finalScores = meteoScoringModule.calculateFinalScores({
+                            horasValidas,
+                            puntosAcumulados,
+                            horasValidasXC,
+                            puntosAcumuladosXC,
+                        });
+                        const maximosPuntosPosibles = finalScores.maximosPuntosPosibles;
+                        notaFinal = finalScores.notaFinal;
+                        notaFinalXC = finalScores.notaFinalXC;
 
 						if (nivelFiltro > 0) {
 							// El filtro actúa sobre la nota ORIGINAL para no cambiar el comportamiento esperado
