@@ -11,20 +11,49 @@ let modoEdicionFavoritos = false;
 let totalFavoritos = 0;
 let totalDespeguesDisponibles = 0;
 
-let VelocidadMin = Number(localStorage.getItem("METEO_VELOCIDAD_MINIMA")) || 0; 
-let VelocidadIdeal = Number(localStorage.getItem("METEO_VELOCIDAD_IDEAL")) || 12;
-let VelocidadMax = Number(localStorage.getItem("METEO_VELOCIDAD_MAXIMA")) || 20;  
-let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 25;
+function asegurarConfiguracionInicial() {
+    const defaults = {
+        "METEO_VELOCIDAD_MINIMA": "0",//
+        "METEO_VELOCIDAD_IDEAL": "12",//
+        "METEO_VELOCIDAD_MAXIMA": "20",//
+        "METEO_RACHA_MAX": "25",//
+        "METEO_RATIO_TECHO_UTIL": "0.85",
+        "METEO_CHECKBOX_SOLO_HORAS_DE_LUZ": "true",//
+        "METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO": "10",//
+        "METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN": "20",//
+        "METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS": "true",//
+        "METEO_CHECKBOX_MOSTRAR_CIZALLADURA": "true",//
+        "METEO_CHECKBOX_MOSTRAR_RAFAGOSIDAD": "false",//
+        "METEO_CHECKBOX_MOSTRAR_XC": "true",
+        "METEO_CHECKBOX_APLICAR_CALIBRACION": "false",
+        "METEO_XC_TECHO_LIMS": JSON.stringify({ rojo: 800, verde: 1500 }),//
+        "METEO_XC_CAPE_LIMS": JSON.stringify({ idealMin: 0, idealMax: 400, riesgo: 800 }),//
+        "METEO_XC_CIN_LIMS": JSON.stringify({ verde: 50, rojo: 150 })//
+    };
+
+    Object.keys(defaults).forEach(key => {
+        if (localStorage.getItem(key) === null) {
+            localStorage.setItem(key, defaults[key]);
+        }
+    });
+}
+asegurarConfiguracionInicial();
+
+let VelocidadMin = Number(localStorage.getItem("METEO_VELOCIDAD_MINIMA"));//
+let VelocidadIdeal = Number(localStorage.getItem("METEO_VELOCIDAD_IDEAL"));//
+let VelocidadMax = Number(localStorage.getItem("METEO_VELOCIDAD_MAXIMA"));//  
+let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX"));//
 
 // Valores límite para puntuación XC y colores en tabla
 // Techo AGL: 800m ya permite volar, 1500m AGL es un día excelente (se suma a la montaña).
-let XCTechoLims = JSON.parse(localStorage.getItem("METEO_XC_TECHO_LIMS")) || { rojo: 800, verde: 1500 };
+let RATIO_TECHO_UTIL = Number(localStorage.getItem("METEO_RATIO_TECHO_UTIL"));
+let XCTechoLims = JSON.parse(localStorage.getItem("METEO_XC_TECHO_LIMS"));
 
 // CAPE: 0-400 es ideal (desde día azul hasta cúmulos bonitos). >800 peligro de tormenta.
-let XCCapeLims = JSON.parse(localStorage.getItem("METEO_XC_CAPE_LIMS")) || { idealMin: 0, idealMax: 400, riesgo: 800 };
+let XCCapeLims = JSON.parse(localStorage.getItem("METEO_XC_CAPE_LIMS"));
 
 // CIN: Inhibición convectiva. 0-50 el aire fluye bien. >150 actúa como tapón.
-let XCCinLims = JSON.parse(localStorage.getItem("METEO_XC_CIN_LIMS")) || { verde: 50, rojo: 150 };
+let XCCinLims = JSON.parse(localStorage.getItem("METEO_XC_CIN_LIMS"));
 
 // Valores iniciales para que se vea la puntuación al seleccionar día de la semana
 if (localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO') === null) {
@@ -2309,16 +2338,25 @@ function importarConfiguracion() {
             reader.onload = function(e) {
                 try {
                     const perfilImportado = JSON.parse(e.target.result);
-                    
-                    // Verificamos de forma básica que es un backup válido de la app
-                    let keysImportadas = 0;
-                    for (const key in perfilImportado) {
-                        if (key.startsWith("METEO_")) {
-                            localStorage.setItem(key, perfilImportado[key]);
-                            keysImportadas++;
-                        }
-                    }
-                    if (keysImportadas > 0) {
+                    const keysNuevas = Object.keys(perfilImportado);
+                    const tieneKeysApp = keysNuevas.some(k => k.startsWith("METEO_"));
+
+                    if (tieneKeysApp) {
+                        // 1. Borrado selectivo (más fiable en Android que clear)
+                        Object.keys(localStorage).forEach(key => {
+                            if (key.startsWith("METEO_")) localStorage.removeItem(key);
+                        });
+
+                        // 2. Inyectar valores del archivo
+                        keysNuevas.forEach(key => {
+                            if (key.startsWith("METEO_")) {
+                                localStorage.setItem(key, perfilImportado[key]);
+                            }
+                        });
+
+                        // 3. ASEGURAR: Si el archivo no traía alguna variable (porque era vieja), 
+                        // la inicialización de defaults la pondrá bien tras el reinicio.
+
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga(``, `<div style="text-align: center;">
                             <p>✅ Se ha importado la configuración.</p>
@@ -2436,15 +2474,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") && 
             !localStorage.getItem("METEO_FAVORITOS_LISTA") && 
             !modoEdicionFavoritos) { 
-            
-            localStorage.setItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ", "true");
-            localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO", "10");
-            localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN", "20");
-            localStorage.setItem("METEO_CHECKBOX_MOSTRAR_RAFAGOSIDAD", "false");
-            localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", "true");
+
             chkMostrarVientoAlturas = true;
             if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = true; //PARA FORZAR EL CHECKBOX VISUAL
-            localStorage.setItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA", "true");
             chkMostrarCizalladura = true;
             if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = true; ////PARA FORZAR EL CHECKBOX VISUAL
             
