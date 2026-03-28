@@ -54,6 +54,9 @@ let RachaMax = meteoPreferencesStore.getNumber(METEO_STORAGE_KEYS.RACHA_MAX || '
 // Techo AGL: 800m ya permite volar, 1500m AGL es un día excelente (se suma a la montaña).
 let XCTechoLims = meteoPreferencesStore.getJSON(METEO_STORAGE_KEYS.XC_TECHO_LIMITS || 'METEO_XC_TECHO_LIMS', METEO_DEFAULTS.xcTechoLims || { rojo: 800, verde: 1500 });
 
+// Ratio para rebajar el dato de Techo a algo realista para parapente (tasa caída 1.2 m/s)
+let RATIO_TECHO_UTIL = 0.85;
+
 // CAPE: 0-400 es ideal (desde día azul hasta cúmulos bonitos). >800 peligro de tormenta.
 let XCCapeLims = meteoPreferencesStore.getJSON(METEO_STORAGE_KEYS.XC_CAPE_LIMITS || 'METEO_XC_CAPE_LIMS', METEO_DEFAULTS.xcCapeLims || { idealMin: 0, idealMax: 400, riesgo: 800 });
 
@@ -101,8 +104,9 @@ const LIMITES_CIZALLADURA = {
 
 //const HorariosMediosActualizacion = ["01:27", "03:07", "06:00", "11:21", "13:31", "16:10", "19:08", "23:18"]; // en UTC-0
 //const HorariosMediosActualizacion = ["01:31", "03:08", "06:02", "11:21", "13:31", "16:12", "19:11", "23:21"]; // en UTC-0
-const HorariosMediosActualizacion = ["01:32", "03:02", "05:52", "08:02", "11:22", "13:32", "16:12", "19:12", "23:22"]; // en UTC-0
-const HorariosMediosActualizacionEcmwf =["00:25", "06:45", "12:25", "18:45"]; // en UTC-0
+const HorariosMediosActualizacion = ["01:32", "03:02", "05:59", "11:22", "13:32", "16:17", "19:12", "23:22"]; // en UTC-0
+const HorariosMediosActualizacionEcmwf =["00:24", "07:00", "12:32", "18:54"]; // en UTC-0
+// Nota: aplico 1 min de más. Buscar: const OFFSET_MS = 1 * 60 * 1000;
 
 let esModoOffline = meteoAppState.get('esModoOffline', false); // Nueva variable para controlar el estado de red
 
@@ -441,7 +445,7 @@ function sugerirGuiaPrincipal(forzar = false) {
 
     const botonesModal =[
         {
-            texto: forzar ? 'Cancelar' : 'Ahora no', 
+            texto: forzar ? 'Cancelar' : 'No', 
             estilo: 'secundario',
             onclick: function() {
                 // Comprobamos si el usuario marcó la casilla antes de darle a "Ahora no"
@@ -625,7 +629,7 @@ function sugerirGuiaFavoritos(forzar = false) {
 
     const botonesModal =[
         {
-            texto: forzar ? 'Cancelar' : 'Ahora no',
+            texto: forzar ? 'Cancelar' : 'No',
             estilo: 'secundario',
             onclick: function() {
                 const chk = document.getElementById('chkNoVolverGuiaFavs');
@@ -2006,6 +2010,8 @@ function importarConfiguracion() {
             reader.onload = function(e) {
                 try {
                     const perfilImportado = JSON.parse(e.target.result);
+
+                    localStorage.clear(); 
                     
                     // Verificamos de forma básica que es un backup válido de la app
                     let keysImportadas = 0;
@@ -2651,7 +2657,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             "<img src='icons/icono_cizalla_fiabilidad.png' style='width:30px;height:8px;'> : Cizalladura de Bajo Nivel por velocidad / Fiabilidad del pronóstico de viento medio" +
             "<hr style='border:none;border-top:1px solid #000;margin:4px 0;'>" +
 
-            "<b>Techo AGL</b>: Altura (km) de la capa límite sobre el suelo (BLH = Boundary Layer Height)<br>" +
+            "<b>Techo</b>: Altitud (km) sobre nivel del mar (MSL) del techo de vuelo previsto y usable en parapente (= espesor capa límite BLH x 0.85 + altitud media suelo celda ECMWF 9km)<br>" +
             "<b>CAPE</b>: Energía Potencial Convectiva Disponible (J/kg)<br>" +
             "<b>CIN</b>: Inhibición Convectiva (J/kg en valor absoluto)<br><br>" +
             "<i>Nota: No está disponible el dato esencial de la base de nube ☁️↓ (CBH = Cloud Base Height) para completar la meteo en el despegue (está solicitado en marzo-2026 a la pasarela meteo)</i><br>";
@@ -2836,7 +2842,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             "<b>2. Condiciones para mantenerse o iniciar XC (fila inferior):</b><br>" +
             "Valora la puntuación de Condiciones del despegue y el potencial térmico para vuelos de distancia (Cross Country) usando los datos del modelo ECMWF:" +
             "<ul style='margin-top: 4px; margin-bottom: 8px;'>" +
-            "<li><b>Techo AGL:</b> Premia techos altos sobre el relieve y penaliza los bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li>" +
+            "<li><b>Techo:</b> Premia el espesor de la capa térmica sobre el relieve y penaliza los bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li>" +
             "<li><b>CAPE:</b> Premia los días azules o de cúmulos inofensivos, y penaliza los valores extremos por riesgo de sobredesarrollo o tormenta (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li>" +
             "<li><b>CIN:</b> Penaliza la inhibición convectiva alta (inversión) que actúa como tapón frenando la formación de térmicas (🟩 &le; 50 | 🟥 > 150 J/kg).</li>" +
             "</ul>" +
@@ -2966,6 +2972,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			// Verificar si hay datos meteo para este despegue (solo aplica si hicimos filtrado de favoritos)
 			const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
 			const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
+            const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0;
 			const hayDatosMeteo = hourlyData !== null;
 			let orientaciones = d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()));
 
@@ -3233,15 +3240,20 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             let ptsXC_hora = 0;
                             // Si el viento base está vetado (lluvia, viento extremo), el XC es 0.
                             if (!vetoActivado) {
-                                let techo = (hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[i] != null) ? Number(hourlyEcmwf.boundary_layer_height[i]) : 0;
+                                // 1. Obtener el dato crudo de la capa límite (AGL)
+                                let techoRaw = (hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[i] != null) ? Number(hourlyEcmwf.boundary_layer_height[i]) : 0;
+
+                                // 2. Aplicar el ratio global de realismo para parapente (0.85)
+                                let techoUtil = techoRaw * RATIO_TECHO_UTIL;
+
                                 let cape = (hourlyEcmwf.cape && hourlyEcmwf.cape[i] != null) ? Number(hourlyEcmwf.cape[i]) : 0;
                                 let cin = (hourlyEcmwf.convective_inhibition && hourlyEcmwf.convective_inhibition[i] != null) ? Math.max(0, Number(hourlyEcmwf.convective_inhibition[i])) : 0;
 
-                                // Techo AGL (0-40 pts)
+                                // Techo Útil (0-40 pts) - Calculado sobre el valor corregido con el ratio
                                 let ptsTecho = 0;
-                                if (techo >= XCTechoLims.verde) ptsTecho = 40;
-                                else if (techo > XCTechoLims.rojo) ptsTecho = 10 + 30 * ((techo - XCTechoLims.rojo) / (XCTechoLims.verde - XCTechoLims.rojo));
-                                else ptsTecho = 10 * (techo / XCTechoLims.rojo);
+                                if (techoUtil >= XCTechoLims.verde) ptsTecho = 40;
+                                else if (techoUtil > XCTechoLims.rojo) ptsTecho = 10 + 30 * ((techoUtil - XCTechoLims.rojo) / (XCTechoLims.verde - XCTechoLims.rojo));
+                                else ptsTecho = 10 * (techoUtil / XCTechoLims.rojo);
 
                                 // CAPE (0-40 pts) - ¡Corregido para no penalizar días azules!
                                 let ptsCape = 0;
@@ -3337,6 +3349,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // -----------------------------------------------------------
 
 			const idDespegue = Number(d.ID); // Usamos el ID numérico
+            const elevacionDespegue = Number(d.elevation || 0); // No es el parámetro "Altitud" que introduzco mediante el .csv, sino el parámetro "elevation" que da la API Open-meteo y que es la altitud promedio de la celda ECMWF de 9 km, ya que he puesto en la URL de la API el parámetro &elevation=nan is specified, downscaling will be disabled and the API uses the average grid-cell height. La clave es que los parámetros que pido al ECMWF no son dependientes de la altitud (comprobado) y no requieren downscaling con el DEM de 90 m predeterminado.
 			const latitud = d.Latitud; 
 			const longitud = d.Longitud;
 			const esFavorito = favoritos.includes(idDespegue);
@@ -3667,7 +3680,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				}
 
                 // Iconos Grupo 2: XC
-                addIconCell(filaTecho, '<span style="font-size:10px; font-weight:bold;">Techo</span>', 'Techo de vuelo AGL (km): Altura sobre el suelo de la capa límite (BLH = Boundary Layer Height)');
+                addIconCell(filaTecho, '<span style="font-size:10px; font-weight:bold;">Techo</span>', 'Altitud (km) sobre nivel del mar (MSL) del techo de vuelo previsto y usable en parapente (= espesor capa límite BLH x 0.85 + altitud media suelo celda ECMWF 9km)');
                 addIconCell(filaCape, '<span style="font-size:10px; font-weight:bold;">CAPE</span>', 'CAPE (J/kg): Energía Potencial Convectiva Disponible (Convective Available Potential Energy)');
                 addIconCell(filaCin, '<span style="font-size:10px; font-weight:bold;">CIN</span>', 'CIN (J/kg): Inhibición Convectiva (Convective INhibition)');
 
@@ -4242,12 +4255,33 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
                     // Datos ECMWF Grupo 2 (XC)
                     if (hourlyEcmwf) {
-                        // Techo AGL
+                        // Techo Útil MSL (Suma: (Espesor BLH * RATIO_TECHO_UTIL) + Elevación de la celda del modelo)
                         renderEcmwfData(filaTecho, hourlyEcmwf.boundary_layer_height, 
-                            v => v == null ? "" : ((Number(v) / 1000).toFixed(1) === "0.0" ? "0" : (Number(v) / 1000).toFixed(1)), "12px",
-                            v => v == null ? "" : (Number(v) < XCTechoLims.rojo ? "fondo-rojo" : (Number(v) >= XCTechoLims.verde ? "fondo-verde" : "fondo-naranja")),
+                            v => {
+                                if (v == null) return "";
+                                // Usamos la variable global
+                                let espesorUtil = Number(v) * RATIO_TECHO_UTIL;
+                                let altitudMSL = (espesorUtil + elevacionModeloECMWF) / 1000;
+                                let valorTexto = altitudMSL.toFixed(1);
+                                return valorTexto === "0.0" ? "0" : valorTexto;
+                            }, 
+                            "12px",
+                            v => {
+                                if (v == null) return "";
+                                // El color se basa en el espesor corregido
+                                let espesorUtil = Number(v) * RATIO_TECHO_UTIL;
+                                return (espesorUtil < XCTechoLims.rojo ? "fondo-rojo" : (espesorUtil >= XCTechoLims.verde ? "fondo-verde" : "fondo-naranja"));
+                            },
                             "0px",
-                            v => v == null ? "" : "Techo AGL: " + Math.round(Number(v)) + " m sobre el suelo"
+                            v => {
+                                if (v == null) return "";
+                                let espesorBLH = Math.round(Number(v));
+                                let espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
+                                let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
+                                
+                                return `Techo usable parapente: ${altitudMSL} m MSL\n` +
+                                    `Cálculo = ${espesorUtil} m espesor útil AGL (${Math.round(RATIO_TECHO_UTIL * 100)}% de la BLH teórica de ${espesorBLH} m) + ${Math.round(elevacionModeloECMWF)} m altitud (suelo medio celda ECMWF 9km)\n`;
+                            }
                         );
                         // CAPE
                         renderEcmwfData(filaCape, hourlyEcmwf.cape, 
