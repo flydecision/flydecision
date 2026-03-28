@@ -327,15 +327,6 @@ details.faq-card:target {
     text-decoration: none !important; 
 }
 
-.badge-google-play:hover {
-    transform: scale(1.05); /* Pequeño zoom al pasar el ratón */
-    opacity: 0.95;
-}
-
-.badge-google-play:active {
-    transform: scale(0.95); /* Efecto de hundimiento al pulsar en móvil */
-}
-
 .splide__slide img {
     width: 100%;
     height: auto;
@@ -461,12 +452,17 @@ details.faq-card:target {
   </div>
 </section>
 
-<!-- 🟩🟩🟩 Google Play -->
-<div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
+<!-- 🟩🟩🟩 Google Play y GitHub -->
+<div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 30px; margin-bottom: 10px;">
     <a href="https://play.google.com/store/apps/details?id=com.flydecision" target="_blank" rel="noopener" class="badge-google-play">
-        <img alt="Disponible en Google Play" src="https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png" width="180">
+        <img alt="Disponible en Google Play" src="https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png" width="180" style="outline: 2px solid black; border-radius: 5px;">
+    </a>
+    
+    <a href="https://github.com/flydecision" target="_blank" rel="noopener noreferrer">
+        <img alt="Perfil de GitHub" src="/icons/github.webp" width="180" style="outline: 2px solid black; border-radius: 5px;">
     </a>
 </div>
+
 
 <!-- 🟥🟥🟥 INICIO SECCIÓN FAQs ACORDEÓN -->
 <div class="faq-container">
@@ -497,7 +493,7 @@ details.faq-card:target {
         <div class="faq-answer">
 
             <p>✅ <b>Ayuda rápida para tu elección de dónde ir a volar</b>, ordenando los despegues automáticamente por puntuación de condiciones. Esto te permite filtrar en segundos qué zonas merecen la pena mirar en detalle y cuáles descartar.</p>
-            <p>✅ Pronóstico actualizado 8 veces al día, hora a hora y para 4 días.</p>
+            <p>✅ Pronóstico hora a hora, actualizado automáticamente varias veces al día (8 veces Arome/Arpege y 4 veces ECMWF) y para 4 días.</p>
             <p>✅ <b>Usa el modelo meteorológico <a href="https://hikefly.es/comparativa-predicciones/" target="_blank" rel="noopener">estadísticamente más fiable para viento</a></b> (Arome-HD 1.3km) en el ámbito del sur de Europa y de meteo general (ECMWF IRF HIRES 9km).</p>
             <p>✅ Filtrado de datos por rango de tiempo (días/horas), recalculando la puntuación de condiciones para ese intervalo concreto.</p>
             <p>✅ <b>Filtro de despegues por condiciones mínimas o por distancia al despegue</b>.</p>
@@ -693,7 +689,7 @@ details.faq-card:target {
         <div class="faq-answer">
 
             <ul>
-                <p>Lo primero es tener claro que pretender "puntuar" unas condiciones de 0-10 y que sea algo totalmente fiable es algo muy atrevido y pretencioso, dada la gran cantidad de factores que intervienen, así que hay que entender esta puntuación como una "visión general" que luego habrá que analizar según otras circunstancias. Hay muchos factores limitantes como, por supuesto, todo el resto de meteo (aquí sólo se analiza viento, al menos por el momento); otros factores son la variabilidad de las predicciones, la exactitud de la base de datos de despegues y sus orientaciones, la cualificación de la idoneidad del grado de orientación (u orientaciones) ideal de cada despegue, etc.</p>
+                <p>Lo primero es tener claro que pretender "puntuar" unas condiciones de 0-10 y que sea algo totalmente fiable es algo muy atrevido y pretencioso, dada la gran cantidad de factores que intervienen, así que hay que entender esta puntuación como una "visión general" que luego habrá que analizar según otras circunstancias. Hay muchos factores limitantes como, por supuesto, la variabilidad de las predicciones, la exactitud de la base de datos de despegues y sus orientaciones, la cualificación de la idoneidad del grado de orientación (u orientaciones) ideal de cada despegue, etc.</p>
                 <p>Teniendo en cuenta todas esas limitaciones y otras muchas, veamos cómo funciona el algoritmo:</p>
                 <li>Cada hora tiene 100 posibles puntos.</li>
                 <li>La dirección es el factor más importante (hasta 50 puntos). Compara de dónde viene el viento con la orientación u orientaciones posibles del despegue (aquí habría mucho margen de mejora cualificando con un índice ponderado de diversas orientaciones ideales en grados, ya que hay despegues que ofrecen mucho rango de ángulos y otros un rango estrecho). Si el viento viene totalmente de frente (menos de 10º de desvío), da la máxima puntuación. A medida que el viento se cruza, la puntuación baja y aplica una penalización al resto de factores. Línea roja (Veto): Si el viento viene con más de 120º de desviación (viento de cola o cruzado extremo), la hora se marca como "No apta" y recibe 0 puntos.</li>
@@ -737,9 +733,9 @@ details.faq-card:target {
         <div class="faq-answer">
 
                 <ul>
-                    <li><b>La primera vez</b> verás la lista completa de despegues. Tienes que marcar tus despegues favoritos. Fin de la configuración mínima.</li>
+                    <li><b>La primera vez</b> tienes que marcar tus despegues favoritos. Fin de la configuración mínima.</li>
                     <li>En el uso normal <b>tocas el día de la semana que quieras y te muestra su pronóstico por horas y su puntuación</b></li>
-                    <li>Los despegues se ordenan automáticamente por su puntuación, así que, con ver los primeros ya puedes hacerte una idea de si es posible despegar por las condiciones de viento.</li>
+                    <li>Los despegues se ordenan automáticamente por su puntuación, así que con ver los primeros ya puedes hacerte una idea de si es posible despegar según las condiciones.</li>
                 </ul>
 
             <div class="share-btn-container">
@@ -875,11 +871,16 @@ details.faq-card:target {
 </div>
 <!-- 🟩🟩🟩 FIN SECCIÓN FAQs -->
 
-<div style="text-align: center; margin-top: 30px; margin-bottom: 10px;">
+<div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 30px; margin-bottom: 10px;">
     <a href="https://play.google.com/store/apps/details?id=com.flydecision" target="_blank" rel="noopener" class="badge-google-play">
-        <img alt="Disponible en Google Play" src="https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png" width="180">
+        <img alt="Disponible en Google Play" src="https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png" width="180" style="outline: 2px solid black; border-radius: 5px;">
+    </a>
+    
+    <a href="https://github.com/flydecision" target="_blank" rel="noopener noreferrer">
+        <img alt="Perfil de GitHub" src="/icons/github.webp" width="180" style="outline: 2px solid black; border-radius: 5px;">
     </a>
 </div>
+
 
 <footer>
     <b><a href="https://flydecision.com/" target="_blank" rel="noopener">FlyDecision.com</a></b> © Fly Decision 2026 | <a href="https://flydecision.com/changelog/" target="_blank" rel="noopener">Historial de cambios</a> | <a href="https://flydecision.com/privacidad" target="_blank" rel="noopener">Aviso Legal y Política de privacidad</a>

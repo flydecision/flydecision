@@ -71,10 +71,13 @@ const LIMITES_CIZALLADURA = {
 }
 
 //const HorariosMediosActualizacion = ["01:27", "03:07", "06:00", "11:21", "13:31", "16:10", "19:08", "23:18"]; // en UTC-0
-const HorariosMediosActualizacion = ["01:31", "03:08", "06:02", "11:21", "13:31", "16:12", "19:11", "23:21"]; // en UTC-0
-const HorariosMediosActualizacionEcmwf =["00:30", "06:55", "12:25", "18:55"]; // en UTC-0
+//const HorariosMediosActualizacion = ["01:31", "03:08", "06:02", "11:21", "13:31", "16:12", "19:11", "23:21"]; // en UTC-0
+const HorariosMediosActualizacion = ["01:32", "03:02", "05:52", "08:02", "11:22", "13:32", "16:12", "19:12", "23:22"]; // en UTC-0
+const HorariosMediosActualizacionEcmwf =["00:25", "06:45", "12:25", "18:45"]; // en UTC-0
 
 let esModoOffline = false; // Nueva variable para controlar el estado de red
+
+const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
 
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
 // Asegúrate de que Capacitor está disponible
@@ -86,251 +89,250 @@ let esModoOffline = false; // Nueva variable para controlar el estado de red
 // }
 
 // ===============================================================
-// 🔴 FILTRO DISTANCIA. GESTIÓN DE UBICACIÓN (GPS, MANUAL, MAPA)
+// 🔴 FILTRO DISTANCIA. GESTIÓN DE UBICACIÓN (MAPA Y GPS UNIFICADO)
 // ===============================================================
 
 // 1. VARIABLES GLOBALES Y CONFIGURACIÓN
-// ---------------------------------------------------------------
-
-let centroLat = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) || 40.4168; // coordenadas "dummy" Madrid, para que no falle si no hay coordenadas
+let centroLat = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) || 40.4168; // dummy Madrid
 let centroLon = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL')) || -3.7038;
 
-// Elementos del Menú Modal Principal
-const modalGeoMenu = document.getElementById('modal-geo-menu');
-const btnAbrirGeo  = document.getElementById('btn-abrir-geo-menu');
-const btnCerrarGeo = document.getElementById('btn-cerrar-menu');
+// Elementos del Modal Mapa unificado
+const modalMapa = document.getElementById('modal-mapa');
+const btnAbrirGeo = document.getElementById('btn-abrir-geo-menu');
+const btnCerrarMapa = document.getElementById('btn-cerrar-mapa');
+const btnGpsMapa = document.getElementById('btn-gps-mapa');
+const btnIncNoFavsDistancia = document.getElementById('btn-incluir-no-favs-distancia');
 
-// 2. FUNCIÓN CENTRAL (Modifica variables, guarda, cierra menú y recarga tabla)
-// ---------------------------------------------------------------
+// Siempre empezamos desactivado al recargar la página
+if (btnIncNoFavsDistancia) {
+    btnIncNoFavsDistancia.classList.remove('activo', 'filtro-aplicado');
+}
+
+let mapaLeaflet = null;
+let marcadorActual = null;
+
+// 2. FUNCIÓN PARA ACTUALIZAR Y GUARDAR CUALQUIER CAMBIO
 function actualizarOrigenGlobal(lat, lon, metodo) {
     centroLat = lat;
     centroLon = lon;
     
-    // Guardar en memoria con tus claves personalizadas
     localStorage.setItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
     localStorage.setItem('METEO_FILTRO_DISTANCIA_LON_INICIAL', lon);
-
-    actualizarTextoVisual();
-    
-    if(modalGeoMenu) modalGeoMenu.style.display = 'none';
-
-    // 🐛 DEBUG Log en consola
-    //console.log(`✅ Origen actualizado a ${lat.toFixed(4)}, ${lon.toFixed(4)} vía ${metodo}`);
 
     construir_tabla();
 }
 
-function actualizarTextoVisual() {
-    const display = document.getElementById('coords-display');
+// 3. FUNCIÓN COMPARTIDA (CLIC EN EL MAPA O AL LOCALIZAR GPS)
+function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
+    // 1. GUARDAR EN LOCALSTORAGE INMEDIATAMENTE. 
+    // Así evitamos que cualquier evento del slider que se dispare a continuación 
+    // crea erróneamente que no hay origen configurado.
+    centroLat = lat;
+    centroLon = lng;
+    localStorage.setItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
+    localStorage.setItem('METEO_FILTRO_DISTANCIA_LON_INICIAL', lng);
+
+    ponerMarcador(lat, lng);
     
-    if(display) {
-        // Solo muestra el icono de ubicación y las coordenadas actuales
-        display.innerHTML = `📍 ${centroLat.toFixed(4)}, ${centroLon.toFixed(4)}`;
-    }
+    construir_tabla(false, false);
+    
+    if(modalMapa) modalMapa.style.display = 'none';
 }
 
-// 3. LÓGICA DE APERTURA/CIERRE DEL MENÚ DE OPCIONES
-// ---------------------------------------------------------------
+// 4. LÓGICA DE APERTURA DEL MAPA DIRECTAMENTE
 if (btnAbrirGeo) {
     btnAbrirGeo.addEventListener('click', () => {
-		actualizarTextoVisual();
-        modalGeoMenu.style.display = 'flex';
-    });
-}
+        if (modalMapa) modalMapa.style.display = 'flex';
 
-if (btnCerrarGeo) {
-    btnCerrarGeo.addEventListener('click', () => {
-        modalGeoMenu.style.display = 'none';
-    });
-}
+        // Comprobamos si la usuaria ya tiene un origen guardado
+        const tieneOrigenGuardado = localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL') !== null;
 
-// Cerrar si clic fuera
-window.addEventListener('click', (e) => {
-    if (e.target === modalGeoMenu) {
-        modalGeoMenu.style.display = 'none';
-    }
-});
-
-// 4. LÓGICA DE LOS BOTONES DE OPCIÓN
-// ---------------------------------------------------------------
-
-// --- OPCIÓN A: GPS AUTOMÁTICO ---
-const btnGps = document.getElementById('btn-gps');
-
-if (btnGps) {
-    btnGps.addEventListener('click', async function() {
-        const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
-        const textoOriginal = btnGps.innerHTML;
-
-        btnGps.innerHTML = "<span>⏳ Buscando...</span>";
-
-        if (isApp) {
-            try {
-                const Geolocation = Capacitor.Plugins.Geolocation;
-
-                // 1. COMPROBACIÓN INICIAL
-                let check = await Geolocation.checkPermissions();
-
-                // Si no tenemos permiso claro, lo pedimos
-                if (check.location !== 'granted' && check.location !== 'coarse') {
-                    // Pedimos el permiso y AQUI ESTA LA MAGIA:
-                    // No comprobamos el resultado con un 'if'. 
-                    // Asumimos que el usuario ha elegido algo válido y probamos.
-                    await Geolocation.requestPermissions();
-                }
-
-                // 2. INTENTAR OBTENER POSICIÓN DIRECTAMENTE
-                // Si el usuario eligió "Aproximada", esto funcionará.
-                // Si el usuario rechazó todo, esto fallará y se irá al 'catch'.
-                const pos = await Geolocation.getCurrentPosition({
-                    enableHighAccuracy: false, // Clave para que funcione con "Aproximada"
-                    timeout: 10000
-                });
-
-                actualizarOrigenGlobal(pos.coords.latitude, pos.coords.longitude, "GPS");
-                
-            } catch (err) {
-                console.error("Error GPS:", err);
-                // Solo si falla REALMENTE al obtener la posición, mostramos el error
-                if (err.message.includes("disabled")) {
-                    alert("Por favor, activa el GPS/Ubicación en tu móvil.");
-                } else {
-                    // Si llegamos aquí es que el usuario rechazó totalmente o hubo error técnico
-                    alert("No se pudo obtener la ubicación. Asegúrate de dar permiso (aunque sea aproximado).");
-                }
-            } finally {
-                btnGps.innerHTML = textoOriginal;
-            }
-        } else { 
-            // --- MODO WEB (PC) ---
-            if (!navigator.geolocation) {
-                alert("Tu navegador no soporta GPS.");
-                btnGps.innerHTML = textoOriginal;
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    actualizarOrigenGlobal(pos.coords.latitude, pos.coords.longitude, "GPS");
-                    btnGps.innerHTML = textoOriginal;
-                },
-                (err) => {
-                    console.error(err);
-                    alert("Error GPS Web.");
-                    btnGps.innerHTML = textoOriginal;
-                },
-                { enableHighAccuracy: false, timeout: 10000 }
-            );
-        }
-    });
-}
-
-// --- OPCIÓN B: MANUAL (Escribir) ---
-/* const btnManual = document.getElementById('btn-manual');
-if (btnManual) {
-    btnManual.addEventListener('click', function() {
-        const input = prompt(
-			"Introduce coordenadas (Latitud, Longitud)", 
-			`${centroLat.toFixed(4)}, ${centroLon.toFixed(4)}`
-		);
-        
-        if (input) {
-            const partes = input.split(',');
-            if (partes.length === 2) {
-                const lat = parseFloat(partes[0].trim());
-                const lon = parseFloat(partes[1].trim());
-                
-                if (!isNaN(lat) && !isNaN(lon)) {
-                    actualizarOrigenGlobal(lat, lon, "Manual");
-                } else {
-                    alert("⚠️ Coordenadas numéricas no válidas.");
-                }
-            } else {
-                alert("⚠️ Formato incorrecto. Usa: 42.123, -2.555");
-            }
-        }
-    });
-}
- */
-// --- OPCIÓN C: MAPA (Leaflet) ---
-const btnMapa = document.getElementById('btn-mapa');
-const modalMapa = document.getElementById('modal-mapa');
-const btnCancelarMapa = document.getElementById('btn-cancelar-mapa');
-const btnGuardarMapa = document.getElementById('btn-aceptar-mapa');
-
-let mapaLeaflet = null;
-let marcadorActual = null;
-let coordsTemporales = { lat: centroLat, lon: centroLon };
-
-if (btnMapa) {
-    btnMapa.addEventListener('click', function() {
-        // 1. Ocultar menú anterior
-        if(modalGeoMenu) modalGeoMenu.style.display = 'none';
-
-        // 2. Mostrar modal
-        modalMapa.style.display = 'flex';
-
-        // 3. Inicializar o Recalibrar
         if (!mapaLeaflet) {
-            // CREACIÓN INICIAL
-            // Pequeño retardo para asegurar que el DIV ya existe visualmente
             setTimeout(() => {
-                mapaLeaflet = L.map('mapa-selector').setView([centroLat, centroLon], 9);
+                // Si no hay origen, centramos en España (Lat 40.0, Lon -4.0) con un zoom general (6)
+                const latInicial = tieneOrigenGuardado ? centroLat : 40.0;
+                const lonInicial = tieneOrigenGuardado ? centroLon : -4.0;
+                const zoomInicial = tieneOrigenGuardado ? 9 : 6;
+
+                mapaLeaflet = L.map('mapa-selector').setView([latInicial, lonInicial], zoomInicial);
                 
                 L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
                     attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://opentopomap.org/" target="_blank">Style OpenTopoMap</a>'
                 }).addTo(mapaLeaflet);
 
                 mapaLeaflet.on('click', function(e) {
-                    ponerMarcador(e.latlng.lat, e.latlng.lng);
+                    seleccionarUbicacionYFiltrar(e.latlng.lat, e.latlng.lng, "Mapa");
                 });
 
-                ponerMarcador(centroLat, centroLon);
-            }, 50); // 50ms de cortesía
-            
+                // Solo ponemos el marcador si ya tenía un origen
+                if (tieneOrigenGuardado) {
+                    ponerMarcador(centroLat, centroLon);
+                }
+            }, 50);
         } else {
-            // YA EXISTÍA: Recalibrar
-            mapaLeaflet.setView([centroLat, centroLon], 8);
+            // Si el mapa ya estaba creado en la memoria
+            const latInicial = tieneOrigenGuardado ? centroLat : 40.0;
+            const lonInicial = tieneOrigenGuardado ? centroLon : -4.0;
+            const zoomInicial = tieneOrigenGuardado ? 8 : 6;
+
+            mapaLeaflet.setView([latInicial, lonInicial], zoomInicial);
+            
             setTimeout(() => { 
                 mapaLeaflet.invalidateSize(); 
-                ponerMarcador(centroLat, centroLon);
+                
+                if (tieneOrigenGuardado) {
+                    ponerMarcador(centroLat, centroLon);
+                } else if (marcadorActual) {
+                    // Si no tiene origen (p.ej. acaba de resetear) pero había un marcador de antes, lo borramos
+                    mapaLeaflet.removeLayer(marcadorActual);
+                    marcadorActual = null;
+                }
             }, 100);
         }
     });
 }
 
 function ponerMarcador(lat, lng) {
-    coordsTemporales = { lat: lat, lon: lng };
-
     const iconoRojo = L.icon({
         iconUrl: 'icons/marker-icon-2x-red.png',
         shadowUrl: 'icons/marker-shadow.png',
-        iconSize: [35, 55],    // Un poco más grande
-        iconAnchor: [17, 55],  // La punta del marcador
-        popupAnchor: [1, -34],
-        shadowSize: [55, 55]
+        iconSize:[35, 55],    
+        iconAnchor:[17, 55],  
+        popupAnchor:[1, -34],
+        shadowSize:[55, 55]
     });
 
     if (marcadorActual) mapaLeaflet.removeLayer(marcadorActual);
-    marcadorActual = L.marker([lat, lng], { icon: iconoRojo }).addTo(mapaLeaflet)
-        //.bindPopup(`Ubicación de origen<br>seleccionada`)
-        .openPopup();
+    marcadorActual = L.marker([lat, lng], { icon: iconoRojo }).addTo(mapaLeaflet).openPopup();
 }
 
-// Botones internos del Mapa
-if (btnCancelarMapa) {
-    btnCancelarMapa.addEventListener('click', () => {
-        modalMapa.style.display = 'none';
-        // Volver a abrir el menú anterior si se cancela
-        if(modalGeoMenu) modalGeoMenu.style.display = 'flex'; 
+/// 5. EVENTO BOTÓN INCLUIR NO FAVORITOS (<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">+<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)
+if (btnIncNoFavsDistancia) {
+    btnIncNoFavsDistancia.addEventListener('click', (e) => {
+        e.preventDefault(); 
+        
+        const estabaActivo = btnIncNoFavsDistancia.classList.contains('activo');
+        const nuevoEstado = !estabaActivo;
+
+        // 1. Lógica para cuando se quiere ACTIVAR
+        if (nuevoEstado) {
+            // Seguridad: Verificar si hay origen configurado
+            if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
+                
+                GestorMensajes.mostrar({
+						tipo: 'modal',
+						htmlContenido: `
+                            <div style="text-align: center;">
+                            <p style="font-size: 2.5em; margin: 0 0 10px 0;">📍</p>
+							<p>Como es la primera vez, necesitas configurar una ubicación de origen.</p>
+							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
+                            </div>
+						`,
+						botones:[
+							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
+                            { texto: 'Configurar origen', onclick: function() { 
+                                GestorMensajes.ocultar(); 
+                                const btnGeo = document.getElementById('btn-abrir-geo-menu');
+                                if (btnGeo) btnGeo.click(); // Simulamos un clic en el botón 📍
+                            } }
+						],
+                        anchoBotones: 160
+					});
+                return;
+            }
+        }
+
+        // 3. Pintamos el botón hundido (activo) y con el borde rojo (filtro-aplicado)
+        if (nuevoEstado) {
+            btnIncNoFavsDistancia.classList.add('activo', 'filtro-aplicado');
+        } else {
+            btnIncNoFavsDistancia.classList.remove('activo', 'filtro-aplicado');
+        }
+        
+        const sliderDistElem = document.getElementById('distancia-slider');
+        if (sliderDistElem && sliderDistElem.noUiSlider) {
+            const currentIdx = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
+            
+            // --- Si se activa el botón y el slider estaba en "Todo", salta a 100km ---
+            if (nuevoEstado && currentIdx === CORTES_DISTANCIA_GLOBAL.length - 1) {
+                
+                const idx100km = CORTES_DISTANCIA_GLOBAL.indexOf(100);
+                ultimaDistanciaConfirmada = idx100km;
+                sliderDistElem.noUiSlider.set(idx100km);
+                
+                // Forzar estilos del filtro principal
+                const btnToggle = document.getElementById("btn-div-filtro-distancia-toggle");
+                if (btnToggle) btnToggle.classList.add('filtro-aplicado');
+                const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
+                if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
+                const btnReset = document.getElementById('btn-reset-filtro-distancia');
+                if (btnReset) btnReset.style.display = 'block';
+
+                construir_tabla(false, false);
+            } 
+            // Si el botón se toca y ya había un filtro de distancia aplicado (< 9999)
+            else if (currentIdx < CORTES_DISTANCIA_GLOBAL.length - 1) {
+                construir_tabla(false, false); 
+            }
+        }
     });
 }
 
-if (btnGuardarMapa) {
-    btnGuardarMapa.addEventListener('click', () => {
-        actualizarOrigenGlobal(coordsTemporales.lat, coordsTemporales.lon, "Mapa");
-        modalMapa.style.display = 'none';
+// 6. EVENTO UBICACIÓN DEL MÓVIL (GPS) EN EL MAPA
+if (btnGpsMapa) {
+    btnGpsMapa.addEventListener('click', async function() {
+        const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
+        const textoOriginal = btnGpsMapa.innerHTML;
+        btnGpsMapa.innerHTML = "<span>⏳ Buscando...</span>";
+
+        const onLocationFound = (lat, lon) => {
+            btnGpsMapa.innerHTML = textoOriginal;
+            seleccionarUbicacionYFiltrar(lat, lon, "GPS");
+        };
+
+        const onLocationError = (errMsg) => {
+            console.error("Error GPS:", errMsg);
+            alert("No se pudo obtener la ubicación. " + errMsg);
+            btnGpsMapa.innerHTML = textoOriginal;
+        };
+
+        if (isApp) {
+            try {
+                const Geolocation = Capacitor.Plugins.Geolocation;
+                let check = await Geolocation.checkPermissions();
+                if (check.location !== 'granted' && check.location !== 'coarse') {
+                    await Geolocation.requestPermissions();
+                }
+                const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 10000 });
+                onLocationFound(pos.coords.latitude, pos.coords.longitude);
+            } catch (err) {
+                onLocationError(err.message.includes("disabled") ? "Asegúrate de tener el GPS activado." : "Revisa los permisos.");
+            }
+        } else { 
+            if (!navigator.geolocation) {
+                onLocationError("Tu navegador no soporta GPS.");
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (pos) => onLocationFound(pos.coords.latitude, pos.coords.longitude),
+                (err) => onLocationError(err.message),
+                { enableHighAccuracy: false, timeout: 10000 }
+            );
+        }
     });
 }
+
+// 7. BOTÓN CERRAR MAPA (LA "X")
+if (btnCerrarMapa) {
+    btnCerrarMapa.addEventListener('click', () => {
+        if(modalMapa) modalMapa.style.display = 'none';
+    });
+}
+window.addEventListener('click', (e) => {
+    if (e.target === modalMapa) {
+        modalMapa.style.display = 'none';
+    }
+});
 
 // ---------------------------------------------------------------
 // 🔴 MENSAJES
@@ -354,28 +356,28 @@ const GestorMensajes = {
      * @param {Array} botones - Lista de botones. Ej: botones: ['ACEPTAR', 'CANCELAR'] o botones ['ACEPTAR'] u objetos personalizados.
      */
 	 
-/* 	Ejemplo de mensaje puntual:
-	 
-	GestorMensajes.mostrar({
-        tipo: 'modal',
-        htmlContenido: '<p>❌ Error: El resultado no puede ser negativo.</p>',
-        botones: ['ACEPTAR']
-    });
- */	
+    /* 	Ejemplo de mensaje puntual:
+        
+        GestorMensajes.mostrar({
+            tipo: 'modal',
+            htmlContenido: '<p>❌ Error: El resultado no puede ser negativo.</p>',
+            botones: ['ACEPTAR']
+        });
+    */	
+    
+    /* 	Ejemplo de mensaje reutilizable (encapsulado en una función). Se usa para el onclick=avisoencapsuladoenfuncionquesea(); para mensajes puntuales recurrentes en un if,.... ; para mensajes que requieren parámetros, se puede crear una función que reciba el texto y llame al gestor function CON_PARAMETROS(texto). Si tiene que salir al inicio, se llama idealmente en un bloque que se ejecute una vez que la página esté lista, una vez que el DOM (la estructura de la página) se haya cargado. Ejemplo: document.addEventListener('DOMContentLoaded', (event) => {
+                mostrar..Configuracion..Inicial();
+                
+            function mostrarSaludo() {
+                GestorMensajes.mostrar({
+                    tipo: 'modal',
+                    htmlContenido: '<p>Hola, bienvenido al sistema</p>',
+                    botones: ['ACEPTAR']
+                });
+            }
+    */
  
-/* 	Ejemplo de mensaje reutilizable (encapsulado en una función). Se usa para el onclick=avisoencapsuladoenfuncionquesea(); para mensajes puntuales recurrentes en un if,.... ; para mensajes que requieren parámetros, se puede crear una función que reciba el texto y llame al gestor function CON_PARAMETROS(texto). Si tiene que salir al inicio, se llama idealmente en un bloque que se ejecute una vez que la página esté lista, una vez que el DOM (la estructura de la página) se haya cargado. Ejemplo: document.addEventListener('DOMContentLoaded', (event) => {
-			mostrar..Configuracion..Inicial();
-			
-		function mostrarSaludo() {
-			GestorMensajes.mostrar({
-				tipo: 'modal',
-				htmlContenido: '<p>Hola, bienvenido al sistema</p>',
-				botones: ['ACEPTAR']
-			});
-		}
- */
- 
-    mostrar: function({ tipo = 'modal', posicion = 'centro', htmlContenido = '', botones = [] }) {
+    mostrar: function({ tipo = 'modal', posicion = 'centro', htmlContenido = '', botones =[], anchoBotones = null }) {
         
         // 1. Limpiar mensaje previo si existe
         this.ocultar();
@@ -430,9 +432,13 @@ const GestorMensajes = {
                     btn.onclick = btnConfig.onclick || (() => this.ocultar());
                     if (btnConfig.estilo === 'secundario') btn.classList.add('btn-secundario');
                 }
+
+                if (anchoBotones) {
+                    // Si pasan un número (ej: 120), le añade 'px'. Si pasan un texto (ej: '120px' o '50%'), lo usa tal cual.
+                    btn.style.width = typeof anchoBotones === 'number' ? `${anchoBotones}px` : anchoBotones;
+                }
                 
-                // Pequeño margen entre botones si hay más de uno
-                if (wrapperBotones.children.length > 0) btn.style.marginLeft = "10px";
+                btn.style.marginLeft = "10px";
                 
                 wrapperBotones.appendChild(btn);
             });
@@ -575,7 +581,7 @@ function mostrarConfirmacionMasiva(cantidad) {
         tipo: 'modal',
         htmlContenido: `
             <div style="text-align: center;">
-                <p style="font-size: 2em; margin: 0;">❤️</p>
+                <p style="font-size: 2em; margin: 0;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></p>
                 <p>¿Quieres marcar <span style="font-weight:bold;">${cantidad}</span> despegues como favoritos?</p>
             </div>
         `,
@@ -632,61 +638,55 @@ function mensajeAvisoRecarga(titulo = '', contenido = '') { // Opcional, puede s
 
 function sugerirGuiaPrincipal(forzar = false) {
 
-    // 1. Si es automático (!forzar) y ya se vio, no hacemos nada.
     if (!forzar && localStorage.getItem('METEO_GUIA_PRINCIPAL_VISTA') === 'true') {
         return; 
     }
 
-    // Si ES forzado, dejamos la cadena vacía ('').
-    // ---------------------------------------------------------
     const htmlAyuda = !forzar 
-        ? `<br><br>Siempre podrás verla en:<br><i>⚙️ Configuración</i> > <i>Guía visual</i>`
+        ? `<p style="color: #555; margin-top: 10px;">Siempre podrás verla en:<br><i>⚙️ Configuración</i> > <i>Guía visual</i></p>
+           <label style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; color: #555; cursor: pointer;">
+               <input type="checkbox" id="chkNoVolverGuiaPrinc" style="transform: scale(1.2);"> No volver a mostrar esta sugerencia
+           </label>`
         : ''; 
 
-    // 2. Preparamos los botones básicos (los que siempre salen)
-    const botonesModal = [
+    const botonesModal =[
+        {
+            texto: forzar ? 'Cancelar' : 'Ahora no', 
+            estilo: 'secundario',
+            onclick: function() {
+                // Comprobamos si el usuario marcó la casilla antes de darle a "Ahora no"
+                const chk = document.getElementById('chkNoVolverGuiaPrinc');
+                if (chk && chk.checked) {
+                    localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
+                }
+                GestorMensajes.ocultar();
+            }
+        },
         {
             texto: 'Ver guía',
             onclick: function() {
                 GestorMensajes.ocultar();
-                localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
+                localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true'); // Si la ve, ya no la sugerimos más
                 const panelConfig = document.getElementById("div-configuracion");
                 if (panelConfig && panelConfig.classList.contains("activo")) {
                     alternardivConfiguracion(); 
                 }
                 setTimeout(() => iniciarGuiaPrincipal(true), 300);
             }
-        },
-        {
-            texto: forzar ? 'Cancelar' : 'Ahora no', 
-            estilo: 'secundario',
-            onclick: function() {
-                GestorMensajes.ocultar();
-            }
         }
     ];
 
-    // 3. Solo si NO es forzado (es decir, es la sugerencia automática), añadimos el botón de "No volver a mostrar"
-    if (!forzar) {
-        botonesModal.push({
-            texto: 'No volver a mostrar',
-            estilo: 'secundario', 
-            onclick: function() {
-                GestorMensajes.ocultar();
-                localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
-            }
-        });
-    }
-
-    // 4. Mostramos el mensaje pasando la lista de botones dinámica
     GestorMensajes.mostrar({
         tipo: 'modal',
         htmlContenido: `
             <div style="text-align: center;">
-                <b>¿Quieres ver una guía visual sobre la<br><i>Pantalla principal</i>?</b>${htmlAyuda}
+                <p style="font-size: 2.5em; margin: 0 0 10px 0;">💡</p>
+                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">¿Quieres ver una guía visual sobre la<br>Pantalla principal?</p>
+                ${htmlAyuda}
             </div>
         `,
-        botones: botonesModal // <--- Aquí pasamos la variable que hemos construido arriba
+        botones: botonesModal,
+        anchoBotones: '130px'
     });
 }
 
@@ -716,7 +716,7 @@ function iniciarGuiaPrincipal(forzar = false) {
 
         steps: [
             { element: '#tabla', //'#tabla thead' apuntaría a la cabecera, '#tabla tbody tr:nth-child(7)' a la fila 3
-                popover: { title: '🪂 Tabla de despegues favoritos', description: 'Esta tabla muestra tus despegues favoritos, su pronóstico de viento para 4 días por horas y su puntuación de condiciones de viento.<br><br>Los despegues siempre se ordenan automáticamente, de mayor a menor puntuación.', side: 'bottom', align: 'center'} },
+                popover: { title: '🪂 Tabla de despegues favoritos', description: 'Muestra tus despegues favoritos, su pronóstico y sus puntuaciones (despegue y XC).<br><br>Los despegues se ordenan automáticamente, de mayor a menor puntuación de despegue.', side: 'top', align: 'center'} },
 
             { element: '.div-paneles-controles-transparente', 
                 popover: { title: 'Selector de rango horario', description: 'Ajusta este deslizador desde ambos extremos para seleccionar el rango horario que te interese.<br><br>La tabla mostrará solo esas horas y la puntuación de condiciones se recalculará para ese intervalo de tiempo concreto.' , side: 'bottom', align: 'center'} },
@@ -739,38 +739,14 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: '🗓️ Día seleccionado', description: 'Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>👉🏽  Puedes mover los deslizadores hora a hora para elegir tu rango horario concreto y también puedes personalizar ese rango horario diario "automático" en ⚙️ Configuración.', side: 'bottom', align: 'center'} },
             
             { element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>👉🏽 Voy a seleccionar el icono para que veas como muestra una explicación sobre lo que significa cada dato.', side: 'bottom', align: 'start'},
-
-                onDeselected: () => {
-                    // querySelectorAll devuelve una lista (array) de todos los elementos
-                    const elementos = document.querySelectorAll('.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda');
-                    
-                    // [0] es el primero, [1] el segundo, etc.
-                    if (elementos[0]) { 
-                        elementos[0].click(); // Clic en el segundo elemento
-                    }
-                }
-            },
-
-            { element: '#tippy-2', 
-                popover: { title: '', description: 'Explicación sobre cada dato meteorológico.' , side: 'bottom', align: 'center' },
-
-                onDeselected: () => {
-                    // querySelectorAll devuelve una lista (array) de todos los elementos
-                    const elementos = document.querySelectorAll('.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda');
-                    
-                    // [0] es el primero, [1] el segundo, etc.
-                    if (elementos[0]) { 
-                        elementos[0].click(); // Clic en el segundo elemento
-                    }
-                }
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>Si seleccionas el icono muestra información sobre cada parámetro meteorológico.', side: 'bottom', align: 'start'},
             },
 
             { element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
                 popover: { title: '🟩🟧🟥 Fila de Cizalladura / Fiabilidad', description: 'Esta fila especial muestra mediante un semáforo de colores el nivel de Cizalladura de Bajo Nivel (LLWS - Low-Level Wind Shear) y también el grado de Fiabilidad del pronóstico de viento medio a 10 m de altura.' , side: 'bottom', align: 'center' } },
 
             { element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
-                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula automáticamente una puntuación de 0 a 10 para cada despegue y para el rango horario seleccionado.<br><br>Los despegues siempre se reordenan automáticamente por puntuación (de mayor a menor).<br><br>En la pantalla de ⚙️ Configuración puedes personalizar los límites que se tienen en cuenta en el cálculo y dispones de información adicional.' } },
+                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula automáticamente dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse o iniciar Cross Country (XC).<br><br>Los despegues siempre se reordenan automáticamente por puntuación de Condiciones para despegar (de mayor a menor).<br><br>En la pantalla de ⚙️ Configuración puedes personalizar los límites que se tienen en cuenta en el cálculo y dispones de información adicional.' } },
 
             { element: '.btn-info.btn-abajo-izquierda', 
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>👉🏽  El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
@@ -780,10 +756,10 @@ function iniciarGuiaPrincipal(forzar = false) {
 
             { element: '#btn-div-filtro-distancia-toggle',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_filtro_60.webp" width="20" height="20" style="display: block;"><span>Filtro de distancia</span></div>', 
-                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>Voy a pulsar ahora ese botón para que lo veas.'}, },
+                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para que lo veas.'}, },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Te ofrecerá usar un mapa o la propia localización del móvil para elegirlo.' , side: 'bottom', align: 'end'},
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.' , side: 'bottom', align: 'end'},
                 
                 onHighlighted: (element) => {
                     // 1. Forzamos el clic en el botón que despliega el menú
@@ -807,6 +783,10 @@ function iniciarGuiaPrincipal(forzar = false) {
                 },
             },
 
+            { element: '#btn-incluir-no-favs-distancia',
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></span> Incluir despegues no favoritos en el filtro', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>Esto es útil cuando viajamos y buscamos las mejores condiciones fuera de nuestra zona de favoritos.' , side: 'bottom', align: 'end'},
+            },
+
             { element: '#distancia-slider',
                 popover: { title: 'Distancia al punto', description: 'Arrastrando este deslizador eliges los kilómetros.<br><br>La tabla mostrará solo los despegues que estén dentro de ese radio de distancia.' },
                 onDeselected: (element) => {
@@ -821,7 +801,7 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_tierra_60.webp" width="20" height="20" style="display: block;"><span>Mapa de despegues</span></div>', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1 millón de puntos exactos de despegues y mucha otra información.<br><br>La información más completa es de España y Pirineos (incluyendo la parte francesa), pero hay información de todo el mundo.' , side: 'bottom', align: 'center' } },
 
             { element: '#btn-activar-edicion-favoritos',
-                popover: { title: '♥️/🤍 Edición de favoritos', description: 'Abre la <i>Pantalla de edición de favoritos</i>.<br><br>En esa pantalla tienes todos los despegues disponibles y es donde se marcan o desmarcan los favoritos que se mostrarán en esta <i>Pantalla principal</i>.' } },
+                popover: { title: '♥️/<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Edición de favoritos', description: 'Abre la <i>Pantalla de edición de favoritos</i>.<br><br>En esa pantalla tienes todos los despegues disponibles y es donde se marcan o desmarcan los favoritos que se mostrarán en esta <i>Pantalla principal</i>.' } },
 
             { element: '#btn-div-configuracion-toggle',
                 popover: { title: '⚙️ Configuración', description: 'Te lleva al panel de configuración, donde podrás personalizar parámetros, activar opciones interesantes y ver información de los datos meteorológicos.<br><br>👉🏽 Para cada opción o dato, tienes un botón de información <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;">.' } }
@@ -842,59 +822,50 @@ function iniciarGuiaPrincipal(forzar = false) {
 
 function sugerirGuiaFavoritos(forzar = false) {
     
-    // 1. Si es automático (!forzar) y ya se vio, no hacemos nada.
     if (!forzar && localStorage.getItem('METEO_GUIA_FAVORITOS_VISTA') === 'true') {
         return; 
     }
 
-    // Si ES forzado, dejamos la cadena vacía ('').
-    // ---------------------------------------------------------
     const htmlAyuda = !forzar 
-        ? `<br><br>Siempre podrás verla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía">`
+        ? `<p style="color: #555; margin-top: 10px;">Siempre podrás verla con el botón <img src="icons/icono_ayuda_60.webp" width="18" height="18" style="vertical-align:middle;" alt="Guía"></p>
+           <label style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; color: #555; cursor: pointer;">
+               <input type="checkbox" id="chkNoVolverGuiaFavs" style="transform: scale(1.2);"> No volver a mostrar esta sugerencia
+           </label>`
         : ''; 
 
-
-    // 2. Preparamos los botones básicos (los que siempre salen)
-    const botonesModal = [
+    const botonesModal =[
+        {
+            texto: forzar ? 'Cancelar' : 'Ahora no',
+            estilo: 'secundario',
+            onclick: function() {
+                const chk = document.getElementById('chkNoVolverGuiaFavs');
+                if (chk && chk.checked) {
+                    localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
+                }
+                GestorMensajes.ocultar();
+            }
+        },
         {
             texto: 'Ver guía',
             onclick: function() {
                 GestorMensajes.ocultar();
-                // Si acepta verla, marcamos que ya la ha visto
                 localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
                 setTimeout(() => iniciarGuiaFavoritos(true), 300);
-            }
-        },
-        {
-            texto: forzar ? 'Cancelar' : 'Ahora no', // Pequeño detalle: si es forzado queda mejor "Cerrar"
-            estilo: 'secundario',
-            onclick: function() {
-                GestorMensajes.ocultar();
             }
         }
     ];
 
-    // 3. Solo si NO es forzado (es decir, es la sugerencia automática), añadimos el botón de "No volver a mostrar"
-    if (!forzar) {
-        botonesModal.push({
-            texto: 'No volver a mostrar',
-            estilo: 'secundario', 
-            onclick: function() {
-                GestorMensajes.ocultar();
-                localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
-            }
-        });
-    }
-
-    // 4. Mostramos el mensaje pasando la lista de botones dinámica
     GestorMensajes.mostrar({
         tipo: 'modal',
         htmlContenido: `
             <div style="text-align: center;">
-                <b>¿Quieres ver una guía visual sobre esta<br><i>Pantalla de edición de favoritos</i> ♥️?</b>${htmlAyuda}
+                <p style="font-size: 2.5em; margin: 0 0 10px 0;">💡</p>
+                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">¿Quieres ver una guía visual sobre esta<br>Pantalla de edición de despegues favoritos ❤️?</p>
+                ${htmlAyuda}
             </div>
         `,
-        botones: botonesModal // <--- Aquí pasamos la variable que hemos construido arriba
+        botones: botonesModal,
+        anchoBotones: '130px'
     });
 }
 
@@ -927,10 +898,10 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '🪂 Tabla de todos los despegues', description: 'Esta pantalla de edición de favoritos sirve para seleccionar los despegues que usas habitualmente. La pantalla normal de la aplicación mostrará solo los despegues favoritos.<br><br>En esta tabla tienes todos disponibles.<br><br>Por el momento solo hay despegues de España y Pirineos (incluyendo la parte francesa). Esta aplicación es un proyecto en desarrollo.', side: 'right', align: 'start'} },
 
             { element: '#tabla tbody tr:nth-child(1) td:first-child', 
-                popover: { title: '❤️ Favoritos', description: 'Marca (o desmarca) aquí tus despegues favoritos.<br><br>Se van guardando automáticamente.', side: 'bottom', align: 'end'} },
+                popover: { title: '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos', description: 'Marca (o desmarca) aquí tus despegues favoritos.<br><br>Se van guardando automáticamente.', side: 'bottom', align: 'end'} },
 
             { element: '#tabla thead tr:first-child th:first-child', 
-                popover: { title: '🤍 Cabecera favoritos', description: 'Permite marcar (o desmarcar) de una sola vez todos los despegues visibles actualmente en la tabla.<br><br>Ejemplo: buscas todos los de "Huesca" y los marcas todos.' } },
+                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Cabecera favoritos', description: 'Permite marcar (o desmarcar) de una sola vez todos los despegues visibles actualmente en la tabla.<br><br>Ejemplo: buscas todos los de "Huesca" y los marcas todos.' } },
 
             { element: '.btn-info.btn-abajo-izquierda', 
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>👉🏽  El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
@@ -943,7 +914,7 @@ function iniciarGuiaFavoritos(forzar = false) {
                     description: 'Muestra solo los despegues alrededor de un punto.<br><br>Ejemplo: te puede servir para seleccionar rápidamente como favoritos (y ver así su pronóstico en la pantalla principal) los despegues que estén en un radio de 50 km alrededor de un punto.<br><br>Voy a pulsar ese botón para que lo veas.' } },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen.<br><br>Te ofrecerá usar un mapa o la propia localización del móvil.' },
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.' },
                 
                 onHighlighted: (element) => {
                     // 1. Forzamos el clic en el botón que despliega el menú
@@ -981,13 +952,13 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_filtro_60.webp" width="20" height="20" style="display: block;"><span>Ver solo favoritos</span></div>', description: 'Alterna entre ver solo los despegues favoritos o ver todos los despegues.<br><br>Si tenías ya favoritos, puede servirte para verlos juntos fácilmente y desmarcar alguno o también para desmarcar todos a la vez.' } },
 
             { element: '#btn-desmarcar-favoritos',
-                popover: { title: '🤍 Desmarcar todos los favoritos', description: 'Desmarca todos los favoritos actuales.' } },
+                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Desmarcar todos los favoritos', description: 'Desmarca todos los favoritos actuales.' } },
 
             { element: '#btn-abrir-favoritos',
-                popover: { title: '📂 Abrir favoritos', description: 'Abre un archivo con una lista de despegues favoritos guardados previamente.' } },
+                popover: { title: '📂 Importar favoritos', description: 'Abre un archivo con una lista de despegues favoritos guardados previamente.' } },
 
             { element: '#btn-guardar-favoritos',
-                popover: { title: '💾 Guardar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras guardarlo, te ofrece compartirlo.<br><br>Los favoritos ya se van guardando automáticamente en la aplicación cuando los marcas; este botón solo sirve para hacer una copia en otro lugar.<br><br>👉🏽  Si te mueves por varias zonas diferentes de vuelo, puedes tener varios archivos de favoritos guardados y abrirlos cuando te interese.' } },
+                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrece compartirlo.<br><br>Los favoritos ya se van guardando automáticamente en la aplicación cuando los marcas; este botón solo sirve para hacer una copia en otro lugar.<br><br>👉🏽  Si te mueves por varias zonas diferentes de vuelo, puedes tener varios archivos de favoritos exportados e importarlos cuando te interese.' } },
 
             { element: '#btn-guia-edicion-favoritos',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_ayuda_60.webp" width="20" height="20" style="display: block;"><span>Guía rápida</span></div>', description: 'Muestra esta guía.' } },
@@ -1043,11 +1014,20 @@ function activarEdicionFavoritos() {
 }
 
 function filtroVerSoloFavoritos() {
-
-    soloFavoritos = true;
-
+    
+    const favoritosActuales = obtenerFavoritos();
     const btn = document.getElementById('btn-filtro-favoritos-toggle');
-    btn.classList.toggle("activo"); // alterna activo/no activo en función de cómo esté el botón
+
+    // --- NUEVO: Comprobar si se va a activar el filtro pero NO hay favoritos ---
+    if (!btn.classList.contains("activo") && favoritosActuales.length === 0) {
+        mensajeModalAceptar('', 
+            '<p>No funciona el filtro <i>Ver solo favoritos</i> porque es necesario marcar al menos un despegue favorito ♥️.</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
+        );
+        return; // Salimos de la función sin aplicar el filtro ni recargar la tabla
+    }
+
+    // Lógica normal de alternar el botón
+    btn.classList.toggle("activo"); 
     const estaHundido = btn.classList.contains("activo");
     
     if (estaHundido) {
@@ -1079,7 +1059,7 @@ function desmarcarFavoritos() {
         tipo: 'modal',
         htmlContenido: `
             <div style="text-align: center;">
-                <p style="font-size: 2em; margin: 0;">🤍</p>
+                <p style="font-size: 2em; margin: 0;"><img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></p>
                 <p>¿Quieres desmarcar todos tus favoritos?</p>
             </div>
         `,
@@ -1093,18 +1073,24 @@ function desmarcarFavoritos() {
             },
             {
                 texto: 'Sí, desmarcar',
-                estilo: 'background-color: #d32f2f; color: white;', // Color rojo destructivo (como en confirmarSalidaApp)
                 onclick: function() {
                     // 1. Sobrescribimos el localStorage con un array vacío
                     localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify([]));
+
+                    // Resetear estado del filtro "Ver solo favoritos" 
+                    soloFavoritos = false;
+                    const btn = document.getElementById('btn-filtro-favoritos-toggle');
+                    if (btn) {
+                        btn.classList.remove("activo", "filtro-aplicado");
+                    }
                     
-                    // 2. Actualizamos el contador visual ("❤️ 0")
+                    // 2. Actualizamos el contador visual ("<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> 0")
                     actualizarContadorVisualFavoritos();
                     
                     // 3. Restauramos el icono de la cabecera de la tabla a desmarcado
                     const thFavorito = document.getElementById('id-thFavorito');
                     if (thFavorito) {
-                        thFavorito.innerHTML = "🤍";
+                        thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
                         thFavorito.title = "Marcar todos los despegues visibles como favoritos";
                     }
 
@@ -1120,9 +1106,6 @@ function desmarcarFavoritos() {
 }
 
 function abrirFavoritos() {
-    
-    // 1. Definimos la acción de cargar el archivo y la "pegamos" a window
-    // para que tu modal pueda encontrarla por su nombre.
     window.accionCargarFavoritos = function() {
         const input = document.createElement('input');
         input.type = 'file';
@@ -1135,19 +1118,34 @@ function abrirFavoritos() {
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const nuevosFavoritos = e.target.result
+                    let nuevosFavoritos = e.target.result
                         .split('\n')
                         .map(l => l.trim())
                         .filter(l => l.length > 0); 
 
+                    // --- MIGRACIÓN AL VUELO SI ES UN ARCHIVO ANTIGUO (CON NOMBRES) ---
+                    if (nuevosFavoritos.length > 0 && isNaN(Number(nuevosFavoritos[0]))) {
+                        const bd = window.bdGlobalDespegues ||[];
+                        const favsMigrados =[];
+                        nuevosFavoritos.forEach(nombre => {
+                            const match = bd.find(d => d.Despegue === nombre);
+                            if (match && match.ID) {
+                                favsMigrados.push(Number(match.ID));
+                            }
+                        });
+                        nuevosFavoritos = favsMigrados;
+                    } else {
+                        // Son IDs numéricos nuevos
+                        nuevosFavoritos = nuevosFavoritos.map(Number).filter(n => !isNaN(n));
+                    }
+
                     if (nuevosFavoritos.length > 0) {
                         localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(nuevosFavoritos));
+                        localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
                         
-                        // Si tienes la función mensajeAvisoRecarga definida:
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga('', `<div style="text-align: center;">
                             <p>✅ Se han importado ${nuevosFavoritos.length} despegues favoritos.</p>
-                            <p>La página se va a recargar.</p>
                         </div>`);
                         } else {
                             location.reload();
@@ -1159,7 +1157,6 @@ function abrirFavoritos() {
                     alert('⚠️ Error al procesar el archivo.');
                 }
                 
-                // Limpieza: borramos la función temporal de la memoria
                 delete window.accionCargarFavoritos; 
             };
             reader.readAsText(file);
@@ -1167,79 +1164,63 @@ function abrirFavoritos() {
         input.click();
     };
 
-    // 2. Llamamos al modal pasando el NOMBRE de la función que acabamos de crear
     mensajeModalAceptarCancelar(
         '', 
-        '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📂</p><p><b>⚠️ ATENCIÓN:</b> Abrir favoritos sustituirá los actuales.</b><br><br>Si los quieres conservar, cancela este mensaje y usa el botón 💾 <i>Guardar favoritos</i>.</p>', 
+        '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📂</p><p><b>⚠️ ATENCIÓN:</b> Importar favoritos sustituirá los actuales.</b><br><br>Si los quieres conservar, cancela este mensaje y usa el botón 💾 <i>Exportar favoritos</i>.</p>', 
         'accionCargarFavoritos'
     );
 }
 
 async function guardarFavoritos() {
-
-    const favoritos = obtenerFavoritos();
+    // Aseguramos que guardamos un txt con puros números
+    const favoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
         
     if (favoritos.length === 0) {
         GestorMensajes.mostrar({
-            tipo: 'modal', // o 'no-modal' si lo prefieres menos invasivo
-            htmlContenido: '<p style="text-align: center;">No hay despegues favoritos para guardar</p>',
+            tipo: 'modal',
+            htmlContenido: '<p style="text-align: center;">No hay despegues favoritos para exportar</p>',
             botones: ['ACEPTAR']
         });
         return;
     }
 
-    // 1. Generamos contenido y un nombre por defecto
     const ahora = new Date();
-    const fecha = ahora.toISOString().split('T')[0]; // 2023-10-27
-    const hora = ahora.toTimeString().split(' ')[0].replace(/:/g, '-').slice(0, 5); // 16-45
-    
-    // Este será el nombre sugerido, pero el usuario podrá cambiarlo
-    //let nombreArchivo = `flydecision_favoritos_${fecha}_${hora}.txt`;
-    let nombreArchivo = `FavoritosFlyDecision.txt`;
+    const fecha = ahora.toISOString().split('T')[0];
+    const hora = ahora.toTimeString().split(' ')[0].replace(/:/g, '-').slice(0, 5);
+    let nombreArchivo = `${fecha}_Fly_Decision_Favorites.txt`;
     const contenido = favoritos.join('\n');
 
-    // --- ESCUDO DE SEGURIDAD ---
     const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
 
     if (isApp) {
-        // MODO APP
         try {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
 
-            // --- NUEVO: PREGUNTAR NOMBRE AL USUARIO ---
             const { value, cancelled } = await Dialog.prompt({
-                title: '💾 Guardar favoritos',
+                title: '💾 Exportar favoritos',
                 message: '\nCambia el nombre del archivo o acepta éste:',
-                inputText: nombreArchivo, // Muestra el nombre automático por defecto
+                inputText: nombreArchivo,
                 okButtonTitle: 'Guardar',
                 cancelButtonTitle: 'Cancelar'
             });
 
-            // Si el usuario pulsa cancelar, salimos de la función sin hacer nada
             if (cancelled) return;
 
-            // Si el usuario borró el nombre o lo dejó vacío, usamos el original.
-            // Si escribió algo, actualizamos la variable nombreArchivo.
             if (value && value.trim() !== '') {
                 nombreArchivo = value.trim();
-                // Asegurarnos de que termina en .txt
                 if (!nombreArchivo.toLowerCase().endsWith('.txt')) {
                     nombreArchivo += '.txt';
                 }
             }
-            // ------------------------------------------
 
-            
-            // PASO 1: Guardar copia permanente
             await Filesystem.writeFile({
-                path: nombreArchivo, // Usamos el nombre decidido por el usuario
+                path: nombreArchivo, 
                 data: contenido,
                 directory: 'DATA', 
                 encoding: 'utf8',
                 recursive: true
             });
 
-            // PASO 2: Guardar copia temporal en CACHÉ (para compartir). (Esta es la clave para que Telegram no se bloquee)
             const resultCache = await Filesystem.writeFile({
                 path: nombreArchivo, 
                 data: contenido,
@@ -1248,7 +1229,6 @@ async function guardarFavoritos() {
                 recursive: true
             });
 
-            // 3. Diálogo de éxito
             const confirmResult = await Dialog.confirm({
                 title: '✅ Favoritos guardados con éxito.',
                 text: 'Aquí tienes mis despegues favoritos de Fly Decision:',
@@ -1257,18 +1237,13 @@ async function guardarFavoritos() {
                 cancelButtonTitle: 'No'
             });
 
-            // 4. Compartir
             if (confirmResult.value) {
-                
-                // 1. Verificamos si el dispositivo permite compartir archivos antes de lanzar
                 const canShare = await Share.canShare();
-                
                 if (canShare.value) {
                     try {
                         await Share.share({
                             title: 'Mis despegues favoritos de Fly Decision',
                             text: 'Aquí tienes mis despegues favoritos:',
-                            // 💡 TRUCO: A veces la URI necesita ser decodificada si Capacitor la codificó doblemente
                             files: [resultCache.uri], 
                             dialogTitle: 'Compartir con...',
                         });
@@ -1277,7 +1252,6 @@ async function guardarFavoritos() {
                         alert("No se pudo abrir el menú de compartir. Intenta usar otro método.");
                     }
                 } else {
-                    // Fallback si el dispositivo no soporta compartir archivos nativamente
                     alert("Tu dispositivo no permite compartir archivos directamente. Asegúrate de tener Telegram instalado.");
                 }
             }
@@ -1287,7 +1261,6 @@ async function guardarFavoritos() {
             alert("Vaya, algo ha fallado: " + error.message);
         }
     } else {
-        // MODO WEB (Aquí el navegador suele preguntar o guardar en descargas directamente)
         const blob = new Blob([contenido], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1304,7 +1277,13 @@ async function guardarFavoritos() {
 
 function obtenerFavoritos() {
     const data = localStorage.getItem("METEO_FAVORITOS_LISTA");
-    return data ? JSON.parse(data) : [];
+    if (!data) return[];
+    try {
+        const parsed = JSON.parse(data);
+        return Array.isArray(parsed) ? parsed :[];
+    } catch(e) {
+        return[];
+    }
 }
 
 function actualizarContadorVisualFavoritos() {
@@ -1315,9 +1294,9 @@ function actualizarContadorVisualFavoritos() {
         let texto = "";
 
         if (num === 1) {
-            texto = `<b>${num}</b> ❤️ Favorito`;
+            texto = `<b>${num}</b> <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favorito`;
         } else {
-            texto = `<b>${num}</b> ❤️ Favoritos`;
+            texto = `<b>${num}</b> <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos`;
         }
         
         el.innerHTML = texto;
@@ -1325,7 +1304,8 @@ function actualizarContadorVisualFavoritos() {
 }
 
 function toggleFavorito(id) {
-    const favoritos = obtenerFavoritos();
+    id = Number(id); // Aseguramos que es un número
+    const favoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
     const indice = favoritos.indexOf(id);
     let esNuevoFavorito = false;
 
@@ -1350,7 +1330,7 @@ let estadoPendienteDeAplicar = false; // true = marcar, false = desmarcar
 function gestionarClickMasivoFavoritos() {
     
     if (!modoEdicionFavoritos) {
-		mensajeModalAceptar('','<p>Para marcar o desmarcar un grupo de favoritos, utiliza la opción:</p><p>Menú ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [❤️ Favoritos]</p>');
+		mensajeModalAceptar('','<p>Para marcar o desmarcar un grupo de favoritos, utiliza la opción:</p><p>Menú ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos]</p>');
         return;
     }
 
@@ -1384,14 +1364,14 @@ function gestionarClickMasivoFavoritos() {
             let celda = filaPrincipal.querySelector('.columna-favoritos');
             
             if (celda && celda.dataset.id) {
-                idsVisibles.push(celda.dataset.id);
+                idsVisibles.push(Number(celda.dataset.id)); // Guardamos como número
             }
         }
     }
 
     if (idsVisibles.length === 0) return;
 
-    let listaFavoritos = obtenerFavoritos(); 
+    let listaFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n)); 
     const todosSonFavoritos = idsVisibles.every(id => listaFavoritos.includes(id));
     const nuevoEstadoEsFavorito = !todosSonFavoritos; // true = añadir, false = quitar
 
@@ -1410,15 +1390,15 @@ function gestionarClickMasivoFavoritos() {
 function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     
     // 1. Usamos Set para máxima velocidad y gestión automática de duplicados
-    let listaFavoritos = obtenerFavoritos();
+    let listaFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
     let setFavoritos = new Set(listaFavoritos);
 
     if (nuevoEstadoEsFavorito) {
         // Añadimos todos (el Set ignora duplicados automáticamente)
-        idsAfectados.forEach(id => setFavoritos.add(id));
+       idsAfectados.forEach(id => setFavoritos.add(Number(id)));
     } else {
         // Borramos todos
-        idsAfectados.forEach(id => setFavoritos.delete(id));
+        idsAfectados.forEach(id => setFavoritos.delete(Number(id)));
     }
 
     // Convertimos de vuelta a Array
@@ -1432,7 +1412,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     // --- Actualización visual (DOM) ---
     const thFavorito = document.getElementById('id-thFavorito');
     if (thFavorito) {
-        thFavorito.innerHTML = nuevoEstadoEsFavorito ? "❤️" : "🤍";
+        thFavorito.innerHTML = nuevoEstadoEsFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
         thFavorito.title = nuevoEstadoEsFavorito 
             ? "Desmarcar todos los despegues visibles como favoritos" 
             : "Marcar todos los despegues visibles como favoritos";
@@ -1444,7 +1424,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     const tabla = document.getElementById('tabla');
     const tbody = tabla.tBodies[0];
     const filas = tbody.rows;
-    const setAfectados = new Set(idsAfectados); // Búsqueda O(1)
+    const setAfectados = new Set(idsAfectados.map(Number)); // Búsqueda O(1)
 
     // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
     let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
@@ -1466,9 +1446,9 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
         if (!celda) celda = filaPrincipal.cells[0];
 
         // Verificamos si esta fila es una de las afectadas
-        if (celda && celda.dataset.id && setAfectados.has(celda.dataset.id)) {
+        if (celda && celda.dataset.id && setAfectados.has(Number(celda.dataset.id))) {
             
-            celda.innerHTML = nuevoEstadoEsFavorito ? "❤️" : "🤍";
+            celda.innerHTML = nuevoEstadoEsFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
             celda.title = nuevoEstadoEsFavorito ? "Quitar de favoritos" : "Añadir a favoritos";
             
             const action = nuevoEstadoEsFavorito ? 'add' : 'remove';
@@ -1523,7 +1503,7 @@ function finalizarEdicionFavoritos() {
 	if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { // Ha pulsado Finalizar pero no existe la key "METEO_FAVORITOS_LISTA" en localstorage o los favoritos están vacíos 
 		
         mensajeModalAceptar('', 
-            '<p>Es necesario marcar al menos un despegue favorito ♥️.</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
+            '<p>Es necesario marcar al menos un despegue favorito ♥️</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
         );
 		
 		return false; // <--- IMPORTANTE: No hemos podido cerrar correctamente la edición porque no ha elegido favoritos
@@ -2010,7 +1990,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 			if (haCambiado) {
                 // Actualizamos la variable global YA
 				window.sliderHorasValues = valoresNuevos;
-				construir_tabla(false, true);
+				construir_tabla(false, false);
 			}
 		});
 
@@ -2227,6 +2207,150 @@ async function exportarFavoritos(contenidoTexto) {
     } catch (e) {
         console.error('Error al guardar el archivo:', e);
         alert("No se pudo guardar el archivo. Revisa los permisos.");
+    }
+}
+
+async function exportarConfiguracion() {
+    // 1. Recopilamos todas las configuraciones de la app
+    const perfilUsuario = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        // Solo cogemos las variables de la app para no mezclar con otras cosas
+        if (key && key.startsWith("METEO_")) {
+            perfilUsuario[key] = localStorage.getItem(key);
+        }
+    }
+
+    // 2. Convertimos el objeto a un texto con formato (fácil de leer)
+    const contenido = JSON.stringify(perfilUsuario, null, 2);
+    
+    // 3. Generamos el nombre del archivo
+    const ahora = new Date();
+    const fecha = ahora.toISOString().split('T')[0];
+    let nombreArchivo = `${fecha}_Fly_Decision_Configuration.json`;
+
+    // 4. Lógica de guardado (Idéntica a la que usas en favoritos)
+    const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
+
+    if (isApp) {
+        try {
+            const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
+            const { value, cancelled } = await Dialog.prompt({
+                title: '💾 Exportar configuración',
+                message: '\nSe exportarán tus favoritos y toda tu configuración (límites de viento, opciones visuales, etc.).',
+                inputText: nombreArchivo,
+                okButtonTitle: 'Guardar',
+                cancelButtonTitle: 'Cancelar'
+            });
+
+            if (cancelled) return;
+            if (value && value.trim() !== '') nombreArchivo = value.trim();
+
+            await Filesystem.writeFile({
+                path: nombreArchivo, 
+                data: contenido,
+                directory: 'DATA', 
+                encoding: 'utf8',
+                recursive: true
+            });
+
+            const resultCache = await Filesystem.writeFile({
+                path: nombreArchivo, 
+                data: contenido,
+                directory: 'CACHE', 
+                encoding: 'utf8',
+                recursive: true
+            });
+
+            const confirmResult = await Dialog.confirm({
+                title: '✅ Se ha guardado la configuración.',
+                message: `\n${nombreArchivo}\n\n¿Quieres compartirla ahora?`,
+                okButtonTitle: 'Sí, compartir',
+                cancelButtonTitle: 'No'
+            });
+
+            if (confirmResult.value) {
+                const canShare = await Share.canShare();
+                if (canShare.value) {
+                    await Share.share({
+                        title: 'Configuración Fly Decision',
+                        files: [resultCache.uri], 
+                        dialogTitle: 'Guardar en...',
+                    });
+                }
+            }
+        } catch (error) {
+            alert("Error al guardar en Android: " + error.message);
+        }
+    } else {
+        // Modo Web PC
+        const blob = new Blob([contenido], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = nombreArchivo; 
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { document.body.removeChild(a); window.URL.revokeObjectURL(url); }, 100);
+    }
+}
+
+function importarConfiguracion() {
+    window.accionCargarPerfil = function() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json'; 
+        
+        input.onchange = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const perfilImportado = JSON.parse(e.target.result);
+                    
+                    // Verificamos de forma básica que es un backup válido de la app
+                    let keysImportadas = 0;
+                    for (const key in perfilImportado) {
+                        if (key.startsWith("METEO_")) {
+                            localStorage.setItem(key, perfilImportado[key]);
+                            keysImportadas++;
+                        }
+                    }
+                    if (keysImportadas > 0) {
+                        if (typeof mensajeAvisoRecarga === 'function') {
+                            mensajeAvisoRecarga(``, `<div style="text-align: center;">
+                            <p>✅ Se ha importado la configuración.</p>
+                        </div>`);
+                        } else {
+                            alert("✅ Se ha importado la configuración.");
+                            location.reload();
+                        }
+                    } else {
+                        alert('⚠️ El archivo no parece ser una copia de seguridad válida de Fly Decision.');
+                    }
+                } catch (error) {
+                    alert('⚠️ Error al leer el archivo. Asegúrate de que es el archivo .json correcto.');
+                }
+                
+                delete window.accionCargarPerfil; 
+            };
+            reader.readAsText(file);
+        };
+        input.click();
+    };
+
+    const favoritosActuales = obtenerFavoritos();
+
+    if (favoritosActuales.length === 0) {
+        window.accionCargarPerfil();
+    } else {
+        mensajeModalAceptarCancelar(
+        '', 
+        '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📂</p><p><b>⚠️ ATENCIÓN:</b> Importar un archivo de configuración sustituirá toda tu configuración actual y despegues favoritos.</b></p>', 
+        'accionCargarPerfil'
+        );
     }
 }
 
@@ -2494,23 +2618,34 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                         <p>Pronóstico y análisis automático de meteorología para despegues de parapente + Mapa de despegues.</p>`,
                     botones: [
                         {
-                            texto: 'Ver antes una guía general',
-                            estilo: 'secundario',
-                            onclick: function() {
-                                GestorMensajes.ocultar();
-                                mostrarPaso2();
-                            }
-                        },
-                        {
-                            texto: 'Ir a marcar favoritos →',
+                            texto: 'Marcar favoritos',
                             onclick: function() {
                                 GestorMensajes.ocultar();
                                 //modoEdicionFavoritos = true; 
                                 activarEdicionFavoritos();
                                 return;
                             }
+                        },
+                        {
+                            texto: 'Ver la guía general',
+                            estilo: 'secundario',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                mostrarPaso2();
+                            }
+                        },
+                        
+                        {
+                            texto: 'Importar configuración',
+                            estilo: 'secundario',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                importarConfiguracion();
+                                return;
+                            }
                         }
-                    ]
+                    ],
+                    anchoBotones: 300
                 });
             };
 
@@ -2608,7 +2743,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             }
         }
 
-		// Guardamos todos los despegues en la variable global para el buscador
+        // Guardamos todos los despegues en la variable global para el buscador
 		window.bdGlobalDespegues = data.despegues;
 		
 		totalDespeguesDisponibles = data.despegues.length;
@@ -2616,6 +2751,29 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		let despegues = data.despegues;
 		let respuestas = data.respuestas;
         let respuestasEcmwf = dataEcmwf.respuestas;
+
+        // ---------------------------------------------------------------
+        // 🔴 MIGRACIÓN AUTOMÁTICA DE FAVORITOS (De Nombres a ID)
+        // ---------------------------------------------------------------
+        let favoritosActuales = obtenerFavoritos();
+        
+        // Si hay favoritos guardados, y comprobamos que no son números puros...
+        if (favoritosActuales.length > 0 && isNaN(Number(favoritosActuales[0]))) {
+            console.log("🔄 Migrando favoritos de Nombres a IDs numéricos...");
+            let nuevosFavs =[];
+            favoritosActuales.forEach(nombreViejo => {
+                let match = despegues.find(d => d.Despegue === nombreViejo);
+                if (match && match.ID) {
+                    nuevosFavs.push(Number(match.ID));
+                }
+            });
+            localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(nuevosFavs));
+            favoritosActuales = nuevosFavs;
+        } else {
+            // Aseguramos que siempre filtramos y devolvemos arrays de Number
+            favoritosActuales = favoritosActuales.map(Number).filter(n => !isNaN(n));
+        }
+        favoritos = favoritosActuales; // Actualizamos la variable global principal
 
 		if (!respuestas || respuestas.length === 0) {
 			console.error("El JSON no contiene datos meteorológicos.");
@@ -2627,30 +2785,43 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // 🔴 LÓGICA DE FILTRADO O NO DE FAVORITOS
         // ---------------------------------------------------------------
 
-		// Está activo filtro favoritos Y hay favoritos --> hacemos que los array despegues y respuestas contengan solo los datos de los despegues que haya en favoritos 
-		if (soloFavoritos && favoritos.length > 0) {
+		// Primero calculamos si el filtro de distancia está activo para ver si el check de favoritos debe aplicar
+        const sliderDistElemParaFavs = document.getElementById('distancia-slider');
+        let distanciaLimiteParaFavs = 9999;
+        if (sliderDistElemParaFavs && sliderDistElemParaFavs.noUiSlider) {
+            const idxDist = Math.round(parseFloat(sliderDistElemParaFavs.noUiSlider.get()));
+            distanciaLimiteParaFavs = CORTES_DISTANCIA_GLOBAL[idxDist];
+        }
+        
+        const btnIncNoFavsDistancia = document.getElementById('btn-incluir-no-favs-distancia');
+        const incluirNoFavs = btnIncNoFavsDistancia ? btnIncNoFavsDistancia.classList.contains('activo') : false;
+        
+        // Si estamos en modo edición de favoritos, el checkbox está oculto y NO debe interferir
+        const ignorarFiltroFavoritos = (!modoEdicionFavoritos && distanciaLimiteParaFavs < 9999 && incluirNoFavs);
+
+        // Está activo filtro favoritos Y hay favoritos --> hacemos que los array despegues y respuestas contengan solo los datos de los despegues que haya en favoritos 
+		if (soloFavoritos && favoritos.length > 0 && !ignorarFiltroFavoritos) {
 			
-			// 1. Crear un mapa temporal para relacionar Despegue con sus respuestas
+			// 1. Crear un mapa temporal para relacionar el ID con sus respuestas
 			const respuestasMap = new Map();
             const respuestasEcmwfMap = new Map();
 			data.despegues.forEach((d, index) => { 
-				// Usamos data.despegues y data.respuestas originales para el mapa
-				respuestasMap.set(d.Despegue, data.respuestas[index]); 
-                respuestasEcmwfMap.set(d.Despegue, dataEcmwf.respuestas[index]); 
+				respuestasMap.set(Number(d.ID), data.respuestas[index]); 
+                respuestasEcmwfMap.set(Number(d.ID), dataEcmwf.respuestas[index]); 
 			});
 			
 			// 2. Filtrar el array de despegues
-			despegues = despegues.filter(d => favoritos.includes(d.Despegue));
+			despegues = despegues.filter(d => favoritos.includes(Number(d.ID)));
 			
 			// 3. Crear el nuevo array de respuestas solo con los datos filtrados
-			respuestas = despegues.map(d => respuestasMap.get(d.Despegue)).filter(r => r !== undefined);
-            respuestasEcmwf = despegues.map(d => respuestasEcmwfMap.get(d.Despegue)).filter(r => r !== undefined);
+			respuestas = despegues.map(d => respuestasMap.get(Number(d.ID))).filter(r => r !== undefined);
+            respuestasEcmwf = despegues.map(d => respuestasEcmwfMap.get(Number(d.ID))).filter(r => r !== undefined);
 			
 		}
 		 // Está activo filtro favoritos pero no hay favoritos
-		 else if (soloFavoritos && favoritos.length === 0) {
-					respuestas = [];
-                    respuestasEcmwf =[];
+		 else if (soloFavoritos && favoritos.length === 0 && !ignorarFiltroFavoritos) {
+			respuestas = [];
+            respuestasEcmwf =[];
 		}
 	
 		// ---------------------------------------------------------------
@@ -2698,7 +2869,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // ---------------------------------------------------------------
 
 		const thFavorito = document.createElement("th");
-		thFavorito.textContent = "🤍";
+		thFavorito.textContent = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
 		thFavorito.id = "id-thFavorito";
 		thFavorito.rowSpan = 2; // Ocupa las dos filas de la cabecera
 		thFavorito.style.fontSize = "18px";
@@ -2784,7 +2955,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
             "<b>Techo AGL</b>: Altura (km) de la capa límite sobre el suelo (BLH = Boundary Layer Height)<br>" +
             "<b>CAPE</b>: Energía Potencial Convectiva Disponible (J/kg)<br>" +
-            "<b>CIN</b>: Inhibición Convectiva (J/kg en valor absoluto)<br>" +
+            "<b>CIN</b>: Inhibición Convectiva (J/kg en valor absoluto)<br><br>" +
             "<i>Nota: No está disponible el dato esencial de la base de nube ☁️↓ (CBH = Cloud Base Height) para completar la meteo en el despegue (está solicitado en marzo-2026 a la pasarela meteo)</i><br>";
         thMeteo.setAttribute("data-tippy-content", tooltipContentMeteo);
         thMeteo.setAttribute("tabindex", "0"); 
@@ -2964,7 +3135,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             "<li>Lluvia (veto automático y 0 puntos a la hora afectada).</li>" +
             "</ul>" +
             
-            "<b>2. Condiciones para XC (fila inferior):</b><br>" +
+            "<b>2. Condiciones para mantenerse o iniciar XC (fila inferior):</b><br>" +
             "Valora la puntuación de Condiciones del despegue y el potencial térmico para vuelos de distancia (Cross Country) usando los datos del modelo ECMWF:" +
             "<ul style='margin-top: 4px; margin-bottom: 8px;'>" +
             "<li><b>Techo AGL:</b> Premia techos altos sobre el relieve y penaliza los bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li>" +
@@ -3048,19 +3219,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // 🟡 CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Bucle principal despegues.forEach que recorre cada despegue para mostrar o no sus X líneas (la primera celda unida con provincia+despegue+orientacion+opcionales
         // ---------------------------------------------------------------
 
-        // 1. Array de referencia (MISMOS VALORES QUE EN EL SLIDER). Este bloque de lógica "traduce" la posición del slider a kilómetros reales usando el array, para hacer pasos secuenciales en apariencia, pero exponenciales en valor
-        const CORTES_DISTANCIA = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
-
+        // -----------------------------------------------------------
+        // 📍📍📍 ️LÓGICA DE FILTRADO DE CONSTRUCCIÓN DE FILAS POR DESPEGUE POR DISTANCIA
+        // -----------------------------------------------------------
         const sliderDistElem = document.getElementById('distancia-slider');
-        // 2. Obtener valor del slider (que será un ÍNDICE, ej: 18)
-        let indiceSeleccionado = CORTES_DISTANCIA.length - 1;
-        // 3. Traducir índice a Kilómetros reales
-        // Si el índice corresponde a 9999 (el último), es "Todo"
+        let indiceSeleccionado = CORTES_DISTANCIA_GLOBAL.length - 1;
         let distanciaLimite = 9999;
-
+        
         if (sliderDistElem && sliderDistElem.noUiSlider) {
             indiceSeleccionado = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
-            distanciaLimite = CORTES_DISTANCIA[indiceSeleccionado];
+            distanciaLimite = CORTES_DISTANCIA_GLOBAL[indiceSeleccionado];
         }
 		
 		const sliderCondiciones = document.getElementById('condiciones-slider');
@@ -3470,7 +3638,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // 🟩🟧🟥 FIN LÓGICA DE FILTRADO POR Slider condiciones / Puntuación
             // -----------------------------------------------------------
 
-			const idDespegue = d.Despegue; // Usamos el nombre como ID
+			const idDespegue = Number(d.ID); // Usamos el ID numérico
 			const latitud = d.Latitud; 
 			const longitud = d.Longitud;
 			const esFavorito = favoritos.includes(idDespegue);
@@ -3560,14 +3728,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     tdFavorito.title = "Despegue favorito";
                 }
                 
-                //tdFavorito.innerHTML = esFavorito ? "❤️" : "🤍";
-                tdFavorito.innerHTML = esFavorito ? "❤️" : "🤍";
+                //tdFavorito.innerHTML = esFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+                tdFavorito.innerHTML = esFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
                 
                 tdFavorito.onclick = function() {
                     
                     const nuevoEstado = toggleFavorito(idDespegue);
 
-                    tdFavorito.innerHTML = nuevoEstado ? "❤️" : "🤍";
+                    tdFavorito.innerHTML = nuevoEstado ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
                     tdFavorito.title = nuevoEstado ? "Quitar de favoritos" : "Añadir a favoritos";
 
                     todasLasFilas.forEach(f => f.classList.toggle("favorito", nuevoEstado));
@@ -4723,7 +4891,7 @@ function btnRestablecerConfiguración() {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2em; margin: 0;">🔄</p>
-                <p><b>⚠️ ATENCIÓN:</b> Esta acción eliminará la configuración y desmarcará todos los despegues favoritos.</p><p>Si quieres conservar tus despegues favoritos, cancela este mensaje, vete a 🪂❤️<i>Editar favoritos</i> y guárdalos con 💾 <i>Guardar favoritos</i>.</p>
+                <p><b>⚠️ ATENCIÓN:</b> Esta acción eliminará la configuración y desmarcará todos los despegues favoritos.</p><p>Si quieres conservar tus favoritos, cancela este mensaje y guárdalos con 💾<i>Exportar favoritos</i>.</p>
             </div>
         `,
         botones: [            
@@ -4795,7 +4963,7 @@ function filtrarDespeguesProvincias() {
 
     const filas = tbody.rows;
     let visibles = 0;
-    const favoritos = obtenerFavoritos(); 
+    const favoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n)); // Seguro Numérico
     const totalFavoritos = favoritos.length;
 
     // Normalización
@@ -4866,50 +5034,80 @@ function filtrarDespeguesProvincias() {
 
     // 3. ACTUALIZAR CONTADOR
     const divContador = document.getElementById('contador-despegues');
+
+    const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
+    // Verificamos si el botón existe y si tiene la clase 'activo'
+    const incluirNoFavs = btnIncNoFavs ? btnIncNoFavs.classList.contains('activo') : false;
+
     if (divContador) {
         if (modoEdicionFavoritos) {
 
-            // Comprobamos si hay algún filtro aplicado (ya sea el botón de favoritos, buscador o distancia)
-            // Si los visibles son menos que el total, es que hay un filtro.
-            if (visibles < totalDespeguesDisponibles) {
-                
-                // Reutilizamos el diseño del BADGE ROJO
+            if (soloFavoritos) {
+                // CASO A: Filtro "ver solo favoritos" activo (y posiblemente otros como buscador/distancia)
                 const htmlNumeroFiltrado = `
                     <span class="contador-badge-filtro" title="Filtro activo">
                         <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
                         <b>${visibles}</b>
                     </span>`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">) de <b>${totalDespeguesDisponibles}</b> disponibles`;
                 
-                divContador.innerHTML = `Mostrando ${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles`;
+            } else if (visibles < totalDespeguesDisponibles) {
+                // CASO B: Otros filtros activos (distancia, buscador), pero NO "solo favoritos"
+                const htmlNumeroFiltrado = `
+                    <span class="contador-badge-filtro" title="Filtro activo">
+                        <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
+                        <b>${visibles}</b>
+                    </span>`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles`;
                 
             } else {
-                // Sin filtros (se ven todos)
-                divContador.innerHTML = `Mostrando <b>${visibles}</b> de <b>${totalDespeguesDisponibles}</b> despegues disponibles`;
+                // CASO C: Ningún filtro activo (Se ven todos)
+                divContador.innerHTML = `<b>${totalDespeguesDisponibles}</b> despegues disponibles`;
             }
 
-        } else if (totalFavoritos === 0) {
-            divContador.innerHTML = `Total de despegues disponibles: ${totalDespeguesDisponibles}`;
         } else {
-            if (visibles < totalFavoritos) {
-                // CASO A: Hay filtros activos (Visibles es menor que Total) -> APLICAR ESTILO ROJO E ICONO
+            const sliderDistElemParaTabla = document.getElementById('distancia-slider');
+            let distanciaLimiteParaFavs = 9999;
+            if (sliderDistElemParaTabla && sliderDistElemParaTabla.noUiSlider) {
+                const idxDist = Math.round(parseFloat(sliderDistElemParaTabla.noUiSlider.get()));
+                distanciaLimiteParaFavs = CORTES_DISTANCIA_GLOBAL[idxDist];
+            }
+            const ignorarFiltroFavoritos = (distanciaLimiteParaFavs < 9999 && incluirNoFavs);
+
+            if (ignorarFiltroFavoritos) {
+                // Modo Normal + Checkbox "Incluir no favoritos" ACTIVO
                 const htmlNumeroFiltrado = `
                     <span class="contador-badge-filtro" title="Filtro activo">
                         <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
                         <b>${visibles}</b>
                     </span>`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">)`;
                 
-                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalFavoritos}</b> despegues favoritos (disponibles: ${totalDespeguesDisponibles})`;
-                
+            } else if (totalFavoritos === 0) {
+                // Modo Normal pero sin favoritos añadidos aún
+                divContador.innerHTML = `Total de despegues disponibles: ${totalDespeguesDisponibles}`;
+
             } else {
-                // CASO B: No hay filtros (Se ven todos) -> ESTILO NORMAL
-                divContador.innerHTML = `<b>${visibles}</b> de <b>${totalFavoritos}</b> despegues favoritos (disponibles: ${totalDespeguesDisponibles})`;
+                // Modo Normal mostrando favoritos (con Checkbox "Incluir no favoritos" DESACTIVADO)
+                if (visibles < totalFavoritos) {
+                    const htmlNumeroFiltrado = `
+                        <span class="contador-badge-filtro" title="Filtro activo">
+                            <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
+                            <b>${visibles}</b>
+                        </span>`;
+                    
+                    divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalFavoritos}</b> despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)`;
+                } else {
+                    // Modo Normal sin ningún filtro extra aplicado (ej: buscador o distancia vacíos)
+                    divContador.innerHTML = `<b>${visibles}</b> despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)`;
+                }
             }
         }
     }
 
     if (modoEdicionFavoritos) {
         const thFavorito = document.getElementById('id-thFavorito'); 
-        if(thFavorito) thFavorito.innerHTML = "🤍";
+        if(thFavorito) thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
     }
 
     // =========================================================
@@ -4936,7 +5134,7 @@ function filtrarDespeguesProvincias() {
             // Unimos nombre y provincia para buscar
             const nombreSoloDespegue = normalizar(d.Despegue);
             
-            const yaEsFavorito = favoritos.includes(d.Despegue); // d.Despegue es el ID
+            const yaEsFavorito = favoritos.includes(Number(d.ID)); // d.ID
             
             // Queremos los que coincidan con el texto Y NO sean favoritos
             return !yaEsFavorito && nombreSoloDespegue.includes(filtroLimpio);
@@ -4951,7 +5149,7 @@ function filtrarDespeguesProvincias() {
 				<ul class="sugerencia-lista">`;
 
 			coincidenciasGlobales.slice(0, 3).forEach(d => {
-				// Fíjate qué limpio queda el HTML ahora usando las clases CSS
+				// AQUÍ ES DONDE PASAMOS EL d.ID directamente en el onclick
 				html += `
 					<li class="sugerencia-item">
 						<span class="sugerencia-texto">
@@ -4960,8 +5158,8 @@ function filtrarDespeguesProvincias() {
 						</span>
 
 						<button class="sugerencia-btn" 
-								onclick="agregarDespegueDesdeBuscador('${d.Despegue.replace(/'/g, "\\'")}')">
-						+ Añadir favorito ❤️
+								onclick="agregarDespegueDesdeBuscador(${d.ID})">
+						+ Añadir favorito <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">
 						</button>
 					</li>`;
 			});
@@ -4982,7 +5180,8 @@ function filtrarDespeguesProvincias() {
 
 // Función auxiliar para el botón del buscador
 function agregarDespegueDesdeBuscador(idDespegue) {
-    const misFavoritos = obtenerFavoritos();
+    idDespegue = Number(idDespegue); // Aseguramos que sea un número
+    const misFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
     
     if (!misFavoritos.includes(idDespegue)) {
         misFavoritos.push(idDespegue);
@@ -4998,11 +5197,14 @@ function agregarDespegueDesdeBuscador(idDespegue) {
         const divSugerencias = document.getElementById('sugerencias-globales');
         if (divSugerencias) divSugerencias.style.display = 'none';
 
-        // Feedback visual
+        // Intentar encontrar el nombre en la BD global para mostrarlo en el mensaje
+        const despegueObj = window.bdGlobalDespegues.find(d => Number(d.ID) === idDespegue);
+        const nombreDespegue = despegueObj ? despegueObj.Despegue : idDespegue;
+
         if (typeof GestorMensajes !== 'undefined') {
             GestorMensajes.mostrar({
                 tipo: 'modal',
-                htmlContenido: `<p>✅ <b>${idDespegue}</b> añadido</p>`,
+                htmlContenido: `<p>✅ <b>${nombreDespegue}</b> añadido</p>`,
                 botones: [] // Sin botones, porque se cerrará solo
             });
 
@@ -5018,7 +5220,7 @@ function agregarDespegueDesdeBuscador(idDespegue) {
 
         } else {
             // Fallback por si no existe el gestor
-            alert(`✅ ${idDespegue} añadido a favoritos`);
+            alert(`✅ ${nombreDespegue} añadido a favoritos`);
             construir_tabla();
         }
     }
@@ -5284,25 +5486,19 @@ document.addEventListener('DOMContentLoaded', function() {
 	// ---------------------------------------------------------------
     const distanciaSlider = document.getElementById('distancia-slider');
 
-    const CORTES_DISTANCIA = [
-        5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 
-        60, 70, 80, 90, 100, 150, 200, 250, 300, 9999
-    ];
-
     // Índice máximo (para el slider): 0 es el primero, N es el último
-    const MAX_INDEX = CORTES_DISTANCIA.length - 1;
+    const MAX_INDEX = CORTES_DISTANCIA_GLOBAL.length - 1;
     let ultimaDistanciaConfirmada = MAX_INDEX;
 
     if (distanciaSlider) {
         noUiSlider.create(distanciaSlider, {
-            start: MAX_INDEX,    // Empieza en el índice más alto (Todo)
-            direction: 'rtl',    // ⬅️ Izquierda = Índice Máximo ("Todo")
-            step: 1,             // Nos movemos de 1 en 1 por los índices del array
+            start: MAX_INDEX,    
+            direction: 'rtl',    
+            step: 1,             
             connect: 'lower',    
-            tooltips: [{
+            tooltips:[{
                 to: function (index) {
-                    // Convertimos el índice del slider (0, 1, 2...) al valor real en km
-                    const val = CORTES_DISTANCIA[Math.round(index)];
+                    const val = CORTES_DISTANCIA_GLOBAL[Math.round(index)];
                     if (val >= 9999) return "";
                     return `${val}`; 
                 }
@@ -5310,16 +5506,6 @@ document.addEventListener('DOMContentLoaded', function() {
             range: {
                 'min': 0,        // Índice del primer elemento (5 km)
                 'max': MAX_INDEX // Índice del último elemento (Todo)
-            },
-            pips: {
-                mode: 'steps',   // Una marca por cada paso (cada valor del array tendrá su marca)
-                density: 100,    // Forzamos alta densidad para que pinte todos
-                filter: function (value, type) {
-                    return 1;    // 1 = Marca grande (todas iguales)
-                },
-                format: {
-                    to: function() { return ""; } // Sin textos, solo las rayitas
-                }
             }
         });
 
@@ -5347,16 +5533,27 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 
 		// 🔴 ACCIÓN PESADA (Datos): Construcción de tabla
-		// Solo se ejecuta UNA VEZ al soltar el dedo.
-		distanciaSlider.noUiSlider.on('change', function(values) {
+		// Usamos el evento 'set' para burlar un bug interno de la librería
+		distanciaSlider.noUiSlider.on('set', function(values) {
 			const valorNuevo = Math.round(values[0]);
 
 			if (valorNuevo !== ultimaDistanciaConfirmada) {
+                
+                // Si volvemos a "Todo" (distancia infinita), desactivamos el botón
+                if (valorNuevo === MAX_INDEX) {
+                    const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
+                    if (btnIncNoFavs) {
+                        btnIncNoFavs.classList.remove('activo', 'filtro-aplicado');
+                    }
+                }
+
 				// A. Verificación de coordenadas (Seguridad)
 				if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
-					// Revertimos todo si no hay GPS configurado
-					distanciaSlider.noUiSlider.set(MAX_INDEX);
+					
+                    // --- CORRECCIÓN BUG: Actualizamos la variable ANTES de mover el slider
+                    // para evitar que la librería entre en un bucle y lance el mensaje 2 veces.
 					ultimaDistanciaConfirmada = MAX_INDEX;
+                    distanciaSlider.noUiSlider.set(MAX_INDEX);
 					
 					// Limpieza visual inmediata
 					document.getElementById('btn-div-filtro-distancia-toggle').classList.remove('filtro-aplicado');
@@ -5367,20 +5564,28 @@ document.addEventListener('DOMContentLoaded', function() {
 					GestorMensajes.mostrar({
 						tipo: 'modal',
 						htmlContenido: `
-							<p>Como es la primera vez, se necesita configurar una ubicación de origen.</p>
-							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
+                            <div style="text-align: center;">
+                            <p style="font-size: 2.5em; margin: 0 0 10px 0;">📍</p>
+							<p>Como es la primera vez, necesitas configurar una ubicación de origen.</p>
+							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
+                            </div>
 						`,
-						botones: [
-							{ texto: 'Configurar origen', onclick: function() { GestorMensajes.ocultar(); if (modalGeoMenu) modalGeoMenu.style.display = 'flex'; } },
-							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } }
-						]
+						botones:[
+							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
+                            { texto: 'Configurar origen', onclick: function() { 
+                                GestorMensajes.ocultar(); 
+                                const btnGeo = document.getElementById('btn-abrir-geo-menu');
+                                if (btnGeo) btnGeo.click(); // Simulamos un clic en el botón 📍
+                            } }
+						],
+                        anchoBotones: 160
 					});
 					return;
 				}
 
 				// B. Si todo es correcto, guardamos y actualizamos
 				ultimaDistanciaConfirmada = valorNuevo;
-				construir_tabla(false, true); 
+				construir_tabla(false, false); 
 			}
 		});
 	}
@@ -5762,7 +5967,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // --- 2. TEXTOS DE FUTURO O ACTUALIZANDO ---
                 const MARGEN_TOLERANCIA_MS = 45 * 60 * 1000; 
-                const OFFSET_MS = 6 * 60 * 1000;
+                const OFFSET_MS = 1 * 60 * 1000;
 
                 // Futuro Météo-France
                 let textoFuturoMF = "";
@@ -6192,13 +6397,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	window.resetFiltroDistancia = function(reconstruir = true) { //flag para que, si le hemos llamado desde activarEdicionFavoritos(), que ya tiene construir_tabla, no se llame otra vez aquí, ya que ya se hace desde esa función (bloquearía navegador)
 
-        // A. Resetear valor del slider (asegúrate de que distanciaSlider es accesible aquí)
+        // Actualizamos variable de control ANTES de mover el slider
+        ultimaDistanciaConfirmada = MAX_INDEX;
+
+        // A. Resetear valor del slider
         if (typeof distanciaSlider !== 'undefined' && distanciaSlider.noUiSlider) {
             distanciaSlider.noUiSlider.set(MAX_INDEX);
         }
 
-        // B. Actualizar variable de control
-        ultimaDistanciaConfirmada = MAX_INDEX;
+        // --- NUEVO: Desmarcar botón de "incluir no favoritos" al resetear ---
+        const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
+        if (btnIncNoFavs) {
+            btnIncNoFavs.classList.remove('activo', 'filtro-aplicado');
+        }
 
         // C. Limpieza Visual (Quitar clases de activo y rojo)
         const btnToggle = document.getElementById('btn-div-filtro-distancia-toggle');
