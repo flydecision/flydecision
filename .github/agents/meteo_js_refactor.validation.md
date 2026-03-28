@@ -113,6 +113,27 @@
   - `BROWSER_VALIDATION_OK`
   - `get_errors` sin errores en `src/meteo.js`, `src/index.html`, `src/js/meteo/services/geolocation-service.js`, `src/js/meteo/services/map-service.js`, `src/js/meteo/features/favorites/favorites-controller.js`, `src/js/meteo/features/distance-filter/distance-filter-controller.js` y `scripts/validate-meteo-phase.js`
 
+## Fase 5
+
+- Estado validado: separación segura del runtime híbrido, conectividad, panel de actualizaciones, detector de `resume` y control del botón atrás Android
+- Scripts añadidos antes de `meteo.js` en `src/index.html`:
+  - `js/meteo/features/app-navigation/runtime-controller.js`
+  - `js/meteo/features/app-navigation/back-button-controller.js`
+- Módulos recolocados:
+  - `FlyDecisionMeteo.features.appNavigation.runtimeController`
+  - `FlyDecisionMeteo.features.appNavigation.backButtonController`
+- Comandos ejecutados:
+  - `Get-ChildItem -Path src/js/meteo -Recurse -Filter *.js | ForEach-Object { node --check $_.FullName }`
+  - `node --check src/meteo.js`
+  - `node --check scripts/validate-meteo-phase.js`
+  - `node --check scripts/validate-meteo-browser.js`
+  - `node scripts/validate-meteo-phase.js phase5`
+  - `node scripts/validate-meteo-browser.js`
+- Resultado:
+  - `VALIDATION_OK phase5`
+  - `BROWSER_VALIDATION_OK`
+  - `get_errors` sin errores en `src/meteo.js`, `src/index.html`, `src/js/meteo/features/app-navigation/runtime-controller.js`, `src/js/meteo/features/app-navigation/back-button-controller.js` y `scripts/validate-meteo-phase.js`
+
 ## Cobertura de esta validación
 
 - Presencia de funciones públicas principales usadas por HTML inline
@@ -126,8 +147,9 @@
 - Cálculo estable del scoring puro de condiciones y XC sin mezclarlo con el fetch ni con el renderer
 - Disponibilidad de controladores de Favoritos y Distancia sin romper `onclick`, `window.*`, importación/exportación ni reset de filtro
 - Disponibilidad de servicios separados para GPS y mapa Leaflet sin romper la selección de origen ni el modal de distancia
+- Disponibilidad de controladores separados para runtime híbrido, panel de actualizaciones, monitor de red, `resume` y botón atrás Android sin romper la inicialización plain `defer`
 
 ## Riesgos residuales reconocidos
 
 - El harness es de smoke test con stubs, no sustituye pruebas manuales visuales reales en navegador o Android
-- No se ha extraído todavía el núcleo renderizador de `construir_tabla()`, parte de los sliders DOM-dependientes ni el runtime híbrido completo
+- No se ha extraído todavía el núcleo renderizador de `construir_tabla()` ni parte de los sliders DOM-dependientes

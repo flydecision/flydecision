@@ -24,6 +24,9 @@ const meteoTimeRangeModule = meteoDomain.timeRange;
 const meteoScoringModule = meteoDomain.scoring;
 const meteoFavoritesFeature = meteoFeatures.favorites ? meteoFeatures.favorites.controller : null;
 const meteoDistanceFilterFeature = meteoFeatures.distanceFilter ? meteoFeatures.distanceFilter.controller : null;
+const meteoAppNavigationFeature = meteoFeatures.appNavigation || {};
+const meteoRuntimeFeature = meteoAppNavigationFeature.runtimeController;
+const meteoBackButtonFeature = meteoAppNavigationFeature.backButtonController;
 const meteoMessageManager = meteoUi.messages ? meteoUi.messages.manager : null;
 const meteoDialogHelpers = meteoUi.messages ? meteoUi.messages.dialogHelpers : null;
 const meteoTableLayout = meteoUi.tableLayout;
@@ -309,6 +312,34 @@ const distanceFilterController = meteoDistanceFilterFeature.init({
         meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LATITUDE || 'METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
         meteoPreferencesStore.setNumber(METEO_STORAGE_KEYS.DISTANCE_LONGITUDE || 'METEO_FILTRO_DISTANCIA_LON_INICIAL', lon);
     },
+});
+
+const runtimeController = meteoRuntimeFeature.init({
+    buildTable: (...args) => construir_tabla(...args),
+    formatHourUTC: (...args) => formatHourUTC(...args),
+    formatTimeAgo: (...args) => formatTimeAgo(...args),
+    getForecastCache: () => DATOS_METEO_CACHE,
+    getOfflineMode: () => esModoOffline,
+    getUpdateSchedules: () => ({
+        mf: HorariosMediosActualizacion,
+        ecmwf: HorariosMediosActualizacionEcmwf,
+    }),
+    setOfflineMode: (value) => {
+        esModoOffline = value;
+        syncPhase1State('esModoOffline', esModoOffline);
+        return esModoOffline;
+    },
+    showAcceptCancelModal: (...args) => mensajeModalAceptarCancelar(...args),
+    showLoading: () => mostrarLoading(),
+});
+
+const backButtonController = meteoBackButtonFeature.init({
+    finishFavoriteEditMode: () => finalizarEdicionFavoritos(),
+    getEditingMode: () => modoEdicionFavoritos,
+    getMessageManager: () => GestorMensajes,
+    setFocusMode: (value) => setModoEnfoque(value),
+    toggleConfigPanel: () => alternardivConfiguracion(),
+    toggleDistancePanel: () => alternardivDistancia(),
 });
 
 // ---------------------------------------------------------------
@@ -1395,8 +1426,7 @@ async function cargarDatosMeteoConstruccion(forzarRecarga = false) {
 
     if (forecastData.isOffline) {
         // Añadimos una marca para saber que estamos en "modo offline"
-        if (forecastData.data.timestamp) lastDataGenerationTimestamp = new Date(forecastData.data.timestamp).getTime();
-        if (forecastData.data.model_run_ref_time) jsonModelInitTimestamp = new Date(forecastData.data.model_run_ref_time).getTime();
+        runtimeController.syncOfflineBootstrapTimestamps(forecastData.data);
     }
 
     // Guardamos todos los despegues en la variable global para el buscador
@@ -4500,429 +4530,21 @@ document.addEventListener('DOMContentLoaded', function() {
 	// 🔴 PANEL INFO ACTUALIZACIONES
 	// ---------------------------------------------------------------
 
-    // ===============================================================
-    // 1. VARIABLES GLOBALES Y CONFIGURACIÓN
-    // ===============================================================
-    
-    // Configuración de Tiempos
-    const TIEMPO_CONFIRMACION_OFFLINE = 5000; // 5 seg. antes 1 minuto de paciencia antes de mostrar sin conexión..
-    const TIEMPO_CONFIRMACION_ONLINE  = 1000;  // 1 seg de margen al recuperar conexión
-    //const HEARTBEAT_INTERVALO = 10000;         // Revisar pulso cada 10s
-
-    // Variables de Control
-    let timerCiclo = null;
-    let timerOffline = null; // Para la cuenta atrás de 1 min
-    let timerOnline = null;  // Para la cuenta atrás de 5 seg
-    let intervaloActualizacion = 60000; 
-
-    // Estado del Sistema
-    let avisoOfflineActivo = false; // Esta es la variable MAESTRA que decide si mostramos la nube naranja
-    let statusActualizaciónEnCurso = false;
-    let hayErrorData = false;
-
-    // Datos
-    let lastStatusTimestamp = 0;
-    let currentStatusText = 'Cargando...'; 
-    let currentStatusTextEcmwf = 'Cargando...'; 
-    let lastDataGenerationTimestamp = 0;
-    let lastDataGenerationTimestampEcmwf = 0; 
-    let jsonModelInitTimestamp = 0; 
-    let jsonModelInitTimestampEcmwf = 0; 
-
-    // ===============================================================
-    // 2. GESTOR CENTRAL DE CONEXIÓN (El Cerebro)
-    // ===============================================================
-    
     function gestionarCambioConexion(estadoDetectado) {
-        if (estadoDetectado === 'offline') {
-            // Cancelamos cualquier intento de volver a online
-            if (timerOnline) { clearTimeout(timerOnline); timerOnline = null; }
-
-            // Si ya estamos avisando de offline, no hacemos nada.
-            // Si NO estamos avisando, iniciamos la cuenta atrás de 1 minuto.
-            if (!avisoOfflineActivo && !timerOffline) {
-                console.log(new Date().toLocaleString(), `⏳ Detectada desconexión. Esperando ${TIEMPO_CONFIRMACION_OFFLINE/1000}s...`); // 1 min
-                timerOffline = setTimeout(() => {
-                    console.log("❌ TIEMPO AGOTADO: Activando Modo Offline.");
-                    avisoOfflineActivo = true; // ¡Aquí activamos la alerta visual!
-                    cicloActualizacion();      // Refrescamos pantalla para que salga la nube
-                    timerOffline = null;
-                }, TIEMPO_CONFIRMACION_OFFLINE);
-            }
-        } 
-        else if (estadoDetectado === 'online') {
-            // Cancelamos cualquier cuenta atrás hacia offline (el túnel ha terminado)
-            if (timerOffline) { 
-                clearTimeout(timerOffline); 
-                timerOffline = null; 
-                //console.log(new Date().toLocaleString(), "✅ Recuperado antes de 1 min");
-            }
-
-            // Si estábamos en modo offline (aviso activo) O si arrancamos sin red (esModoOffline)
-            if ((avisoOfflineActivo || esModoOffline) && !timerOnline) {
-                 console.log(new Date().toLocaleString(), `📶 Red detectada. Esperando ${TIEMPO_CONFIRMACION_ONLINE/1000}s de estabilidad...`);
-                 timerOnline = setTimeout(() => {
-                    // *** Doble check de seguridad por si acaso ***
-                    if (navigator.onLine === false) return;
-
-                     console.log(new Date().toLocaleString(), "Conexión estable. Recargando datos...");
-                     avisoOfflineActivo = false; // Quitamos la alerta
-                     esModoOffline = false;      // Quitamos flag de caché inicial
-                     cicloActualizacion();       // Refrescamos y pedimos datos nuevos
-                     construir_tabla(true);
-                     timerOnline = null;
-                 }, TIEMPO_CONFIRMACION_ONLINE);
-            }
-        }
-    }
-
-    // ===============================================================
-    // 3. FUNCIONES VISUALES (La Piel)
-    // ===============================================================
-
-    function formatearTextoStatus(textoOriginal) {
-        // Busca una fecha en formato ISO (ej: 2026-02-02T15:30:00+00:00)
-        const patronISO = /(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2})/;
-        const match = textoOriginal.match(patronISO);
-
-        if (match) {
-            try {
-                const fechaObj = new Date(match[0]);
-                // Formatea a hora local del usuario (ej: 17:30)
-                const horaLocal = fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                // Reemplaza la fecha ISO fea por la hora bonita
-                return textoOriginal.replace(match[0], horaLocal);
-            } catch (e) {
-                return textoOriginal; // Si falla, devuelve el original
-            }
-        }
-        return textoOriginal;
+        return runtimeController.manageConnectionChange(estadoDetectado);
     }
 
     function refrescoPanelInfoActualizaciones() {
-        const ahora = new Date();
-        const ahoraMs = ahora.getTime();
-
-        const mostrarErrorOffline = esModoOffline || avisoOfflineActivo;
-
-        // Ocultamos el contenedor viejo de "Próxima Actualización" porque ahora lo inyectamos todo en el de arriba
-        const proximaActualizacionContenedor = document.getElementById('proxima-actualizacion-contenedor');
-        if (proximaActualizacionContenedor) proximaActualizacionContenedor.style.display = 'none';
-
-        // --- A. PANEL CENTRAL DE DATOS UNIFICADO ---
-        const dataGenElement = document.getElementById('data_generation_time');
-        
-        if (dataGenElement) {
-            if ((!lastDataGenerationTimestamp || lastDataGenerationTimestamp === 0) && 
-                typeof DATOS_METEO_CACHE !== 'undefined' && 
-                DATOS_METEO_CACHE && 
-                DATOS_METEO_CACHE.timestamp) {
-                lastDataGenerationTimestamp = new Date(DATOS_METEO_CACHE.timestamp).getTime();
-            }
-
-            if (mostrarErrorOffline) {
-                const timeAgoGen = (lastDataGenerationTimestamp > 0 && typeof formatTimeAgo === 'function') 
-                                   ? formatTimeAgo(lastDataGenerationTimestamp, ahoraMs) 
-                                   : 'tiempo desconocido';
-
-                dataGenElement.innerHTML = `<span style="color: #ff8400; font-weight: bold; padding-left: 15px; display: block; margin-top: 4px;">⚠️ No hay conexión a Internet. Antigüedad datos: ${timeAgoGen}.</span>`;
-                
-            } else if (lastDataGenerationTimestamp > 0 && !hayErrorData) {
-                
-                // --- 1. TEXTOS DE PASADO ---
-                const timeAgoMF = typeof formatTimeAgo === 'function' ? formatTimeAgo(lastDataGenerationTimestamp, ahoraMs) : '';
-                const timeAgoEC = (typeof formatTimeAgo === 'function' && lastDataGenerationTimestampEcmwf > 0) ? formatTimeAgo(lastDataGenerationTimestampEcmwf, ahoraMs) : '...';
-                
-                const refMF = (jsonModelInitTimestamp > 0 && typeof formatHourUTC === 'function') ? formatHourUTC(new Date(jsonModelInitTimestamp)) : '';
-                const refEC = (jsonModelInitTimestampEcmwf > 0 && typeof formatHourUTC === 'function') ? formatHourUTC(new Date(jsonModelInitTimestampEcmwf)) : '';
-
-                // --- 2. TEXTOS DE FUTURO O ACTUALIZANDO ---
-                const MARGEN_TOLERANCIA_MS = 45 * 60 * 1000; 
-                const OFFSET_MS = 1 * 60 * 1000;
-
-                // Futuro Météo-France
-                let textoFuturoMF = "";
-                if (currentStatusText && !currentStatusText.toUpperCase().includes("OPERATIVO")) {
-                    textoFuturoMF = `<span style="color:#e39300; font-weight:bold;">🔄 ${formatearTextoStatus(currentStatusText)}</span>`;
-                } else {
-                    let proximaFechaMF = null;
-                    for (let h of HorariosMediosActualizacion) {
-                        const [hora, min] = h.split(':').map(Number);
-                        const intento = new Date(ahora);
-                        intento.setUTCHours(hora, min, 0, 0);
-                        let distancia = lastDataGenerationTimestamp > 0 ? intento.getTime() - lastDataGenerationTimestamp : Infinity;
-                        if (intento > ahora && distancia > MARGEN_TOLERANCIA_MS) { proximaFechaMF = intento; break; }
-                    }
-                    if (!proximaFechaMF) {
-                        const [hora, min] = HorariosMediosActualizacion[0].split(':').map(Number);
-                        proximaFechaMF = new Date(ahora);
-                        proximaFechaMF.setUTCDate(proximaFechaMF.getUTCDate() + 1); 
-                        proximaFechaMF.setUTCHours(hora, min, 0, 0);
-                    }
-                    const diffMsMF = (proximaFechaMF - ahora) + OFFSET_MS;
-                    const diffMinsMF = Math.floor(diffMsMF / 60000) % 60;
-                    const diffHorasMF = Math.floor(Math.floor(diffMsMF / 60000) / 60);
-                    let textoMF = diffHorasMF > 0 ? `~${diffHorasMF} h ${diffMinsMF} min` : `~${diffMinsMF} min`;
-                    textoFuturoMF = `🔄 Próxima: <b>${textoMF}</b>`;
-                }
-
-                // Futuro ECMWF
-                let textoFuturoEC = "";
-                if (currentStatusTextEcmwf && !currentStatusTextEcmwf.toUpperCase().includes("OPERATIVO")) {
-                    textoFuturoEC = `<span style="color:#e39300; font-weight:bold;">🔄 ${formatearTextoStatus(currentStatusTextEcmwf)}</span>`;
-                } else {
-                    let proximaFechaEC = null;
-                    for (let h of HorariosMediosActualizacionEcmwf) {
-                        const [hora, min] = h.split(':').map(Number);
-                        const intento = new Date(ahora);
-                        intento.setUTCHours(hora, min, 0, 0);
-                        let distancia = lastDataGenerationTimestampEcmwf > 0 ? intento.getTime() - lastDataGenerationTimestampEcmwf : Infinity;
-                        if (intento > ahora && distancia > MARGEN_TOLERANCIA_MS) { proximaFechaEC = intento; break; }
-                    }
-                    if (!proximaFechaEC) {
-                        const [hora, min] = HorariosMediosActualizacionEcmwf[0].split(':').map(Number);
-                        proximaFechaEC = new Date(ahora);
-                        proximaFechaEC.setUTCDate(proximaFechaEC.getUTCDate() + 1); 
-                        proximaFechaEC.setUTCHours(hora, min, 0, 0);
-                    }
-                    const diffMsEC = (proximaFechaEC - ahora) + OFFSET_MS;
-                    const diffMinsEC = Math.floor(diffMsEC / 60000) % 60;
-                    const diffHorasEC = Math.floor(Math.floor(diffMsEC / 60000) / 60);
-                    let textoEC = diffHorasEC > 0 ? `~${diffHorasEC} h ${diffMinsEC} min` : `~${diffMinsEC} min`;
-                    textoFuturoEC = `🔄 Próxima: <b>${textoEC}</b>`;
-                }
-
-                // --- 3. DIBUJAR LISTA UNIFICADA ---
-                dataGenElement.innerHTML = `
-                    <ul style="margin: 5px 0 0 0; padding-left: 30px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
-                        <li style="margin-bottom: 8px;">
-                            <b>Météo-France:</b> hace <b>${timeAgoMF}</b> <span style="color:#777; font-style:italic;">(ref. ${refMF}Z)</span><br>
-                            <span>${textoFuturoMF}</span>
-                        </li>
-                        <li>
-                            <b>ECMWF:</b> hace <b>${timeAgoEC}</b> <span style="color:#777; font-style:italic;">(ref. ${refEC}Z)</span><br>
-                            <span>${textoFuturoEC}</span>
-                        </li>
-                    </ul>`;
-                    
-            } else if (!hayErrorData) {
-                dataGenElement.textContent = 'Cargando...';
-            }
-        }
-
-        // --- C. ICONO FLOTANTE (NUBE) ---
-        const offlineIcon = document.getElementById('offline-indicator');
-        if (offlineIcon) {
-            offlineIcon.style.display = mostrarErrorOffline ? 'flex' : 'none';
-        }
+        return runtimeController.refreshUpdatePanel();
     }
-
-    // ===============================================================
-    // 4. FUNCIONES DE DATOS (El Músculo)
-    // ===============================================================
-
-    async function PanelInfoActualizaciones_Web() {
-        if (!navigator.onLine) return; 
-
-        try {
-            // Hacemos las dos peticiones a la vez (si una falla, no bloquea a la otra)
-            const [resMF, resECMWF] = await Promise.all([
-                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
-                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time_ecmwf.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null)
-            ]);
-            
-            // Procesar Météo-France
-            if (resMF && resMF.ok) {
-                const textContent = (await resMF.text()).trim();
-                if (textContent) {
-                    const parts = textContent.split('|');
-                    if (parts[0]) lastDataGenerationTimestamp = new Date(parts[0]).getTime();
-                    if (parts[1]) jsonModelInitTimestamp = new Date(parts[1]).getTime();
-                    else jsonModelInitTimestamp = lastDataGenerationTimestamp;
-                    if (!isNaN(lastDataGenerationTimestamp)) hayErrorData = false; 
-                }
-            }
-
-            // Procesar ECMWF
-            if (resECMWF && resECMWF.ok) {
-                const textContentE = (await resECMWF.text()).trim();
-                if (textContentE) {
-                    const partsE = textContentE.split('|');
-                    if (partsE[0]) lastDataGenerationTimestampEcmwf = new Date(partsE[0]).getTime();
-                    if (partsE[1]) jsonModelInitTimestampEcmwf = new Date(partsE[1]).getTime();
-                    else jsonModelInitTimestampEcmwf = lastDataGenerationTimestampEcmwf;
-                }
-            }
-
-        } catch (e) {
-            console.warn("Error general timestamps:", e.message);
-        }
-    }
-
-    async function PanelInfoActualizaciones_Status_auto_actualizaciones() {
-        if (!navigator.onLine) return 60000;
-
-        let nuevoIntervalo = 60000;
-        let redMF = false;
-        let redECMWF = false;
-
-        try {
-            const[resMF, resECMWF] = await Promise.all([
-                fetch('https://flydecision.com/meteo-status.txt?t=' + Date.now()).catch(() => null),
-                fetch('https://flydecision.com/meteo-status-ecmwf.txt?t=' + Date.now()).catch(() => null)
-            ]);
-
-            let currentlyUpdatingMF = false;
-            let currentlyUpdatingEC = false;
-
-            // --- ESTADO MÉTÉO-FRANCE ---
-            if (resMF && resMF.ok) {
-                redMF = true;
-                currentStatusText = (await resMF.text()).trim();
-                const upperText = currentStatusText.toUpperCase();
-
-                if (upperText.includes("OPERATIVO")) {
-                    currentlyUpdatingMF = false;
-                } else if (!upperText.includes("ERROR") && !upperText.includes("FATAL") && !upperText.includes("FAILED")) {
-                    currentlyUpdatingMF = true;
-                    nuevoIntervalo = 5000; // Aceleramos
-                }
-            }
-
-            // --- ESTADO ECMWF ---
-            if (resECMWF && resECMWF.ok) {
-                redECMWF = true;
-                currentStatusTextEcmwf = (await resECMWF.text()).trim();
-                const upperTextE = currentStatusTextEcmwf.toUpperCase();
-
-                if (upperTextE.includes("OPERATIVO")) {
-                    currentlyUpdatingEC = false;
-                } else if (!upperTextE.includes("ERROR") && !upperTextE.includes("FATAL") && !upperTextE.includes("FAILED")) {
-                    currentlyUpdatingEC = true;
-                    nuevoIntervalo = 5000; // Aceleramos
-                }
-            } else {
-                if (currentStatusTextEcmwf === 'Cargando...') currentStatusTextEcmwf = "Esperando primer dato...";
-            }
-
-            // --- LÓGICA DE AVISO (MODAL) Y CUENTA ATRÁS ---
-            
-            // 1. Detectar si alguno ha terminado de actualizar (pasó de true a false)
-            const mfTermino = (window.oldUpdatingMF && !currentlyUpdatingMF);
-            const ecTermino = (window.oldUpdatingEC && !currentlyUpdatingEC);
-
-            if (mfTermino || ecTermino) {
-                if (typeof mensajeModalAceptarCancelar === 'function') {
-                    mensajeModalAceptarCancelar('', '<p>ℹ️ Hay datos meteorológicos actualizados.</p><p>¿Recargar ahora?</p>', 'recargarPagina');
-                }
-            }
-
-            // 2. Guardamos el estado en la ventana para leerlo en el siguiente segundo
-            window.oldUpdatingMF = currentlyUpdatingMF;
-            window.oldUpdatingEC = currentlyUpdatingEC;
-
-            // 3. Modificamos tu variable global para que la UI (la cuenta atrás) se oculte
-            //    si *CUALQUIERA* de los dos está en pleno proceso.
-            statusActualizaciónEnCurso = (currentlyUpdatingMF || currentlyUpdatingEC);
-
-            // --- RED ---
-            if (!redMF && !redECMWF) {
-                gestionarCambioConexion('offline');
-            } else {
-                gestionarCambioConexion('online');
-            }
-
-        } catch (e) {
-            console.warn("Fallo fetch status:", e.message);
-            gestionarCambioConexion('offline');
-        }
-        return nuevoIntervalo;
-    }
-
-    // ===============================================================
-    // 5. CICLO Y DETECTORES (El Corazón)
-    // ===============================================================
 
     async function cicloActualizacion() {
-        if (timerCiclo) clearTimeout(timerCiclo);
-
-        // Si el gestor dice que estamos Offline confirmado, no gastamos datos en fetch
-        if (!avisoOfflineActivo) {
-            const [_, intervaloSugerido] = await Promise.all([
-                PanelInfoActualizaciones_Web(),
-                PanelInfoActualizaciones_Status_auto_actualizaciones()
-            ]);
-            if (intervaloSugerido) {
-                intervaloActualizacion = intervaloSugerido;
-            } else {
-                intervaloActualizacion = 60000;
-            }
-        }
-
-        refrescoPanelInfoActualizaciones(); // Pintamos la pantalla
-        timerCiclo = setTimeout(cicloActualizacion, intervaloActualizacion);
+        return runtimeController.runUpdateCycle();
     }
-
-    // --- Listeners y Heartbeat ---
-    
-    // 1. Eventos del Navegador
-    window.addEventListener('offline', () => gestionarCambioConexion('offline'));
-    window.addEventListener('online',  () => gestionarCambioConexion('online'));
-
-    // ===============================================================
-    // 5.5 Monitorización red con plugin Capacitor Network
-    // ===============================================================
 
     async function iniciarMonitorRedNativo() {
-        // Solo si estamos en la App con Capacitor
-        if (typeof Capacitor !== 'undefined' && Capacitor.Plugins.Network) {
-            const Network = Capacitor.Plugins.Network;
-
-            // 1. CHEQUEO INICIAL: ¿Cómo hemos despertado?
-            const status = await Network.getStatus();
-            
-            if (status.connected) {
-                console.log(new Date().toLocaleString(), "⚡ [Nativo] Red detectada al inicio. Forzando ONLINE.");
-                // Forzamos la verdad: HAY RED.
-                // Esto evita que el Heartbeat falle los primeros segundos y active el timerOffline.
-                avisoOfflineActivo = false;
-                
-                // Si hubiera algún timer de "se ha ido la luz" pendiente, lo matamos.
-                if (timerOffline) { clearTimeout(timerOffline); timerOffline = null; }
-                
-                // Opcional: Si quieres refrescar la pantalla ya, descomenta:
-                // cicloActualizacion(); 
-            } else {
-                console.log(new Date().toLocaleString(), "⚡ [Nativo] Arrancamos SIN red.");
-                gestionarCambioConexion('offline');
-            }
-
-            // 2. ESCUCHA ACTIVA: El sistema operativo nos avisa de cambios
-            Network.addListener('networkStatusChange', (status) => {
-                console.log(new Date().toLocaleString(), '📡 [Nativo] Cambio de red:', status.connected);
-                if (status.connected) {
-                    gestionarCambioConexion('online');
-                } else {
-                    gestionarCambioConexion('offline');
-                }
-            });
-        }
+        return runtimeController.startNativeNetworkMonitor();
     }
-
-    // ===============================================================
-    // 6. ARRANQUE
-    // ===============================================================
-
-    // Esperamos a que TODA la web (imágenes, estilos, scripts) esté cargada
-    window.addEventListener('load', () => {
-
-        iniciarMonitorRedNativo();
-        
-        setTimeout(() => {
-            //iniciarHeartbeat();
-            cicloActualizacion(); 
-        }, 3000); 
-    });
 
 	// ---------------------------------------------------------------
 	// 🔴 CONFIGURACIÓN GLOBAL DE TOOLTIPS (TIPPY.JS)
@@ -5107,293 +4729,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // ---------------------------------------------------------------
 	// 🔴 ANDROID: Control botón "Atras" de Android
 	// ---------------------------------------------------------------
-    
-    // Solo activamos esto si estamos en una App Nativa (Android)
-    // (En iOS no existe botón atrás físico, así que no afecta)
-    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
-        
-        const App = window.Capacitor.Plugins.App;
 
-        App.addListener('backButton', ({ canGoBack }) => {
-
-            // --- PRIORIDAD 0: Tippy.js (Globos de ayuda) ---
-            const tippyAbierto = document.querySelector('[data-tippy-root]');
-            if (tippyAbierto) {
-                if (typeof tippy !== 'undefined' && tippy.hideAll) {
-                    tippy.hideAll();
-                } else {
-                    document.body.click();
-                }
-                return; 
-            }
-
-            // --- PRIORIDAD 1: Mensajes MODALES (Bloqueantes) ---
-            // SOLO cerramos los modales puros (ej: Alerta de "No has seleccionado favoritos")
-            // Si cerramos esto, seguimos en la pantalla de edición, que es lo correcto.
-            const modalAbierto = document.querySelector('.mensaje-modal.visible');
-            if (modalAbierto) {
-                GestorMensajes.ocultar();
-                return; 
-            }
-
-            // --- PRIORIDAD 1.5: Modal de Geolocalización (Código especial) ---
-            const modalGeo = document.getElementById("modal-geo-menu");
-            // Comprobamos si existe y si NO está oculto (display no es 'none')
-            if (modalGeo && modalGeo.style.display !== 'none') {
-                
-                // Opción Recomendada: Simular clic en la "X" de cerrar.
-                // Así, si tienes lógica extra al cerrar (limpiar mapas, variables, etc.), se ejecutará.
-                const btnCerrar = document.getElementById("btn-cerrar-menu");
-                if (btnCerrar) {
-                    btnCerrar.click();
-                } else {
-                    // Fallback: Si no encuentra el botón, lo ocultamos a la fuerza
-                    modalGeo.style.display = 'none';
-                }
-                return; // ¡Importante parar aquí!
-            }
-
-            // --- PRIORIDAD 2: Modo Edición Favoritos (El cambio clave) ---
-            // Si estamos editando, el botón atrás actúa como el botón "Finalizar".
-            // Esto cerrará automáticamente el mensaje no-modal, restaurará el horario, etc.
-            if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos === true) {
-                
-                // Intentamos cerrar llamando a la función y evaluando su resultado (true o false = no hay favoritos marcados)
-                finalizarEdicionFavoritos();
-                // Si NO se pudo cerrar (porque devolvió false, ej: lista vacía),
-                // tu función 'cerrar...' ya habrá mostrado un MODAL de error.
-                // La próxima vez que pulses atrás, saltará la PRIORIDAD 1 y cerrará ese error.
-                return; 
-            }
-
-            // --- PRIORIDAD 3: Otros Mensajes NO-MODALES ---
-            // Si hay algún otro mensaje flotante que NO sea el de favoritos (porque ya pasó el check anterior)
-            const mensajeFlotante = document.querySelector('.mensaje-no-modal.visible');
-            if (mensajeFlotante) {
-                GestorMensajes.ocultar();
-                return;
-            }
-
-            // --- PRIORIDAD 4: Paneles Laterales ---
-            
-            // Panel Configuración
-            const panelConfig = document.getElementById("div-configuracion");
-            if (panelConfig && panelConfig.classList.contains("activo")) {
-                alternardivConfiguracion(); 
-                return;
-            }
-
-            // Panel Filtro Distancia
-            const panelDistancia = document.getElementById("div-filtro-distancia");
-            if (panelDistancia && panelDistancia.classList.contains("activo")) {
-                alternardivDistancia(); 
-                return;
-            }
-
-            // Panel Filtro Condiciones
-            const panelCondiciones = document.getElementById("div-filtro-condiciones");
-            if (panelCondiciones && panelCondiciones.classList.contains("activo")) {
-                // Cierre manual o con función toggle si tienes
-                panelCondiciones.classList.remove("activo");
-                const btnCond = document.getElementById("btn-div-filtro-condiciones-toggle");
-                if (btnCond) btnCond.classList.remove("activo");
-                if (typeof setModoEnfoque === "function") setModoEnfoque(false);
-                return;
-            }
-            
-            // Panel Horario (si aplica)
-            const panelHorario = document.querySelector('.div-filtro-horario');
-            if (panelHorario && panelHorario.style.display !== 'none' && panelHorario.classList.contains('activo')) {
-                // Tu lógica si el horario se expande/contrae
-                return;
-            }
-
-            // --- PRIORIDAD FINAL: Salir de la App ---
-            confirmarSalidaApp();
-        });
-    }
-
-    // Función específica para preguntar antes de matar la app
     function confirmarSalidaApp() {
-        GestorMensajes.mostrar({
-            tipo: 'modal',
-            htmlContenido: '<p>¿Quieres salir de la aplicación?</p>',
-            botones: [
-                {
-                    texto: 'No',
-                    onclick: function() { GestorMensajes.ocultar(); },
-                    estilo: 'secundario'
-                },
-                {
-                    texto: 'Sí, salir',
-                    estilo: 'background-color: #d32f2f; color: white;', // Rojo para indicar cierre
-                    onclick: function() {
-                        // Esta orden cierra la App nativa de Android
-                        window.Capacitor.Plugins.App.exitApp();
-                    }
-                }
-            ]
-        });
-    }    
-
-    // ---------------------------------------------------------------
-	// 🔴 ANDROID: Solución para el problema de que ocupe el área de notificaciones Android y otras soluciones
-	// ---------------------------------------------------------------
-
-    const esAndroidApp = window.Capacitor && window.Capacitor.getPlatform() === 'android';
-
-    if (esAndroidApp) {
-        // 1. Extraemos StatusBar y TextZoom de los plugins
-        const { StatusBar, TextZoom } = window.Capacitor.Plugins;
-
-        // 2. Aplicamos la clase base INMEDIATAMENTE
-        document.body.classList.add('modo-android-manual');
-
-        // Función asíncrona para asegurar el orden de ejecución
-        const configurarAndroid = async () => {
-            try {
-                // --- A. CONFIGURACIÓN DE STATUS BAR ---
-                
-                // Forzar modo "Edge-to-Edge" (Overlay TRUE)
-                await StatusBar.setOverlaysWebView({ overlay: true });
-
-                // Poner estilo y color transparente
-                await StatusBar.setStyle({ style: 'LIGHT' });
-                // await StatusBar.setBackgroundColor({ color: '#00000000' }); 
-
-                // Leer la altura real
-                const info = await StatusBar.getInfo();
-                const altura = info.height;
-                console.log(`📏 Altura detectada: ${altura}px`);
-
-                // Inyectar en CSS
-                if (altura > 0) {
-                    document.documentElement.style.setProperty('--android-sb-height', `${altura}px`);
-                }
-
-                // --- B. CONFIGURACIÓN DE TAMAÑO DE TEXTO (TEXTZOOM) ---
-                // Esto es lo nuevo que corrige el problema de la letra gigante
-                if (TextZoom) {
-                    await TextZoom.set({ value: 1 }); // Fuerza el tamaño al 100% (16px reales)
-                    console.log('✅ TextZoom forzado a 1');
-                }
-
-            } catch (err) {
-                console.warn('Error configurando Android (StatusBar/TextZoom):', err);
-                
-                // Fallback de seguridad por si falla la altura
-                document.documentElement.style.setProperty('--android-sb-height', '35px');
-            }
-        };
-
-        // Ejecutamos todo junto
-        configurarAndroid();
+        return backButtonController.confirmExit();
     }
 
     // ---------------------------------------------------------------
 	// 🔴 ANDROID: Detectar el "Despertar" de la App (Resume) para que pida datos nuevos y se actualice slider rango horario
 	// ---------------------------------------------------------------
 
-function iniciarDetectorResume() {
-        
-        // Esta lógica funciona tanto para App nativa como para Web (usando visibilitychange)
-const checkResume = async () => {
-            //console.log(new Date().toLocaleString(), "📱 [Resume/Visible] Vuelto a primer plano");
-
-            const ahora = Date.now();
-            // Si lastDataGenerationTimestamp es 0 o null, forzamos antigüedad máxima
-            const timestampDatosLocal = lastDataGenerationTimestamp || 0;
-            const antiguedad = ahora - timestampDatosLocal; 
-            
-            // 2 horas
-            const UMBRAL_RECARGA = 7200000; 
-
-            if (antiguedad > UMBRAL_RECARGA) { 
-                //console.log("⏳ Datos locales antiguos (>2h). Comprobando servidor...");
-                
-                statusActualizaciónEnCurso = false; 
-                mostrarLoading(); // Mostramos spinner por si acaso
-                
-                try {
-                    // 1. PASO CLAVE: Consultamos SOLO el archivo ligero de texto (bytes)
-                    // Usamos un timeout corto (3s) para no bloquear si la red es mala
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-                    const response = await fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { 
-                        cache: "no-store",
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
-
-                    if (response.ok) {
-                        const textContent = (await response.text()).trim();
-                        const parts = textContent.split('|');
-                        const serverTimestamp = parts[0] ? new Date(parts[0]).getTime() : 0;
-
-                        // 2. COMPARAMOS
-                        if (serverTimestamp > timestampDatosLocal) {
-                            //console.log("🔄 Datos nuevos en servidor. Descargando JSON completo...");
-                            // AHORA SÍ: Forzamos recarga total
-                            await construir_tabla(true); 
-                        } else {
-                            //console.log("✅ No hay datos nuevos en servidor. Manteniendo caché local.");
-                            // AHORA NO: Usamos false para tirar de caché RAM/LocalStorage
-                            // Esto solo repinta la tabla (muy rápido) sin descargar nada
-                            construir_tabla(false); 
-                        }
-                    } else {
-                        throw new Error("Error al leer timestamp del servidor");
-                    }
-
-                } catch (error) {
-                    console.warn("⚠️ Fallo al comprobar versión servidor (u Offline). Manteniendo caché local.", error);
-                    // Si falla la comprobación (ej. túnel, offline), no borramos nada.
-                    // Repintamos con caché para asegurar que la UI esté bien.
-                    construir_tabla(false);
-                }
-
-                // 3. Lanzamos el ciclo de verificación de status para actualizar textos de "hace X tiempo"
-                if (typeof cicloActualizacion === 'function') {
-                    cicloActualizacion(); 
-                }
-
-            } else {
-                //console.log("✅ Datos recientes (<2h). Solo refresco UI.");
-                if (typeof refrescoPanelInfoActualizaciones === 'function') {
-                    refrescoPanelInfoActualizaciones();
-                }
-                
-                if (typeof iniciarMonitorRedNativo === 'function') {
-                    iniciarMonitorRedNativo();
-                }
-            }
-        };
-
-        // A. DETECCIÓN NATIVA (Android/iOS)
-        const isNative = window.Capacitor && window.Capacitor.isNativePlatform();
-        if (isNative) {
-            const AppPlugin = window.Capacitor.Plugins ? window.Capacitor.Plugins.App : null;
-            if (AppPlugin) {
-                AppPlugin.addListener('resume', checkResume);
-            }
-        } 
-
-        // B. DETECCIÓN WEB (PC / Móvil navegador)
-        // Esto cubre el caso de cambiar de pestaña y volver horas después
-        document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === 'visible') {
-                checkResume();
-            }
-        });
+    function iniciarDetectorResume() {
+        return runtimeController.startResumeDetector();
     }
 
-    // EJECUCIÓN
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', iniciarDetectorResume);
-    } else {
-        iniciarDetectorResume();
-    }
+    runtimeController.start();
+    backButtonController.register();
 
     // ---------------------------------------------------------------
 	// 🔴 ANDROID: GESTOR DE ENLACES EXTERNOS (In-App Browser)

@@ -93,6 +93,29 @@ const phaseScripts = {
         'js/meteo/ui/table/table-layout.js',
         'meteo.js',
     ],
+    phase5: [
+        'js/meteo/utils/constants.js',
+        'js/meteo/compat/public-api.js',
+        'js/meteo/state/preferences-store.js',
+        'js/meteo/state/favorites-store.js',
+        'js/meteo/state/app-state.js',
+        'js/meteo/state/cache-store.js',
+        'js/meteo/services/meteo-data-service.js',
+        'js/meteo/services/geolocation-service.js',
+        'js/meteo/services/map-service.js',
+        'js/meteo/domain/distance.js',
+        'js/meteo/domain/orientation.js',
+        'js/meteo/domain/time-range.js',
+        'js/meteo/domain/scoring.js',
+        'js/meteo/features/favorites/favorites-controller.js',
+        'js/meteo/features/distance-filter/distance-filter-controller.js',
+        'js/meteo/features/app-navigation/runtime-controller.js',
+        'js/meteo/features/app-navigation/back-button-controller.js',
+        'js/meteo/ui/messages/message-manager.js',
+        'js/meteo/ui/messages/dialog-helpers.js',
+        'js/meteo/ui/table/table-layout.js',
+        'meteo.js',
+    ],
 };
 
 const requiredRuntimeFunctions = [
@@ -754,6 +777,29 @@ function validatePhase4Modules(context) {
     assert(typeof root.features.distanceFilter.controller.resetFilter === 'function', 'distanceFilter.controller.resetFilter no está disponible');
 }
 
+function validatePhase5Modules(context, meteoSource) {
+    const root = context.window.FlyDecisionMeteo;
+
+    assert(root.features && root.features.appNavigation, 'No existe features.appNavigation');
+    assert(root.features.appNavigation.runtimeController, 'No existe runtimeController');
+    assert(typeof root.features.appNavigation.runtimeController.init === 'function', 'runtimeController.init no está disponible');
+    assert(typeof root.features.appNavigation.runtimeController.start === 'function', 'runtimeController.start no está disponible');
+    assert(typeof root.features.appNavigation.runtimeController.syncOfflineBootstrapTimestamps === 'function', 'runtimeController.syncOfflineBootstrapTimestamps no está disponible');
+    assert(typeof root.features.appNavigation.runtimeController.runUpdateCycle === 'function', 'runtimeController.runUpdateCycle no está disponible');
+
+    assert(root.features.appNavigation.backButtonController, 'No existe backButtonController');
+    assert(typeof root.features.appNavigation.backButtonController.init === 'function', 'backButtonController.init no está disponible');
+    assert(typeof root.features.appNavigation.backButtonController.register === 'function', 'backButtonController.register no está disponible');
+    assert(typeof root.features.appNavigation.backButtonController.confirmExit === 'function', 'backButtonController.confirmExit no está disponible');
+
+    assert(/function gestionarCambioConexion\s*\(estadoDetectado\)\s*{\s*return runtimeController\.manageConnectionChange\(estadoDetectado\);\s*}/.test(meteoSource), 'No existe el puente gestionarCambioConexion');
+    assert(/function refrescoPanelInfoActualizaciones\s*\(\)\s*{\s*return runtimeController\.refreshUpdatePanel\(\);\s*}/.test(meteoSource), 'No existe el puente refrescoPanelInfoActualizaciones');
+    assert(/async function cicloActualizacion\s*\(\)\s*{\s*return runtimeController\.runUpdateCycle\(\);\s*}/.test(meteoSource), 'No existe el puente cicloActualizacion');
+    assert(/async function iniciarMonitorRedNativo\s*\(\)\s*{\s*return runtimeController\.startNativeNetworkMonitor\(\);\s*}/.test(meteoSource), 'No existe el puente iniciarMonitorRedNativo');
+    assert(/function confirmarSalidaApp\s*\(\)\s*{\s*return backButtonController\.confirmExit\(\);\s*}/.test(meteoSource), 'No existe el puente confirmarSalidaApp');
+    assert(/function iniciarDetectorResume\s*\(\)\s*{\s*return runtimeController\.startResumeDetector\(\);\s*}/.test(meteoSource), 'No existe el puente iniciarDetectorResume');
+}
+
 function main() {
     const scripts = phaseScripts[phase];
     assert(Array.isArray(scripts), `Fase desconocida: ${phase}`);
@@ -763,20 +809,24 @@ function main() {
     runScripts(context, scripts);
     validateBaseline(context, meteoSource);
 
-    if (phase === 'phase1' || phase === 'phase2' || phase === 'phase25' || phase === 'phase3' || phase === 'phase4') {
+    if (phase === 'phase1' || phase === 'phase2' || phase === 'phase25' || phase === 'phase3' || phase === 'phase4' || phase === 'phase5') {
         validatePhase1Modules(context);
     }
 
-    if (phase === 'phase2' || phase === 'phase25' || phase === 'phase3' || phase === 'phase4') {
+    if (phase === 'phase2' || phase === 'phase25' || phase === 'phase3' || phase === 'phase4' || phase === 'phase5') {
         validatePhase2Modules(context);
     }
 
-    if (phase === 'phase3' || phase === 'phase4') {
+    if (phase === 'phase3' || phase === 'phase4' || phase === 'phase5') {
         validatePhase3Modules(context);
     }
 
-    if (phase === 'phase4') {
+    if (phase === 'phase4' || phase === 'phase5') {
         validatePhase4Modules(context);
+    }
+
+    if (phase === 'phase5') {
+        validatePhase5Modules(context, meteoSource);
     }
 
     console.log(`VALIDATION_OK ${phase}`);
