@@ -12,6 +12,9 @@ const METEO_STORAGE_KEYS = meteoConstants.STORAGE_KEYS || {};
 const meteoPreferencesStore = meteoState.preferencesStore;
 const meteoFavoritesStore = meteoState.favoritesStore;
 const meteoAppState = meteoState.appState;
+const meteoCacheStore = meteoState.cacheStore;
+const meteoServices = meteoRoot.services || {};
+const meteoDataService = meteoServices.meteoDataService;
 const meteoDistanceModule = meteoDomain.distance;
 const meteoOrientationModule = meteoDomain.orientation;
 const meteoMessageManager = meteoUi.messages ? meteoUi.messages.manager : null;
@@ -2060,51 +2063,149 @@ function importarConfiguracion() {
 //*********************************************************************
 // 💽 BASE DE DATOS INDEXEDDB (Modo Offline sin límite de 5MB)
 //*********************************************************************
-const initDB = () => {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open("FlyDecisionDB", 1); //Versión de la DB. Si el año que viene decides que además de la tabla meteoCache quieres crear otra que se llame mapasOffline, tendrás que cambiar ese 1 por un 2 y gestionar el evento de actualización
-        request.onupgradeneeded = (e) => {
-            const db = e.target.result;
-            if (!db.objectStoreNames.contains("meteoCache")) {
-                db.createObjectStore("meteoCache");
+const initDB = meteoCacheStore.initDB;
+const guardarEnCacheIDB = meteoCacheStore.guardarEnCacheIDB;
+const leerDeCacheIDB = meteoCacheStore.leerDeCacheIDB;
+
+// ---------------------------------------------------------------
+// 🔴 CARGA DE DATOS CARGA DE DATOS OPTIMIZADA (MEMORIA -> RED -> LOCALSTORAGE) del meteo-datos.json a "despegues" (nombre, coordenadas, orientaciones..) y "respuestas" (la meteo de cada despegue generada por la llamada a la API y código que ejecuta el generador .php)
+// ---------------------------------------------------------------
+async function cargarDatosMeteoConstruccion(forzarRecarga = false) {
+    const forecastData = await meteoDataService.getForecastData({ forceReload: forzarRecarga });
+
+    DATOS_METEO_CACHE = meteoAppState.get('DATOS_METEO_CACHE', null);
+    DATOS_METEO_ECMWF_CACHE = meteoAppState.get('DATOS_METEO_ECMWF_CACHE', null);
+    esModoOffline = meteoAppState.get('esModoOffline', false);
+
+    if (forecastData.isOffline) {
+        // Añadimos una marca para saber que estamos en "modo offline"
+        if (forecastData.data.timestamp) lastDataGenerationTimestamp = new Date(forecastData.data.timestamp).getTime();
+        if (forecastData.data.model_run_ref_time) jsonModelInitTimestamp = new Date(forecastData.data.model_run_ref_time).getTime();
+    }
+
+    // Guardamos todos los despegues en la variable global para el buscador
+    bdGlobalDespegues = syncPhase1State('bdGlobalDespegues', forecastData.data.despegues);
+    window.bdGlobalDespegues = bdGlobalDespegues;
+
+    totalDespeguesDisponibles = forecastData.data.despegues.length;
+
+    return forecastData;
+}
+
+// ---------------------------------------------------------------
+// 🔴 MIGRACIÓN AUTOMÁTICA DE FAVORITOS (De Nombres a ID)
+// ---------------------------------------------------------------
+// ---------------------------------------------------------------
+// 🔴 LÓGICA DE FILTRADO O NO DE FAVORITOS
+// ---------------------------------------------------------------
+function prepararDatosFavoritosConstruccion(data, dataEcmwf) {
+    let despegues = data.despegues;
+    let respuestas = data.respuestas;
+    let respuestasEcmwf = dataEcmwf.respuestas;
+
+    let favoritosActuales = obtenerFavoritos();
+
+    // Si hay favoritos guardados, y comprobamos que no son números puros...
+    if (favoritosActuales.length > 0 && isNaN(Number(favoritosActuales[0]))) {
+        console.log('🔄 Migrando favoritos de Nombres a IDs numéricos...');
+        let nuevosFavs =[];
+        favoritosActuales.forEach(nombreViejo => {
+            let match = despegues.find(d => d.Despegue === nombreViejo);
+            if (match && match.ID) {
+                nuevosFavs.push(Number(match.ID));
             }
-        };
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
-};
-
-const guardarEnCacheIDB = async (key, data) => {
-    try {
-        const db = await initDB();
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction("meteoCache", "readwrite");
-            const store = tx.objectStore("meteoCache");
-            store.put(data, key); // Guarda el objeto directo (super rápido, sin stringify)
-            tx.oncomplete = () => resolve(true);
-            tx.onerror = () => reject(tx.error);
         });
-    } catch(e) { 
-        console.error("Error guardando en BD offline", e); 
-        return false;
+        meteoFavoritesStore.setFavorites(nuevosFavs);
+        favoritosActuales = nuevosFavs;
+    } else {
+        // Aseguramos que siempre filtramos y devolvemos arrays de Number
+        favoritosActuales = favoritosActuales.map(Number).filter(n => !isNaN(n));
     }
-};
+    favoritos = favoritosActuales; // Actualizamos la variable global principal
 
-const leerDeCacheIDB = async (key) => {
-    try {
-        const db = await initDB();
-        return new Promise((resolve, reject) => {
-            const tx = db.transaction("meteoCache", "readonly");
-            const store = tx.objectStore("meteoCache");
-            const request = store.get(key);
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
-        });
-    } catch(e) { 
-        console.error("Error leyendo de BD offline", e); 
-        return null; 
+    if (!respuestas || respuestas.length === 0) {
+        console.error('El JSON no contiene datos meteorológicos.');
+        ocultarLoading(); // Asegura quitar loading
+        return null;
     }
-};
+
+    // Primero calculamos si el filtro de distancia está activo para ver si el check de favoritos debe aplicar
+    const sliderDistElemParaFavs = document.getElementById('distancia-slider');
+    let distanciaLimiteParaFavs = 9999;
+    if (sliderDistElemParaFavs && sliderDistElemParaFavs.noUiSlider) {
+        const idxDist = Math.round(parseFloat(sliderDistElemParaFavs.noUiSlider.get()));
+        distanciaLimiteParaFavs = CORTES_DISTANCIA_GLOBAL[idxDist];
+    }
+
+    const btnIncNoFavsDistancia = document.getElementById('btn-incluir-no-favs-distancia');
+    const incluirNoFavs = btnIncNoFavsDistancia ? btnIncNoFavsDistancia.classList.contains('activo') : false;
+
+    // Si estamos en modo edición de favoritos, el checkbox está oculto y NO debe interferir
+    const ignorarFiltroFavoritos = (!modoEdicionFavoritos && distanciaLimiteParaFavs < 9999 && incluirNoFavs);
+
+    // Está activo filtro favoritos Y hay favoritos --> hacemos que los array despegues y respuestas contengan solo los datos de los despegues que haya en favoritos
+    if (soloFavoritos && favoritos.length > 0 && !ignorarFiltroFavoritos) {
+
+        // 1. Crear un mapa temporal para relacionar el ID con sus respuestas
+        const respuestasMap = new Map();
+        const respuestasEcmwfMap = new Map();
+        data.despegues.forEach((d, index) => {
+            respuestasMap.set(Number(d.ID), data.respuestas[index]);
+            respuestasEcmwfMap.set(Number(d.ID), dataEcmwf.respuestas[index]);
+        });
+
+        // 2. Filtrar el array de despegues
+        despegues = despegues.filter(d => favoritos.includes(Number(d.ID)));
+
+        // 3. Crear el nuevo array de respuestas solo con los datos filtrados
+        respuestas = despegues.map(d => respuestasMap.get(Number(d.ID))).filter(r => r !== undefined);
+        respuestasEcmwf = despegues.map(d => respuestasEcmwfMap.get(Number(d.ID))).filter(r => r !== undefined);
+
+    }
+     // Está activo filtro favoritos pero no hay favoritos
+     else if (soloFavoritos && favoritos.length === 0 && !ignorarFiltroFavoritos) {
+        respuestas = [];
+        respuestasEcmwf =[];
+    }
+
+    return {
+        despegues,
+        respuestas,
+        respuestasEcmwf,
+    };
+}
+
+// ---------------------------------------------------------------
+// 🔴 LECTURA DEL SLIDER RANGO HORARIO (necesario para la construcción de la tabla)
+// ---------------------------------------------------------------
+function resolverRangoHorarioConstruccion(respuestas, soloHorasDeLuz) {
+    // Primero lo creamos o recreamos con los datos base de la construcción de la tabla mediante una función en que hemos encapsulado su creacción (que depende de esos datos, no como los otros sliders de filtros, que son más estáticos).
+    gestionarSliderHoras(respuestas, soloHorasDeLuz);
+
+    const sliderHoras = document.getElementById('horario-slider');
+
+    // Declaramos las variables FUERA (usamos let porque su valor va a cambiar)
+    let indiceInicioRangoHorario;
+    let indiceFinRangoHorario;
+
+    if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario.length > 0) {
+        const vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
+
+        // 2. Asignamos el valor (SIN poner 'let' ni 'var' aquí)
+        indiceInicioRangoHorario = window.indicesHorasRangoHorario[vals[0]];
+        indiceFinRangoHorario    = window.indicesHorasRangoHorario[vals[1]];
+
+    } else {
+        // Fallback
+        indiceInicioRangoHorario = 0;
+        indiceFinRangoHorario = 99999;
+    }
+
+    return {
+        indiceInicioRangoHorario,
+        indiceFinRangoHorario,
+    };
+}
 
 //*********************************************************************
 // 🟦🟦🟦🟦🟦 FUNCIÓN PRINCIPAL: CONTRUIR LA TABLA 
@@ -2373,186 +2474,23 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             modoEdicionFavoritos = false;
         }
 
-        // ---------------------------------------------------------------
-        // 🔴 CARGA DE DATOS CARGA DE DATOS OPTIMIZADA (MEMORIA -> RED -> LOCALSTORAGE) del meteo-datos.json a "despegues" (nombre, coordenadas, orientaciones..) y "respuestas" (la meteo de cada despegue generada por la llamada a la API y código que ejecuta el generador .php)
-        // ---------------------------------------------------------------
-
 		const soloHorasDeLuz = localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") === "true";
+        const forecastData = await cargarDatosMeteoConstruccion(forzarRecarga);
+        const data = forecastData.data;
+        const dataEcmwf = forecastData.dataEcmwf;
 
-		// const response = await fetch(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" });
-
-		// if (!response.ok) {
-		// 	throw new Error(`Error al cargar el archivo JSON: ${response.statusText}`);
-		// }
-
-		// const data = await response.json();
-
-        // Estas serán las variables locals que usará el resto de la función
-        let data; //// Esta será la variable local que usará el resto de la función
-        let dataEcmwf; 
-
-        // 1. ¿Lo tenemos ya en RAM? (Velocidad instantánea)
-        if (DATOS_METEO_CACHE && DATOS_METEO_ECMWF_CACHE) {
-            data = DATOS_METEO_CACHE;
-            dataEcmwf = DATOS_METEO_ECMWF_CACHE;
-        } 
-        else {
-            // 2. Si no está en RAM, intentamos buscarlo fuera
-            try {
-                // Intentamos descargar (Petición de red real)
-                const[res1, res2] = await Promise.all([
-                    fetch(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" }),
-                    fetch(`https://flydecision.com/meteo-datos-ecmwf.json?t=${Date.now()}`, { cache: "no-store" })
-                ]);
-
-                if (!res1.ok || !res2.ok) {
-                    throw new Error(`⚠️ Error al cargar archivos JSON`);
-                }
-
-                // Si llegamos aquí, hay internet. Parseamos y guardamos en RAM.
-                data = await res1.json();
-                dataEcmwf = await res2.json();
-                
-                DATOS_METEO_CACHE = syncPhase1State('DATOS_METEO_CACHE', data); 
-                DATOS_METEO_ECMWF_CACHE = syncPhase1State('DATOS_METEO_ECMWF_CACHE', dataEcmwf);
-                esModoOffline = syncPhase1State('esModoOffline', false);
-
-                // Guardamos en la Base de Datos del navegador (Sin límite de espacio de 5MB y sin bloquear la pantalla)
-                guardarEnCacheIDB('METEO_DATOS_JSON_CACHE', data);
-                guardarEnCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE', dataEcmwf);
-
-            } catch (error) {
-                // 3. PLAN DE EMERGENCIA: Falló la red, miramos en IndexedDB
-                console.warn("⚠️ Fallo de conexión. Buscando en BD offline (IndexedDB)...");
-
-                const cachedData = await leerDeCacheIDB('METEO_DATOS_JSON_CACHE');
-                const cachedDataEcmwf = await leerDeCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE');
-
-                if (cachedData && cachedDataEcmwf) {
-                    data = cachedData; // En IndexedDB ya viene como objeto JS limpio, no hace falta JSON.parse
-                    dataEcmwf = cachedDataEcmwf;
-                    DATOS_METEO_CACHE = syncPhase1State('DATOS_METEO_CACHE', data); 
-                    DATOS_METEO_ECMWF_CACHE = syncPhase1State('DATOS_METEO_ECMWF_CACHE', dataEcmwf);
-                    esModoOffline = syncPhase1State('esModoOffline', true);
-                    
-                    // Añadimos una marca para saber que estamos en "modo offline"
-                    if(data.timestamp) lastDataGenerationTimestamp = new Date(data.timestamp).getTime();
-                    if(data.model_run_ref_time) jsonModelInitTimestamp = new Date(data.model_run_ref_time).getTime();
-                } else {
-                    console.error("❌ No hay conexión ni datos en la BD offline.");
-                    ocultarLoading(); // Importante quitar el loading si fallamos
-                    throw error; 
-                }
-            }
-        }
-
-        // Guardamos todos los despegues en la variable global para el buscador
-        bdGlobalDespegues = syncPhase1State('bdGlobalDespegues', data.despegues);
-        window.bdGlobalDespegues = bdGlobalDespegues;
-		
-		totalDespeguesDisponibles = data.despegues.length;
-		
-		let despegues = data.despegues;
-		let respuestas = data.respuestas;
-        let respuestasEcmwf = dataEcmwf.respuestas;
-
-        // ---------------------------------------------------------------
-        // 🔴 MIGRACIÓN AUTOMÁTICA DE FAVORITOS (De Nombres a ID)
-        // ---------------------------------------------------------------
-        let favoritosActuales = obtenerFavoritos();
-        
-        // Si hay favoritos guardados, y comprobamos que no son números puros...
-        if (favoritosActuales.length > 0 && isNaN(Number(favoritosActuales[0]))) {
-            console.log("🔄 Migrando favoritos de Nombres a IDs numéricos...");
-            let nuevosFavs =[];
-            favoritosActuales.forEach(nombreViejo => {
-                let match = despegues.find(d => d.Despegue === nombreViejo);
-                if (match && match.ID) {
-                    nuevosFavs.push(Number(match.ID));
-                }
-            });
-            meteoFavoritesStore.setFavorites(nuevosFavs);
-            favoritosActuales = nuevosFavs;
-        } else {
-            // Aseguramos que siempre filtramos y devolvemos arrays de Number
-            favoritosActuales = favoritosActuales.map(Number).filter(n => !isNaN(n));
-        }
-        favoritos = favoritosActuales; // Actualizamos la variable global principal
-
-		if (!respuestas || respuestas.length === 0) {
-			console.error("El JSON no contiene datos meteorológicos.");
-            ocultarLoading(); // Asegura quitar loading
+        const datosPreparados = prepararDatosFavoritosConstruccion(data, dataEcmwf);
+        if (!datosPreparados) {
             return;
         }
 
-        // ---------------------------------------------------------------
-        // 🔴 LÓGICA DE FILTRADO O NO DE FAVORITOS
-        // ---------------------------------------------------------------
+        const despegues = datosPreparados.despegues;
+        const respuestas = datosPreparados.respuestas;
+        const respuestasEcmwf = datosPreparados.respuestasEcmwf;
 
-		// Primero calculamos si el filtro de distancia está activo para ver si el check de favoritos debe aplicar
-        const sliderDistElemParaFavs = document.getElementById('distancia-slider');
-        let distanciaLimiteParaFavs = 9999;
-        if (sliderDistElemParaFavs && sliderDistElemParaFavs.noUiSlider) {
-            const idxDist = Math.round(parseFloat(sliderDistElemParaFavs.noUiSlider.get()));
-            distanciaLimiteParaFavs = CORTES_DISTANCIA_GLOBAL[idxDist];
-        }
-        
-        const btnIncNoFavsDistancia = document.getElementById('btn-incluir-no-favs-distancia');
-        const incluirNoFavs = btnIncNoFavsDistancia ? btnIncNoFavsDistancia.classList.contains('activo') : false;
-        
-        // Si estamos en modo edición de favoritos, el checkbox está oculto y NO debe interferir
-        const ignorarFiltroFavoritos = (!modoEdicionFavoritos && distanciaLimiteParaFavs < 9999 && incluirNoFavs);
-
-        // Está activo filtro favoritos Y hay favoritos --> hacemos que los array despegues y respuestas contengan solo los datos de los despegues que haya en favoritos 
-		if (soloFavoritos && favoritos.length > 0 && !ignorarFiltroFavoritos) {
-			
-			// 1. Crear un mapa temporal para relacionar el ID con sus respuestas
-			const respuestasMap = new Map();
-            const respuestasEcmwfMap = new Map();
-			data.despegues.forEach((d, index) => { 
-				respuestasMap.set(Number(d.ID), data.respuestas[index]); 
-                respuestasEcmwfMap.set(Number(d.ID), dataEcmwf.respuestas[index]); 
-			});
-			
-			// 2. Filtrar el array de despegues
-			despegues = despegues.filter(d => favoritos.includes(Number(d.ID)));
-			
-			// 3. Crear el nuevo array de respuestas solo con los datos filtrados
-			respuestas = despegues.map(d => respuestasMap.get(Number(d.ID))).filter(r => r !== undefined);
-            respuestasEcmwf = despegues.map(d => respuestasEcmwfMap.get(Number(d.ID))).filter(r => r !== undefined);
-			
-		}
-		 // Está activo filtro favoritos pero no hay favoritos
-		 else if (soloFavoritos && favoritos.length === 0 && !ignorarFiltroFavoritos) {
-			respuestas = [];
-            respuestasEcmwf =[];
-		}
-	
-		// ---------------------------------------------------------------
-		// 🔴 LECTURA DEL SLIDER RANGO HORARIO (necesario para la construcción de la tabla)
-		// ---------------------------------------------------------------
-		
-		// Primero lo creamos o recreamos con los datos base de la construcción de la tabla mediante una función en que hemos encapsulado su creacción (que depende de esos datos, no como los otros sliders de filtros, que son más estáticos).
-		gestionarSliderHoras(respuestas, soloHorasDeLuz);
-		
-		const sliderHoras = document.getElementById('horario-slider');
-
-		// Declaramos las variables FUERA (usamos let porque su valor va a cambiar)
-        let indiceInicioRangoHorario;
-        let indiceFinRangoHorario;
-
-        if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario.length > 0) {
-            const vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
-            
-            // 2. Asignamos el valor (SIN poner 'let' ni 'var' aquí)
-            indiceInicioRangoHorario = window.indicesHorasRangoHorario[vals[0]];
-            indiceFinRangoHorario    = window.indicesHorasRangoHorario[vals[1]];
-            
-        } else {
-            // Fallback
-            indiceInicioRangoHorario = 0;
-            indiceFinRangoHorario = 99999;
-        }
+        const rangoHorario = resolverRangoHorarioConstruccion(respuestas, soloHorasDeLuz);
+        const indiceInicioRangoHorario = rangoHorario.indiceInicioRangoHorario;
+        const indiceFinRangoHorario = rangoHorario.indiceFinRangoHorario;
 
         // ---------------------------------------------------------------
         // 🔴 CONSTRUCCIÓN DE LA TABLA

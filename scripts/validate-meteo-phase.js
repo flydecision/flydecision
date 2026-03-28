@@ -25,6 +25,36 @@ const phaseScripts = {
         'js/meteo/ui/table/table-layout.js',
         'meteo.js',
     ],
+    phase2: [
+        'js/meteo/utils/constants.js',
+        'js/meteo/compat/public-api.js',
+        'js/meteo/state/preferences-store.js',
+        'js/meteo/state/favorites-store.js',
+        'js/meteo/state/app-state.js',
+        'js/meteo/state/cache-store.js',
+        'js/meteo/services/meteo-data-service.js',
+        'js/meteo/domain/distance.js',
+        'js/meteo/domain/orientation.js',
+        'js/meteo/ui/messages/message-manager.js',
+        'js/meteo/ui/messages/dialog-helpers.js',
+        'js/meteo/ui/table/table-layout.js',
+        'meteo.js',
+    ],
+    phase25: [
+        'js/meteo/utils/constants.js',
+        'js/meteo/compat/public-api.js',
+        'js/meteo/state/preferences-store.js',
+        'js/meteo/state/favorites-store.js',
+        'js/meteo/state/app-state.js',
+        'js/meteo/state/cache-store.js',
+        'js/meteo/services/meteo-data-service.js',
+        'js/meteo/domain/distance.js',
+        'js/meteo/domain/orientation.js',
+        'js/meteo/ui/messages/message-manager.js',
+        'js/meteo/ui/messages/dialog-helpers.js',
+        'js/meteo/ui/table/table-layout.js',
+        'meteo.js',
+    ],
 };
 
 const requiredRuntimeFunctions = [
@@ -610,6 +640,20 @@ function validatePhase1Modules(context) {
     assert(Array.isArray(favorites) && favorites.length === 3, 'favoritesStore no normaliza favoritos');
 }
 
+function validatePhase2Modules(context) {
+    const root = context.window.FlyDecisionMeteo;
+
+    assert(root.state && root.state.cacheStore, 'No existe cacheStore');
+    assert(typeof root.state.cacheStore.initDB === 'function', 'cacheStore.initDB no está disponible');
+    assert(typeof root.state.cacheStore.guardarEnCacheIDB === 'function', 'cacheStore.guardarEnCacheIDB no está disponible');
+    assert(typeof root.state.cacheStore.leerDeCacheIDB === 'function', 'cacheStore.leerDeCacheIDB no está disponible');
+    assert(root.services && root.services.meteoDataService, 'No existe meteoDataService');
+    assert(typeof root.services.meteoDataService.getForecastData === 'function', 'getForecastData no está disponible');
+    assert(typeof getGlobalValue(context, 'cargarDatosMeteoConstruccion') === 'function', 'No existe cargarDatosMeteoConstruccion');
+    assert(typeof getGlobalValue(context, 'prepararDatosFavoritosConstruccion') === 'function', 'No existe prepararDatosFavoritosConstruccion');
+    assert(typeof getGlobalValue(context, 'resolverRangoHorarioConstruccion') === 'function', 'No existe resolverRangoHorarioConstruccion');
+}
+
 function main() {
     const scripts = phaseScripts[phase];
     assert(Array.isArray(scripts), `Fase desconocida: ${phase}`);
@@ -619,8 +663,12 @@ function main() {
     runScripts(context, scripts);
     validateBaseline(context, meteoSource);
 
-    if (phase === 'phase1') {
+    if (phase === 'phase1' || phase === 'phase2' || phase === 'phase25') {
         validatePhase1Modules(context);
+    }
+
+    if (phase === 'phase2' || phase === 'phase25') {
+        validatePhase2Modules(context);
     }
 
     console.log(`VALIDATION_OK ${phase}`);
