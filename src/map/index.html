@@ -25,6 +25,8 @@
 <!-- Plugin noUiSlider -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.1/nouislider.min.css" />
 
+<script src="config.js"></script>
+
 <style>
 body, html {
 	margin: 0;
@@ -2073,7 +2075,7 @@ complete: function(results) {
 			<div class="popup-collapsible-content" style="display: none; overflow-wrap: break-word; ">
 
 				<div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
-				<div style="margin-bottom: 5px;">Altitud: <b>${escapeHtml(altitud)} m</b></div>
+				<div style="margin-bottom: 5px;">Altitud aprox.: <b>${escapeHtml(altitud)} m</b></div>
 				<div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="Nivel de uso del despegue según fecha del último vuelo registrado (referencia: nov-2025): Verde 0–6 meses, Naranja 6–12, Amarillo 12–24, Blanco >24 meses sin vuelos">Nivel de actividad: ${dot}</div>
 				<div style="margin-bottom: 5px;">Nº de vuelos en XContest: <b>${escapeHtml(vuelos)}</b></div>
 				<div style="margin-bottom: 5px;">Nº de km medios recorridos: <b>${escapeHtml(KmMediaDisplay)}</b></div>

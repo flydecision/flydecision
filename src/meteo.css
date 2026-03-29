@@ -653,10 +653,6 @@ input[type="search"]::-webkit-search-cancel-button {
 	border: 1px solid #333;
     border-radius: 5px;
 }
-.btn-accion:hover {
-  background-color: #0078d4;
-  color: #ffffff !important;
-}
 
 /* 🔴 DIVs dentro de los paneles -------------------------------- */
 
@@ -841,10 +837,10 @@ details.config-accordion .accordion-content {
     z-index: 15;             /* Asegura que quede por encima si roza algo */
 }
 
-.div-paneles-controles-transparente img {
+/* .div-paneles-controles-transparente img {
     width: 20px;
     height: 20px;
-}
+} */
 
 
 /* 🔴 MENÚ 2 EDICIÓN FAVORITOS -------------------------------- */
@@ -1522,19 +1518,29 @@ span.grados {
     margin-right: 18px !important;
 }
 .noUi-horizontal .noUi-handle {
-	width: 20px !important;
-	height: 24px !important;
-	top: -5px !important;
-	right: -9px !important;
+    width: 28px !important;   /* Antes 20px */
+    height: 28px !important;  /* Antes 24px */
+    top: -7px !important;     /* Antes -5px (lo centramos verticalmente) */
+    right: -14px !important;  /* Antes -9px (mitad exacta del width para centrarlo) */
     border: 1px solid #999 !important;
+    border-radius: 6px !important; /* Esquinas ligeramente más suaves */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important; /* Ligera sombra para darle volumen */
 }
+
 .noUi-handle:after, .noUi-handle:before {
-    left: 8px !important;
-    top: 4px !important;
+    top: 6px !important;      /* Antes 4px */
+    height: 14px !important;  /* Altura de la raya */
     width: 2px !important;
 }
+.noUi-handle:before {
+    left: 10px !important;    /* Rayita izquierda */
+}
+.noUi-handle:after {
+    left: 15px !important;    /* Rayita derecha (5px de separación) */
+}
+
 .noUi-horizontal .noUi-tooltip {
-    cursor: grab !important;
+    cursor:pointer !important;
     /* border-radius: 3px; */
 	font-weight: bold;
 	/* ESTILOS DE ALINEACIÓN */
@@ -1545,8 +1551,27 @@ span.grados {
     /* white-space: nowrap; */ /* Prohíbe terminantemente que se parta la línea */
 }
 .noUi-touch-area {
-    cursor: grab !important;
+    cursor: pointer !important;
+    position: absolute !important;
+    
+    /* 1. Ponemos el punto de anclaje en el centro exacto del botón blanco */
+    top: 50% !important;
+    left: 50% !important;
+    
+    /* 2. Desplazamos la caja hacia atrás para que su centro coincida con el anclaje */
+    transform: translate(-50%, -50%) !important;
+    
+    /* 3. Forzamos el tamaño táctil ideal (Fat Finger) ignorando el 100% nativo */
+    width: 44px !important;
+    height: 44px !important;
+    
+    /* 4. Limpieza de seguridad */
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important; 
+    border: none !important;
 }
+
 .noUi-handle .noUi-tooltip {
     display: flex !important;
     /* flex-direction: column !important; */
@@ -1578,7 +1603,7 @@ span.grados {
 #horario-slider .noUi-pips-horizontal {
     padding: 0px !important;
     height: 45px !important;
-    top: 130% !important;
+    top: 145% !important;
     left: -4px !important;
     width: 100% !important;
 }
@@ -1629,8 +1654,8 @@ span.grados {
   display: none !important;
 }
 #horario-slider .noUi-marker-horizontal.noUi-marker-large {
-    height: 6px;
-    margin-top: -27px;  
+    height: 9px;
+    margin-top: -32px;  
 }
 
 /* 🟡 SLIDERS. Personalizados. Configuración Horario -------------------------------- */
@@ -1793,11 +1818,36 @@ span.grados {
     /* border-radius: 5px; */
 	border: 1px solid #333;
 }
-.btn-icon-trigger:hover {
-	background-color: #0078d4;
-	color: #ffffff !important;
-    border-color: #999;
-    /* transform: scale(1.1); */
+/* Estilos para cuando el botón de "<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">+❤️" está activo (hundido) */
+/* 1. Estilo base del botón (hereda de .btn-icon-trigger pero con ajustes) */
+#btn-incluir-no-favs-distancia {
+    border-radius: 4px !important;
+    width: auto !important;
+    height: 24px !important; /* Igualamos altura a los botones del menú superior */
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #333 !important;
+    background-color: #f0f0f0 !important;
+    box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2) !important;
+    transition: all 0.2s;
+    font-size: 16px;
+    cursor: pointer;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+/* 3. ESTADO ACTIVO/FILTRO APLICADO (La clave) 
+   Copiamos exactamente la lógica de los botones de filtro del menú principal 
+   para que se vea igual */
+#btn-incluir-no-favs-distancia.filtro-aplicado {
+    border-color: #ff0000 !important;
+    border-width: 1px !important;
+    /* La sombra roja que crea el borde grueso visualmente */
+    box-shadow: 
+        inset 0 0 0 2px #ff0000, 
+        inset 1px 1px 3px rgba(0,0,0,0.4) !important;
+    background-color: #ff000042 !important;
 }
 
 /* 2. Fondo Oscuro (Overlay) - Compartido por Menu y Mapa */
@@ -1816,7 +1866,7 @@ span.grados {
     transform: translateY(var(--vv-offset-top, 0px));
 }
 
-/* 3. Caja Blanca del Modal */
+/* Caja Blanca del Modal */
 .modal-content {
     background: white;
     padding: 8px;
@@ -1831,20 +1881,12 @@ span.grados {
 /* Tamaños específicos */
 .small-modal { width: 360px; }
 .map-modal-size {
-
-	/* width: 90%;
-	max-width: 600px; */
-	width: 80vw;
-    height: 60vh;
-    
-    /* limitar que no se vea gigante en monitores muy grandes */
-    /* max-width: 1200px; 
-    max-height: 1000px; */
-
-    /* Asegura que si hay contenido dentro (como un mapa), se comporte bien */
+	width: 90vw;
+    height: 85vh; /* Subimos un poco para dar cabida al nuevo layout */
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: auto;
+    box-sizing: border-box;
 }
 
 /* Cabecera del modal */
@@ -1853,18 +1895,16 @@ span.grados {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0px;
+    padding: 5px;
 }
 .modal-header h3 { margin: 0; font-size: 1.1rem; color: #333; }
 
-/* Botón X de cerrar (Estilo redondo Tooltip/Configuración) */
+/* Botón X de cerrar */
 .close-x {
-    /* --- Magia para anclarlo a la esquina --- */
     position: absolute;
     top: 5px;
     right: 5px;
     z-index: 20;
-
-    /* --- Resto del diseño redondo --- */
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -1889,33 +1929,11 @@ span.grados {
     color: #000;
 }
 
-/* Caja de Estado (Coordenadas actuales) */
-.geo-status-box {
-    /* background: #f1f3f5; */
-    padding: 5px;
-    /* border-radius: 6px; */
-    text-align: center;
-    margin-bottom: 20px;
-    /* border: 1px solid #e9ecef; */
-    /* color: #495057; */
-}
-
-/* Grid de botones del menú (GPS, Manual, Mapa) */
-.geo-options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
+/* Estilo botón auxiliar (ahora usado para el GPS) */
 .btn-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     background: white;
     border: 2px solid #dee2e6;
     border-radius: 8px;
-    padding: 5px 5px;
     cursor: pointer;
     transition: all 0.2s;
     color: #333;
@@ -1926,28 +1944,18 @@ span.grados {
     transform: translateY(-3px);
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-.btn-option .emoji { font-size: 28px; margin-bottom: 8px; }
-/* .btn-option span { font-size: 0.85rem; font-weight: 500; } */
 
-/* 4. Botones de acción del Mapa (Aceptar / Cancelar) */
 .modal-footer {
-    margin-top: 15px;
     display: flex;
     justify-content: space-between;
-    gap: 10px;
 }
 .btn-aceptar, .btn-cancelar {
-    flex: 1;
-    padding: 10px;
     border-radius: 6px;
     border: none;
     font-weight: bold;
     cursor: pointer;
     font-size: 14px;
-	max-width: 150px;
 }
-.btn-aceptar { background-color: #007bff; color: white; }
-
 .btn-cancelar { background-color: #999; color: white; }
 
 /* Animación */
@@ -2271,7 +2279,6 @@ span.grados {
 /* Botón gris (estilo secundario para Cancelar) */
 .boton-mensajes.btn-secundario {
     background-color: #999;
-    margin-left: 10px; /* Separación si hay varios botones */
 }
 
 .boton-mensajes-wrapper {
@@ -2449,24 +2456,17 @@ label.custom-checkbox {
 
 .btn-reset-filtro {
     border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    font-size: 20px;
+    /* width: 25px; */
+    /* height: 25px; */
+    /* font-weight: bold; */
+    font-size: 25px;
     cursor: pointer;
     display: inline-flex;
     /* align-items: center; */
     /* justify-content: center; */
     /* margin-left: 5px; */
-    transition: background-color 0.2s;
-    padding-left: 4px;
-}
-/* Solo aplica el hover si el dispositivo tiene un puntero que puede "flotar" (ratón) */
-@media (min-width: 1025px) {
-  .btn-reset-filtro:hover {
-    background-color: #0078d4;
-    color: #ffffff !important;
-	/* transform: scale(1.1); */
-  }
+    /* transition: background-color 0.2s; */
+    /* padding-left: 0px; */
 }
 
 /* 🔴 BOTONES AYUDA -------------------------------- */
@@ -2771,3 +2771,26 @@ label.custom-checkbox {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* Ocultar el botón de incluir no favoritos cuando estamos en modo edición */
+body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
+    display: none !important;
+}
+
+.icono-emoji {
+  /* Usar 1em hace que mida exactamente lo mismo que el texto (16px).
+     La gran ventaja es que si mañana cambias el texto a 20px, 
+     el corazón crecerá automáticamente a 20px sin tocar el CSS. */
+  height: 1em;
+  width: 1em;
+  
+  /* Los emojis por defecto no se apoyan exactamente en la línea base del texto, 
+     sino que bajan un poquito. Este valor negativo imita ese comportamiento. */
+  vertical-align: -0.15em; 
+  
+  /* Propiedades de seguridad para evitar comportamientos raros del navegador */
+  display: inline-block;
+  border: none;
+  margin: 0 0.05em; /* Un margen minúsculo a los lados para que respire como un emoji */
+}
+

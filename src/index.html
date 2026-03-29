@@ -17,15 +17,15 @@
 <link rel="icon" type="image/png" sizes="512x512" href="https://flydecision.com/icons/logo_512px.png">
 <link rel="shortcut icon" href="https://flydecision.com/icons/logo_192px.png">
 <link rel="apple-touch-icon" href="https://flydecision.com/icons/logo_192px.png">
-<meta name="theme-color" content="#d9ebf9"> <!-- Antes content="#cfe5fa"; #d9ebf9 es azul claro fondo de sliders en configuración (#0078d4 azul oscuro para otros temas; #0086f4 es el azul fuerte fondo logo) -->
+<meta name="theme-color" content="#d9ebf9"> 
 
 <link rel="manifest" href="manifest.json">
 
 <script src="config.js"></script>
 
-<script>window.WEB_VERSION = "2.1";</script>
-<link rel="stylesheet" href="meteo.css?v=2.1">
-<script src="meteo.js?v=2.1" defer></script>
+<script>window.WEB_VERSION = "2.3.0";</script>
+<link rel="stylesheet" href="meteo.css?v=2.3.0">
+<script src="meteo.js?v=2.3.0" defer></script>
 
 <link rel="stylesheet" href="css/nouislider.min.css">
 <link rel="stylesheet" href="css/leaflet.css" />
@@ -49,11 +49,10 @@
     <span>Esperando conexión...</span>
 </div>
 
-<!-- MENSAJE ACTUALIZANDO... | Los tiempos de inicio, fadein y fin se controlan en css en .loader-activo -->
+<!-- MENSAJE ACTUALIZANDO... -->
 <div id="msgActualizando..." class="loader-container">
     <div class="loader-box">
         <div class="spinner"></div> 
-        <!-- <span></span> -->
     </div> 
 </div>
 
@@ -78,40 +77,30 @@
 			enterkeyhint="search"
 			aria-label="Buscador de despegues"
 			title="Buscador de despegues">
-			<!-- <span class="buscador-despegues-provincias-badge">Filtrado</span> -->
 			<button id="limpiar-buscador" type="button" style="display: none;">&times;</button>
 		</div>
 
 		<button id="btn-div-filtro-distancia-toggle" title="Filtro de distancia al despegue" onclick="alternardivDistancia(event)" style="position: relative;">
 			<img src="icons/icono_filtro_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
-			<span style="position: absolute; bottom: 2px; right: 0px; font-size: 12px; line-height: 1; border-radius: 50%;">
-				📍
-			</span>
+			<span style="position: absolute; bottom: 2px; right: 0px; font-size: 12px; line-height: 1; border-radius: 50%;">📍</span>
 		</button>
 
 		<button id="btn-filtro-favoritos-toggle" class="group-edit" title="Ver solo favoritos" onclick="filtroVerSoloFavoritos()" style="position: relative;">
 			<img src="icons/icono_filtro_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
-			<span style="position: absolute; bottom: 2px; right: 0px; font-size: 10px; line-height: 1; border-radius: 50%;">
-				❤️
-			</span>
+			<span style="position: absolute; bottom: 2px; right: 2px; font-size: 10px; line-height: 1; border-radius: 50%;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></span>
 		</button>
 
 		<button id="btn-desmarcar-favoritos" class="group-edit" title="Desmarcar favoritos" onclick="desmarcarFavoritos()" style="position: relative;">
-			<span style="font-size: 20px;">🤍</span>
+			<span style="font-size: 20px;"><img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></span>
 		</button>
 
-		<button id="btn-abrir-favoritos" class="group-edit" title="Abrir favoritos" onclick="abrirFavoritos()" style="position: relative;">
+		<button id="btn-abrir-favoritos" class="group-edit" title="Importar favoritos" onclick="abrirFavoritos()" style="position: relative;">
 			<span style="font-size: 20px;">📂</span>
 		</button>
 
-		<button id="btn-guardar-favoritos" class="group-edit" title="Guardar favoritos" onclick="guardarFavoritos()" style="position: relative;">
+		<button id="btn-guardar-favoritos" class="group-edit" title="Exportar favoritos" onclick="guardarFavoritos()" style="position: relative;">
 			<span style="font-size: 20px;">💾</span>
 		</button>
-
-		<!-- <button id="btn-div-filtro-condiciones-toggle" class="group-normal" title="Filtro de condiciones en el despegue" onclick="alternardivCondiciones(event)" style="position: relative;">
-			<img src="icono_filtro_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;"> 
-			<img src="icono_viento_48x42.webp" width="11" height="12" style="position: absolute; bottom: 2px; right: 0px;">
-		</button> -->
 
 		<button id="btn-mapa-despegues" class="group-normal" title="Mapa de despegues" aria-label="Mapa de despegues" onclick="abrirLinkExterno('https://flydecision.com/map/')" style="position: relative;">
 			<img src="icons/icono_tierra_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
@@ -119,9 +108,7 @@
 
 		<button id="btn-activar-edicion-favoritos" class="group-normal" title="Editar despegues favoritos" onclick="activarEdicionFavoritos()" style="position: relative;"> 
 			<img src="icons/icono_parapente_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
-			<span style="position: absolute; bottom: 2px; right: 0px; font-size: 10px; line-height: 1; border-radius: 50%;">
-				❤️
-			</span>
+			<span style="position: absolute; bottom: 2px; right: 2px; font-size: 10px; line-height: 1; border-radius: 50%;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></span>
 		</button>
 
 		<button id="btn-guia-edicion-favoritos" class="group-edit" title="Guía de la pantalla de editar despegues favoritos" onclick="sugerirGuiaFavoritos(true)" style="position: relative;"> 
@@ -131,8 +118,6 @@
 		<button id="btn-div-configuracion-toggle" class="group-normal" title="Configuración" onclick="alternardivConfiguracion(event)" style="position: relative;"> 
 			<img src="icons/icono_configuracion_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
 		</button>
-
-		<!-- <button id="btn-fullscreen-toggle" class="btn-fullscreen-toggle" title="Alternar entre pantalla completa y normal" onclick="alternarPantallaCompleta()">⛶</button> -->
 
 	</div>
 
@@ -150,15 +135,16 @@
 
 		<div class="div-paneles-controles-transparente">
 		
-			<div id="titulo-distancia-slider" style="display: flex; align-items: center; gap: 7px; margin-bottom: 5px; cursor: pointer;">
-		
-				<span>Filtro de distancia desde</span><button id="btn-abrir-geo-menu" class="btn-icon-trigger" title="Cambiar ubicación de origen">📍</button>
+			<div id="titulo-distancia-slider" style="display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+				<span style="cursor: pointer;">Filtro de distancia desde</span>
+				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" title="Cambiar ubicación de origen">📍</button>
 				
+				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" title="Incluir despegues no favoritos en el filtro"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
 			</div>	
 			
 			<div id="distancia-slider" role="slider" aria-labelledby="titulo-distancia-slider"></div>
 
-			<button id="btn-reset-filtro-distancia" class="btn-reset-filtro btn-arriba-izquierda" style="left: 1px; top: 0px; display:none;" title="Restablecer y ocultar filtro de distancia" onclick="resetFiltroDistancia()">
+			<button id="btn-reset-filtro-distancia" class="btn-reset-filtro btn-abajo-izquierda" style="display:none; bottom: 0px; left: 0px;" title="Restablecer y ocultar filtro de distancia" onclick="resetFiltroDistancia()">
 				<span><b>↺</b></span>
 			</button>
 			
@@ -166,9 +152,10 @@
 					style="right: 7px; bottom: 8px;"
 					data-tippy-content="
 						<b>Filtro de distancia al despegue:</b><br><br>
-						
 						Muestra solo despegues dentro del radio de distancia que selecciones.<br><br>
-						Usa el botón <span style='background-color: #e0e0e0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span> para establecer la posición de origen (se guarda automáticamente).
+						Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span> para establecer la posición de origen. Puedes usar el mapa o la ubicación actual de tu dispositivo.<br><br>
+						Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> para incluir despegues no favoritos en el filtro, es decir, para <b>incluir temporalmente todos los despegues</b> disponibles en la base de datos.<br><br>
+						Al activarlo, se aplica un filtro inicial de 100 km para evitar sobrecargar la tabla. Puedes ajustarlo según tus necesidades y el rendimiento de tu dispositivo.
 					">
 				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 			</button>
@@ -224,7 +211,7 @@
 	
 	<div id="div-menu2-edicion-favoritos" class="div-menu2-edicion-favoritos">
 
-		<span id="contador-favoritos-texto" style="font-size: 18px; font-weight: bold;">❤️ 0</span>
+		<span id="contador-favoritos-texto" style="font-size: 18px; font-weight: bold;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> 0</span>
 
 		<button id="btn-finalizar-edicion-favoritos" class="btn-finalizar-edicion-favoritos" title="Finalizar edición de despegues favoritos" onclick="finalizarEdicionFavoritos()">
 			Finalizar edición de despegues favoritos
@@ -239,13 +226,9 @@
 <div id="div-configuracion" class="div-configuracion">
 
 	<button class="btn-cerrar-modal" onclick="alternardivConfiguracion(event)">&times;</button>
-
 	<div class="panel-titulo" style="font-size: 1.4em;">Configuración</div>
-
 	<div class="div-configuracion-subpanel">
-
 		<div class="div-paneles-controles-sin-pips">
-						
 			<div class="linea-con-bt-info" style="justify-content: center;">
 
 				<div id="titulo-velocidad-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
@@ -273,13 +256,10 @@
 				</button>
 
 			</div>
-			
 			<div id="velocidad-slider" role="slider" aria-labelledby="titulo-velocidad-slider"></div>
-			
 		</div>
 
 		<div class="div-paneles-controles-sin-pips">
-		
 			<div class="linea-con-bt-info" style="justify-content: center;">
 
 				<div id="titulo-racha-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
@@ -305,17 +285,12 @@
 				</button>
 
 			</div>
-				
 			<div id="racha-slider" role="slider" aria-labelledby="titulo-racha-slider"></div>
-			
 		</div>
-		
 	</div>
 
 	<div class="div-configuracion-subpanel">
-
 		<div class="div-paneles-controles">
-		
 			<div class="linea-con-bt-info" style="justify-content: center;">
 
 				<div id="titulo-configuracion-horario-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
@@ -337,15 +312,12 @@
 				</button>
 
 			</div>
-				
 			<div id="configuracion-horario-slider" role="slider" aria-labelledby="titulo-configuracion-horario-slider"></div>
-			
 		</div>
 		
 		<details class="config-accordion">
 			<summary>Datos meteorológicos opcionales</summary>
 			<div class="accordion-content">
-				
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarProbPrecipitacion" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarProbPrecipitacion" onclick="alternarMostrarProbPrecipitacion()"> Probabilidad de Precipitación
@@ -354,16 +326,6 @@
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-
-				<!-- <div class="linea-con-bt-info">
-					<label for="chkMostrarBaseNube" class="custom-checkbox">
-						<input type="checkbox" id="chkMostrarBaseNube" onclick="alternarMostrarBaseNube()"> Base de nube AGL
-					</label>
-					<button class="btn-info btn-inline" data-tippy-content="<b>Base de nube AGL (km)</b><br><br>Altura de la base de la nube sobre el suelo.<br><br>Estimación aproximada calculada a partir de la temperatura 2m y punto de rocío 2m originales del modelo ECMWF.">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-					</button>
-				</div> -->
-
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarVientoAlturas" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarVientoAlturas" onclick="alternarMostrarVientoAlturas()"> Viento a 80, 120 y 180 m
@@ -372,23 +334,20 @@
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarXC" class="custom-checkbox">
-						<input type="checkbox" id="chkMostrarXC" onclick="alternarMostrarXC()"> XC: Techo AGL, CAPE y CIN
+						<input type="checkbox" id="chkMostrarXC" onclick="alternarMostrarXC()"> XC: Techo MSL, CAPE y CIN
 					</label>
-					<button class="btn-info btn-inline" data-tippy-content="<b>XC: Techo AGL, CAPE, CIN</b><br><br>Muestra un grupo de 3 filas con datos enfocados al vuelo de Cross Country (XC):<ul><li><b>Techo de vuelo AGL (km):</b> Altura sobre el suelo de la capa límite (BLH = Boundary Layer Height)</li><li><b>CAPE (J/kg):</b> Energía Potencial Convectiva Disponible (Convective Available Potential Energy)</li><li><b>CIN (J/kg):</b> Inhibición Convectiva (Convective INhibition)</li></ul>Datos originales del modelo ECMWF.">
+					<button class="btn-info btn-inline" data-tippy-content="<b>XC: Techo MSL, CAPE, CIN</b><br><br>Muestra un grupo de 3 filas con datos enfocados al vuelo de Cross Country (XC):<ul><li><b>Techo de vuelo MSL (km):</b> Altitud máxima de la capa límite (BLH = Boundary Layer Height)</li><li><b>CAPE (J/kg):</b> Energía Potencial Convectiva Disponible (Convective Available Potential Energy)</li><li><b>CIN (J/kg):</b> Inhibición Convectiva (Convective INhibition)</li></ul>Datos originales del modelo ECMWF.">
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-
 			</div>
 		</details>
 
 		<details class="config-accordion">
 			<summary>Datos calculados y opciones</summary>
 			<div class="accordion-content">
-
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarSoloHorasDiurnas" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarSoloHorasDiurnas" onclick="alternarHorasNoche()"> Solo horas diurnas
@@ -397,7 +356,6 @@
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarCizalladura" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarCizalladura" onclick="alternarMostrarCizalladura()"> Cizalladura / Fiabilidad
@@ -406,16 +364,14 @@
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarRafagosidad" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarRafagosidad" onclick="alternarMostrarRafagosidad()"> Rafagosidad
 					</label>
-					<button class="btn-info btn-inline" data-tippy-content='<b>Rafagosidad:</b><br><br>Muestra una fina línea con colores entre la fila de Velocidad media y la fila de Racha máxima. Esa línea indica visualmente para cada hora un valor calculado: la <i>Rafagosidad (Factor de racha, de ráfaga o Gust Factor)</i>.<br><br>La Rafagosidad es la relación entre la racha y la velocidad media. Es uno de los varios factores que indican el grado de turbulencia del aire. Se calcula dividiendo la racha máxima entre la velocidad media del viento (Racha/Media) y se muestra un código de colores como indicación general del grado de turbulencia:<br><br>🟩 Verde: baja (relación < 1.5)<br>🟧 Naranja: media (relación < 2.1)<br>🟥 Rojo: alta (relación >= 2.1)<br><br>Hay umbrales de ráfaga máxima por debajo de los cuales se considera que el viento es laminar, independientemente de la relación. Si la racha es inferior a 10 km/h, se considera una situación poco peligrosa, aunque la relación sea alta (esto ocurre cuando el viento es muy flojo).<br><br>Otra forma de cálculo de este factor de ráfaga es la diferencia aritmética entre la velocidad media y la ráfaga máxima. Como indicación general, una diferencia superior a 10 km/h entre la velocidad media y la ráfaga, o una ráfaga que duplique la velocidad media, son indicadores de turbulencia alta.<br><br>Como referencias, las más interesantes encontradas son en sitios específicos como Aspen, en que se establece como límite de seguridad que el viento medio no exceda las 12 mph (19 km/h) con ráfagas no mayores a 18 mph (29 km/h), lo que implica una ráfaga máxima de 1.5 veces la media (cifra conservadora que correspondería a una situación "naranja" aquí). Algunas estaciones meteorológicas (como las de Holfuy) consideran que un factor de ráfaga de 2.1 veces la velocidad media es una señal de aviso. Una relación tan alta suele indicar térmicas rotas o más cizalladuras. Es la cifra media de referencia que coincide con otras y que hemos tomado aquí.'>
+					<button class="btn-info btn-inline" data-tippy-content='<b>Rafagosidad:</b><br><br>Muestra una fina línea con colores entre la fila de Velocidad media y la fila de Racha máxima. Esa línea indica visualmente para cada hora un valor calculado: la <i>Rafagosidad (Factor de racha, de ráfaga o Gust Factor)</i>.<br><br>La Rafagosidad es la relación entre la racha y la velocidad media. Es uno de los varios factores que indican el grado de turbulencia del aire. Se calcula dividiendo la racha máxima entre la velocidad media del viento (Racha/Media) y se muestra un código de colores como indicación general del grado de turbulencia:<br><br>🟩 Verde: baja (relación < 1.5)<br>🟧 Naranja: media (relación < 2.1)<br>🟥 Rojo: alta (relación >= 2.1)<br><br>Hay umbrales de ráfaga máxima por debajo de los cuales se considera que el viento es laminar, independientemente de la relación. Si la racha es inferior a 10 km/h, se considera una situación poco peligrosa, aunque la relación sea alta (esto ocurre cuando el viento es muy flojo).<br><br>Otra forma de cálculo de este factor de ráfaga es la diferencia aritmética entre la velocidad media y la ráfaga máxima. Como indicación general, una diferencia superior a 10 km/h entre la velocidad media y la ráfaga, o una ráfaga que duplique la velocidad media, son indicadores de turbulencia alta.'>
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-
 				<div class="linea-con-bt-info">
 					<label for="chkAplicarCalibracion" class="custom-checkbox">
 						<input type="checkbox" id="chkAplicarCalibracion" onclick="alternarAplicarCalibracion()"> Aplicar calibración (beta)
@@ -424,20 +380,14 @@
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-
 			</div>
 		</details>
- 
  	</div>
 
 	<div class="div-configuracion-subpanel">
-
 		<div class="div-paneles-controles" style="min-height: initial; padding-top: 5px; padding-bottom: 5px;">
-				
 			<span style="font-weight: bold; display: block; text-align: left; padding-bottom: 5px; padding-left: 15px;">Actualizaciones modelos meteo</span>
-
 			<span id="data_generation_time"></span>
-
 			<button class="btn-info btn-arriba-derecha" 
 				data-tippy-content="
 					<b>Modelos meteorológicos:</b><br>
@@ -455,39 +405,34 @@
 				">
 				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 			</button>
-
 			<div id="proxima-actualizacion-contenedor" style="padding-left:15px;">	
-				<span id="proxima-actualizacion"></span>
-				<br>
+				<span id="proxima-actualizacion"></span><br>
 			</div>
-
-			<!-- <div id="meteo_status" style="font-weight: bold;"></div> -->
-
 		</div>
-
 	</div>
 
 	<div class="div-configuracion-subpanel" style="display: flex; justify-content: center; align-items: center;">
+		<div class="div-paneles-controles" style="border: none; background-color: #ffffff; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: auto; box-sizing: border-box; box-shadow: none;">
 
-		<div class="div-paneles-controles" style="border: none; background-color: #ffffff; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: auto; box-sizing: border-box; box-shadow: none;">
+			<!-- Grupo de Gestión de Datos (Importar, Exportar, Reset) -->
+			<div style="display: flex; gap: 6px; flex-shrink: 0;">
+				<button class="btn-accion" onclick="importarConfiguracion()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Importar configuración y favoritos">
+					📂
+				</button>
+				<button class="btn-accion" onclick="exportarConfiguracion()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Exportar configuración y favoritos">
+					💾
+				</button>
+				<button class="btn-accion" onclick="btnRestablecerConfiguración()" style="color: #ff0000; border: 3px solid #ff0000; width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Restablecer la configuración (elimina toda la configuración y favoritos)">
+					🔄
+				</button>
+			</div>
 
-			<!-- 1. Botón Restablecer -->
-			<button class="btn-accion" onclick="btnRestablecerConfiguración()" 
-					style="color: #ff0000; border: 1px solid #ff0000; width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0;" 
-					title="Eliminar todas las configuraciones, favoritos y preferencias y volver a la configuración inicial">
-				🔄
-			</button>
-
-			<!-- 2. Badge Google Play -->
-			<a href="https://play.google.com/store/apps/details?id=com.flydecision" 
-			target="_blank" rel="noopener" class="badge-google-play" 
-			style="display: flex; align-items: center; text-decoration: none !important; margin: 0; flex-shrink: 0;">
-				<img alt="Disponible en Google Play" 
-					src="https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png" 
-					style="height: 34px; width: auto; display: block;">
+			<!-- Botón Google Play -->
+			<a href="https://play.google.com/store/apps/details?id=com.flydecision" target="_blank" rel="noopener" class="badge-google-play" style="display: flex; align-items: center; text-decoration: none !important; margin: 0; flex-shrink: 0;">
+				<img alt="Disponible en Google Play" src="icons/logo_google_play_34.webp" class="btn-accion" style="height: 34px; width: auto; display: block;" title="Descargar en Google Play">
 			</a>
-
-			<!-- 3. Bloque de Enlaces y Versión -->
+			
+			<!-- Enlaces legales y de ayuda (Fuerza salto de línea con width: 100%) -->
 			<div class="enlaces-legales" style="display: flex; align-items: center; gap: 5px; white-space: nowrap; margin: 0;">
 				<a href="#" onclick="sugerirGuiaPrincipal(true)">Guía</a>
 				<span class="separador" style="color: #ccc;">|</span>
@@ -497,59 +442,36 @@
 				<span class="separador" style="color: #ccc;">|</span>
 				<span id="web-version-text" style="font-size: 12px; color: #666;"></span>
 			</div>
-			
 		</div>
-
 	</div>
-
 </div>
 
 <!-- 🟦🟦 TABLA  -->
 
 <div class="contenedor-principal-tabla">
-
 	<div class="contador-despegues" id="contador-despegues"></div>
-	
 	<div class="tabla-wrapper">
 		<table id="tabla"></table>
 		<div id="sugerencias-globales" class="sugerencias-globales" style="display:none;"></div>
 	</div>
-	
 </div>
 
-<!-- 🟦🟦 Overlay mapa selección origen del filtro distancia -->
-
-<div id="modal-geo-menu" class="modal-overlay" style="display:none;">
-	<div class="modal-content small-modal">
-		<div class="modal-header">
-			<h3></h3>
-			<button id="btn-cerrar-menu" class="close-x">×</button>
-		</div>
-		
-		<div class="geo-status-box" style="margin-top: 10px;">
-			<span><b>Ubicación de origen actual:</b></span><br><br>
-			<span id="coords-display">Sin configurar</span>
-		</div>
-
-		<div class="geo-options-grid">
-			<button id="btn-gps" class="btn-option">
-				<span class="emoji">🛰️</span>
-				<span>Cambiar con ubicación del móvil</span>
-			</button>
-			<button id="btn-mapa" class="btn-option">
-				<span class="emoji">🗺️</span>
-				<span>Cambiar con mapa</span>
-			</button>
-		</div>
-	</div>
-</div>
+<!-- 🟦🟦 Overlay Mapa Selección Origen (Unificado) -->
 
 <div id="modal-mapa" class="modal-overlay" style="display:none;">
 	<div class="modal-content map-modal-size">
-		<div id="mapa-selector" style="height: 100%; width: 100%; margin-bottom:10px;"></div>
-		<div class="modal-footer">
-			<button id="btn-cancelar-mapa" class="btn-cancelar">Cancelar</button>
-			<button id="btn-aceptar-mapa" class="btn-aceptar">Aceptar</button>
+        <div class="modal-header">
+            <h3>📍 Seleccionar origen</h3>
+            <button id="btn-cerrar-mapa" class="close-x">×</button>
+        </div>
+        
+		<div id="mapa-selector" style="height: 100%; width: 100%; margin-top: 10px; margin-bottom: 15px;"></div>
+
+		<div class="modal-footer" style="margin-top: 0; display: flex; justify-content: center;">
+            <button id="btn-gps-mapa" class="btn-option" style="width: 170px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; margin-bottom: 7px; padding: 0px;">
+				<span style="font-size: 1.8rem; margin: 0;">🛰️</span>
+				<span style="font-size: 0.9rem; font-weight: bold; text-align: center; line-height: 1.2;">Ubicación del móvil</span>
+			</button>
 		</div>
 	</div>
 </div>

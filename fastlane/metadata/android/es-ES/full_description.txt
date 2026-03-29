@@ -1,0 +1,1 @@
+A Web / Android mobile / WPA application for automatic weather forecast analysis tailored for paragliding launch sites. Provides visual evaluations using a color-coded system to help paragliders make informed decisions about flying conditions. It has many more features and a launch site map with useful information and various filters (number of flights, average distance, etc.).
