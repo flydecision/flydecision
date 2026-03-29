@@ -1480,23 +1480,6 @@ function confirmarSeleccionMasiva() {
     }, 50);
 }
 
-
-
-    const btn = document.getElementById('btn-filtro-favoritos-toggle');
-    btn.classList.toggle("activo"); // alterna activo/no activo en función de cómo esté el botón
-    const estaHundido = btn.classList.contains("activo");
-    
-    if (estaHundido) {
-        soloFavoritos = true; 
-        btn.classList.add('filtro-aplicado');
-    } else {
-        soloFavoritos = false;
-        btn.classList.remove('filtro-aplicado');
-    }
-
-
-
-
 function finalizarEdicionFavoritos() {
 
     resetFiltroCondiciones(false); //les pasamos false para que no reconstruyan la tabla
@@ -2875,7 +2858,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // ---------------------------------------------------------------
 
 		const thFavorito = document.createElement("th");
-		thFavorito.textContent = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+		thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
 		thFavorito.id = "id-thFavorito";
 		thFavorito.rowSpan = 2; // Ocupa las dos filas de la cabecera
 		thFavorito.style.fontSize = "18px";
@@ -2942,13 +2925,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
             "<hr style='border:none;border-top:1px solid #000;margin:4px 0;'>" +
 
-            "<b>180 m</b>: Viento medio a 180 m del suelo (km/h)<br>" +
-            "<b>120 m</b>: Viento medio a 120 m del suelo (km/h)<br>" +
-            "<b>80 m</b>: Viento medio a 80 m del suelo (km/h)<br>" +
+            "<b>180 m</b>: Viento a 180 m del suelo (km/h)<br>" +
+            "<b>120 m</b>: Viento a 120 m del suelo (km/h)<br>" +
+            "<b>80 m</b>: Viento a 80 m del suelo (km/h)<br>" +
 
             "<hr style='border:none;border-top:1px solid #000;margin:4px 0;'>" +
 
-            "<b>10 m</b>: Viento medio a 10 m del suelo (km/h)<br>" +
+            "<b>10 m</b>: Viento a 10 m del suelo (km/h)<br>" +
             "<img src='icons/icono_racha_48x42.webp' style='width:16px;height:14px;'> : Racha máxima a 10 m del suelo (km/h)<br>" +
             "<img src='icons/icono_direccion_45.webp' style='width:15px;height:15px;'> : Dirección del viento a 10 m del suelo<br>" +
 
@@ -3141,7 +3124,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             "<b>2. Condiciones para mantenerse o iniciar XC (fila inferior):</b><br>" +
             "Valora la puntuación de Condiciones del despegue y el potencial térmico para vuelos de distancia (Cross Country) usando los datos del modelo ECMWF:" +
             "<ul style='margin-top: 4px; margin-bottom: 8px;'>" +
-            "<li><b>Techo:</b> Premia el espesor de la capa térmica sobre el relieve y penaliza los bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li>" +
+            "<li><b>Techo:</b> Premia techos altos sobre la altura media del relieve y penaliza bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li>" +
             "<li><b>CAPE:</b> Premia los días azules o de cúmulos inofensivos, y penaliza los valores extremos por riesgo de sobredesarrollo o tormenta (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li>" +
             "<li><b>CIN:</b> Penaliza la inhibición convectiva alta (inversión) que actúa como tapón frenando la formación de térmicas (🟩 &le; 50 | 🟥 > 150 J/kg).</li>" +
             "</ul>" +
@@ -3648,7 +3631,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // -----------------------------------------------------------
 
 			const idDespegue = Number(d.ID); // Usamos el ID numérico
-            const elevacionDespegue = Number(d.elevation || 0); // No es el parámetro "Altitud" que introduzco mediante el .csv, sino el parámetro "elevation" que da la API Open-meteo y que es la altitud promedio de la celda ECMWF de 9 km, ya que he puesto en la URL de la API el parámetro &elevation=nan is specified, downscaling will be disabled and the API uses the average grid-cell height. La clave es que los parámetros que pido al ECMWF no son dependientes de la altitud (comprobado) y no requieren downscaling con el DEM de 90 m predeterminado.
+            const elevacionDespegue = Number(d.elevation || 0); // No usada a 20260329 No es el parámetro "Altitud" que introduzco mediante el .csv, sino el parámetro "elevation" que da la API Open-meteo y que es la altitud promedio de la celda ECMWF de 9 km, ya que he puesto en la URL de la API el parámetro &elevation=nan is specified, downscaling will be disabled and the API uses the average grid-cell height. La clave es que los parámetros que pido al ECMWF no son dependientes de la altitud (comprobado) y no requieren downscaling con el DEM de 90 m predeterminado.
 			const latitud = d.Latitud; 
 			const longitud = d.Longitud;
 			const esFavorito = favoritos.includes(idDespegue);
@@ -4840,35 +4823,6 @@ function alternarPantallaCompleta() { //obsoleta
         if (exitMethod) {
             exitMethod.call(doc);
         }
-    }
-}
-
-function alternardivCondiciones(event) {
-	
-	const divCondiciones = document.getElementById("div-filtro-condiciones");
-	const activo = divCondiciones.classList.contains("activo");
-	const vamosAMostrar = !activo; 
-
-    // 1. Cerramos paneles de configuración (Viento y General)
-    document.getElementById("div-configuracion").classList.remove("activo");
-    document.getElementById("btn-activar-edicion-favoritos").classList.remove("activo");
-    document.getElementById("btn-div-configuracion-toggle").classList.remove("activo");
-
-    setModoEnfoque(false);
-	
-	divCondiciones.classList.toggle("activo", vamosAMostrar);
-	document.getElementById("btn-div-filtro-condiciones-toggle").classList.toggle("activo", vamosAMostrar);
-	
-	/* EL FIX PARA SLIDER BLOQUEADO */
-    if (vamosAMostrar) {
-        setTimeout(() => {
-            const sliderElement = document.getElementById('condiciones-slider');
-
-            if (sliderElement && sliderElement.noUiSlider) {
-                sliderElement.noUiSlider.updateOptions({}, true); 
-                const forzarReflow = divCondiciones.offsetHeight;
-            }
-        }, 50); 
     }
 }
 
