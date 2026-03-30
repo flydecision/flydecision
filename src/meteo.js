@@ -3951,7 +3951,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				    const tdIconoCiz = document.createElement("td");	
 				    //tdIconoCiz.innerHTML = '<span style="font-size:4px;">🌪️🎯</span>';
                     tdIconoCiz.innerHTML = '';
-                    tdIconoCiz.style.background = "linear-gradient(to right, #19ed86 33.3%, #ffa500 33.3%, #ffa500 66.6%, #ff5243 66.6%)";
+                    tdIconoCiz.style.background = "linear-gradient(to right, #6befaf 33.3%, #ffa500 33.3%, #ffa500 66.6%, #fb796e 66.6%)";
 				    tdIconoCiz.setAttribute("title", "Cizalladura de Bajo Nivel por velocidad / Fiabilidad del pronóstico de viento medio");	
 				    tdIconoCiz.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda", "celda-altura-4px");
                     tdIconoCiz.style.borderTop = "1px solid #000";
@@ -4636,20 +4636,26 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 tdCondiciones.title = "Sin datos suficientes para puntuar";
             }
 			
-            const coloresNota =[
-                "#ff5243", // 0  (Rojo inicial)
-                "#ff6336", // 1
-                "#ff7328", // 2
-                "#ff841b", // 3
-                "#ff940d", // 4
-                "#ffa500", // 5  (Naranja medio intermedio)
-                "#d1b31b", // 6
-                "#a3c236", // 7
-                "#75d050", // 8
-                "#47df6b", // 9
-                "#19ed86"  // 10 (Verde final)
-            ];
+            // const coloresNota =[
+            //     "#fb796e", // 0  (Rojo inicial)
+            //     "#ffa500", // 5  (Naranja medio intermedio)
+            //     "#6befaf"  // 10 (Verde final)
+            // ];
 
+            const coloresNota = [
+                "#fb796e", // 0  — Rojo
+                "#fc8258", // 1
+                "#fd8b42", // 2
+                "#fd932c", // 3
+                "#fe9c16", // 4
+                "#ffa500", // 5  — Naranja
+                "#e1b423", // 6
+                "#c4c346", // 7
+                "#a6d169", // 8
+                "#89e08c", // 9
+                "#6befaf"  // 10 — Verde
+            ];
+            
             if (valorVisual !== "-") {
                 // El color ahora responde a la notaFinal2 (valorVisual)
                 tdCondiciones.style.backgroundColor = coloresNota[valorVisual];
