@@ -974,7 +974,7 @@ details.config-accordion .accordion-content {
     margin-right: auto;
 /*	Prueba para iphone 7 */
 	
-	border-right: 2px solid #000;
+	/* border-right: 2px solid #000; */
 	table-layout: fixed;
 	width: max-content;	/* Usamos max-content para que la tabla crezca lo necesario horizontalmente */
 	margin-bottom: 0; /* Añadimos margen inferior para asegurar que la última fila no roce el scrollbar horizontal */
@@ -1028,6 +1028,49 @@ td div {
 	align-items: center; /* Centrado horizontal */
 	height: 100%; /* El div debe ocupar toda la altura del td */
 }
+
+/* Mini-tablas por despegue */
+#tabla tbody td.celda-condiciones-inicio {
+    border-top-right-radius: 10px;
+}
+
+#tabla tbody td.celda-condiciones-final {
+    border-bottom-right-radius: 10px;
+}
+
+body.modo-edicion-tabla #tabla tbody tr.fila-inicio-despegue td.columna-favoritos {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-despegue {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+/* Cabecera redondeada */
+/* #tabla thead tr:nth-child(1) th:first-child {
+    border-top-left-radius: 10px;
+}
+
+#tabla thead tr:nth-child(1) th:last-child {
+    border-top-right-radius: 10px;
+}
+
+#tabla thead tr:nth-child(1) th[rowspan="2"]:first-child {
+    border-bottom-left-radius: 10px;
+} */
+
+#tabla thead tr:nth-child(1) th:last-child[rowspan="2"] {
+    /* border-bottom-right-radius: 10px; */
+    border-right: 2px solid #000 !important;
+}
+/* En edición de favoritos, la columna Despegue es la última visible: pintamos su borde derecho exterior */
+body.modo-edicion-tabla #tabla tbody td.columna-despegue {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
 /* CLASE PARA FILAS DE DATOS NORMALES (20px) */
 .celda-altura-20px {
     height: 20px !important;
@@ -1142,6 +1185,7 @@ table.tabla-tooltip-desglose {
     /* Correcciones visuales */
     background-clip: padding-box; 
     border-top: 0;
+    background-color: #f0f0f0;
 }
 
 /* Fila 2: Horas */
@@ -1259,6 +1303,10 @@ tbody td.cursor-pointer:hover {
 .borde-grueso-abajo { border-bottom: 2px solid #000 !important; }
 .borde-grueso-arriba { border-top: 2px solid #000 !important; }
 tr.fila-separador td, tr.fila-separador th { border-bottom: 2px solid #000 !important; }
+
+tr.fila-inicio-despegue.favorito td {
+    border-top: 1px solid #000 !important;
+}
 
 /* Fechas */
 /* .orientaciones-svg {

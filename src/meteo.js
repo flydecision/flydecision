@@ -2906,6 +2906,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		thDespegue.rowSpan = 2; // Ocupa las dos filas de la cabecera
 		thDespegue.style.fontSize = "18px";
 		thDespegue.classList.add("borde-grueso-izquierda", "columna-despegue", "borde-grueso-abajo", "borde-grueso-arriba");
+        if (modoEdicionFavoritos) {
+            thDespegue.classList.add("borde-grueso-derecha");
+        }
 
         // ---------------------------------------------------------------
         // 🟡 CONSTRUCCIÓN DE LA TABLA. Cabecera. Meteo
@@ -3685,7 +3688,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             }
             
             // La ultimísima fila del despegue recibe la separación grande principal
-            if (todasLasFilas.length > 0) todasLasFilas[todasLasFilas.length - 1].classList.add("fila-separador");
+            if (todasLasFilas.length > 0) {
+                todasLasFilas[0].classList.add("fila-inicio-despegue");
+                todasLasFilas[todasLasFilas.length - 1].classList.add("fila-separador", "fila-fin-despegue");
+            }
 
 			// Clase para el filtrado
 			if (esFavorito) {
@@ -3830,6 +3836,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			// ROWSPAN DINÁMICO
             tdDespegue.rowSpan = totalFilasRowSpan;	
 			tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda");
+            if (modoEdicionFavoritos) {
+                tdDespegue.classList.add("borde-grueso-derecha");
+            }
 			
 			filaPrincipal.appendChild(tdDespegue);
 				
@@ -4618,7 +4627,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             tdCondiciones.rowSpan = rowsGroup1.length; 	
             
             tdCondiciones.style.fontWeight = "bold";
-			tdCondiciones.classList.add("borde-grueso-izquierda", "borde-grueso-abajo");
+			tdCondiciones.classList.add("borde-grueso-izquierda", "borde-grueso-abajo", "borde-grueso-derecha", "celda-condiciones-inicio");
             //tdCondiciones.style.cursor = "help"; 
 
             if (horasValidas > 0) {
@@ -4663,7 +4672,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     tdCondicionesXC.rowSpan = rowsGroup2.length;
                     tdCondicionesXC.style.fontWeight = "bold";
                     tdCondicionesXC.style.textAlign = "center";
-                    tdCondicionesXC.classList.add("borde-grueso-izquierda", "borde-grueso-abajo");
+                    tdCondicionesXC.classList.add("borde-grueso-izquierda", "borde-grueso-abajo", "borde-grueso-derecha", "celda-condiciones-final");
                     
                     if (valorVisualXC !== "-") {
                         tdCondicionesXC.style.backgroundColor = coloresNota[valorVisualXC];
