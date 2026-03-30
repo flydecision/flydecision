@@ -88,6 +88,7 @@ body.modo-android-manual {
 /* A veces Capacitor tarda unos milisegundos en cargar el plugin, y durante ese tiempo la app se ve mal. En tu CSS global, puedes añadir esto para que los elementos fixed (como tu cabecera) tengan una transición suave si cambian de altura: */
 body, header, .offline-badge {
     transition: padding-top 0.3s ease, top 0.3s ease;
+    background: blanchedalmond;
 }
 
 /* 🔴 Mensaje "Esperando conexión..."  -------------------------------- */ 
@@ -890,10 +891,13 @@ details.config-accordion .accordion-content {
     flex-direction: column;     /* Pone contador arriba y tabla abajo */
     overflow: hidden;           /* Contiene el scroll dentro de este bloque */
     min-height: 0;              /* Truco vital de Flexbox para permitir el scroll interno en hijos */
-    margin: 0 auto;             /* Centrado horizontal */
+    /* margin: 0 auto;              */
     max-width: 100%;            /* NUNCA permitas que el contenedor sea más ancho que la ventana */
     /* min-width: min(100%, 760px); *//* "si es pequeña, alineada con el menú (760px)" Si la tabla es pequeñita, forzamos al contenedor a medir al menos lo mismo que tu menú. Al tener margin: 0 auto, esos 800px se centran, y la tabla pequeña queda alineada visualmente con el inicio del menú (a la izquierda dentro de la caja centrada)*/
     /* margin-bottom: 5px; */
+    padding-left: 3px;
+    padding-right: 3px;
+    background: blanchedalmond;
 }
 
 /* 🔴 CONTADOR DESPEGUES -------------------------------- */
@@ -949,15 +953,15 @@ details.config-accordion .accordion-content {
 .tabla-wrapper {
     flex: 1; /* Ocupa todo el espacio vertical restante */
     /* max-height: 90vh; */
-	margin-left: 3px;
+	/* margin-left: 3px; */
     margin-bottom: 0px; 
-    margin-right: 3px;
+    /* margin-right: 3px; */
 	margin-top: 3px;
 	flex-grow: 1;       /* Se estira para llenar el hueco dejado por el contador */
     overflow: auto;     /* Aquí aparecen las barras de scroll si hace falta */
 	height: 100%;       /* Asegura que ocupe el contenedor */
-    width: 100%;
-	margin: 0;           /* Quitamos márgenes que resten espacio */
+    width: auto;
+	/* margin: 0;           Quitamos márgenes que resten espacio */
 	box-sizing: border-box;
     
     /* Ajustes para móviles */
