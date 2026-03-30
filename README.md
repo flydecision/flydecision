@@ -47,7 +47,7 @@ A Web / Android mobile / WPA application for automatic weather forecast analysis
 | **💨 Max Gust** | Maximum gust at 10 m above ground | km/h |
 | **🧭 Wind Dir.** | Wind direction at 10 m above ground | Degrees / Cardinal |
 | **⚠️ Wind Shear** | Low-Level Wind Shear by speed / Forecast reliability | - |
-| **☁️ AGL Ceiling** | Height of the boundary layer above ground (BLH) | km |
+| **☁️ MSL Ceiling** | Height of the boundary layer (BLH) referenced to sea level | km |
 | **⚡ CAPE** | Convective Available Potential Energy | J/kg |
 | **🛑 CIN** | Convective Inhibition | J/kg |
 
@@ -91,7 +91,7 @@ Note: The essential cloud base data ☁↓ (CBH = Cloud Base Height) is not avai
 ### Setup
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/flydecision.git
+   git clone https://github.com/flydecisionj/flydecision.git
    cd flydecision/flydecision
    ```
 

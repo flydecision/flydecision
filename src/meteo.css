@@ -1203,7 +1203,7 @@ table.tabla-tooltip-desglose {
 
 /* --- COLUMNAS IZQUIERDAS (FAV, DESPEGUE, METEO) --- */
 
-/* Columna 1: Favoritos */
+/* Columna Favoritos */
 .columna-favoritos {	
 	left: 0px;	
 	width: 30px !important;	
@@ -1218,22 +1218,22 @@ table.tabla-tooltip-desglose {
 }
 
 
-/* Columna 2: Despegue */
+/* Columna Despegue */
 .columna-despegue {	
 	position: sticky;
 	left: 0px; /* Se pega después de la columna favoritos (0 + 30px) */
-	width: 110px !important;	
-	min-width: 110px !important;	
-	max-width: 110px !important;
+	width: 100px !important;	
+	min-width: 100px !important;	
+	max-width: 100px !important;
 	padding-left: 3px;
     z-index: 15;
     background-color: #ffffff;
 }
 
-/* Columna 3 y 4: Meteo (Iconos y Cabecera) */
+/* Columna Meteo (Iconos y Cabecera) */
 .columna-meteo, .columna-simbolo-fija {	
 	position: sticky;
-    left: 110px !important; /* Se pega después de despegue (30 + 110 = 140px) */
+    left: 100px !important; /* Se pega después de despegue (30 + 110 = 140px) */
 	width: 33px !important;	
 	min-width: 33px !important;	
 	max-width: 33px !important;	
@@ -1270,7 +1270,7 @@ thead .columna-meteo {
 /* Los iconos de meteo (viento, racha, dir) NO son th, son td, pero queremos que floten sobre los datos */
 .columna-simbolo-fija {
     position: sticky;
-    left: 110px !important;
+    left: 100px !important;
     z-index: 15 !important;
     background-color: #ffffff;
 }
@@ -1356,12 +1356,7 @@ span.grados {
 	font-size: 10px;
 }
 
-
-/* Opcional: Un poco de especio vertical, pero no horizontal. Mejora la alineación vertical si el texto es más grande. Problema: aumenta ligeramente altura de fila */
-/* .orientaciones-svg svg {
-    vertical-align: middle;
-} */
- 
+/* COLORES CELDAS       */
 .fondo-verde { background-color: #6befaf; }
 .fondo-naranja { background-color: #ffa500; }
 .fondo-rojo { background-color: #fb796e; }
