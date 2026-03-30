@@ -895,8 +895,6 @@ details.config-accordion .accordion-content {
     max-width: 100%;            /* NUNCA permitas que el contenedor sea más ancho que la ventana */
     /* min-width: min(100%, 760px); *//* "si es pequeña, alineada con el menú (760px)" Si la tabla es pequeñita, forzamos al contenedor a medir al menos lo mismo que tu menú. Al tener margin: 0 auto, esos 800px se centran, y la tabla pequeña queda alineada visualmente con el inicio del menú (a la izquierda dentro de la caja centrada)*/
     /* margin-bottom: 5px; */
-    padding-left: 3px;
-    padding-right: 3px;
     background: blanchedalmond;
 }
 
@@ -953,9 +951,10 @@ details.config-accordion .accordion-content {
 .tabla-wrapper {
     flex: 1; /* Ocupa todo el espacio vertical restante */
     /* max-height: 90vh; */
-	/* margin-left: 3px; */
+	margin-left: 3px;
     margin-bottom: 0px; 
-    /* margin-right: 3px; */
+    margin-right: 3px;
+    padding-right: 1px;
 	margin-top: 3px;
 	flex-grow: 1;       /* Se estira para llenar el hueco dejado por el contador */
     overflow: auto;     /* Aquí aparecen las barras de scroll si hace falta */
