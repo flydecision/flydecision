@@ -1358,7 +1358,7 @@ span.grados {
 
 /* COLORES CELDAS       */
 .fondo-verde { background-color: #6befaf; }
-.fondo-naranja { background-color: #ffa500; }
+.fondo-naranja { background-color: #f0c16a; }
 .fondo-rojo { background-color: #fb796e; }
 
 /* 🔴 SUGERENCIAS GLOBALES -------------------------------- */
@@ -1903,14 +1903,14 @@ span.grados {
 
 /* velocidad-slider. Colores de los 4 segmentos */
 #velocidad-slider .noUi-connects .noUi-connect:nth-child(1) {
-    background: #ffa500; 
+    background: #f0c16a; 
 }
 #velocidad-slider .noUi-connects .noUi-connect:nth-child(2) {
     background: #6befaf; /* Verde */
 }
 /* Entre Ideal y Máxima (2/3 Verde, 1/3 Naranja). 66.6% es Verde (Ideal), el resto 33.3% es Naranja (Tolerable) */
 #velocidad-slider .noUi-connects .noUi-connect:nth-child(3) {
-    background: linear-gradient(to right, #6befaf 66.6%, #ffa500 66.6%);
+    background: linear-gradient(to right, #6befaf 66.6%, #f0c16a 66.6%);
 }
 #velocidad-slider .noUi-connects .noUi-connect:nth-child(4) {
     background: #fb796e;
@@ -1934,7 +1934,7 @@ span.grados {
 /* Antes de RachaMax: Degradado de Verde a Naranja en el punto dinámico --racha-tolerable-pct. rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3; */
 #racha-slider .noUi-connects .noUi-connect:nth-child(1) {
     /* Usamos la variable calculada en JS para el punto de cambio */
-    background: linear-gradient(to right, #6befaf var(--racha-tolerable-pct), #ffa500 var(--racha-tolerable-pct));
+    background: linear-gradient(to right, #6befaf var(--racha-tolerable-pct), #f0c16a var(--racha-tolerable-pct));
 }
 #racha-slider .noUi-connects .noUi-connect:nth-child(2) {
     background: #fb796e;

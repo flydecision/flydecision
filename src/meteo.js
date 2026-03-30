@@ -3953,7 +3953,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				    const tdIconoCiz = document.createElement("td");	
 				    //tdIconoCiz.innerHTML = '<span style="font-size:4px;">🌪️🎯</span>';
                     tdIconoCiz.innerHTML = '';
-                    tdIconoCiz.style.background = "linear-gradient(to right, #6befaf 33.3%, #ffa500 33.3%, #ffa500 66.6%, #fb796e 66.6%)";
+                    tdIconoCiz.style.background = "linear-gradient(to right, #6befaf 33.3%, #f0c16a 33.3%, #f0c16a 66.6%, #fb796e 66.6%)";
 				    tdIconoCiz.setAttribute("title", "Cizalladura de Bajo Nivel por velocidad / Fiabilidad del pronóstico de viento medio");	
 				    tdIconoCiz.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda", "celda-altura-4px");
                     tdIconoCiz.style.borderTop = "1px solid #000";
@@ -4645,17 +4645,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // ];
 
             const coloresNota = [
-                "#fb796e", // 0  — Rojo
-                "#fc8258", // 1
-                "#fd8b42", // 2
-                "#fd932c", // 3
-                "#fe9c16", // 4
-                "#ffa500", // 5  — Naranja
-                "#e1b423", // 6
-                "#c4c346", // 7
-                "#a6d169", // 8
-                "#89e08c", // 9
-                "#6befaf"  // 10 — Verde
+                "#fb796e", // 0  — Rojo (ancla)
+                "#f9876d", // 1
+                "#f7966c", // 2
+                "#f4a46c", // 3
+                "#f2b36b", // 4
+                "#f0c16a", // 5  — Naranja (ancla)
+                "#d5ca78", // 6
+                "#bbd386", // 7
+                "#a0dd93", // 8
+                "#86e6a1", // 9
+                "#6befaf"  // 10 — Verde (ancla)
             ];
 
             if (valorVisual !== "-") {
