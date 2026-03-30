@@ -1052,7 +1052,7 @@ body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-de
 }
 
 /* Cabecera redondeada */
-/* #tabla thead tr:nth-child(1) th:first-child {
+#tabla thead tr:nth-child(1) th:first-child {
     border-top-left-radius: 10px;
 }
 
@@ -1062,10 +1062,10 @@ body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-de
 
 #tabla thead tr:nth-child(1) th[rowspan="2"]:first-child {
     border-bottom-left-radius: 10px;
-} */
+}
 
 #tabla thead tr:nth-child(1) th:last-child[rowspan="2"] {
-    /* border-bottom-right-radius: 10px; */
+    border-bottom-right-radius: 10px;
     border-right: 2px solid #000 !important;
 }
 /* En edición de favoritos, la columna Despegue es la última visible: pintamos su borde derecho exterior */
