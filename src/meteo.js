@@ -1149,7 +1149,7 @@ function abrirFavoritos() {
                         
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga('', `<div style="text-align: center;">
-                            <p>✅ Se han importado ${nuevosFavoritos.length} despegues favoritos.</p>
+                            <p>✅ Se han importado ${nuevosFavoritos.length} despegues favoritos</p>
                         </div>`);
                         } else {
                             location.reload();
@@ -1234,7 +1234,7 @@ async function guardarFavoritos() {
             });
 
             const confirmResult = await Dialog.confirm({
-                title: '✅ Favoritos guardados con éxito.',
+                title: '✅ Favoritos guardados con éxito',
                 text: 'Aquí tienes mis despegues favoritos de Fly Decision:',
                 message: `\n${nombreArchivo}\n\n¿Quieres compartirlo ahora?`,
                 okButtonTitle: 'Sí, compartir',
@@ -2250,7 +2250,7 @@ async function exportarConfiguracion() {
             });
 
             const confirmResult = await Dialog.confirm({
-                title: '✅ Se ha guardado la configuración.',
+                title: '✅ Se ha guardado la configuración',
                 message: `\n${nombreArchivo}\n\n¿Quieres compartirla ahora?`,
                 okButtonTitle: 'Sí, compartir',
                 cancelButtonTitle: 'No'
@@ -2310,10 +2310,10 @@ function importarConfiguracion() {
                     if (keysImportadas > 0) {
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga(``, `<div style="text-align: center;">
-                            <p>✅ Se ha importado la configuración.</p>
+                            <p>✅ Se ha importado la configuración</p>
                         </div>`);
                         } else {
-                            alert("✅ Se ha importado la configuración.");
+                            alert("✅ Se ha importado la configuración");
                             location.reload();
                         }
                     } else {
@@ -2439,6 +2439,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             
             soloFavoritos = false;
             modoEdicionFavoritos = true; 
+
+            document.body.classList.add('modo-edicion-tabla'); 
 
             document.getElementById('div-menu').classList.add('mode-editing');
         	document.getElementById("btn-div-configuracion-toggle").classList.remove("activo");
@@ -4655,7 +4657,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 "#89e08c", // 9
                 "#6befaf"  // 10 — Verde
             ];
-            
+
             if (valorVisual !== "-") {
                 // El color ahora responde a la notaFinal2 (valorVisual)
                 tdCondiciones.style.backgroundColor = coloresNota[valorVisual];
