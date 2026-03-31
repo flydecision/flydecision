@@ -6014,6 +6014,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // --- 2. TEXTOS DE FUTURO O ACTUALIZANDO ---
                 const MARGEN_TOLERANCIA_MS = 45 * 60 * 1000; 
                 const OFFSET_MS = 1 * 60 * 1000;
+                const LIMITE_ATRASO_MS = 3 * 60 * 60 * 1000; // 3 horas de margen para considerar una actualización "retrasada" e Inminente
 
                 // Futuro Météo-France
                 let textoFuturoMF = "";
@@ -6021,24 +6022,48 @@ document.addEventListener('DOMContentLoaded', function() {
                     textoFuturoMF = `<span style="color:#e39300; font-weight:bold;">🔄 ${formatearTextoStatus(currentStatusText)}</span>`;
                 } else {
                     let proximaFechaMF = null;
+                    let esInminenteMF = false;
+
                     for (let h of HorariosMediosActualizacion) {
                         const [hora, min] = h.split(':').map(Number);
                         const intento = new Date(ahora);
                         intento.setUTCHours(hora, min, 0, 0);
+                        
                         let distancia = lastDataGenerationTimestamp > 0 ? intento.getTime() - lastDataGenerationTimestamp : Infinity;
-                        if (intento > ahora && distancia > MARGEN_TOLERANCIA_MS) { proximaFechaMF = intento; break; }
+                        
+                        // Si la hora de este ciclo ya pasó, pero NO tenemos los datos de este ciclo (distancia > margen)
+                        if (ahoraMs > intento.getTime() && distancia > MARGEN_TOLERANCIA_MS && (ahoraMs - intento.getTime()) < LIMITE_ATRASO_MS) {
+                            esInminenteMF = true;
+                            break;
+                        }
+                        
+                        // Si es un ciclo futuro y NO lo tenemos ya (distancia > margen)
+                        if (intento.getTime() > ahoraMs && distancia > MARGEN_TOLERANCIA_MS) { 
+                            proximaFechaMF = intento; 
+                            break; 
+                        }
                     }
-                    if (!proximaFechaMF) {
-                        const [hora, min] = HorariosMediosActualizacion[0].split(':').map(Number);
-                        proximaFechaMF = new Date(ahora);
-                        proximaFechaMF.setUTCDate(proximaFechaMF.getUTCDate() + 1); 
-                        proximaFechaMF.setUTCHours(hora, min, 0, 0);
+                    
+                    if (esInminenteMF) {
+                        textoFuturoMF = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En breve...⌛</span>`;
+                    } else {
+                        if (!proximaFechaMF) {
+                            const [hora, min] = HorariosMediosActualizacion[0].split(':').map(Number);
+                            proximaFechaMF = new Date(ahora);
+                            proximaFechaMF.setUTCDate(proximaFechaMF.getUTCDate() + 1); 
+                            proximaFechaMF.setUTCHours(hora, min, 0, 0);
+                        }
+                        const diffMsMF = (proximaFechaMF.getTime() - ahoraMs) + OFFSET_MS;
+                        
+                        if (diffMsMF <= 0) {
+                            textoFuturoMF = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En breve...⌛</span>`;
+                        } else {
+                            const diffMinsMF = Math.floor(diffMsMF / 60000) % 60;
+                            const diffHorasMF = Math.floor(Math.floor(diffMsMF / 60000) / 60);
+                            let textoMF = diffHorasMF > 0 ? `~${diffHorasMF} h ${diffMinsMF} min` : `~${diffMinsMF} min`;
+                            textoFuturoMF = `🔄 Próxima: <b>${textoMF}</b>`;
+                        }
                     }
-                    const diffMsMF = (proximaFechaMF - ahora) + OFFSET_MS;
-                    const diffMinsMF = Math.floor(diffMsMF / 60000) % 60;
-                    const diffHorasMF = Math.floor(Math.floor(diffMsMF / 60000) / 60);
-                    let textoMF = diffHorasMF > 0 ? `~${diffHorasMF} h ${diffMinsMF} min` : `~${diffMinsMF} min`;
-                    textoFuturoMF = `🔄 Próxima: <b>${textoMF}</b>`;
                 }
 
                 // Futuro ECMWF
@@ -6047,24 +6072,48 @@ document.addEventListener('DOMContentLoaded', function() {
                     textoFuturoEC = `<span style="color:#e39300; font-weight:bold;">🔄 ${formatearTextoStatus(currentStatusTextEcmwf)}</span>`;
                 } else {
                     let proximaFechaEC = null;
+                    let esInminenteEC = false;
+
                     for (let h of HorariosMediosActualizacionEcmwf) {
                         const [hora, min] = h.split(':').map(Number);
                         const intento = new Date(ahora);
                         intento.setUTCHours(hora, min, 0, 0);
+                        
                         let distancia = lastDataGenerationTimestampEcmwf > 0 ? intento.getTime() - lastDataGenerationTimestampEcmwf : Infinity;
-                        if (intento > ahora && distancia > MARGEN_TOLERANCIA_MS) { proximaFechaEC = intento; break; }
+                        
+                        // Si la hora de este ciclo ya pasó, pero NO tenemos los datos de este ciclo (distancia > margen)
+                        if (ahoraMs > intento.getTime() && distancia > MARGEN_TOLERANCIA_MS && (ahoraMs - intento.getTime()) < LIMITE_ATRASO_MS) {
+                            esInminenteEC = true;
+                            break;
+                        }
+                        
+                        // Si es un ciclo futuro y NO lo tenemos ya (distancia > margen)
+                        if (intento.getTime() > ahoraMs && distancia > MARGEN_TOLERANCIA_MS) { 
+                            proximaFechaEC = intento; 
+                            break; 
+                        }
                     }
-                    if (!proximaFechaEC) {
-                        const [hora, min] = HorariosMediosActualizacionEcmwf[0].split(':').map(Number);
-                        proximaFechaEC = new Date(ahora);
-                        proximaFechaEC.setUTCDate(proximaFechaEC.getUTCDate() + 1); 
-                        proximaFechaEC.setUTCHours(hora, min, 0, 0);
+                    
+                    if (esInminenteEC) {
+                        textoFuturoEC = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En breve... ⌛</span>`;
+                    } else {
+                        if (!proximaFechaEC) {
+                            const [hora, min] = HorariosMediosActualizacionEcmwf[0].split(':').map(Number);
+                            proximaFechaEC = new Date(ahora);
+                            proximaFechaEC.setUTCDate(proximaFechaEC.getUTCDate() + 1); 
+                            proximaFechaEC.setUTCHours(hora, min, 0, 0);
+                        }
+                        const diffMsEC = (proximaFechaEC.getTime() - ahoraMs) + OFFSET_MS;
+                        
+                        if (diffMsEC <= 0) {
+                            textoFuturoEC = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En breve... ⌛</span>`;
+                        } else {
+                            const diffMinsEC = Math.floor(diffMsEC / 60000) % 60;
+                            const diffHorasEC = Math.floor(Math.floor(diffMsEC / 60000) / 60);
+                            let textoEC = diffHorasEC > 0 ? `~${diffHorasEC} h ${diffMinsEC} min` : `~${diffMinsEC} min`;
+                            textoFuturoEC = `🔄 Próxima: <b>${textoEC}</b>`;
+                        }
                     }
-                    const diffMsEC = (proximaFechaEC - ahora) + OFFSET_MS;
-                    const diffMinsEC = Math.floor(diffMsEC / 60000) % 60;
-                    const diffHorasEC = Math.floor(Math.floor(diffMsEC / 60000) / 60);
-                    let textoEC = diffHorasEC > 0 ? `~${diffHorasEC} h ${diffMinsEC} min` : `~${diffMinsEC} min`;
-                    textoFuturoEC = `🔄 Próxima: <b>${textoEC}</b>`;
                 }
 
                 // --- 3. DIBUJAR LISTA UNIFICADA ---
