@@ -802,7 +802,7 @@ function iniciarGuiaPrincipal(forzar = false) {
             },
 
             { element: '#btn-mapa-despegues',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_tierra_60.webp" width="20" height="20" style="display: block;"><span>Mapa de despegues</span></div>', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1 millón de puntos exactos de despegues y mucha otra información.<br><br>La información más completa es de España y Pirineos (incluyendo la parte francesa), pero hay información de todo el mundo.' , side: 'bottom', align: 'center' } },
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_tierra_60.webp" width="20" height="20" style="display: block;"><span>Mapa de despegues</span></div>', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1 millón de puntos exactos de despegues y mucha otra información.<br><br>La información más completa es de España, Portugal y Pirineos (incluyendo la parte francesa), pero hay información de todo el mundo.' , side: 'bottom', align: 'center' } },
 
             { element: '#btn-activar-edicion-favoritos',
                 popover: { title: '♥️/<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Edición de favoritos', description: 'Abre la <i>Pantalla de edición de favoritos</i>.<br><br>En esa pantalla tienes todos los despegues disponibles y es donde se marcan o desmarcan los favoritos que se mostrarán en esta <i>Pantalla principal</i>.' } },
@@ -899,7 +899,7 @@ function iniciarGuiaFavoritos(forzar = false) {
 
         steps: [
             { element: '#tabla', //'#tabla thead' apuntaría a la cabecera, '#tabla tbody tr:nth-child(7)' a la fila 3
-                popover: { title: '🪂 Tabla de todos los despegues', description: 'Esta pantalla de edición de favoritos sirve para seleccionar los despegues que usas habitualmente. La pantalla normal de la aplicación mostrará solo los despegues favoritos.<br><br>En esta tabla tienes todos disponibles.<br><br>Por el momento solo hay despegues de España y Pirineos (incluyendo la parte francesa). Esta aplicación es un proyecto en desarrollo.', side: 'right', align: 'start'} },
+                popover: { title: '🪂 Tabla de todos los despegues', description: 'Esta pantalla de edición de favoritos sirve para seleccionar los despegues que usas habitualmente. La pantalla normal de la aplicación mostrará solo los despegues favoritos.<br><br>En esta tabla tienes todos disponibles.<br><br>Por el momento solo hay despegues de España, Portugal, Pirineos (incluyendo la parte francesa) y parte de Alpes franceses y suizos. Esta aplicación es un proyecto en desarrollo.', side: 'right', align: 'start'} },
 
             { element: '#tabla tbody tr:nth-child(1) td:first-child', 
                 popover: { title: '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos', description: 'Marca (o desmarca) aquí tus despegues favoritos.<br><br>Se van guardando automáticamente.', side: 'bottom', align: 'end'} },
@@ -2496,7 +2496,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 						<p>👉 La tabla mostrará solo los despegues favoritos. Puedes marcarlos todos si lo necesitas, pero puede ralentizar el uso según tu dispositivo.</p>
 						<p>👉️ La tabla estará siempre ordenada automáticamente por la puntuación de condiciones, de mejor (10) a peor (0).</p>
 						<p>👉️ Por el momento no se muestra el dato CBH (base de nube), necesario para saber si estará cubierto el despegue a esa hora (está solicitado a Open-meteo y pendiente). Antes de volar, como sabes, hay que analizar muchos más datos.</p>
-						<p>👉️ Por el momento el ámbito es España y Pirineos (incluyendo la parte francesa).</p>
+						<p>👉️ Por el momento el ámbito es España, Portugal, Pirineos (incluyendo la parte francesa) y parte de Alpes franceses y suizos.</p>
 					    `,
 					botones: [
 					{
