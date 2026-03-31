@@ -1847,25 +1847,31 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
     let horasFiltradasPermanentemente = window.horasCrudasRangoHorario;
     if (horasFiltradasPermanentemente.length > 0) {
         const ultimoIndice = horasFiltradasPermanentemente.length - 1;
-        if (ultimoIndice > 0) { 
-            const ultimaHora = horasFiltradasPermanentemente[ultimoIndice];
-            const penultimaHora = horasFiltradasPermanentemente[ultimoIndice - 1];
-            const ultimaFechaLocal = new Date(ultimaHora.endsWith('Z') ? ultimaHora : ultimaHora + 'Z');
-            const penultimaFechaLocal = new Date(penultimaHora.endsWith('Z') ? penultimaHora : penultimaHora + 'Z');
-            
-            if (ultimaFechaLocal.getDate() !== penultimaFechaLocal.getDate()) {
-                const diaCorte = penultimaFechaLocal.getDate();
-                let indiceCorte = -1;
-                for (let i = ultimoIndice; i >= 0; i--) {
-                    const h = horasFiltradasPermanentemente[i];
-                    const d = new Date(h.endsWith('Z') ? h : h + 'Z');
-                    if (d.getDate() === diaCorte) {
-                        indiceCorte = i + 1; 
-                        break;
-                    }
-                }
-                if (indiceCorte !== -1) horasFiltradasPermanentemente = horasFiltradasPermanentemente.slice(0, indiceCorte);
+        const ultimaHora = horasFiltradasPermanentemente[ultimoIndice];
+        
+        // Obtenemos qué día es el último del array
+        const ultimaFechaLocal = new Date(ultimaHora.endsWith('Z') ? ultimaHora : ultimaHora + 'Z');
+        const diaUltimo = ultimaFechaLocal.getDate();
+
+        let horasEnUltimoDia = 0;
+        let indiceCorte = -1;
+
+        // Contamos cuántas horas hay en ese último día y dónde empieza
+        for (let i = ultimoIndice; i >= 0; i--) {
+            const h = horasFiltradasPermanentemente[i];
+            const d = new Date(h.endsWith('Z') ? h : h + 'Z');
+            if (d.getDate() === diaUltimo) {
+                horasEnUltimoDia++;
+            } else {
+                indiceCorte = i + 1; // Índice donde empieza ese último día
+                break;
             }
+        }
+
+        // Si el último día es solo un "derrame" por el cambio de hora (ej. tiene menos de 6 horas),
+        // lo cortamos para que la tabla termine limpia al final del 4º día a las 23:00.
+        if (indiceCorte !== -1 && horasEnUltimoDia < 6) {
+            horasFiltradasPermanentemente = horasFiltradasPermanentemente.slice(0, indiceCorte);
         }
     }
     window.horasCrudasRangoHorario = horasFiltradasPermanentemente;
