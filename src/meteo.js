@@ -720,7 +720,7 @@ function iniciarGuiaPrincipal(forzar = false) {
 
         steps: [
             { element: '#tabla', //'#tabla thead' apuntaría a la cabecera, '#tabla tbody tr:nth-child(7)' a la fila 3
-                popover: { title: '🪂 Tabla de despegues favoritos', description: 'Muestra tus despegues favoritos, su pronóstico y sus puntuaciones (despegue y XC).<br><br>Los despegues se ordenan automáticamente, de mayor a menor puntuación de despegue.', side: 'top', align: 'center'} },
+                popover: { title: '🪂 Tabla de despegues favoritos', description: 'Muestra el pronóstico y sus puntuaciones de condiciones (despegue y XC).<br><br>Los despegues se ordenan automáticamente por la puntuación de despegue.', side: 'top', align: 'center'} },
 
             { element: '.div-paneles-controles-transparente', 
                 popover: { title: 'Selector de rango horario', description: 'Ajusta este deslizador desde ambos extremos para seleccionar el rango horario que te interese.<br><br>La tabla mostrará solo esas horas y la puntuación de condiciones se recalculará para ese intervalo de tiempo concreto.' , side: 'bottom', align: 'center'} },
@@ -2923,7 +2923,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
         const tooltipContentMeteo =
             "<b style='font-size:20px;'>🌦️ Meteorología</b><br><br>" +
-            "<b>🌦️</b>: Icono de meteo general (nubosidad y precipitación)<br>" +
+            "<b>🌦️</b>: Meteo general (nubosidad y precipitación)<br>" +
             "<b>💦</b>: Precipitación en mm (litros/m²)<br>" +
             "<b>💦?</b>: Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²)<br>" +
             //"<b>☁️↕</b>: Base de nube AGL (km). Altura de la base de la nube sobre el suelo. Estimación aproximada calculada a partir de la temperatura 2m y punto de rocío 2m<br>" +
@@ -2947,7 +2947,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             "<b>Techo</b>: Altitud (km) sobre nivel del mar (MSL) del techo de vuelo previsto y usable en parapente (= espesor capa límite BLH x 0.85 + altitud media suelo celda ECMWF 9km)<br>" +
             "<b>CAPE</b>: Energía Potencial Convectiva Disponible (J/kg)<br>" +
             "<b>CIN</b>: Inhibición Convectiva (J/kg en valor absoluto)<br><br>" +
-            "<i>Nota: No está disponible el dato esencial de la base de nube ☁️↓ (CBH = Cloud Base Height) para completar la meteo en el despegue (está solicitado en marzo-2026 a la pasarela meteo)</i><br>";
+            "<i>Nota: No está disponible aún el dato esencial de la base de nube ☁️↓ (CBH = Cloud Base Height).</i><br>";
         thMeteo.setAttribute("data-tippy-content", tooltipContentMeteo);
         thMeteo.setAttribute("tabindex", "0"); 
         thMeteo.style.cursor = "help";
@@ -4563,7 +4563,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                                 let espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
                                 let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
                                 
-                                return `Techo usable parapente: ${altitudMSL} m MSL\n` +
+                                return `Techo usable en parapente: ${altitudMSL} m MSL\n` +
                                     `Cálculo = ${espesorUtil} m espesor útil AGL (${Math.round(RATIO_TECHO_UTIL * 100)}% de la BLH teórica de ${espesorBLH} m) + ${Math.round(elevacionModeloECMWF)} m altitud (suelo medio celda ECMWF 9km)\n`;
                             }
                         );
@@ -5397,6 +5397,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Comprobación inicial al cargar la página
     gestionarBotonLimpiar();
+
+    function comprobarAvisoCambioTecho() {
+        // 1. Si la versión es 3.0.0 o superior, este aviso ya es "historia" y no debe salir nunca
+        const versionActual = window.WEB_VERSION || "0.0.0";
+        const majorVersion = parseInt(versionActual.split('.')[0]);
+        if (majorVersion >= 3) return;
+
+        // 2. Si el usuario ya lo aceptó, no se muestra más
+        if (localStorage.getItem('METEO_AVISO_TECHO_MSL_VISTO') === 'true') return;
+
+        // 3. Si es un usuario nuevo (que aún no ha hecho la primera visita), 
+        // no le mostramos este aviso técnico todavía para no saturarle, 
+        // saldrá la próxima vez que entre una vez configurada su app.
+        if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA")) return;
+
+        // 4. Mostrar el mensaje técnico
+        GestorMensajes.mostrar({
+            tipo: 'modal',
+            htmlContenido: `
+                <div style="text-align: center;">
+                    <p style="font-size: 2.5em; margin: 0 0 10px 0;">ℹ️</p>
+                    <p style="font-size: 1.2em; font-weight: bold;">Cambio de referencia en "Techo"</p>
+                    <div style="text-align: left; font-size: 0.95em; line-height: 1.5; color: #333;">
+                        <p>A partir de esta versión, el valor de <b>Techo</b> ha sido optimizado:</p>
+                        <ul style="padding-left: 20px; margin-top: 10px;">
+                            <li><b>Altitud MSL:</b> Ahora se muestra la altura respecto al <b>nivel del mar</b> (MSL), es decir, la altitud. Antes se mostraba la altura respecto al suelo del despegue (AGL). Esto reduce errores, al usar la altitud media de la celda del modelo y es más útil para planificar rutas XC.</li>
+                            <li><b>Cálculo más realista:</b> Se ha aplicado un <b>factor de 0.85</b> (un 15% menos) al dato original del modelo para compensar la tasa de caída media del parapente, ofreciendo un techo más realista.</li>
+                        </ul>
+                    <p>💡Seleccionando el icono"🌦️" en la cabecera de la tabla se muestra la información de cada dato.</p>
+                    </div>
+                </div>
+            `,
+            botones: [
+                {
+                    texto: 'Entendido',
+                    onclick: function() {
+                        // Guardamos que ya lo ha visto para que no vuelva a salir
+                        localStorage.setItem('METEO_AVISO_TECHO_MSL_VISTO', 'true');
+                        GestorMensajes.ocultar();
+                    }
+                }
+            ],
+            anchoBotones: 160
+        });
+    }    
 	    	
 	// ---------------------------------------------------------------
 	// 🔴🔴🔴 SLIDERS
@@ -6653,10 +6698,10 @@ document.addEventListener('DOMContentLoaded', function() {
 	// 🔴 ANDROID: Detectar el "Despertar" de la App (Resume) para que pida datos nuevos y se actualice slider rango horario
 	// ---------------------------------------------------------------
 
-function iniciarDetectorResume() {
-        
-        // Esta lógica funciona tanto para App nativa como para Web (usando visibilitychange)
-const checkResume = async () => {
+    function iniciarDetectorResume() {
+            
+            // Esta lógica funciona tanto para App nativa como para Web (usando visibilitychange)
+            const checkResume = async () => {
             //console.log(new Date().toLocaleString(), "📱 [Resume/Visible] Vuelto a primer plano");
 
             const ahora = Date.now();
@@ -6753,6 +6798,9 @@ const checkResume = async () => {
     } else {
         iniciarDetectorResume();
     }
+
+    // Un pequeño retraso de 1 segundo para que la tabla cargue primero y no sea tan brusco
+    setTimeout(comprobarAvisoCambioTecho, 1000);
 
     // ---------------------------------------------------------------
 	// 🔴 ANDROID: GESTOR DE ENLACES EXTERNOS (In-App Browser)

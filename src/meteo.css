@@ -2274,6 +2274,7 @@ span.grados {
     color: black !important;
     /* Usa la variable de entorno segura, con un fallback de 20px si no existe */
     margin-top: max(20px, env(safe-area-inset-top)) !important;
+    margin-bottom: 35px;
 }
 
 /* .driver-popover-arrow {
@@ -2288,6 +2289,7 @@ span.grados {
     /* margin-bottom: 10px; */
     /* border-bottom: 2px solid #f0f0f0; */
     /* padding-bottom: 5px; */
+    background-color: #fde047 !important;
 }
 
 .driver-popover-description {
