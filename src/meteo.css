@@ -483,7 +483,7 @@ input[type="search"]::-webkit-search-cancel-button {
     padding-right: 30px;
     padding-left: 30px;
     padding-bottom: 8px;
-    max-height: calc(100dvh - env(safe-area-inset-bottom) - 20px) !important; 
+    max-height: calc(100dvh - env(safe-area-inset-bottom) - 100px) !important; 
     -webkit-overflow-scrolling: touch;
 }
 
