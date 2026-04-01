@@ -6060,7 +6060,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     if (esInminenteMF) {
-                        textoFuturoMF = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En breve...⌛</span>`;
+                        textoFuturoMF = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En cualquier momento...⌛</span>`;
                     } else {
                         if (!proximaFechaMF) {
                             const [hora, min] = HorariosMediosActualizacion[0].split(':').map(Number);
@@ -6071,7 +6071,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const diffMsMF = (proximaFechaMF.getTime() - ahoraMs) + OFFSET_MS;
                         
                         if (diffMsMF <= 0) {
-                            textoFuturoMF = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En breve...⌛</span>`;
+                            textoFuturoMF = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En cualquier momento...⌛</span>`;
                         } else {
                             const diffMinsMF = Math.floor(diffMsMF / 60000) % 60;
                             const diffHorasMF = Math.floor(Math.floor(diffMsMF / 60000) / 60);
@@ -6110,7 +6110,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     if (esInminenteEC) {
-                        textoFuturoEC = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En breve... ⌛</span>`;
+                        textoFuturoEC = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En cualquier momento... ⌛</span>`;
                     } else {
                         if (!proximaFechaEC) {
                             const [hora, min] = HorariosMediosActualizacionEcmwf[0].split(':').map(Number);
@@ -6121,7 +6121,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const diffMsEC = (proximaFechaEC.getTime() - ahoraMs) + OFFSET_MS;
                         
                         if (diffMsEC <= 0) {
-                            textoFuturoEC = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En breve... ⌛</span>`;
+                            textoFuturoEC = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">En cualquier momento... ⌛</span>`;
                         } else {
                             const diffMinsEC = Math.floor(diffMsEC / 60000) % 60;
                             const diffHorasEC = Math.floor(Math.floor(diffMsEC / 60000) / 60);

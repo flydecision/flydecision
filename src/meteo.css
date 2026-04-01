@@ -143,7 +143,7 @@ body, header, .offline-badge {
 
 .contenedor-principal-controles {
     max-width: 727px;
-    width: 100%;
+    width: calc(100% - 8px);
     margin: 0 auto;
     position: sticky;
     top: 0;
@@ -151,6 +151,8 @@ body, header, .offline-badge {
     background-color: rgba(255, 255, 255);
     box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
     border-radius: 10px;
+    margin-top: 3px;
+    margin-left: 4px;
 }
 
 /* Para que el Slider respire un poco cuando el menú de arriba está oculto en modo normal */
@@ -2245,7 +2247,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     /* position: fixed; */
     bottom: 0;
     left: 0;
-    width: 100%;
+    width: calc(100% - 7px);
     height: calc(56px + env(safe-area-inset-bottom));
     background-color: #f3f4f65c;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
@@ -2257,12 +2259,11 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
     border-radius: 10px;
     max-width: 727px;
-    margin-bottom: 5px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-bottom: 4px;
     position: sticky;
     background-color: #ffffff;
     padding-top: 2px;
+    margin-left: 3px;
 }
 
 .compact-nav .nav-item {
