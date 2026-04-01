@@ -152,7 +152,6 @@ body, header, .offline-badge {
     box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
     border-radius: 10px;
     margin-top: 3px;
-    margin-left: 4px;
 }
 
 /* Para que el Slider respire un poco cuando el menú de arriba está oculto en modo normal */
@@ -821,7 +820,7 @@ details.config-accordion .accordion-content {
 .tabla-wrapper {
     flex: 1; /* Ocupa todo el espacio vertical restante */
 	margin-left: 3px;
-    margin-bottom: 0px; 
+    margin-bottom: 3px; 
     margin-right: 3px;
     padding-right: 1px;
 	margin-top: 3px;
@@ -2247,7 +2246,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     /* position: fixed; */
     bottom: 0;
     left: 0;
-    width: calc(100% - 7px);
+    width: calc(100% - 8px);
     height: calc(56px + env(safe-area-inset-bottom));
     background-color: #f3f4f65c;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
@@ -2264,6 +2263,8 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     background-color: #ffffff;
     padding-top: 2px;
     margin-left: 3px;
+    margin: 0 auto;
+    margin-bottom: 4px;
 }
 
 .compact-nav .nav-item {
