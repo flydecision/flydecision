@@ -58,30 +58,8 @@
 
 <div class="contenedor-principal-controles">
 
-	<!-- 🟦 MENÚ  -->
-
+	<!-- 🟦 MENÚ (Oculto en modo normal, visible en Modo Edición Favoritos) -->
 	<div id="div-menu" class="div-menu">	
-
-		<div id="buscador-wrapper" class="buscador-con-boton" style="position: relative;">
-			<input type="search" 
-			id="buscador-despegues-provincias"
-			name="search_query_unique_xyz" 
-			placeholder="🔍"
-			onkeyup="filtrarDespeguesProvincias()"
-			autocomplete="off" 
-			autocorrect="off" 
-			autocapitalize="off" 
-			spellcheck="false"
-			enterkeyhint="search"
-			aria-label="Buscador de despegues"
-			title="Buscador de despegues">
-			<button id="limpiar-buscador" type="button" style="display: none;">&times;</button>
-		</div>
-
-		<button id="btn-div-filtro-distancia-toggle" title="Filtro de distancia al despegue" onclick="alternardivDistancia(event)" style="position: relative;">
-			<img src="icons/icono_filtro_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
-			<span style="position: absolute; bottom: 2px; right: 0px; font-size: 12px; line-height: 1; border-radius: 50%;">📍</span>
-		</button>
 
 		<button id="btn-filtro-favoritos-toggle" class="group-edit" title="Ver solo favoritos" onclick="filtroVerSoloFavoritos()" style="position: relative;">
 			<img src="icons/icono_filtro_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
@@ -100,21 +78,8 @@
 			<span style="font-size: 20px;">💾</span>
 		</button>
 
-		<button id="btn-mapa-despegues" class="group-normal" title="Mapa de despegues" aria-label="Mapa de despegues" onclick="abrirLinkExterno('https://flydecision.com/map/')" style="position: relative;">
-			<img src="icons/icono_tierra_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
-		</button>
-
-		<button id="btn-activar-edicion-favoritos" class="group-normal" title="Editar despegues favoritos" onclick="activarEdicionFavoritos()" style="position: relative;"> 
-			<img src="icons/icono_parapente_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
-			<span style="position: absolute; bottom: 2px; right: 2px; font-size: 10px; line-height: 1; border-radius: 50%;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></span>
-		</button>
-
-		<button id="btn-guia-edicion-favoritos" class="group-edit" title="Guía de la pantalla de editar despegues favoritos" onclick="sugerirGuiaFavoritos(true)" style="position: relative;"> 
+		<button id="btn-guia-edicion-favoritos" class="group-edit" title="Guía de la pantalla de editar despegues favoritos" onclick="sugerirGuiaFavoritos(true)" style="position: relative; margin-left: auto;"> 
 			<img src="icons/icono_ayuda_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
-		</button>
-
-		<button id="btn-div-configuracion-toggle" class="group-normal" title="Configuración" onclick="alternardivConfiguracion(event)" style="position: relative;"> 
-			<img src="icons/icono_configuracion_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
 		</button>
 
 	</div>
@@ -224,95 +189,88 @@
 <div id="div-configuracion" class="div-configuracion">
 
 	<button class="btn-cerrar-modal" onclick="alternardivConfiguracion(event)">&times;</button>
-	<div class="panel-titulo" style="font-size: 1.4em;">Configuración</div>
+	<div class="panel-titulo" style="font-size: 1.4em;">Ajustes</div>
+    
 	<div class="div-configuracion-subpanel">
-		<div class="div-paneles-controles-sin-pips">
-			<div class="linea-con-bt-info" style="justify-content: center;">
+		<div style="display: flex; align-items: center; gap: 8px; width: 100%; max-width: 365px; min-width: 365px; margin-bottom: 8px !important;">
+			
+			<button onclick="activarEdicionFavoritos(); " style="height: 34px; box-sizing: border-box; display: flex; align-items: center; gap: 6px; background-color: #f0f0f0; border: 1px solid #333; border-radius: 6px; padding: 0 12px; font-size: 1em; font-weight: bold; box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2); cursor: pointer; transition: all 0.2s;">
+				<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width: 16px; height: 16px;">
+				Editar Favoritos
+			</button>
 
-				<div id="titulo-velocidad-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
-					<img src="icons/icono_viento_60.webp" width="20" height="20" style="display: block;"><span>Viento medio</span>
-				</div>
+			<button class="btn-accion" onclick="importarConfiguracion()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Importar configuración y favoritos">
+				📂
+			</button>
 
-				<button class="btn-info btn-arriba-derecha" 
-					data-tippy-content="
-						<b>Viento medio mínimo, ideal y máximo:</b><br><br>
-						
-						El sistema automático de puntuación de condiciones tendrá en cuenta estos valores.<br><br>
-						
-						El color del dato en la tabla indica visualmente el análisis de las condiciones para estos valores que configures aquí (Mín, Ideal y Máx).<br><br>
+			<button class="btn-accion" onclick="exportarConfiguracion()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Exportar configuración y favoritos">
+				💾
+			</button>
 
-						🟧 Naranja: viento flojo por debajo de tu viento Mínimo (normalmente será 0, salvo que precises cierto viento para vuelo dinámico u otra razón).<br> 
-						🟩 Verde: viento Ideal, desde mínimo hasta un margen de seguridad antes del Máximo.<br> 
-						🟧 Naranja: viento más fuerte acercándose al Máximo (último tercio antes del Máximo).<br>
-						🟥 Rojo: viento muy fuerte que supera tu viento Máximo.<br><br>
-						
-						<b>Definición técnica estándar OMM (Organización Meteorológica Mundial) de la Velocidad media 10 m</b>:<br><br>
+			<button class="btn-accion" onclick="btnRestablecerConfiguración()" style="margin-left: auto; color: #ff0000; border: 3px solid #ff0000; width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; font-size: 1.1em;" title="Restablecer la configuración (elimina toda la configuración y favoritos)">
+				🔄
+			</button>
 
-						Es la velocidad promedio del viento sostenido durante los últimos 10 minutos antes de la hora indicada. Se mide a una altura estándar de 10 metros sobre el suelo (evitando el rozamiento inmediato del terreno). Representa el flujo laminar o base.
-					">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-
-			</div>
-			<div id="velocidad-slider" role="slider" aria-labelledby="titulo-velocidad-slider"></div>
-		</div>
-
-		<div class="div-paneles-controles-sin-pips">
-			<div class="linea-con-bt-info" style="justify-content: center;">
-
-				<div id="titulo-racha-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
-					<img src="icons/icono_racha_60.webp" width="20" style="display: block;"><span>Racha máxima</span>
-				</div>
-
-				<button class="btn-info btn-arriba-derecha" 
-					data-tippy-content="
-						<b>Racha máxima:</b><br><br>
-						
-						El sistema automático de puntuación de condiciones tendrá en cuenta estos valores.<br><br>
-						
-						El color del dato en la tabla indica visualmente el análisis de las condiciones para el valor que configures aquí.<br><br>
-
-						🟩 Verde: racha máxima segura, lejos del límite.<br>
-						🟧 Naranja: racha máxima acercándose a tu racha Máxima.<br> 
-						🟥 Rojo: racha superando tu racha Máxima.<br><br>
-						
-						<b>Definición técnica estándar OMM (Organización Meteorológica Mundial) de la Racha máxima 10 m</b>:<br><br>
-
-						Es el pico máximo de velocidad instantánea (con una duración de 3 segundos) registrado en cualquier momento dentro del periodo de la hora anterior. Representa las fluctuaciones breves e intensas superpuestas al viento medio, asociada a turbulencia mecánica o térmica (convección).">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-
-			</div>
-			<div id="racha-slider" role="slider" aria-labelledby="titulo-racha-slider"></div>
 		</div>
 	</div>
 
+    <!-- 2. NUEVO ACORDEÓN: Viento medio y Racha máxima -->
 	<div class="div-configuracion-subpanel">
-		<div class="div-paneles-controles">
-			<div class="linea-con-bt-info" style="justify-content: center;">
+		<details class="config-accordion" style="margin-bottom: 8px;">
+			<summary>Límites de Viento y Racha</summary>
+			<div class="accordion-content">
+				<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding-top: 5px;">
+					
+					<!-- Panel original de Viento Medio -->
+					<div class="div-paneles-controles-sin-pips">
+						<div class="linea-con-bt-info">
+							<div id="titulo-velocidad-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold; margin-left: 2px;">
+								<img src="icons/icono_viento_60.webp" width="20" height="20" style="display: block;"><span>Viento</span>
+							</div>
+							<button class="btn-info btn-inline" data-tippy-content="
+								<b>Viento medio mínimo, ideal y máximo:</b><br><br>
+								El sistema automático de puntuación de condiciones tendrá en cuenta estos valores.<br><br>
+								El color del dato en la tabla indica visualmente el análisis de las condiciones para estos valores que configures aquí (Mín, Ideal y Máx).<br><br>
+								🟧 Naranja: viento flojo por debajo de tu viento Mínimo (normalmente será 0, salvo que precises cierto viento para vuelo dinámico u otra razón).<br> 
+								🟩 Verde: viento Ideal, desde mínimo hasta un margen de seguridad antes del Máximo.<br> 
+								🟧 Naranja: viento más fuerte acercándose al Máximo (último tercio antes del Máximo).<br>
+								🟥 Rojo: viento muy fuerte que supera tu viento Máximo.<br><br>
+								<b>Definición técnica estándar OMM (Organización Meteorológica Mundial) de la Velocidad media 10 m</b>:<br><br>
+								Es la velocidad promedio del viento sostenido durante los últimos 10 minutos antes de la hora indicada. Se mide a una altura estándar de 10 metros sobre el suelo (evitando el rozamiento inmediato del terreno). Representa el flujo laminar o base.
+							">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							</button>
+						</div>
+						<div id="velocidad-slider" role="slider" aria-labelledby="titulo-velocidad-slider"></div>
+					</div>
 
-				<div id="titulo-configuracion-horario-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold;">
-					<span style="font-size:1.2em; display: block;">🕜</span>
-					<span>Horario de vuelo preferido</span>
+					<!-- Panel original de Racha Máxima -->
+					<div class="div-paneles-controles-sin-pips">
+						<div class="linea-con-bt-info">
+							<div id="titulo-racha-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold; margin-left: 2px;">
+								<img src="icons/icono_racha_60.webp" width="20" style="display: block;"><span>Racha máxima</span>
+							</div>
+							<button class="btn-info btn-inline" data-tippy-content="
+								<b>Racha máxima:</b><br><br>
+								El sistema automático de puntuación de condiciones tendrá en cuenta estos valores.<br><br>
+								El color del dato en la tabla indica visualmente el análisis de las condiciones para el valor que configures aquí.<br><br>
+								🟩 Verde: racha máxima segura, lejos del límite.<br>
+								🟧 Naranja: racha máxima acercándose a tu racha Máxima.<br> 
+								🟥 Rojo: racha superando tu racha Máxima.<br><br>
+								<b>Definición técnica estándar OMM (Organización Meteorológica Mundial) de la Racha máxima 10 m</b>:<br><br>
+								Es el pico máximo de velocidad instantánea (con una duración de 3 segundos) registrado en cualquier momento dentro del periodo de la hora anterior. Representa las fluctuaciones breves e intensas superpuestas al viento medio, asociada a turbulencia mecánica o térmica (convección).">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							</button>
+						</div>
+						<div id="racha-slider" role="slider" aria-labelledby="titulo-racha-slider"></div>
+					</div>
 				</div>
-
-				<button class="btn-info btn-arriba-derecha" 
-					data-tippy-content='
-						<b>Horario de vuelo preferido:</b><br><br>
-						Los valores que se configuren aquí, harán que se seleccionen automáticamente estas horas de inicio y fin al elegir un día de la semana (lunes, martes,..) en el selector de rango horario que está siempre encima de la tabla.<br><br>
-						
-						Siempre puedes mover ese selector de rango horario a tu gusto; esta configuración es solo una automatización para facilitar la selección automática de un rango horario habitual.<br><br>
-						
-						Lo hagas manual o automáticamente, el rango de tiempo finalmente seleccionado es el único que se tiene en cuenta en el cálculo de la puntuación de <i>Condiciones</i>; así, la puntuación de cada despegue sera más realista para ese rango.<br><br>
-						
-						Si está activada la opción <i>Mostrar horas diurnas</i>, el rango horario seleccionado automáticamente con esta opción se ajustará a los límites de horas diurnas.'>
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-
 			</div>
-			<div id="configuracion-horario-slider" role="slider" aria-labelledby="titulo-configuracion-horario-slider"></div>
-		</div>
-		
+		</details>
+	</div>
+
+    <!-- 3. ACORDEÓN EXISTENTE: Datos meteorológicos opcionales -->
+	<div class="div-configuracion-subpanel">
 		<details class="config-accordion">
 			<summary>Datos meteorológicos opcionales</summary>
 			<div class="accordion-content">
@@ -342,10 +300,35 @@
 				</div>
 			</div>
 		</details>
+	</div>
 
+    <!-- 4. ACORDEÓN EXISTENTE: Datos calculados y opciones -->
+	<div class="div-configuracion-subpanel">
 		<details class="config-accordion">
-			<summary>Datos calculados y opciones</summary>
+			<summary>Datos calculados y otras opciones</summary>
 			<div class="accordion-content">
+				
+				<!-- Panel original de Horario movido aquí dentro -->
+				<div style="display: flex; justify-content: center; width: 100%; margin-bottom: 25px;">
+					<div class="div-paneles-controles" style="min-height: auto; padding-bottom: 12px; margin-bottom: 0;">
+						<div class="linea-con-bt-info">
+							<div id="titulo-configuracion-horario-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold; margin-left: 2px;">
+								<span style="font-size:1.2em; display: block;">🕜</span>
+								<span>Horario de vuelo preferido</span>
+							</div>
+							<button class="btn-info btn-inline" data-tippy-content='
+								<b>Horario de vuelo preferido:</b><br><br>
+								Los valores que se configuren aquí, harán que se seleccionen automáticamente estas horas de inicio y fin al elegir un día de la semana (lunes, martes,..) en el selector de rango horario que está siempre encima de la tabla.<br><br>
+								Siempre puedes mover ese selector de rango horario a tu gusto; esta configuración es solo una automatización para facilitar la selección automática de un rango horario habitual.<br><br>
+								Lo hagas manual o automáticamente, el rango de tiempo finalmente seleccionado es el único que se tiene en cuenta en el cálculo de la puntuación de <i>Condiciones</i>; así, la puntuación de cada despegue sera más realista para ese rango.<br><br>
+								Si está activada la opción <i>Mostrar horas diurnas</i>, el rango horario seleccionado automáticamente con esta opción se ajustará a los límites de horas diurnas.'>
+								<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							</button>
+						</div>
+						<div id="configuracion-horario-slider" role="slider" aria-labelledby="titulo-configuracion-horario-slider"></div>
+					</div>
+				</div>
+
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarSoloHorasDiurnas" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarSoloHorasDiurnas" onclick="alternarHorasNoche()"> Solo horas diurnas
@@ -380,7 +363,7 @@
 				</div>
 			</div>
 		</details>
- 	</div>
+	</div>
 
 	<div class="div-configuracion-subpanel">
 		<div class="div-paneles-controles" style="min-height: initial; padding-top: 5px; padding-bottom: 5px;">
@@ -396,7 +379,6 @@
 					</ul>
 					<b>Frecuencia de actualización automática:</b> Météo-France cada 3 horas aproximadamente (8 veces al día) y ECMWF cada 6 horas aproximadamente (4 veces al día).<br><br>
 					<b>Pasarela de datos meteorológicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>
-					
 					El valor <i>Ref. HHZ</i> indica la hora UTC±0 (Z) correspondiente al último ciclo de ejecución del modelo en el servidor meteorológico de origen. A partir de ese momento, hay varias horas de cálculo computacional antes de la distribución final y su disponibilidad pública.<br><br>
 				">
 				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
@@ -408,26 +390,7 @@
 	</div>
 
 	<div class="div-configuracion-subpanel" style="display: flex; justify-content: center; align-items: center;">
-		<div class="div-paneles-controles" style="border: none; background-color: #ffffff; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: auto; box-sizing: border-box; box-shadow: none;">
-
-			<!-- Grupo de Gestión de Datos (Importar, Exportar, Reset) -->
-			<div style="display: flex; gap: 6px; flex-shrink: 0;">
-				<button class="btn-accion" onclick="importarConfiguracion()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Importar configuración y favoritos">
-					📂
-				</button>
-				<button class="btn-accion" onclick="exportarConfiguracion()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Exportar configuración y favoritos">
-					💾
-				</button>
-				<button class="btn-accion" onclick="btnRestablecerConfiguración()" style="color: #ff0000; border: 3px solid #ff0000; width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Restablecer la configuración (elimina toda la configuración y favoritos)">
-					🔄
-				</button>
-			</div>
-
-			<!-- Botón Google Play -->
-			<a href="https://play.google.com/store/apps/details?id=com.flydecision" target="_blank" rel="noopener" class="badge-google-play" style="display: flex; align-items: center; text-decoration: none !important; margin: 0; flex-shrink: 0;">
-				<img alt="Disponible en Google Play" src="icons/logo_google_play_34.webp" class="btn-accion" style="height: 34px; width: auto; display: block;" title="Descargar en Google Play">
-			</a>
-			
+		<div style="border: none; background-color: #ffffff; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: auto; box-sizing: border-box; box-shadow: none;">
 			<!-- Enlaces legales y de ayuda (Fuerza salto de línea con width: 100%) -->
 			<div class="enlaces-legales" style="display: flex; align-items: center; gap: 5px; white-space: nowrap; margin: 0;">
 				<a href="#" onclick="sugerirGuiaPrincipal(true)">Guía</a>
@@ -471,6 +434,63 @@
 		</div>
 	</div>
 </div>
+
+<!-- 🔍 BUSCADOR FLOTANTE (Oculto por defecto) -->
+<div id="floating-search-container" class="floating-search-hidden">
+    <div id="buscador-wrapper" class="buscador-con-boton" style="position: relative;">
+        <input type="search" 
+        id="buscador-despegues-provincias"
+        name="search_query_unique_xyz" 
+        placeholder="🔍 Buscar zona..."
+        onkeyup="filtrarDespeguesProvincias()"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        style="width: 250px; height: 40px; border-radius: 20px; padding-left: 15px; font-size: 16px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <button id="limpiar-buscador" type="button" style="display: none; right: 10px; font-size: 28px; color: #999;">&times;</button>
+    </div>
+</div>
+
+<!-- 🟦🟦 MENÚ INFERIOR COMPACTO (5 BOTONES)  -->
+<nav class="bottom-nav compact-nav">
+    <!-- 1. TABLA -->
+    <button class="nav-item active" id="nav-home" onclick="activarMenuInferior(this); finalizarEdicionFavoritos();">
+        <div class="nav-icon-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </div>
+        <span>Tabla</span>
+    </button>
+    
+    <!-- 2. BUSCAR -->
+    <button class="nav-item" id="nav-search" onclick="activarMenuInferior(this); toggleBuscadorFlotante();">
+        <div class="nav-icon-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
+        <span>Buscar</span>
+    </button>
+    
+    <!-- 3. DISTANCIA -->
+    <button class="nav-item" id="nav-distance" onclick="activarMenuInferior(this); alternardivDistancia(event);">
+        <div class="nav-icon-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        </div>
+        <span>Cerca</span>
+    </button>
+    
+    <!-- 4. MAPA (Nuevo lugar) -->
+    <button class="nav-item" id="nav-map" onclick="activarMenuInferior(this); abrirLinkExterno('https://flydecision.com/map/')">
+        <div class="nav-icon-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+        </div>
+        <span>Mapa</span>
+    </button>
+    
+    <!-- 5. AJUSTES -->
+    <button class="nav-item" id="nav-settings" onclick="activarMenuInferior(this); alternardivConfiguracion(event);">
+        <div class="nav-icon-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </div>
+        <span>Ajustes</span>
+    </button>
+</nav>
 
 </body>
 </html>

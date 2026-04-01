@@ -985,36 +985,42 @@ function iniciarGuiaFavoritos(forzar = false) {
 // ---------------------------------------------------------------
 
 function activarEdicionFavoritos() {
-	
-    resetFiltroCondiciones(false); //les pasamos false para que no reconstruyan la tabla
+    resetFiltroCondiciones(false); 
     resetFiltroDistancia(false);
 
-    document.getElementById('btn-filtro-favoritos-toggle').classList.remove('filtro-aplicado');
+    const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
+    if (btnFavsTog) btnFavsTog.classList.remove('filtro-aplicado', 'activo');
 
 	modoEdicionFavoritos = true;
     soloFavoritos = false;
 
     document.body.classList.add('modo-edicion-tabla');
-    document.getElementById('div-menu').classList.add('mode-editing');
-    document.getElementById('div-menu2-edicion-favoritos').classList.add('mode-editing');
-
-	// Deshundo botones
-	document.getElementById("btn-div-configuracion-toggle").classList.remove("activo");
-    document.getElementById("btn-filtro-favoritos-toggle").classList.remove("activo");
+    
+    const divMenu = document.getElementById('div-menu');
+    if (divMenu) divMenu.classList.add('mode-editing');
+    
+    const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+    if (divMenu2) divMenu2.classList.add('mode-editing');
 	
-	// Cierro paneles
-    document.querySelector('.div-filtro-horario').style.display = 'none';
-	document.getElementById("div-configuracion").classList.remove("activo");
+	// Cierro paneles de forma segura
+    const panelHorario = document.querySelector('.div-filtro-horario');
+    if (panelHorario) panelHorario.style.display = 'none';
+	
+    const divConfig = document.getElementById("div-configuracion");
+    if (divConfig) divConfig.classList.remove("activo");
 
     if (typeof setModoEnfoque === "function") { setModoEnfoque(false); }
 
 	construir_tabla();
-
     actualizarContadorVisualFavoritos(); 
 
-    setTimeout(() => {
-        sugerirGuiaFavoritos();
-    }, 500);
+    setTimeout(() => { sugerirGuiaFavoritos(); }, 500);
+
+    // Activar visualmente el botón de Favoritos en el menú inferior
+    const navFavs = document.getElementById('nav-favs');
+    if (navFavs && typeof window.activarMenuInferior === 'function') {
+        window.activarMenuInferior(navFavs);
+    }
 }
 
 function filtroVerSoloFavoritos() {
@@ -1481,43 +1487,47 @@ function confirmarSeleccionMasiva() {
 }
 
 function finalizarEdicionFavoritos() {
-
-    resetFiltroCondiciones(false); //les pasamos false para que no reconstruyan la tabla
+    resetFiltroCondiciones(false); 
     resetFiltroDistancia(false);
 
 	favoritos = obtenerFavoritos();
 
-	if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { // Ha pulsado Finalizar pero no existe la key "METEO_FAVORITOS_LISTA" en localstorage o los favoritos están vacíos 
-		
+	if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { 
         mensajeModalAceptar('', 
             '<p>Es necesario marcar al menos un despegue favorito ♥️</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
         );
-		
-		return false; // <--- IMPORTANTE: No hemos podido cerrar correctamente la edición porque no ha elegido favoritos
-		
+		return false; 
 	}
 
     document.body.classList.remove('modo-edicion-tabla');
-    document.getElementById('div-menu').classList.remove('mode-editing');
-    document.getElementById('div-menu2-edicion-favoritos').classList.remove('mode-editing');
-    document.getElementById('btn-filtro-favoritos-toggle').classList.remove('filtro-aplicado');
+    
+    const divMenu = document.getElementById('div-menu');
+    if (divMenu) divMenu.classList.remove('mode-editing');
+    
+    const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+    if (divMenu2) divMenu2.classList.remove('mode-editing');
+    
+    const btnToggleFav = document.getElementById('btn-filtro-favoritos-toggle');
+    if (btnToggleFav) btnToggleFav.classList.remove('filtro-aplicado');
 
-    // Hacemos que el filtro horario vuelva a aparecer SIEMPRE al cerrar
-    document.querySelector('.div-filtro-horario').style.display = ''; // Quita el 'none' y vuelve al original (block/flex)
+    const panelHorario = document.querySelector('.div-filtro-horario');
+    if (panelHorario) panelHorario.style.display = ''; 
 	
 	localStorage.setItem("METEO_PRIMERA_VISITA_HECHA", "true");
 	modoEdicionFavoritos = false; 
 	limpiarBuscador();
-    //document.getElementById("btn-activar-edicion-favoritos").classList.remove("activo");
     
     construir_tabla(); 
 
-    setTimeout(() => {
-        sugerirGuiaPrincipal();
-    }, 500);
+    setTimeout(() => { sugerirGuiaPrincipal(); }, 500);
 
-    return true; // <--- IMPORTANTE: Cierre realizado con éxito
+    // Activar visualmente el botón Tabla en el menú inferior
+    const navHome = document.getElementById('nav-home');
+    if (navHome && typeof window.activarMenuInferior === 'function') {
+        window.activarMenuInferior(navHome);
+    }
 
+    return true; 
 }
 
 // ---------------------------------------------------------------
@@ -4850,45 +4860,53 @@ function alternarPantallaCompleta() { //obsoleta
 }
 
 function alternardivDistancia(event) {
-	
     const divDistancia = document.getElementById("div-filtro-distancia");
+    if (!divDistancia) return;
+
     const activo = divDistancia.classList.contains("activo");
     const vamosAMostrar = !activo; 
 
-    // 1. Cerramos paneles de configuración (Viento y General)
-    document.getElementById("div-configuracion").classList.remove("activo");
-    // document.getElementById("btn-activar-edicion-favoritos").classList.remove("activo");
-    document.getElementById("btn-div-configuracion-toggle").classList.remove("activo");
+    // 1. Cerramos panel de configuración
+    const panelConfig = document.getElementById("div-configuracion");
+    if (panelConfig) panelConfig.classList.remove("activo");
 
-    setModoEnfoque(false);
+    // Deshundo botón antiguo si existe (Seguridad)
+    const btnConfigAntiguo = document.getElementById("btn-div-configuracion-toggle");
+    if (btnConfigAntiguo) btnConfigAntiguo.classList.remove("activo");
+
+    if (typeof setModoEnfoque === "function") { setModoEnfoque(false); }
     
+    // 2. Mostramos/Ocultamos el panel de distancia
     divDistancia.classList.toggle("activo", vamosAMostrar);
-    document.getElementById("btn-div-filtro-distancia-toggle").classList.toggle("activo", vamosAMostrar);
+    
+    // Deshundo/Hundo el botón antiguo si existe (Seguridad)
+    const btnDistanciaAntiguo = document.getElementById("btn-div-filtro-distancia-toggle");
+    if (btnDistanciaAntiguo) btnDistanciaAntiguo.classList.toggle("activo", vamosAMostrar);
     
     /* EL FIX PARA EL SLIDER BLOQUEADO */
     if (vamosAMostrar) {
         setTimeout(() => {
             const sliderElement = document.getElementById('distancia-slider');
-            
             if (sliderElement && sliderElement.noUiSlider) {
                 sliderElement.noUiSlider.updateOptions({}, true); 
-                const forzarReflow = divDistancia.offsetHeight;
             }
         }, 50); 
     }
 }
 
 function alternardivConfiguracion(event) {
-	
 	const divconfiguracion = document.getElementById("div-configuracion");
+    if (!divconfiguracion) return;
+
 	const activo = divconfiguracion.classList.contains("activo");
 
 	divconfiguracion.classList.toggle("activo", !activo);
 	
-	document.getElementById("btn-div-configuracion-toggle").classList.toggle("activo", !activo);
+    // Deshundo/Hundo el botón antiguo si existe (Seguridad)
+    const btnConfigAntiguo = document.getElementById("btn-div-configuracion-toggle");
+	if (btnConfigAntiguo) btnConfigAntiguo.classList.toggle("activo", !activo);
 
-    setModoEnfoque(!activo);
-
+    if (typeof setModoEnfoque === "function") { setModoEnfoque(!activo); }
 }
 
 function btnRestablecerConfiguración() {
@@ -5240,9 +5258,8 @@ let botonLimpiar = null;  // Se inicializará al cargar el DOM
 //let badge = null;  // Se inicializará al cargar el DOM
 
 function limpiarBuscador() {
-
-    document.getElementById("div-configuracion").classList.remove("activo");
-    document.getElementById("btn-div-configuracion-toggle").classList.remove("activo");
+    const divConfig = document.getElementById("div-configuracion");
+    if (divConfig) divConfig.classList.remove("activo");
 
     if (typeof setModoEnfoque === "function") { setModoEnfoque(false); }
     
@@ -5252,13 +5269,9 @@ function limpiarBuscador() {
     botonLimpiar.style.display = 'none';
 	
     inputBuscador.classList.remove('filtrado');
-    
     inputBuscador.placeholder = placeholderOriginal;
     
     filtrarDespeguesProvincias();
-
-    //inputBuscador.focus();
-    
 }
 
 // ---------------------------------------------------------------
@@ -5376,10 +5389,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 4. Focus: Borrar placeholder al entrar
     inputBuscador.addEventListener('focus', function() {
 
-         // Cerramos paneles de configuración por si estuviesen abiertos (Viento y General)
-        document.getElementById("div-configuracion").classList.remove("activo");
-        //document.getElementById("btn-activar-edicion-favoritos").classList.remove("activo");
-        document.getElementById("btn-div-configuracion-toggle").classList.remove("activo");
+         // Cerramos paneles de configuración por si estuviesen abiertos
+        const divConfig = document.getElementById("div-configuracion");
+        if (divConfig) divConfig.classList.remove("activo");
 
         if (typeof setModoEnfoque === "function") { setModoEnfoque(false); }
 
@@ -5511,11 +5523,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			const btnReset = document.getElementById('btn-reset-filtro-condiciones');
 
 			if (valorNuevo > 0) {
-				btnToggle.classList.add('filtro-aplicado');
+				if (btnToggle) btnToggle.classList.add('filtro-aplicado'); // Solo si existe
 				if (panel) panel.classList.add('borde-rojo-externo');
 				if (btnReset) btnReset.style.display = 'block';
 			} else {
-				btnToggle.classList.remove('filtro-aplicado');
+				if (btnToggle) btnToggle.classList.remove('filtro-aplicado');
 				if (panel) panel.classList.remove('borde-rojo-externo');
 				if (btnReset) btnReset.style.display = 'none';
 			}
@@ -5571,14 +5583,17 @@ document.addEventListener('DOMContentLoaded', function() {
 			const valorNuevo = Math.round(values[0]);
 			const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
 			const btnToggle = document.getElementById('btn-div-filtro-distancia-toggle');
+			const navDistance = document.getElementById('nav-distance'); // El nuevo botón de abajo
 			const btnReset = document.getElementById('btn-reset-filtro-distancia');
 
 			if (valorNuevo < MAX_INDEX) {
-				btnToggle.classList.add('filtro-aplicado');
+				if (btnToggle) btnToggle.classList.add('filtro-aplicado'); // Solo si existe
+				if (navDistance) navDistance.classList.add('filtro-aplicado'); // Ponemos rojo el de abajo
 				if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
 				if (btnReset) btnReset.style.display = 'block';
 			} else {
-				btnToggle.classList.remove('filtro-aplicado');
+				if (btnToggle) btnToggle.classList.remove('filtro-aplicado');
+				if (navDistance) navDistance.classList.remove('filtro-aplicado');
 				if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo');
 				if (btnReset) btnReset.style.display = 'none';
 			}
@@ -6522,6 +6537,9 @@ document.addEventListener('DOMContentLoaded', function() {
             btnToggle.classList.remove("activo");         // Deshundir botón
             btnToggle.classList.remove('filtro-aplicado'); // Quitar borde rojo botón
         }
+        const navDistance = document.getElementById('nav-distance');
+        if (navDistance) navDistance.classList.remove('filtro-aplicado');
+
         if (divPanel) divPanel.classList.remove("activo");          // Cerrar panel
         if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo'); // Quitar borde panel
 		if (btnReset) btnReset.style.display = 'none'; // Ocultar botón de reset
@@ -6530,12 +6548,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ---------------------------------------------------------------
-	// 🔴 LISTENER PARA CERRA EL PANEL DE CONFIGURACIÓN ABIERTO AL TOCAR ÁREA VACÍA FUERA
+	// 🔴 LISTENER PARA CIERRA EL PANEL DE CONFIGURACIÓN ABIERTO AL TOCAR ÁREA VACÍA FUERA
 	// ---------------------------------------------------------------
 
     document.addEventListener('click', function(event) {
         const panelConfig = document.getElementById('div-configuracion');
-        const btnConfig = document.getElementById('btn-div-configuracion-toggle');
         const overlay = document.getElementById('msgActualizando...');
 
         // 1. Si el loader está activo, no hacemos nada
@@ -6551,6 +6568,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const clicEnZonaProtegida = 
                 event.target.closest('#div-configuracion') || 
                 event.target.closest('#btn-div-configuracion-toggle') ||
+                event.target.closest('#nav-settings') || /* <--- ¡ESTO ES LO QUE FALTABA! */
                 event.target.closest('.tippy-box') ||        
                 event.target.closest('.mensaje-modal') ||    
                 event.target.closest('.mensaje-no-modal');
@@ -6922,5 +6940,79 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     window.abrirLinkExterno = abrirLinkExterno; // Esto hace que la función sea visible para los onclick="" de tu HTML generado
+
+    // ==========================================================================
+    // 🔴 LÓGICA DEL MENÚ INFERIOR Y BUSCADOR FLOTANTE
+    // ==========================================================================
+
+    // 1. Lógica del Buscador Flotante
+    let buscadorVisible = false;
+    window.toggleBuscadorFlotante = function() {
+        const contenedor = document.getElementById('floating-search-container');
+        const input = document.getElementById('buscador-despegues-provincias');
+        
+        if (!contenedor || !input) return; // Seguridad
+        
+        buscadorVisible = !buscadorVisible;
+        if (buscadorVisible) {
+            contenedor.classList.remove('floating-search-hidden');
+            setTimeout(() => input.focus(), 100); // Abre teclado con suavidad
+        } else {
+            contenedor.classList.add('floating-search-hidden');
+            input.blur(); // Cierra teclado
+        }
+    };
+
+    // 2. Lógica de activar el botón del menú inferior
+    window.activarMenuInferior = function(botonClicado) {
+        const botones = document.querySelectorAll('.bottom-nav .nav-item');
+        botones.forEach(btn => btn.classList.remove('active'));
+        
+        if (botonClicado) {
+            botonClicado.classList.add('active');
+        }
+        
+        // Esconder buscador si se pulsa cualquier otra cosa que no sea el botón Buscar
+        if(botonClicado && botonClicado.id !== 'nav-search' && buscadorVisible) {
+            window.toggleBuscadorFlotante();
+        }
+    };
+
+    // 3. Fix para redibujar los sliders cuando abres los Acordeones de Configuración
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('details.config-accordion').forEach(details => {
+            details.addEventListener('toggle', (e) => {
+                if (details.open) {
+                    const sliders = details.querySelectorAll('.noUi-target');
+                    sliders.forEach(slider => {
+                        if (slider.noUiSlider) {
+                            // Pequeño retraso de 50ms para que el CSS termine de abrir el panel
+                            setTimeout(() => slider.noUiSlider.updateOptions({}, true), 50);
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // 🔴 FIX: REDIBUJAR SLIDERS AL ABRIR ACORDEONES (<details>)
+    // ---------------------------------------------------------------
+    document.querySelectorAll('details.config-accordion').forEach(details => {
+        details.addEventListener('toggle', (e) => {
+            if (details.open) {
+                // Buscamos cualquier slider de noUiSlider que esté dentro
+                const sliders = details.querySelectorAll('.noUi-target');
+                sliders.forEach(slider => {
+                    if (slider.noUiSlider) {
+                        // Damos 50ms para que el navegador termine la animación de abrir
+                        setTimeout(() => {
+                            slider.noUiSlider.updateOptions({}, true);
+                        }, 50);
+                    }
+                });
+            }
+        });
+    });
 
 }); //document . addEventListener('DOMContentLoaded', function() {
