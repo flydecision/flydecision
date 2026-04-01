@@ -265,8 +265,6 @@ if (btnIncNoFavsDistancia) {
                 sliderDistElem.noUiSlider.set(idx100km);
                 
                 // Forzar estilos del filtro principal
-                const btnToggle = document.getElementById("btn-div-filtro-distancia-toggle");
-                if (btnToggle) btnToggle.classList.add('filtro-aplicado');
                 const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
                 if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
                 const btnReset = document.getElementById('btn-reset-filtro-distancia');
@@ -2457,10 +2455,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             modoEdicionFavoritos = true; 
 
             document.body.classList.add('modo-edicion-tabla'); 
+            const divMenu = document.getElementById('div-menu');
+            if (divMenu) divMenu.classList.add('mode-editing');
 
-            document.getElementById('div-menu').classList.add('mode-editing');
-        	document.getElementById("btn-div-configuracion-toggle").classList.remove("activo");
-            document.querySelector('.div-filtro-horario').style.display = 'none';
+            const panelHorario = document.querySelector('.div-filtro-horario');
+            if (panelHorario) panelHorario.style.display = 'none';
 
             // Mensaje modal: La tabla se generará detrás, pero el modal estará encima.
             // mostrarConfiguracionInicial();
@@ -4878,11 +4877,7 @@ function alternardivDistancia(event) {
     
     // 2. Mostramos/Ocultamos el panel de distancia
     divDistancia.classList.toggle("activo", vamosAMostrar);
-    
-    // Deshundo/Hundo el botón antiguo si existe (Seguridad)
-    const btnDistanciaAntiguo = document.getElementById("btn-div-filtro-distancia-toggle");
-    if (btnDistanciaAntiguo) btnDistanciaAntiguo.classList.toggle("activo", vamosAMostrar);
-    
+        
     /* EL FIX PARA EL SLIDER BLOQUEADO */
     if (vamosAMostrar) {
         setTimeout(() => {
@@ -5623,7 +5618,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     distanciaSlider.noUiSlider.set(MAX_INDEX);
 					
 					// Limpieza visual inmediata
-					document.getElementById('btn-div-filtro-distancia-toggle').classList.remove('filtro-aplicado');
 					const panel = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
 					if (panel) panel.classList.remove('borde-rojo-externo');
 					document.getElementById('btn-reset-filtro-distancia').style.display = 'none';
@@ -6528,15 +6522,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // C. Limpieza Visual (Quitar clases de activo y rojo)
-        const btnToggle = document.getElementById('btn-div-filtro-distancia-toggle');
         const divPanel = document.getElementById('div-filtro-distancia');
         const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
 		const btnReset = document.getElementById('btn-reset-filtro-distancia');
 
-        if (btnToggle) {
-            btnToggle.classList.remove("activo");         // Deshundir botón
-            btnToggle.classList.remove('filtro-aplicado'); // Quitar borde rojo botón
-        }
         const navDistance = document.getElementById('nav-distance');
         if (navDistance) navDistance.classList.remove('filtro-aplicado');
 
