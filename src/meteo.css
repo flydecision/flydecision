@@ -557,7 +557,6 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .btn-accion {
-    width: 170px;
     height: 30px;
     text-align: center;
     box-sizing: border-box;
@@ -565,7 +564,7 @@ input[type="search"]::-webkit-search-cancel-button {
     cursor: pointer;
     background-color: #f0f0f0;
 	border: 1px solid #333;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 /* 🔴 DIVs dentro de los paneles -------------------------------- */
@@ -2263,6 +2262,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     margin-right: auto;
     position: sticky;
     background-color: #ffffff;
+    padding-top: 2px;
 }
 
 .compact-nav .nav-item {
