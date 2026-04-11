@@ -98,7 +98,7 @@
 
 		<div class="div-paneles-controles-transparente">
 		
-			<div id="titulo-distancia-slider" style="display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+			<div id="titulo-distancia-slider" style="display: flex; align-items: center; gap: 7px; margin-bottom: 5px;">
 				<span style="cursor: pointer;">Distancia desde:</span>
 				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" title="Cambiar ubicación de origen">📍</button>
 				
@@ -170,6 +170,20 @@
 			
 	</div>
 
+	<!-- 🔍 BUSCADOR FLOTANTE (Oculto por defecto) -->
+	<div id="floating-search-container" class="floating-search-hidden">
+		<div id="buscador-wrapper" class="buscador-con-boton" style="position: relative;">
+			<input type="search" 
+			id="buscador-despegues-provincias"
+			name="search_query_unique_xyz" 
+			placeholder="🔍 Buscar zona..."
+			onkeyup="filtrarDespeguesProvincias()"
+			autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+			style="width: 250px; height: 40px; border-radius: 10px; padding-left: 15px; font-size: 16px; border: 1px solid #ccc; box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);">
+			<button id="limpiar-buscador" type="button" style="display: none; right: 10px; font-size: 28px; color: #999;">&times;</button>
+		</div>
+	</div>
+
 	<!-- 🟦 MENÚ2 EDICIÓN FAVORITOS  -->
 	
 	<div id="div-menu2-edicion-favoritos" class="div-menu2-edicion-favoritos">
@@ -180,20 +194,6 @@
 			Finalizar edición de despegues favoritos
 		</button>
 
-	</div>
-
-	<!-- 🔍 BUSCADOR FLOTANTE (Oculto por defecto) -->
-	<div id="floating-search-container" class="floating-search-hidden">
-		<div id="buscador-wrapper" class="buscador-con-boton" style="position: relative;">
-			<input type="search" 
-			id="buscador-despegues-provincias"
-			name="search_query_unique_xyz" 
-			placeholder="🔍 Buscar zona..."
-			onkeyup="filtrarDespeguesProvincias()"
-			autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-			style="width: 250px; height: 40px; border-radius: 20px; padding-left: 15px; font-size: 16px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-			<button id="limpiar-buscador" type="button" style="display: none; right: 10px; font-size: 28px; color: #999;">&times;</button>
-		</div>
 	</div>
 
 </div>

@@ -2277,7 +2277,6 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     background: transparent;
     border: none;
     cursor: pointer;
-    color: #4a5568;
     transition: color 0.2s ease;
 }
 
@@ -2297,12 +2296,12 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     height: 20px;
 }
 
-.compact-nav .nav-item span {
+/* .compact-nav .nav-item span {
     font-weight: 600;
-}
+} */
 
 /* ESTADO ACTIVO */
-.compact-nav .nav-item.active { color: #000000; }
+.compact-nav .nav-item.active { color: #000000; font-weight: bold;}
 .compact-nav .nav-item.active .nav-icon-container { background-color: #c2e7ff; }
 .compact-nav .nav-item.active svg { stroke: #001d35; }
 

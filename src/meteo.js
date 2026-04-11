@@ -4866,7 +4866,6 @@ function alternardivDistancia(event) {
     if (!divDistancia) return;
 
     const activo = divDistancia.classList.contains("activo");
-    const vamosAMostrar = !activo; 
 
     // 1. Cerramos panel de configuración
     const panelConfig = document.getElementById("div-configuracion");
@@ -4877,16 +4876,23 @@ function alternardivDistancia(event) {
     if (btnConfigAntiguo) btnConfigAntiguo.classList.remove("activo");
 
     if (typeof setModoEnfoque === "function") { setModoEnfoque(false); }
-    
-    // 2. Mostramos/Ocultamos el panel de distancia
-    divDistancia.classList.toggle("activo", vamosAMostrar);
-        
-    /* EL FIX PARA EL SLIDER BLOQUEADO */
-    if (vamosAMostrar) {
+
+    if (activo) {
+        // Si el panel ya estaba abierto, reseteamos el filtro y lo ocultamos
+        if (typeof resetFiltroDistancia === "function") {
+            resetFiltroDistancia(true);
+        } else {
+            divDistancia.classList.remove("activo");
+        }
+    } else {
+        // 2. Mostramos el panel de distancia
+        divDistancia.classList.add("activo");
+
+        /* EL FIX PARA EL SLIDER BLOQUEADO */
         setTimeout(() => {
             const sliderElement = document.getElementById('distancia-slider');
             if (sliderElement && sliderElement.noUiSlider) {
-                sliderElement.noUiSlider.updateOptions({}, true); 
+                sliderElement.noUiSlider.updateOptions({}, true);
             }
         }, 50); 
     }
@@ -4905,6 +4911,11 @@ function alternardivConfiguracion(event) {
 	if (btnConfigAntiguo) btnConfigAntiguo.classList.toggle("activo", !activo);
 
     if (typeof setModoEnfoque === "function") { setModoEnfoque(!activo); }
+
+    // Si estamos CERRANDO el panel, activamos la auto-detección del menú
+    if (activo && typeof window.activarMenuInferior === "function") {
+        window.activarMenuInferior(); 
+    }
 }
 
 function btnRestablecerConfiguración() {
@@ -6546,6 +6557,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo'); // Quitar borde panel
 		if (btnReset) btnReset.style.display = 'none'; // Ocultar botón de reset
 
+        // Recalcular botón azul al resetear y cerrar el panel
+        if (typeof window.activarMenuInferior === 'function') {
+            window.activarMenuInferior();
+        }
+
         if (reconstruir) { construir_tabla(); }
     }
 
@@ -6962,28 +6978,60 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             contenedor.classList.add('floating-search-hidden');
             input.blur(); // Cierra teclado
-            limpiarBuscador(); // 🟢 NUEVO: Limpia el texto y resetea la tabla automáticamente
+            limpiarBuscador(); // Limpia el texto y resetea la tabla automáticamente
         }
     };
 
     // 2. Lógica de activar el botón del menú inferior
     window.activarMenuInferior = function(botonClicado) {
+        
+        const panelDistancia = document.getElementById("div-filtro-distancia");
+        const distanciaVisible = panelDistancia && panelDistancia.classList.contains("activo");
+        
+        const panelConfig = document.getElementById("div-configuracion");
+        const configAbierta = panelConfig && panelConfig.classList.contains("activo");
+
+        let botonActivar = botonClicado;
+
+        if (botonClicado) {
+            // Lógica de transición de fondos azules cuando CLICAMOS en un botón
+            if (botonClicado.id === 'nav-search' && buscadorVisible) {
+                botonActivar = configAbierta ? document.getElementById('nav-settings')
+                             : distanciaVisible ? document.getElementById('nav-distance') 
+                             : document.getElementById('nav-home');
+            } 
+            else if (botonClicado.id === 'nav-distance' && distanciaVisible) {
+                botonActivar = configAbierta ? document.getElementById('nav-settings')
+                             : buscadorVisible ? document.getElementById('nav-search') 
+                             : document.getElementById('nav-home');
+            } 
+            else if (botonClicado.id === 'nav-settings' && configAbierta) {
+                botonActivar = buscadorVisible ? document.getElementById('nav-search') 
+                             : distanciaVisible ? document.getElementById('nav-distance') 
+                             : document.getElementById('nav-home');
+            }
+        } else {
+            // 🟢 LÓGICA DE AUTO-DETECCIÓN (Cuando cerramos paneles desde una X o el fondo)
+            if (configAbierta) botonActivar = document.getElementById('nav-settings');
+            else if (buscadorVisible) botonActivar = document.getElementById('nav-search');
+            else if (distanciaVisible) botonActivar = document.getElementById('nav-distance');
+            else botonActivar = document.getElementById('nav-home');
+        }
+
+        // Limpiamos todos los botones
         const botones = document.querySelectorAll('.bottom-nav .nav-item');
         botones.forEach(btn => btn.classList.remove('active'));
         
-        if (botonClicado) {
-            // 🟢 NUEVO: Si pulsamos "Buscar" y ya estaba abierto, lo desactivamos y encendemos "Tabla"
-            if (botonClicado.id === 'nav-search' && buscadorVisible) {
-                const navHome = document.getElementById('nav-home');
-                if (navHome) navHome.classList.add('active');
-            } else {
-                botonClicado.classList.add('active');
-            }
+        // Aplicamos el azul al botón correspondiente
+        if (botonActivar) {
+            botonActivar.classList.add('active');
         }
         
-        // Esconder buscador si se pulsa cualquier otra cosa que no sea el botón Buscar
-        if (botonClicado && botonClicado.id !== 'nav-search' && buscadorVisible) {
-            window.toggleBuscadorFlotante();
+        // Esconder buscador SOLO si se pulsa Tabla o Mapa explicitamente
+        if (botonClicado && buscadorVisible) {
+            if (botonClicado.id === 'nav-home' || botonClicado.id === 'nav-map') {
+                window.toggleBuscadorFlotante();
+            }
         }
     };
 
