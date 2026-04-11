@@ -6962,6 +6962,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             contenedor.classList.add('floating-search-hidden');
             input.blur(); // Cierra teclado
+            limpiarBuscador(); // 🟢 NUEVO: Limpia el texto y resetea la tabla automáticamente
         }
     };
 
@@ -6971,11 +6972,17 @@ document.addEventListener('DOMContentLoaded', function() {
         botones.forEach(btn => btn.classList.remove('active'));
         
         if (botonClicado) {
-            botonClicado.classList.add('active');
+            // 🟢 NUEVO: Si pulsamos "Buscar" y ya estaba abierto, lo desactivamos y encendemos "Tabla"
+            if (botonClicado.id === 'nav-search' && buscadorVisible) {
+                const navHome = document.getElementById('nav-home');
+                if (navHome) navHome.classList.add('active');
+            } else {
+                botonClicado.classList.add('active');
+            }
         }
         
         // Esconder buscador si se pulsa cualquier otra cosa que no sea el botón Buscar
-        if(botonClicado && botonClicado.id !== 'nav-search' && buscadorVisible) {
+        if (botonClicado && botonClicado.id !== 'nav-search' && buscadorVisible) {
             window.toggleBuscadorFlotante();
         }
     };
