@@ -959,11 +959,19 @@ function activarEdicionFavoritos() {
     resetFiltroCondiciones(false); 
     resetFiltroDistancia(false);
 
+    // Resetear visualmente el botón de filtro de favoritos
     const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
-    if (btnFavsTog) btnFavsTog.classList.remove('filtro-aplicado', 'activo');
+    if (btnFavsTog) {
+        btnFavsTog.classList.remove('filtro-aplicado', 'activo');
+        const heartSvg = btnFavsTog.querySelector('.heart-icon-svg');
+        if (heartSvg) {
+            heartSvg.setAttribute('fill', 'none');
+            heartSvg.setAttribute('stroke', 'currentColor');
+        }
+    }
 
 	modoEdicionFavoritos = true;
-    soloFavoritos = false;
+    soloFavoritos = false; // Aseguramos que empezamos viendo todos
 
     document.body.classList.add('modo-edicion-tabla');
     
@@ -973,7 +981,6 @@ function activarEdicionFavoritos() {
     const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
     if (divMenu2) divMenu2.classList.add('mode-editing');
 	
-	// Cierro paneles de forma segura
     const panelHorario = document.querySelector('.div-filtro-horario');
     if (panelHorario) panelHorario.style.display = 'none';
 	
@@ -987,7 +994,6 @@ function activarEdicionFavoritos() {
 
     setTimeout(() => { sugerirGuiaFavoritos(); }, 500);
 
-    // Activar visualmente el botón de Favoritos en el menú inferior
     const navFavs = document.getElementById('nav-favs');
     if (navFavs && typeof window.activarMenuInferior === 'function') {
         window.activarMenuInferior(navFavs);

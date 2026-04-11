@@ -200,7 +200,7 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
 }
 
 #btn-filtro-favoritos-toggle.activo {
-    background-color: #ff000042;
+    /* background-color: #ff000042; */
 	box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
     padding-top: 2px;
     border-color: #999;
