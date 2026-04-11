@@ -4708,6 +4708,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     }
 
                     rowsGroup2[0].appendChild(tdCondicionesXC);
+                } else {
+                    // Si no hay Grupo 2 (XC desactivado), la celda principal debe redondearse también por abajo
+                    tdCondiciones.classList.add("celda-condiciones-final");
                 }
 			}
 
