@@ -2307,21 +2307,28 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 .compact-nav .nav-item.active svg { stroke: #001d35; }
 
 /* ==========================================================================
-   BUSCADOR FLOTANTE Y PANELES DESDE ABAJO
+   BUSCADOR DESPLEGABLE INTEGRADO
    ========================================================================== */
 #floating-search-container {
-    position: fixed;
-    bottom: calc(66px + env(safe-area-inset-bottom));
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9998;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+    /* Estado visible: */
+    max-height: 60px; 
+    opacity: 1;
+    padding-top: 4px;
+    padding-bottom: 8px;
+    transition: max-height 0.3s ease-in-out, opacity 0.2s ease, padding 0.3s ease;
 }
 
 .floating-search-hidden {
-    opacity: 0;
+    /* Estado oculto: */
+    max-height: 0 !important;
+    opacity: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
     pointer-events: none;
-    transform: translate(-50%, 20px) !important; 
 }
 
 .div-filtro-distancia, .div-filtro-condiciones {

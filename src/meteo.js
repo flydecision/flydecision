@@ -5395,6 +5395,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         this.placeholder = '';
         gestionarBotonLimpiar();
+
+        // FIX TECLADO: Evitar que Android desplace la pantalla hacia arriba
+        setTimeout(() => {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            document.body.scrollTop = 0;
+        }, 100);
+        setTimeout(() => {
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            document.body.scrollTop = 0;
+        }, 300);
     });
 
     // 5. Blur (Pérdida de Foco)

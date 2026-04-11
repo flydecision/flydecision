@@ -99,7 +99,7 @@
 		<div class="div-paneles-controles-transparente">
 		
 			<div id="titulo-distancia-slider" style="display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
-				<span style="cursor: pointer;">Filtro de distancia desde</span>
+				<span style="cursor: pointer;">Distancia desde:</span>
 				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" title="Cambiar ubicación de origen">📍</button>
 				
 				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" title="Incluir despegues no favoritos en el filtro"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
@@ -180,6 +180,20 @@
 			Finalizar edición de despegues favoritos
 		</button>
 
+	</div>
+
+	<!-- 🔍 BUSCADOR FLOTANTE (Oculto por defecto) -->
+	<div id="floating-search-container" class="floating-search-hidden">
+		<div id="buscador-wrapper" class="buscador-con-boton" style="position: relative;">
+			<input type="search" 
+			id="buscador-despegues-provincias"
+			name="search_query_unique_xyz" 
+			placeholder="🔍 Buscar zona..."
+			onkeyup="filtrarDespeguesProvincias()"
+			autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+			style="width: 250px; height: 40px; border-radius: 20px; padding-left: 15px; font-size: 16px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+			<button id="limpiar-buscador" type="button" style="display: none; right: 10px; font-size: 28px; color: #999;">&times;</button>
+		</div>
 	</div>
 
 </div>
@@ -435,20 +449,6 @@
 	</div>
 </div>
 
-<!-- 🔍 BUSCADOR FLOTANTE (Oculto por defecto) -->
-<div id="floating-search-container" class="floating-search-hidden">
-    <div id="buscador-wrapper" class="buscador-con-boton" style="position: relative;">
-        <input type="search" 
-        id="buscador-despegues-provincias"
-        name="search_query_unique_xyz" 
-        placeholder="🔍 Buscar zona..."
-        onkeyup="filtrarDespeguesProvincias()"
-        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-        style="width: 250px; height: 40px; border-radius: 20px; padding-left: 15px; font-size: 16px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-        <button id="limpiar-buscador" type="button" style="display: none; right: 10px; font-size: 28px; color: #999;">&times;</button>
-    </div>
-</div>
-
 <!-- 🟦🟦 MENÚ INFERIOR COMPACTO (5 BOTONES)  -->
 <nav class="bottom-nav compact-nav">
     <!-- 1. TABLA -->
@@ -472,7 +472,7 @@
         <div class="nav-icon-container">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
         </div>
-        <span>Cerca</span>
+        <span>Distancia</span>
     </button>
     
     <!-- 4. MAPA (Nuevo lugar) -->
