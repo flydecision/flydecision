@@ -703,21 +703,17 @@ function iniciarGuiaPrincipal(forzar = false) {
         showProgress: true, 
         progressText: '{{current}} de {{total}}',
         smoothScroll: true,
-        overlayClickBehavior: () => {}, //() => {}, // Al ser una función vacía, no hace nada // What to do when the overlay backdrop is clicked. Possible options are 'close', 'nextStep', or a custom function. default: 'close')
-        overlayColor: 'rgba(0, 0, 0, 0.75)', // Un fondo oscuro que haga resaltar tu azul
-        allowClose: true,      // ¿Permitir cerrar pulsando la X?
-        //popoverOffset: number, // Distance between the popover and the highlighted element. (default: 10)
-        // Opcional: Personalizar el espacio alrededor del elemento destacado
-        //stagePadding: 10,       // Margen en píxeles entre el elemento y el brillo (default: 10)
-        stageRadius: 8,   // Redondea las esquinas del brillo para que no sea un cuadrado seco (default: 5)
+        overlayClickBehavior: () => {}, 
+        overlayColor: 'rgba(0, 0, 0, 0.75)', 
+        allowClose: true,      
+        stageRadius: 8,   
 
         nextBtnText: 'Siguiente →',
         prevBtnText: '←',
         doneBtnText: 'Cerrar guía',
-        //closeBtnText: '×',
 
         steps: [
-            { element: '#tabla', //'#tabla thead' apuntaría a la cabecera, '#tabla tbody tr:nth-child(7)' a la fila 3
+            { element: '#tabla',
                 popover: { title: '🪂 Tabla de despegues favoritos', description: 'Muestra el pronóstico y sus puntuaciones de condiciones (despegue y XC).<br><br>Los despegues se ordenan automáticamente por la puntuación de despegue.', side: 'top', align: 'center'} },
 
             { element: '.div-paneles-controles-transparente', 
@@ -727,86 +723,69 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: 'Días de la semana', description: 'Estos botones de día de la semana facilitan la selección del rango horario de ese día. Será el uso habitual de la aplicación: echar un vistazo rápido a los despegues "posibles" ese día.<br><br>👉🏽 Voy a seleccionar éste como ejemplo para que veas cómo funciona.', side: 'bottom', align: 'start'},
 
                 onDeselected: () => {
-                    // querySelectorAll devuelve una lista (array) de todos los elementos
                     const elementos = document.querySelectorAll('.noUi-value.noUi-value-horizontal.noUi-value-large');
-                    
-                    // [0] es el primero, [1] el segundo, etc.
                     if (elementos[0]) { 
-                        elementos[0].click(); // Clic en el segundo elemento
+                        elementos[0].click(); 
                     }
                 }
             },
 
-            { element: '#tabla', //'#tabla thead' apuntaría a la cabecera, '#tabla tbody tr:nth-child(7)' a la fila 3
-                popover: { title: '🗓️ Día seleccionado', description: 'Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>👉🏽  Puedes mover los deslizadores hora a hora para elegir tu rango horario concreto y también puedes personalizar ese rango horario diario "automático" en ⚙️ Configuración.', side: 'bottom', align: 'center'} },
+            { element: '#tabla', 
+                popover: { title: '🗓️ Día seleccionado', description: 'Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>👉🏽 Puedes mover los deslizadores hora a hora para elegir tu rango horario concreto y también puedes personalizar ese rango horario diario "automático" en ⚙️ Ajustes.', side: 'bottom', align: 'center'} },
             
             { element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>Si seleccionas el icono muestra información sobre cada parámetro meteorológico.', side: 'bottom', align: 'start'},
             },
 
             { element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
-                popover: { title: '🟩🟧🟥 Fila de Cizalladura / Fiabilidad', description: 'Esta fila especial muestra mediante un semáforo de colores el nivel de Cizalladura de Bajo Nivel (LLWS - Low-Level Wind Shear) y también el grado de Fiabilidad del pronóstico de viento medio a 10 m de altura.' , side: 'bottom', align: 'center' } },
+                popover: { title: '🟩🟧🟥 Fila de Cizalladura / Fiabilidad', description: 'Esta fila especial muestra mediante un semáforo de colores el nivel de Cizalladura de Bajo Nivel y también el grado de Fiabilidad del pronóstico de viento medio a 10 m de altura.' , side: 'bottom', align: 'center' } },
 
             { element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
-                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula automáticamente dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse o iniciar Cross Country (XC).<br><br>Los despegues siempre se reordenan automáticamente por puntuación de Condiciones para despegar (de mayor a menor).<br><br>En la pantalla de ⚙️ Configuración puedes personalizar los límites que se tienen en cuenta en el cálculo y dispones de información adicional.' } },
+                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse o iniciar Cross Country (XC).<br><br>Los despegues siempre se reordenan automáticamente por puntuación de Condiciones para despegar.<br><br>En ⚙️ Ajustes puedes personalizar el cálculo.' } },
 
             { element: '.btn-info.btn-abajo-izquierda', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>👉🏽  El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>💡 El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
 
-            { element: '#buscador-wrapper',
-                popover: { title: '🔍 Buscador', description: 'Busca despegues escribiendo su nombre, su región o su provincia.<br><br>👉🏽 Puedes escribir sin tildes.' } },
+            { element: '#nav-search',
+                popover: { title: '🔍 Buscar', description: 'Busca despegues escribiendo su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón o pulsar el de Tabla, se cerrará automáticamente.', side: 'top', align: 'center' } },
 
-            { element: '#btn-div-filtro-distancia-toggle',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_filtro_60.webp" width="20" height="20" style="display: block;"><span>Filtro de distancia</span></div>', 
-                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para que lo veas.'}, },
+            { element: '#nav-distance',
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Filtro de distancia</span></div>', 
+                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro.', side: 'top', align: 'center'}, 
+            },
 
             { element: '#btn-abrir-geo-menu',
                 popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.' , side: 'bottom', align: 'end'},
-                
-                onHighlighted: (element) => {
-                    // 1. Forzamos el clic en el botón que despliega el menú
-                    const toggleBtn = document.getElementById('btn-div-filtro-distancia-toggle');
-                    
-                    if (toggleBtn) {
-                        // Ejecutamos el clic
-                        toggleBtn.click();
-                        
-                        // 2. IMPORTANTE: Usamos un pequeño retraso para que el DOM se asiente
-                        // y luego forzamos a Driver.js a recalcular la posición del elemento resaltado
-                        setTimeout(() => {
-                            if (typeof driverObj !== 'undefined') {
-                                driverObj.refresh();
-                            } else {
-                                // Si driverObj no es global, intenta usar la instancia interna si la tienes
-                                console.warn("Instancia driverObj no encontrada. Asegúrate de que sea accesible.");
-                            }
-                        }, 300); // Aumentado a 300ms para dar tiempo a posibles animaciones CSS
+                onHighlighted: () => {
+                    const panel = document.getElementById('div-filtro-distancia');
+                    if (panel && !panel.classList.contains('activo')) {
+                        const btn = document.getElementById('nav-distance');
+                        if (btn) btn.click();
                     }
-                },
+                    setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 300);
+                }
             },
 
             { element: '#btn-incluir-no-favs-distancia',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></span> Incluir despegues no favoritos en el filtro', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>Esto es útil cuando viajamos y buscamos las mejores condiciones fuera de nuestra zona de favoritos.' , side: 'bottom', align: 'end'},
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></span> Incluir no favoritos', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>💡 Esto es útil cuando viajamos y buscamos las mejores condiciones fuera de nuestra zona de favoritos.' , side: 'bottom', align: 'end'},
             },
 
             { element: '#distancia-slider',
-                popover: { title: 'Distancia al punto', description: 'Arrastrando este deslizador eliges los kilómetros.<br><br>La tabla mostrará solo los despegues que estén dentro de ese radio de distancia.' },
-                onDeselected: (element) => {
-                    const toggleBtn = document.getElementById('btn-div-filtro-distancia-toggle');
-                    if (toggleBtn) {
-                        toggleBtn.click(); // Cerramos el menú
+                popover: { title: 'Distancia al punto', description: 'Arrastrando este deslizador eliges los kilómetros de distancia.<br><br>La tabla mostrará solo los despegues que estén dentro de ese radio de distancia.' },
+                onDeselected: () => {
+                    const panel = document.getElementById('div-filtro-distancia');
+                    if (panel && panel.classList.contains('activo')) {
+                        const btn = document.getElementById('nav-distance');
+                        if (btn) btn.click(); // Cierra el panel
                     }
                 }
             },
 
-            { element: '#btn-mapa-despegues',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_tierra_60.webp" width="20" height="20" style="display: block;"><span>Mapa de despegues</span></div>', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1 millón de puntos exactos de despegues y mucha otra información.<br><br>La información más completa es de España, Portugal y Pirineos (incluyendo la parte francesa), pero hay información de todo el mundo.' , side: 'bottom', align: 'center' } },
+            { element: '#nav-map',
+                popover: { title: '🗺️ Mapa de despegues', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1 millón de puntos exactos de despegues y mucha otra información.<br><br>La información más completa es de España, Portugal y Pirineos (incluyendo la parte francesa), pero hay información de todo el mundo.', side: 'top', align: 'center' } },
 
-            { element: '#btn-activar-edicion-favoritos',
-                popover: { title: '♥️/<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Edición de favoritos', description: 'Abre la <i>Pantalla de edición de favoritos</i>.<br><br>En esa pantalla tienes todos los despegues disponibles y es donde se marcan o desmarcan los favoritos que se mostrarán en esta <i>Pantalla principal</i>.' } },
-
-            { element: '#btn-div-configuracion-toggle',
-                popover: { title: '⚙️ Configuración', description: 'Te lleva al panel de configuración, donde podrás personalizar parámetros, activar opciones interesantes y ver información de los datos meteorológicos.<br><br>👉🏽 Para cada opción o dato, tienes un botón de información <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;">.' } }
+            { element: '#nav-settings',
+                popover: { title: '⚙️ Ajustes y Favoritos', description: 'Aquí podrás acceder a <b>Editar de favoritos</b> (para añadir o quitar tus despegues habituales), personalizar parámetros, activar opciones interesantes y ver información de los datos meteorológicos.<br><br>💡 Para cada opción o dato, tienes un botón de información <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;">.', side: 'top', align: 'center' } }
         ],
         
         onDestroyStarted: () => {
@@ -882,22 +861,18 @@ function iniciarGuiaFavoritos(forzar = false) {
         showProgress: true, 
         progressText: '{{current}} de {{total}}',
         smoothScroll: true,
-        overlayClickBehavior: () => {}, //() => {}, // Al ser una función vacía, no hace nada // What to do when the overlay backdrop is clicked. Possible options are 'close', 'nextStep', or a custom function. default: 'close')
-        overlayColor: 'rgba(0, 0, 0, 0.75)', // Un fondo oscuro que haga resaltar tu azul
-        allowClose: true,      // ¿Permitir cerrar pulsando la X?
-        //popoverOffset: number, // Distance between the popover and the highlighted element. (default: 10)
-        // Opcional: Personalizar el espacio alrededor del elemento destacado
-        //stagePadding: 10,       // Margen en píxeles entre el elemento y el brillo (default: 10)
-        stageRadius: 8,   // Redondea las esquinas del brillo para que no sea un cuadrado seco (default: 5)
+        overlayClickBehavior: () => {}, 
+        overlayColor: 'rgba(0, 0, 0, 0.75)', 
+        allowClose: true,      
+        stageRadius: 8,   
 
         nextBtnText: 'Siguiente →',
         prevBtnText: '←',
         doneBtnText: 'Cerrar guía',
-        //closeBtnText: '×',
 
         steps: [
-            { element: '#tabla', //'#tabla thead' apuntaría a la cabecera, '#tabla tbody tr:nth-child(7)' a la fila 3
-                popover: { title: '🪂 Tabla de todos los despegues', description: 'Esta pantalla de edición de favoritos sirve para seleccionar los despegues que usas habitualmente. La pantalla normal de la aplicación mostrará solo los despegues favoritos.<br><br>En esta tabla tienes todos disponibles.<br><br>Por el momento solo hay despegues de España, Portugal, Pirineos (incluyendo la parte francesa) y parte de Alpes franceses y suizos. Esta aplicación es un proyecto en desarrollo.', side: 'right', align: 'start'} },
+            { element: '#tabla', 
+                popover: { title: '🪂 Tabla de todos los despegues', description: 'Esta pantalla sirve para seleccionar los despegues que usas habitualmente. La pantalla normal mostrará solo estos favoritos.<br><br>Por el momento solo hay despegues de España, Portugal, Pirineos y parte de Alpes. Esta aplicación es un proyecto en desarrollo.', side: 'right', align: 'start'} },
 
             { element: '#tabla tbody tr:nth-child(1) td:first-child', 
                 popover: { title: '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos', description: 'Marca (o desmarca) aquí tus despegues favoritos.<br><br>Se van guardando automáticamente.', side: 'bottom', align: 'end'} },
@@ -906,46 +881,34 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Cabecera favoritos', description: 'Permite marcar (o desmarcar) de una sola vez todos los despegues visibles actualmente en la tabla.<br><br>Ejemplo: buscas todos los de "Huesca" y los marcas todos.' } },
 
             { element: '.btn-info.btn-abajo-izquierda', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>👉🏽  El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Muestra información más completa del despegue y un botón para acceder a su mapa.' } },
 
-            { element: '#buscador-wrapper',
-                popover: { title: '🔍 Buscador', description: 'Encuentra tus despegues favoritos escribiendo su nombre, la región o la provincia.<br><br>👉🏽  Puedes escribir sin tildes.' } },
+            { element: '#nav-search',
+                popover: { title: '🔍 Buscar', description: 'Busca despegues escribiendo su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón o pulsar el de Tabla, se cerrará automáticamente.', side: 'top', align: 'center' } },
 
-            { element: '#btn-div-filtro-distancia-toggle',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_filtro_60.webp" width="20" height="20" style="display: block;"><span>Filtro de distancia</span></div>', 
-                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>Ejemplo: te puede servir para seleccionar rápidamente como favoritos (y ver así su pronóstico en la pantalla principal) los despegues que estén en un radio de 50 km alrededor de un punto.<br><br>Voy a pulsar ese botón para que lo veas.' } },
+            { element: '#nav-distance',
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Filtro de distancia</span></div>', 
+                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para seleccionar rápidamente como favoritos los despegues que estén en un radio de 50 km alrededor de un punto.<br><br>Voy a abrirlo.', side: 'top', align: 'center' } },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Aquí eliges el punto de origen.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.' },
-                
-                onHighlighted: (element) => {
-                    // 1. Forzamos el clic en el botón que despliega el menú
-                    const toggleBtn = document.getElementById('btn-div-filtro-distancia-toggle');
-                    
-                    if (toggleBtn) {
-                        // Ejecutamos el clic
-                        toggleBtn.click();
-                        
-                        // 2. IMPORTANTE: Usamos un pequeño retraso para que el DOM se asiente
-                        // y luego forzamos a Driver.js a recalcular la posición del elemento resaltado
-                        setTimeout(() => {
-                            if (typeof driverObj !== 'undefined') {
-                                driverObj.refresh();
-                            } else {
-                                // Si driverObj no es global, intenta usar la instancia interna si la tienes
-                                console.warn("Instancia driverObj no encontrada. Asegúrate de que sea accesible.");
-                            }
-                        }, 300); // Aumentado a 300ms para dar tiempo a posibles animaciones CSS
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Aquí eliges el punto de origen en el mapa o con tu ubicación.' , side: 'bottom', align: 'end'},
+                onHighlighted: () => {
+                    const panel = document.getElementById('div-filtro-distancia');
+                    if (panel && !panel.classList.contains('activo')) {
+                        const btn = document.getElementById('nav-distance');
+                        if (btn) btn.click();
                     }
-                },
+                    setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 300);
+                }
             },
 
             { element: '#distancia-slider',
-                popover: { title: 'Distancia al punto', description: 'Arrastrando este deslizador eliges los kilómetros.<br><br>La tabla mostrará solo los despegues que estén dentro de ese radio de distancia.' },
-                onDeselected: (element) => {
-                    const toggleBtn = document.getElementById('btn-div-filtro-distancia-toggle');
-                    if (toggleBtn) {
-                        toggleBtn.click(); // Cerramos el menú
+                popover: { title: 'Distancia al punto', description: 'Arrastrando este deslizador eliges los kilómetros.' },
+                onDeselected: () => {
+                    const panel = document.getElementById('div-filtro-distancia');
+                    if (panel && panel.classList.contains('activo')) {
+                        const btn = document.getElementById('nav-distance');
+                        if (btn) btn.click();
                     }
                 }
             },
@@ -960,13 +923,13 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '📂 Importar favoritos', description: 'Abre un archivo con una lista de despegues favoritos guardados previamente.' } },
 
             { element: '#btn-guardar-favoritos',
-                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrece compartirlo.<br><br>Los favoritos ya se van guardando automáticamente en la aplicación cuando los marcas; este botón solo sirve para hacer una copia en otro lugar.<br><br>👉🏽  Si te mueves por varias zonas diferentes de vuelo, puedes tener varios archivos de favoritos exportados e importarlos cuando te interese.' } },
+                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrece compartirlo.<br><br>Los favoritos ya se van guardando automáticamente en la aplicación cuando los marcas; este botón solo sirve para hacer una copia en otro lugar.<br><br>👉🏽 Si te mueves por varias zonas diferentes de vuelo, puedes tener varios archivos de favoritos exportados e importarlos cuando te interese.' } },
 
             { element: '#btn-guia-edicion-favoritos',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_ayuda_60.webp" width="20" height="20" style="display: block;"><span>Guía rápida</span></div>', description: 'Muestra esta guía.' } },
 
             { element: '#btn-finalizar-edicion-favoritos',
-                popover: { title: '🏁 Finalizar edición de favoritos', description: 'Sale a la pantalla normal de la aplicación, con tus favoritos y su pronóstico.<br><br>👉🏽 También puedes volver a esta pantalla cuando quieras ver información <img src="icons/info.svg" style="vertical-align: middle; margin: 0 4px;" width="20" height="20"> de un despegue poco habitual que no te interese tener como favorito permanente.' } }
+                popover: { title: '🏁 Finalizar edición de favoritos', description: 'Sale a la pantalla normal de la aplicación, con tus favoritos y su pronóstico.<br><br>👉🏽 También puedes volver a esta pantalla cuando quieras ver información de un despegue poco habitual que no te interese tener como favorito permanente.' } }
         ],
         
         onDestroyStarted: () => {
