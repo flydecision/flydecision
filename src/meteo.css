@@ -8,7 +8,7 @@ html, body {
 	display: flex;
     flex-direction: column; /* Organiza elementos uno debajo de otro */
 	font-size: 16px !important;
-    background-color: #F3F4F6;
+    background-color: #d9ebf9;
     box-sizing: border-box;
 
     /* Esto impide que Android infle el texto arbitrariamente para móviles con cambios en tamaño predeterminado de letra (accesibilidad) */
@@ -71,7 +71,8 @@ body.modo-android-manual {
     padding-right: env(safe-area-inset-right);
 
     /* Tu degradado para que el fondo de la barra se vea bonito */
-    background: linear-gradient(to bottom, #d9ebf9 0%, #d9ebf9 calc(100px + var(--vv-offset-top, 0px)), #F3F4F6 calc(100px + var(--vv-offset-top, 0px))) !important;
+    /* background: linear-gradient(to bottom, #d9ebf9 0%, #d9ebf9 calc(100px + var(--vv-offset-top, 0px)), #F3F4F6 calc(100px + var(--vv-offset-top, 0px))) !important; */
+    background-color: #d9ebf9;
     background-size: 100% 100%;
 }
 
@@ -2248,7 +2249,6 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     left: 0;
     width: calc(100% - 8px);
     height: calc(56px + env(safe-area-inset-bottom));
-    background-color: #f3f4f65c;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-around;
