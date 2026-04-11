@@ -221,6 +221,20 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
         inset 1px 1px 3px rgba(0,0,0,0.4) !important; 
 }
 
+#div-menu .nav-icon-container {
+    width: 34px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+#btn-desmarcar-favoritos:active .nav-icon-container {
+    background-color: #ffdada; /* Rojo suave al pulsar desmarcar todo */
+}
+
 /* 🟡 Lógica de visibilidad de botones--- */
 
 .div-menu .group-edit {

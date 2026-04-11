@@ -914,16 +914,26 @@ function iniciarGuiaFavoritos(forzar = false) {
             },
 
             { element: '#btn-filtro-favoritos-toggle',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_filtro_60.webp" width="20" height="20" style="display: block;"><span>Ver solo favoritos</span></div>', description: 'Alterna entre ver solo los despegues favoritos o ver todos los despegues.<br><br>Si tenías ya favoritos, puede servirte para verlos juntos fácilmente y desmarcar alguno o también para desmarcar todos a la vez.' } },
+                popover: { 
+                    title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="red" stroke="red"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span>Ver solo favoritos</span></div>', 
+                    description: 'Alterna entre ver solo los despegues favoritos o ver todos los despegues.<br><br>💡 Si tenías ya favoritos, puede servirte para verlos juntos fácilmente y desmarcar alguno o también para desmarcar todos a la vez.', 
+                    side: 'bottom', align: 'start'
+                } 
+            },
 
             { element: '#btn-desmarcar-favoritos',
-                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Desmarcar todos los favoritos', description: 'Desmarca todos los favoritos actuales.' } },
+                popover: { 
+                    title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path><line x1="5" y1="5" x2="19" y2="19" stroke="red" stroke-width="3"></line></svg><span>Desmarcar todos los favoritos</span></div>', 
+                    description: 'Desmarca todos los favoritos actuales.', 
+                    side: 'bottom', align: 'start'
+                } 
+            },
 
             { element: '#btn-abrir-favoritos',
                 popover: { title: '📂 Importar favoritos', description: 'Abre un archivo con una lista de despegues favoritos guardados previamente.' } },
 
             { element: '#btn-guardar-favoritos',
-                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrece compartirlo.<br><br>Los favoritos ya se van guardando automáticamente en la aplicación cuando los marcas; este botón solo sirve para hacer una copia en otro lugar.<br><br>👉🏽 Si te mueves por varias zonas diferentes de vuelo, puedes tener varios archivos de favoritos exportados e importarlos cuando te interese.' } },
+                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrece compartirlo.<br><br>Los favoritos ya se van guardando automáticamente en la aplicación cuando los marcas; este botón solo sirve para hacer una copia en otro lugar.<br><br>💡 Si te mueves por varias zonas diferentes de vuelo, puedes tener varios archivos de favoritos exportados e importarlos cuando te interese.' } },
 
             { element: '#btn-guia-edicion-favoritos',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_ayuda_60.webp" width="20" height="20" style="display: block;"><span>Guía rápida</span></div>', description: 'Muestra esta guía.' } },
@@ -985,28 +995,31 @@ function activarEdicionFavoritos() {
 }
 
 function filtroVerSoloFavoritos() {
-    
-    const favoritosActuales = obtenerFavoritos();
     const btn = document.getElementById('btn-filtro-favoritos-toggle');
+    const iconContainer = document.getElementById('icon-filter-favs');
+    const heartSvg = btn.querySelector('.heart-icon-svg');
+    const favoritosActuales = obtenerFavoritos();
 
-    // --- NUEVO: Comprobar si se va a activar el filtro pero NO hay favoritos ---
     if (!btn.classList.contains("activo") && favoritosActuales.length === 0) {
-        mensajeModalAceptar('', 
-            '<p>No funciona el filtro <i>Ver solo favoritos</i> porque es necesario marcar al menos un despegue favorito ♥️.</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
-        );
-        return; // Salimos de la función sin aplicar el filtro ni recargar la tabla
+        mensajeModalAceptar('', '<p>No tienes despegues marcados como favoritos ♥️.</p>');
+        return;
     }
 
-    // Lógica normal de alternar el botón
-    btn.classList.toggle("activo"); 
-    const estaHundido = btn.classList.contains("activo");
+    btn.classList.toggle("activo");
+    const estaActivo = btn.classList.contains("activo");
     
-    if (estaHundido) {
+    if (estaActivo) {
         soloFavoritos = true; 
         btn.classList.add('filtro-aplicado');
+        // Pintamos el corazón de rojo relleno
+        heartSvg.setAttribute('fill', '#ff0000');
+        heartSvg.setAttribute('stroke', '#ff0000');
     } else {
         soloFavoritos = false;
         btn.classList.remove('filtro-aplicado');
+        // Corazón vacío original
+        heartSvg.setAttribute('fill', 'none');
+        heartSvg.setAttribute('stroke', 'currentColor');
     }
 
     construir_tabla();
