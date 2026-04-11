@@ -100,7 +100,9 @@
 		
 			<div id="titulo-distancia-slider" style="display: flex; align-items: center; gap: 7px; margin-bottom: 5px;">
 				<span style="cursor: pointer;">Distancia desde:</span>
-				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" title="Cambiar ubicación de origen">📍</button>
+				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" title="Cambiar ubicación de origen">
+					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+				</button>
 				
 				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" title="Incluir despegues no favoritos en el filtro"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
 			</div>	
@@ -116,7 +118,7 @@
 					data-tippy-content="
 						<b>Filtro de distancia al despegue:</b><br><br>
 						Muestra solo despegues dentro del radio de distancia que selecciones.<br><br>
-						Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span> para establecer la posición de origen. Puedes usar el mapa o la ubicación actual de tu dispositivo.<br><br>
+						Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> para establecer la posición de origen. Puedes usar el mapa o la ubicación actual de tu dispositivo.<br><br>
 						Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> para incluir despegues no favoritos en el filtro, es decir, para <b>incluir temporalmente todos los despegues</b> disponibles en la base de datos.<br><br>
 						Al activarlo, se aplica un filtro inicial de 100 km para evitar sobrecargar la tabla. Puedes ajustarlo según tus necesidades y el rendimiento de tu dispositivo.
 					">
@@ -434,7 +436,7 @@
 <div id="modal-mapa" class="modal-overlay" style="display:none;">
 	<div class="modal-content map-modal-size">
         <div class="modal-header">
-            <h3>📍 Seleccionar origen</h3>
+            <h3><svg viewBox="0 0 24 24" width="1.2em" height="1.2em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 5px; color: #0078d4;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Seleccionar origen</h3>
             <button id="btn-cerrar-mapa" class="close-x">×</button>
         </div>
         

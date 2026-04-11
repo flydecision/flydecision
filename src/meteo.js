@@ -227,9 +227,9 @@ if (btnIncNoFavsDistancia) {
 						tipo: 'modal',
 						htmlContenido: `
                             <div style="text-align: center;">
-                            <p style="font-size: 2.5em; margin: 0 0 10px 0;">📍</p>
+                            <p style="font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></p>
 							<p>Como es la primera vez, necesitas configurar una ubicación de origen.</p>
-							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
+							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span></p>
                             </div>
 						`,
 						botones:[
@@ -761,7 +761,7 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: 'Muestra solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para que lo veas.'}, },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.' , side: 'bottom', align: 'end'},
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.' , side: 'bottom', align: 'end'},
                 
                 onHighlighted: (element) => {
                     // 1. Forzamos el clic en el botón que despliega el menú
@@ -916,7 +916,7 @@ function iniciarGuiaFavoritos(forzar = false) {
                     description: 'Muestra solo los despegues alrededor de un punto.<br><br>Ejemplo: te puede servir para seleccionar rápidamente como favoritos (y ver así su pronóstico en la pantalla principal) los despegues que estén en un radio de 50 km alrededor de un punto.<br><br>Voy a pulsar ese botón para que lo veas.' } },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;">📍</span> Punto de origen', description: 'Aquí eliges el punto de origen.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.' },
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Aquí eliges el punto de origen.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.' },
                 
                 onHighlighted: (element) => {
                     // 1. Forzamos el clic en el botón que despliega el menú
@@ -5650,9 +5650,9 @@ document.addEventListener('DOMContentLoaded', function() {
 						tipo: 'modal',
 						htmlContenido: `
                             <div style="text-align: center;">
-                            <p style="font-size: 2.5em; margin: 0 0 10px 0;">📍</p>
+                            <p style="font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></p>
 							<p>Como es la primera vez, necesitas configurar una ubicación de origen.</p>
-							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block;'>📍</span></p>
+							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span></p>
                             </div>
 						`,
 						botones:[
