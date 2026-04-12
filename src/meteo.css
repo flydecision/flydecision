@@ -57,7 +57,6 @@ button {
 
 :root {
     --android-sb-height: 0px;
-    --android-nav-height: 0px;  /* JS lo calcula: 0 con gestos, ~48px con botones */
     --vv-offset-top: 0px;
 }
 
@@ -2264,10 +2263,6 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     left: 0;
     width: calc(100% - 8px);
     height: calc(56px + env(safe-area-inset-bottom));
-    min-height: calc(56px + env(safe-area-inset-bottom)); /* Nunca se encoge */
-    max-height: calc(56px + env(safe-area-inset-bottom)); /* Nunca crece */
-    flex-shrink: 0;  /* Impide que el flex lo encoja */
-    flex-grow: 0;    /* Impide que el flex lo agrande */
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: space-around;
@@ -2277,20 +2272,13 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
     border-radius: 10px;
     max-width: 727px;
+    margin-bottom: 4px;
     position: sticky;
     background-color: #ffffff;
     padding-top: 2px;
+    margin-left: 3px;
     margin: 0 auto;
     margin-bottom: 4px;
-}
-
-/* En Android usamos --android-nav-height (calculado por JS) en lugar de env(),
-   que devuelve valores incorrectos según el tipo de navegación del sistema */
-body.modo-android-manual .bottom-nav.compact-nav {
-    height: calc(56px + var(--android-nav-height));
-    min-height: calc(56px + var(--android-nav-height));
-    max-height: calc(56px + var(--android-nav-height));
-    padding-bottom: var(--android-nav-height);
 }
 
 .compact-nav .nav-item {
@@ -2299,7 +2287,7 @@ body.modo-android-manual .bottom-nav.compact-nav {
     align-items: center;
     justify-content: center;
     width: 20%; /* 5 botones = 20% cada uno */
-    height: 56px; /* Fijo: solo el área de botones, sin incluir el safe-area padding inferior */
+    height: 100%;
     background: transparent;
     border: none;
     cursor: pointer;

@@ -6741,31 +6741,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Leer la altura real
                 const info = await StatusBar.getInfo();
                 const altura = info.height;
-                console.log(`📏 StatusBar física detectada: ${altura}px`);
+                console.log(`📏 Altura detectada: ${altura}px`);
 
                 // Inyectar en CSS
                 if (altura > 0) {
                     document.documentElement.style.setProperty('--android-sb-height', `${altura}px`);
-                }
-
-                // --- A2. ALTURA BARRA DE NAVEGACIÓN INFERIOR (gestos o botones) ---
-                // Con overlay:true, el WebView cubre la status bar, pero la barra de
-                // navegación inferior puede o no estar cubierta según el dispositivo.
-                // Fórmula: screen.height/dpr - innerHeight nos da el espacio del sistema
-                // que NO está en el WebView (= nav bar si no está cubierta, o 0 si sí lo está).
-                // Umbral de 40px: gestos (~18px) → 0px, botones (~48px) → valor real.
-                try {
-                    const dpr = window.devicePixelRatio || 1;
-                    const screenCssPx = window.screen.height / dpr;
-                    const navRaw = screenCssPx - window.innerHeight;
-                    // Si es <40px asumimos gestos (barra pequeña/transparente) → 0
-                    // Si es ≥40px asumimos botones → usamos el valor real
-                    const navFinal = (navRaw >= 40 && navRaw < 200) ? Math.round(navRaw) : 0;
-                    console.log(`📏 Nav bar Android: raw=${navRaw.toFixed(1)}px → final=${navFinal}px (dpr=${dpr}, screen=${screenCssPx.toFixed(1)}, inner=${window.innerHeight})`);
-                    document.documentElement.style.setProperty('--android-nav-height', `${navFinal}px`);
-                } catch (e) {
-                    console.warn('No se pudo calcular nav bar height:', e);
-                    document.documentElement.style.setProperty('--android-nav-height', '0px');
                 }
 
                 // --- B. CONFIGURACIÓN DE TAMAÑO DE TEXTO (TEXTZOOM) ---
