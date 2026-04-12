@@ -2259,7 +2259,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
    MENÚ INFERIOR COMPACTO (MATERIAL DESIGN 3)
    ========================================================================== */
 .bottom-nav.compact-nav {
-    /* position: fixed; */
+    position: sticky;
     bottom: 0;
     left: 0;
     width: calc(100% - 8px);
@@ -2277,7 +2277,6 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
     border-radius: 10px;
     max-width: 727px;
-    position: sticky;
     background-color: #ffffff;
     padding-top: 2px;
     margin: 0 auto;
