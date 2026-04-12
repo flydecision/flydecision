@@ -29,11 +29,44 @@
 <link rel="stylesheet" href="css/leaflet.css" />
 <link rel="stylesheet" href="css/driver.css" />
 
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<!-- Plugin Fullscreen CSS -->
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+<!-- Plugin Choices.js. Personalización de desplegables,.. -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<!-- Plugin Leaflet Control Geocoder -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+<!-- Leaflet JSs: -->
+ <script src="js/leaflet.js"></script>
+
+<!-- Heatmap Plugin -->
+<script src="https://cdn.jsdelivr.net/gh/Leaflet/Leaflet.heat@gh-pages/dist/leaflet-heat.js"></script>
+<!-- Flullscreen Plugin -->
+<script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
+<!-- Markercluster Plugin -->
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<!-- Plugin Choices.js. Personalización de desplegables,.. -->
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<!-- Plugin Leaflet Control Geocoder -->
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<!-- Plugin Leaflet Cargar .GPX -->
+<script src="https://unpkg.com/togeojson"></script>
+<script src="https://unpkg.com/leaflet-filelayer"></script>
+<!-- Plugin Leaflet Glyfy (carga asíncrona de puntos) -->
+<script src="https://unpkg.com/leaflet.glify@0.3.0/dist/leaflet.glify.min.js"></script>
+<!-- Plugin Leaflet Parseo .CSV -->
+<script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+
+
 <script src="js/nouislider.min.js"></script>
 <script src="js/popper.min.js" defer></script>
 <script src="js/tippy-bundle.umd.min.js" defer></script>
-<script src="js/leaflet.js" defer></script>
 <script src="js/driver.js.iife.js"></script>
+
+<script src="js/config.js"></script>
 
 </head>
 
@@ -457,18 +490,204 @@
 	</div>
 </div>
 
+<!-- 🟦🟦 MAPA (oculto por defecto) -->
+<div id="vista-mapa" style="display: none; flex-grow: 1; width: 100%; position: relative; z-index: 1;">
+    
+    <div id="mensajeCargaMapaDeCalorPeninsulaIberica" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;">
+	⏳ Cargando mapa de calor Península Ibérica...<br><br>(309.157 despegues registrados)
+	</div>
+	<div id="mensajeCargaMapaDeCalorAlpes" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;">
+		⏳ Cargando mapa de calor Alpes...<br><br>(967.477 despegues registrados)
+	</div>
+	<div id="mensajeCargaMapaDeCalorMarruecos" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;">
+		⏳ Cargando mapa de calor Marruecos...<br><br>(11.006 despegues registrados)
+	</div>
+
+    <div id="map" style="height: 100%; width: 100%;"></div>
+
+    <div id="infoPanel" class="info-panel">
+
+		<span id="labelMostrarOpciones" class="labelMostrarOpciones">
+			Capas y filtros
+		</span>
+					
+		<div id="divOpciones">
+		
+			<button id="buttonCerrar" title="Cerrar Panel">
+					<span>❌</span>
+			</button>			 
+		
+			<button id="buttonFijar" title="Fijar Panel (anula su ocultación al mover mapa)">
+					<span id="iconoFijar">📌</span>
+			</button>			 
+				
+			<div style="font-weight: bold">
+				<a href="https://hikefly.es/despegues-ayuda/" style="color: #fc6668; text-decoration: underline; float: right; padding-right: 33px;" target="_blank"><span style="font-weight: bold;">Ayuda</span></a>
+			</div>
+			
+			<div style="font-weight: bold; margin-bottom: 5px;">
+				<br>Capas:
+			</div>
+		
+			<div class="legend-item" title="Despegues de parapente">
+				<label for="checkboxDespegues" class="custom-checkbox">
+				<input type="checkbox" id="checkboxDespegues" class="custom-checkbox" checked>
+				🪂 Despegues
+				</label>
+			</div>
+			<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+				<label for="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
+				<input type="checkbox" id="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
+				🔥 Mapa de calor Península Ibérica
+				</label>
+			</div>
+			<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+				<label for="checkboxMapaDeCalorAlpes" class="custom-checkbox">
+				<input type="checkbox" id="checkboxMapaDeCalorAlpes" class="custom-checkbox">
+				🔥 Mapa de calor Alpes
+				</label>
+			</div>
+			<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+				<label for="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
+				<input type="checkbox" id="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
+				🔥 Mapa de calor Marruecos
+				</label>
+			</div>
+			<div class="legend-item" title="Notas personales tomadas sobre despegues y aterrizajes">
+				<label for="checkboxNotasPersonales" class="custom-checkbox">
+				<input type="checkbox" id="checkboxNotasPersonales" class="custom-checkbox">
+				✏️ Notas
+				</label>
+			</div>
+			<div class="legend-item" title="Despegues de Paraglidingearth.com">
+				<label for="checkboxDespeguesMundo" class="custom-checkbox">
+				<input type="checkbox" id="checkboxDespeguesMundo" class="custom-checkbox">
+				🪂 Despegues de Paraglidingearth
+				</label>
+			</div>
+			
+			<div class="control-orientacion-container">
+				<div style="font-weight: bold; margin-bottom: 5px;">
+					Orientación:
+				</div>
+
+				<div id="rosaDeLosVientos">
+					
+					<label class="filtro-orientacion" data-orientacion="NO" title="Noroeste">
+						<input type="checkbox" class="filtro-orientacion-checkbox" value="NO"> 
+						<span>NO</span>
+					</label>
+					<label class="filtro-orientacion" data-orientacion="N" title="Norte">
+						<input type="checkbox" class="filtro-orientacion-checkbox" value="N"> 
+						<span>N</span>
+					</label>
+					<label class="filtro-orientacion" data-orientacion="NE" title="Noreste">
+						<input type="checkbox" class="filtro-orientacion-checkbox" value="NE"> 
+						<span>NE</span>
+					</label>
+
+					<label class="filtro-orientacion" data-orientacion="O" title="Oeste">
+						<input type="checkbox" class="filtro-orientacion-checkbox" value="O"> 
+						<span>O</span>
+					</label>
+					
+					<label class="centro-rosa filtro-maestro" title="Hay filtros de orientación activos. Haz clic para desactivarlos todos.">
+						<input type="checkbox" id="filtroMaestroOrientacion" class="filtro-orientacion-checkbox" value="TODOS">
+					</label>	
+					
+					<label class="filtro-orientacion" data-orientacion="E" title="Este">
+						<input type="checkbox" class="filtro-orientacion-checkbox" value="E"> 
+						<span>E</span>
+					</label>
+
+					<label class="filtro-orientacion" data-orientacion="SO" title="Suroeste">
+						<input type="checkbox" class="filtro-orientacion-checkbox" value="SO"> 
+						<span>SO</span>
+					</label>
+					<label class="filtro-orientacion" data-orientacion="S" title="Sur">
+						<input type="checkbox" class="filtro-orientacion-checkbox" value="S"> 
+						<span>S</span>
+					</label>
+					<label class="filtro-orientacion" data-orientacion="SE" title="Sureste">
+						<input type="checkbox" class="filtro-orientacion-checkbox" value="SE"> 
+						<span>SE</span>
+					</label>
+					
+				</div>	
+			</div>	
+					
+			<div class="control-vuelos-container" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
+				<label for="sliderVuelos" style="font-weight: bold;">
+					Mínimo de vuelos registrados = <span id="valorVuelosTexto">0</span>
+				</label>
+				<br>
+				<input type="range" id="sliderVuelos" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
+			</div>
+			
+			<div class="control-ultimovuelo-container" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
+				<label for="sliderUltimoVuelo" style="font-weight: bold; display: block;">
+					Año del último vuelo >= <span id="valorUltimoVueloTexto">Todos</span>
+				</label>
+				<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 88%; margin-left: 22px;">
+			</div>
+						
+			<div class="control-KmMedia-container" title="Mostrar solo los despegues con una media de distancia recorrida en los últimos vuelos registrados mayor o igual a los km seleccionados. El valor de referencia está tomado en nov-2025 usando los últimos vuelos disponibles (hasta un máximo de 50). Por el momento, este filtro solo aplica a 'Despegues' y no a la capa 'Despegues de Paraglidingearth'">
+				<label for="sliderKmMedia" style="font-weight: bold;">
+					Mínimo de km medios recorridos = <span id="valorKmMediaTexto">0</span>
+				</label>
+				<br>
+				<input type="range" id="sliderKmMedia" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
+			</div>
+				
+		</div>
+							
+	</div>
+
+	<div id="configuracionPanel" class="info-panel">
+
+		<span style="font-weight: bold; display: block;">
+			Configuración inicial:<br><br>
+					
+		<div id="divOpcionesconfiguracionPanel">
+
+			<div class="configuracion-control-vuelos-container">
+				<label for="sliderVuelos" style="font-weight: bold;">
+					Mínimo de vuelos registrados: <span id="valorConfigFiltroNumeroMinimoVuelosTexto">0</span>
+				</label>
+				<br>
+				<input type="range" id="sliderValorInicialFiltroNumeroMinimoVuelos" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
+			</div>
+					
+			<div class="configuracion-control-ultimovuelo-container">
+				<label for="sliderUltimoVuelo" style="font-weight: bold;">
+					Año último vuelo >= <span id="valorConfigFiltroUltimoVueloTexto">Todos</span>
+				</label>
+				<br>
+				<input type="range" id="sliderValorInicialFiltroUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 88%; margin-left: 22px;">
+			</div>
+					
+			<div>
+				<a href="https://hikefly.es/despegues-ayuda/" style="color: #fc6668; text-decoration: underline;" target="_blank"><span style="font-weight: bold;">Ayuda</span></a>
+			</div>	
+										
+		</div>
+							
+	</div>
+
+</div>
+
 <!-- 🟦🟦 MENÚ INFERIOR COMPACTO (5 BOTONES)  -->
-<nav class="bottom-nav compact-nav">
+<nav class="bottom-nav compact-nav" style="z-index: 1000;">
     <!-- 1. TABLA -->
-    <button class="nav-item active" id="nav-home" onclick="activarMenuInferior(this); finalizarEdicionFavoritos();">
-        <div class="nav-icon-container">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        </div>
-        <span>Tabla</span>
-    </button>
+	<button class="nav-item active" id="nav-home" onclick="activarMenuInferior(this); finalizarEdicionFavoritos(); cambiarVista('tabla');">
+		<div class="nav-icon-container">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+		</div>
+		<span>Tabla</span>
+	</button>
     
     <!-- 2. BUSCAR -->
-    <button class="nav-item" id="nav-search" onclick="activarMenuInferior(this); toggleBuscadorFlotante();">
+    <button class="nav-item" id="nav-search" onclick="activarMenuInferior(this); toggleBuscadorFlotante(); cambiarVista('tabla');">
         <div class="nav-icon-container">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </div>
@@ -476,23 +695,23 @@
     </button>
     
     <!-- 3. DISTANCIA -->
-    <button class="nav-item" id="nav-distance" onclick="activarMenuInferior(this); alternardivDistancia(event);">
+    <button class="nav-item" id="nav-distance" onclick="activarMenuInferior(this); alternardivDistancia(event); cambiarVista('tabla');">
         <div class="nav-icon-container">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
         </div>
         <span>Distancia</span>
     </button>
     
-    <!-- 4. MAPA (Nuevo lugar) -->
-    <button class="nav-item" id="nav-map" onclick="activarMenuInferior(this); abrirLinkExterno('https://flydecision.com/map/')">
-        <div class="nav-icon-container">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
-        </div>
-        <span>Mapa</span>
-    </button>
-    
+	<!-- 4. MAPA -->
+	<button class="nav-item" id="nav-map" onclick="activarMenuInferior(this); cambiarVista('mapa');">
+		<div class="nav-icon-container">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+		</div>
+		<span>Mapa</span>
+	</button>    
+
     <!-- 5. AJUSTES -->
-    <button class="nav-item" id="nav-settings" onclick="activarMenuInferior(this); alternardivConfiguracion(event);">
+    <button class="nav-item" id="nav-settings" onclick="activarMenuInferior(this); alternardivConfiguracion(event); cambiarVista('tabla');">
         <div class="nav-icon-container">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </div>

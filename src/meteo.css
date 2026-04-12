@@ -2391,3 +2391,638 @@ details.config-accordion .accordion-content {
     padding-left: 18px !important;
     padding-right: 18px !important;
 }
+
+/* 🔴🔴 INICIO MAPA */
+
+#map {
+	height: 100dvh;
+	width: 100%;
+}
+
+.label-large-despegues {
+	position: relative;
+	font-size: 1.2em;
+	padding: 2px 3px 4px 3px;
+	border-radius: 5px;
+	white-space: nowrap;
+	background-color: #ffffff;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
+	border: 1.8px solid #007AFF;
+}
+@media (max-width: 768px) {
+.label-large-despegues {
+	font-size: 1.4em;
+}
+}
+.label-large-despegues::after {
+  content: '';
+  position: absolute;
+  left: 0.1em;          /* controla desplazamiento horizontal de la flecha */
+  bottom: -14px;        /* saca la punta fuera del cuadro */
+  width: 0;
+  height: 0;
+  border-left: 13px solid transparent; /* dimensiones: Ancho del triángulo = border-left + border-right. Altura del triángulo = border-top  */
+  border-right: 13px solid transparent;
+  border-top: 13px solid #007AFF; /* color del borde */
+}
+
+.label-large-despeguesmundo {
+	position: relative;
+	font-size: 1.2em;
+	padding: 2px 3px 4px 3px;
+	border-radius: 5px;
+	white-space: nowrap;
+	background-color: #dadada;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
+	border: 1.8px solid #007AFF;
+}
+@media (max-width: 768px) {
+.label-large-despeguesmundo {
+	font-size: 1.4em;
+}
+}
+.label-large-despeguesmundo::after {
+  content: '';
+  position: absolute;
+  left: 0.1em;          /* controla desplazamiento horizontal de la flecha */
+  bottom: -14px;        /* saca la punta fuera del cuadro */
+  width: 0;
+  height: 0;
+  border-left: 13px solid transparent; /* dimensiones: Ancho del triángulo = border-left + border-right. Altura del triángulo = border-top  */
+  border-right: 13px solid transparent;
+  border-top: 13px solid #007AFF; /* color del borde */
+}
+
+.dot {
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  display:inline-block;
+  margin-right:6px;
+  vertical-align:middle;
+  box-shadow: 0 0 1px rgba(0,0,0,0.4);
+  border:1px solid #888
+}	
+.leaflet-marker-icon.custom-div-icon {
+	margin-left: -12px !important;
+	margin-top: -33px !important;	
+}
+.info-panel {
+	background: rgb(255 255 255);
+	padding-left: 10px;
+	/* box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); */
+	z-index: 2000; 
+	width: 340px;
+	width: 262px;
+	max-width: 500px;
+	display: none; /* Ocultar por defecto. Si este index.html se está mostrando en el iframe de la página /mapa no quiero que se muestre este infopanel (el enlace a hikefly.es del mapa). Hay un javascript al final(document.addEventListener) que lo oculta si la URL no contiene https://hikefly.es/mapa/ */
+	transition: all 0.2s ease;
+	font-size: 1.2em;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 8px;
+	padding-top: 8px;
+}	
+@media (max-width: 768px) {
+	.info-panel {
+		width: 302px;
+		font-size: 1.4em !important;
+	}
+}
+
+.info-panel.retraido {
+	width: 124px;
+	height: 23px;
+	font-size: 1.2em;
+	padding-top: 4.4px;
+	padding-bottom: 2.6px;
+	cursor: pointer;
+}
+@media (max-width: 768px) {
+	.info-panel.retraido {
+		font-size: 1.4em !important;
+        padding-top: 2.4px !important;
+		padding-bottom: 4.6px !important;
+	}
+}
+<!--Antes de integrarlo en los controles leaflet
+#divOpciones {
+  max-height: 500px; /* altura máxima cuando está desplegado */
+  overflow: hidden;
+  transition: max-height 0.6s ease; /* transición suave */
+  position: relative;
+  font-size: 1.2em
+}
+-->	
+#divOpciones {
+	overflow: hidden;
+}
+#divOpciones.oculto {
+  max-height: 0; /* se retrae hasta 0 */
+}
+
+
+.legend-item {
+	display: block;
+	align-items: center;
+	margin-bottom: 0px;
+}
+.legend-color {
+	width: 20px;
+	height: 20px;
+	margin-right: 10px;
+	border-radius: 50%;
+}
+.legend { 
+	background: white;
+	padding: 6px 8px 0px 6px; 
+	line-height: 1;
+	background: rgba(255, 255, 255, 1);
+}
+.legend-header {
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.triangle {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	margin-left: 6px;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 6px solid #333; /* apunta hacia abajo inicialmente */
+	transition: transform 0.2s;
+}
+.legend.collapsed .triangle {
+	transform: rotate(180deg); /* apunta hacia arriba cuando está plegado */
+}
+.legend-content {
+	margin-top: 6px;
+	font-size: medium;
+}
+.legend.collapsed .legend-content {
+	display: none;
+}
+.leaflet-right .leaflet-control {
+margin-right: 5px;
+}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 5px;
+}
+.layer-controls {
+	margin-top: 15px;
+}
+.layer-control {
+	margin-bottom: 10px;
+}
+h3 {
+	margin-top: 0;
+	border-bottom: 1px solid #ddd;
+	padding-bottom: 8px;
+}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 30px;
+	height: 30px;
+}
+.leaflet-control-locate {
+	margin-top: 8px;
+}
+.leaflet-control-locate a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 26px;
+	height: 26px;
+	cursor: pointer;
+}
+.leaflet-left .leaflet-control {
+	margin-left: 3px;
+}
+.leaflet-top .leaflet-control {
+	margin-top: 3px;
+}		
+.leaflet-bar button {
+	background-color: white !important;
+}
+.leaflet-control-attribution {
+	display: block !important;
+	font-size: 11px;
+	white-space: normal;
+}
+.info {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: #FC6668;
+	color: #333;
+	padding: 1em;
+	z-index: 1000;
+	font-size: 1.5em;
+	border-radius: 4px;
+	font-weight: bold;
+	display: flex;
+}
+.choices {
+	width: 270px; 
+	margin-bottom: 5px;
+	margin-top: 3px;
+}
+.choices.is-focused.is-open {
+	font-size: medium !important;
+}	
+.choices__item { 
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  hyphens: none;
+}		
+.choices__inner {
+  padding: 0px 0px; /* alto */
+  padding-bottom: 0px;
+  min-height: auto; /* evita altura mínima forzada */
+  font-size: medium;
+}
+.choices__inner,
+.choices__list--dropdown,
+.choices__list--dropdown .choices__item {
+	font-size: medium !important;
+}
+.choices__list {
+	font-size: medium;
+}	
+.choices:last-child {
+	margin-bottom: 5px;
+}		
+.choices__list--dropdown, .choices__list[aria-expanded] {
+	word-break: auto-phrase;
+}			
+.choices__list--dropdown .choices__list, .choices__list[aria-expanded] .choices__list {
+	max-height: unset;										
+}
+.choices__list--single {
+	display: inline-block !important;
+	padding: 0px 0px 0px 3px !important;
+	width: 88% !important;
+}		
+.leaflet-popup-content {
+	font-size: 1.2em;
+	width: 203px;
+	line-height: 1;
+	margin: 5px 10px 5px 10px;
+}
+@media (max-width: 768px) {
+.leaflet-popup-content {
+	font-size: 1.4em;
+	width: 235px;
+}
+}
+/* 	.leaflet-popup{
+	bottom: 28px !important;
+	left: -114px !important;
+}
+*/	.choices[data-type*=select-one]::after {
+	right: 0.2em !important;
+	top:45%  !important;
+	border-width: 10px !important;
+}
+.choices[data-type*=select-one] .choices__inner {
+	padding-bottom: 1.5px;
+}	
+.leaflet-popup-content-wrapper.popup-despegues {
+	background-color: #ffffff !important;
+	border: 2px solid #007AFF;
+}
+.leaflet-popup-tip.popup-despegues {
+	background-color: #007AFF !important;
+}
+.leaflet-popup.popup-despegues.leaflet-zoom-animated {
+	bottom: 28px !important;
+}		
+.leaflet-popup-content-wrapper.popup-despeguesmundo {
+	background-color: #dadada !important;
+	border: 2px solid #007AFF;
+}
+.leaflet-popup-tip.popup-despeguesmundo {
+	background-color: #007AFF !important;
+}
+.leaflet-popup.popup-despeguesmundo.leaflet-zoom-animated {
+	bottom: 28px !important;
+}		
+	
+.leaflet-popup-content-wrapper.popup-despegueindividual {
+	background-color: #eddff5 !important;
+	border: 2px solid #007AFF;
+}
+.leaflet-popup-tip.popup-despegueindividual {
+	background-color: #007AFF !important;
+}
+.leaflet-popup.popup-despegueindividual.leaflet-zoom-animated {
+  bottom: 42px !important;
+}	
+.estilobase-custom-cluster-mapadecalor {
+	/* Define la forma general del contenedor */
+	background-clip: padding-box;
+	border-radius: 50%; /* Para hacerlo circular */
+	text-align: center;
+	line-height: 1; /* Necesario para centrar el texto verticalmente */
+	color: white; /* Color del número */
+	font-weight: bold;
+	font-size: 12px; /* Ajusta según el tamaño */
+}
+.estilobase-custom-cluster-mapadecalor div {
+	/* Estilo para el div interno que contiene el número.
+	   El color de fondo se establecerá dinámicamente en JavaScript */
+	width: 35px;
+	height: 35px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.flash-llamativo {
+	/* Define la sombra de inicio (invisible pero lista) */
+	box-shadow: 0 0 0px rgba(255, 69, 0, 0); 
+	/* Aplica la animación */
+	animation: flashPulso 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+	/* Asegura que el borde original (legend) no moleste */
+	border: none !important; 
+}
+
+/* 2. KEYFRAMES para la animación */
+@keyframes flashPulso {
+	0%   { 
+		box-shadow: 0 0 0px rgba(255, 69, 0, 0); 
+	}
+	30%  { 
+		/* Máxima visibilidad: sombra roja/naranja grande y brillante */
+		box-shadow: 0 0 15px 5px rgba(255, 69, 0, 0.8), /* Sombra exterior */
+					0 0 3px 1px rgba(255, 255, 255, 0.8); /* Borde interior blanco */
+	}
+	100% { 
+		box-shadow: 0 0 0px rgba(255, 69, 0, 0); /* Vuelve a cero */
+	}
+}
+
+.leaflet-text-search-input {
+	font-size: 1.2em;
+	border: none;
+	width: 140px;
+	outline: none;
+	padding-top: 6.5px;
+	padding-bottom: 6.6px;
+	padding-left: 10px;
+	font-weight: bold;
+}
+.leaflet-text-search-input::placeholder {
+	color: black;
+}
+/* Por defecto, si el dispositivo no es móvil, hereda el 1.2em de input.style.fontSize */
+@media (max-width: 768px) {
+	.leaflet-text-search-input {
+		font-size: 1.4em !important;
+		padding-bottom: 4px !important;
+	}
+}
+@media (max-width: 768px) {
+	.autocomplete-list {
+		font-size: 1.4em !important;
+	}
+}
+
+/* CONTENEDOR ROSA DE LOS VIENTOS (3x3 Grid) */
+#rosaDeLosVientos {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr); 
+	grid-template-rows: repeat(3, 1fr);
+	width: 80px; 
+	height: 80px;
+	border-radius: 5px;
+	margin-left: 22px;
+	/* overflow: hidden; Esto es clave para que los hijos respeten el radio del padre */
+}
+
+/* 2. Estilo del contenedor de cada dirección (LABEL) */
+.filtro-orientacion {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	/* font-weight: bold; */
+	cursor: pointer;
+	position: relative;
+	border: 1px solid #00000000;
+	border-radius: 12px;
+}
+/* 🚀 NUEVA REGLA: Estilo del SPAN interno (El contenido visible que será el botón) */
+.filtro-orientacion span {
+	padding: 0; /* Ya no necesitamos padding aquí, el flex lo centrará */
+	width: 100%; /* Ocupa todo el ancho disponible */
+	height: 100%; /* Ocupa todo el alto disponible */
+	display: flex; /* Centra el texto dentro del span */
+	justify-content: center;
+	align-items: center;
+	
+	/* 🛑 APLICAR BORDES Y RADIOS AQUÍ para la forma del botón 🛑 */
+	border: 1px solid #ccc; /* Borde del botón */
+	border-radius: 3px; /* Bordes redondeados */
+	background-color: white; /* Fondo blanco por defecto */
+	color: black;
+	
+	transition: all 0.2s ease; /* Transición suave para el cambio de estado */
+	box-sizing: border-box; /* Asegura que el padding/border no desborde el 100% */
+}
+
+/* 3. Posicionamiento en la Rejilla (Áreas de Grid existentes) */
+/* ... (sigue igual) ... */
+/* 4. Ocultar el checkbox nativo */
+.filtro-orientacion input[type="checkbox"] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+/* 5. Efecto al pasar el ratón */
+.filtro-orientacion:hover span { /* Aplica el hover al span */
+	background-color: #f0f0f0;
+}
+
+/* 🛑 ESTADO ACTIVO (HUNDIDO): Aplica el estilo al SPAN adyacente al INPUT:CHECKED */
+.filtro-orientacion input:checked + span { 
+	background-color: #007aff; 
+	color: white; 
+	/* Efecto "hundido" */
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4); 
+	border-color: #007aff; /* Cambiar el color del borde para que coincida con el fondo */
+}
+.centro-rosa {
+	visibility: hidden; 	
+	display: flex;         /* Usa Flexbox */
+	align-items: center;   /* Centrado vertical */		
+	justify-content: center;
+	grid-area: 2 / 2; /* Su posición en la rejilla */
+	/* Hereda las propiedades de flex, cursor, etc., del LABEL */
+	border: 1px solid #ccc; 
+	border-radius: 3px;
+	cursor: pointer;
+	position: relative;
+	/* Estilo del contenido del centro (el 🧭) */
+	font-size: 1.2em;
+}
+/* 🛑 ESTADO ACTIVO DEL CENTRO 🛑 */
+/* Cuando el checkbox maestro está marcado, aplica el estilo "hundido" al SPAN interno */
+.filtro-maestro input:checked + span { 
+	background-color: #007aff; 
+	color: white; 
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4); 
+	border-color: #007aff;
+}	
+
+/* Estilo para el botón de fijar cuando está activo (hundido) */
+#buttonFijar.activo-fijado {
+	background-color: #f0f0f0; /* Color un poco más oscuro que el fondo normal */
+	box-shadow: 
+		inset 0 3px 6px rgba(0, 0, 0, 0.6), /* Sombra interior principal (más oscura) */
+		inset 0 0 10px rgba(0, 0, 0, 0.1); /* Ligero desenfoque para dar más profundidad */		
+	border-color: #555;
+	transform: translateY(1px);
+}
+/* Asegura que el texto del icono se mantenga centrado y sin cambios de tamaño */
+#buttonFijar #iconoFijar {
+	display: inline-block;
+	font-size: 1em; 
+	line-height: 1;
+	cursor: pointer;
+}	
+#buttonFijar {
+	font-size: 1.2em;
+	float: right;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	cursor: pointer;
+}
+#buttonCerrar {
+	font-size: 1.2em;
+	float: right;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+.custom-checkbox {
+	transform-origin: center;
+	transform: scale(1.2);
+	margin: 2px;
+	cursor: pointer;
+}
+.custom-checkbox:hover {
+	background-color: #f0f0f0;
+}
+/* Solo para los label con esa clase */
+label.custom-checkbox {
+	padding-top: 4px;
+    padding-right: 4px;
+    padding-bottom: 1px;
+    padding-left: 2px;}
+
+#filtroMaestroOrientacion {
+	transform-origin: center;
+	transform: scale(1.2);
+	margin: 2px;
+}
+.labelMostrarOpciones {
+	font-weight: bold;
+	display: none;	
+	padding-left: 5px;
+}
+/* Ajuste fino posición del la clase original para que coincida con el punto exacto.Original: -20px */
+.leaflet-popup-tip-container { 
+	margin-left: -18px !important;
+}	
+
+
+/* 🛑 CONTROL "Desplegable de otros controles" */
+
+/* 1. Estilo del Panel Desplegable (Caja Contenedora) */
+.custom-control-panel {
+	/* Hacemos el contenedor invisible */
+	background-color: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	padding: 0 !important;
+
+	/* Mantenemos la organización vertical */
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start; /* Alinea a la izquierda (donde están los otros controles) */
+	
+	/* Posicionamiento */
+	position: relative;
+	margin-top: 0px; 
+}
+
+/* 2. Estilo para el Wrapper (intermediario) */
+.custom-control-panel .custom-control-wrapper {
+	width: auto; /* Dejar que se ajuste al contenido */
+	margin: 0;
+	padding: 0;
+	padding-top: 1px;
+	border: none;
+}
+
+/* 3. Estilo para los CONTROLES DE LEAFLET dentro del panel */
+/* Aquí está la clave: Restauramos el 'look' de botón individual */
+.custom-control-panel .leaflet-control-fullscreen,
+.custom-control-panel .leaflet-control-locate,
+.custom-control-panel .leaflet-control-filelayer,
+.custom-control-panel .leaflet-control-geocoder,
+.custom-control-panel .leaflet-bar {
+	
+	/* Restaurar la sombra estándar de Leaflet para que parezcan botones flotantes */
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65) !important; 
+	
+	/* Margen entre botones (estándar suele ser 10px, pero en grupo puede ser 5px) */
+	margin-top: 5px !important; 
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	
+	/* Bordes redondeados estándar */
+	border-radius: 4px !important;
+	border: none !important; /* Leaflet usa boxShadow, no border sólido usualmente */
+	
+	/* Fondo blanco puro */
+	background-color: #fff !important;
+}
+
+.control-orientacion-container {  
+    margin-bottom: 5px;
+	padding-bottom: 4px;
+}	
+@media (max-width: 768px) {
+	.control-orientacion-container {
+		padding-bottom: 8px;
+	}
+}
+
+.control-vuelos-container {
+    
+    /* Asegura que el padding no aumente el ancho total */
+    box-sizing: border-box; 
+	
+	display: block; /* La convierte en un elemento de bloque que ocupa toda la línea */
+    margin-bottom: 5px; /* Opcional: añade un pequeño espacio entre el texto y el slider */	
+}
+.control-ultimovuelo-container {  
+    margin-bottom: 5px;
+}	
+/* Ajuste fino posición del la clase original para que coincida con el punto exacto.Original: -20px */
+.leaflet-popup-tip-container { 
+	margin-left: -18px !important;
+}	
+
+/* 🔴🔴 FIN MAPA */
