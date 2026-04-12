@@ -2263,9 +2263,9 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     bottom: 0;
     left: 0;
     width: calc(100% - 8px);
-    height: 50px;
-    min-height: 50px;
-    max-height: 50px;
+    height: 48px;
+    min-height: 48px;
+    max-height: 48px;
     flex-shrink: 0;  /* Impide que el flex lo encoja */
     flex-grow: 0;    /* Impide que el flex lo agrande */
     border-top: 1px solid rgba(0, 0, 0, 0.05);
@@ -2283,9 +2283,9 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     margin-bottom: 3px;
 }
 body.modo-android-manual .bottom-nav.compact-nav {
-    height: 50px;
-    min-height: 50px;
-    max-height: 50px;
+    height: 48px;
+    min-height: 48px;
+    max-height: 48px;
     padding-bottom: env(safe-area-inset-bottom);
 }
 .compact-nav .nav-item {
