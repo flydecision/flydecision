@@ -2583,8 +2583,8 @@ h3 {
 	padding-bottom: 8px;
 }
 .leaflet-touch .leaflet-control-layers-toggle {
-	width: 30px;
-	height: 30px;
+	width: 30px !important;
+	height: 30px !important;
 }
 .leaflet-control-locate {
 	margin-top: 8px;
