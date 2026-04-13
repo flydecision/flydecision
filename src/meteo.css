@@ -2019,7 +2019,7 @@ label.custom-checkbox {
     align-items: center; 
 	margin-left: 4px;
 	cursor: pointer;
-	font-weight: bold
+	/* font-weight: bold */
 }
 
 /* 🔴 BOTONES RESET FILTRO -------------------------------- */
@@ -2401,7 +2401,6 @@ details.config-accordion .accordion-content {
 
 .label-large-despegues {
 	position: relative;
-	font-size: 1.2em;
 	padding: 2px 3px 4px 3px;
 	border-radius: 5px;
 	white-space: nowrap;
@@ -2409,11 +2408,7 @@ details.config-accordion .accordion-content {
 	box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
 	border: 1.8px solid #007AFF;
 }
-@media (max-width: 768px) {
-.label-large-despegues {
-	font-size: 1.4em;
-}
-}
+
 .label-large-despegues::after {
   content: '';
   position: absolute;
@@ -2428,7 +2423,7 @@ details.config-accordion .accordion-content {
 
 .label-large-despeguesmundo {
 	position: relative;
-	font-size: 1.2em;
+	font-size: 1em;
 	padding: 2px 3px 4px 3px;
 	border-radius: 5px;
 	white-space: nowrap;
@@ -2473,12 +2468,10 @@ details.config-accordion .accordion-content {
 	padding-left: 10px;
 	/* box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); */
 	z-index: 2000; 
-	width: 340px;
-	width: 262px;
+	width: 284px;
 	max-width: 500px;
 	display: none; /* Ocultar por defecto. Si este index.html se está mostrando en el iframe de la página /mapa no quiero que se muestre este infopanel (el enlace a hikefly.es del mapa). Hay un javascript al final(document.addEventListener) que lo oculta si la URL no contiene https://hikefly.es/mapa/ */
 	transition: all 0.2s ease;
-	font-size: 1.2em;
 	padding-left: 8px;
 	padding-right: 8px;
 	padding-bottom: 8px;
@@ -2487,21 +2480,19 @@ details.config-accordion .accordion-content {
 @media (max-width: 768px) {
 	.info-panel {
 		width: 302px;
-		font-size: 1.4em !important;
 	}
 }
 
 .info-panel.retraido {
 	width: 124px;
 	height: 23px;
-	font-size: 1.2em;
 	padding-top: 4.4px;
 	padding-bottom: 2.6px;
 	cursor: pointer;
+    line-height: 1.3;
 }
 @media (max-width: 768px) {
 	.info-panel.retraido {
-		font-size: 1.4em !important;
         padding-top: 2.4px !important;
 		padding-bottom: 4.6px !important;
 	}
@@ -2512,7 +2503,6 @@ details.config-accordion .accordion-content {
   overflow: hidden;
   transition: max-height 0.6s ease; /* transición suave */
   position: relative;
-  font-size: 1.2em
 }
 -->	
 #divOpciones {
@@ -2668,8 +2658,8 @@ h3 {
 	width: 88% !important;
 }		
 .leaflet-popup-content {
-	font-size: 1.2em;
-	width: 203px;
+	font-size: 1em;
+	width: 230px;
 	line-height: 1;
 	margin: 5px 10px 5px 10px;
 }
@@ -2768,7 +2758,7 @@ h3 {
 }
 
 .leaflet-text-search-input {
-	font-size: 1.2em;
+	font-size: 1em;
 	border: none;
 	width: 140px;
 	outline: none;
@@ -2869,7 +2859,7 @@ h3 {
 	cursor: pointer;
 	position: relative;
 	/* Estilo del contenido del centro (el 🧭) */
-	font-size: 1.2em;
+	font-size: 1em;
 }
 /* 🛑 ESTADO ACTIVO DEL CENTRO 🛑 */
 /* Cuando el checkbox maestro está marcado, aplica el estilo "hundido" al SPAN interno */
@@ -2913,22 +2903,6 @@ h3 {
 	margin-left: 10px;
 	cursor: pointer;
 }
-
-.custom-checkbox {
-	transform-origin: center;
-	transform: scale(1.2);
-	margin: 2px;
-	cursor: pointer;
-}
-.custom-checkbox:hover {
-	background-color: #f0f0f0;
-}
-/* Solo para los label con esa clase */
-label.custom-checkbox {
-	padding-top: 4px;
-    padding-right: 4px;
-    padding-bottom: 1px;
-    padding-left: 2px;}
 
 #filtroMaestroOrientacion {
 	transform-origin: center;
@@ -3023,5 +2997,12 @@ label.custom-checkbox {
 .leaflet-popup-tip-container { 
 	margin-left: -18px !important;
 }	
+
+.leaflet-container {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 16px;
+    font-size: 1rem;
+    line-height: 1; 
+}
 
 /* 🔴🔴 FIN MAPA */

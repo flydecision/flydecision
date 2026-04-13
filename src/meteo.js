@@ -198,8 +198,8 @@ if (btnAbrirGeo) {
 
 function ponerMarcador(lat, lng) {
     const iconoRojo = L.icon({
-        iconUrl: 'icons/marker-icon-2x-red.png',
-        shadowUrl: 'icons/marker-shadow.png',
+        iconUrl: 'css/images/marker-icon-2x.png',
+        shadowUrl: 'css/images/marker-shadow.png',
         iconSize:[35, 55],    
         iconAnchor:[17, 55],  
         popupAnchor:[1, -34],
@@ -7833,53 +7833,6 @@ function inicializarMapaLeaflet() {
 
     map.addControl(new infopanelControl({ position: 'topleft' }));
 
-    // 🟡 CONTROL plegable leyenda escala de colores por Actividad
-    const legend = L.control({ position: 'bottomleft' });
-
-    legend.onAdd = function() {
-        const div = L.DomUtil.create('div', 'legend collapsed');
-
-        const header = L.DomUtil.create('div', 'legend-header', div);
-        header.style.fontSize = '11px';
-        header.style.setProperty('margin-bottom', '2px', 'important');
-        header.style.setProperty('margin-top', '-4px');
-        header.innerHTML = 'Leyenda nivel de Actividad <span class="triangle"></span>';
-
-        const content = L.DomUtil.create('div', 'legend-content', div);
-
-        const actividad = [
-            { label: 'Normal (0-6 meses)', color: actividadToColor('verde') },
-            { label: 'Media (6-12 meses)', color: actividadToColor('naranja') },
-            { label: 'Baja (12-24 meses)', color: actividadToColor('amarillo') },
-            { label: 'Muy baja o nula (>24 meses)', color: actividadToColor('blanco') }
-        ];
-
-        actividad.forEach(d => {
-            const row = document.createElement('div');
-            row.style.display = 'flex';
-            row.style.alignItems = 'center';
-            row.style.marginTop = '6px';
-            row.innerHTML = `<span class="dot" style="background:${d.color};width:18px;height:18px;margin-right:8px"></span><span>${d.label}</span>`;
-            content.appendChild(row);
-        });
-
-        // Toggle al hacer clic en el encabezado
-        L.DomEvent.on(header, 'click', function() {
-            div.classList.toggle('collapsed');
-        });
-        
-        const extra = document.createElement('div');
-        extra.style.marginTop = '10px';
-        extra.style.marginBottom = '10px';
-        extra.style.fontSize = '16px';
-        extra.textContent = 'Nivel de actividad según fecha del último vuelo registrado (tomado como referencia en nov-2025):';
-        content.prepend(extra);
-
-        return div;
-    };
-    legend.addTo(map);
-
-
     // 🟡 CONTROL Escala
     L.control.scale({
         position: 'bottomleft',
@@ -7919,11 +7872,11 @@ function inicializarMapaLeaflet() {
         } else {
             currentLocationMarker = L.marker(e.latlng, {
             icon: L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+                iconUrl: 'css/images/marker-icon-red.png',
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
                 popupAnchor: [1, -34],
-                shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+                shadowUrl: 'css/images/marker-shadow.png',
                 shadowSize: [41, 41]
             })
             }).addTo(map).bindPopup("<b style='font-size:16px;'>Esta es tu ubicación actual</b>").openPopup();
