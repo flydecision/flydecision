@@ -6933,13 +6933,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // 🔴 FUNCIÓN PARA ABRIR EL MAPA INTEGRADO DESDE LA TABLA
     // ---------------------------------------------------------------
     window.abrirMapaIntegrado = function(lat, lon, nombreDespegue) {
-        // 1. Cierra el globo de información (Tippy)
+        // 1. Cerramos todos los globos Tippy de la tabla
         if (typeof tippy !== 'undefined' && tippy.hideAll) {
             tippy.hideAll();
         }
 
-        // 2. Cambiar la URL de forma silenciosa. 
-        // Si el mapa aún no se había inicializado, leerá estos parámetros al crearse.
+        // 2. Cambiamos la URL
         const newParams = new URLSearchParams();
         newParams.set('lat', lat);
         newParams.set('lon', lon);
@@ -6948,43 +6947,52 @@ document.addEventListener('DOMContentLoaded', function() {
         const newUrl = `${window.location.pathname}?${newParams.toString()}${window.location.hash}`;
         window.history.replaceState(null, '', newUrl);
 
-        // 3. Cambiar vista a la pestaña del Mapa
+        // 3. Saltamos a la vista del mapa
         cambiarVista('mapa');
         
-        // 4. Iluminar el botón inferior del mapa
         const btnMap = document.getElementById('nav-map');
         if (btnMap && typeof activarMenuInferior === 'function') {
             activarMenuInferior(btnMap);
         }
 
-        // 5. Si el mapa ya estaba cargado en memoria, forzamos la búsqueda y el zoom manualmente
-        if (typeof map !== 'undefined' && map && typeof markersDespegues !== 'undefined') {
-            // Le damos 350ms para que termine la transición CSS de abrir la pestaña
+        // 4. Lógica de enfoque en el mapa
+        if (typeof map !== 'undefined' && map) {
+            
+            // LIMPIEZA: Cerramos cualquier popup que estuviera abierto de antes
+            map.closePopup();
+
+            // Esperamos a que la pestaña esté visible (transición CSS)
             setTimeout(() => {
                 map.invalidateSize();
                 
-                const normalizarTexto = (text) => text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : '';
-                const textoBuscado = normalizarTexto(nombreDespegue);
-                
-                // Buscar el marcador correspondiente
-                let found = markersDespegues.find(m => normalizarTexto(m.metadata.despegue) === textoBuscado);
-                if (!found) {
-                    found = markersDespegues.find(m => normalizarTexto(m.metadata.despegue).includes(textoBuscado));
-                }
+                // Si ya tenemos los marcadores cargados
+                if (markersDespegues && markersDespegues.length > 0) {
+                    const normalizar = (t) => t ? t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
+                    const term = normalizar(nombreDespegue);
+                    
+                    // Buscamos el marcador por nombre exacto o parcial
+                    let target = markersDespegues.find(m => normalizar(m.metadata.despegue) === term);
+                    if (!target) {
+                        target = markersDespegues.find(m => normalizar(m.metadata.despegue).includes(term));
+                    }
 
-                if (found) {
-                    if (typeof clustergroupDespegues !== 'undefined') {
-                        // Si está agrupado, la función zoomToShowLayer lo abre todo suavemente
-                        clustergroupDespegues.zoomToShowLayer(found, function() {
-                            found.openPopup();
-                            map.panTo(found.getLatLng());
-                        });
+                    if (target) {
+                        // Si está dentro de un cluster, lo abrimos
+                        if (clustergroupDespegues) {
+                            clustergroupDespegues.zoomToShowLayer(target, function() {
+                                target.openPopup();
+                                map.panTo(target.getLatLng());
+                            });
+                        } else {
+                            map.setView([lat, lon], 14);
+                            target.openPopup();
+                        }
                     } else {
+                        // Si no lo encuentra en la lista (raro), al menos vamos a las coordenadas
                         map.setView([lat, lon], 14);
-                        found.openPopup();
                     }
                 } else {
-                    // Si por algún motivo no lo encuentra, al menos centramos el mapa en las coordenadas
+                    // Si el mapa es virgen y se está cargando por primera vez, vamos a coordenadas
                     map.setView([lat, lon], 14);
                 }
             }, 350);
@@ -7184,7 +7192,10 @@ window.cambiarVista = function(vista) {
 
 // 🌍 VARIABLES GLOBALES DEL MAPA
 let map;
+let markersDespegues = [];
 let clustergroupDespegues;
+let markersDespeguesMundo = []; 
+let clustergroupDespeguesMundo;
 
 const ESCALA_VUELOS = [
     // Parte detallada (pasos de 10 hasta 100)
@@ -8267,8 +8278,6 @@ function inicializarMapaLeaflet() {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    const markersDespegues = [];
-
     Papa.parse('map/despegues.csv', {
     download: true,
     header: true, // Usa la primera fila como nombres de columnas
@@ -9132,7 +9141,7 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
 
-    const clustergroupDespeguesMundo = L.markerClusterGroup({
+    clustergroupDespeguesMundo = L.markerClusterGroup({
         chunkedLoading: true,      	// Divide la carga en bloques
         chunkDelay: 100,            // Tiempo entre bloques (ms)
         showCoverageOnHover: false, // false mejora rendimiento. Muestra el área que ocupan los puntos
@@ -9204,8 +9213,6 @@ function inicializarMapaLeaflet() {
     if (!str && str !== 0) return '';
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
-
-    const markersDespeguesMundo = []; 
 
     // Flag para controlar la carga única del CSV
     let csvCargadoDespeguesMundo = false; // Usamos un nombre específico para evitar conflictos.
