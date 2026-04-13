@@ -4811,39 +4811,6 @@ function formatTimeAgo(timestampBase, timestampActual) {
     return resultado.trim();
 }
 
-function alternarPantallaCompleta() { //obsoleta
-    const doc = window.document;
-    const docEl = doc.documentElement;
-
-    // Detectar si es iOS (iPhone/iPad)
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-    const requestMethod = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullscreen || docEl.msRequestFullscreen;
-    const exitMethod = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-    
-    const isFullScreen = doc.fullscreenElement || doc.mozFullScreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
-
-    if (!isFullScreen) {
-        if (requestMethod && !isIOS) { 
-            // Si hay método y NO es iOS, procedemos normal (Android/PC)
-            requestMethod.call(docEl).catch(err => {
-                console.error(`Error: ${err.message}`);
-            });
-        } else {
-            // Si es iOS o navegador antiguo sin soporte
-            if (isIOS) {
-                alert("En iPhone, para ver la pantalla completa debes pulsar el botón 'Compartir' y elegir 'Añadir a pantalla de inicio'.");
-            } else {
-                alert("Tu navegador no soporta el modo pantalla completa.");
-            }
-        }
-    } else {
-        if (exitMethod) {
-            exitMethod.call(doc);
-        }
-    }
-}
-
 function alternardivDistancia(event) {
     const divDistancia = document.getElementById("div-filtro-distancia");
     if (!divDistancia) return;
@@ -7116,6 +7083,39 @@ window.cambiarVista = function(vista) {
 let map;
 let clustergroupDespegues;
 
+const ESCALA_VUELOS = [
+    // Parte detallada (pasos de 10 hasta 100)
+    0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 
+
+    // Transición (pasos de 100 hasta 1000)
+    200, 300, 400, 500, 600, 700, 800, 900, 1000, 
+
+    // Parte rápida (pasos de 1000 hasta 10000)
+    2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000
+];
+
+const ESCALA_ULTIMO_VUELO = [
+    'Todos', // Índice 0: No filtra
+    2006, 2007, 2008, 2009, 2010, 
+    2011, 2012, 2013, 2014, 2015, 
+    2016, 2017, 2018, 2019, 2020, 
+    2021, 2022, 2023, 2024, 2025
+];
+
+const ESCALA_KMMEDIA = [
+    // 1. Zona de Precisión (0 a 20) - 14 pasos
+    // Aquí está tu promedio (12) y la gran mayoría de tus datos.
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20,
+
+    // 2. Zona Media (25 a 100) - 9 pasos
+    // Cubre la "cola" de la distribución hasta los valores altos frecuentes.
+    25, 30, 40, 50, 60, 70, 80, 90, 100,
+
+    // 3. Zona de Valores Extremos (120 a 250) - 5 pasos
+    // Cubre tus "Top 15" (máximo 200) con un pequeño margen extra.
+    120, 150, 180, 200, 250
+];
+
 function inicializarMapaLeaflet() {
 
     // --- 🟢 BLOQUE DE SEGURIDAD ANTI-CRASH LEAFLET ---
@@ -7810,7 +7810,6 @@ function inicializarMapaLeaflet() {
 
     map.addControl(new L.Control.textSearch({ position: 'topleft' }));
 
-
     // 🟡 CONTROL "infoPanel" (Capas y Filtros)
 
     const infopanelControl = L.Control.extend({
@@ -7833,7 +7832,6 @@ function inicializarMapaLeaflet() {
     });
 
     map.addControl(new infopanelControl({ position: 'topleft' }));
-
 
     // 🟡 CONTROL plegable leyenda escala de colores por Actividad
     const legend = L.control({ position: 'bottomleft' });
@@ -7932,25 +7930,6 @@ function inicializarMapaLeaflet() {
         }
     });
 
-    // 🟡 CONTROL "cargar archivos GPX, KML, GeoJSON, etc. (oculto inicialmente en el desplegable)
-    L.Control.FileLayerLoad.LABEL = '📂';
-
-    const fileLoader = L.Control.fileLayerLoad({
-        fitBounds: true,
-        formats: ['.GPX','.KML'],
-        title: 'Cargar track (.GPX o .KML)',
-        layerOptions: {
-            style: { color: '#ff0000', weight: 3 },
-            onEachFeature: function (feature, layer) {
-            if (feature.properties && feature.properties.name) {
-            layer.bindPopup(feature.properties.name);
-            } //añade un popup con el nombre si el elemento tiene un campo name válido.
-        }
-        }
-    });
-
-    //fileLoader.addTo(map);
-
     // 🟡 CONTROL "Buscador general" (oculto inicialmente en el desplegable)
     var geocoderControl = L.Control.geocoder({
         defaultMarkGeocode: false,
@@ -7973,7 +7952,6 @@ function inicializarMapaLeaflet() {
         }
     })//.addTo(map)
     ;
-
 
     // 🟡 CONTROL "Desplegable de otros controles"
     L.Control.CustomToggle = L.Control.extend({
@@ -8065,22 +8043,8 @@ function inicializarMapaLeaflet() {
 
     // Añadimos controles ocultos, que hemos definido antes de este código y en los que no hemos usado .addTo(map), para que no se muestren inicialmente
 
-    // 🟡 CONTROL "Pantalla completa"
-    toggleControl.addControl(new L.Control.Fullscreen({
-        title: {
-        'false': 'Pantalla completa',
-        'true': 'Salir de pantalla completa (o tecla ESC)'
-        }
-        }));
-        
     // 🟡 CONTROL "Mi localización"	
     toggleControl.addControl(new L.Control.Locate());
-
-    // 🟡 CONTROL "cargar archivos GPX, KML, GeoJSON, etc.
-    toggleControl.addControl(fileLoader);
-
-    // Tras añadirlo al mapa, cambio el título del plugin a uno traducido
-        document.querySelector('.leaflet-control-filelayer.leaflet-control-zoom-in').setAttribute('title', 'Cargar track (GPX o KML)');
 
     // 🟡 CONTROL "Buscador general"
     toggleControl.addControl(geocoderControl);
@@ -8269,7 +8233,7 @@ function inicializarMapaLeaflet() {
 
     const markersDespegues = [];
 
-    Papa.parse('despegues.csv', {
+    Papa.parse('map/despegues.csv', {
     download: true,
     header: true, // Usa la primera fila como nombres de columnas
     //dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
@@ -8523,7 +8487,7 @@ function inicializarMapaLeaflet() {
 
         mostrarMensajeCargaMapaDeCalorPeninsulaIberica();	// Mostramos el mensaje de carga antes de la operación asíncrona
 
-        Papa.parse('mapadecalorpeninsulaiberica.csv', {
+        Papa.parse('map/mapadecalorpeninsulaiberica.csv', {
 
             download: true,
             header: true, // Usa la primera fila como nombres de columnas
@@ -8728,7 +8692,7 @@ function inicializarMapaLeaflet() {
         if (proceed) {
             mostrarMensajeCargaMapaDeCalorAlpes(); // Mostramos el mensaje de carga antes de la operación asíncrona
 
-            Papa.parse('mapadecaloralpes.csv', {
+            Papa.parse('map/mapadecaloralpes.csv', {
 
                 download: true,
                 header: true, // Usa la primera fila como nombres de columnas
@@ -8931,7 +8895,7 @@ function inicializarMapaLeaflet() {
 
         mostrarMensajeCargaMapaDeCalorMarruecos();	// Mostramos el mensaje de carga antes de la operación asíncrona
 
-        Papa.parse('mapadecalormarruecos.csv', {
+        Papa.parse('map/mapadecalormarruecos.csv', {
 
             download: true,
             header: true, // Usa la primera fila como nombres de columnas
@@ -9047,17 +9011,17 @@ function inicializarMapaLeaflet() {
     });
 
     const aterrizajesIcon = L.icon({
-        iconUrl: 'aterrizajes.png',
+        iconUrl: 'map/aterrizajes.png',
         iconSize: [28, 28],
         iconAnchor: [16, 16]
     });
     const despeguesIcon = L.icon({
-        iconUrl: 'despegues.png',
+        iconUrl: 'map/despegues.png',
         iconSize: [28, 28],
         iconAnchor: [16, 16]
     });
     const despeguesainvestigarIcon = L.icon({
-        iconUrl: 'despegues-a-investigar.png',
+        iconUrl: 'map/despegues-a-investigar.png',
         iconSize: [28, 28],
         iconAnchor: [16, 16]
     });
@@ -9065,7 +9029,7 @@ function inicializarMapaLeaflet() {
 
     const markersNotasPersonales = []; 
 
-    Papa.parse('personal.csv', {
+    Papa.parse('map/personal.csv', {
 
     download: true,
     header: true, // Usa la primera fila como nombres de columnas
@@ -9218,7 +9182,7 @@ function inicializarMapaLeaflet() {
             return; // Detener si ya se cargó
         }
 
-        Papa.parse('despeguesmundo.csv', {
+        Papa.parse('map/despeguesmundo.csv', {
         download: true,
         header: true, // Usa la primera fila como nombres de columnas
         //dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
@@ -9690,40 +9654,6 @@ function inicializarMapaLeaflet() {
 
     // 🔴 FILTRO ORIENTACIONES Y Nº DE VUELOS:
     //___________________________________________________________________________________
-
-    const ESCALA_VUELOS = [
-        // Parte detallada (pasos de 10 hasta 100)
-        0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 
-
-        // Transición (pasos de 100 hasta 1000)
-        200, 300, 400, 500, 600, 700, 800, 900, 1000, 
-
-        // Parte rápida (pasos de 1000 hasta 10000)
-        2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000
-    ];
-
-    const ESCALA_ULTIMO_VUELO = [
-        'Todos', // Índice 0: No filtra
-        2006, 2007, 2008, 2009, 2010, 
-        2011, 2012, 2013, 2014, 2015, 
-        2016, 2017, 2018, 2019, 2020, 
-        2021, 2022, 2023, 2024, 2025
-    ];
-
-    const ESCALA_KMMEDIA = [
-        // 1. Zona de Precisión (0 a 20) - 14 pasos
-        // Aquí está tu promedio (12) y la gran mayoría de tus datos.
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 18, 20,
-
-        // 2. Zona Media (25 a 100) - 9 pasos
-        // Cubre la "cola" de la distribución hasta los valores altos frecuentes.
-        25, 30, 40, 50, 60, 70, 80, 90, 100,
-
-        // 3. Zona de Valores Extremos (120 a 250) - 5 pasos
-        // Cubre tus "Top 15" (máximo 200) con un pequeño margen extra.
-        120, 150, 180, 200, 250
-    ];
-
 
     function obtenerMinAnioUltimoVuelo() {
         const slider = document.getElementById('sliderUltimoVuelo');
