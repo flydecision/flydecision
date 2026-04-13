@@ -644,11 +644,9 @@ function sugerirGuiaPrincipal(forzar = false) {
         return; 
     }
 
+    // Eliminamos el checkbox y simplificamos el texto de ayuda
     const htmlAyuda = !forzar 
-        ? `<p style="color: #555; margin-top: 10px;">Siempre podrás verla en:<br><i>⚙️ Configuración</i> > <i>Guía visual</i></p>
-           <label style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; color: #555; cursor: pointer;">
-               <input type="checkbox" id="chkNoVolverGuiaPrinc" style="transform: scale(1.2);"> No volver a mostrar esta sugerencia
-           </label>`
+        ? `<p style="color: #555; margin-top: 10px;">Si eliges "No", podrás verla más tarde en:<br><i>⚙️ Ajustes</i> → <i>Guía</i></p>`
         : ''; 
 
     const botonesModal =[
@@ -656,9 +654,9 @@ function sugerirGuiaPrincipal(forzar = false) {
             texto: forzar ? 'Cancelar' : 'No', 
             estilo: 'secundario',
             onclick: function() {
-                // Comprobamos si el usuario marcó la casilla antes de darle a "Ahora no"
-                const chk = document.getElementById('chkNoVolverGuiaPrinc');
-                if (chk && chk.checked) {
+                // Si el usuario pulsa "No" en la sugerencia automática, 
+                // guardamos la bandera para que no vuelva a salir.
+                if (!forzar) {
                     localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
                 }
                 GestorMensajes.ocultar();
@@ -668,7 +666,8 @@ function sugerirGuiaPrincipal(forzar = false) {
             texto: 'Ver guía',
             onclick: function() {
                 GestorMensajes.ocultar();
-                localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true'); // Si la ve, ya no la sugerimos más
+                localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true'); // Al verla, ya no la sugerimos más
+                
                 const panelConfig = document.getElementById("div-configuracion");
                 if (panelConfig && panelConfig.classList.contains("activo")) {
                     alternardivConfiguracion(); 
@@ -785,7 +784,7 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: '🗺️ Mapa de despegues', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1 millón de puntos exactos de despegues y mucha otra información.<br><br>La información más completa es de España, Portugal y Pirineos (incluyendo la parte francesa), pero hay información de todo el mundo.', side: 'top', align: 'center' } },
 
             { element: '#nav-settings',
-                popover: { title: '⚙️ Ajustes y Favoritos', description: 'Aquí podrás acceder a <b>Editar de favoritos</b> (para añadir o quitar tus despegues habituales), personalizar parámetros, activar opciones interesantes y ver información de los datos meteorológicos.<br><br>💡 Para cada opción o dato, tienes un botón de información <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;">.', side: 'top', align: 'center' } }
+                popover: { title: '⚙️ Ajustes', description: 'Aquí se puede <b>Editar favoritos</b> (para añadir o quitar tus despegues habituales), personalizar parámetros, activar opciones y ver información sobre la actualización de los datos meteorológicos.<br><br>💡 Para cada opción o dato, tienes un botón de información <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;">.', side: 'top', align: 'center' } }
         ],
         
         onDestroyStarted: () => {
@@ -807,11 +806,9 @@ function sugerirGuiaFavoritos(forzar = false) {
         return; 
     }
 
+    // Eliminamos el checkbox y ajustamos el texto informativo
     const htmlAyuda = !forzar 
-        ? `<p style="color: #555; margin-top: 10px;">Siempre podrás verla con el botón <img src="icons/icono_ayuda_60.webp" width="18" height="18" style="vertical-align:middle;" alt="Guía"></p>
-           <label style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; color: #555; cursor: pointer;">
-               <input type="checkbox" id="chkNoVolverGuiaFavs" style="transform: scale(1.2);"> No volver a mostrar esta sugerencia
-           </label>`
+        ? `<p style="color: #555; margin-top: 10px;">Si eliges "No", podrás verla más tarde con el botón <img src="icons/icono_ayuda_60.webp" width="18" height="18" style="vertical-align:middle;"> de esta pantalla.</p>`
         : ''; 
 
     const botonesModal =[
@@ -819,8 +816,9 @@ function sugerirGuiaFavoritos(forzar = false) {
             texto: forzar ? 'Cancelar' : 'No',
             estilo: 'secundario',
             onclick: function() {
-                const chk = document.getElementById('chkNoVolverGuiaFavs');
-                if (chk && chk.checked) {
+                // Si es la sugerencia automática (!forzar) y pulsa No, 
+                // marcamos como vista para que no vuelva a saltar.
+                if (!forzar) {
                     localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
                 }
                 GestorMensajes.ocultar();
@@ -830,7 +828,7 @@ function sugerirGuiaFavoritos(forzar = false) {
             texto: 'Ver guía',
             onclick: function() {
                 GestorMensajes.ocultar();
-                localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
+                localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true'); // Marcamos como vista al aceptarla
                 setTimeout(() => iniciarGuiaFavoritos(true), 300);
             }
         }
@@ -933,13 +931,13 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '📂 Importar favoritos', description: 'Abre un archivo con una lista de despegues favoritos guardados previamente.' } },
 
             { element: '#btn-guardar-favoritos',
-                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrece compartirlo.<br><br>Los favoritos ya se van guardando automáticamente en la aplicación cuando los marcas; este botón solo sirve para hacer una copia en otro lugar.<br><br>💡 Si te mueves por varias zonas diferentes de vuelo, puedes tener varios archivos de favoritos exportados e importarlos cuando te interese.' } },
+                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrece compartirlo.<br><br>Los favoritos se guardan automáticamente cada vez que marcas uno. Este botón sirve para hacer una copia de todos en un archivo externo (como backup o para compartirlo). <br><br>💡 Si te mueves por varias zonas de vuelo distantes, puede interesarte tener los favoritos de cada zona guardados en archivos diferentes.' } },
 
             { element: '#btn-guia-edicion-favoritos',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_ayuda_60.webp" width="20" height="20" style="display: block;"><span>Guía rápida</span></div>', description: 'Muestra esta guía.' } },
 
             { element: '#btn-finalizar-edicion-favoritos',
-                popover: { title: '🏁 Finalizar edición de favoritos', description: 'Sale a la pantalla normal de la aplicación, con tus favoritos y su pronóstico.<br><br>👉🏽 También puedes volver a esta pantalla cuando quieras ver información de un despegue poco habitual que no te interese tener como favorito permanente.' } }
+                popover: { title: '🏁 Finalizar edición de favoritos', description: 'Sale a la pantalla normal de la aplicación (con tus favoritos, su pronóstico y puntuación).' } }
         ],
         
         onDestroyStarted: () => {
