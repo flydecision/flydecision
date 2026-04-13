@@ -2467,34 +2467,37 @@ details.config-accordion .accordion-content {
 	margin-left: -12px !important;
 	margin-top: -33px !important;	
 }
-.info-panel {
-    background: rgba(255, 255, 255, 0.95) !important; /* Un poco de transparencia queda genial */
-    box-shadow: 0 1px 5px rgba(0,0,0,0.65) !important;
-    z-index: 2000; 
-    width: 262px;
-    max-width: 500px;
-    /* QUITAMOS EL DISPLAY: NONE de CSS porque el JS lo maneja ahora */
-    display: block; 
-    transition: all 0.2s ease;
-    font-size: 1.1em; /* Ajusta este valor si se ve muy grande/pequeño */
-    padding: 10px !important;
-    border-radius: 5px;
-    color: #333 !important;
-}
 
+.info-panel {
+	background: rgb(255 255 255);
+	padding-left: 10px;
+	/* box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); */
+	z-index: 2000; 
+	width: 340px;
+	width: 262px;
+	max-width: 500px;
+	display: none; /* Ocultar por defecto. Si este index.html se está mostrando en el iframe de la página /mapa no quiero que se muestre este infopanel (el enlace a hikefly.es del mapa). Hay un javascript al final(document.addEventListener) que lo oculta si la URL no contiene https://hikefly.es/mapa/ */
+	transition: all 0.2s ease;
+	font-size: 1.2em;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 8px;
+	padding-top: 8px;
+}	
 @media (max-width: 768px) {
-    .info-panel {
-        width: 302px;
-        font-size: 1.2em !important;
-    }
+	.info-panel {
+		width: 302px;
+		font-size: 1.4em !important;
+	}
 }
 
 .info-panel.retraido {
-    width: auto !important; /* Que se ajuste al texto */
-    height: auto !important;
-    padding: 6px 12px !important;
-    cursor: pointer;
-    text-align: center;
+	width: 124px;
+	height: 23px;
+	font-size: 1.2em;
+	padding-top: 4.4px;
+	padding-bottom: 2.6px;
+	cursor: pointer;
 }
 @media (max-width: 768px) {
 	.info-panel.retraido {
@@ -2513,15 +2516,11 @@ details.config-accordion .accordion-content {
 }
 -->	
 #divOpciones {
-    overflow: hidden;
+	overflow: hidden;
 }
 #divOpciones.oculto {
-    max-height: 0; 
-    opacity: 0;
-    margin: 0;
-    padding: 0;
+  max-height: 0; /* se retrae hasta 0 */
 }
-
 
 .legend-item {
 	display: block;
