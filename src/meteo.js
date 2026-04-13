@@ -3792,37 +3792,37 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             const URLDespegue = `https://flydecision.com/map/?lat=${latitud}&lon=${longitud}&zoom=14&q=${nombreParaURL}`;
             const svgOrientaciones = createOrientationSVG(d["Orientación"]);
             const svgParaTooltip = svgOrientaciones.replaceAll('"', "'");
+            
+            // 1. Preparamos el nombre para que sea seguro dentro de la función JS (escapa comillas simples)
+            const safeDespegue = d.Despegue.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
-            // Construimos el tooltip
+            // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
                 <b><span style='font-size: 18px; padding-right: 8px;'>🪂 ${d.Despegue}</b></span><br>
                 Región: <b>${d.Región}</b><br>
                 Provincia: <b>${d.Provincia}</b><br>
                 Orientación: <b>${svgParaTooltip} <span style='vertical-align:middle;'>${d["Orientación"]}</span></b><br>
-
                 ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
-                
                 ⛅ <a href='https://meteo-parapente.com/#/${latitud},${longitud},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
-                
                 ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
-                
                 <div style='margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; text-align: center;'>
-                    
-                    <a href='${URLDespegue}' onclick='abrirLinkExterno(this.href); return false;' style='display: inline-block; background-color: #007bff; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-weight: bold;'>
+                    <a href='#' onclick="abrirMapaIntegrado(${latitud}, ${longitud}, '${safeDespegue}'); return false;" style='display: inline-block; background-color: #007bff; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-weight: bold;'>
                         🌍 Mapa y más información
                     </a>
-
                 </div>
             `;
 
-			const botonMapaHTML = `
-				<button class="btn-info btn-abajo-izquierda" 
-					style="bottom: 2px; left: 2px;"
-					data-tippy-content="${contenidoTooltip}"
-					title="Más información">
+            // 3. Escapamos todas las comillas dobles para que no rompan el atributo data-tippy-content
+            const contenidoEscapado = contenidoTooltip.replace(/"/g, '&quot;');
+
+            const botonMapaHTML = `
+                <button class="btn-info btn-abajo-izquierda" 
+                    style="bottom: 2px; left: 2px;"
+                    data-tippy-content="${contenidoEscapado}"
+                    title="Más información">
                        <img src="icons/info.svg" alt="Más info" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			`;
+                </button>
+            `;
 			
 			// Si estamos en modoEdicionFavoritos, no queremos la línea de la provincia
             const provinciaHTML = modoEdicionFavoritos ? "" : `<b style="display:block;">${d.Provincia.toUpperCase()}</b>`;
@@ -6929,6 +6929,68 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.abrirLinkExterno = abrirLinkExterno; // Esto hace que la función sea visible para los onclick="" de tu HTML generado
 
+    // ---------------------------------------------------------------
+    // 🔴 FUNCIÓN PARA ABRIR EL MAPA INTEGRADO DESDE LA TABLA
+    // ---------------------------------------------------------------
+    window.abrirMapaIntegrado = function(lat, lon, nombreDespegue) {
+        // 1. Cierra el globo de información (Tippy)
+        if (typeof tippy !== 'undefined' && tippy.hideAll) {
+            tippy.hideAll();
+        }
+
+        // 2. Cambiar la URL de forma silenciosa. 
+        // Si el mapa aún no se había inicializado, leerá estos parámetros al crearse.
+        const newParams = new URLSearchParams();
+        newParams.set('lat', lat);
+        newParams.set('lon', lon);
+        newParams.set('zoom', 14);
+        newParams.set('q', nombreDespegue);
+        const newUrl = `${window.location.pathname}?${newParams.toString()}${window.location.hash}`;
+        window.history.replaceState(null, '', newUrl);
+
+        // 3. Cambiar vista a la pestaña del Mapa
+        cambiarVista('mapa');
+        
+        // 4. Iluminar el botón inferior del mapa
+        const btnMap = document.getElementById('nav-map');
+        if (btnMap && typeof activarMenuInferior === 'function') {
+            activarMenuInferior(btnMap);
+        }
+
+        // 5. Si el mapa ya estaba cargado en memoria, forzamos la búsqueda y el zoom manualmente
+        if (typeof map !== 'undefined' && map && typeof markersDespegues !== 'undefined') {
+            // Le damos 350ms para que termine la transición CSS de abrir la pestaña
+            setTimeout(() => {
+                map.invalidateSize();
+                
+                const normalizarTexto = (text) => text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : '';
+                const textoBuscado = normalizarTexto(nombreDespegue);
+                
+                // Buscar el marcador correspondiente
+                let found = markersDespegues.find(m => normalizarTexto(m.metadata.despegue) === textoBuscado);
+                if (!found) {
+                    found = markersDespegues.find(m => normalizarTexto(m.metadata.despegue).includes(textoBuscado));
+                }
+
+                if (found) {
+                    if (typeof clustergroupDespegues !== 'undefined') {
+                        // Si está agrupado, la función zoomToShowLayer lo abre todo suavemente
+                        clustergroupDespegues.zoomToShowLayer(found, function() {
+                            found.openPopup();
+                            map.panTo(found.getLatLng());
+                        });
+                    } else {
+                        map.setView([lat, lon], 14);
+                        found.openPopup();
+                    }
+                } else {
+                    // Si por algún motivo no lo encuentra, al menos centramos el mapa en las coordenadas
+                    map.setView([lat, lon], 14);
+                }
+            }, 350);
+        }
+    };
+
     // ==========================================================================
     // 🔴 LÓGICA DEL MENÚ INFERIOR Y BUSCADOR FLOTANTE
     // ==========================================================================
@@ -6974,7 +7036,7 @@ document.addEventListener('DOMContentLoaded', function() {
             limpiarBuscador(); // Limpia el texto y resetea la tabla automáticamente
         }
     };
-    
+
     // 2. Lógica de activar el botón del menú inferior
     window.activarMenuInferior = function(botonClicado) {
         
