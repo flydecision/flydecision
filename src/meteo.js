@@ -4835,6 +4835,19 @@ function alternardivDistancia(event) {
             divDistancia.classList.remove("activo");
         }
     } else {
+        // --- NUEVO: REGLA DE EXCLUSIÓN MUTUA CON EL BUSCADOR ---
+        const searchContainer = document.getElementById('floating-search-container');
+        const searchInput = document.getElementById('buscador-despegues-provincias');
+        const isSearchOpen = searchContainer && !searchContainer.classList.contains('floating-search-hidden');
+        
+        // Si el buscador está abierto pero vacío, lo cerramos para no saturar la pantalla
+        if (isSearchOpen && searchInput && searchInput.value.trim() === '') {
+            if (typeof window.toggleBuscadorFlotante === 'function') {
+                window.toggleBuscadorFlotante();
+            }
+        }
+        // --------------------------------------------------------
+
         // 2. Mostramos el panel de distancia
         divDistancia.classList.add("activo");
 
@@ -6930,6 +6943,29 @@ document.addEventListener('DOMContentLoaded', function() {
         
         buscadorVisible = !buscadorVisible;
         if (buscadorVisible) {
+            // --- NUEVO: REGLA DE EXCLUSIÓN MUTUA CON DISTANCIA ---
+            const panelDistancia = document.getElementById("div-filtro-distancia");
+            if (panelDistancia && panelDistancia.classList.contains("activo")) {
+                const sliderDistancia = document.getElementById('distancia-slider');
+                let sliderModificado = false;
+                
+                // Comprobamos si el slider de distancia está en su posición por defecto ("Todo")
+                if (sliderDistancia && sliderDistancia.noUiSlider) {
+                    const maxIndex = CORTES_DISTANCIA_GLOBAL.length - 1; // Generalmente 19
+                    const currentValue = Math.round(parseFloat(sliderDistancia.noUiSlider.get()));
+                    if (currentValue < maxIndex) {
+                        sliderModificado = true;
+                    }
+                }
+                
+                // Si el panel está abierto pero NO se ha usado (está al máximo), lo cerramos
+                // Lo hacemos visualmente para no forzar una recarga inútil de toda la tabla
+                if (!sliderModificado) {
+                    panelDistancia.classList.remove("activo");
+                }
+            }
+            // ------------------------------------------------------
+
             contenedor.classList.remove('floating-search-hidden');
             setTimeout(() => input.focus(), 100); // Abre teclado con suavidad
         } else {
@@ -6938,7 +6974,7 @@ document.addEventListener('DOMContentLoaded', function() {
             limpiarBuscador(); // Limpia el texto y resetea la tabla automáticamente
         }
     };
-
+    
     // 2. Lógica de activar el botón del menú inferior
     window.activarMenuInferior = function(botonClicado) {
         
@@ -6947,6 +6983,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const panelConfig = document.getElementById("div-configuracion");
         const configAbierta = panelConfig && panelConfig.classList.contains("activo");
+
+        // NUEVO: Comprobar si el mapa está visible
+        const vistaMapa = document.getElementById('vista-mapa');
+        const mapaVisible = vistaMapa && vistaMapa.style.display === 'flex';
 
         let botonActivar = botonClicado;
 
@@ -6968,10 +7008,11 @@ document.addEventListener('DOMContentLoaded', function() {
                              : document.getElementById('nav-home');
             }
         } else {
-            // 🟢 LÓGICA DE AUTO-DETECCIÓN (Cuando cerramos paneles desde una X o el fondo)
+            // LÓGICA DE AUTO-DETECCIÓN (Cuando cerramos paneles desde una X o el fondo)
             if (configAbierta) botonActivar = document.getElementById('nav-settings');
             else if (buscadorVisible) botonActivar = document.getElementById('nav-search');
             else if (distanciaVisible) botonActivar = document.getElementById('nav-distance');
+            else if (mapaVisible) botonActivar = document.getElementById('nav-map'); // <--- AHORA SÍ DETECTA EL MAPA
             else botonActivar = document.getElementById('nav-home');
         }
 
@@ -6984,7 +7025,7 @@ document.addEventListener('DOMContentLoaded', function() {
             botonActivar.classList.add('active');
         }
         
-        // Esconder buscador SOLO si se pulsa Tabla o Mapa explicitamente
+        // Esconder buscador SOLO si se pulsa Tabla o Mapa explícitamente
         if (botonClicado && buscadorVisible) {
             if (botonClicado.id === 'nav-home' || botonClicado.id === 'nav-map') {
                 window.toggleBuscadorFlotante();
@@ -7631,7 +7672,6 @@ function inicializarMapaLeaflet() {
             autocompleteList.style.maxHeight = '300px';
             autocompleteList.style.overflowY = 'auto';
             autocompleteList.style.backgroundColor = '#eddff5';
-            autocompleteList.style.fontSize = '1.2em';
             autocompleteList.style.padding = '6px 6px 3px 6px';
 
             L.DomEvent.disableClickPropagation(container); // Evita que los clics en el control afecten al mapa
@@ -7842,7 +7882,7 @@ function inicializarMapaLeaflet() {
     }).addTo(map);
 
 
-    // 🟡 CONTROL "Mi ubicación" (oculto inicialmente en el desplegable)
+    // 🟡 CONTROL "Mi ubicación"
     L.Control.Locate = L.Control.extend({
     onAdd: function(map) {
     var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-locate');
@@ -7862,7 +7902,7 @@ function inicializarMapaLeaflet() {
     return container;
         }
     });
-    //map.addControl(new L.Control.Locate({ position: 'topleft' }));
+    map.addControl(new L.Control.Locate({ position: 'topleft' }));
     
     // Añadir marcador al obtener ubicación
     var currentLocationMarker = null;
@@ -7903,7 +7943,7 @@ function inicializarMapaLeaflet() {
             map.fitBounds(e.geocode.bbox);
             L.marker(e.geocode.center).addTo(map);
         }
-    })//.addTo(map)
+    }).addTo(map)
     ;
 
     // 🟡 CONTROL "Desplegable de otros controles"
@@ -7987,24 +8027,6 @@ function inicializarMapaLeaflet() {
     L.control.customToggle = function(options) {
         return new L.Control.CustomToggle(options);
     };
-
-    //------------------------------------------------------------
-    // 1. Crear el control desplegable y añadirlo al mapa
-    const toggleControl = L.control.customToggle({
-        position: 'topleft' // Elige dónde aparecerá el botón
-    }).addTo(map);
-
-    // Añadimos controles ocultos, que hemos definido antes de este código y en los que no hemos usado .addTo(map), para que no se muestren inicialmente
-
-    // 🟡 CONTROL "Mi localización"	
-    toggleControl.addControl(new L.Control.Locate());
-
-    // 🟡 CONTROL "Buscador general"
-    toggleControl.addControl(geocoderControl);
-
-    // Tras añadirlo al mapa, cambio el título del plugin a uno traducido
-        document.querySelector('.leaflet-control-geocoder.leaflet-bar').setAttribute('title', 'Buscador general (poblaciones, lugares y coordenadas)');
-        document.querySelector('.leaflet-control-geocoder-form input[type="search"]').setAttribute('placeholder', 'Buscar lugar o coordenadas...');
         
     // 🟡 CONTROL "Configuración" (Despliega #configuracionPanel)
     L.Control.ConfigToggle = L.Control.extend({

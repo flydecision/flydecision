@@ -2982,4 +2982,9 @@ h3 {
     line-height: 1; 
 }
 
+.leaflet-control-layers label {
+    display: block;
+    font-size: 16px;
+}
+
 /* 🔴🔴 FIN MAPA */
