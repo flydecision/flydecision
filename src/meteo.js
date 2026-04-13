@@ -8137,7 +8137,6 @@ function inicializarMapaLeaflet() {
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        font-size: 1.5em;
                         box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
                     ">
                         ${count}
@@ -8951,7 +8950,6 @@ function inicializarMapaLeaflet() {
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        font-size: 1.5em;
                         box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
                     ">
                         ✏️
@@ -9077,7 +9075,6 @@ function inicializarMapaLeaflet() {
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        font-size: 1.5em;
                         box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
                     ">
                         ${count}

@@ -2431,11 +2431,6 @@ details.config-accordion .accordion-content {
 	box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
 	border: 1.8px solid #007AFF;
 }
-@media (max-width: 768px) {
-.label-large-despeguesmundo {
-	font-size: 1.4em;
-}
-}
 .label-large-despeguesmundo::after {
   content: '';
   position: absolute;
@@ -2663,12 +2658,6 @@ h3 {
 	line-height: 1;
 	margin: 5px 10px 5px 10px;
 }
-@media (max-width: 768px) {
-.leaflet-popup-content {
-	font-size: 1.4em;
-	width: 235px;
-}
-}
 /* 	.leaflet-popup{
 	bottom: 28px !important;
 	left: -114px !important;
@@ -2769,18 +2758,6 @@ h3 {
 }
 .leaflet-text-search-input::placeholder {
 	color: black;
-}
-/* Por defecto, si el dispositivo no es móvil, hereda el 1.2em de input.style.fontSize */
-@media (max-width: 768px) {
-	.leaflet-text-search-input {
-		font-size: 1.4em !important;
-		padding-bottom: 4px !important;
-	}
-}
-@media (max-width: 768px) {
-	.autocomplete-list {
-		font-size: 1.4em !important;
-	}
 }
 
 /* CONTENEDOR ROSA DE LOS VIENTOS (3x3 Grid) */
