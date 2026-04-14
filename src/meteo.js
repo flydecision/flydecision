@@ -746,11 +746,11 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>💡 El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
 
             { element: '#nav-search',
-                popover: { title: '🔍 Buscar', description: 'Busca despegues escribiendo su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón o pulsar el de Tabla, se cerrará automáticamente.', side: 'top', align: 'center' } },
+                popover: { title: '🔍 Buscar', description: 'Muestra una casilla para buscar despegues por su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón Buscar o el de Tabla, se anula y cierra la búsqueda.', side: 'top', align: 'center' } },
 
             { element: '#nav-distance',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Filtro de distancia</span></div>', 
-                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro.', side: 'top', align: 'center'}, 
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Distancia</span></div>', 
+                    description: 'Muestra un deslizador que permite filtrar solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro.', side: 'top', align: 'center'}, 
             },
 
             { element: '#btn-abrir-geo-menu',

@@ -1927,79 +1927,108 @@ span.grados {
   pointer-events: none !important;
 }
 
+/* ==========================================================================
+   🛠️ CORRECCIONES DRIVER.JS (Guías visuales)
+   ========================================================================== */
+
+/* 1. CAJA PRINCIPAL (Límites estrictos y color) */
 .driver-popover {
-    background-color: var(--meteo-blanco);
-    border-radius: 12px;
-    border: 1px solid rgba(0,0,0,0.1);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-    background-color: #dbeafe !important; /* Azul cielo muy suave */
-    color: #1e3a8a !important; /* Texto en azul oscuro para que sea legible */
-    max-width: 300px !important;
-    pointer-events: auto !important; 
-    margin-top: max(20px, env(safe-area-inset-top)) !important;
-    margin-bottom: 35px;
+    background-color: #fde047 !important; /* Azul cielo pálido */
+    color: #fd0093 !important;
+    border-radius: 12px !important;
+    border: 1px solid #bfdbfe !important;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25) !important;
+    
+    /* LA MAGIA: Nunca será más ancha ni más alta que la pantalla libre */
+    max-width: calc(100vw - 30px) !important; 
+    max-height: calc(100dvh - 80px) !important; /* Deja espacio para el menú inferior */
+    
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 2147483647 !important; /* Por encima de todo */
 }
 
+/* 2. TÍTULO */
 .driver-popover-title {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    font-weight: 700;
-    background-color: #dbeafe !important;
+    font-family: inherit !important;
+    font-weight: 700 !important;
+    background-color: transparent !important;
     color: #1e3a8a !important;
+    font-size: 18px !important;
+    margin-bottom: 8px !important;
 }
 
+/* 3. TEXTO EXPLICATIVO (Scroll automático si no cabe) */
 .driver-popover-description {
     font-size: 16px !important;
-    color: var(--meteo-texto);
-    line-height: 1.4;
+    color: #000000 !important;
+    line-height: 1.4 !important;
+    
+    /* Si la pantalla es pequeña, el texto hará scroll y los botones se quedarán fijos */
+    overflow-y: auto !important;
+    max-height: 45vh !important; /* Ocupará como máximo casi media pantalla */
+    padding-right: 5px !important;
 }
 
+/* 4. BOTONES "SIGUIENTE" / "CERRAR" (Siempre visibles) */
 .driver-popover-footer {
-    margin-top: 10px !important;
+    margin-top: 15px !important;
+    flex-shrink: 0 !important; /* Prohíbe que el navegador aplaste los botones */
 }
 
 .driver-popover-footer button {
-    font-size: 16px !important;
-    line-height: 1 !important;
-}
-
-.driver-popover-footer button.driver-popover-next-btn:hover,
-.driver-popover-footer button.driver-popover-prev-btn:hover {
-    background-color: #007bff !important;
+    text-shadow: none !important;
 }
 
 .driver-popover-footer button.driver-popover-next-btn {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    background-color: #007bff;
-    color: white;
+    background-color: #007bff !important;
+    color: white !important;
     font-size: 16px !important;
-    text-shadow: none;
-    border-radius: 5px !important;
-    padding: 5px 10px !important;
-    cursor: pointer !important;
+    border-radius: 6px !important;
+    padding: 8px 16px !important;
     font-weight: bold !important;
-    box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2) !important;
-    border: 1px solid #333 !important;    
+    border: 1px solid #0056b3 !important;
 }
 
 .driver-popover-footer button.driver-popover-prev-btn {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    background-color: #999;
-    color: white;
-    font: 16px !important;
+    background-color: #999 !important;
+    color: white !important;
+    font-size: 16px !important;
+    border-radius: 6px !important;
+    padding: 8px 16px !important;
     font-weight: bold !important;
-    border: 1px solid #333 !important;
-    padding: 8px 16px;
-    border-radius: 6px;
-    text-shadow: none;
+    border: 1px solid #666 !important;
 }
+
+/* 5. CORRECCIÓN DE LA FLECHA APUNTADORA (Del mismo color que la caja) */
+div.driver-popover-arrow {
+    display: block !important;
+}
+.driver-popover-arrow-side-top { border-bottom-color: #dbeafe !important; }
+.driver-popover-arrow-side-bottom { border-top-color: #dbeafe !important; }
+.driver-popover-arrow-side-left { border-right-color: #dbeafe !important; }
+.driver-popover-arrow-side-right { border-left-color: #dbeafe !important; }
 
 .driver-popover-close-btn {
-    font-size: 25px !important;
-    color: #000000 !important;
-}
-
-.driver-popover-close-btn:hover {
-    color: var(--meteo-azul-oscuro);
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-size: 28px;
+    font-family: Arial, sans-serif;
+    color: #444;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(2px);
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* 🔴 CHECKBOX -------------------------------- */
