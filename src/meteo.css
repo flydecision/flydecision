@@ -1932,10 +1932,10 @@ span.grados {
     border-radius: 12px;
     border: 1px solid rgba(0,0,0,0.1);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-    background-color: #fde047 !important;
+    background-color: #dbeafe !important; /* Azul cielo muy suave */
+    color: #1e3a8a !important; /* Texto en azul oscuro para que sea legible */
     max-width: 300px !important;
     pointer-events: auto !important; 
-    color: black !important;
     margin-top: max(20px, env(safe-area-inset-top)) !important;
     margin-bottom: 35px;
 }
@@ -1943,7 +1943,8 @@ span.grados {
 .driver-popover-title {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-weight: 700;
-    background-color: #fde047 !important;
+    background-color: #dbeafe !important;
+    color: #1e3a8a !important;
 }
 
 .driver-popover-description {

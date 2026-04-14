@@ -716,10 +716,10 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: '🪂 Tabla de despegues favoritos', description: 'Muestra el pronóstico y sus puntuaciones de condiciones (despegue y XC).<br><br>Los despegues se ordenan automáticamente por la puntuación de despegue.', side: 'top', align: 'center'} },
 
             { element: '.div-paneles-controles-transparente', 
-                popover: { title: 'Selector de rango horario', description: 'Ajusta este deslizador desde ambos extremos para seleccionar el rango horario que te interese.<br><br>La tabla mostrará solo esas horas y la puntuación de condiciones se recalculará para ese intervalo de tiempo concreto.' , side: 'bottom', align: 'center'} },
+                popover: { title: '🗓️🕜 Selector de rango horario', description: 'Ajusta este deslizador desde ambos extremos para seleccionar el rango horario que te interese.<br><br>La tabla mostrará solo esas horas y la puntuación de condiciones se recalculará para ese intervalo de tiempo concreto.' , side: 'bottom', align: 'center'} },
 
             { element: '.noUi-value.noUi-value-horizontal.noUi-value-large', 
-                popover: { title: 'Días de la semana', description: 'Estos botones de día de la semana facilitan la selección del rango horario de ese día. Será el uso habitual de la aplicación: echar un vistazo rápido a los despegues "posibles" ese día.<br><br>👉🏽 Voy a seleccionar éste como ejemplo para que veas cómo funciona.', side: 'bottom', align: 'start'},
+                popover: { title: '🗓️ Días de la semana', description: 'Estos botones de día de la semana facilitan la selección del rango horario de ese día. Será el uso habitual de la aplicación: echar un vistazo rápido a los despegues "posibles" ese día.<br><br>👉🏽 Voy a seleccionar éste como ejemplo para que veas cómo funciona.', side: 'bottom', align: 'start'},
 
                 onDeselected: () => {
                     const elementos = document.querySelectorAll('.noUi-value.noUi-value-horizontal.noUi-value-large');
@@ -730,17 +730,17 @@ function iniciarGuiaPrincipal(forzar = false) {
             },
 
             { element: '#tabla', 
-                popover: { title: '🗓️ Día seleccionado', description: 'Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>👉🏽 Puedes mover los deslizadores hora a hora para elegir tu rango horario concreto y también puedes personalizar ese rango horario diario "automático" en ⚙️ Ajustes.', side: 'bottom', align: 'center'} },
+                popover: { title: '🗓️ Día seleccionado', description: 'Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>💡 Puedes mover los deslizadores a tu rango horario concreto y así la puntuación será más ajustada. Puedes personalizar ese rango horario diario "automático" en ⚙️ Ajustes.', side: 'bottom', align: 'center'} },
             
             { element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>Si seleccionas el icono muestra información sobre cada parámetro meteorológico.', side: 'bottom', align: 'start'},
             },
 
             { element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
-                popover: { title: '🟩🟧🟥 Fila de Cizalladura / Fiabilidad', description: 'Esta fila especial muestra mediante un semáforo de colores el nivel de Cizalladura de Bajo Nivel y también el grado de Fiabilidad del pronóstico de viento medio a 10 m de altura.' , side: 'bottom', align: 'center' } },
+                popover: { title: '🟩🟧🟥 Fila de Cizalladura / Fiabilidad', description: 'Esta fila especial es un indicador combinado. Es un semáforo de colores que muestra simultáneamente dos datos concurrentes: la Cizalladura de Bajo Nivel y la Fiabilidad del pronóstico de viento a 10 m de altura.' , side: 'bottom', align: 'center' } },
 
             { element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
-                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse o iniciar Cross Country (XC).<br><br>Los despegues siempre se reordenan automáticamente por puntuación de Condiciones para despegar.<br><br>En ⚙️ Ajustes puedes personalizar el cálculo.' } },
+                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse o iniciar Cross Country (XC).<br><br>Los despegues siempre se reordenan automáticamente por puntuación de Condiciones para despegar.<br><br>En ⚙️ Ajustes puedes personalizar tus límites para el cálculo.' } },
 
             { element: '.btn-info.btn-abajo-izquierda', 
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>💡 El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
@@ -839,7 +839,7 @@ function sugerirGuiaFavoritos(forzar = false) {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2.5em; margin: 0 0 10px 0;">💡</p>
-                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">¿Quieres ver una guía visual sobre esta<br>Pantalla de edición de despegues favoritos ❤️?</p>
+                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">¿Quieres ver una guía visual sobre esta pantalla?</p>
                 ${htmlAyuda}
             </div>
         `,
@@ -870,13 +870,13 @@ function iniciarGuiaFavoritos(forzar = false) {
 
         steps: [
             { element: '#tabla', 
-                popover: { title: '🪂 Tabla de todos los despegues', description: 'Esta pantalla sirve para seleccionar los despegues que usas habitualmente. La pantalla normal mostrará solo estos favoritos.<br><br>Por el momento solo hay despegues de España, Portugal, Pirineos y parte de Alpes. Esta aplicación es un proyecto en desarrollo.', side: 'right', align: 'start'} },
+                popover: { title: '🪂 Tabla de todos los despegues', description: 'Esta pantalla sirve para seleccionar los despegues que usas habitualmente. La pantalla normal mostrará solo estos favoritos.<br><br>Por el momento están los despegues de España, Portugal, Pirineos y parte de Alpes. Esta aplicación es un proyecto en desarrollo.', side: 'right', align: 'start'} },
 
             { element: '#tabla tbody tr:nth-child(1) td:first-child', 
-                popover: { title: '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos', description: 'Marca (o desmarca) aquí tus despegues favoritos.<br><br>Se van guardando automáticamente.', side: 'bottom', align: 'end'} },
+                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> ↔ <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos', description: 'Marca o desmarca aquí tus despegues favoritos.<br><br>Los cambios se guardan automáticamente.', side: 'bottom', align: 'end'} },
 
             { element: '#tabla thead tr:first-child th:first-child', 
-                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> Cabecera favoritos', description: 'Permite marcar (o desmarcar) de una sola vez todos los despegues visibles actualmente en la tabla.<br><br>Ejemplo: buscas todos los de "Huesca" y los marcas todos.' } },
+                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> ↔ <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Cabecera favoritos', description: 'Permite marcar o desmarcar de una sola vez todos los despegues visibles actualmente en la tabla.<br><br>💡 Ejemplo: con el botón "Buscar" filtras los de "Huesca" y los marcas todos. O con el botón "Distancia" filtras los que estén a 50 km de distancia de tu casa y los marcas todos.' } },
 
             { element: '.btn-info.btn-abajo-izquierda', 
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Muestra información más completa del despegue y un botón para acceder a su mapa.' } },
@@ -886,10 +886,10 @@ function iniciarGuiaFavoritos(forzar = false) {
 
             { element: '#nav-distance',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Filtro de distancia</span></div>', 
-                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para seleccionar rápidamente como favoritos los despegues que estén en un radio de 50 km alrededor de un punto.<br><br>Voy a abrirlo.', side: 'top', align: 'center' } },
+                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para seleccionar rápidamente como favoritos los despegues que estén en un radio de X km alrededor de un punto.<br><br>👉🏽 Voy a abrirlo.', side: 'top', align: 'center' } },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Aquí eliges el punto de origen en el mapa o con tu ubicación.' , side: 'bottom', align: 'end'},
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Con este botón eliges el centro del radio de búsqueda por distancia. Te ofrecerá usar un mapa o usar tu ubicación.' , side: 'bottom', align: 'end'},
                 onHighlighted: () => {
                     const panel = document.getElementById('div-filtro-distancia');
                     if (panel && !panel.classList.contains('activo')) {
@@ -901,7 +901,7 @@ function iniciarGuiaFavoritos(forzar = false) {
             },
 
             { element: '#distancia-slider',
-                popover: { title: 'Distancia al punto', description: 'Arrastrando este deslizador eliges los kilómetros.' },
+                popover: { title: 'Distancia al punto', description: 'Arrastrando este deslizador eliges los kilómetros de distancia máxima.' },
                 onDeselected: () => {
                     const panel = document.getElementById('div-filtro-distancia');
                     if (panel && panel.classList.contains('activo')) {
@@ -913,8 +913,8 @@ function iniciarGuiaFavoritos(forzar = false) {
 
             { element: '#btn-filtro-favoritos-toggle',
                 popover: { 
-                    title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="red" stroke="red"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><span>Ver solo favoritos</span></div>', 
-                    description: 'Alterna entre ver solo los despegues favoritos o ver todos los despegues.<br><br>💡 Si tenías ya favoritos, puede servirte para verlos juntos fácilmente y desmarcar alguno o también para desmarcar todos a la vez.', 
+                    title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> ↔ <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Ver solo favoritos</span></div>', 
+                    description: 'Alterna entre ver solo los despegues favoritos o ver todos los despegues.<br><br>💡 Si tienes ya favoritos, puede servirte para verlos juntos fácilmente y desmarcar alguno.', 
                     side: 'bottom', align: 'start'
                 } 
             },
@@ -922,22 +922,22 @@ function iniciarGuiaFavoritos(forzar = false) {
             { element: '#btn-desmarcar-favoritos',
                 popover: { 
                     title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path><line x1="5" y1="5" x2="19" y2="19" stroke="red" stroke-width="3"></line></svg><span>Desmarcar todos los favoritos</span></div>', 
-                    description: 'Desmarca todos los favoritos actuales.', 
+                    description: 'Desmarca de una sola vez todos los favoritos actuales, para luego empezar de nuevo a marcar favoritos.', 
                     side: 'bottom', align: 'start'
                 } 
             },
 
             { element: '#btn-abrir-favoritos',
-                popover: { title: '📂 Importar favoritos', description: 'Abre un archivo con una lista de despegues favoritos guardados previamente.' } },
+                popover: { title: '📂 Importar favoritos', description: 'Abre un archivo de despegues favoritos.' } },
 
             { element: '#btn-guardar-favoritos',
-                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrece compartirlo.<br><br>Los favoritos se guardan automáticamente cada vez que marcas uno. Este botón sirve para hacer una copia de todos en un archivo externo (como backup o para compartirlo). <br><br>💡 Si te mueves por varias zonas de vuelo distantes, puede interesarte tener los favoritos de cada zona guardados en archivos diferentes.' } },
+                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrecerá compartirlo.<br><br>Nota: Los favoritos realmente se guardan automáticamente cada vez que marcas uno. Este botón sirve para hacer una copia de todos en un archivo externo (como backup o para compartirlo). <br><br>💡 Si te mueves por varias zonas de vuelo distantes, puede interesarte tener los favoritos de cada zona guardados en archivos diferentes.' } },
 
             { element: '#btn-guia-edicion-favoritos',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_ayuda_60.webp" width="20" height="20" style="display: block;"><span>Guía rápida</span></div>', description: 'Muestra esta guía.' } },
 
             { element: '#btn-finalizar-edicion-favoritos',
-                popover: { title: '🏁 Finalizar edición de favoritos', description: 'Sale a la pantalla normal de la aplicación (con tus favoritos, su pronóstico y puntuación).' } }
+                popover: { title: '🏁 Finalizar edición de favoritos', description: 'Sale a la pantalla de uso normal de la aplicación, que mostrará la tabla con tus favoritos, su pronóstico y puntuación.' } }
         ],
         
         onDestroyStarted: () => {
@@ -1047,7 +1047,7 @@ function desmarcarFavoritos() {
         tipo: 'modal',
         htmlContenido: `
             <div style="text-align: center;">
-                <p style="font-size: 2em; margin: 0;"><img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></p>
+                <p style="font-size: 2em; margin: 0;"><svg viewBox="0 0 24 24" style="width: 1em; height: 1em;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path><line x1="5" y1="5" x2="19" y2="19" stroke="red" stroke-width="3"></line></svg></p>
                 <p>¿Quieres desmarcar todos tus favoritos?</p>
             </div>
         `,
@@ -4886,7 +4886,7 @@ function btnRestablecerConfiguración() {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2em; margin: 0;">🔄</p>
-                <p><b>⚠️ ATENCIÓN:</b> Esta acción eliminará la configuración y desmarcará todos los despegues favoritos.</p><p>Si quieres conservar tus favoritos, cancela este mensaje y guárdalos con 💾<i>Exportar favoritos</i>.</p>
+                <p><b>⚠️ ATENCIÓN:</b> Esta acción reseteará la configuración a la original y desmarcará todos los despegues favoritos.</p>
             </div>
         `,
         botones: [            
@@ -7990,7 +7990,7 @@ function inicializarMapaLeaflet() {
                 shadowUrl: 'css/images/marker-shadow.png',
                 shadowSize: [41, 41]
             })
-            }).addTo(map).bindPopup("<b style='font-size:16px;'>Esta es tu ubicación actual</b>").openPopup();
+            }).addTo(map).bindPopup("<b style='font-size:16px;'>Estás aquí</b>").openPopup();
         }
     });
 
