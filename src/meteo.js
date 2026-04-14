@@ -725,7 +725,7 @@ function iniciarGuiaPrincipal(forzar = false) {
         steps: [
             { 
                 element: '#caja-fantasma-guia',
-                popover: { title: '🪂 Tabla de despegues favoritos', description: 'Muestra su pronóstico y puntuación de condiciones (despegue y XC).<br><br>Los despegues se ordenan siempre por puntuación de despegue.' },
+                popover: { title: '🪂 Tabla de despegues favoritos', description: 'Muestra el pronóstico y puntuación de condiciones (despegue y XC).<br><br>Los despegues se ordenan siempre por puntuación de despegue.' },
                 onHighlightStarted: () => {
                     const thead = document.querySelector('#tabla thead');
                     const finPrimerDespegue = document.querySelector('#tabla tbody tr.fila-fin-despegue'); 
@@ -790,7 +790,7 @@ function iniciarGuiaPrincipal(forzar = false) {
             },
             
             { element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>Si seleccionas el icono muestra información sobre cada parámetro meteorológico.'},
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>Selecciona el icono para ver el significado de cada parámetro.'},
             },
 
             { element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
@@ -803,7 +803,7 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>💡 El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
 
             { element: '#nav-search',
-                popover: { title: '🔍 Buscar', description: 'Muestra una casilla para buscar despegues por su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón Buscar o el de Tabla, se anula y cierra la búsqueda.'} },
+                popover: { title: '🔍 Buscar', description: 'Muestra una casilla para buscar despegues por su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón Buscar o el de Inicio, se anula y cierra la búsqueda.'} },
 
             { element: '#nav-distance',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Distancia</span></div>', 
@@ -2691,8 +2691,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 GestorMensajes.mostrar({
                     tipo: 'modal',
                     htmlContenido: `
-                        <p style="font-size: 1.2em; font-weight: bold; text-align:center;">🪂 Fly Decision. ¿Dónde ir a volar?</p>
-                        <p>Pronóstico y análisis automático de meteorología para despegues de parapente + Mapa de despegues.</p>`,
+                        <p style="font-size: 1.1em; font-weight: bold; text-align:center;">🪂 Fly Decision. ¿Dónde ir a volar?</p>
+                        <p style="text-align: center;">Pronóstico y análisis automático de meteorología para despegues de parapente + Mapa de despegues.</p>`,
                     botones: [
                         {
                             texto: 'Marcar favoritos',
@@ -5306,7 +5306,7 @@ function agregarDespegueDesdeBuscador(idDespegue) {
 }
 
 // Función global para limpiar el buscador, restaurar el placeholder. Antes estaba en el ...Listener ('DOMContentLoaded', function() {
-const placeholderOriginal = '🔍';
+const placeholderOriginal = '🔍 Buscar despegue o provincia...';
 let inputBuscador = null; // Se inicializará al cargar el DOM
 let botonLimpiar = null;  // Se inicializará al cargar el DOM
 //let badge = null;  // Se inicializará al cargar el DOM
@@ -5424,8 +5424,14 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
     }
 	
-    // 1. Click en el botón 'X': Limpia todo
-    botonLimpiar.addEventListener('click', limpiarBuscador);
+    // 1. Click en el botón 'X': Limpia todo y mantiene el cursor dentro
+    botonLimpiar.addEventListener('click', function() {
+        limpiarBuscador();
+        // Forzamos el foco de nuevo al input
+        setTimeout(() => {
+            inputBuscador.focus();
+        }, 10); 
+    });
 	
     // 2. Keyup: Vuelve a comprobar si mostrar/ocultar la 'X' (el filtrado lo hace el onkeyup del HTML)
     inputBuscador.addEventListener('keyup', gestionarBotonLimpiar);
@@ -5449,7 +5455,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (typeof setModoEnfoque === "function") { setModoEnfoque(false); }
 
-        this.placeholder = '';
+        // this.placeholder = '';
         gestionarBotonLimpiar();
 
         // FIX TECLADO: Evitar que Android desplace la pantalla hacia arriba
@@ -7181,100 +7187,86 @@ document.addEventListener('DOMContentLoaded', function() {
     // 🔴 LÓGICA DEL MENÚ INFERIOR
     // ==========================================================================
 
-    // 1️⃣ BOTÓN INICIO (Reset Total)
+    // 1️⃣ BOTÓN INICIO: Único botón que resetea y limpia todo
     window.clicBotonInicio = function() {
-        // A. Cierra la edición de favoritos (si estaba abierta)
         if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
             if (!finalizarEdicionFavoritos(true)) return; 
         }
 
-        // B. RESET DE BUSCADOR: Limpia texto y oculta la barra
+        // Reset total de filtros
         const searchInput = document.getElementById('buscador-despegues-provincias');
-        if (searchInput) searchInput.value = ''; // Borramos el texto
+        if (searchInput) searchInput.value = ''; 
         if (typeof buscadorVisible !== 'undefined' && buscadorVisible) {
-            window.toggleBuscadorFlotante(); // Ocultamos la barra si estaba abierta
+            window.toggleBuscadorFlotante(); 
         }
-        if (typeof limpiarBuscador === 'function') {
-            limpiarBuscador(); // Ejecuta la limpieza interna de la tabla
-        }
+        if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
 
-        // C. RESET DE DISTANCIA: Slider al máximo ("Todo") y oculta el panel
-        if (typeof resetFiltroDistancia === 'function') {
-            resetFiltroDistancia(false); // false para que no reconstruya la tabla todavía
-        }
+        if (typeof resetFiltroDistancia === 'function') { resetFiltroDistancia(false); }
+        if (typeof resetFiltroCondiciones === 'function') { resetFiltroCondiciones(false); }
 
-        // D. RESET DE CONDICIONES (Opcional pero recomendado para un "Inicio" real)
-        if (typeof resetFiltroCondiciones === 'function') {
-            resetFiltroCondiciones(false); 
-        }
-
-        // E. Cierra los ajustes (por si veníamos de ahí)
         const panelConfig = document.getElementById("div-configuracion");
         if (panelConfig && panelConfig.classList.contains("activo")) {
             alternardivConfiguracion(); 
         }
 
-        // F. Volvemos a la vista de Tabla, reconstruimos una sola vez y marcamos el botón
         cambiarVista('tabla');
-        construir_tabla(); // Reconstrucción limpia final
+        construir_tabla(); 
         window.activarMenuInferior(document.getElementById('nav-home'));
-        
-        // Scroll al principio para que se vea el reset
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // 2️⃣ BOTÓN BUSCAR
+    // 2️⃣ BOTÓN BUSCAR: Solo asegura que estemos en tabla y el panel abierto
     window.clicBotonBuscar = function() {
         cambiarVista('tabla');
-        window.toggleBuscadorFlotante();
+        
+        const searchContainer = document.getElementById('floating-search-container');
+        // Si el panel está oculto, lo abrimos. Si ya estaba abierto, no hacemos nada (persistencia)
+        if (searchContainer && searchContainer.classList.contains('floating-search-hidden')) {
+            window.toggleBuscadorFlotante();
+        }
+        
         window.activarMenuInferior(document.getElementById('nav-search'));
     };
 
-
-    // 3️⃣ BOTÓN DISTANCIA
+    // 3️⃣ BOTÓN DISTANCIA: Solo asegura que estemos en tabla y el panel abierto
     window.clicBotonDistancia = function() {
         cambiarVista('tabla');
-        alternardivDistancia(); // La función original ya maneja su apertura/cierre
         
-        // Comprobamos si quedó abierto o cerrado para iluminar el botón
         const panelDistancia = document.getElementById("div-filtro-distancia");
-        if (panelDistancia && panelDistancia.classList.contains("activo")) {
-            window.activarMenuInferior(document.getElementById('nav-distance'));
-        } else {
-            window.activarMenuInferior(document.getElementById('nav-home'));
+        // Si el panel está cerrado, lo abrimos. Si ya estaba abierto, se queda (persistencia)
+        if (panelDistancia && !panelDistancia.classList.contains("activo")) {
+            alternardivDistancia();
         }
+
+        window.activarMenuInferior(document.getElementById('nav-distance'));
     };
 
-    // 4️⃣ BOTÓN MAPA
+    // 4️⃣ BOTÓN MAPA: Cambia la vista, pero no toca las clases de los paneles
     window.clicBotonMapa = function() {
         cambiarVista('mapa');
+        // Al ocultarse el contenedor de controles por cambiarVista, los paneles desaparecen
+        // visualmente pero sus clases (.activo) se mantienen intactas.
         window.activarMenuInferior(document.getElementById('nav-map'));
     };
 
-    // 5️⃣ BOTÓN AJUSTES
+    // 5️⃣ BOTÓN AJUSTES: Cierra edición pero mantiene filtros de usuario
     window.clicBotonAjustes = function() {
-        // A. Cierra la edición de favoritos ANTES de abrir ajustes
         if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
             if (!finalizarEdicionFavoritos(true)) {
-                // Si falla, iluminamos la Tabla para avisar del error
                 window.activarMenuInferior(document.getElementById('nav-home'));
                 return; 
             }
         }
 
-        // B. Volvemos a la tabla si estábamos en el mapa
         cambiarVista('tabla');
         
-        // C. Abrimos/Cerramos el panel
-        alternardivConfiguracion(); 
-
-        // D. Iluminamos el botón correcto
         const panelConfig = document.getElementById("div-configuracion");
-        if (panelConfig && panelConfig.classList.contains("activo")) {
-            window.activarMenuInferior(document.getElementById('nav-settings'));
-        } else {
-            window.activarMenuInferior(document.getElementById('nav-home'));
+        // Solo lo abrimos si estaba cerrado
+        if (panelConfig && !panelConfig.classList.contains("activo")) {
+            alternardivConfiguracion(); 
         }
+
+        window.activarMenuInferior(document.getElementById('nav-settings'));
     };
 
 }); //document . addEventListener('DOMContentLoaded', function() {
@@ -8129,7 +8121,10 @@ function inicializarMapaLeaflet() {
                 shadowUrl: 'css/images/marker-shadow.png',
                 shadowSize: [41, 41]
             })
-            }).addTo(map).bindPopup("<b style='font-size:16px;'>Estás aquí</b>").openPopup();
+            }).addTo(map).bindPopup("<b style='font-size:16px;'>Estás aquí</b>", { 
+                className: 'popup-ajustado', 
+                maxWidth: 'auto' 
+            }).openPopup();
         }
     });
 

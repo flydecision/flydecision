@@ -265,6 +265,8 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
 	padding-right: 30px; /* Deja espacio para el botón de borrado */
 	transition: background-color 0.2s, border-color 0.2s;
     background-color: #FFFFFF;
+    text-indent: 0px; 
+    padding-left: 10px; /* Espacio general interno */
 }
 #buscador-despegues-provincias.filtrado {
     border-color: #ff0000;
@@ -272,6 +274,21 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
 	box-shadow: inset 0 0 0 3px red, inset 1px 1px 3px rgba(0, 0, 0, .4) !important;
     border: none !important; 
 }
+
+/* Estilo del placeholder: gris, con sitio para el cursor a la izquierda */
+#buscador-despegues-provincias::placeholder {
+    color: #888 !important;
+    opacity: 1;
+    /* Empuja el texto 12px a la derecha para que el cursor no lo tape */
+    text-indent: 12px; 
+    transition: opacity 0.2s ease;
+}
+
+/* Comportamiento al entrar: el cursor aparece y el texto se va */
+#buscador-despegues-provincias:focus::placeholder {
+    color: #888 !important;
+}
+
 .buscador-despegues-sin-resultados {
     color: #ff0000  !important;    /* Rojo (tu variable --tag-fix) */
     font-weight: bold !important; /* Negrita */
@@ -2368,7 +2385,7 @@ body.modo-android-manual .bottom-nav.compact-nav {
     max-height: 60px; 
     opacity: 1;
     padding-top: 4px;
-    padding-bottom: 8px;
+    padding-bottom: 12px;
     transition: max-height 0.3s ease-in-out, opacity 0.2s ease, padding 0.3s ease;
 }
 
@@ -3015,6 +3032,19 @@ h3 {
 .leaflet-control-layers label {
     display: block;
     font-size: 16px;
+}
+
+/* POPUP AJUSTADO AL CONTENIDO (Ubicación GPS) */
+.popup-ajustado .leaflet-popup-content-wrapper {
+    width: auto !important;
+    min-width: 50px !important;
+    padding-right: 10px; /* Un poco de margen para que no pegue a la derecha */
+}
+
+.popup-ajustado .leaflet-popup-content {
+    width: auto !important;
+    margin: 8px 12px !important; /* Espaciado interno equilibrado */
+    white-space: nowrap !important; /* Evita que el texto salte de línea */
 }
 
 /* 🔴🔴 FIN MAPA */
