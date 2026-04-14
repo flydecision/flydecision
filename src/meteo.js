@@ -228,8 +228,8 @@ if (btnIncNoFavsDistancia) {
 						htmlContenido: `
                             <div style="text-align: center;">
                             <p style="font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></p>
-							<p>Como es la primera vez, necesitas configurar una ubicación de origen.</p>
-							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span></p>
+							<p>La primera vez se necesita configurar un punto de origen.</p>
+							<p>Podrás cambiarlo cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span></p>
                             </div>
 						`,
 						botones:[
@@ -797,13 +797,16 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: '🟩🟧🟥 Fila de Cizalladura / Fiabilidad', description: 'Esta fila especial es un indicador combinado. Es un semáforo de colores que muestra simultáneamente dos datos concurrentes: la Cizalladura de Bajo Nivel y la Fiabilidad del pronóstico de viento a 10 m de altura.'} },
 
             { element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
-                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse o iniciar Cross Country (XC).<br><br>Los despegues siempre se reordenan automáticamente por puntuación de Condiciones para despegar.<br><br>En ⚙️ Ajustes puedes personalizar tus límites para el cálculo.' } },
+                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse o iniciar Cross Country (XC).<br><br>Los despegues se reordenan automáticamente por puntuación de Condiciones para despegar.<br><br>En ⚙️ Ajustes puedes personalizar tus límites para el cálculo.' } },
 
             { element: '.btn-info.btn-abajo-izquierda', 
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>💡 El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
 
+            { element: '#nav-home',
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Inicio</span></div>', description: 'Muestra la tabla con todos los despegues favoritos. Si hay búsquedas o filtros activos, los desactiva.<br><br>💡 Si te pierdes con algunas funciones, pulsa este botón para ir a la vista "normal".'} },
+
             { element: '#nav-search',
-                popover: { title: '🔍 Buscar', description: 'Muestra una casilla para buscar despegues por su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón Buscar o el de Inicio, se anula y cierra la búsqueda.'} },
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Buscar</span></div>', description: 'Muestra una casilla para buscar despegues por su nombre, su región o su provincia (puedes escribir sin tildes).'} },
 
             { element: '#nav-distance',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Distancia</span></div>', 
@@ -838,15 +841,20 @@ function iniciarGuiaPrincipal(forzar = false) {
             },
 
             { element: '#nav-map',
-                popover: { title: '🗺️ Mapa de despegues', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1 millón de puntos exactos de despegues y mucha otra información.<br><br>La información más completa es de España, Portugal y Pirineos (incluyendo la parte francesa), pero hay información de todo el mundo.'} },
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg><span>Mapa</span></div>', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1,3 millones de puntos exactos de despegues registrados y mucha otra información.'} },
 
             { element: '#nav-settings',
-                popover: { title: '⚙️ Ajustes', description: 'Aquí se puede <b>Editar favoritos</b> (para añadir o quitar tus despegues habituales), personalizar parámetros, activar opciones y ver información sobre la actualización de los datos meteorológicos.<br><br>💡 Para cada opción o dato, tienes un botón de información <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;">.'} }
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span>Ajustes</span></div>', description: 'Aquí se puede <b>Editar favoritos</b> (para añadir o quitar tus despegues habituales), personalizar parámetros, activar opciones y ver información sobre la actualización de los datos meteorológicos.<br><br>💡 Para cada opción o dato, tienes un botón de información <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;">.'} }
         ],
         
         onDestroyStarted: () => {
-                localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
-                driverObj.destroy();
+            localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
+            driverObj.destroy();
+            setTimeout(() => {
+            if (typeof clicBotonInicio === 'function') {
+                    clicBotonInicio();
+                }
+            }, 100);
         }
     });
 
@@ -973,10 +981,10 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Muestra información más completa del despegue y un botón para acceder a su mapa.' } },
 
             { element: '#nav-search',
-                popover: { title: '🔍 Buscar', description: 'Busca despegues escribiendo su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón o pulsar el de Tabla, se cerrará automáticamente.'} },
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Buscar</span></div>', description: 'Busca despegues escribiendo su nombre, su región o su provincia (puedes escribir sin tildes).'} },
 
             { element: '#nav-distance',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Filtro de distancia</span></div>', 
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Distancia</span></div>', 
                     description: 'Muestra solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para seleccionar rápidamente como favoritos los despegues que estén en un radio de X km alrededor de un punto.<br><br>👉🏽 Voy a abrirlo.'} },
 
             { element: '#btn-abrir-geo-menu',
@@ -1021,15 +1029,20 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Nota: Los favoritos realmente se guardan automáticamente cada vez que marcas uno. Este botón sirve para hacer una copia de todos en un archivo externo (como backup o para compartirlo). <br><br>💡 Si te mueves por varias zonas de vuelo distantes, puede interesarte tener los favoritos de cada zona guardados en archivos diferentes.' } },
 
             { element: '#btn-guia-edicion-favoritos',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_ayuda_60.webp" width="20" height="20" style="display: block;"><span>Guía rápida</span></div>', description: 'Muestra esta guía.' } },
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_ayuda_60.webp" width="20" height="20" style="display: block;"><span>Guía rápida</span></div>', description: 'Muestra esta guía sobre edición de despegues favoritos.' } },
 
             { element: '#btn-finalizar-edicion-favoritos',
                 popover: { title: '🏁 Finalizar edición de favoritos', description: 'Sale a la pantalla de uso normal de la aplicación, que mostrará la tabla con tus favoritos, su pronóstico y puntuación.' } }
         ],
         
         onDestroyStarted: () => {
-                localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
-                driverObj.destroy();
+            localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
+            driverObj.destroy();
+            setTimeout(() => {
+                if (typeof clicBotonInicio === 'function') {
+                    clicBotonInicio();
+                }
+            }, 100);
         }
     });
 
@@ -2691,8 +2704,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 GestorMensajes.mostrar({
                     tipo: 'modal',
                     htmlContenido: `
-                        <p style="font-size: 1.1em; font-weight: bold; text-align:center;">🪂 Fly Decision. ¿Dónde ir a volar?</p>
-                        <p style="text-align: center;">Pronóstico y análisis automático de meteorología para despegues de parapente + Mapa de despegues.</p>`,
+                        <p style="font-size: 1.4em; font-weight: bold; text-align:center;">🪂 Fly Decision<br>¿Dónde ir a volar?</p>
+                        <p>🌦️ Pronóstico para 4 días por horas</p>
+                        <p>📊 Análisis automático de condiciones para despegar o para iniciar XC</p>
+                        <p>🗺️ Mapa de despegues</p>`,
                     botones: [
                         {
                             texto: 'Marcar favoritos',
@@ -5702,8 +5717,8 @@ document.addEventListener('DOMContentLoaded', function() {
 						htmlContenido: `
                             <div style="text-align: center;">
                             <p style="font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></p>
-							<p>Como es la primera vez, necesitas configurar una ubicación de origen.</p>
-							<p>Podrás cambiarla cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span></p>
+							<p>La primera vez se necesita configurar un punto de origen.</p>
+							<p>Podrás cambiarlo cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span></p>
                             </div>
 						`,
 						botones:[
@@ -8151,87 +8166,10 @@ function inicializarMapaLeaflet() {
     }).addTo(map)
     ;
 
-    // 🟡 CONTROL "Desplegable de otros controles"
-    L.Control.CustomToggle = L.Control.extend({
-        options: {
-            position: 'topleft'
-        },
-
-        onAdd: function(map) {
-            // --- Contenedor Principal (lo que Leaflet mueve) ---
-            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-
-            // --- Contenedor para el Botón (Control que siempre se ve) ---
-            const buttonDiv = L.DomUtil.create('div', 'leaflet-control-button', container);
-            buttonDiv.style.cursor = 'pointer';
-            buttonDiv.title = 'Mostrar más controles del mapa';
-            
-            // El icono hamburguesa (tres líneas horizontales)
-            buttonDiv.innerHTML =  `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                                    </svg>`;
-            buttonDiv.style.padding = '0'; // Quitar el padding para que el SVG ocupe todo el espacio del botón
-            buttonDiv.style.display = 'flex'; // Usar flexbox para centrar el SVG
-            buttonDiv.style.justifyContent = 'center';
-            buttonDiv.style.alignItems = 'center';  
-            buttonDiv.style.backgroundColor = 'white';		
-            buttonDiv.style.borderRadius = '4px';		
-            
-            // --- Contenedor Oculto (donde irán los otros controles) ---
-            this._controlPanel = L.DomUtil.create('div', 'custom-control-panel', container);
-            this._controlPanel.style.display = 'none'; // Oculto por defecto
-            
-            // Ocultar la lista si haces clic fuera del control
-            L.DomEvent.on(map, 'click', this._collapse, this);
-
-            // Prevenir que los clics en el panel afecten al mapa
-            L.DomEvent.disableClickPropagation(container);
-            
-            // Evento para expandir/colapsar al hacer clic en el botón
-            L.DomEvent.on(buttonDiv, 'click', this._togglePanel, this);
-
-            return container;
-        },
-        
-        // Método para alternar la visibilidad del panel
-        _togglePanel: function() {
-            const isVisible = this._controlPanel.style.display !== 'none';
-            if (isVisible) {
-                this._collapse();
-            } else {
-                this._expand();
-            }
-        },
-        
-        _expand: function() {
-            this._controlPanel.style.display = 'flex'; // Usamos flex para ordenar los controles
-        },
-        
-        _collapse: function() {
-            this._controlPanel.style.display = 'none';
-        },
-
-        // Permite añadir otros controles al panel desplegable
-        addControl: function(control) {
-            // Asegúrate de que el control se añade al DOM
-            const controlContainer = control.onAdd(this._map);
-            
-            // El nuevo control se añade al panel oculto
-            this._controlPanel.appendChild(controlContainer);
-            
-            // Wrap the control container in a div to ensure proper vertical stacking
-            const wrapper = L.DomUtil.create('div', 'custom-control-wrapper');
-            wrapper.appendChild(controlContainer);
-            this._controlPanel.appendChild(wrapper);
-        }
-    });
-
-    // Función de conveniencia para crear la instancia del control
-    L.control.customToggle = function(options) {
-        return new L.Control.CustomToggle(options);
-    };
+    // Tras añadirlo al mapa, cambio el título del plugin a uno traducido
+    document.querySelector('.leaflet-control-geocoder.leaflet-bar').setAttribute('title', 'Buscador general (poblaciones, lugares y coordenadas)');
+    document.querySelector('.leaflet-control-geocoder-form input[type="search"]').setAttribute('placeholder', 'Buscar lugar o coordenadas...');
+    document.querySelector('.leaflet-control-geocoder-form input[type="search"]').style.fontSize = '16px';
         
     // 🟡 CONTROL "Configuración" (Despliega #configuracionPanel)
     L.Control.ConfigToggle = L.Control.extend({
@@ -8324,7 +8262,7 @@ function inicializarMapaLeaflet() {
     "OpenStreetMap estilo OpenStreetMap": OpenStreetMap,  
     "Relieve Hipsométrico": Hipsometrico,
     "Tracestrack Topo": TracesTrackTopo,
-    "Institut Cartogràfic i Geològic de Catalunya (ICGC)": ICGC,
+    "ICGC Catalunya": ICGC,
     "ESRI Topo + Skyways (KK7)": capaMezcladaWorldTopoMapKK7SkyWays,
     "ESRI Topo + Thermals (KK7)": capaMezcladaWorldTopoMapKK7Thermals,
     "ESRI Topo + Skyways+Thermals (KK7)": capaMezcladaWorldTopoMapKK7SkyWaysThermals
