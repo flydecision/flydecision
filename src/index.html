@@ -205,7 +205,7 @@
 			placeholder="🔍 Buscar zona..."
 			onkeyup="filtrarDespeguesProvincias()"
 			autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-			style="width: 250px; height: 40px; border-radius: 10px; padding-left: 15px; font-size: 16px; border: 1px solid #ccc; box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);">
+			style="width: 250px; height: 40px; border-radius: 10px; padding-left: 15px; font-size: 16px; border: 2px solid #000000; box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);">
 			<button id="limpiar-buscador" type="button" style="display: none; right: 10px; font-size: 28px; color: #999;">&times;</button>
 		</div>
 	</div>
@@ -664,7 +664,7 @@
 <!-- 🟦🟦 MENÚ INFERIOR COMPACTO (5 BOTONES)  -->
 <nav class="bottom-nav compact-nav" style="z-index: 1000;">
     <!-- 1. TABLA -->
-	<button class="nav-item active" id="nav-home" onclick="activarMenuInferior(this); finalizarEdicionFavoritos(); cambiarVista('tabla');">
+	<button class="nav-item active" id="nav-home" onclick="clicBotonTabla()">
 		<div class="nav-icon-container">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
 		</div>
@@ -672,7 +672,7 @@
 	</button>
     
     <!-- 2. BUSCAR -->
-    <button class="nav-item" id="nav-search" onclick="activarMenuInferior(this); toggleBuscadorFlotante(); cambiarVista('tabla');">
+    <button class="nav-item" id="nav-search" onclick="clicBotonBuscar()">
         <div class="nav-icon-container">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </div>
@@ -680,7 +680,7 @@
     </button>
     
     <!-- 3. DISTANCIA -->
-    <button class="nav-item" id="nav-distance" onclick="activarMenuInferior(this); alternardivDistancia(event); cambiarVista('tabla');">
+    <button class="nav-item" id="nav-distance" onclick="clicBotonDistancia()">
         <div class="nav-icon-container">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
         </div>
@@ -688,7 +688,7 @@
     </button>
     
 	<!-- 4. MAPA -->
-	<button class="nav-item" id="nav-map" onclick="activarMenuInferior(this); cambiarVista('mapa');">
+	<button class="nav-item" id="nav-map" onclick="clicBotonMapa()">
 		<div class="nav-icon-container">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
 		</div>
@@ -696,7 +696,7 @@
 	</button>    
 
     <!-- 5. AJUSTES -->
-    <button class="nav-item" id="nav-settings" onclick="activarMenuInferior(this); alternardivConfiguracion(event); cambiarVista('tabla');">
+    <button class="nav-item" id="nav-settings" onclick="clicBotonAjustes()">
         <div class="nav-icon-container">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </div>

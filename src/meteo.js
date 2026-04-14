@@ -697,6 +697,17 @@ function iniciarGuiaPrincipal(forzar = false) {
         return; 
     }
 
+    // Creamos una caja invisible para engañar a driver.js
+    let cajaFantasma = document.getElementById('caja-fantasma-guia');
+    if (!cajaFantasma) {
+        cajaFantasma = document.createElement('div');
+        cajaFantasma.id = 'caja-fantasma-guia';
+        cajaFantasma.style.position = 'absolute';
+        cajaFantasma.style.pointerEvents = 'none';
+        cajaFantasma.style.background = 'transparent';
+        document.body.appendChild(cajaFantasma);
+    }
+
     const driverObj = window.driver.js.driver({
         
         showProgress: true, 
@@ -712,14 +723,40 @@ function iniciarGuiaPrincipal(forzar = false) {
         doneBtnText: 'Cerrar guía',
 
         steps: [
-            { element: '#tabla',
-                popover: { title: '🪂 Tabla de despegues favoritos', description: 'Muestra el pronóstico y sus puntuaciones de condiciones (despegue y XC).<br><br>Los despegues se ordenan automáticamente por la puntuación de despegue.', side: 'top', align: 'center'} },
+            { 
+                element: '#caja-fantasma-guia',
+                popover: { title: '🪂 Tabla de despegues favoritos', description: 'Muestra su pronóstico y puntuación de condiciones (despegue y XC).<br><br>Los despegues se ordenan siempre por puntuación de despegue.' },
+                onHighlightStarted: () => {
+                    const thead = document.querySelector('#tabla thead');
+                    const finPrimerDespegue = document.querySelector('#tabla tbody tr.fila-fin-despegue'); 
+                    const wrapper = document.querySelector('.tabla-wrapper'); // <--- NUEVO
+                    const fantasma = document.getElementById('caja-fantasma-guia');
+                    
+                    if (thead && finPrimerDespegue && wrapper && fantasma) {
+                        const rectArriba = thead.getBoundingClientRect();
+                        const rectAbajo = finPrimerDespegue.getBoundingClientRect();
+                        const rectWrapper = wrapper.getBoundingClientRect(); // <--- NUEVO
+                        
+                        fantasma.style.top = (rectArriba.top + window.scrollY) + 'px';
+                        
+                        // TRUCO: Usamos la posición y ancho de la caja visible, NO de la tabla entera
+                        fantasma.style.left = (rectWrapper.left + window.scrollX) + 'px';
+                        fantasma.style.width = rectWrapper.width + 'px';
+                        
+                        fantasma.style.height = (rectAbajo.bottom - rectArriba.top) + 'px'; 
+                    }
+                },
+                onDeselected: () => {
+                    // SEGURO: Obliga al navegador a volver al centro exacto al pasar de paso
+                    window.scrollTo({ left: 0, top: 0, behavior: 'instant' });
+                }
+            },
 
             { element: '.div-paneles-controles-transparente', 
-                popover: { title: '🗓️🕜 Selector de rango horario', description: 'Ajusta este deslizador desde ambos extremos para seleccionar el rango horario que te interese.<br><br>La tabla mostrará solo esas horas y la puntuación de condiciones se recalculará para ese intervalo de tiempo concreto.' , side: 'bottom', align: 'center'} },
+                popover: { title: '🗓️🕜 Selector de rango horario', description: 'Ajusta este deslizador desde ambos extremos para seleccionar el rango horario que te interese.<br><br>La tabla mostrará solo esas horas y la puntuación de condiciones se recalculará para ese intervalo de tiempo concreto.'} },
 
             { element: '.noUi-value.noUi-value-horizontal.noUi-value-large', 
-                popover: { title: '🗓️ Días de la semana', description: 'Estos botones de día de la semana facilitan la selección del rango horario de ese día. Será el uso habitual de la aplicación: echar un vistazo rápido a los despegues "posibles" ese día.<br><br>👉🏽 Voy a seleccionar éste como ejemplo para que veas cómo funciona.', side: 'bottom', align: 'start'},
+                popover: { title: '🗓️ Días de la semana', description: 'Estos botones de día de la semana facilitan la selección del rango horario de ese día. Será el uso habitual de la aplicación: echar un vistazo rápido a los despegues "posibles" ese día.<br><br>👉🏽 Voy a seleccionar éste como ejemplo para que veas cómo funciona.'},
 
                 onDeselected: () => {
                     const elementos = document.querySelectorAll('.noUi-value.noUi-value-horizontal.noUi-value-large');
@@ -729,15 +766,35 @@ function iniciarGuiaPrincipal(forzar = false) {
                 }
             },
 
-            { element: '#tabla', 
-                popover: { title: '🗓️ Día seleccionado', description: 'Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>💡 Puedes mover los deslizadores a tu rango horario concreto y así la puntuación será más ajustada. Puedes personalizar ese rango horario diario "automático" en ⚙️ Ajustes.', side: 'bottom', align: 'center'} },
+            {   element: '#caja-fantasma-guia', // 1️⃣ Apuntamos de nuevo a la caja invisible
+                popover: { title: '🗓️ Día seleccionado', description: 'Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>💡 Puedes mover los deslizadores a tu rango horario concreto y así la puntuación será más ajustada. Puedes personalizar ese rango horario diario "automático" en ⚙️ Ajustes.'},
+                onHighlightStarted: () => {
+                    const thead = document.querySelector('#tabla thead');
+                    const wrapper = document.querySelector('.tabla-wrapper');
+                    const fantasma = document.getElementById('caja-fantasma-guia');
+                    
+                    if (thead && wrapper && fantasma) {
+                        const rectArriba = thead.getBoundingClientRect();
+                        const rectWrapper = wrapper.getBoundingClientRect();
+                        
+                        fantasma.style.top = (rectArriba.top + window.scrollY) + 'px';
+                        fantasma.style.left = (rectWrapper.left + window.scrollX) + 'px';
+                        fantasma.style.width = rectWrapper.width + 'px'; // 2️⃣ Ancho = Solo lo que se ve en pantalla
+                        fantasma.style.height = rectArriba.height + 'px'; // 3️⃣ Alto = SOLO LA CABECERA
+                    }
+                },
+                onDeselected: () => {
+                    // Seguro antidescuadre al cambiar de paso
+                    window.scrollTo({ left: 0, top: 0, behavior: 'instant' });
+                }
+            },
             
             { element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>Si seleccionas el icono muestra información sobre cada parámetro meteorológico.', side: 'bottom', align: 'start'},
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>Si seleccionas el icono muestra información sobre cada parámetro meteorológico.'},
             },
 
             { element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
-                popover: { title: '🟩🟧🟥 Fila de Cizalladura / Fiabilidad', description: 'Esta fila especial es un indicador combinado. Es un semáforo de colores que muestra simultáneamente dos datos concurrentes: la Cizalladura de Bajo Nivel y la Fiabilidad del pronóstico de viento a 10 m de altura.' , side: 'bottom', align: 'center' } },
+                popover: { title: '🟩🟧🟥 Fila de Cizalladura / Fiabilidad', description: 'Esta fila especial es un indicador combinado. Es un semáforo de colores que muestra simultáneamente dos datos concurrentes: la Cizalladura de Bajo Nivel y la Fiabilidad del pronóstico de viento a 10 m de altura.'} },
 
             { element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
                 popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse o iniciar Cross Country (XC).<br><br>Los despegues siempre se reordenan automáticamente por puntuación de Condiciones para despegar.<br><br>En ⚙️ Ajustes puedes personalizar tus límites para el cálculo.' } },
@@ -746,15 +803,15 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>💡 El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
 
             { element: '#nav-search',
-                popover: { title: '🔍 Buscar', description: 'Muestra una casilla para buscar despegues por su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón Buscar o el de Tabla, se anula y cierra la búsqueda.', side: 'top', align: 'center' } },
+                popover: { title: '🔍 Buscar', description: 'Muestra una casilla para buscar despegues por su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón Buscar o el de Tabla, se anula y cierra la búsqueda.'} },
 
             { element: '#nav-distance',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Distancia</span></div>', 
-                    description: 'Muestra un deslizador que permite filtrar solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro.', side: 'top', align: 'center'}, 
+                    description: 'Muestra un deslizador que permite filtrar solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro.'}, 
             },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.' , side: 'bottom', align: 'end'},
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.'},
                 onHighlighted: () => {
                     const panel = document.getElementById('div-filtro-distancia');
                     if (panel && !panel.classList.contains('activo')) {
@@ -766,7 +823,7 @@ function iniciarGuiaPrincipal(forzar = false) {
             },
 
             { element: '#btn-incluir-no-favs-distancia',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></span> Incluir no favoritos', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>💡 Esto es útil cuando viajamos y buscamos las mejores condiciones fuera de nuestra zona de favoritos.' , side: 'bottom', align: 'end'},
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></span> Incluir no favoritos', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>💡 Esto es útil cuando viajamos y buscamos las mejores condiciones fuera de nuestra zona de favoritos.'},
             },
 
             { element: '#distancia-slider',
@@ -781,10 +838,10 @@ function iniciarGuiaPrincipal(forzar = false) {
             },
 
             { element: '#nav-map',
-                popover: { title: '🗺️ Mapa de despegues', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1 millón de puntos exactos de despegues y mucha otra información.<br><br>La información más completa es de España, Portugal y Pirineos (incluyendo la parte francesa), pero hay información de todo el mundo.', side: 'top', align: 'center' } },
+                popover: { title: '🗺️ Mapa de despegues', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1 millón de puntos exactos de despegues y mucha otra información.<br><br>La información más completa es de España, Portugal y Pirineos (incluyendo la parte francesa), pero hay información de todo el mundo.'} },
 
             { element: '#nav-settings',
-                popover: { title: '⚙️ Ajustes', description: 'Aquí se puede <b>Editar favoritos</b> (para añadir o quitar tus despegues habituales), personalizar parámetros, activar opciones y ver información sobre la actualización de los datos meteorológicos.<br><br>💡 Para cada opción o dato, tienes un botón de información <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;">.', side: 'top', align: 'center' } }
+                popover: { title: '⚙️ Ajustes', description: 'Aquí se puede <b>Editar favoritos</b> (para añadir o quitar tus despegues habituales), personalizar parámetros, activar opciones y ver información sobre la actualización de los datos meteorológicos.<br><br>💡 Para cada opción o dato, tienes un botón de información <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;">.'} }
         ],
         
         onDestroyStarted: () => {
@@ -854,6 +911,17 @@ function iniciarGuiaFavoritos(forzar = false) {
         return; 
     }
 
+    // Nos aseguramos de que exista la caja invisible
+    let cajaFantasma = document.getElementById('caja-fantasma-guia');
+    if (!cajaFantasma) {
+        cajaFantasma = document.createElement('div');
+        cajaFantasma.id = 'caja-fantasma-guia';
+        cajaFantasma.style.position = 'absolute';
+        cajaFantasma.style.pointerEvents = 'none';
+        cajaFantasma.style.background = 'transparent';
+        document.body.appendChild(cajaFantasma);
+    }
+
     const driverObj = window.driver.js.driver({
         
         showProgress: true, 
@@ -869,11 +937,34 @@ function iniciarGuiaFavoritos(forzar = false) {
         doneBtnText: 'Cerrar guía',
 
         steps: [
-            { element: '#tabla', 
-                popover: { title: '🪂 Tabla de todos los despegues', description: 'Esta pantalla sirve para seleccionar los despegues que usas habitualmente. La pantalla normal mostrará solo estos favoritos.<br><br>Por el momento están los despegues de España, Portugal, Pirineos y parte de Alpes. Esta aplicación es un proyecto en desarrollo.', side: 'right', align: 'start'} },
+            { element: '#caja-fantasma-guia', 
+                popover: { title: '🪂 Tabla de todos los despegues', description: 'Esta pantalla sirve para seleccionar los despegues que usas habitualmente. La pantalla normal mostrará solo estos favoritos.<br><br>Por el momento están los despegues de España, Portugal, Pirineos y parte de Alpes. Esta aplicación es un proyecto en desarrollo.'},
+
+                onHighlightStarted: () => {
+                    const thead = document.querySelector('#tabla thead');
+                    const finPrimerDespegue = document.querySelector('#tabla tbody tr.fila-fin-despegue');
+                    const wrapper = document.querySelector('.tabla-wrapper');
+                    const fantasma = document.getElementById('caja-fantasma-guia');
+                    
+                    if (thead && finPrimerDespegue && wrapper && fantasma) {
+                        const rectArriba = thead.getBoundingClientRect();
+                        const rectAbajo = finPrimerDespegue.getBoundingClientRect();
+                        const rectWrapper = wrapper.getBoundingClientRect();
+                        
+                        fantasma.style.top = (rectArriba.top + window.scrollY) + 'px';
+                        fantasma.style.left = (rectWrapper.left + window.scrollX) + 'px';
+                        fantasma.style.width = rectWrapper.width + 'px';
+                        fantasma.style.height = (rectAbajo.bottom - rectArriba.top) + 'px';
+                    }
+                },
+                onDeselected: () => {
+                    window.scrollTo({ left: 0, top: 0, behavior: 'instant' });
+                }
+            
+            },
 
             { element: '#tabla tbody tr:nth-child(1) td:first-child', 
-                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> ↔ <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos', description: 'Marca o desmarca aquí tus despegues favoritos.<br><br>Los cambios se guardan automáticamente.', side: 'bottom', align: 'end'} },
+                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> ↔ <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos', description: 'Marca o desmarca aquí tus despegues favoritos.<br><br>Los cambios se guardan automáticamente.'} },
 
             { element: '#tabla thead tr:first-child th:first-child', 
                 popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> ↔ <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Cabecera favoritos', description: 'Permite marcar o desmarcar de una sola vez todos los despegues visibles actualmente en la tabla.<br><br>💡 Ejemplo: con el botón "Buscar" filtras los de "Huesca" y los marcas todos. O con el botón "Distancia" filtras los que estén a 50 km de distancia de tu casa y los marcas todos.' } },
@@ -882,14 +973,14 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Muestra información más completa del despegue y un botón para acceder a su mapa.' } },
 
             { element: '#nav-search',
-                popover: { title: '🔍 Buscar', description: 'Busca despegues escribiendo su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón o pulsar el de Tabla, se cerrará automáticamente.', side: 'top', align: 'center' } },
+                popover: { title: '🔍 Buscar', description: 'Busca despegues escribiendo su nombre, su región o su provincia (puedes escribir sin tildes).<br><br>👉🏽 Al pulsar de nuevo el botón o pulsar el de Tabla, se cerrará automáticamente.'} },
 
             { element: '#nav-distance',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Filtro de distancia</span></div>', 
-                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para seleccionar rápidamente como favoritos los despegues que estén en un radio de X km alrededor de un punto.<br><br>👉🏽 Voy a abrirlo.', side: 'top', align: 'center' } },
+                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para seleccionar rápidamente como favoritos los despegues que estén en un radio de X km alrededor de un punto.<br><br>👉🏽 Voy a abrirlo.'} },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Con este botón eliges el centro del radio de búsqueda por distancia. Te ofrecerá usar un mapa o usar tu ubicación.' , side: 'bottom', align: 'end'},
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Con este botón eliges el centro del radio de búsqueda por distancia. Te ofrecerá usar un mapa o usar tu ubicación.'},
                 onHighlighted: () => {
                     const panel = document.getElementById('div-filtro-distancia');
                     if (panel && !panel.classList.contains('activo')) {
@@ -914,24 +1005,20 @@ function iniciarGuiaFavoritos(forzar = false) {
             { element: '#btn-filtro-favoritos-toggle',
                 popover: { 
                     title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> ↔ <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Ver solo favoritos</span></div>', 
-                    description: 'Alterna entre ver solo los despegues favoritos o ver todos los despegues.<br><br>💡 Si tienes ya favoritos, puede servirte para verlos juntos fácilmente y desmarcar alguno.', 
-                    side: 'bottom', align: 'start'
-                } 
+                    description: 'Alterna entre ver solo los despegues favoritos o ver todos los despegues.<br><br>💡 Si tienes ya favoritos, puede servirte para verlos juntos fácilmente y desmarcar alguno.'} 
             },
 
             { element: '#btn-desmarcar-favoritos',
                 popover: { 
                     title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path><line x1="5" y1="5" x2="19" y2="19" stroke="red" stroke-width="3"></line></svg><span>Desmarcar todos los favoritos</span></div>', 
-                    description: 'Desmarca de una sola vez todos los favoritos actuales, para luego empezar de nuevo a marcar favoritos.', 
-                    side: 'bottom', align: 'start'
-                } 
+                    description: 'Desmarca de una sola vez todos los favoritos actuales, para luego empezar de nuevo a marcar favoritos.'} 
             },
 
             { element: '#btn-abrir-favoritos',
                 popover: { title: '📂 Importar favoritos', description: 'Abre un archivo de despegues favoritos.' } },
 
             { element: '#btn-guardar-favoritos',
-                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Tras exportarlo, te ofrecerá compartirlo.<br><br>Nota: Los favoritos realmente se guardan automáticamente cada vez que marcas uno. Este botón sirve para hacer una copia de todos en un archivo externo (como backup o para compartirlo). <br><br>💡 Si te mueves por varias zonas de vuelo distantes, puede interesarte tener los favoritos de cada zona guardados en archivos diferentes.' } },
+                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Nota: Los favoritos realmente se guardan automáticamente cada vez que marcas uno. Este botón sirve para hacer una copia de todos en un archivo externo (como backup o para compartirlo). <br><br>💡 Si te mueves por varias zonas de vuelo distantes, puede interesarte tener los favoritos de cada zona guardados en archivos diferentes.' } },
 
             { element: '#btn-guia-edicion-favoritos',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_ayuda_60.webp" width="20" height="20" style="display: block;"><span>Guía rápida</span></div>', description: 'Muestra esta guía.' } },
@@ -1464,7 +1551,8 @@ function confirmarSeleccionMasiva() {
     }, 50);
 }
 
-function finalizarEdicionFavoritos() {
+// Parámetro opcional 'ignorarMenu' que por defecto es false
+function finalizarEdicionFavoritos(ignorarMenu = false) {
     resetFiltroCondiciones(false); 
     resetFiltroDistancia(false);
 
@@ -1499,10 +1587,12 @@ function finalizarEdicionFavoritos() {
 
     setTimeout(() => { sugerirGuiaPrincipal(); }, 500);
 
-    // Activar visualmente el botón Tabla en el menú inferior
-    const navHome = document.getElementById('nav-home');
-    if (navHome && typeof window.activarMenuInferior === 'function') {
-        window.activarMenuInferior(navHome);
+    // Si NO le hemos dicho que ignore el menú, iluminamos "Tabla"
+    if (ignorarMenu !== true) {
+        const navHome = document.getElementById('nav-home');
+        if (navHome && typeof window.activarMenuInferior === 'function') {
+            window.activarMenuInferior(navHome);
+        }
     }
 
     return true; 
@@ -4867,16 +4957,10 @@ function alternardivConfiguracion(event) {
 
 	divconfiguracion.classList.toggle("activo", !activo);
 	
-    // Deshundo/Hundo el botón antiguo si existe (Seguridad)
     const btnConfigAntiguo = document.getElementById("btn-div-configuracion-toggle");
 	if (btnConfigAntiguo) btnConfigAntiguo.classList.toggle("activo", !activo);
 
     if (typeof setModoEnfoque === "function") { setModoEnfoque(!activo); }
-
-    // Si estamos CERRANDO el panel, activamos la auto-detección del menú
-    if (activo && typeof window.activarMenuInferior === "function") {
-        window.activarMenuInferior(); 
-    }
 }
 
 function btnRestablecerConfiguración() {
@@ -7045,60 +7129,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 2. Lógica de activar el botón del menú inferior
     window.activarMenuInferior = function(botonClicado) {
-        
-        const panelDistancia = document.getElementById("div-filtro-distancia");
-        const distanciaVisible = panelDistancia && panelDistancia.classList.contains("activo");
-        
-        const panelConfig = document.getElementById("div-configuracion");
-        const configAbierta = panelConfig && panelConfig.classList.contains("activo");
-
-        // NUEVO: Comprobar si el mapa está visible
-        const vistaMapa = document.getElementById('vista-mapa');
-        const mapaVisible = vistaMapa && vistaMapa.style.display === 'flex';
-
-        let botonActivar = botonClicado;
-
-        if (botonClicado) {
-            // Lógica de transición de fondos azules cuando CLICAMOS en un botón
-            if (botonClicado.id === 'nav-search' && buscadorVisible) {
-                botonActivar = configAbierta ? document.getElementById('nav-settings')
-                             : distanciaVisible ? document.getElementById('nav-distance') 
-                             : document.getElementById('nav-home');
-            } 
-            else if (botonClicado.id === 'nav-distance' && distanciaVisible) {
-                botonActivar = configAbierta ? document.getElementById('nav-settings')
-                             : buscadorVisible ? document.getElementById('nav-search') 
-                             : document.getElementById('nav-home');
-            } 
-            else if (botonClicado.id === 'nav-settings' && configAbierta) {
-                botonActivar = buscadorVisible ? document.getElementById('nav-search') 
-                             : distanciaVisible ? document.getElementById('nav-distance') 
-                             : document.getElementById('nav-home');
-            }
-        } else {
-            // LÓGICA DE AUTO-DETECCIÓN (Cuando cerramos paneles desde una X o el fondo)
-            if (configAbierta) botonActivar = document.getElementById('nav-settings');
-            else if (buscadorVisible) botonActivar = document.getElementById('nav-search');
-            else if (distanciaVisible) botonActivar = document.getElementById('nav-distance');
-            else if (mapaVisible) botonActivar = document.getElementById('nav-map'); // <--- AHORA SÍ DETECTA EL MAPA
-            else botonActivar = document.getElementById('nav-home');
-        }
+        if (!botonClicado) return; // Si no hay botón, no hace nada
 
         // Limpiamos todos los botones
         const botones = document.querySelectorAll('.bottom-nav .nav-item');
         botones.forEach(btn => btn.classList.remove('active'));
         
-        // Aplicamos el azul al botón correspondiente
-        if (botonActivar) {
-            botonActivar.classList.add('active');
-        }
-        
-        // Esconder buscador SOLO si se pulsa Tabla o Mapa explícitamente
-        if (botonClicado && buscadorVisible) {
-            if (botonClicado.id === 'nav-home' || botonClicado.id === 'nav-map') {
-                window.toggleBuscadorFlotante();
-            }
-        }
+        // Aplicamos el azul al botón seleccionado
+        botonClicado.classList.add('active');
     };
 
     // 3. Fix para redibujar los sliders cuando abres los Acordeones de Configuración
@@ -7137,6 +7175,110 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+
+    // ==========================================================================
+    // 🔴 LÓGICA DEL MENÚ INFERIOR
+    // ==========================================================================
+
+    // 1️⃣ BOTÓN TABLA
+    window.clicBotonTabla = function() {
+        // A. Cierra la edición de favoritos (si estaba abierta)
+        if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+            if (!finalizarEdicionFavoritos(true)) return; // Si falla (0 favoritos), se cancela
+        }
+
+        // B. Cierra buscador si está vacío
+        const searchContainer = document.getElementById('floating-search-container');
+        const searchInput = document.getElementById('buscador-despegues-provincias');
+        if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
+            if (searchInput && searchInput.value.trim() === '') {
+                window.toggleBuscadorFlotante();
+            }
+        }
+
+        // C. Cierra filtro de distancia si no se ha usado
+        const panelDistancia = document.getElementById("div-filtro-distancia");
+        if (panelDistancia && panelDistancia.classList.contains("activo")) {
+            const sliderDistancia = document.getElementById('distancia-slider');
+            let sliderModificado = false;
+            if (sliderDistancia && sliderDistancia.noUiSlider) {
+                const maxIndex = CORTES_DISTANCIA_GLOBAL.length - 1; 
+                const currentValue = Math.round(parseFloat(sliderDistancia.noUiSlider.get()));
+                if (currentValue < maxIndex) sliderModificado = true;
+            }
+            if (!sliderModificado) {
+                panelDistancia.classList.remove("activo");
+            }
+        }
+
+        // D. Cierra los ajustes (por si veníamos de ahí)
+        const panelConfig = document.getElementById("div-configuracion");
+        if (panelConfig && panelConfig.classList.contains("activo")) {
+            alternardivConfiguracion(); // Usamos su función natural para que quite el desenfoque
+        }
+
+        // E. Volvemos a la vista principal
+        cambiarVista('tabla');
+        window.activarMenuInferior(document.getElementById('nav-home'));
+    };
+
+
+    // 2️⃣ BOTÓN BUSCAR
+    window.clicBotonBuscar = function() {
+        cambiarVista('tabla');
+        window.toggleBuscadorFlotante();
+        window.activarMenuInferior(document.getElementById('nav-search'));
+    };
+
+
+    // 3️⃣ BOTÓN DISTANCIA
+    window.clicBotonDistancia = function() {
+        cambiarVista('tabla');
+        alternardivDistancia(); // La función original ya maneja su apertura/cierre
+        
+        // Comprobamos si quedó abierto o cerrado para iluminar el botón
+        const panelDistancia = document.getElementById("div-filtro-distancia");
+        if (panelDistancia && panelDistancia.classList.contains("activo")) {
+            window.activarMenuInferior(document.getElementById('nav-distance'));
+        } else {
+            window.activarMenuInferior(document.getElementById('nav-home'));
+        }
+    };
+
+
+    // 4️⃣ BOTÓN MAPA
+    window.clicBotonMapa = function() {
+        cambiarVista('mapa');
+        window.activarMenuInferior(document.getElementById('nav-map'));
+    };
+
+
+    // 5️⃣ BOTÓN AJUSTES
+    window.clicBotonAjustes = function() {
+        // A. Cierra la edición de favoritos ANTES de abrir ajustes
+        if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+            if (!finalizarEdicionFavoritos(true)) {
+                // Si falla, iluminamos la Tabla para avisar del error
+                window.activarMenuInferior(document.getElementById('nav-home'));
+                return; 
+            }
+        }
+
+        // B. Volvemos a la tabla si estábamos en el mapa
+        cambiarVista('tabla');
+        
+        // C. Abrimos/Cerramos el panel
+        alternardivConfiguracion(); 
+
+        // D. Iluminamos el botón correcto
+        const panelConfig = document.getElementById("div-configuracion");
+        if (panelConfig && panelConfig.classList.contains("activo")) {
+            window.activarMenuInferior(document.getElementById('nav-settings'));
+        } else {
+            window.activarMenuInferior(document.getElementById('nav-home'));
+        }
+    };
 
 }); //document . addEventListener('DOMContentLoaded', function() {
 
