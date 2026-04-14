@@ -7181,48 +7181,47 @@ document.addEventListener('DOMContentLoaded', function() {
     // 🔴 LÓGICA DEL MENÚ INFERIOR
     // ==========================================================================
 
-    // 1️⃣ BOTÓN TABLA
-    window.clicBotonTabla = function() {
+    // 1️⃣ BOTÓN INICIO (Reset Total)
+    window.clicBotonInicio = function() {
         // A. Cierra la edición de favoritos (si estaba abierta)
         if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
-            if (!finalizarEdicionFavoritos(true)) return; // Si falla (0 favoritos), se cancela
+            if (!finalizarEdicionFavoritos(true)) return; 
         }
 
-        // B. Cierra buscador si está vacío
-        const searchContainer = document.getElementById('floating-search-container');
+        // B. RESET DE BUSCADOR: Limpia texto y oculta la barra
         const searchInput = document.getElementById('buscador-despegues-provincias');
-        if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
-            if (searchInput && searchInput.value.trim() === '') {
-                window.toggleBuscadorFlotante();
-            }
+        if (searchInput) searchInput.value = ''; // Borramos el texto
+        if (typeof buscadorVisible !== 'undefined' && buscadorVisible) {
+            window.toggleBuscadorFlotante(); // Ocultamos la barra si estaba abierta
+        }
+        if (typeof limpiarBuscador === 'function') {
+            limpiarBuscador(); // Ejecuta la limpieza interna de la tabla
         }
 
-        // C. Cierra filtro de distancia si no se ha usado
-        const panelDistancia = document.getElementById("div-filtro-distancia");
-        if (panelDistancia && panelDistancia.classList.contains("activo")) {
-            const sliderDistancia = document.getElementById('distancia-slider');
-            let sliderModificado = false;
-            if (sliderDistancia && sliderDistancia.noUiSlider) {
-                const maxIndex = CORTES_DISTANCIA_GLOBAL.length - 1; 
-                const currentValue = Math.round(parseFloat(sliderDistancia.noUiSlider.get()));
-                if (currentValue < maxIndex) sliderModificado = true;
-            }
-            if (!sliderModificado) {
-                panelDistancia.classList.remove("activo");
-            }
+        // C. RESET DE DISTANCIA: Slider al máximo ("Todo") y oculta el panel
+        if (typeof resetFiltroDistancia === 'function') {
+            resetFiltroDistancia(false); // false para que no reconstruya la tabla todavía
         }
 
-        // D. Cierra los ajustes (por si veníamos de ahí)
+        // D. RESET DE CONDICIONES (Opcional pero recomendado para un "Inicio" real)
+        if (typeof resetFiltroCondiciones === 'function') {
+            resetFiltroCondiciones(false); 
+        }
+
+        // E. Cierra los ajustes (por si veníamos de ahí)
         const panelConfig = document.getElementById("div-configuracion");
         if (panelConfig && panelConfig.classList.contains("activo")) {
-            alternardivConfiguracion(); // Usamos su función natural para que quite el desenfoque
+            alternardivConfiguracion(); 
         }
 
-        // E. Volvemos a la vista principal
+        // F. Volvemos a la vista de Tabla, reconstruimos una sola vez y marcamos el botón
         cambiarVista('tabla');
+        construir_tabla(); // Reconstrucción limpia final
         window.activarMenuInferior(document.getElementById('nav-home'));
+        
+        // Scroll al principio para que se vea el reset
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-
 
     // 2️⃣ BOTÓN BUSCAR
     window.clicBotonBuscar = function() {
@@ -7246,13 +7245,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-
     // 4️⃣ BOTÓN MAPA
     window.clicBotonMapa = function() {
         cambiarVista('mapa');
         window.activarMenuInferior(document.getElementById('nav-map'));
     };
-
 
     // 5️⃣ BOTÓN AJUSTES
     window.clicBotonAjustes = function() {
