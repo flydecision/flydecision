@@ -2002,7 +2002,7 @@ span.grados {
 
 /* 5. CORRECCIÓN DE LA FLECHA APUNTADORA (Del mismo color que la caja) */
 div.driver-popover-arrow {
-    display: block !important;
+    display: none !important;
 }
 .driver-popover-arrow-side-top { border-bottom-color: #dbeafe !important; }
 .driver-popover-arrow-side-bottom { border-top-color: #dbeafe !important; }
