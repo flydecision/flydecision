@@ -646,7 +646,7 @@ function sugerirGuiaPrincipal(forzar = false) {
 
     // Eliminamos el checkbox y simplificamos el texto de ayuda
     const htmlAyuda = !forzar 
-        ? `<p style="color: #555; margin-top: 10px;">Si eliges "No", podrás verla más tarde en:<br><i>⚙️ Ajustes</i> → <i>Guía</i></p>`
+        ? `<p style="color: #555; margin-top: 10px;">Puedes verla cuando quieras en:<br><i>⚙️ Ajustes</i> → <i>Guía</i></p>`
         : ''; 
 
     const botonesModal =[
@@ -808,7 +808,7 @@ function sugerirGuiaFavoritos(forzar = false) {
 
     // Eliminamos el checkbox y ajustamos el texto informativo
     const htmlAyuda = !forzar 
-        ? `<p style="color: #555; margin-top: 10px;">Si eliges "No", podrás verla más tarde con el botón <img src="icons/icono_ayuda_60.webp" width="18" height="18" style="vertical-align:middle;"> de esta pantalla.</p>`
+        ? `<p style="color: #555; margin-top: 10px;">Puedes verla cuando quieras con el botón <img src="icons/icono_ayuda_60.webp" width="18" height="18" style="vertical-align:middle;"> de esta pantalla.</p>`
         : ''; 
 
     const botonesModal =[
