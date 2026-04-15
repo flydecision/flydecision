@@ -1038,11 +1038,6 @@ function iniciarGuiaFavoritos(forzar = false) {
         onDestroyStarted: () => {
             localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
             driverObj.destroy();
-            setTimeout(() => {
-                if (typeof clicBotonInicio === 'function') {
-                    clicBotonInicio();
-                }
-            }, 100);
         }
     });
 
