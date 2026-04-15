@@ -7278,29 +7278,70 @@ document.addEventListener('DOMContentLoaded', function() {
         window.activarMenuInferior(document.getElementById('nav-home'));
     };
 
-    // 2️⃣ BOTÓN BUSCAR: Solo asegura que estemos en tabla y el panel abierto
+    // 2️⃣ BOTÓN BUSCAR
     window.clicBotonBuscar = function() {
-        cambiarVista('tabla');
-        
         const searchContainer = document.getElementById('floating-search-container');
-        // Si el panel está oculto, lo abrimos. Si ya estaba abierto, no hacemos nada (persistencia)
-        if (searchContainer && searchContainer.classList.contains('floating-search-hidden')) {
-            window.toggleBuscadorFlotante();
+        const searchInput = document.getElementById('buscador-despegues-provincias');
+        const isSearchOpen = searchContainer && !searchContainer.classList.contains('floating-search-hidden');
+
+        // REGLA: Si está abierto y vacío, lo cerramos "en silencio" (sin tocar la tabla)
+        if (isSearchOpen && searchInput && searchInput.value.trim() === '') {
+            searchContainer.classList.add('floating-search-hidden');
+            buscadorVisible = false;
+            searchInput.blur();
+            // Iluminamos Inicio
+            window.activarMenuInferior(document.getElementById('nav-home'));
+        } else {
+            cambiarVista('tabla');
+            if (!isSearchOpen) {
+                window.toggleBuscadorFlotante();
+            }
+            window.activarMenuInferior(document.getElementById('nav-search'));
         }
-        
-        window.activarMenuInferior(document.getElementById('nav-search'));
     };
 
-    // 3️⃣ BOTÓN DISTANCIA: Solo asegura que estemos en tabla y el panel abierto
+    // 3️⃣ BOTÓN DISTANCIA (Corregido: Cierre silencioso sin scroll)
     window.clicBotonDistancia = function() {
-        cambiarVista('tabla');
-        
         const panelDistancia = document.getElementById("div-filtro-distancia");
-        // Si el panel está cerrado, lo abrimos. Si ya estaba abierto, se queda (persistencia)
-        if (panelDistancia && !panelDistancia.classList.contains("activo")) {
-            alternardivDistancia();
+        if (!panelDistancia) return;
+
+        const isDistanceOpen = panelDistancia.classList.contains("activo");
+        const sliderDistancia = document.getElementById('distancia-slider');
+        
+        let filtrandoCosas = false;
+        if (sliderDistancia && sliderDistancia.noUiSlider) {
+            const maxIndex = CORTES_DISTANCIA_GLOBAL.length - 1;
+            const currentValue = Math.round(parseFloat(sliderDistancia.noUiSlider.get()));
+            // Si el valor es menor que el máximo ("Todo"), es que está filtrando
+            if (currentValue < maxIndex) filtrandoCosas = true;
         }
 
+        // CASO A: Si está abierto y NO está filtrando nada, lo cerramos visualmente
+        if (isDistanceOpen && !filtrandoCosas) {
+            // Quitamos la clase directamente sin llamar a alternardivDistancia()
+            // así evitamos que se ejecute el reset que reconstruye la tabla.
+            panelDistancia.classList.remove("activo");
+            
+            // Iluminamos Inicio y salimos
+            window.activarMenuInferior(document.getElementById('nav-home'));
+            return; 
+        }
+
+        // CASO B: Abrir el panel o mantenerse si hay datos
+        cambiarVista('tabla');
+        
+        if (!isDistanceOpen) {
+            // Si estaba cerrado, lo abrimos
+            panelDistancia.classList.add("activo");
+            // Pequeño refresco técnico del slider
+            setTimeout(() => {
+                if (sliderDistancia && sliderDistancia.noUiSlider) {
+                    sliderDistancia.noUiSlider.updateOptions({}, true);
+                }
+            }, 50);
+        }
+        
+        // Iluminamos el botón de Distancia
         window.activarMenuInferior(document.getElementById('nav-distance'));
     };
 
