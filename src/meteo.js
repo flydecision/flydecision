@@ -723,33 +723,7 @@ function iniciarGuiaPrincipal(forzar = false) {
         doneBtnText: 'Cerrar guía',
 
         steps: [
-            { 
-                element: '#caja-fantasma-guia',
-                popover: { title: '🪂 Tabla de despegues favoritos', description: 'Muestra el pronóstico y puntuación de condiciones (despegue y XC).<br><br>Los despegues se ordenan siempre por puntuación de despegue.' },
-                onHighlightStarted: () => {
-                    const thead = document.querySelector('#tabla thead');
-                    const finPrimerDespegue = document.querySelector('#tabla tbody tr.fila-fin-despegue'); 
-                    const wrapper = document.querySelector('.tabla-wrapper'); // <--- NUEVO
-                    const fantasma = document.getElementById('caja-fantasma-guia');
-                    
-                    if (thead && finPrimerDespegue && wrapper && fantasma) {
-                        const rectArriba = thead.getBoundingClientRect();
-                        const rectAbajo = finPrimerDespegue.getBoundingClientRect();
-                        const rectWrapper = wrapper.getBoundingClientRect(); // <--- NUEVO
-                        
-                        fantasma.style.top = (rectArriba.top + window.scrollY) + 'px';
-                        
-                        // TRUCO: Usamos la posición y ancho de la caja visible, NO de la tabla entera
-                        fantasma.style.left = (rectWrapper.left + window.scrollX) + 'px';
-                        fantasma.style.width = rectWrapper.width + 'px';
-                        
-                        fantasma.style.height = (rectAbajo.bottom - rectArriba.top) + 'px'; 
-                    }
-                },
-                onDeselected: () => {
-                    // SEGURO: Obliga al navegador a volver al centro exacto al pasar de paso
-                    window.scrollTo({ left: 0, top: 0, behavior: 'instant' });
-                }
+            { popover: { title: '🪂 Pantalla principal', description: 'Esta es la pantalla de uso habitual de la aplicación.<br><br>Muestra una tabla con todos los despegues que has seleccionado como favoritos y muestra su pronóstico y puntuación de condiciones (para despegar y para iniciar rutas XC).<br><br>Los despegues están siempre ordenados automáticamente por su puntuación de condiciones para despegar (de mayor a menor).' },
             },
 
             { element: '.div-paneles-controles-transparente', 
@@ -950,30 +924,8 @@ function iniciarGuiaFavoritos(forzar = false) {
         doneBtnText: 'Cerrar guía',
 
         steps: [
-            { element: '#caja-fantasma-guia', 
-                popover: { title: '🪂 Tabla de todos los despegues', description: 'Esta pantalla sirve para seleccionar los despegues que usas habitualmente. La pantalla normal mostrará solo estos favoritos.<br><br>Por el momento están los despegues de España, Portugal, Pirineos y parte de Alpes. Esta aplicación es un proyecto en desarrollo.'},
-
-                onHighlightStarted: () => {
-                    const thead = document.querySelector('#tabla thead');
-                    const finPrimerDespegue = document.querySelector('#tabla tbody tr.fila-fin-despegue');
-                    const wrapper = document.querySelector('.tabla-wrapper');
-                    const fantasma = document.getElementById('caja-fantasma-guia');
-                    
-                    if (thead && finPrimerDespegue && wrapper && fantasma) {
-                        const rectArriba = thead.getBoundingClientRect();
-                        const rectAbajo = finPrimerDespegue.getBoundingClientRect();
-                        const rectWrapper = wrapper.getBoundingClientRect();
-                        
-                        fantasma.style.top = (rectArriba.top + window.scrollY) + 'px';
-                        fantasma.style.left = (rectWrapper.left + window.scrollX) + 'px';
-                        fantasma.style.width = rectWrapper.width + 'px';
-                        fantasma.style.height = (rectAbajo.bottom - rectArriba.top) + 'px';
-                    }
-                },
-                onDeselected: () => {
-                    window.scrollTo({ left: 0, top: 0, behavior: 'instant' });
-                }
-            
+            {  
+                popover: { title: '🪂 Pantalla de edición de despegues favoritos', description: 'En esta pantalla tienes todos los despegues disponibles actualmente. Aquí seleccionas los despegues que usas habitualmente. La pantalla de uso normal de la aplicación mostrará solo estos despegues favoritos.<br><br>Realmente podrías seleccionar todos pero, según dispositivo, ralentizará luego las búsquedas y su uso diario.<br><br>Por el momento están los despegues de España, Portugal, Pirineos y parte de Alpes. Esta aplicación es un proyecto en crecimiento.'},            
             },
 
             { element: '#tabla tbody tr:nth-child(1) td:first-child', 
