@@ -7282,7 +7282,18 @@ document.addEventListener('DOMContentLoaded', function() {
             return; 
         }
 
-        // CASO B: Abrir el panel o mantenerse si hay datos
+        // Caso B: Cerrar buscador si está abierto y vacío ---
+        const searchContainer = document.getElementById('floating-search-container');
+        const searchInput = document.getElementById('buscador-despegues-provincias');
+        const isSearchOpen = searchContainer && !searchContainer.classList.contains('floating-search-hidden');
+
+        if (!isDistanceOpen && isSearchOpen && searchInput && searchInput.value.trim() === '') {
+            searchContainer.classList.add('floating-search-hidden');
+            buscadorVisible = false; // Variable global del buscador
+            searchInput.blur();
+        }
+
+        // CASO C: Abrir el panel o mantenerse si hay datos
         cambiarVista('tabla');
         
         if (!isDistanceOpen) {
