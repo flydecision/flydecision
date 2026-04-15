@@ -7204,30 +7204,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 1️⃣ BOTÓN INICIO: Único botón que resetea y limpia todo
     window.clicBotonInicio = function() {
+        let necesitaReconstruir = false;
+
+        // 1. Salir de edición de favoritos si estamos en ella
         if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+            // finalizarEdicionFavoritos ya llama a construir_tabla() internamente si tiene éxito
             if (!finalizarEdicionFavoritos(true)) return; 
+            // Como ya se reconstruyó la tabla dentro de finalizarEdicionFavoritos, no lo hacemos de nuevo.
+        } else {
+            // 2. Comprobar si hay filtros activos que modifiquen la tabla y requieran reconstrucción
+            if (typeof ultimaDistanciaConfirmada !== 'undefined' && typeof CORTES_DISTANCIA_GLOBAL !== 'undefined') {
+                if (ultimaDistanciaConfirmada < (CORTES_DISTANCIA_GLOBAL.length - 1)) {
+                    necesitaReconstruir = true;
+                }
+            }
+            if (typeof ultimaCondicionConfirmada !== 'undefined' && ultimaCondicionConfirmada > 0) {
+                necesitaReconstruir = true;
+            }
         }
 
-        // Reset total de filtros
-        const searchInput = document.getElementById('buscador-despegues-provincias');
-        if (searchInput) searchInput.value = ''; 
-        if (typeof buscadorVisible !== 'undefined' && buscadorVisible) {
-            window.toggleBuscadorFlotante(); 
-        }
-        if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
-
+        // 3. Reset visual y de estado de los filtros (pasamos false para que no reconstruyan por su cuenta)
         if (typeof resetFiltroDistancia === 'function') { resetFiltroDistancia(false); }
         if (typeof resetFiltroCondiciones === 'function') { resetFiltroCondiciones(false); }
 
+        // 4. Limpiar buscador (esto solo oculta filas por CSS, no requiere reconstruir la tabla y mantiene el scroll)
+        const searchInput = document.getElementById('buscador-despegues-provincias');
+        if (searchInput && searchInput.value.trim() !== '') {
+            if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
+        }
+        
+        // Ocultar la barra del buscador si está visible
+        if (typeof buscadorVisible !== 'undefined' && buscadorVisible) {
+            window.toggleBuscadorFlotante(); 
+        }
+
+        // 5. Cerrar panel de configuración si está abierto
         const panelConfig = document.getElementById("div-configuracion");
         if (panelConfig && panelConfig.classList.contains("activo")) {
             alternardivConfiguracion(); 
         }
 
+        // 6. Volver a la vista de tabla
         cambiarVista('tabla');
-        construir_tabla(); 
+
+        // 7. Reconstruir solo si algún filtro lo requiere
+        if (necesitaReconstruir) {
+            construir_tabla(); 
+        }
+
+        // 8. Iluminar botón inicio
         window.activarMenuInferior(document.getElementById('nav-home'));
-        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     // 2️⃣ BOTÓN BUSCAR: Solo asegura que estemos en tabla y el panel abierto
