@@ -797,25 +797,26 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { title: '🟩🟧🟥 Fila de Cizalladura / Fiabilidad', description: 'Esta fila especial es un indicador combinado. Es un semáforo de colores que muestra simultáneamente dos datos concurrentes: la Cizalladura de Bajo Nivel y la Fiabilidad del pronóstico de viento a 10 m de altura.'} },
 
             { element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
-                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse o iniciar Cross Country (XC).<br><br>Los despegues se reordenan automáticamente por puntuación de Condiciones para despegar.<br><br>En ⚙️ Ajustes puedes personalizar tus límites para el cálculo.' } },
+                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse en térmicas o iniciar Cross Country (XC).<br><br>Los despegues se reordenan automáticamente por puntuación de Condiciones para despegar.<br><br>En ⚙️ Ajustes puedes personalizar tus límites para el cálculo.' } },
 
             { element: '.btn-info.btn-abajo-izquierda', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue y un botón para acceder a su mapa.<br><br>💡 El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue, enlaces a pronósticos de Windy, Meteo-parapente, Meteoblue y un botón para acceder a su mapa.<br><br>💡 El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
 
             { element: '#nav-home',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Inicio</span></div>', description: 'Muestra la tabla con todos los despegues favoritos. Si hay búsquedas o filtros activos, los desactiva.<br><br>💡 Si te pierdes con algunas funciones, pulsa este botón para ir a la vista "normal".'} },
 
             { element: '#nav-search',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Buscar</span></div>', description: 'Muestra una casilla para buscar despegues por su nombre, su región o su provincia (puedes escribir sin tildes).'} },
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Buscar</span></div>', description: 'Muestra una casilla para buscar despegues por su nombre o por su zona administrativa (normalmente será la provincia). Puedes escribir sin tildes para mayor agilidad.'} },
 
             { element: '#nav-distance',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Distancia</span></div>', 
-                    description: 'Muestra un deslizador que permite filtrar solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro.'}, 
+                    description: 'Muestra un deslizador que permite filtrar solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro.'}
             },
 
-            { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Te ofrecerá usar un mapa o la propia localización del dispositivo.'},
-                onHighlighted: () => {
+            { element: '#div-filtro-distancia-interno',
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Distancia</span></div>', 
+                    description: 'Es un filtro que te permite mostrar solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para encontrar rápidamente los despegues que estén en un radio de distancia que elijas alrededor de un punto.'},
+                    onHighlighted: () => {
                     const panel = document.getElementById('div-filtro-distancia');
                     if (panel && !panel.classList.contains('activo')) {
                         const btn = document.getElementById('nav-distance');
@@ -825,8 +826,12 @@ function iniciarGuiaPrincipal(forzar = false) {
                 }
             },
 
+            { element: '#btn-abrir-geo-menu',
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual.'},
+            },
+
             { element: '#btn-incluir-no-favs-distancia',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></span> Incluir no favoritos', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>💡 Esto es útil cuando viajamos y buscamos las mejores condiciones fuera de nuestra zona de favoritos.'},
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></span> Incluir no favoritos', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>💡 Sirve para buscar rápidamente condiciones de vuelo en despegues de diferentes zonas fuera de nuestra zona de favoritos.'},
             },
 
             { element: '#distancia-slider',
@@ -980,35 +985,18 @@ function iniciarGuiaFavoritos(forzar = false) {
             { element: '.btn-info.btn-abajo-izquierda', 
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Muestra información más completa del despegue y un botón para acceder a su mapa.' } },
 
-            { element: '#nav-search',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Buscar</span></div>', description: 'Busca despegues escribiendo su nombre, su región o su provincia (puedes escribir sin tildes).'} },
+            { element: '#buscador-wrapper',
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Buscar</span></div>', description: 'Busca despegues escribiendo su región, su provincia o su nombre. Puedes escribir sin tildes para mayor agilidad.'} },
 
-            { element: '#nav-distance',
+            { element: '#div-filtro-distancia-interno',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Distancia</span></div>', 
-                    description: 'Muestra solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para seleccionar rápidamente como favoritos los despegues que estén en un radio de X km alrededor de un punto.<br><br>👉🏽 Voy a abrirlo.'} },
+                    description: 'Es un filtro que te permite mostrar solo despegues alrededor de un punto.<br><br>💡 Puede servirte para encontrar rápidamente los despegues que estén en un radio de distancia que elijas alrededor de un punto.'} },
 
             { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Con este botón eliges el centro del radio de búsqueda por distancia. Te ofrecerá usar un mapa o usar tu ubicación.'},
-                onHighlighted: () => {
-                    const panel = document.getElementById('div-filtro-distancia');
-                    if (panel && !panel.classList.contains('activo')) {
-                        const btn = document.getElementById('nav-distance');
-                        if (btn) btn.click();
-                    }
-                    setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 300);
-                }
-            },
+                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Con este botón eliges el centro del radio de búsqueda por distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual.'} },
 
             { element: '#distancia-slider',
-                popover: { title: 'Distancia al punto', description: 'Arrastrando este deslizador eliges los kilómetros de distancia máxima.' },
-                onDeselected: () => {
-                    const panel = document.getElementById('div-filtro-distancia');
-                    if (panel && panel.classList.contains('activo')) {
-                        const btn = document.getElementById('nav-distance');
-                        if (btn) btn.click();
-                    }
-                }
-            },
+                popover: { title: 'Distancia al punto', description: 'Arrastrando este deslizador eliges los kilómetros de distancia máxima.'} },
 
             { element: '#btn-filtro-favoritos-toggle',
                 popover: { 
@@ -3244,7 +3232,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             "<li>Lluvia (veto automático y 0 puntos a la hora afectada).</li>" +
             "</ul>" +
             
-            "<b>2. Condiciones para mantenerse o iniciar XC (fila inferior):</b><br>" +
+            "<b>2. Condiciones para mantenerse en térmicas o iniciar XC (fila inferior):</b><br>" +
             "Valora la puntuación de Condiciones del despegue y el potencial térmico para vuelos de distancia (Cross Country) usando los datos del modelo ECMWF:" +
             "<ul style='margin-top: 4px; margin-bottom: 8px;'>" +
             "<li><b>Techo:</b> Premia techos altos sobre la altura media del relieve y penaliza bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li>" +
