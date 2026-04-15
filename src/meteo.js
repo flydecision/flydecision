@@ -1068,11 +1068,31 @@ function activarEdicionFavoritos() {
         }
     }
 
-	modoEdicionFavoritos = true;
-    soloFavoritos = false; // Aseguramos que empezamos viendo todos
+    modoEdicionFavoritos = true;
+    soloFavoritos = false;
+
+    // 📍 1. ABRIR FILTRO DISTANCIA
+    const panelDistancia = document.getElementById("div-filter-distancia") || document.getElementById("div-filtro-distancia");
+    if (panelDistancia) {
+        panelDistancia.classList.add("activo");
+        // Forzar actualización del slider de distancia
+        setTimeout(() => {
+            const sliderDist = document.getElementById('distancia-slider');
+            if (sliderDist && sliderDist.noUiSlider) sliderDist.noUiSlider.updateOptions({}, true);
+        }, 50);
+    }
+
+    // 🔍 2. ABRIR BUSCADOR (Forzado manual para evitar que alternardivDistancia lo cierre)
+    const searchContainer = document.getElementById('floating-search-container');
+    if (searchContainer) {
+        searchContainer.classList.remove('floating-search-hidden');
+        buscadorVisible = true; // Actualizamos la variable global del buscador
+    }
+    if (inputBuscador) {
+        inputBuscador.placeholder = "🔍 Buscar región, provincia o despegue...";
+    }
 
     document.body.classList.add('modo-edicion-tabla');
-    
     const divMenu = document.getElementById('div-menu');
     if (divMenu) divMenu.classList.add('mode-editing');
     
@@ -1087,15 +1107,10 @@ function activarEdicionFavoritos() {
 
     if (typeof setModoEnfoque === "function") { setModoEnfoque(false); }
 
-	construir_tabla();
+    construir_tabla();
     actualizarContadorVisualFavoritos(); 
 
     setTimeout(() => { sugerirGuiaFavoritos(); }, 500);
-
-    const navFavs = document.getElementById('nav-favs');
-    if (navFavs && typeof window.activarMenuInferior === 'function') {
-        window.activarMenuInferior(navFavs);
-    }
 }
 
 function filtroVerSoloFavoritos() {
@@ -1566,41 +1581,48 @@ function confirmarSeleccionMasiva() {
 
 // Parámetro opcional 'ignorarMenu' que por defecto es false
 function finalizarEdicionFavoritos(ignorarMenu = false) {
-    resetFiltroCondiciones(false); 
-    resetFiltroDistancia(false);
+    favoritos = obtenerFavoritos();
 
-	favoritos = obtenerFavoritos();
-
-	if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { 
+    if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { 
         mensajeModalAceptar('', 
             '<p>Es necesario marcar al menos un despegue favorito ♥️</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
         );
-		return false; 
-	}
+        return false; 
+    }
+
+    // 🔍 CERRAR BUSCADOR
+    const searchContainer = document.getElementById('floating-search-container');
+    if (searchContainer) {
+        searchContainer.classList.add('floating-search-hidden');
+        buscadorVisible = false;
+    }
+    
+    // 📍 CERRAR FILTRO DISTANCIA
+    const panelDistancia = document.getElementById("div-filtro-distancia");
+    if (panelDistancia) {
+        panelDistancia.classList.remove("activo");
+    }
 
     document.body.classList.remove('modo-edicion-tabla');
-    
     const divMenu = document.getElementById('div-menu');
     if (divMenu) divMenu.classList.remove('mode-editing');
     
     const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
     if (divMenu2) divMenu2.classList.remove('mode-editing');
     
-    const btnToggleFav = document.getElementById('btn-filtro-favoritos-toggle');
-    if (btnToggleFav) btnToggleFav.classList.remove('filtro-aplicado');
-
     const panelHorario = document.querySelector('.div-filtro-horario');
     if (panelHorario) panelHorario.style.display = ''; 
 	
-	localStorage.setItem("METEO_PRIMERA_VISITA_HECHA", "true");
-	modoEdicionFavoritos = false; 
-	limpiarBuscador();
+    localStorage.setItem("METEO_PRIMERA_VISITA_HECHA", "true");
+    modoEdicionFavoritos = false; 
+    
+    // Al limpiar el buscador aquí, ya se restaurará el placeholder normal
+    limpiarBuscador(); 
     
     construir_tabla(); 
 
     setTimeout(() => { sugerirGuiaPrincipal(); }, 500);
 
-    // Si NO le hemos dicho que ignore el menú, iluminamos "Tabla"
     if (ignorarMenu !== true) {
         const navHome = document.getElementById('nav-home');
         if (navHome && typeof window.activarMenuInferior === 'function') {
