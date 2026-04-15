@@ -6677,7 +6677,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // 1. Panel Configuración
             const panelConfig = document.getElementById("div-configuracion");
             if (panelConfig && panelConfig.classList.contains("activo")) {
-                alternardivConfiguracion(); 
+                alternardivConfiguracion(); // Cierra el panel visualmente
+                // Iluminamos el botón de Inicio en el menú inferior
+                window.activarMenuInferior(document.getElementById('nav-home'));
                 return;
             }
 
