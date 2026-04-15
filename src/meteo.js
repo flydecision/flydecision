@@ -1525,6 +1525,13 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
         return false; 
     }
 
+    // 📍 CERRAR FILTRO DISTANCIA
+    // 1. Resetear el Filtro de Distancia (Valores y Variables)
+    if (typeof resetFiltroDistancia === 'function') {
+        // Pasamos 'false' para que no reconstruya la tabla todavía (lo haremos al final)
+        resetFiltroDistancia(false); 
+    }
+
     // 🔍 CERRAR BUSCADOR
     const searchContainer = document.getElementById('floating-search-container');
     if (searchContainer) {
@@ -1532,12 +1539,6 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
         buscadorVisible = false;
     }
     
-    // 📍 CERRAR FILTRO DISTANCIA
-    const panelDistancia = document.getElementById("div-filtro-distancia");
-    if (panelDistancia) {
-        panelDistancia.classList.remove("activo");
-    }
-
     document.body.classList.remove('modo-edicion-tabla');
     const divMenu = document.getElementById('div-menu');
     if (divMenu) divMenu.classList.remove('mode-editing');
@@ -6627,7 +6628,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	// ---------------------------------------------------------------
     
     // Solo activamos esto si estamos en una App Nativa (Android)
-    // (En iOS no existe botón atrás físico, así que no afecta)
     if (window.Capacitor && window.Capacitor.isNativePlatform()) {
         
         const App = window.Capacitor.Plugins.App;
@@ -6646,91 +6646,109 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // --- PRIORIDAD 1: Mensajes MODALES (Bloqueantes) ---
-            // SOLO cerramos los modales puros (ej: Alerta de "No has seleccionado favoritos")
-            // Si cerramos esto, seguimos en la pantalla de edición, que es lo correcto.
             const modalAbierto = document.querySelector('.mensaje-modal.visible');
             if (modalAbierto) {
                 GestorMensajes.ocultar();
                 return; 
             }
 
-            // --- PRIORIDAD 1.5: Modal de Geolocalización (Código especial) ---
-            const modalGeo = document.getElementById("modal-geo-menu");
-            // Comprobamos si existe y si NO está oculto (display no es 'none')
-            if (modalGeo && modalGeo.style.display !== 'none') {
-                
-                // Opción Recomendada: Simular clic en la "X" de cerrar.
-                // Así, si tienes lógica extra al cerrar (limpiar mapas, variables, etc.), se ejecutará.
-                const btnCerrar = document.getElementById("btn-cerrar-menu");
-                if (btnCerrar) {
-                    btnCerrar.click();
-                } else {
-                    // Fallback: Si no encuentra el botón, lo ocultamos a la fuerza
-                    modalGeo.style.display = 'none';
-                }
-                return; // ¡Importante parar aquí!
+            // --- PRIORIDAD 1.5: Modal de Geolocalización / Mapa Origen ---
+            const modalMapaSelect = document.getElementById('modal-mapa');
+            if (modalMapaSelect && modalMapaSelect.style.display !== 'none') {
+                modalMapaSelect.style.display = 'none';
+                return;
             }
 
-            // --- PRIORIDAD 2: Modo Edición Favoritos (El cambio clave) ---
-            // Si estamos editando, el botón atrás actúa como el botón "Finalizar".
-            // Esto cerrará automáticamente el mensaje no-modal, restaurará el horario, etc.
+            // --- PRIORIDAD 2: Modo Edición Favoritos ---
             if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos === true) {
-                
-                // Intentamos cerrar llamando a la función y evaluando su resultado (true o false = no hay favoritos marcados)
                 finalizarEdicionFavoritos();
-                // Si NO se pudo cerrar (porque devolvió false, ej: lista vacía),
-                // tu función 'cerrar...' ya habrá mostrado un MODAL de error.
-                // La próxima vez que pulses atrás, saltará la PRIORIDAD 1 y cerrará ese error.
                 return; 
             }
 
             // --- PRIORIDAD 3: Otros Mensajes NO-MODALES ---
-            // Si hay algún otro mensaje flotante que NO sea el de favoritos (porque ya pasó el check anterior)
             const mensajeFlotante = document.querySelector('.mensaje-no-modal.visible');
             if (mensajeFlotante) {
                 GestorMensajes.ocultar();
                 return;
             }
 
-            // --- PRIORIDAD 4: Paneles Laterales ---
+            // --- PRIORIDAD 4: Paneles Laterales y Buscador ---
             
-            // Panel Configuración
+            // 1. Panel Configuración
             const panelConfig = document.getElementById("div-configuracion");
             if (panelConfig && panelConfig.classList.contains("activo")) {
                 alternardivConfiguracion(); 
                 return;
             }
 
-            // Panel Filtro Distancia
+            // 2. Panel Filtro Distancia (Sincronización de menú en ambos casos)
             const panelDistancia = document.getElementById("div-filtro-distancia");
             if (panelDistancia && panelDistancia.classList.contains("activo")) {
-                alternardivDistancia(); 
+                const sliderDistancia = document.getElementById('distancia-slider');
+                let filtrandoCosas = false;
+                
+                if (sliderDistancia && sliderDistancia.noUiSlider) {
+                    const maxIndex = CORTES_DISTANCIA_GLOBAL.length - 1;
+                    const currentValue = Math.round(parseFloat(sliderDistancia.noUiSlider.get()));
+                    if (currentValue < maxIndex) filtrandoCosas = true;
+                }
+
+                if (filtrandoCosas) {
+                    // Si estaba filtrando: reseteamos datos, cerramos y ponemos icono en INICIO
+                    if (typeof resetFiltroDistancia === 'function') {
+                        resetFiltroDistancia(); 
+                    }
+                } else {
+                    // Si solo estaba el panel abierto: cerramos visualmente y ponemos icono en INICIO
+                    panelDistancia.classList.remove("activo");
+                }
+                
+                // Asegura que el botón azul vuelva a Inicio
+                window.activarMenuInferior(document.getElementById('nav-home'));
                 return;
             }
 
-            // Panel Filtro Condiciones
-            const panelCondiciones = document.getElementById("div-filtro-condiciones");
-            if (panelCondiciones && panelCondiciones.classList.contains("activo")) {
-                // Cierre manual o con función toggle si tienes
-                panelCondiciones.classList.remove("activo");
-                const btnCond = document.getElementById("btn-div-filtro-condiciones-toggle");
-                if (btnCond) btnCond.classList.remove("activo");
-                if (typeof setModoEnfoque === "function") setModoEnfoque(false);
+            // 3. Buscador Flotante
+            const searchContainer = document.getElementById('floating-search-container');
+            const searchInput = document.getElementById('buscador-despegues-provincias');
+            if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
+                let tieneTexto = searchInput && searchInput.value.trim() !== '';
+                
+                if (tieneTexto) {
+                    // Si había búsqueda real, limpiamos todo y reconstruimos
+                    if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
+                }
+                
+                // En cualquier caso, cerramos la barra visualmente y marcamos Inicio
+                searchContainer.classList.add('floating-search-hidden');
+                buscadorVisible = false;
+                if (searchInput) searchInput.blur();
+                window.activarMenuInferior(document.getElementById('nav-home'));
                 return;
             }
-            
-            // Panel Horario (si aplica)
-            const panelHorario = document.querySelector('.div-filtro-horario');
-            if (panelHorario && panelHorario.style.display !== 'none' && panelHorario.classList.contains('activo')) {
-                // Tu lógica si el horario se expande/contrae
+
+            // 4. Panel Filtro Condiciones
+            const panelCondiciones = document.getElementById("div-filtro-condiciones");
+            if (panelCondiciones && panelCondiciones.classList.contains("activo")) {
+                // Misma lógica: si no hay estrellas, cierre silencioso
+                if (typeof ultimaCondicionConfirmada !== 'undefined' && ultimaCondicionConfirmada > 0) {
+                    if (typeof resetFiltroCondiciones === 'function') resetFiltroCondiciones();
+                } else {
+                    panelCondiciones.classList.remove("activo");
+                    const btnCond = document.getElementById("btn-div-filtro-condiciones-toggle");
+                    if (btnCond) btnCond.classList.remove("activo");
+                    window.activarMenuInferior(document.getElementById('nav-home'));
+                }
+                if (typeof setModoEnfoque === "function") setModoEnfoque(false);
                 return;
             }
 
             // Si estamos en el mapa, volver a la tabla
             const vistaMapa = document.getElementById('vista-mapa');
-            if (vistaMapa && vistaMapa.style.display === 'block') {
+            if (vistaMapa && vistaMapa.style.display === 'flex') { // En tu código usas flex para el mapa
                 cambiarVista('tabla');
-                return; // Detenemos la ejecución
+                window.activarMenuInferior(document.getElementById('nav-home'));
+                return; 
             }
 
             // --- PRIORIDAD FINAL: Salir de la App ---
