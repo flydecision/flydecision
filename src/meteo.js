@@ -2457,7 +2457,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 	
 	if (!silencioso) {
         mostrarLoading();
-        await new Promise(r => setTimeout(r, 50)); // Pausa técnica solo si mostramos loader
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // Pausa técnica solo si mostramos loader
     }
 
     // Ponemos la bandera de "Carga en proceso". Si el navegador peta durante esta función, esta bandera se quedará grabada.
@@ -7345,6 +7345,21 @@ document.addEventListener('DOMContentLoaded', function() {
 // 🔴 MAPA
 // ---------------------------------------------------------------
 
+// function cargarScriptDinamico(src) {
+//     return new Promise((resolve, reject) => {
+//         // Si el script ya está cargado, no lo añadimos otra vez
+//         if (document.querySelector(`script[src="${src}"]`)) {
+//             resolve();
+//             return;
+//         }
+//         const script = document.createElement('script');
+//         script.src = src;
+//         script.onload = resolve;
+//         script.onerror = reject;
+//         document.head.appendChild(script);
+//     });
+// }
+
 let mapaInicializado = false;
 
 window.cambiarVista = function(vista) {
@@ -7364,6 +7379,8 @@ window.cambiarVista = function(vista) {
         // 3. Inicializar SOLO la primera vez
         if (!mapaInicializado) {
             if (typeof inicializarMapaLeaflet === 'function') {
+                // await cargarScriptDinamico('js/leaflet.js');
+                // await cargarScriptDinamico('js/leaflet.markercluster.js');
                 inicializarMapaLeaflet(); 
             }
             mapaInicializado = true;
