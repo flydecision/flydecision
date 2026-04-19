@@ -44,17 +44,6 @@ let indicesHorasRangoHorario = []; // Contiene los índices válidos (ej: [5, 6,
 // Variable global para almacenar todos los despegues (sin filtrar)
 let bdGlobalDespegues = [];
 
-let chkAplicarCalibracion = localStorage.getItem("METEO_CHECKBOX_APLICAR_CALIBRACION") === "true";
-
-const calibracionVelocidad = 1.36; // Factor de calibración por defecto
-const calibracionRacha = 1.07; // Factor de calibración por defecto
-const calibracionDireccion = 7; // Factor de calibración por defecto (Grados a añadir a la dirección)
-
-let chkMostrarRafagosidad = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_RAFAGOSIDAD") === "true";
-// Límites rafagosidad: Verde (< 1.3): Viento laminar. La racha no supera en un 30% a la media. Aire estable. Naranja (1.3 a 1.6): Viento racheado. Rojo (> 1.6): Viento turbulento. La racha es más de un 60% superior a la media
-const rafagosidadUmbralNaranja = 1.5;
-const rafagosidadUmbralRojo = 2.1;
-
 let chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") === "true"; 
 
 let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false"; // Por defecto true para que lo vean
@@ -1386,7 +1375,6 @@ function gestionarClickMasivoFavoritos() {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarRafagosidad) filasPorDespegue++;
     //if (chkMostrarPrecipitacion) filasPorDespegue++;
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
@@ -1471,7 +1459,6 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarRafagosidad) filasPorDespegue++;
     //if (chkMostrarPrecipitacion) filasPorDespegue++;
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
@@ -1626,21 +1613,6 @@ function alternarMostrarVientoAlturas() {
 
     chkMostrarVientoAlturas = document.getElementById("chkMostrarVientoAlturas").checked;
     localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", chkMostrarVientoAlturas);
-	construir_tabla(); 
-}
-
-function alternarMostrarRafagosidad() {
-
-    chkMostrarRafagosidad = document.getElementById("chkMostrarRafagosidad").checked;
-    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_RAFAGOSIDAD", chkMostrarRafagosidad);
-	construir_tabla(); 
-}
-
-function alternarAplicarCalibracion() {
-
-    chkAplicarCalibracion = document.getElementById("chkAplicarCalibracion").checked;
-    localStorage.setItem("METEO_CHECKBOX_APLICAR_CALIBRACION", chkAplicarCalibracion);
-	sliderHorasValues = null; 
 	construir_tabla(); 
 }
 
@@ -2485,7 +2457,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             localStorage.setItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ", "true");
             localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO", "10");
             localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN", "20");
-            localStorage.setItem("METEO_CHECKBOX_MOSTRAR_RAFAGOSIDAD", "false");
             localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", "true");
             chkMostrarVientoAlturas = true;
             if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = true; //PARA FORZAR EL CHECKBOX VISUAL
@@ -3374,25 +3345,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
 						let dirCorregida = dirArray[i];
 
-						if (chkAplicarCalibracion) {
-							dirCorregida = dirCorregida + calibracionDireccion; 
-							dirCorregida = (dirCorregida % 360 + 360) % 360;    // Normalización 0-360
-						}
-
-						// CÁLCULO PREVIO DE VELOCIDAD Y RACHA PARA COMPARARLAS. 
-                        
-                        // 1. Velocidad
-                        let velocidad = chkAplicarCalibracion ? (velModelo * calibracionVelocidad) : velModelo;
-                        velocidad = Math.round(Math.max(0, velocidad));
-
-                        // 2. Racha
-                        let rachaCorregida = chkAplicarCalibracion ? (rachaArray[i] * calibracionRacha) : rachaArray[i];
-                        rachaCorregida = Math.round(Math.max(0, rachaCorregida));
-
-                        // CORRECCIÓN DE CONSISTENCIA: Racha nunca puede ser menor que Velocidad
-                        if (chkAplicarCalibracion && rachaCorregida < velocidad) {
-                            rachaCorregida = velocidad; // Clamp: Igualamos racha a velocidad
-                        }                        
+                        let velocidad = Math.round(Math.max(0, velModelo));
+                        let rachaCorregida = Math.round(Math.max(0, rachaArray[i]));                      
 						
                         // 3. Ángulo mínimo (mejor orientación)
                         let minimoAngulo = 180;
@@ -3687,8 +3641,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             }
 
 			const filaVel = document.createElement("tr");	
-			let filaRafagosidad; 
-			if (chkMostrarRafagosidad) filaRafagosidad = document.createElement("tr");
 			const filaRacha = document.createElement("tr");	
 			const filaDir = document.createElement("tr");	
 
@@ -3703,7 +3655,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 filaCin = document.createElement("tr");
             }
 
-            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, fila180, fila120, fila80, filaVel, filaRafagosidad, filaRacha, filaDir, filaCizalladura].filter(Boolean);
+            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, fila180, fila120, fila80, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
             const rowsGroup2 = [filaTecho, filaCape, filaCin].filter(Boolean);
 
             const todasLasFilas = [...rowsGroup1, ...rowsGroup2];
@@ -3948,23 +3900,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
 				filaRacha.appendChild(tdIconoRacha);
 
-				if (chkMostrarRafagosidad) {
-					const tdIconoRafagosidad = document.createElement("td");
-					// Como no tienes imagen .webp, pongo texto o puedes añadir tu propia imagen
-					tdIconoRafagosidad.innerHTML = ''; 
-					// 🔧 FORZADO DE ALTURA EXTREMO
-					tdIconoRafagosidad.style.height = "4px";      // Altura física
-					tdIconoRafagosidad.style.lineHeight = "0px";  // IMPORTANTE: Elimina altura de línea de texto
-					tdIconoRafagosidad.style.fontSize = "0px";    // Elimina tamaño de fuente fantasma
-					tdIconoRafagosidad.style.padding = "0px";     // Asegura sin relleno
-
-					tdIconoRafagosidad.setAttribute("title", "Rafagosidad (Factor de Racha: Ráfaga / Velocidad)");
-					tdIconoRafagosidad.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
-					
-					// Asegúrate de que 'filaRafagosidad' existe (es el <tr>)
-					filaRafagosidad.appendChild(tdIconoRafagosidad);
-				}
-				
 				// Dirección 10 m
 				const tdIconoDireccion = document.createElement("td");	
                    tdIconoDireccion.innerHTML = '<img src="icons/icono_direccion_45.webp" width="15" height="15">';
@@ -4259,8 +4194,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 						/* 🕜 Filtro del slider de rango horario */
 						if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
 
-						// Calibración: Si está calibrado, multiplicamos por X, si no, se queda igual
-                        let velocidad = chkAplicarCalibracion ? (velocidadModelo * calibracionVelocidad) : velocidadModelo;
+                        let velocidad = velocidadModelo;
 
                         velocidad = Math.round(Math.max(0, velocidad)); // Redondeo a 0 decimales
 
@@ -4295,95 +4229,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                         td.textContent = velocidad;
                         //td.style.cursor = "help";
 
-                        if (chkAplicarCalibracion) {
-                            td.title = `${velocidad} km/h (calibrada)\nOriginal: ${Math.round(velocidadModelo)} km/h`;
-                        } else {
-                            td.title = `${velocidad} km/h`;
-                        }
+                        td.title = `${velocidad} km/h`;
+
                         filaVel.appendChild(td);
 					});
-
-					// ⚪ Rafagosidad *****************************
-
-					if (chkMostrarRafagosidad) {
-						// Reutilizamos los arrays ya definidos arriba (velocidades y rachas)
-						// Nota: Iteramos sobre 'velocidades' pero usamos el índice 'i' para sacar la racha correspondiente
-						velocidades.forEach((velocidadModelo, i) => {
-							
-							if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-
-							// 1. Recalcular valores locales para asegurar consistencia (Speed)
-							let vel = chkAplicarCalibracion ? (velocidadModelo * calibracionVelocidad) : velocidadModelo;
-							vel = Math.round(Math.max(0, vel));
-
-							// 2. Recalcular valores locales (Gust)
-							let rac = hourlyData.wind_gusts_10m[i]; // Sacamos el dato crudo del array original
-							rac = chkAplicarCalibracion ? (rac * calibracionRacha) : rac;
-							rac = Math.round(Math.max(0, rac));
-
-							// CORRECCIÓN DE CONSISTENCIA EN VISUALIZACIÓN
-                            if (chkAplicarCalibracion && rac < vel) {
-                                rac = vel;
-                            }
-
-							const td = document.createElement("td");
-
-                            // Marcar celdas de noche en datos (Usando la caché)
-                            if (cacheEsNoche[i]) {
-                                td.classList.add("celda-noche");
-                            }
-
-							if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
-
-							// Cálculo de Rafagosidad
-							// Evitar división por cero
-							let factor = 0;
-							//let textoMostrar = "-"; // Por defecto guión si vel es 0
-
-							// Filtro para viento flojísimo (no tiene sentido poner fondo rojo en fila rafagosidad para no alertar visualmente si la racha es solo de 10 km/h)
-							if (rac < 10) {
-								td.classList.add("fondo-verde");
-								factor = vel > 0 ? rac / vel : 1.0;
-							} 
-							else if (vel > 0) {
-                                factor = rac / vel;
-                                //textoMostrar = factor.toFixed(1);
-
-                                if (factor < rafagosidadUmbralNaranja) {
-                                    td.classList.add("fondo-verde");
-                                } else if (factor < rafagosidadUmbralRojo) {
-                                    td.classList.add("fondo-naranja");
-                                } else {
-                                    td.classList.add("fondo-rojo");
-                                }
-                            } 
-                            // CASO 2: Velocidad 0 pero hay Racha (Térmica pura o turbulencia en calma)
-                            else if (rac > 0) {
-                                //textoMostrar = "∞"; 
-                                td.classList.add("fondo-rojo"); // Infinitamente racheado
-                            }
-                            // CASO 3: Calma total (0/0)
-                            else {
-                                //textoMostrar = "-";
-                                td.classList.add("fondo-verde"); 
-                            }
-
-                            // Texto y estilos finales
-                            //td.textContent = textoMostrar;
-                            //td.style.fontSize = "0.9em";
-                            //td.style.color = "#333"; // Color texto un poco más oscuro para que se lea sobre fondos de color
-
-							td.innerHTML = ""; 
-							// 2. Forzamos la altura para que sea una línea delgada
-							td.style.height = "4px";       // Grosor de la línea
-							td.style.padding = "0";        // Sin relleno para que el color ocupe todo
-							td.style.lineHeight = "0";     // Evita que el navegador intente reservar espacio para texto
-
-							td.title = `Factor de Rafagosidad ${factor.toFixed(1)}`;
-							
-							filaRafagosidad.appendChild(td);
-						});
-					}
 
 					// ⚪ Racha *****************************
 					
@@ -4395,17 +4244,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
 						// 1. Calculamos la velocidad de referencia para esta hora (necesario para la corrección)
                         const velModeloRef = hourlyData.wind_speed_10m[i];
-                        let velRef = chkAplicarCalibracion ? (velModeloRef * calibracionVelocidad) : velModeloRef;
+                        let velRef = velModeloRef;
                         velRef = Math.round(Math.max(0, velRef));
 
-						// Aplicamos calibración y redondeo (igual que en velocidad)
-                        let racha = chkAplicarCalibracion ? (rachaModelo * calibracionRacha) : rachaModelo;
+                        let racha = rachaModelo;
                         racha = Math.round(Math.max(0, racha));
-
-						// CORRECCIÓN DE CONSISTENCIA EN VISUALIZACIÓN
-                        if (chkAplicarCalibracion && racha < velRef) {
-                            racha = velRef; 
-                        }
 
 						const td = document.createElement("td");
 
@@ -4432,11 +4275,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
 						td.textContent = racha;
 
-						if (chkAplicarCalibracion) {
-                            td.title = `${racha} km/h Racha máxima a 10 m (calibrada)\n${Math.round(rachaModelo)} km/h Racha máxima a 10 m (original)`;
-                        } else {
-                            td.title = `${racha} km/h racha máxima`;
-                        }
+                        td.title = `${racha} km/h racha máxima`;
 
 						filaRacha.appendChild(td);
 					});
@@ -4448,16 +4287,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 						
 						/* 🕜 Filtro del slider de rango horario */
 						if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-
 						
-                        // calibración circular (0-360º)
                         let dir = dirModelo;
                         
-                        if (chkAplicarCalibracion) {
-                            dir = dirModelo + calibracionDireccion;
-                            dir = ((dir % 360) + 360) % 360;
-                        }
-
                         dir = Math.round(dir);
 
 						const td = document.createElement("td");
@@ -4488,11 +4320,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 							</svg>
 							`;
 							
-						if (chkAplicarCalibracion) {
-                            td.title = `${dir}º (calibrada)\n${Math.round(dirModelo)}º (original)`;
-                        } else {
-                            td.title = `${dir}º`;
-                        }
+                        td.title = `${dir}º`;
 
 						filaDir.appendChild(td);
 					});
@@ -5009,7 +4837,6 @@ function aplicarFiltrosVisuales() {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarRafagosidad) filasPorDespegue++;
 
     // 4. BUCLE DE FILTRADO SÚPER RÁPIDO (Solo DOM/CSS)
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
@@ -6450,8 +6277,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 
     document.getElementById("chkMostrarVientoAlturas").checked = chkMostrarVientoAlturas;
-	document.getElementById("chkMostrarRafagosidad").checked = chkMostrarRafagosidad;
-	document.getElementById("chkAplicarCalibracion").checked = chkAplicarCalibracion;
     document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
     
     // ECMWF Checks
