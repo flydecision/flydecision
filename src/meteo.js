@@ -138,7 +138,7 @@ function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
 
     ponerMarcador(lat, lng);
     
-    construir_tabla(false, false);
+    aplicarFiltrosVisuales();
     
     if(modalMapa) modalMapa.style.display = 'none';
 }
@@ -3322,36 +3322,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			const hayDatosMeteo = hourlyData !== null;
 			let orientaciones = d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()));
 
-			// -----------------------------------------------------------
-            // 📍📍📍 ️LÓGICA DE FILTRADO DE CONSTRUCCIÓN DE FILAS POR DESPEGUE POR DISTANCIA
-            // -----------------------------------------------------------
-            // Solo filtramos si la distancia limite es menor que 9999 ("Todo")
-            if (distanciaLimite < 9999) {
-
-                let destLat = 0;
-                let destLon = 0;
-
-                try {
-                    if (d.Coordenadas) { 
-                        const partes = d.Coordenadas.split(',');
-                        destLat = parseFloat(partes[0]);
-                        destLon = parseFloat(partes[1]);
-                    } else if (d.Latitud && d.Longitud) {
-                        destLat = parseFloat(d.Latitud);
-                        destLon = parseFloat(d.Longitud);
-                    }
-                } catch (e) { }
-
-                if (destLat !== 0 && destLon !== 0) {
-					const distanciaReal = obtenerDistanciaKm(centroLat, centroLon, destLat, destLon);
-
-					// Si la distancia real es mayor que el límite seleccionado, fuera.
-					if (distanciaReal > distanciaLimite) {
-						return; // ⛔ Ocultar fila
-					}
-                }
-            }
-
             // -----------------------------------------------------------
             // 🟩🟧🟥 LÓGICA DE FILTRADO POR Slider condiciones / Puntuación
             // -----------------------------------------------------------
@@ -3739,6 +3709,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             const todasLasFilas = [...rowsGroup1, ...rowsGroup2];
             const filaPrincipal = todasLasFilas[0];
             const totalFilasRowSpan = todasLasFilas.length;
+
+            // Guardamos las coordenadas en la fila principal para el filtro rápido
+            filaPrincipal.dataset.lat = latitud;
+            filaPrincipal.dataset.lon = longitud;
 
             // Limpieza y Control de la línea separadora inferior
             todasLasFilas.forEach(f => f.classList.remove("fila-separador"));
@@ -4781,7 +4755,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		
 		tbody.appendChild(tbodyFragmento);
 
-		filtrarDespeguesProvincias();
+		aplicarFiltrosVisuales();
 
 		// const chkMostrarSoloHorasDiurnas = localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") === "true";
 
@@ -4999,16 +4973,27 @@ const ocultarLoading = () => {
 };
 
 // ---------------------------------------------------------------
-// 🔴 BUSCADOR DESPEGUES / PROVINCIAS
+// 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------
 
-
-function filtrarDespeguesProvincias() {
-
-    // 1. Obtener inputs y configuración básica
+function aplicarFiltrosVisuales() {
+    // 1. Obtener valores de Búsqueda de Texto
     const input = document.getElementById('buscador-despegues-provincias');
     const filtro = input ? input.value.toLowerCase() : "";
+    const normalizar = (texto) => texto.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const filtroLimpio = normalizar(filtro);
 
+    // 2. Obtener valores de Filtro de Distancia
+    const sliderDistElem = document.getElementById('distancia-slider');
+    let distanciaLimite = 9999;
+    if (sliderDistElem && sliderDistElem.noUiSlider) {
+        const idxDist = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
+        distanciaLimite = CORTES_DISTANCIA_GLOBAL[idxDist];
+    }
+    const centroLatFiltro = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) || null;
+    const centroLonFiltro = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL')) || null;
+
+    // 3. Preparativos de la tabla
     const tabla = document.getElementById('tabla');
     const tbody = tabla.tBodies[0];
     if (!tbody) return;
@@ -5018,55 +5003,53 @@ function filtrarDespeguesProvincias() {
     const favoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n)); // Seguro Numérico
     const totalFavoritos = favoritos.length;
 
-    // Normalización
-    const normalizar = (texto) => texto.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    const filtroLimpio = normalizar(filtro);
-
     // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
-    let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
+    let filasPorDespegue = 5; 
     if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-    //if (chkMostrarBaseNube) filasPorDespegue++;
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
     if (chkMostrarRafagosidad) filasPorDespegue++;
-    //if (chkMostrarPrecipitacion) filasPorDespegue++;
 
-    // 2. FILTRADO VISUAL
+    // 4. BUCLE DE FILTRADO SÚPER RÁPIDO (Solo DOM/CSS)
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
 
-		// La fila principal siempre es la primera del bloque (sea cual sea)
         const filaPrincipal = filas[i];      
-
-        // Protección por si la tabla no tuviera un múltiplo exacto
         if (!filaPrincipal) continue;
 		
+        // A) Comprobar Texto
 		let txtBusqueda = "";
-
         if (modoEdicionFavoritos) {
-            // En modo EDICIÓN, la info está separada en columnas: 1 (Región), 2 (Provincia), 3 (Despegue)
-            // Concatenamos todo para buscar en cualquier campo
             const txtRegion = filaPrincipal.cells[1] ? filaPrincipal.cells[1].textContent : "";
             const txtProvincia = filaPrincipal.cells[2] ? filaPrincipal.cells[2].textContent : "";
             const txtDespegue = filaPrincipal.cells[3] ? filaPrincipal.cells[3].textContent : "";
-            
             txtBusqueda = normalizar(txtRegion + " " + txtProvincia + " " + txtDespegue);
         } else {
-            // En modo NORMAL, toda la info suele estar agrupada en la celda 0
             const celda = filaPrincipal.cells[0];
             txtBusqueda = celda ? normalizar(celda.textContent) : "";
         }
+        let pasaTexto = txtBusqueda.includes(filtroLimpio);
 
-        let coincide = false;
-        if (txtBusqueda.includes(filtroLimpio)) {
-            coincide = true;
-            visibles++;
+        // B) Comprobar Distancia
+        let pasaDistancia = true;
+        if (distanciaLimite < 9999 && centroLatFiltro !== null && centroLonFiltro !== null) {
+            const latSpot = parseFloat(filaPrincipal.dataset.lat);
+            const lonSpot = parseFloat(filaPrincipal.dataset.lon);
+            
+            if (!isNaN(latSpot) && !isNaN(lonSpot)) {
+                const distReal = obtenerDistanciaKm(centroLatFiltro, centroLonFiltro, latSpot, lonSpot);
+                if (distReal > distanciaLimite) {
+                    pasaDistancia = false;
+                }
+            }
         }
 
+        // C) Evaluar y Ocultar/Mostrar el bloque completo
+        const coincide = (pasaTexto && pasaDistancia);
+        if (coincide) visibles++;
+        
         const displayStyle = coincide ? '' : 'none';
 
-        // --- APLICAR VISIBILIDAD A TODO EL BLOQUE DE FILAS ---
-        // Iteramos desde i hasta i + filasPorDespegue para ocultar/mostrar todas
         for (let j = 0; j < filasPorDespegue; j++) {
             const fila = filas[i + j];
             if (fila) {
@@ -5075,82 +5058,51 @@ function filtrarDespeguesProvincias() {
         }
     }
     
+    // 5. EFECTOS VISUALES Y CONTADORES
+    
+    // Marcar input en rojo si no hay resultados
     if (input) {
-        // Si no hay filas visibles (visibles === 0) y hay texto escrito...
         if (visibles === 0 && filtroLimpio.length > 0) {
-            input.classList.add('buscador-despegues-sin-resultados'); // Texto rojo y negrita
+            input.classList.add('buscador-despegues-sin-resultados');
         } else {
-            input.classList.remove('buscador-despegues-sin-resultados'); // Texto normal
+            input.classList.remove('buscador-despegues-sin-resultados');
         }
     }
 
-    // 3. ACTUALIZAR CONTADOR
+    // Actualizar Contador Superior
     const divContador = document.getElementById('contador-despegues');
-
     const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
-    // Verificamos si el botón existe y si tiene la clase 'activo'
     const incluirNoFavs = btnIncNoFavs ? btnIncNoFavs.classList.contains('activo') : false;
 
     if (divContador) {
         if (modoEdicionFavoritos) {
-
             if (soloFavoritos) {
-                // CASO A: Filtro "ver solo favoritos" activo (y posiblemente otros como buscador/distancia)
-                const htmlNumeroFiltrado = `
-                    <span class="contador-badge-filtro" title="Filtro activo">
-                        <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
-                        <b>${visibles}</b>
-                    </span>`;
+                const htmlNumeroFiltrado = `<span class="contador-badge-filtro" title="Filtro activo"><img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro"><b>${visibles}</b></span>`;
                 divContador.innerHTML = `${htmlNumeroFiltrado} despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">) de <b>${totalDespeguesDisponibles}</b> disponibles`;
-                
             } else if (visibles < totalDespeguesDisponibles) {
-                // CASO B: Otros filtros activos (distancia, buscador), pero NO "solo favoritos"
-                const htmlNumeroFiltrado = `
-                    <span class="contador-badge-filtro" title="Filtro activo">
-                        <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
-                        <b>${visibles}</b>
-                    </span>`;
+                const htmlNumeroFiltrado = `<span class="contador-badge-filtro" title="Filtro activo"><img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro"><b>${visibles}</b></span>`;
                 divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles`;
-                
             } else {
-                // CASO C: Ningún filtro activo (Se ven todos)
                 divContador.innerHTML = `<b>${totalDespeguesDisponibles}</b> despegues disponibles`;
             }
-
         } else {
-            const sliderDistElemParaTabla = document.getElementById('distancia-slider');
             let distanciaLimiteParaFavs = 9999;
-            if (sliderDistElemParaTabla && sliderDistElemParaTabla.noUiSlider) {
-                const idxDist = Math.round(parseFloat(sliderDistElemParaTabla.noUiSlider.get()));
+            if (sliderDistElem && sliderDistElem.noUiSlider) {
+                const idxDist = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
                 distanciaLimiteParaFavs = CORTES_DISTANCIA_GLOBAL[idxDist];
             }
             const ignorarFiltroFavoritos = (distanciaLimiteParaFavs < 9999 && incluirNoFavs);
 
             if (ignorarFiltroFavoritos) {
-                // Modo Normal + Checkbox "Incluir no favoritos" ACTIVO
-                const htmlNumeroFiltrado = `
-                    <span class="contador-badge-filtro" title="Filtro activo">
-                        <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
-                        <b>${visibles}</b>
-                    </span>`;
+                const htmlNumeroFiltrado = `<span class="contador-badge-filtro" title="Filtro activo"><img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro"><b>${visibles}</b></span>`;
                 divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">)`;
-                
             } else if (totalFavoritos === 0) {
-                // Modo Normal pero sin favoritos añadidos aún
                 divContador.innerHTML = `Total de despegues disponibles: ${totalDespeguesDisponibles}`;
-
             } else {
-                // Modo Normal mostrando favoritos (con Checkbox "Incluir no favoritos" DESACTIVADO)
-                if (visibles < totalFavoritos) {
-                    const htmlNumeroFiltrado = `
-                        <span class="contador-badge-filtro" title="Filtro activo">
-                            <img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">
-                            <b>${visibles}</b>
-                        </span>`;
-                    
+                if (visibles < totalFavoritos || distanciaLimite < 9999) {
+                    const htmlNumeroFiltrado = `<span class="contador-badge-filtro" title="Filtro activo"><img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro"><b>${visibles}</b></span>`;
                     divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalFavoritos}</b> despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)`;
                 } else {
-                    // Modo Normal sin ningún filtro extra aplicado (ej: buscador o distancia vacíos)
                     divContador.innerHTML = `<b>${visibles}</b> despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)`;
                 }
             }
@@ -5162,72 +5114,54 @@ function filtrarDespeguesProvincias() {
         if(thFavorito) thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
     }
 
-    // =========================================================
-    // 4. SUGERENCIAS OTROS DESPEGUES SI NO SE ENCUENTRA NADA
-    // =========================================================
-    
+    // 6. SUGERENCIAS OTROS DESPEGUES (Solo para texto, ignora distancia)
 	let divSugerencias = document.getElementById('sugerencias-globales');
-
 	if (!divSugerencias) {
 		divSugerencias = document.createElement('div');
 		divSugerencias.id = 'sugerencias-globales'; 
-
-		// Insertarlo después del buscador
 		if (input && input.parentNode) {
 			input.parentNode.insertBefore(divSugerencias, input.nextSibling);
 		}
 	}
 
-    // Lógica: Si hay texto (>2 letras) Y NO estamos en modo edición (porque ahí ya se ven todos)
     if (filtroLimpio.length > 2 && !modoEdicionFavoritos && visibles === 0) {
-        
-        // Buscamos en la variable GLOBAL que llenamos en construir_tabla
         const coincidenciasGlobales = window.bdGlobalDespegues.filter(d => {
-            // Unimos nombre y provincia para buscar
             const nombreSoloDespegue = normalizar(d.Despegue);
-            
-            const yaEsFavorito = favoritos.includes(Number(d.ID)); // d.ID
-            
-            // Queremos los que coincidan con el texto Y NO sean favoritos
+            const yaEsFavorito = favoritos.includes(Number(d.ID));
             return !yaEsFavorito && nombreSoloDespegue.includes(filtroLimpio);
         });
 
-        // Si encontramos algo que no está en la tabla
 		if (coincidenciasGlobales.length > 0) {
-			let html = `
-				<p class="sugerencia-aviso">
-					💡 No tienes favoritos con * <b>${filtroLimpio}</b> *, pero tienes disponibles en la base de datos de despegues:
-				</p>
-				<ul class="sugerencia-lista">`;
-
+			let html = `<p class="sugerencia-aviso">💡 No tienes favoritos con * <b>${filtroLimpio}</b> *, pero tienes disponibles en la base de datos de despegues:</p><ul class="sugerencia-lista">`;
 			coincidenciasGlobales.slice(0, 3).forEach(d => {
-				// AQUÍ ES DONDE PASAMOS EL d.ID directamente en el onclick
 				html += `
 					<li class="sugerencia-item">
-						<span class="sugerencia-texto">
-							<b>${d.Despegue}</b> <br>
-							<small style="color:#666;">(${d.Provincia})</small>
-						</span>
-
-						<button class="sugerencia-btn" 
-								onclick="agregarDespegueDesdeBuscador(${d.ID})">
-						+ Añadir favorito <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">
-						</button>
+						<span class="sugerencia-texto"><b>${d.Despegue}</b> <br><small style="color:#666;">(${d.Provincia})</small></span>
+						<button class="sugerencia-btn" onclick="agregarDespegueDesdeBuscador(${d.ID})">+ Añadir favorito <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></button>
 					</li>`;
 			});
 			html += `</ul>`;
-			
 			divSugerencias.innerHTML = html;
-			
 			divSugerencias.style.display = 'flex'; 
-
 		} else {
 			divSugerencias.style.display = 'none';
 		}
-
 	} else {
 		if(divSugerencias) divSugerencias.style.display = 'none';
 	}
+
+    // 7. AUTO-SCROLL AL INICIO
+    // Si estamos aplicando filtros (hay texto o distancia < Todo), subimos al inicio de la tabla
+    if (filtroLimpio.length > 0 || distanciaLimite < 9999) {
+        const wrapper = document.querySelector('.tabla-wrapper');
+        const principal = document.querySelector('.contenedor-principal-tabla');
+        
+        const scrollOptions = { top: 0, behavior: 'smooth' }; // Usamos 'instant' para que sea súper ágil. La otra opción sería smooth
+
+        if (wrapper) wrapper.scrollTo(scrollOptions);
+        if (principal) principal.scrollTo(scrollOptions);
+        window.scrollTo(scrollOptions);
+    }
 }
 
 // Función auxiliar para el botón del buscador
@@ -5298,7 +5232,7 @@ function limpiarBuscador() {
     inputBuscador.classList.remove('filtrado');
     inputBuscador.placeholder = placeholderOriginal;
     
-    filtrarDespeguesProvincias();
+    aplicarFiltrosVisuales();
 }
 
 // ---------------------------------------------------------------
@@ -5694,7 +5628,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 				// B. Si todo es correcto, guardamos y actualizamos
 				ultimaDistanciaConfirmada = valorNuevo;
-				construir_tabla(false, false); 
+				aplicarFiltrosVisuales(); 
 			}
 		});
 	}
@@ -6583,7 +6517,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Recalcular botón azul al resetear y cerrar el panel
         if (typeof window.activarMenuInferior === 'function') {
-            window.activarMenuInferior();
+            const searchContainer = document.getElementById('floating-search-container');
+            const isSearchVisible = searchContainer && !searchContainer.classList.contains('floating-search-hidden');
+            
+            // Si el buscador está abierto, iluminamos 'Buscar'. Si no, iluminamos 'Inicio'.
+            if (isSearchVisible) {
+                window.activarMenuInferior(document.getElementById('nav-search'));
+            } else {
+                window.activarMenuInferior(document.getElementById('nav-home'));
+            }
         }
 
         if (reconstruir) { construir_tabla(); }
