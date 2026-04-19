@@ -72,6 +72,9 @@ let esModoOffline = false; // Nueva variable para controlar el estado de red
 
 const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
 
+let guiaActiva = false;
+let actualizacionPendiente = false;
+
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
 // Asegúrate de que Capacitor está disponible
 // if (window.Capacitor && window.Capacitor.Plugins.StatusBar) {
@@ -686,16 +689,12 @@ function iniciarGuiaPrincipal(forzar = false) {
         return; 
     }
 
-    // Creamos una caja invisible para engañar a driver.js
-    let cajaFantasma = document.getElementById('caja-fantasma-guia');
-    if (!cajaFantasma) {
-        cajaFantasma = document.createElement('div');
-        cajaFantasma.id = 'caja-fantasma-guia';
-        cajaFantasma.style.position = 'absolute';
-        cajaFantasma.style.pointerEvents = 'none';
-        cajaFantasma.style.background = 'transparent';
-        document.body.appendChild(cajaFantasma);
+    // Esto cierra buscadores, resetea filtros de distancia y vuelve a la tabla
+    if (typeof clicBotonInicio === 'function') {
+        clicBotonInicio();
     }
+
+    guiaActiva = true; //para que no muestre actualización si hay
 
     const driverObj = window.driver.js.driver({
         
@@ -729,28 +728,7 @@ function iniciarGuiaPrincipal(forzar = false) {
                 }
             },
 
-            {   element: '#caja-fantasma-guia', // 1️⃣ Apuntamos de nuevo a la caja invisible
-                popover: { title: '🗓️ Día seleccionado', description: 'Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>💡 Puedes mover los deslizadores a tu rango horario concreto y así la puntuación será más ajustada. Puedes personalizar ese rango horario diario "automático" en ⚙️ Ajustes.'},
-                onHighlightStarted: () => {
-                    const thead = document.querySelector('#tabla thead');
-                    const wrapper = document.querySelector('.tabla-wrapper');
-                    const fantasma = document.getElementById('caja-fantasma-guia');
-                    
-                    if (thead && wrapper && fantasma) {
-                        const rectArriba = thead.getBoundingClientRect();
-                        const rectWrapper = wrapper.getBoundingClientRect();
-                        
-                        fantasma.style.top = (rectArriba.top + window.scrollY) + 'px';
-                        fantasma.style.left = (rectWrapper.left + window.scrollX) + 'px';
-                        fantasma.style.width = rectWrapper.width + 'px'; // 2️⃣ Ancho = Solo lo que se ve en pantalla
-                        fantasma.style.height = rectArriba.height + 'px'; // 3️⃣ Alto = SOLO LA CABECERA
-                    }
-                },
-                onDeselected: () => {
-                    // Seguro antidescuadre al cambiar de paso
-                    window.scrollTo({ left: 0, top: 0, behavior: 'instant' });
-                }
-            },
+            {   popover: { title: '🗓️ Día seleccionado', description: 'Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>💡 Puedes mover los deslizadores a tu rango horario concreto y así la puntuación será más ajustada. Puedes personalizar ese rango horario diario "automático" en ⚙️ Ajustes.'}, },
             
             { element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>Selecciona el icono para ver el significado de cada parámetro.'},
@@ -817,6 +795,13 @@ function iniciarGuiaPrincipal(forzar = false) {
         
         onDestroyStarted: () => {
             localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
+            guiaActiva = false; // <--- 2. DESACTIVAR AL CERRAR
+            
+            // 3. COMPROBAR SI HABÍA ALGO POSPUESTO
+            if (actualizacionPendiente) {
+                actualizacionPendiente = false;
+                mostrarAvisoActualizacionMeteo();
+            }
             driverObj.destroy();
             setTimeout(() => {
             if (typeof clicBotonInicio === 'function') {
@@ -883,19 +868,10 @@ function sugerirGuiaFavoritos(forzar = false) {
 
 function iniciarGuiaFavoritos(forzar = false) {
 
+    guiaActiva = true;
+
     if (!forzar && localStorage.getItem('METEO_GUIA_FAVORITOS_VISTA') === 'true') {
         return; 
-    }
-
-    // Nos aseguramos de que exista la caja invisible
-    let cajaFantasma = document.getElementById('caja-fantasma-guia');
-    if (!cajaFantasma) {
-        cajaFantasma = document.createElement('div');
-        cajaFantasma.id = 'caja-fantasma-guia';
-        cajaFantasma.style.position = 'absolute';
-        cajaFantasma.style.pointerEvents = 'none';
-        cajaFantasma.style.background = 'transparent';
-        document.body.appendChild(cajaFantasma);
     }
 
     const driverObj = window.driver.js.driver({
@@ -966,6 +942,15 @@ function iniciarGuiaFavoritos(forzar = false) {
         
         onDestroyStarted: () => {
             localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
+
+            guiaActiva = false; // <--- 2. DESACTIVAR AL CERRAR
+            
+            // 3. COMPROBAR SI HABÍA ALGO POSPUESTO
+            if (actualizacionPendiente) {
+                actualizacionPendiente = false;
+                mostrarAvisoActualizacionMeteo();
+            }
+            
             driverObj.destroy();
         }
     });
@@ -978,8 +963,19 @@ function iniciarGuiaFavoritos(forzar = false) {
 // ---------------------------------------------------------------
 
 function activarEdicionFavoritos() {
+
+    // 1. LIMPIAR BÚSQUEDA Y OTROS FILTROS PREVIOS
+    if (typeof limpiarBuscador === 'function') {
+        limpiarBuscador(); 
+    }
     resetFiltroCondiciones(false); 
     resetFiltroDistancia(false);
+
+    // 2. ILUMINAR BOTÓN DE AJUSTES EN EL MENÚ INFERIOR
+    const btnSettings = document.getElementById('nav-settings');
+    if (btnSettings && typeof window.activarMenuInferior === 'function') {
+        window.activarMenuInferior(btnSettings);
+    }
 
     // Resetear visualmente el botón de filtro de favoritos
     const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
@@ -2367,6 +2363,12 @@ function importarConfiguracion() {
         '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📂</p><p><b>⚠️ ATENCIÓN:</b> Importar un archivo de configuración sustituirá toda tu configuración actual y despegues favoritos.</b></p>', 
         'accionCargarPerfil'
         );
+    }
+}
+
+function mostrarAvisoActualizacionMeteo() {
+    if (typeof mensajeModalAceptarCancelar === 'function') {
+        mensajeModalAceptarCancelar('', '<p>ℹ️ Hay datos meteorológicos actualizados.</p><p>¿Recargar ahora?</p>', 'recargarPagina');
     }
 }
 
@@ -6060,8 +6062,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const ecTermino = (window.oldUpdatingEC && !currentlyUpdatingEC);
 
             if (mfTermino || ecTermino) {
-                if (typeof mensajeModalAceptarCancelar === 'function') {
-                    mensajeModalAceptarCancelar('', '<p>ℹ️ Hay datos meteorológicos actualizados.</p><p>¿Recargar ahora?</p>', 'recargarPagina');
+                if (guiaActiva) {
+                    // Si hay una guía, anotamos que hay algo pendiente pero no molestamos
+                    actualizacionPendiente = true; 
+                } else {
+                    // Si no hay guía, lo mostramos normalmente
+                    mostrarAvisoActualizacionMeteo();
                 }
             }
 
@@ -6948,6 +6954,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 1️⃣ BOTÓN INICIO: Único botón que resetea y limpia todo
     window.clicBotonInicio = function() {
+
+        // Si el loader está activo, esperamos (evita errores en carga inicial)
+        const overlay = document.getElementById('msgActualizando...');
+        if (overlay && overlay.classList.contains('loader-activo')) return;
+
         let necesitaReconstruir = false;
 
         // 1. Salir de edición de favoritos si estamos en ella
