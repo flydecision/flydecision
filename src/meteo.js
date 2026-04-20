@@ -73,7 +73,7 @@ let esModoOffline = false; // Nueva variable para controlar el estado de red
 const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
 
 let guiaActiva = false;
-let actualizacionPendiente = false;
+let actualizacionesPendientes = [];
 
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
 // Asegúrate de que Capacitor está disponible
@@ -794,15 +794,18 @@ function iniciarGuiaPrincipal(forzar = false) {
         ],
         
         onDestroyStarted: () => {
-            localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
-            guiaActiva = false; // <--- 2. DESACTIVAR AL CERRAR
+            localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true'); 
             
-            // 3. COMPROBAR SI HABÍA ALGO POSPUESTO
-            if (actualizacionPendiente) {
-                actualizacionPendiente = false;
-                mostrarAvisoActualizacionMeteo();
+            guiaActiva = false;
+            
+            // COMPROBAR SI HABÍA ALGO POSPUESTO
+            if (actualizacionesPendientes.length > 0) {
+                mostrarAvisoActualizacionMeteo(actualizacionesPendientes);
+                actualizacionesPendientes = []; // Vaciamos la lista tras avisar
             }
+
             driverObj.destroy();
+
             setTimeout(() => {
             if (typeof clicBotonInicio === 'function') {
                     clicBotonInicio();
@@ -941,16 +944,16 @@ function iniciarGuiaFavoritos(forzar = false) {
         ],
         
         onDestroyStarted: () => {
-            localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true');
-
-            guiaActiva = false; // <--- 2. DESACTIVAR AL CERRAR
+            localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true'); // o FAVORITOS
             
-            // 3. COMPROBAR SI HABÍA ALGO POSPUESTO
-            if (actualizacionPendiente) {
-                actualizacionPendiente = false;
-                mostrarAvisoActualizacionMeteo();
+            guiaActiva = false;
+            
+            // COMPROBAR SI HABÍA ALGO POSPUESTO
+            if (actualizacionesPendientes.length > 0) {
+                mostrarAvisoActualizacionMeteo(actualizacionesPendientes);
+                actualizacionesPendientes = []; // Vaciamos la lista tras avisar
             }
-            
+
             driverObj.destroy();
         }
     });
@@ -2366,9 +2369,18 @@ function importarConfiguracion() {
     }
 }
 
-function mostrarAvisoActualizacionMeteo() {
+function mostrarAvisoActualizacionMeteo(modelos) {
+    if (!modelos || modelos.length === 0) return;
+
+    // Unimos los nombres de los modelos con "y" (Ej: "Météo-France" o "Météo-France y ECMWF")
+    const textoModelos = modelos.join(' y ');
+
     if (typeof mensajeModalAceptarCancelar === 'function') {
-        mensajeModalAceptarCancelar('', '<p>ℹ️ Hay datos meteorológicos actualizados.</p><p>¿Recargar ahora?</p>', 'recargarPagina');
+        mensajeModalAceptarCancelar(
+            '', 
+            `<p>ℹ️ Hay nuevos datos actualizados de <b>${textoModelos}</b>.</p><p>¿Recargar ahora?</p>`, 
+            'recargarPagina'
+        );
     }
 }
 
@@ -6061,13 +6073,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const mfTermino = (window.oldUpdatingMF && !currentlyUpdatingMF);
             const ecTermino = (window.oldUpdatingEC && !currentlyUpdatingEC);
 
-            if (mfTermino || ecTermino) {
+            let modelosRecientes = [];
+            if (mfTermino) modelosRecientes.push("Météo-France");
+            if (ecTermino) modelosRecientes.push("ECMWF");
+
+            if (modelosRecientes.length > 0) {
                 if (guiaActiva) {
-                    // Si hay una guía, anotamos que hay algo pendiente pero no molestamos
-                    actualizacionPendiente = true; 
+                    // Si la guía está activa, guardamos los nombres para mostrarlos luego
+                    actualizacionesPendientes = actualizacionesPendientes.concat(modelosRecientes);
+                    // Quitamos duplicados por si acaso se actualizan dos veces en una guía larguísima
+                    actualizacionesPendientes = [...new Set(actualizacionesPendientes)];
                 } else {
-                    // Si no hay guía, lo mostramos normalmente
-                    mostrarAvisoActualizacionMeteo();
+                    // Si no hay guía, los mostramos directamente
+                    mostrarAvisoActualizacionMeteo(modelosRecientes);
                 }
             }
 
