@@ -76,6 +76,8 @@ const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 8
 let guiaActiva = false;
 let actualizacionesPendientes = [];
 
+let autoSeleccionInicialHecha = false; // bandera de control para la selección o no automática de un día de la semana al arrancar
+
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
 // Asegúrate de que Capacitor está disponible
 // if (window.Capacitor && window.Capacitor.Plugins.StatusBar) {
@@ -1972,14 +1974,12 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         // CASO 1: CREAR
         
         sliderHoras.dayStartIndices = pipIndices;
-        
-        // guardar la referencia del timestamp, para que la comparación funcione la próxima ve
         sliderHoras.dayStartTimestamp = window.horasCrudasRangoHorario.length > 0 
         ? new Date(window.horasCrudasRangoHorario[0].endsWith('Z') ? window.horasCrudasRangoHorario[0] : window.horasCrudasRangoHorario[0] + 'Z').getTime() 
         : 0;
         
         noUiSlider.create(sliderHoras, {
-            start: [0, maxSteps], // Rango completo por defecto
+            start: [0, maxSteps], 
             connect: true,
             step: 1,
             range: { min: 0, max: maxSteps },
@@ -1993,31 +1993,59 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
             }
         });
         
-        // Inicializar variable global
-        // Inicializar variable global (Esta actúa como nuestra "Variable de control externa")
-		window.sliderHorasValues = sliderHoras.noUiSlider.get().map(Number);
-        
-        // (Eliminamos 'valoresHorasAntes' y el evento 'start')
+        // 1. Inicializamos los valores actuales
+        window.sliderHorasValues = sliderHoras.noUiSlider.get().map(Number);
 
-		// Al soltar o hacer clic, comparamos directamente contra la variable global
+        // 2. Adjuntamos los eventos a los Pips (Días)
+        adjuntarEventoPips(sliderHoras);
+
+        // --- LÓGICA DE AUTO-SELECCIÓN ---
+        if (!autoSeleccionInicialHecha) {
+            autoSeleccionInicialHecha = true; // Marcamos para que no se repita
+
+            const ahora = new Date();
+            const horaActual = ahora.getHours();
+            
+            // Decidimos: Hoy (0) o Mañana (1) si son más de las 16:00
+            let indiceDiaObjetivo = (horaActual >= 16) ? 1 : 0;
+
+            if (pipIndices && pipIndices.length > indiceDiaObjetivo) {
+                const valorPipBuscado = pipIndices[indiceDiaObjetivo];
+                
+                // IMPORTANTE: Usamos un pequeño setTimeout para que no interfiera 
+                // con la construcción de la tabla actual y evitar bucles.
+                setTimeout(() => {
+                    const pipsVisuales = sliderHoras.querySelectorAll('.noUi-value');
+                    let pipParaClicar = null;
+
+                    pipsVisuales.forEach(p => {
+                        if (Number(p.getAttribute('data-value')) === valorPipBuscado) {
+                            pipParaClicar = p;
+                        }
+                    });
+
+                    if (pipParaClicar) {
+                        // Al disparar el click, se ejecutará clickOnPip() que ya tiene
+                        // tu lógica de "Horario preferido" y refrescará la tabla.
+                        pipParaClicar.dispatchEvent(new Event('click'));
+                        console.log("AUTO-SELECT: Ejecutado para día " + (indiceDiaObjetivo + 1));
+                    }
+                }, 100); 
+            }
+        }
+
 		sliderHoras.noUiSlider.on('change', function(values) {
 			const valoresNuevos = values.map(Number);
-
-			// Comparamos contra lo que teníamos guardado en window.sliderHorasValues
 			const haCambiado = valoresNuevos.some((val, i) => val !== window.sliderHorasValues[i]);
-
 			if (haCambiado) {
-                // Actualizamos la variable global YA
 				window.sliderHorasValues = valoresNuevos;
 				construir_tabla(false, false);
 			}
 		});
 
         sliderHoras.noUiSlider.on('slide', function () {
-            if (typeof Capacitor !== 'undefined') { Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); }
+            if (typeof window.Capacitor !== 'undefined') { window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); }
         });
-
-        adjuntarEventoPips(sliderHoras);
 
     } else {
         // CASO 2: ACTUALIZAR
