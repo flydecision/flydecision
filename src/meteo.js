@@ -4768,14 +4768,38 @@ function alternardivConfiguracion(event) {
 	const divconfiguracion = document.getElementById("div-configuracion");
     if (!divconfiguracion) return;
 
-	const activo = divconfiguracion.classList.contains("activo");
+	const estabaActivo = divconfiguracion.classList.contains("activo");
 
-	divconfiguracion.classList.toggle("activo", !activo);
+	divconfiguracion.classList.toggle("activo", !estabaActivo);
 	
     const btnConfigAntiguo = document.getElementById("btn-div-configuracion-toggle");
-	if (btnConfigAntiguo) btnConfigAntiguo.classList.toggle("activo", !activo);
+	if (btnConfigAntiguo) btnConfigAntiguo.classList.toggle("activo", !estabaActivo);
 
-    if (typeof setModoEnfoque === "function") { setModoEnfoque(!activo); }
+    if (typeof setModoEnfoque === "function") { setModoEnfoque(!estabaActivo); }
+
+    // --- NUEVA LÓGICA: Iluminar el botón correcto del menú inferior ---
+    if (typeof window.activarMenuInferior === 'function') {
+        if (!estabaActivo) {
+            // Si el panel estaba cerrado y lo acabamos de ABRIR, iluminamos Ajustes
+            window.activarMenuInferior(document.getElementById('nav-settings'));
+        } else {
+            // Si el panel estaba abierto y lo acabamos de CERRAR, 
+            // miramos qué hay en pantalla para devolverle el foco azul
+            const vistaMapa = document.getElementById('vista-mapa');
+            const searchContainer = document.getElementById('floating-search-container');
+            const panelDistancia = document.getElementById('div-filtro-distancia');
+
+            if (vistaMapa && vistaMapa.style.display === 'flex') {
+                window.activarMenuInferior(document.getElementById('nav-map'));
+            } else if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
+                window.activarMenuInferior(document.getElementById('nav-search'));
+            } else if (panelDistancia && panelDistancia.classList.contains('activo')) {
+                window.activarMenuInferior(document.getElementById('nav-distance'));
+            } else {
+                window.activarMenuInferior(document.getElementById('nav-home'));
+            }
+        }
+    }
 }
 
 function btnRestablecerConfiguración() {
@@ -7012,20 +7036,20 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     // 1️⃣ BOTÓN INICIO: Único botón que resetea y limpia todo
     window.clicBotonInicio = function() {
-
-        // Si el loader está activo, esperamos (evita errores en carga inicial)
         const overlay = document.getElementById('msgActualizando...');
         if (overlay && overlay.classList.contains('loader-activo')) return;
 
         let necesitaReconstruir = false;
 
+        // Comprobamos si ya estábamos en la pestaña Inicio ANTES de hacer nada
+        const btnInicio = document.getElementById('nav-home');
+        const yaEnInicio = btnInicio && btnInicio.classList.contains('active');
+
         // 1. Salir de edición de favoritos si estamos en ella
         if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
-            // finalizarEdicionFavoritos ya llama a construir_tabla() internamente si tiene éxito
             if (!finalizarEdicionFavoritos(true)) return; 
-            // Como ya se reconstruyó la tabla dentro de finalizarEdicionFavoritos, no lo hacemos de nuevo.
         } else {
-            // 2. Comprobar si hay filtros activos que modifiquen la tabla y requieran reconstrucción
+            // 2. Comprobar si hay filtros activos que requieran reconstrucción real
             if (typeof ultimaDistanciaConfirmada !== 'undefined' && typeof CORTES_DISTANCIA_GLOBAL !== 'undefined') {
                 if (ultimaDistanciaConfirmada < (CORTES_DISTANCIA_GLOBAL.length - 1)) {
                     necesitaReconstruir = true;
@@ -7036,22 +7060,21 @@ function comprobarAvisoCambiosPuntuacionXC() {
             }
         }
 
-        // 3. Reset visual y de estado de los filtros (pasamos false para que no reconstruyan por su cuenta)
+        // 3. Reset visual y de estado de los filtros
         if (typeof resetFiltroDistancia === 'function') { resetFiltroDistancia(false); }
         if (typeof resetFiltroCondiciones === 'function') { resetFiltroCondiciones(false); }
 
-        // 4. Limpiar buscador (esto solo oculta filas por CSS, no requiere reconstruir la tabla y mantiene el scroll)
+        // 4. Limpiar buscador
         const searchInput = document.getElementById('buscador-despegues-provincias');
         if (searchInput && searchInput.value.trim() !== '') {
             if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
         }
         
-        // Ocultar la barra del buscador si está visible
         if (typeof buscadorVisible !== 'undefined' && buscadorVisible) {
             window.toggleBuscadorFlotante(); 
         }
 
-        // 5. Cerrar panel de configuración si está abierto
+        // 5. Cerrar panel de configuración
         const panelConfig = document.getElementById("div-configuracion");
         if (panelConfig && panelConfig.classList.contains("activo")) {
             alternardivConfiguracion(); 
@@ -7060,13 +7083,23 @@ function comprobarAvisoCambiosPuntuacionXC() {
         // 6. Volver a la vista de tabla
         cambiarVista('tabla');
 
-        // 7. Reconstruir solo si algún filtro lo requiere
+        // 7. EJECUCIÓN FINAL (Reconstruir o hacer Scroll)
         if (necesitaReconstruir) {
             construir_tabla(); 
+        } else if (yaEnInicio) {
+            // Si el usuario ya estaba en inicio y no hizo falta reconstruir, 
+            // hacemos el comportamiento estándar de las Apps: Scroll suave arriba del todo.
+            const wrapper = document.querySelector('.tabla-wrapper');
+            const principal = document.querySelector('.contenedor-principal-tabla');
+            const scrollOptions = { top: 0, behavior: 'smooth' };
+
+            if (wrapper) wrapper.scrollTo(scrollOptions);
+            if (principal) principal.scrollTo(scrollOptions);
+            window.scrollTo(scrollOptions);
         }
 
         // 8. Iluminar botón inicio
-        window.activarMenuInferior(document.getElementById('nav-home'));
+        window.activarMenuInferior(btnInicio);
     };
 
     // 2️⃣ BOTÓN BUSCAR
@@ -7164,7 +7197,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             }
         }
 
-        cambiarVista('tabla');
+        //cambiarVista('tabla');
         
         const panelConfig = document.getElementById("div-configuracion");
         // Solo lo abrimos si estaba cerrado
