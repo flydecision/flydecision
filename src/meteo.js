@@ -972,7 +972,6 @@ function activarEdicionFavoritos() {
     if (typeof limpiarBuscador === 'function') {
         limpiarBuscador(); 
     }
-    resetFiltroCondiciones(false); 
     resetFiltroDistancia(false);
 
     // 2. ILUMINAR BOTÓN DE AJUSTES EN EL MENÚ INFERIOR
@@ -3273,12 +3272,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             distanciaLimite = CORTES_DISTANCIA_GLOBAL[indiceSeleccionado];
         }
 		
-		const sliderCondiciones = document.getElementById('condiciones-slider');
-		let nivelFiltro = 0; 
-		if (sliderCondiciones && sliderCondiciones.noUiSlider) {
-			nivelFiltro = parseFloat(sliderCondiciones.noUiSlider.get());
-		}
-
 		// Creamos el array vacío ANTES de empezar a recorrer los despegues, para luego guardarlos ahí, ordenarlos por puntuación y dibujar todo de golpe
 		let listaFilasParaOrdenar = [];
 
@@ -3608,18 +3601,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             notaFinalXC = (puntosAcumuladosXC / maximosPuntosPosiblesXC) * 10;
                         }
 
-						if (nivelFiltro > 0) {
-							// El filtro actúa sobre la nota ORIGINAL para no cambiar el comportamiento esperado
-							pasaFiltro = Math.round(notaFinal) >= nivelFiltro;
-						}
-
                         // --- 🐛 INICIO DEBUG (Resumen Final) ---
                         if (MODO_DEBUG) {
                             console.log(`📊 %cRESUMEN FINAL '${d.Despegue}'`, 'font-weight: bold; color: #8b5cf6;');
                             console.log(`   - Horas válidas procesadas: ${horasValidas}`);
                             console.log(`   - Puntos Acumulados: ${puntosAcumulados.toFixed(2)} / ${maximosPuntosPosibles}`);
                             console.log(`   - NOTA FINAL: %c${notaFinal.toFixed(2)} / 10`, 'font-weight: bold; font-size: 1.1em;');
-                            console.log(`   - Filtro Nivel ${nivelFiltro}: ${pasaFiltro ? '✅ PASA' : '❌ NO PASA'}`);
                             console.groupEnd(); // Cerramos el grupo de este despegue
                         }
                         // --- 🐛 FIN DEBUG ---
@@ -5333,86 +5320,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
 	// ---------------------------------------------------------------
 
 	// ---------------------------------------------------------------
-	// 🔴 SLIDERS. CONDICIONES. Construcción
-	// ---------------------------------------------------------------
-    const condicionesSlider = document.getElementById('condiciones-slider');
-
-    let ultimaCondicionConfirmada = 0; // sacada fuera para que sea accesible también al botón reset
-
-    if (condicionesSlider) {
-        noUiSlider.create(condicionesSlider, {
-            start: 0, // 0 = Mostrar todo
-            step: 1,  // Pasos enteros del 0 al 10
-            connect: 'upper',
-			tooltips: [{ // Sintaxis de array para un solo handle
-                to: function (value) {
-					const score = parseInt(value);
-					if (score === 0) { return ""; }
-                    return `${score}⭐`; 
-                }
-            }],			
-            range: {
-                'min': 0,
-                'max': 10
-            },
-            pips: {
-                mode: 'values',
-                values: [0,1,2,3,4,5,6,7,8,9,10],
-                density: 10,
-                format: {
-                    to: function(val) {
-						if (val === 0) {
-                            return ``;
-                        }
-						if (val === 10) {
-                            //return `10⭐`;
-                        }
-						// Lo dejo por si lo necesito en futuro
-						if (val === 11) {
-                               return `<img src="icons/icono_parapente.png" style="width:20px;height:20px; vertical-align: middle;">`;
-						}
-						return ""; 
-					}
-                }
-            }
-        });
-
-		// 🟢 1. ACCIÓN RÁPIDA (Solo visual)
-		// Se ejecuta mientras arrastras. Es ultra-ligero porque NO toca la tabla.
-		condicionesSlider.noUiSlider.on('slide', function(values) {
-
-            // Si existe Capacitor (es la App), vibramos. Si es web, no hace nada.
-            if (typeof Capacitor !== 'undefined') { Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); }
-
-			const valorNuevo = parseFloat(values[0]);
-			const panel = document.querySelector('#div-filtro-condiciones .div-paneles-controles-transparente');
-			const btnToggle = document.getElementById('btn-div-filtro-condiciones-toggle');
-			const btnReset = document.getElementById('btn-reset-filtro-condiciones');
-
-			if (valorNuevo > 0) {
-				if (btnToggle) btnToggle.classList.add('filtro-aplicado'); // Solo si existe
-				if (panel) panel.classList.add('borde-rojo-externo');
-				if (btnReset) btnReset.style.display = 'block';
-			} else {
-				if (btnToggle) btnToggle.classList.remove('filtro-aplicado');
-				if (panel) panel.classList.remove('borde-rojo-externo');
-				if (btnReset) btnReset.style.display = 'none';
-			}
-		});
-
-		// 🔴 2. ACCIÓN PESADA (Datos)
-		// Solo se ejecuta UNA VEZ cuando el usuario suelta el slider.
-		condicionesSlider.noUiSlider.on('change', function(values) {
-			const valorNuevo = parseFloat(values[0]);
-			if (valorNuevo !== ultimaCondicionConfirmada) {
-				ultimaCondicionConfirmada = valorNuevo;
-				construir_tabla(false, true); // <--- Los "enormes cálculos" solo ocurren aquí
-			}
-		});
-
-    }
-
-	// ---------------------------------------------------------------
 	// 🔴 SLIDERS. DISTANCIA. Construcción
 	// ---------------------------------------------------------------
     const distanciaSlider = document.getElementById('distancia-slider');
@@ -6361,33 +6268,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
     document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkOrdenarPorXC")) document.getElementById("chkOrdenarPorXC").checked = chkOrdenarPorXC;
 
-	window.resetFiltroCondiciones = function(reconstruir = true) { //flag para que, si le hemos llamado desde activarEdicionFavoritos(), que ya tiene construir_tabla, no se llame otra vez aquí, ya que ya se hace desde esa función (bloquearía navegador)
-
-        // A. Resetear valor del slider (asegúrate de que condicionesSlider es accesible aquí)
-        if (typeof condicionesSlider !== 'undefined' && condicionesSlider.noUiSlider) {
-            condicionesSlider.noUiSlider.set(0);
-        }
-
-        // B. Actualizar variable de control
-        ultimaCondicionConfirmada = 0;
-
-        // C. Limpieza Visual (Quitar clases de activo y rojo)
-        const btnToggle = document.getElementById('btn-div-filtro-condiciones-toggle');
-        const divPanel = document.getElementById('div-filtro-condiciones');
-        const panelCondiciones = document.querySelector('#div-filtro-condiciones .div-paneles-controles-transparente');
-		const btnReset = document.getElementById('btn-reset-filtro-condiciones');
-
-        if (btnToggle) {
-            btnToggle.classList.remove("activo");         // Deshundir botón
-            btnToggle.classList.remove('filtro-aplicado'); // Quitar borde rojo botón
-        }
-        if (divPanel) divPanel.classList.remove("activo");          // Cerrar panel
-        if (panelCondiciones) panelCondiciones.classList.remove('borde-rojo-externo'); // Quitar borde panel
-		if (btnReset) btnReset.style.display = 'none'; // Ocultar botón de reset
-
-        if (reconstruir) { construir_tabla(); }
-    }
-
 	window.resetFiltroDistancia = function(reconstruir = true) { //flag para que, si le hemos llamado desde activarEdicionFavoritos(), que ya tiene construir_tabla, no se llame otra vez aquí, ya que ya se hace desde esa función (bloquearía navegador)
 
         // Actualizamos variable de control ANTES de mover el slider
@@ -6581,22 +6461,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 buscadorVisible = false;
                 if (searchInput) searchInput.blur();
                 window.activarMenuInferior(document.getElementById('nav-home'));
-                return;
-            }
-
-            // 4. Panel Filtro Condiciones
-            const panelCondiciones = document.getElementById("div-filtro-condiciones");
-            if (panelCondiciones && panelCondiciones.classList.contains("activo")) {
-                // Misma lógica: si no hay estrellas, cierre silencioso
-                if (typeof ultimaCondicionConfirmada !== 'undefined' && ultimaCondicionConfirmada > 0) {
-                    if (typeof resetFiltroCondiciones === 'function') resetFiltroCondiciones();
-                } else {
-                    panelCondiciones.classList.remove("activo");
-                    const btnCond = document.getElementById("btn-div-filtro-condiciones-toggle");
-                    if (btnCond) btnCond.classList.remove("activo");
-                    window.activarMenuInferior(document.getElementById('nav-home'));
-                }
-                if (typeof setModoEnfoque === "function") setModoEnfoque(false);
                 return;
             }
 
@@ -7055,14 +6919,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     necesitaReconstruir = true;
                 }
             }
-            if (typeof ultimaCondicionConfirmada !== 'undefined' && ultimaCondicionConfirmada > 0) {
-                necesitaReconstruir = true;
-            }
         }
 
         // 3. Reset visual y de estado de los filtros
         if (typeof resetFiltroDistancia === 'function') { resetFiltroDistancia(false); }
-        if (typeof resetFiltroCondiciones === 'function') { resetFiltroCondiciones(false); }
 
         // 4. Limpiar buscador
         const searchInput = document.getElementById('buscador-despegues-provincias');

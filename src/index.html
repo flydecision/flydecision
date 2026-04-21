@@ -156,49 +156,6 @@
 			
 	</div>
 
-	<!-- 🟦 FILTRO CONDICIONES  -->
-
-	<div id="div-filtro-condiciones" class="div-filtro-condiciones">
-
-		<div class="div-paneles-controles-transparente">
-		
-			<div id="titulo-condiciones-slider" style="margin-bottom: 5px;">
-				<span style="display: inline-flex; align-items: center; gap: 6px;">
-					Filtro de condiciones 
-					<img src="icons/icono_viento_48x42.webp" width="16" height="14" style="display: block;" title="Viento medio a 10 m (km/h)">
-					<img src="icons/icono_racha_48x42.webp" width="16" height="14" style="display: block;" title="Racha máxima a 10 m (km/h)">
-					<img src="icons/icono_direccion_45.webp" width="15" height="15" style="display: block;" title="Dirección del viento">
-				</span>
-			</div>	
-			
-			<div id="condiciones-slider" role="slider" aria-labelledby="titulo-condiciones-slider"></div>
-
-			<button id="btn-reset-filtro-condiciones" class="btn-reset-filtro btn-arriba-izquierda" style="left: 1px; top: 0px; display:none;" title="Restablecer y ocultar filtro de condiciones" onclick="resetFiltroCondiciones()">
-				<span><b>↺</b></span>
-			</button>
-
-			<button class="btn-info btn-abajo-derecha"
-					style="right: 7px; bottom: 8px;"
-					data-tippy-content="<b>Filtro de condiciones en el despegue:</b><br><br>
-					
-					Muestra solo despegues con una puntuación de condiciones igual o mayor a la seleccionada.<br><br>
-					Puedes personalizar los límites de condiciones con el botón de <i>Configuración de condiciones en el despegue</i>. El algoritmo de cálculo de puntuaciones y el coloreado de la tabla tendrá en cuenta tus preferencias.<br><br>
-					<b>🧮 Resumen del algoritmo de cálculo de puntuación:</b></p>
-					Se evalúa cada hora del rango horario seleccionado y se calcula una suma ponderada sobre 100 puntos máximos/hora, normalizando la puntuación final a una escala de 0 a 10 puntos.<br><br>
-					<ul style='margin-top:5px; padding-left:20px;'>
-						<li><b>Diferencia mínima en grados entre el pronóstico de dirección del viento y la orientación u orientaciones del despegue (0-50 puntos):</b> Óptimo &lt;10°. Penaliza progresivamente fuerte si &gt;22°.</li>
-						<li><b>Racha máxima (0-30 puntos):</b> Penaliza progresivamente fuerte según el límite máximo configurado.</li>
-						<li><b>Velocidad media (0-20 puntos):</b> Pondera positivamente estar en rango ideal configurado y penaliza su alejamiento.</li>
-					</ul>
-					<b>✖️ Correctores:</b><br>
-					Precipitación, Dirección y Racha actúan como modificadores del ratio de puntuación. Si son factores negativos, reducen la ponderación progresiva y porcentualmente de la nota total de esa hora o, incluso, califican con 0 puntos finales ante valores extremos.">
-				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-			</button>
-
-		</div>
-			
-	</div>
-
 	<!-- 🔍 BUSCADOR FLOTANTE (Oculto por defecto) -->
 	<div id="floating-search-container" class="floating-search-hidden">
 		<div id="buscador-wrapper" class="buscador-con-boton" style="position: relative;">
