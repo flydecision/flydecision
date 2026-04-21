@@ -144,7 +144,7 @@ body, header, .offline-badge {
 /* 🔴🔴 CONTENEDOR PRINCIPAL CONTROLES (Menú + Filtro horario + Configuración filtros + Configuración) */
 
 .contenedor-principal-controles {
-    max-width: 727px;
+    max-width: 600px;
     width: calc(100% - 8px);
     margin: 0 auto;
     position: sticky;
@@ -152,7 +152,7 @@ body, header, .offline-badge {
     z-index: 1000;
     background-color: rgba(255, 255, 255);
     box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
-    border-radius: 20px;
+    border-radius: 10px;
     margin-top: 3px;
 }
 
@@ -2303,67 +2303,54 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 }
 
 /* ==========================================================================
-   MENÚ INFERIOR COMPACTO (MATERIAL DESIGN 3)
+   MENÚ INFERIOR COMPACTO (FLOTANTE EFECTO CRISTAL) - WEB & APP
    ========================================================================== */
+
+/* 1. Estilo General (La "pastilla" flotante) */
 .bottom-nav.compact-nav {
-    position: sticky;
-    bottom: 0;
-    left: 0;
-    width: calc(100% - 8px);
-    height: 48px;
-    min-height: 48px;
-    max-height: 48px;
-    flex-shrink: 0;  /* Impide que el flex lo encoja */
-    flex-grow: 0;    /* Impide que el flex lo agrande */
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    position: fixed; /* Forzamos a que flote sobre todo */
+    bottom: calc(15px + env(safe-area-inset-bottom, 0px)); /* Separado del fondo y respetando la barra de iOS/Android */
+    left: 50%;
+    transform: translateX(-50%); /* Centrado perfecto */
+    width: calc(100% - 30px); /* Margen a los lados en móviles */
+    max-width: 600px; /* Tamaño máximo en ordenadores/tablets para que no sea kilométrico */
+    
+    /* El efecto Cristal (Transparencia + Desenfocado) */
+    background-color: rgba(255, 255, 255, 0.7); 
+    backdrop-filter: blur(12px); 
+    -webkit-backdrop-filter: blur(12px); /* Para Safari/iOS */
+    
+    border-radius: 10px; /* Bordes muy redondeados */
+    border: 1px solid rgba(255, 255, 255, 0.6); /* Brillo sutil */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Sombra elegante flotante */
+    
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding-bottom: env(safe-area-inset-bottom);
     z-index: 9999;
-    box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
-    border-radius: 20px;
-    max-width: 727px;
-    background-color: #ffffff;
-    padding-top: 2px;
-    margin: 0 auto;
-    margin-bottom: 3px;
-}
-body.modo-android-manual .bottom-nav.compact-nav {
-    position: fixed; /* Forzamos a que flote sobre todo */
-    bottom: calc(15px + env(safe-area-inset-bottom, 0px)); /* Lo separamos del fondo */
-    left: 50%;
-    transform: translateX(-50%); /* Lo centramos perfectamente */
-    width: calc(100% - 30px); /* Le damos margen a los lados */
-    max-width: 700px;
     
-    /* El efecto Cristal (Transparencia + Desenfocado) */
-    background-color: rgba(255, 255, 255, 0.85); 
-    backdrop-filter: blur(12px); 
-    -webkit-backdrop-filter: blur(12px);
-    
-    border-radius: 20px; /* Bordes muy redondeados tipo píldora */
-    border: 1px solid rgba(255, 255, 255, 0.6); /* Un brillo sutil en el borde */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Sombra elegante */
-    
-    padding-bottom: 0; 
-    height: 60px; /* Un poco más alto para que respire */
+    /* Ajuste de alturas */
+    height: 60px; 
     min-height: 60px;
     max-height: 60px;
+    padding-bottom: 0; 
+    margin: 0; /* Limpiamos márgenes antiguos */
 }
 
-/* Evitamos que la tabla se esconda detrás del nuevo menú flotante */
-body.modo-android-manual .tabla-wrapper {
-    padding-bottom: calc(env(safe-area-inset-bottom) + 70px) !important;
+/* 2. Para asegurar que la tabla no se esconda detrás del menú flotante,
+   le damos espacio vacío abajo al contenedor de la tabla, sea Android, iOS o PC */
+.tabla-wrapper {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 90px) !important;
 }
 
+/* 3. Estilo de los botones internos */
 .compact-nav .nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 20%; /* 5 botones = 20% cada uno */
-    height: 48px;
+    height: 100%;
     background: transparent;
     border: none;
     cursor: pointer;
@@ -2386,16 +2373,17 @@ body.modo-android-manual .tabla-wrapper {
     height: 20px;
 }
 
-/* .compact-nav .nav-item span {
-    font-weight: 600;
-} */
-
-/* ESTADO ACTIVO */
-.compact-nav .nav-item.active { color: #000000; font-weight: bold;}
-.compact-nav .nav-item.active .nav-icon-container { background-color: #c2e7ff; }
+/* 4. ESTADO ACTIVO (Botón seleccionado) */
+.compact-nav .nav-item.active { 
+    color: #000000; 
+    font-weight: bold;
+}
+.compact-nav .nav-item.active .nav-icon-container { 
+    background-color: #c2e7ff; 
+}
 .compact-nav .nav-item.active svg { 
     stroke: #001d35; 
-    stroke-width: 2.7; /* Aumenta el grosor del trazo (por defecto es 2) */
+    stroke-width: 2.7; /* SVG en negrita para que coincida con el texto */
 }
 
 /* ==========================================================================
