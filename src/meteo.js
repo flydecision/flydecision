@@ -54,6 +54,7 @@ const chkMostrarPrecipitacion = true; // Siempre activo
 let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION") !== "false";
 //let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") !== "false";
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
+let chkOrdenarPorXC = localStorage.getItem("METEO_CHECKBOX_ORDENAR_POR_XC") === "true"; // false por defecto
 
 // UMBRALES DE CIZALLADURA (Factor multiplicador)
 const LIMITES_CIZALLADURA = {
@@ -1645,6 +1646,12 @@ function alternarMostrarXC() {
     construir_tabla();
 }
 
+function alternarOrdenarPorXC() {
+    chkOrdenarPorXC = document.getElementById("chkOrdenarPorXC").checked;
+    localStorage.setItem("METEO_CHECKBOX_ORDENAR_POR_XC", chkOrdenarPorXC);
+    construir_tabla();
+}
+
 // ---------------------------------------------------------------
 // 🔴 SLIDERS. RANGO HORARIO. Lógica para poder hacer clic en los pips de los días semanales y seleccionar así sus rango horario completo (tiene en cuenta chk día/noche) con un toque
 // ---------------------------------------------------------------
@@ -3181,7 +3188,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             
             "⚠️ <b>Aviso:</b> Faltaría el dato esencial de la base de nube (CBH = Cloud Base Height) para saber si el despegue estará cubierto por nube. Es un valor del ECMWF no disponible aún en la pasarela (solicitado en marzo-2026, pendiente y sin fecha prevista). Deberás consultarlo en otros servicios.<br><br>" +
             
-            "<b>Los despegues de la tabla se reordenan siempre automáticamente por la primera puntuación</b> (Condiciones del despegue), de mayor a menor.";        
+            "<b>Por defecto, los despegues se reordenan automáticamente por la primera puntuación</b> (Condiciones del despegue), de mayor a menor. Puedes cambiar este comportamiento en: ⚙️ <i>Ajustes</i> > <i>Otras opciones</i> > <i>Ordenar por Condiciones XC</i>.";        
         thCondiciones.setAttribute("data-tippy-content", tooltipContent);
         thCondiciones.setAttribute("tabindex", "0"); 
         thCondiciones.style.cursor = "help"; // Cambia el cursor para indicar que hay info
@@ -4563,7 +4570,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     if (valorVisualXC !== "-") {
                         tdCondicionesXC.style.backgroundColor = coloresNota[valorVisualXC];
                         tdCondicionesXC.style.color = "#000";
-                        tdCondicionesXC.title = `Nota XC: ${notaFinalXC.toFixed(1)} puntos`;
+                        tdCondicionesXC.title = `Nota Condiciones XC: ${notaFinalXC.toFixed(1)} puntos`;
                     } else {
                         tdCondicionesXC.style.backgroundColor = "#f0f0f0";
                         tdCondicionesXC.style.color = "#888";
@@ -4580,15 +4587,31 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // 2. Guardamos el grupo en la lista para ordenar
 			listaFilasParaOrdenar.push({
 				nota: horasValidas > 0 ? notaFinal : -1, 
+				notaXC: horasValidasXC > 0 ? notaFinalXC : -1, // Guardamos también la nota XC
 				elementos: todasLasFilas 
 			});
 
 		}); // <--- FIN DEL BUCLE despegues.forEach
 		
-		// Solo ordenamos por nota si NO estamos en modo edición. Si estamos en modo edición, saltamos este paso y se quedan en el orden original de inserción (orden del JSON)
+		// Solo ordenamos por nota si NO estamos en modo edición. 
 		if (!modoEdicionFavoritos) {
 			// 1. Ordenamos el array de mayor a menor nota
-			listaFilasParaOrdenar.sort((a, b) => b.nota - a.nota);
+			listaFilasParaOrdenar.sort((a, b) => {
+                // Si el usuario quiere ordenar por XC y además el XC está visible
+                if (chkOrdenarPorXC && chkMostrarXC) {
+                    if (b.notaXC === a.notaXC) {
+                        return b.nota - a.nota; // Desempate: Si el XC es igual, gana el que tenga mejor viento
+                    }
+                    return b.notaXC - a.notaXC; // Orden principal por XC
+                } 
+                // Ordenación estándar (Por Condiciones de Despegue)
+                else {
+                    if (b.nota === a.nota) {
+                        return b.notaXC - a.notaXC; // Desempate: Si el viento es igual, gana el que tenga mejor XC
+                    }
+                    return b.nota - a.nota; // Orden principal por Despegue
+                }
+            });
 		}
 		
 		// 2. Ahora que están ordenados, los metemos en la tabla uno a uno
@@ -6311,6 +6334,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
     //if (document.getElementById("chkMostrarBaseNube")) document.getElementById("chkMostrarBaseNube").checked = chkMostrarBaseNube;
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
 
+    document.getElementById("chkMostrarXC").checked = chkMostrarXC;
+    if (document.getElementById("chkOrdenarPorXC")) document.getElementById("chkOrdenarPorXC").checked = chkOrdenarPorXC;
+
 	window.resetFiltroCondiciones = function(reconstruir = true) { //flag para que, si le hemos llamado desde activarEdicionFavoritos(), que ya tiene construir_tabla, no se llame otra vez aquí, ya que ya se hace desde esa función (bloquearía navegador)
 
         // A. Resetear valor del slider (asegúrate de que condicionesSlider es accesible aquí)
@@ -6436,6 +6462,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     document.body.click();
                 }
                 return; 
+            }
+
+            // --- PRIORIDAD 0.5: Guías interactivas (Driver.js) ---
+            // Si la variable global dice que hay una guía, o si vemos la caja amarilla en pantalla
+            if (typeof guiaActiva !== 'undefined' && guiaActiva === true) {
+                // Driver.js no tiene un "hideAll" global accesible fácilmente si no guardamos la instancia,
+                // pero sí tiene un botón de cerrar. Vamos a simular un clic en él.
+                const btnCerrarGuia = document.querySelector('.driver-popover-close-btn');
+                if (btnCerrarGuia) {
+                    btnCerrarGuia.click();
+                    return; // Detenemos el botón atrás aquí
+                }
             }
 
             // --- PRIORIDAD 1: Mensajes MODALES (Bloqueantes) ---
