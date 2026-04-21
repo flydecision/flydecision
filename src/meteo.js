@@ -1663,6 +1663,11 @@ const chkDiaNoche = document.getElementById('chkDiaNoche');
 function clickOnPip(sliderElement) {
     // 1. Obtener el índice de inicio (el pip clicado)
     const startSliderIndex = Number(this.getAttribute('data-value'));
+
+    // --- Gestión de estilos visuales ---
+    const pips = sliderElement.querySelectorAll('.noUi-value');
+    pips.forEach(p => p.classList.remove('pip-activo')); // Limpiar todos
+    this.classList.add('pip-activo'); // Marcar el actual
     
     // 2. Obtener los índices de inicio de día guardados
     const dayStartIndices = sliderElement.dayStartIndices || [];
@@ -1977,9 +1982,47 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         sliderHoras.dayStartTimestamp = window.horasCrudasRangoHorario.length > 0 
         ? new Date(window.horasCrudasRangoHorario[0].endsWith('Z') ? window.horasCrudasRangoHorario[0] : window.horasCrudasRangoHorario[0] + 'Z').getTime() 
         : 0;
-        
+
+        // --- 🚀 CÁLCULO PREVIO DEL RANGO INICIAL DIRECTO ---
+        let startIndices = [0, maxSteps]; // Por defecto todo
+
+        if (!autoSeleccionInicialHecha) {
+            const ahora = new Date();
+            const horaActual = ahora.getHours();
+            let diaObjetivo = (horaActual >= 16) ? 1 : 0;
+
+            if (pipIndices && pipIndices.length > diaObjetivo) {
+                const idxInicioDia = pipIndices[diaObjetivo];
+                const idxFinDia = (pipIndices[diaObjetivo + 1]) ? pipIndices[diaObjetivo + 1] - 1 : maxSteps;
+
+                // Aplicar las preferencias de "Horario de vuelo preferido" del usuario
+                const prefInicio = parseInt(localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO')) || 0;
+                const prefFin = parseInt(localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN')) || 23;
+
+                let finalStart = idxInicioDia;
+                let finalEnd = idxFinDia;
+
+                // Buscamos dentro de los índices de ese día cuáles coinciden con las horas del usuario
+                for (let i = idxInicioDia; i <= idxFinDia; i++) {
+                    const idxReal = window.indicesHorasRangoHorario[i];
+                    const fecha = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z') ? window.horasCrudasRangoHorario[idxReal] : window.horasCrudasRangoHorario[idxReal] + 'Z');
+                    const h = fecha.getHours();
+                    
+                    if (h < prefInicio) finalStart = i + 1;
+                    if (h <= prefFin) finalEnd = i;
+                }
+                
+                if (finalStart > idxFinDia) finalStart = idxFinDia;
+                if (finalEnd < finalStart) finalEnd = finalStart;
+
+                startIndices = [finalStart, finalEnd];
+                autoSeleccionInicialHecha = true; // Bloqueamos para que no lo vuelva a hacer al actualizar
+            }
+        }
+
+        // Crear el slider ya con el rango recortado
         noUiSlider.create(sliderHoras, {
-            start: [0, maxSteps], 
+            start: startIndices, 
             connect: true,
             step: 1,
             range: { min: 0, max: maxSteps },
@@ -1993,47 +2036,29 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
             }
         });
         
-        // 1. Inicializamos los valores actuales
-        window.sliderHorasValues = sliderHoras.noUiSlider.get().map(Number);
-
-        // 2. Adjuntamos los eventos a los Pips (Días)
-        adjuntarEventoPips(sliderHoras);
-
-        // --- LÓGICA DE AUTO-SELECCIÓN ---
-        if (!autoSeleccionInicialHecha) {
-            autoSeleccionInicialHecha = true; // Marcamos para que no se repita
-
+        // --- Iluminar el botón inicial en el arranque ---
+        if (autoSeleccionInicialHecha) {
             const ahora = new Date();
             const horaActual = ahora.getHours();
+            let diaObjetivo = (horaActual >= 16) ? 1 : 0;
             
-            // Decidimos: Hoy (0) o Mañana (1) si son más de las 16:00
-            let indiceDiaObjetivo = (horaActual >= 16) ? 1 : 0;
-
-            if (pipIndices && pipIndices.length > indiceDiaObjetivo) {
-                const valorPipBuscado = pipIndices[indiceDiaObjetivo];
-                
-                // IMPORTANTE: Usamos un pequeño setTimeout para que no interfiera 
-                // con la construcción de la tabla actual y evitar bucles.
-                setTimeout(() => {
-                    const pipsVisuales = sliderHoras.querySelectorAll('.noUi-value');
-                    let pipParaClicar = null;
-
-                    pipsVisuales.forEach(p => {
-                        if (Number(p.getAttribute('data-value')) === valorPipBuscado) {
-                            pipParaClicar = p;
-                        }
-                    });
-
-                    if (pipParaClicar) {
-                        // Al disparar el click, se ejecutará clickOnPip() que ya tiene
-                        // tu lógica de "Horario preferido" y refrescará la tabla.
-                        pipParaClicar.dispatchEvent(new Event('click'));
-                        console.log("AUTO-SELECT: Ejecutado para día " + (indiceDiaObjetivo + 1));
+            if (pipIndices && pipIndices.length > diaObjetivo) {
+                const valorBuscado = pipIndices[diaObjetivo];
+                const pipsVisuales = sliderHoras.querySelectorAll('.noUi-value');
+                pipsVisuales.forEach(p => {
+                    if (Number(p.getAttribute('data-value')) === valorBuscado) {
+                        p.classList.add('pip-activo');
                     }
-                }, 100); 
+                });
             }
         }
 
+        // Sincronizar la variable global de valores inmediatamente
+        window.sliderHorasValues = startIndices;
+
+        adjuntarEventoPips(sliderHoras);
+
+        // Listener de cambios manuales
 		sliderHoras.noUiSlider.on('change', function(values) {
 			const valoresNuevos = values.map(Number);
 			const haCambiado = valoresNuevos.some((val, i) => val !== window.sliderHorasValues[i]);
@@ -2044,7 +2069,13 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 		});
 
         sliderHoras.noUiSlider.on('slide', function () {
-            if (typeof window.Capacitor !== 'undefined') { window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); }
+            // --- Quitar azul si la usuaria mueve los tiradores manuales ---
+            const pips = sliderHoras.querySelectorAll('.noUi-value');
+            pips.forEach(p => p.classList.remove('pip-activo'));
+
+            if (typeof window.Capacitor !== 'undefined') { 
+                window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); 
+            }
         });
 
     } else {

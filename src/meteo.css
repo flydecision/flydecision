@@ -1415,6 +1415,13 @@ span.grados {
 	color: #ffffff;
 	font-weight: bold;
 }
+/* Clase para el Pip (día) seleccionado */
+#horario-slider .noUi-value.pip-activo {
+    background-color: #0078d4 !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
 #horario-slider .noUi-connect {
 	background: #0078d4;
 }
