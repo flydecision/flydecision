@@ -5246,8 +5246,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
     } else {
-        // 3. Si no hubo crash, iniciamos normalmente
-        construir_tabla();
+        // 1. Capturamos los parámetros de la URL
+        const params = new URLSearchParams(window.location.search);
+        const tieneCoords = params.has('lat') && params.has('lon');
+
+        if (tieneCoords) {
+            // --- 🚀 ARRANQUE POR COORDENADAS ---
+            
+            // 2. Cargamos la tabla en segundo plano (silencioso)
+            // Esto es vital para ocultar el Splash Screen y que los datos existan
+            construir_tabla(false, true); 
+
+            // 3. Cambiamos a la vista de mapa
+            cambiarVista('mapa');
+
+            // 4. ILUMINAR EL BOTÓN (Con un pequeño retraso de seguridad)
+            // Le damos 100ms para asegurar que el navegador ha terminado de procesar el HTML base
+            setTimeout(() => {
+                const btnMap = document.getElementById('nav-map');
+                if (btnMap && typeof window.activarMenuInferior === 'function') {
+                    window.activarMenuInferior(btnMap);
+                } else if (btnMap) {
+                    // Fallback manual si la función aún no estuviera definida globalmente
+                    document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
+                    btnMap.classList.add('active');
+                }
+            }, 150);
+
+        } else {
+            // --- ARRANQUE NORMAL ---
+            construir_tabla();
+        }
     }
 
 	// ---------------------------------------------------------------
@@ -7156,49 +7185,69 @@ function comprobarAvisoCambiosPuntuacionXC() {
 //     });
 // }
 
+// 🛑 ACTUALIZAR LA URL AL MOVER O HACER ZOOM EN EL MAPA
+// ___________________________________________________________________________________
+
+function updateURL(mapInstance) {
+    // Solo actualizamos la URL si el contenedor del mapa es visible
+    const vistaMapa = document.getElementById('vista-mapa');
+    if (!vistaMapa || vistaMapa.style.display === 'none') return;
+
+    const center = mapInstance.getCenter();
+    const zoom = mapInstance.getZoom();
+
+    const lat = center.lat.toFixed(4);
+    const lon = center.lng.toFixed(4);
+
+    const newParams = new URLSearchParams();
+    newParams.set('lat', lat);
+    newParams.set('lon', lon);
+    newParams.set('zoom', zoom);
+
+    // Si había una búsqueda activa (?q=...), la mantenemos
+    const currentParams = new URLSearchParams(window.location.search);
+    if (currentParams.has('q')) {
+        newParams.set('q', currentParams.get('q'));
+    }
+
+    const newUrl = `${window.location.pathname}?${newParams.toString()}${window.location.hash}`;
+    window.history.replaceState(null, '', newUrl);
+}
+
 let mapaInicializado = false;
 
 window.cambiarVista = function(vista) {
     const vistaTabla = document.querySelector('.contenedor-principal-tabla');
     const vistaControles = document.querySelector('.contenedor-principal-controles');
-    const vistaMapa = document.getElementById('vista-mapa'); // El contenedor de tu mapa
+    const vistaMapa = document.getElementById('vista-mapa');
 
     if (vista === 'mapa') {
-        // 1. Ocultar la tabla
         if (vistaTabla) vistaTabla.style.display = 'none';
         if (vistaControles) vistaControles.style.display = 'none';
-        
-        // 2. Mostrar el contenedor del mapa
-        // Usamos flex para que ocupe el hueco que deja la tabla y empuje el menú abajo
         if (vistaMapa) vistaMapa.style.display = 'flex';
 
-        // 3. Inicializar SOLO la primera vez
         if (!mapaInicializado) {
-            if (typeof inicializarMapaLeaflet === 'function') {
-                // await cargarScriptDinamico('js/leaflet.js');
-                // await cargarScriptDinamico('js/leaflet.markercluster.js');
-                inicializarMapaLeaflet(); 
-            }
+            inicializarMapaLeaflet();
             mapaInicializado = true;
         } 
         
-        // 4. FIX VITAL (Siempre se ejecuta)
-        // Le damos 300ms al móvil para que renderice el div, 
-        // y le decimos a Leaflet que ajuste los mapas a la pantalla.
+        // Cuando entramos al mapa, forzamos que la URL muestre las coordenadas actuales
         setTimeout(() => { 
             if (typeof map !== 'undefined' && map) {
                 map.invalidateSize(); 
+                updateURL(map); // <--- Esto pone los parámetros en la barra de direcciones
             }
         }, 300);
 
     } 
     else if (vista === 'tabla') {
-        // Ocultar el mapa
         if (vistaMapa) vistaMapa.style.display = 'none';
-        
-        // Mostrar la tabla y controles
         if (vistaTabla) vistaTabla.style.display = 'flex'; 
         if (vistaControles) vistaControles.style.display = 'block';
+
+        // Cuando volvemos a la tabla, LIMPIAMOS la URL
+        // Esto quita el ?lat=...&lon=... y deja solo flydecision.com/
+        window.history.replaceState(null, '', window.location.pathname);
     }
 };
 
@@ -7665,33 +7714,6 @@ function inicializarMapaLeaflet() {
             //.bindPopup(`Aquí está`)
             //.openPopup();
     //}
-
-
-    // 🛑 ACTUALIZAR LA URL AL MOVER O HACER ZOOM EN EL MAPA
-    // ___________________________________________________________________________________
-
-    function updateURL(mapInstance) {
-        // 1. Obtener la vista actual
-        const center = mapInstance.getCenter();
-        const zoom = mapInstance.getZoom();
-
-        // 2. Redondear los valores para una URL más limpia (e.g., a 6 decimales)
-        const lat = center.lat.toFixed(4);
-        const lon = center.lng.toFixed(4);
-
-        // 3. Crear el nuevo objeto URLSearchParams
-        const newParams = new URLSearchParams();
-        newParams.set('lat', lat);
-        newParams.set('lon', lon);
-        newParams.set('zoom', zoom);
-
-        // 4. Crear la nueva URL completa
-        const newUrl = `${window.location.pathname}?${newParams.toString()}${window.location.hash}`;
-
-        // 5. Actualizar la URL en el historial del navegador sin recargar la página
-        // Esto es vital para no interrumpir la experiencia del usuario.
-        window.history.replaceState(null, '', newUrl);
-    }
 
     // Añadir listeners al mapa (después de 'const map = L.map(...)')
     // Escuchar cuando el usuario termina de moverse/arrastrar el mapa
