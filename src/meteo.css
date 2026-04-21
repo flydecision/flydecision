@@ -145,7 +145,7 @@ body, header, .offline-badge {
 
 .contenedor-principal-controles {
     max-width: 600px;
-    width: calc(100% - 30px);
+    width: calc(100% - 8px);
     margin: 0 auto;
     position: sticky;
     top: 0;
@@ -2309,11 +2309,12 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 /* 1. Estilo General (La "pastilla" flotante) */
 .bottom-nav.compact-nav {
     position: fixed; /* Forzamos a que flote sobre todo */
-    bottom: calc(15px + env(safe-area-inset-bottom, 0px)); /* Separado del fondo y respetando la barra de iOS/Android */
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px)); /* Separado del fondo y respetando la barra de iOS/Android */
     left: 50%;
     transform: translateX(-50%); /* Centrado perfecto */
     width: calc(100% - 30px); /* Margen a los lados en móviles */
     max-width: 600px; /* Tamaño máximo en ordenadores/tablets para que no sea kilométrico */
+    min-width: 365px; /* Como el filtro de rango horario */
     
     /* El efecto Cristal (Transparencia + Desenfocado) */
     background-color: rgba(255, 255, 255, 0.7); 
