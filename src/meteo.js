@@ -2378,7 +2378,7 @@ function mostrarAvisoActualizacionMeteo(modelos) {
     if (typeof mensajeModalAceptarCancelar === 'function') {
         mensajeModalAceptarCancelar(
             '', 
-            `<p>ℹ️ Hay nuevos datos meteorológicos de:</p><p><b>${textoModelos}</b></p>.</p><p>¿Actualizar ahora?</p>`, 
+            `<p>ℹ️ Hay nuevos datos meteorológicos de:</p><p><b>${textoModelos}</b></p><p>¿Actualizar ahora?</p>`, 
             'recargarPagina'
         );
     }
@@ -5256,16 +5256,14 @@ function comprobarAvisoCambiosPuntuacionXC() {
             tipo: 'modal',
             htmlContenido: `
                 <div style="text-align: center;">
-                    <p style="font-size: 2.5em; margin: 0 0 10px 0;">ℹ️</p>
-                    <p style="font-size: 1.2em; font-weight: bold;">Novedades en el algoritmo XC</p>
+                    <p style="font-size: 1.2em; font-weight: bold;">ℹ️ Novedades en datos XC</p>
                     <div style="text-align: left; font-size: 0.95em; line-height: 1.5; color: #333;">
-                        <p>A partir de esta versión, la puntuación de Condiciones térmicas (para mantenerse o iniciar vuelo de distancia XC ha cambiado:</p>
                         <ul style="padding-left: 20px; margin-top: 10px;">
-                            <li><b>Puntuación independiente de Condiciones para despegar:</b> La nota XC ahora valora <b>exclusivamente el potencial térmico</b> de la masa de aire (Techo, CAPE y CIN), ignorando la orientación y el viento en el despegue. Solo puntúa 0 en caso de lluvia o riesgo extremo de tormenta.</li>
-                            <li><b>Altitud MSL:</b> El "Techo" ahora muestra la altura respecto al <b>nivel del mar</b> (MSL), es decir, la altitud en lugar de la altura sobre el suelo. Esto reduce errores, al usar la altitud media de la celda del modelo ECMWF y es más útil para planificar rutas XC.</li>
-                            <li><b>Cálculo de techo más realista:</b> Se ha aplicado un <b>factor de 0.85</b> (15% menos) al dato original del modelo para compensar la tasa de caída media del parapente.</li>
+                            <li><b>La puntuación de Condiciones XC (condiciones térmicas para iniciar vuelo de distancia) es independiente de la puntuación de Condiciones para despegar:</b> Ahora valora solo el potencial térmico (Techo, CAPE y CIN), ignorando la orientación y el viento en el despegue. Solo puntúa 0 en caso de lluvia o riesgo extremo de tormenta.</li>
+                            <li><b>El Techo es altitud (MSL):</b> el Techo ahora muestra la altura respecto al nivel del mar (altitud). Antes mostraba la altura sobre el suelo (AGL). Esto reduce errores, al usar la altitud media de la celda ECMWF y es más útil para planificar XC.</li>
+                            <li><b>Cálculo de Techo más realista:</b> Se aplica una correción 0.85 (15% menos) al Techo original del modelo para compensar la tasa de caída media del parapente.</li>
                         </ul>
-                    <p>💡 Seleccionando el icono "🌦️" en la cabecera de la tabla se muestra la información de cada dato meteorológico.</p>
+                    <p>💡 Puedes ver esta información, la del resto de datos meteorológicos y la de puntuación, seleccionando los iconos 🌦️ o ⭐ en la cabecera de la tabla.</p>
                     </div>
                 </div>
             `,
@@ -6078,8 +6076,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
             const ecTermino = (window.oldUpdatingEC && !currentlyUpdatingEC);
 
             let modelosRecientes = [];
-            if (mfTermino) modelosRecientes.push("viento (Météo-France: Arome-HD y Arpege)");
-            if (ecTermino) modelosRecientes.push("meteo general y XC (ECMWF)");
+            if (mfTermino) modelosRecientes.push("Viento (Météo-France: Arome-HD y Arpege)");
+            if (ecTermino) modelosRecientes.push("Meteo general y condiciones térmicas XC (ECMWF)");
 
             if (modelosRecientes.length > 0) {
                 if (guiaActiva) {
@@ -6736,7 +6734,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
     }
 
     // Un pequeño retraso de 1 segundo para que la tabla cargue primero y no sea tan brusco
-    setTimeout(comprobarAvisoCambioTecho, 1000);
+    setTimeout(comprobarAvisoCambiosPuntuacionXC, 1000);
 
     // ---------------------------------------------------------------
 	// 🔴 ANDROID: GESTOR DE ENLACES EXTERNOS (In-App Browser)
