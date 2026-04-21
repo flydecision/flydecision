@@ -3177,9 +3177,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             "<li><b>CAPE:</b> Premia los días azules o de cúmulos inofensivos, y penaliza los valores extremos por riesgo de sobredesarrollo o tormenta (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li>" +
             "<li><b>CIN:</b> Penaliza la inhibición convectiva alta (inversión) que actúa como tapón frenando la formación de térmicas (🟩 &le; 50 | 🟥 > 150 J/kg).</li>" +
             "</ul>" +
-            "<i style='color: #555;'>Nota: La puntuación XC se reduce progresivamente o se anula de forma automática si las condiciones base del despegue (viento cruzado, racha excesiva o lluvia) son malas.</i><br><br>" +
+            "<i style='color: #555;'>Nota: La puntuación XC es <b>independiente</b> de la orientación o el viento del despegue. Evalúa puramente el potencial térmico de la masa de aire en esa zona. Solo se anula (0 puntos) si hay previsión de lluvia o tormenta severa.</i><br><br>" +
             
-            "⚠️ <b>Aviso:</b> Faltaría el dato esencial de la base de nube (CBH = Cloud Base Height) para saber si el despegue estará metido en nube. Es un valor del ECMWF no disponible aún en la pasarela (solicitado en marzo-2026, pendiente y sin fecha prevista). Deberás consultarlo en otros servicios.<br><br>" +
+            "⚠️ <b>Aviso:</b> Faltaría el dato esencial de la base de nube (CBH = Cloud Base Height) para saber si el despegue estará cubierto por nube. Es un valor del ECMWF no disponible aún en la pasarela (solicitado en marzo-2026, pendiente y sin fecha prevista). Deberás consultarlo en otros servicios.<br><br>" +
             
             "<b>Los despegues de la tabla se reordenan siempre automáticamente por la primera puntuación</b> (Condiciones del despegue), de mayor a menor.";        
         thCondiciones.setAttribute("data-tippy-content", tooltipContent);
@@ -3518,36 +3518,38 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                         puntosAcumulados += ptsHora;
 
                         // ---------------------------------------------------------
-                        // 🟢 ALGORITMO XC
+                        // 🟢 ALGORITMO XC (INDEPENDIENTE DEL DESPEGUE)
                         // ---------------------------------------------------------
                         if (chkMostrarXC && hourlyEcmwf) {
                             let ptsXC_hora = 0;
-                            // Si el viento base está vetado (lluvia, viento extremo), el XC es 0.
-                            if (!vetoActivado) {
+                            
+                            // Único veto lógico para XC: Lluvia o Tormenta severa (CAPE altísimo)
+                            let lluviaXC = (hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] != null) ? Number(hourlyEcmwf.precipitation[i]) : 0;
+                            let capeXC = (hourlyEcmwf.cape && hourlyEcmwf.cape[i] != null) ? Number(hourlyEcmwf.cape[i]) : 0;
+
+                            if (lluviaXC > 0 || capeXC > XCCapeLims.riesgo) {
+                                ptsXC_hora = 0; // Si llueve o hay tormenta, no hay XC posible
+                            } else {
                                 // 1. Obtener el dato crudo de la capa límite (AGL)
                                 let techoRaw = (hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[i] != null) ? Number(hourlyEcmwf.boundary_layer_height[i]) : 0;
 
                                 // 2. Aplicar el ratio global de realismo para parapente (0.85)
                                 let techoUtil = techoRaw * RATIO_TECHO_UTIL;
 
-                                let cape = (hourlyEcmwf.cape && hourlyEcmwf.cape[i] != null) ? Number(hourlyEcmwf.cape[i]) : 0;
                                 let cin = (hourlyEcmwf.convective_inhibition && hourlyEcmwf.convective_inhibition[i] != null) ? Math.max(0, Number(hourlyEcmwf.convective_inhibition[i])) : 0;
 
-                                // Techo Útil (0-40 pts) - Calculado sobre el valor corregido con el ratio
+                                // Techo Útil (0-40 pts)
                                 let ptsTecho = 0;
                                 if (techoUtil >= XCTechoLims.verde) ptsTecho = 40;
                                 else if (techoUtil > XCTechoLims.rojo) ptsTecho = 10 + 30 * ((techoUtil - XCTechoLims.rojo) / (XCTechoLims.verde - XCTechoLims.rojo));
                                 else ptsTecho = 10 * (techoUtil / XCTechoLims.rojo);
 
-                                // CAPE (0-40 pts) - ¡Corregido para no penalizar días azules!
+                                // CAPE (0-40 pts)
                                 let ptsCape = 0;
-                                if (cape >= XCCapeLims.idealMin && cape <= XCCapeLims.idealMax) {
-                                    ptsCape = 40; // Día azul o con cúmulos inofensivos (Perfecto)
-                                } else if (cape > XCCapeLims.idealMax && cape <= XCCapeLims.riesgo) {
-                                    // Penaliza progresivamente por riesgo de sobredesarrollo
-                                    ptsCape = 40 - 40 * ((cape - XCCapeLims.idealMax) / (XCCapeLims.riesgo - XCCapeLims.idealMax));
-                                } else {
-                                    ptsCape = 0; // Tormentas garantizadas
+                                if (capeXC >= XCCapeLims.idealMin && capeXC <= XCCapeLims.idealMax) {
+                                    ptsCape = 40; 
+                                } else if (capeXC > XCCapeLims.idealMax && capeXC <= XCCapeLims.riesgo) {
+                                    ptsCape = 40 - 40 * ((capeXC - XCCapeLims.idealMax) / (XCCapeLims.riesgo - XCCapeLims.idealMax));
                                 }
 
                                 // CIN (0-20 pts)
@@ -3556,9 +3558,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                                 else if (cin < XCCinLims.rojo) ptsCin = 20 * (1 - (cin - XCCinLims.verde) / (XCCinLims.rojo - XCCinLims.verde));
                                 else ptsCin = 0;
 
-                                // Puntuación total de la hora (penalizada si el viento/racha general no es ideal)
-                                ptsXC_hora = (ptsTecho + ptsCape + ptsCin) * ratioCorreccionPorDireccion * ratioCorreccionPorRacha;
+                                // Puntuación total Pura (sin ratios de viento/orientación del despegue)
+                                ptsXC_hora = ptsTecho + ptsCape + ptsCin;
                             }
+                            
                             puntosAcumuladosXC += ptsXC_hora;
                             horasValidasXC++;
                         }
@@ -5234,14 +5237,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Comprobación inicial al cargar la página
     gestionarBotonLimpiar();
 
-    function comprobarAvisoCambioTecho() {
+function comprobarAvisoCambiosPuntuacionXC() {
         // 1. Si la versión es 3.0.0 o superior, este aviso ya es "historia" y no debe salir nunca
         const versionActual = window.WEB_VERSION || "0.0.0";
         const majorVersion = parseInt(versionActual.split('.')[0]);
         if (majorVersion >= 3) return;
 
         // 2. Si el usuario ya lo aceptó, no se muestra más
-        if (localStorage.getItem('METEO_AVISO_TECHO_MSL_VISTO') === 'true') return;
+        if (localStorage.getItem('METEO_AVISO_CAMBIOS_XC_VISTO') === 'true') return;
 
         // 3. Si es un usuario nuevo (que aún no ha hecho la primera visita), 
         // no le mostramos este aviso técnico todavía para no saturarle, 
@@ -5254,14 +5257,15 @@ document.addEventListener('DOMContentLoaded', function() {
             htmlContenido: `
                 <div style="text-align: center;">
                     <p style="font-size: 2.5em; margin: 0 0 10px 0;">ℹ️</p>
-                    <p style="font-size: 1.2em; font-weight: bold;">Cambio de referencia en "Techo"</p>
+                    <p style="font-size: 1.2em; font-weight: bold;">Novedades en el algoritmo XC</p>
                     <div style="text-align: left; font-size: 0.95em; line-height: 1.5; color: #333;">
-                        <p>A partir de esta versión, el valor de <b>Techo</b> ha sido optimizado:</p>
+                        <p>A partir de esta versión, la puntuación de Condiciones térmicas (para mantenerse o iniciar vuelo de distancia XC ha cambiado:</p>
                         <ul style="padding-left: 20px; margin-top: 10px;">
-                            <li><b>Altitud MSL:</b> Ahora se muestra la altura respecto al <b>nivel del mar</b> (MSL), es decir, la altitud. Antes se mostraba la altura respecto al suelo del despegue (AGL). Esto reduce errores, al usar la altitud media de la celda del modelo y es más útil para planificar rutas XC.</li>
-                            <li><b>Cálculo más realista:</b> Se ha aplicado un <b>factor de 0.85</b> (un 15% menos) al dato original del modelo para compensar la tasa de caída media del parapente, ofreciendo un techo más realista.</li>
+                            <li><b>Puntuación independiente de Condiciones para despegar:</b> La nota XC ahora valora <b>exclusivamente el potencial térmico</b> de la masa de aire (Techo, CAPE y CIN), ignorando la orientación y el viento en el despegue. Solo puntúa 0 en caso de lluvia o riesgo extremo de tormenta.</li>
+                            <li><b>Altitud MSL:</b> El "Techo" ahora muestra la altura respecto al <b>nivel del mar</b> (MSL), es decir, la altitud en lugar de la altura sobre el suelo. Esto reduce errores, al usar la altitud media de la celda del modelo ECMWF y es más útil para planificar rutas XC.</li>
+                            <li><b>Cálculo de techo más realista:</b> Se ha aplicado un <b>factor de 0.85</b> (15% menos) al dato original del modelo para compensar la tasa de caída media del parapente.</li>
                         </ul>
-                    <p>💡Seleccionando el icono"🌦️" en la cabecera de la tabla se muestra la información de cada dato.</p>
+                    <p>💡 Seleccionando el icono "🌦️" en la cabecera de la tabla se muestra la información de cada dato meteorológico.</p>
                     </div>
                 </div>
             `,
@@ -5270,7 +5274,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     texto: 'Entendido',
                     onclick: function() {
                         // Guardamos que ya lo ha visto para que no vuelva a salir
-                        localStorage.setItem('METEO_AVISO_TECHO_MSL_VISTO', 'true');
+                        localStorage.setItem('METEO_AVISO_CAMBIOS_XC_VISTO', 'true');
                         GestorMensajes.ocultar();
                     }
                 }
