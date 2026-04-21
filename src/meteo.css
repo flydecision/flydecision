@@ -145,7 +145,7 @@ body, header, .offline-badge {
 
 .contenedor-principal-controles {
     max-width: 600px;
-    width: calc(100% - 8px);
+    width: calc(100% - 30px);
     margin: 0 auto;
     position: sticky;
     top: 0;
