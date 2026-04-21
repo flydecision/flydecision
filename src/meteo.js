@@ -2378,7 +2378,7 @@ function mostrarAvisoActualizacionMeteo(modelos) {
     if (typeof mensajeModalAceptarCancelar === 'function') {
         mensajeModalAceptarCancelar(
             '', 
-            `<p>ℹ️ Hay nuevos datos actualizados de <b>${textoModelos}</b>.</p><p>¿Recargar ahora?</p>`, 
+            `<p>ℹ️ Hay nuevos datos meteorológicos de:</p><p><b>${textoModelos}</b></p>.</p><p>¿Actualizar ahora?</p>`, 
             'recargarPagina'
         );
     }
@@ -6074,8 +6074,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const ecTermino = (window.oldUpdatingEC && !currentlyUpdatingEC);
 
             let modelosRecientes = [];
-            if (mfTermino) modelosRecientes.push("Météo-France");
-            if (ecTermino) modelosRecientes.push("ECMWF");
+            if (mfTermino) modelosRecientes.push("viento (Météo-France: Arome-HD y Arpege)");
+            if (ecTermino) modelosRecientes.push("meteo general y XC (ECMWF)");
 
             if (modelosRecientes.length > 0) {
                 if (guiaActiva) {
