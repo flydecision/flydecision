@@ -152,7 +152,7 @@ body, header, .offline-badge {
     z-index: 1000;
     background-color: rgba(255, 255, 255);
     box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
+    border-radius: 20px;
     margin-top: 3px;
 }
 
@@ -2322,7 +2322,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     padding-bottom: env(safe-area-inset-bottom);
     z-index: 9999;
     box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
+    border-radius: 20px;
     max-width: 727px;
     background-color: #ffffff;
     padding-top: 2px;
@@ -2330,11 +2330,33 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     margin-bottom: 3px;
 }
 body.modo-android-manual .bottom-nav.compact-nav {
-    height: 48px;
-    min-height: 48px;
-    max-height: 48px;
-    padding-bottom: env(safe-area-inset-bottom);
+    position: fixed; /* Forzamos a que flote sobre todo */
+    bottom: calc(15px + env(safe-area-inset-bottom, 0px)); /* Lo separamos del fondo */
+    left: 50%;
+    transform: translateX(-50%); /* Lo centramos perfectamente */
+    width: calc(100% - 30px); /* Le damos margen a los lados */
+    max-width: 700px;
+    
+    /* El efecto Cristal (Transparencia + Desenfocado) */
+    background-color: rgba(255, 255, 255, 0.85); 
+    backdrop-filter: blur(12px); 
+    -webkit-backdrop-filter: blur(12px);
+    
+    border-radius: 20px; /* Bordes muy redondeados tipo píldora */
+    border: 1px solid rgba(255, 255, 255, 0.6); /* Un brillo sutil en el borde */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Sombra elegante */
+    
+    padding-bottom: 0; 
+    height: 60px; /* Un poco más alto para que respire */
+    min-height: 60px;
+    max-height: 60px;
 }
+
+/* Evitamos que la tabla se esconda detrás del nuevo menú flotante */
+body.modo-android-manual .tabla-wrapper {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 70px) !important;
+}
+
 .compact-nav .nav-item {
     display: flex;
     flex-direction: column;
@@ -2371,7 +2393,10 @@ body.modo-android-manual .bottom-nav.compact-nav {
 /* ESTADO ACTIVO */
 .compact-nav .nav-item.active { color: #000000; font-weight: bold;}
 .compact-nav .nav-item.active .nav-icon-container { background-color: #c2e7ff; }
-.compact-nav .nav-item.active svg { stroke: #001d35; }
+.compact-nav .nav-item.active svg { 
+    stroke: #001d35; 
+    stroke-width: 2.7; /* Aumenta el grosor del trazo (por defecto es 2) */
+}
 
 /* ==========================================================================
    BUSCADOR DESPLEGABLE INTEGRADO
