@@ -4500,7 +4500,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                         );
                         // CAPE
                         renderEcmwfData(filaCape, hourlyEcmwf.cape, 
-                            v => (v == null || v === "") ? "" : Math.round(Number(v)), "11px",
+                            v => {
+                                if (v == null || v === "") return "";
+                                let n = Math.round(Number(v));
+                                if (n >= 1000) {
+                                    return (n / 1000).toFixed(1) + "k"; // 1200 -> 1.2k
+                                }
+                                return n;
+                            }, 
+                            "11px",
                             v => {
                                 if (v == null || v === "") return "";
                                 let n = Number(v);
