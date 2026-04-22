@@ -6315,7 +6315,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                             // SOLUCIÓN: Usamos un objeto en lugar de un número único.
                             // top: 60 -> Deja 60px de "aire" arriba (suficiente para librar cualquier barra de notificaciones)
                             // left/right: 10 -> Aprovecha el ancho al máximo en los lados
-                            padding: { top: 60, bottom: 20, left: 10, right: 10 }, 
+                            padding: { top: 60, bottom: 90, left: 10, right: 10 }, 
                             
                             boundary: 'viewport',
                             
@@ -6330,7 +6330,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                         name: 'flip',
                         options: {
                             // Aquí también podemos proteger el top si decide voltearse
-                            padding: { top: 60, bottom: 20, left: 10, right: 10 }
+                            padding: { top: 60, bottom: 90, left: 10, right: 10 }
                         }
                     }
                 ],

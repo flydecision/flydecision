@@ -80,6 +80,19 @@ body.modo-android-manual {
     background-size: 100% 100%;
 }
 
+/* Franja opaca en la zona del nav bar de Android */
+body.modo-android-manual::after {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--safe-area-inset-bottom, 0px);
+    background-color: #d9ebf9;
+    z-index: 99998; /* debajo del bottom-nav (9999) pero encima de todo lo demás */
+    pointer-events: none;
+}
+
 /* A veces Capacitor tarda unos milisegundos en cargar el plugin, y durante ese tiempo la app se ve mal. En tu CSS global, puedes añadir esto para que los elementos fixed (como tu cabecera) tengan una transición suave si cambian de altura: */
 body, header, .offline-badge {
     transition: padding-top 0.3s ease, top 0.3s ease;
@@ -2641,10 +2654,22 @@ details.config-accordion .accordion-content {
 	display: none;
 }
 .leaflet-right .leaflet-control {
-margin-right: 5px;
+    margin-right: 3px;
+    margin-bottom: 0px;
 }
-.leaflet-bottom .leaflet-control {
-	margin-bottom: 5px;
+.leaflet-control-attribution.leaflet-control {
+    margin-right: 5px;
+    margin-bottom: 6px;
+}
+
+/* Controles de Leaflet (escala + atribución):
+   suben por encima del bottom-nav (60px altura + 12px margen = 72px)
+   y de la barra de navegación Android */
+.leaflet-bottom {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 72px);
+}
+.leaflet-bottom .leaflet-control-scale {
+    margin-bottom: 5px !important;
 }
 .layer-controls {
 	margin-top: 15px;
@@ -2654,7 +2679,11 @@ margin-right: 5px;
 }
 
 .leaflet-control-scale-line {
-    font-size: 14px;
+    font-size: 12px;
+    line-height: 0.9;
+    margin-left: 3px;
+    border: 1px solid #777;
+    margin-bottom: 1px;
 }
 
 h3 {
@@ -2690,6 +2719,11 @@ h3 {
 	display: block !important;
 	font-size: 11px;
 	white-space: normal;
+}
+
+.leaflet-control-attribution.leaflet-control {
+    margin-right: 6px;
+    margin-bottom: 6px;
 }
 
 .leaflet-container a.leaflet-popup-close-button {
