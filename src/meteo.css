@@ -65,7 +65,7 @@ button {
 body.modo-android-manual {
     /* 1. PARTE SUPERIOR: Usamos la variable inyectada por Capacitor */
     /* El valor 25px se queda como "seguro" por si el plugin tarda un milisegundo en cargar */
-    padding-top: var(--safe-area-inset-top, 25px) !important;
+    padding-top: calc(var(--safe-area-inset-top, 25px) + 8px) !important;
 
     /* 2. PARTE INFERIOR: ¡Vital para que los botones de Android no tapen tu menú! */
     /* Esto es lo que soluciona que la barra de abajo se vea integrada */
