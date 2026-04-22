@@ -5069,17 +5069,29 @@ function aplicarFiltrosVisuales() {
     if (miniCounter && !modoEdicionFavoritos) {
         const totalFavs = favoritos.length;
         
-        // Comprobamos si hay algún filtro activo (texto o distancia)
+        // Detectamos si el botón de "incluir no favoritos" está activo
+        const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
+        const incluirNoFavsActivo = btnIncNoFavs ? btnIncNoFavs.classList.contains('activo') : false;
+
+        // Comprobamos si hay filtros activos
         const hayFiltroTexto = filtroLimpio.length > 0;
         const hayFiltroDistancia = distanciaLimite < 9999;
         const hayFiltros = hayFiltroTexto || hayFiltroDistancia;
 
-        if (hayFiltros) {
-            // Formato: "X de Y ❤️"
-            miniCounter.innerHTML = `${visibles} de ${totalFavs} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
+        if (incluirNoFavsActivo) {
+            // --- MODO "BASE DE DATOS TOTAL" (Corazón oculto) ---
+            // Mostramos cuántos se ven respecto al total global de despegues
+            miniCounter.innerHTML = `${visibles} de ${totalDespeguesDisponibles}`;
+            miniCounter.title = "Número de despegues visibles de la base de datos completa";
         } else {
-            // Formato: "X ❤️"
-            miniCounter.innerHTML = `${totalFavs} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
+            // --- MODO "FAVORITOS" (Corazón visible) ---
+            miniCounter.title = "Número de despegues favoritos / filtrados";
+            
+            if (hayFiltros) {
+                miniCounter.innerHTML = `${visibles} de ${totalFavs} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
+            } else {
+                miniCounter.innerHTML = `${totalFavs} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
+            }
         }
     }
 
