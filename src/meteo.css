@@ -63,16 +63,19 @@ button {
 
 /* Solo aplicamos esto cuando detectamos Android por JS */
 body.modo-android-manual {
-    /* 1. PARTE SUPERIOR (Tu lógica manual) */
-    /* IMPORTANTE: En Android ignoramos env(). Usamos SOLO lo que diga el plugin. */
-    padding-top: max(25px, var(--android-sb-height)) !important;
+    /* 1. PARTE SUPERIOR: Usamos la variable inyectada por Capacitor */
+    /* El valor 25px se queda como "seguro" por si el plugin tarda un milisegundo en cargar */
+    padding-top: var(--safe-area-inset-top, 25px) !important;
 
-    /* 3. LATERALES (Por si hay muescas/notches en horizontal o pantallas curvas) */
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
+    /* 2. PARTE INFERIOR: ¡Vital para que los botones de Android no tapen tu menú! */
+    /* Esto es lo que soluciona que la barra de abajo se vea integrada */
+    padding-bottom: var(--safe-area-inset-bottom, 0px) !important;
 
-    /* Tu degradado para que el fondo de la barra se vea bonito */
-    /* background: linear-gradient(to bottom, #d9ebf9 0%, #d9ebf9 calc(100px + var(--vv-offset-top, 0px)), #F3F4F6 calc(100px + var(--vv-offset-top, 0px))) !important; */
+    /* 3. LATERALES: Para móviles con "notches" laterales o pantallas curvas */
+    padding-left: var(--safe-area-inset-left, 0px);
+    padding-right: var(--safe-area-inset-right, 0px);
+
+    /* Estética general */
     background-color: #d9ebf9;
     background-size: 100% 100%;
 }

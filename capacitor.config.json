@@ -22,6 +22,10 @@
     "Keyboard": {
       "resize": "body",
       "resizeOnFullScreen": true
+    },
+    "SystemBars": {
+      "insetsHandling": "css",
+      "style": "LIGHT"
     }
   }
 }

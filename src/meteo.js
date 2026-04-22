@@ -6603,8 +6603,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
     const esAndroidApp = window.Capacitor && window.Capacitor.getPlatform() === 'android';
 
     if (esAndroidApp) {
-        // 1. Extraemos StatusBar y TextZoom de los plugins
-        const { StatusBar, TextZoom } = window.Capacitor.Plugins;
+        // 1. Extraemos StatusBar y TextZoom y SystemBars de los plugins
+        const { StatusBar, TextZoom, SystemBars } = window.Capacitor.Plugins;
 
         // 2. Aplicamos la clase base INMEDIATAMENTE
         document.body.classList.add('modo-android-manual');
@@ -6637,9 +6637,14 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     await TextZoom.set({ value: 1 }); // Fuerza el tamaño al 100% (16px reales)
                     console.log('✅ TextZoom forzado a 1');
                 }
+                if (SystemBars) {
+                // Aplicamos el estilo para que los botones sean oscuros
+                await SystemBars.setStyle({ style: 'LIGHT' });
+                console.log("SystemBars: Configurado estilo oficial.");
+            }
 
             } catch (err) {
-                console.warn('Error configurando Android (StatusBar/TextZoom):', err);
+                console.warn('Error configurando Android (StatusBar/TextZoom/SystemBars):', err);
                 
                 // Fallback de seguridad por si falla la altura
                 document.documentElement.style.setProperty('--android-sb-height', '35px');
