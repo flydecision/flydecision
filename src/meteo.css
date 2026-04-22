@@ -819,7 +819,7 @@ details.config-accordion .accordion-content {
 /* 🔴 CONTADOR DESPEGUES -------------------------------- */
 
 .contador-despegues {
-    display: flex;
+    display: none; 
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
@@ -828,6 +828,14 @@ details.config-accordion .accordion-content {
     color: #666;
     font-style: italic;
     gap: 4px;
+}
+
+/* Estilo para el mini-contador dentro de la cabecera */
+#header-contador-mini {
+    display: block;
+    font-size: 15px; /* Un poco más pequeño que el título */
+    font-weight: normal;
+    margin-top: 2px;
 }
 
 /* Borde y fondo cuando la tabla está filtrada */
@@ -859,7 +867,7 @@ details.config-accordion .accordion-content {
     margin-bottom: 3px; 
     margin-right: 3px;
     padding-right: 1px;
-	margin-top: 3px;
+	margin-top: 10px;
 	flex-grow: 1;       /* Se estira para llenar el hueco dejado por el contador */
     overflow: auto;     /* Aquí aparecen las barras de scroll si hace falta */
 	height: 100%;       /* Asegura que ocupe el contenedor */
@@ -868,7 +876,9 @@ details.config-accordion .accordion-content {
     
     /* Ajustes para móviles. Sumamos los 56px del menú compacto al margen. */
     -webkit-overflow-scrolling: touch;
-    padding-bottom: calc(env(safe-area-inset-bottom) + 3px) !important;
+    /* 2. Para asegurar que la tabla no se esconda detrás del menú flotante,
+   le damos espacio vacío abajo al contenedor de la tabla, sea Android, iOS o PC */
+    padding-bottom: calc(env(safe-area-inset-bottom) + 90px) !important;
 }
 
 #tabla { 
@@ -961,6 +971,21 @@ body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-de
 body.modo-edicion-tabla #tabla tbody td.columna-despegue {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
+}
+
+/* --- CONFIGURACIÓN VISTA EDICIÓN (CUANDO EXISTE .modo-edicion-tabla) --- */
+
+/* Mostrar el contador externo solo en modo edición */
+body.modo-edicion-tabla .contador-despegues {
+    display: flex;
+}
+/* Recuperar el margen original de 3px en modo edición */
+body.modo-edicion-tabla .tabla-wrapper {
+    margin-top: 3px;
+}
+/* Ocultar el mini-contador de la cabecera en modo edición */
+body.modo-edicion-tabla #header-contador-mini {
+    display: none;
 }
 
 /* CLASE PARA FILAS DE DATOS NORMALES (20px) */
@@ -2346,12 +2371,6 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     max-height: 60px;
     padding-bottom: 0; 
     margin: 0; /* Limpiamos márgenes antiguos */
-}
-
-/* 2. Para asegurar que la tabla no se esconda detrás del menú flotante,
-   le damos espacio vacío abajo al contenedor de la tabla, sea Android, iOS o PC */
-.tabla-wrapper {
-    padding-bottom: calc(env(safe-area-inset-bottom) + 90px) !important;
 }
 
 /* 3. Estilo de los botones internos */

@@ -3015,12 +3015,19 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // ---------------------------------------------------------------
 
 		const thDespegue = document.createElement("th");
-		thDespegue.textContent = "Despegue";
-		thDespegue.rowSpan = 2; // Ocupa las dos filas de la cabecera
-		thDespegue.style.fontSize = "18px";
-		thDespegue.classList.add("borde-grueso-izquierda", "columna-despegue", "borde-grueso-abajo", "borde-grueso-arriba");
+        thDespegue.rowSpan = 2;
+        thDespegue.style.fontSize = "18px";
+        thDespegue.classList.add("borde-grueso-izquierda", "columna-despegue", "borde-grueso-abajo", "borde-grueso-arriba");
+
         if (modoEdicionFavoritos) {
+            thDespegue.textContent = "Despegue";
             thDespegue.classList.add("borde-grueso-derecha");
+        } else {
+            // En vista normal, creamos dos líneas: Título + Mini Contador
+            thDespegue.innerHTML = `
+                <div style="line-height: 1.1;">Despegue</div>
+                <div id="header-contador-mini" title="Número de despegues favoritos (♥️) mostrados en la tabla"></div>
+            `;
         }
 
         // ---------------------------------------------------------------
@@ -5016,7 +5023,7 @@ function aplicarFiltrosVisuales() {
         }
     }
 
-    // Actualizar Contador Superior
+    // Actualizar Contador Superior (modo Edición favoritos)
     const divContador = document.getElementById('contador-despegues');
     const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
     const incluirNoFavs = btnIncNoFavs ? btnIncNoFavs.classList.contains('activo') : false;
@@ -5053,6 +5060,26 @@ function aplicarFiltrosVisuales() {
                     divContador.innerHTML = `<b>${visibles}</b> despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)`;
                 }
             }
+        }
+    }
+
+    // Actualizar Mini-Contador (modo Normal)
+    const miniCounter = document.getElementById('header-contador-mini');
+
+    if (miniCounter && !modoEdicionFavoritos) {
+        const totalFavs = favoritos.length;
+        
+        // Comprobamos si hay algún filtro activo (texto o distancia)
+        const hayFiltroTexto = filtroLimpio.length > 0;
+        const hayFiltroDistancia = distanciaLimite < 9999;
+        const hayFiltros = hayFiltroTexto || hayFiltroDistancia;
+
+        if (hayFiltros) {
+            // Formato: "X de Y ❤️"
+            miniCounter.innerHTML = `${visibles} de ${totalFavs} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
+        } else {
+            // Formato: "X ❤️"
+            miniCounter.innerHTML = `${totalFavs} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
         }
     }
 
