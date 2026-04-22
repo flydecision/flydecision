@@ -7058,73 +7058,78 @@ function comprobarAvisoCambiosPuntuacionXC() {
         window.activarMenuInferior(btnInicio);
     };
 
-    // 2️⃣ BOTÓN BUSCAR
+// 2️⃣ BOTÓN BUSCAR
     window.clicBotonBuscar = function() {
         const searchContainer = document.getElementById('floating-search-container');
         const searchInput = document.getElementById('buscador-despegues-provincias');
         const isSearchOpen = searchContainer && !searchContainer.classList.contains('floating-search-hidden');
 
-        // REGLA: Si está abierto y vacío, lo cerramos "en silencio" (sin tocar la tabla)
-        if (isSearchOpen && searchInput && searchInput.value.trim() === '') {
+        // Miramos si estamos en el mapa actualmente
+        const vistaMapa = document.getElementById('vista-mapa');
+        const estaEnMapa = vistaMapa && vistaMapa.style.display === 'flex';
+
+        // REGLA: Si NO estamos en el mapa, está abierto y vacío, lo cerramos "en silencio"
+        if (!estaEnMapa && isSearchOpen && searchInput && searchInput.value.trim() === '') {
             searchContainer.classList.add('floating-search-hidden');
             buscadorVisible = false;
             searchInput.blur();
-            // Iluminamos Inicio
             window.activarMenuInferior(document.getElementById('nav-home'));
         } else {
+            // Siempre cambiamos a la tabla
             cambiarVista('tabla');
+            
+            // Si el buscador estaba cerrado (incluso de forma fantasma), lo abrimos
             if (!isSearchOpen) {
                 window.toggleBuscadorFlotante();
             }
+            
             window.activarMenuInferior(document.getElementById('nav-search'));
         }
     };
 
-    // 3️⃣ BOTÓN DISTANCIA (Corregido: Cierre silencioso sin scroll)
+    // 3️⃣ BOTÓN DISTANCIA (Corregido: Ahora cierra el buscador si está abierto y vacío)
     window.clicBotonDistancia = function() {
         const panelDistancia = document.getElementById("div-filtro-distancia");
+        const searchContainer = document.getElementById('floating-search-container');
+        const searchInput = document.getElementById('buscador-despegues-provincias');
+        
         if (!panelDistancia) return;
 
         const isDistanceOpen = panelDistancia.classList.contains("activo");
+        const isSearchOpen = searchContainer && !searchContainer.classList.contains('floating-search-hidden');
         const sliderDistancia = document.getElementById('distancia-slider');
         
+        // Estado del mapa
+        const vistaMapa = document.getElementById('vista-mapa');
+        const estaEnMapa = vistaMapa && vistaMapa.style.display === 'flex';
+
         let filtrandoCosas = false;
         if (sliderDistancia && sliderDistancia.noUiSlider) {
             const maxIndex = CORTES_DISTANCIA_GLOBAL.length - 1;
             const currentValue = Math.round(parseFloat(sliderDistancia.noUiSlider.get()));
-            // Si el valor es menor que el máximo ("Todo"), es que está filtrando
             if (currentValue < maxIndex) filtrandoCosas = true;
         }
 
-        // CASO A: Si está abierto y NO está filtrando nada, lo cerramos visualmente
-        if (isDistanceOpen && !filtrandoCosas) {
-            // Quitamos la clase directamente sin llamar a alternardivDistancia()
-            // así evitamos que se ejecute el reset que reconstruye la tabla.
+        // --- 🚀 REGLA DE EXCLUSIÓN MUTUA (FIX DEL BUG) ---
+        // Si el buscador está abierto y vacío, lo cerramos al pulsar Distancia
+        if (!isDistanceOpen && isSearchOpen && searchInput && searchInput.value.trim() === '') {
+            searchContainer.classList.add('floating-search-hidden');
+            buscadorVisible = false; // Actualizamos la variable global
+            searchInput.blur();
+        }
+
+        // CASO A: Si NO estamos en el mapa, está abierto y NO está filtrando nada, lo cerramos
+        if (!estaEnMapa && isDistanceOpen && !filtrandoCosas) {
             panelDistancia.classList.remove("activo");
-            
-            // Iluminamos Inicio y salimos
             window.activarMenuInferior(document.getElementById('nav-home'));
             return; 
         }
 
-        // Caso B: Cerrar buscador si está abierto y vacío ---
-        const searchContainer = document.getElementById('floating-search-container');
-        const searchInput = document.getElementById('buscador-despegues-provincias');
-        const isSearchOpen = searchContainer && !searchContainer.classList.contains('floating-search-hidden');
-
-        if (!isDistanceOpen && isSearchOpen && searchInput && searchInput.value.trim() === '') {
-            searchContainer.classList.add('floating-search-hidden');
-            buscadorVisible = false; // Variable global del buscador
-            searchInput.blur();
-        }
-
-        // CASO C: Abrir el panel o mantenerse si hay datos
+        // CASO B: Cambiar a la tabla o abrir el panel
         cambiarVista('tabla');
         
         if (!isDistanceOpen) {
-            // Si estaba cerrado, lo abrimos
             panelDistancia.classList.add("activo");
-            // Pequeño refresco técnico del slider
             setTimeout(() => {
                 if (sliderDistancia && sliderDistancia.noUiSlider) {
                     sliderDistancia.noUiSlider.updateOptions({}, true);
@@ -7132,7 +7137,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
             }, 50);
         }
         
-        // Iluminamos el botón de Distancia
         window.activarMenuInferior(document.getElementById('nav-distance'));
     };
 
