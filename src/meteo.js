@@ -976,6 +976,8 @@ function activarEdicionFavoritos() {
     }
     resetFiltroDistancia(false);
 
+    cambiarVista('tabla'); 
+
     // 2. ILUMINAR BOTÓN DE AJUSTES EN EL MENÚ INFERIOR
     const btnSettings = document.getElementById('nav-settings');
     if (btnSettings && typeof window.activarMenuInferior === 'function') {
@@ -6614,12 +6616,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
             try {
                 // --- A. CONFIGURACIÓN DE STATUS BAR ---
                 
-                // Forzar modo "Edge-to-Edge" (Overlay TRUE)
-                await StatusBar.setOverlaysWebView({ overlay: true });
-
-                // Poner estilo y color transparente
-                await StatusBar.setStyle({ style: 'LIGHT' });
-                // await StatusBar.setBackgroundColor({ color: '#00000000' }); 
+                // Arriba: Transparente e iconos negros
+                if (StatusBar) {
+                    // overlaysWebView es la clave para la transparencia arriba
+                    await StatusBar.setOverlaysWebView({ overlay: true });
+                    // Forzamos el color transparente y estilo Dark (iconos negros)
+                    await StatusBar.setBackgroundColor({ color: '#00000000' });
+                    await StatusBar.setStyle({ style: 'DARK' }); 
+                }
+                
+                if (SystemBars) {
+                    // style: 'LIGHT' pone botones de navegación negros en la nueva API
+                    await SystemBars.setStyle({ style: 'LIGHT' }); 
+                }
 
                 // Leer la altura real
                 const info = await StatusBar.getInfo();
@@ -6637,11 +6646,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     await TextZoom.set({ value: 1 }); // Fuerza el tamaño al 100% (16px reales)
                     console.log('✅ TextZoom forzado a 1');
                 }
-                if (SystemBars) {
-                // Aplicamos el estilo para que los botones sean oscuros
-                await SystemBars.setStyle({ style: 'LIGHT' });
-                console.log("SystemBars: Configurado estilo oficial.");
-            }
 
             } catch (err) {
                 console.warn('Error configurando Android (StatusBar/TextZoom/SystemBars):', err);
@@ -8035,7 +8039,7 @@ function inicializarMapaLeaflet() {
                 shadowUrl: 'css/images/marker-shadow.png',
                 shadowSize: [41, 41]
             })
-            }).addTo(map).bindPopup("<b style='font-size:16px;'>Estás aquí</b>", { 
+            }).addTo(map).bindPopup("<b style='font-size:16px;'>Estás aquí&nbsp;&nbsp;</b>", { 
                 className: 'popup-ajustado', 
                 maxWidth: 'auto' 
             }).openPopup();
