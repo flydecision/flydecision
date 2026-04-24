@@ -2733,6 +2733,19 @@ h3 {
     font-weight: bold;
 }
 
+/* --- RESET ESPECÍFICO PARA EL MINIMAPA DEL MODAL --- */
+
+/* Forzamos que los controles (atribución y escala) vuelvan abajo del todo */
+#mapa-selector .leaflet-bottom {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + -1px) !important;
+}
+/* Opcional: Si quieres que la letra de la atribución sea un poco más pequeña 
+   en el minimapa para que no ocupe tanto espacio */
+#mapa-selector .leaflet-control-attribution {
+    font-size: 8px !important;
+    background: rgba(255, 255, 255, 0.7) !important; /* Un poco de transparencia */
+}
+
 .info {
 	position: fixed;
 	top: 50%;
