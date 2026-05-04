@@ -11,7 +11,26 @@
     "generate-icons": "capacitor-assets generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["paragliding", "forecast", "analysis", "parapente", "pronóstico", "meteorología", "despegues", "paragliding launch sites", "free software", "android", "open-source", "free flight", "paragliding takeoff", "paragliding map", "thermal activity", "XC", "Cross Country", "soaring"],
+  "keywords": [
+    "paragliding",
+    "forecast",
+    "analysis",
+    "parapente",
+    "pronóstico",
+    "meteorología",
+    "despegues",
+    "paragliding launch sites",
+    "free software",
+    "android",
+    "open-source",
+    "free flight",
+    "paragliding takeoff",
+    "paragliding map",
+    "thermal activity",
+    "XC",
+    "Cross Country",
+    "soaring"
+  ],
   "author": "Fly Decision <flydecision@flydecision.com> (https://flydecision.com)",
   "license": "AGPL-3.0-or-later",
   "repository": {
@@ -24,24 +43,24 @@
   "homepage": "https://flydecision.com",
   "type": "commonjs",
   "dependencies": {
-    "@capacitor/android": "^8.1.0",
-    "@capacitor/app": "^8.0.0",
+    "@capacitor/android": "^8.3.1",
+    "@capacitor/app": "^8.1.0",
     "@capacitor/app-launcher": "^8.0.1",
-    "@capacitor/browser": "^8.0.0",
-    "@capacitor/core": "^8.0.2",
-    "@capacitor/dialog": "^8.0.0",
-    "@capacitor/filesystem": "^8.1.0",
-    "@capacitor/geolocation": "^8.0.0",
-    "@capacitor/haptics": "^8.0.0",
-    "@capacitor/network": "^8.0.0",
-    "@capacitor/preferences": "^8.0.0",
-    "@capacitor/share": "^8.0.0",
-    "@capacitor/status-bar": "^8.0.1",
-    "@capacitor/text-zoom": "^8.0.0"
+    "@capacitor/browser": "^8.0.3",
+    "@capacitor/core": "^8.3.1",
+    "@capacitor/dialog": "^8.0.1",
+    "@capacitor/filesystem": "^8.1.2",
+    "@capacitor/geolocation": "^8.2.0",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/network": "^8.0.1",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/share": "^8.0.1",
+    "@capacitor/status-bar": "^8.0.2",
+    "@capacitor/text-zoom": "^8.0.1"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
-    "@capacitor/cli": "^8.0.2",
+    "@capacitor/cli": "^8.3.1",
     "patch-package": "^8.0.1"
   }
 }

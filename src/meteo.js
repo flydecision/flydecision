@@ -6656,10 +6656,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 // Arriba: Transparente e iconos negros
                 if (StatusBar) {
                     // overlaysWebView es la clave para la transparencia arriba
-                    await StatusBar.setOverlaysWebView({ overlay: true });
-                    // Forzamos el color transparente y estilo Dark (iconos negros)
-                    await StatusBar.setBackgroundColor({ color: '#00000000' });
-                    await StatusBar.setStyle({ style: 'DARK' }); 
+                    try {
+                        await StatusBar.setOverlaysWebView({ overlay: true });
+                        // En Android 15 el overlay ya hace la barra transparente. 
+                        // Mantenemos la línea por compatibilidad con Androids antiguos, 
+                        // pero capturamos el error si el plugin se niega a ejecutarla en Android 15.
+                        try {
+                            await StatusBar.setBackgroundColor({ color: '#00000000' });
+                        } catch (e) { /* Silenciamos el error en versiones nuevas */ }
+                        
+                        await StatusBar.setStyle({ style: 'DARK' }); 
+                    } catch(err) {
+                        console.warn('Error configurando StatusBar:', err);
+                    } 
                 }
                 
                 if (SystemBars) {
