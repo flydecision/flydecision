@@ -830,6 +830,9 @@ details.config-accordion .accordion-content {
     min-height: 0;              /* Truco vital de Flexbox para permitir el scroll interno en hijos */
     max-width: 100%;            /* NUNCA permitas que el contenedor sea más ancho que la ventana */
     background: #d9ebf9;
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+    box-sizing: border-box; /* Asegura que el padding empuje hacia adentro */
 }
 
 /* 🔴 CONTADOR DESPEGUES -------------------------------- */
