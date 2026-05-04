@@ -2672,6 +2672,15 @@ details.config-accordion .accordion-content {
 .leaflet-bottom .leaflet-control-scale {
     margin-bottom: 5px !important;
 }
+
+/* 1. Mover los controles del mapa para que la barra de Android no los tape */
+.leaflet-right {
+    padding-right: env(safe-area-inset-right, 0px) !important;
+}
+.leaflet-left {
+    padding-left: env(safe-area-inset-left, 0px) !important;
+}
+
 .layer-controls {
 	margin-top: 15px;
 }
