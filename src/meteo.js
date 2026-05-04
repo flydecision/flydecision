@@ -6549,9 +6549,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // 1. Panel Configuración
             const panelConfig = document.getElementById("div-configuracion");
             if (panelConfig && panelConfig.classList.contains("activo")) {
-                alternardivConfiguracion(); // Cierra el panel visualmente
-                // Iluminamos el botón de Inicio en el menú inferior
-                window.activarMenuInferior(document.getElementById('nav-home'));
+                alternardivConfiguracion(); // Cierra el panel visualmente (y esta función ya ilumina el botón correcto)
                 return;
             }
 
