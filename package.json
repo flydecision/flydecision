@@ -1,6 +1,6 @@
 {
   "name": "flydecision",
-  "version": "2.1.0",
+  "version": "2.7.1",
   "description": "Análisis automático del pronóstico meteorológico para puntos de despegue de parapente. Puntuación de condiciones y mapa de despegues.",
   "main": "index.js",
   "scripts": {
