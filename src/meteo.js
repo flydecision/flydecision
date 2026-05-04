@@ -44,6 +44,8 @@ let indicesHorasRangoHorario = []; // Contiene los índices válidos (ej: [5, 6,
 // Variable global para almacenar todos los despegues (sin filtrar)
 let bdGlobalDespegues = [];
 
+const cacheSVG_Tabla = {};
+
 let chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") === "true"; 
 
 let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false"; // Por defecto true para que lo vean
@@ -2156,31 +2158,31 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 // ---------------------------------------------------------------
 
 function createOrientationSVG(orientacionesStr) {
-	
+    
+    // 1. SI YA ESTÁ EN CACHÉ, LO DEVOLVEMOS AL INSTANTE
+    if (cacheSVG_Tabla[orientacionesStr]) return cacheSVG_Tabla[orientacionesStr];
+
     const ALL_SEGMENTS = [
         'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
         'S', 'SSO', 'SO', 'OSO', 'O', 'ONO', 'NO', 'NNO'
     ];
     
     // 2. Colores y dimensiones
-    const size = 23; // Lo he subido un poco para que se vea mejor en la tabla
+    const size = 23; 
     const radius = 8; 
     const strokeWidth = 1; 
     const colorBorde = "#666"; 
     const colorFondoInactivo = "white"; 
     const colorSegmentoActivo = "#19ed86"; 
 
-    // Parsear metadata formato "N, NO, S". Separamos por coma y quitamos espacios en blanco
     const activeOrientations = new Set(
         (orientacionesStr || '').split(',').map(s => s.trim())
     );
 
     let svg = `<svg width="${size}" height="${size}" viewBox="-10 -10 20 20" style="vertical-align: middle; display:inline-block; transform: rotate(-90deg);">`;
     
-    // Círculo base
     svg += `<circle cx="0" cy="0" r="${radius}" fill="${colorFondoInactivo}" stroke="${colorBorde}" stroke-width="${strokeWidth}" />`;
 
-    // Generar segmentos
     const AXIS_ANGLE = 360 / ALL_SEGMENTS.length; 
     const SEGMENT_WIDTH = 45; 
     const HALF_SEGMENT = SEGMENT_WIDTH / 2; 
@@ -2202,6 +2204,10 @@ function createOrientationSVG(orientacionesStr) {
     });
 
     svg += `</svg>`;
+
+    // 3. ANTES DE SALIR, LO GUARDAMOS EN LA CACHÉ PARA LA PRÓXIMA VEZ
+    cacheSVG_Tabla[orientacionesStr] = svg;
+
     return svg;
 }
 
