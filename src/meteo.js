@@ -63,10 +63,8 @@ const LIMITES_CIZALLADURA = {
     "80 m":  { naranja: 1.4, rojo: 1.7 }  // +40% / +70%
 }
 
-//const HorariosMediosActualizacion = ["01:27", "03:07", "06:00", "11:21", "13:31", "16:10", "19:08", "23:18"]; // en UTC-0
-//const HorariosMediosActualizacion = ["01:31", "03:08", "06:02", "11:21", "13:31", "16:12", "19:11", "23:21"]; // en UTC-0
-const HorariosMediosActualizacion = ["01:32", "03:02", "05:59", "11:22", "13:32", "16:17", "19:12", "23:22"]; // en UTC-0
-const HorariosMediosActualizacionEcmwf =["00:24", "07:00", "12:32", "18:54"]; // en UTC-0
+const HorariosMediosActualizacion = ["01:32", "03:02", "06:02", "11:22", "13:32", "16:22", "19:12", "23:22"]; // en UTC-0
+const HorariosMediosActualizacionEcmwf = ["00:45", "07:15", "13:05", "19:15"]; // en UTC-0
 // Nota: aplico 1 min de más. Buscar: const OFFSET_MS = 1 * 60 * 1000;
 
 let esModoOffline = false; // Nueva variable para controlar el estado de red
