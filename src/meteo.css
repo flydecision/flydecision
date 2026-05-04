@@ -892,6 +892,7 @@ details.config-accordion .accordion-content {
     /* 2. Para asegurar que la tabla no se esconda detrás del menú flotante,
    le damos espacio vacío abajo al contenedor de la tabla, sea Android, iOS o PC */
     padding-bottom: calc(env(safe-area-inset-bottom) + 90px) !important;
+    scrollbar-gutter: stable both-edges; /* reserva espacio a ambos lados para que la tabla siempre esté centrada aunque haya o no barra de desplazamiento */
 }
 
 #tabla { 
