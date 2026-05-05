@@ -6548,7 +6548,26 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 return;
             }
 
-            // --- PRIORIDAD 4: Paneles Laterales y Buscador ---
+            // --- PRIORIDAD 4: Salir del Mapa ---
+            const vistaMapa = document.getElementById('vista-mapa');
+            if (vistaMapa && vistaMapa.style.display === 'flex') {
+                cambiarVista('tabla');
+                
+                // Comprobamos qué panel se había quedado abierto en la tabla para iluminar el botón correcto
+                const searchContainer = document.getElementById('floating-search-container');
+                const panelDistancia = document.getElementById("div-filtro-distancia");
+                
+                if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
+                    window.activarMenuInferior(document.getElementById('nav-search'));
+                } else if (panelDistancia && panelDistancia.classList.contains("activo")) {
+                    window.activarMenuInferior(document.getElementById('nav-distance'));
+                } else {
+                    window.activarMenuInferior(document.getElementById('nav-home'));
+                }
+                return; 
+            }
+
+            // --- PRIORIDAD 5: Paneles Laterales y Buscador ---
             
             // 1. Panel Configuración
             const panelConfig = document.getElementById("div-configuracion");
@@ -6601,14 +6620,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 if (searchInput) searchInput.blur();
                 window.activarMenuInferior(document.getElementById('nav-home'));
                 return;
-            }
-
-            // Si estamos en el mapa, volver a la tabla
-            const vistaMapa = document.getElementById('vista-mapa');
-            if (vistaMapa && vistaMapa.style.display === 'flex') { // En tu código usas flex para el mapa
-                cambiarVista('tabla');
-                window.activarMenuInferior(document.getElementById('nav-home'));
-                return; 
             }
 
             // --- PRIORIDAD FINAL: Salir de la App ---
