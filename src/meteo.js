@@ -6515,14 +6515,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
             }
 
             // --- PRIORIDAD 0.5: Guías interactivas (Driver.js) ---
-            // Si la variable global dice que hay una guía, o si vemos la caja amarilla en pantalla
             if (typeof guiaActiva !== 'undefined' && guiaActiva === true) {
-                // Driver.js no tiene un "hideAll" global accesible fácilmente si no guardamos la instancia,
-                // pero sí tiene un botón de cerrar. Vamos a simular un clic en él.
                 const btnCerrarGuia = document.querySelector('.driver-popover-close-btn');
                 if (btnCerrarGuia) {
                     btnCerrarGuia.click();
-                    return; // Detenemos el botón atrás aquí
+                    return; 
                 }
             }
 
@@ -6553,7 +6550,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 return;
             }
 
-            // --- PRIORIDAD 4: Salir del Mapa ---
+            // --- PRIORIDAD 4: Panel Configuración (Ajustes) ---
+            // IMPORTANTE: Va antes que el mapa porque flota por encima de todo
+            const panelConfig = document.getElementById("div-configuracion");
+            if (panelConfig && panelConfig.classList.contains("activo")) {
+                alternardivConfiguracion(); // Al cerrarse, esta función ya sabe iluminar el botón del Mapa o la Tabla
+                return;
+            }
+
+            // --- PRIORIDAD 5: Salir del Mapa ---
             const vistaMapa = document.getElementById('vista-mapa');
             if (vistaMapa && vistaMapa.style.display === 'flex') {
                 cambiarVista('tabla');
@@ -6572,16 +6577,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 return; 
             }
 
-            // --- PRIORIDAD 5: Paneles Laterales y Buscador ---
-            
-            // 1. Panel Configuración
-            const panelConfig = document.getElementById("div-configuracion");
-            if (panelConfig && panelConfig.classList.contains("activo")) {
-                alternardivConfiguracion(); // Cierra el panel visualmente (y esta función ya ilumina el botón correcto)
-                return;
-            }
+            // --- PRIORIDAD 6: Paneles Laterales y Buscador (Solo en Tabla) ---
 
-            // 2. Panel Filtro Distancia (Sincronización de menú en ambos casos)
+            // A. Panel Filtro Distancia
             const panelDistancia = document.getElementById("div-filtro-distancia");
             if (panelDistancia && panelDistancia.classList.contains("activo")) {
                 const sliderDistancia = document.getElementById('distancia-slider');
@@ -6594,41 +6592,46 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 }
 
                 if (filtrandoCosas) {
-                    // Si estaba filtrando: reseteamos datos, cerramos y ponemos icono en INICIO
-                    if (typeof resetFiltroDistancia === 'function') {
-                        resetFiltroDistancia(); 
-                    }
+                    if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(); 
                 } else {
-                    // Si solo estaba el panel abierto: cerramos visualmente y ponemos icono en INICIO
                     panelDistancia.classList.remove("activo");
+                    
+                    const searchContainer = document.getElementById('floating-search-container');
+                    if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
+                        window.activarMenuInferior(document.getElementById('nav-search'));
+                    } else {
+                        window.activarMenuInferior(document.getElementById('nav-home'));
+                    }
                 }
-                
-                // Asegura que el botón azul vuelva a Inicio
-                window.activarMenuInferior(document.getElementById('nav-home'));
                 return;
             }
 
-            // 3. Buscador Flotante
+            // B. Buscador Flotante
             const searchContainer = document.getElementById('floating-search-container');
             const searchInput = document.getElementById('buscador-despegues-provincias');
             if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
                 let tieneTexto = searchInput && searchInput.value.trim() !== '';
                 
                 if (tieneTexto) {
-                    // Si había búsqueda real, limpiamos todo y reconstruimos
-                    if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
+                    if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
                 }
                 
-                // En cualquier caso, cerramos la barra visualmente y marcamos Inicio
                 searchContainer.classList.add('floating-search-hidden');
-                buscadorVisible = false;
+                if (typeof buscadorVisible !== 'undefined') buscadorVisible = false;
                 if (searchInput) searchInput.blur();
-                window.activarMenuInferior(document.getElementById('nav-home'));
+                
+                if (panelDistancia && panelDistancia.classList.contains("activo")) {
+                    window.activarMenuInferior(document.getElementById('nav-distance'));
+                } else {
+                    window.activarMenuInferior(document.getElementById('nav-home'));
+                }
                 return;
             }
 
             // --- PRIORIDAD FINAL: Salir de la App ---
-            confirmarSalidaApp();
+            if (typeof confirmarSalidaApp === 'function') {
+                confirmarSalidaApp();
+            }
         });
     }
 

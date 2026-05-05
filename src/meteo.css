@@ -2350,7 +2350,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     bottom: calc(12px + env(safe-area-inset-bottom, 0px)); /* Separado del fondo y respetando la barra de iOS/Android */
     left: 50%;
     transform: translateX(-50%); /* Centrado perfecto */
-    width: calc(100% - 30px); /* Margen a los lados en móviles */
+    width: calc(100% - 8px); /* Margen a los lados en móviles */
     max-width: 500px; /* Tamaño máximo en ordenadores/tablets para que no sea kilométrico */
     min-width: 365px; /* Como el filtro de rango horario */
     
