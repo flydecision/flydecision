@@ -2719,9 +2719,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     tipo: 'modal',
                     htmlContenido: `
                         <p style="font-size: 1.4em; font-weight: bold; text-align:center;">🪂 Fly Decision<br>¿Dónde ir a volar?</p>
-                        <p>🌦️ Pronóstico para 4 días por horas</p>
-                        <p>📊 Análisis automático de condiciones para despegar o para iniciar XC</p>
-                        <p>🗺️ Mapa de despegues</p>`,
+                        <p>🌦️ Pronóstico para 4 días por horas.</p>
+                        <p>📊 Análisis automático de condiciones para despegar o para iniciar XC.</p>
+                        <p>🗺️ Mapa de despegues.</p>`,
                     botones: [
                         {
                             texto: 'Marcar favoritos',

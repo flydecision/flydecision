@@ -160,7 +160,7 @@ body, header, .offline-badge {
 /* 🔴🔴 CONTENEDOR PRINCIPAL CONTROLES (Menú + Filtro horario + Configuración filtros + Configuración) */
 
 .contenedor-principal-controles {
-    max-width: 600px;
+    max-width: 500px;
     width: calc(100% - 8px);
     margin: 0 auto;
     position: sticky;
@@ -1347,11 +1347,6 @@ span.grados {
     box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
 }
 
-.sugerencia-btn:hover {
-    background-color: #0078d4;
-    color: #ffffff !important;
-}
-
 /* 🔴 SLIDERS -------------------------------- */
 
 /* 🟡 SLIDERS. Modificación clases generales noUi -------------------------------- */
@@ -1457,11 +1452,6 @@ span.grados {
     justify-content: center;   
     padding: 0;                
     line-height: 1;            
-}
-#horario-slider .noUi-value:hover {
-	background-color: #0078d4;
-	color: #ffffff;
-	font-weight: bold;
 }
 /* Clase para el Pip (día) seleccionado */
 #horario-slider .noUi-value.pip-activo {
@@ -1726,19 +1716,12 @@ span.grados {
 /* Estilo botón auxiliar (ahora usado para el GPS) */
 .btn-option {
     background: white;
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
+    border: 1px solid #6e6e6e;
+    border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s;
     color: #333;
 }
-.btn-option:hover {
-    background: #e7f5ff;
-    border-color: #74c0fc;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
 .modal-footer {
     display: flex;
     justify-content: space-between;
@@ -2368,16 +2351,16 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     left: 50%;
     transform: translateX(-50%); /* Centrado perfecto */
     width: calc(100% - 30px); /* Margen a los lados en móviles */
-    max-width: 600px; /* Tamaño máximo en ordenadores/tablets para que no sea kilométrico */
+    max-width: 500px; /* Tamaño máximo en ordenadores/tablets para que no sea kilométrico */
     min-width: 365px; /* Como el filtro de rango horario */
     
     /* El efecto Cristal (Transparencia + Desenfocado) */
-    background-color: rgba(255, 255, 255, 0.7); 
-    backdrop-filter: blur(12px); 
+    background-color: #ffffff73; 
+    backdrop-filter: blur(10px); 
     -webkit-backdrop-filter: blur(12px); /* Para Safari/iOS */
     
     border-radius: 10px; /* Bordes muy redondeados */
-    border: 1px solid rgba(255, 255, 255, 0.6); /* Brillo sutil */
+    border: 1px solid #6e6e6e; /* Brillo sutil */
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* Sombra elegante flotante */
     
     display: flex;
@@ -2407,12 +2390,6 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     transition: color 0.2s ease;
 }
 
-.compact-nav .nav-item:hover {
-    background-color: #0078d4;
-    color: #ffffff;
-    border-radius: 10px;
-}
-
 .compact-nav .nav-icon-container {
     width: 48px; 
     height: 28px; 
@@ -2431,10 +2408,10 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 
 /* 4. ESTADO ACTIVO (Botón seleccionado) */
 .compact-nav .nav-item.active { 
-    font-weight: bold;
     background-color: #0078d4 !important;
     color: #ffffff !important;
     border-radius: 10px;
+    box-shadow: inset 0 0 0 2px #ffffff;
 }
 /* .compact-nav .nav-item.active .nav-icon-container { 
     background-color: #c2e7ff; 
@@ -2711,7 +2688,6 @@ details.config-accordion .accordion-content {
 
 h3 {
 	margin-top: 0;
-	border-bottom: 1px solid #ddd;
 	padding-bottom: 8px;
 }
 .leaflet-touch .leaflet-control-layers-toggle {
@@ -2986,7 +2962,9 @@ h3 {
 }
 /* 5. Efecto al pasar el ratón */
 .filtro-orientacion:hover span { /* Aplica el hover al span */
-	background-color: #f0f0f0;
+	background: #e7f5ff;
+    border-color: #74c0fc;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 /* 🛑 ESTADO ACTIVO (HUNDIDO): Aplica el estilo al SPAN adyacente al INPUT:CHECKED */
