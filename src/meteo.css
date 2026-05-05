@@ -2407,6 +2407,12 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     transition: color 0.2s ease;
 }
 
+.compact-nav .nav-item:hover {
+    background-color: #0078d4;
+    color: #ffffff;
+    border-radius: 10px;
+}
+
 .compact-nav .nav-icon-container {
     width: 48px; 
     height: 28px; 
@@ -2419,20 +2425,22 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 }
 
 .compact-nav .nav-item svg {
-    width: 20px; 
-    height: 20px;
+    width: 22px; 
+    height: 22px;
 }
 
 /* 4. ESTADO ACTIVO (Botón seleccionado) */
 .compact-nav .nav-item.active { 
-    color: #000000; 
     font-weight: bold;
+    background-color: #0078d4 !important;
+    color: #ffffff !important;
+    border-radius: 10px;
 }
-.compact-nav .nav-item.active .nav-icon-container { 
+/* .compact-nav .nav-item.active .nav-icon-container { 
     background-color: #c2e7ff; 
-}
+} */
 .compact-nav .nav-item.active svg { 
-    stroke: #001d35; 
+    /* stroke: #001d35;  */
     stroke-width: 2.7; /* SVG en negrita para que coincida con el texto */
 }
 
