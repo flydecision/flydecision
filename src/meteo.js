@@ -4832,38 +4832,43 @@ function alternardivDistancia(event) {
 }
 
 function alternardivConfiguracion(event) {
-	const divconfiguracion = document.getElementById("div-configuracion");
+    const divconfiguracion = document.getElementById("div-configuracion");
     if (!divconfiguracion) return;
 
-	const estabaActivo = divconfiguracion.classList.contains("activo");
+    const estabaActivo = divconfiguracion.classList.contains("activo");
 
-	divconfiguracion.classList.toggle("activo", !estabaActivo);
-	
+    divconfiguracion.classList.toggle("activo", !estabaActivo);
+    
     const btnConfigAntiguo = document.getElementById("btn-div-configuracion-toggle");
-	if (btnConfigAntiguo) btnConfigAntiguo.classList.toggle("activo", !estabaActivo);
+    if (btnConfigAntiguo) btnConfigAntiguo.classList.toggle("activo", !estabaActivo);
 
     if (typeof setModoEnfoque === "function") { setModoEnfoque(!estabaActivo); }
 
-    // --- NUEVA LÓGICA: Iluminar el botón correcto del menú inferior ---
+    // --- NUEVA LÓGICA: MEMORIA DEL BOTÓN PREVIO ---
     if (typeof window.activarMenuInferior === 'function') {
         if (!estabaActivo) {
-            // Si el panel estaba cerrado y lo acabamos de ABRIR, iluminamos Ajustes
+            // Si vamos a ABRIR Ajustes, guardamos en la memoria qué botón estaba encendido
+            window.botonPrevioAjustes = document.querySelector('.bottom-nav .nav-item.active');
             window.activarMenuInferior(document.getElementById('nav-settings'));
         } else {
-            // Si el panel estaba abierto y lo acabamos de CERRAR, 
-            // miramos qué hay en pantalla para devolverle el foco azul
-            const vistaMapa = document.getElementById('vista-mapa');
-            const searchContainer = document.getElementById('floating-search-container');
-            const panelDistancia = document.getElementById('div-filtro-distancia');
-
-            if (vistaMapa && vistaMapa.style.display === 'flex') {
-                window.activarMenuInferior(document.getElementById('nav-map'));
-            } else if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
-                window.activarMenuInferior(document.getElementById('nav-search'));
-            } else if (panelDistancia && panelDistancia.classList.contains('activo')) {
-                window.activarMenuInferior(document.getElementById('nav-distance'));
+            // Si vamos a CERRAR Ajustes, recuperamos la memoria
+            if (window.botonPrevioAjustes && window.botonPrevioAjustes.id !== 'nav-settings') {
+                window.activarMenuInferior(window.botonPrevioAjustes);
             } else {
-                window.activarMenuInferior(document.getElementById('nav-home'));
+                // Fallback de seguridad por si no había memoria
+                const vistaMapa = document.getElementById('vista-mapa');
+                const searchContainer = document.getElementById('floating-search-container');
+                const panelDistancia = document.getElementById('div-filtro-distancia');
+
+                if (vistaMapa && vistaMapa.style.display === 'flex') {
+                    window.activarMenuInferior(document.getElementById('nav-map'));
+                } else if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
+                    window.activarMenuInferior(document.getElementById('nav-search'));
+                } else if (panelDistancia && panelDistancia.classList.contains('activo')) {
+                    window.activarMenuInferior(document.getElementById('nav-distance'));
+                } else {
+                    window.activarMenuInferior(document.getElementById('nav-home'));
+                }
             }
         }
     }
@@ -6474,7 +6479,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             const clicEnZonaProtegida = 
                 event.target.closest('#div-configuracion') || 
                 event.target.closest('#btn-div-configuracion-toggle') ||
-                event.target.closest('#nav-settings') || /* <--- ¡ESTO ES LO QUE FALTABA! */
+                event.target.closest('.bottom-nav') ||
                 event.target.closest('.tippy-box') ||        
                 event.target.closest('.mensaje-modal') ||    
                 event.target.closest('.mensaje-no-modal');
@@ -7064,6 +7069,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // 🔴 LÓGICA DEL MENÚ INFERIOR
     // ==========================================================================
 
+    // Función auxiliar para cerrar Ajustes sin disparar la auto-iluminación
+    function cerrarAjustesSilencioso() {
+        const panelConfig = document.getElementById("div-configuracion");
+        if (panelConfig && panelConfig.classList.contains("activo")) {
+            panelConfig.classList.remove("activo");
+            if (typeof setModoEnfoque === "function") setModoEnfoque(false);
+        }
+    }
+
     // 1️⃣ BOTÓN INICIO: Único botón que resetea y limpia todo
     window.clicBotonInicio = function() {
         const overlay = document.getElementById('msgActualizando...');
@@ -7100,11 +7114,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
             window.toggleBuscadorFlotante(); 
         }
 
-        // 5. Cerrar panel de configuración
-        const panelConfig = document.getElementById("div-configuracion");
-        if (panelConfig && panelConfig.classList.contains("activo")) {
-            alternardivConfiguracion(); 
-        }
+        // 5. Cerrar panel de configuración silenciosamente
+        cerrarAjustesSilencioso();
 
         // 6. Volver a la vista de tabla
         cambiarVista('tabla');
@@ -7130,6 +7141,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
 // 2️⃣ BOTÓN BUSCAR
     window.clicBotonBuscar = function() {
+        cerrarAjustesSilencioso(); 
         const searchContainer = document.getElementById('floating-search-container');
         const searchInput = document.getElementById('buscador-despegues-provincias');
         const isSearchOpen = searchContainer && !searchContainer.classList.contains('floating-search-hidden');
@@ -7143,7 +7155,14 @@ function comprobarAvisoCambiosPuntuacionXC() {
             searchContainer.classList.add('floating-search-hidden');
             buscadorVisible = false;
             searchInput.blur();
-            window.activarMenuInferior(document.getElementById('nav-home'));
+            
+            // --- NUEVO: ¿Qué luz encendemos al cerrar el Buscador? ---
+            const panelDistancia = document.getElementById("div-filtro-distancia");
+            if (panelDistancia && panelDistancia.classList.contains("activo")) {
+                window.activarMenuInferior(document.getElementById('nav-distance'));
+            } else {
+                window.activarMenuInferior(document.getElementById('nav-home'));
+            }
         } else {
             // Siempre cambiamos a la tabla
             cambiarVista('tabla');
@@ -7157,8 +7176,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
         }
     };
 
-    // 3️⃣ BOTÓN DISTANCIA (Corregido: Ahora cierra el buscador si está abierto y vacío)
+    // 3️⃣ BOTÓN DISTANCIA
     window.clicBotonDistancia = function() {
+        cerrarAjustesSilencioso(); 
         const panelDistancia = document.getElementById("div-filtro-distancia");
         const searchContainer = document.getElementById('floating-search-container');
         const searchInput = document.getElementById('buscador-despegues-provincias');
@@ -7180,7 +7200,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             if (currentValue < maxIndex) filtrandoCosas = true;
         }
 
-        // --- 🚀 REGLA DE EXCLUSIÓN MUTUA (FIX DEL BUG) ---
+        // --- REGLA DE EXCLUSIÓN MUTUA ---
         // Si el buscador está abierto y vacío, lo cerramos al pulsar Distancia
         if (!isDistanceOpen && isSearchOpen && searchInput && searchInput.value.trim() === '') {
             searchContainer.classList.add('floating-search-hidden');
@@ -7191,7 +7211,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
         // CASO A: Si NO estamos en el mapa, está abierto y NO está filtrando nada, lo cerramos
         if (!estaEnMapa && isDistanceOpen && !filtrandoCosas) {
             panelDistancia.classList.remove("activo");
-            window.activarMenuInferior(document.getElementById('nav-home'));
+            
+            // --- NUEVO: ¿Qué luz encendemos al cerrar la Distancia? ---
+            if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
+                window.activarMenuInferior(document.getElementById('nav-search'));
+            } else {
+                window.activarMenuInferior(document.getElementById('nav-home'));
+            }
             return; 
         }
 
@@ -7212,6 +7238,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     // 4️⃣ BOTÓN MAPA: Cambia la vista, pero no toca las clases de los paneles
     window.clicBotonMapa = function() {
+        cerrarAjustesSilencioso();
         cambiarVista('mapa');
         // Al ocultarse el contenedor de controles por cambiarVista, los paneles desaparecen
         // visualmente pero sus clases (.activo) se mantienen intactas.
@@ -7227,15 +7254,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
             }
         }
 
-        //cambiarVista('tabla');
-        
         const panelConfig = document.getElementById("div-configuracion");
-        // Solo lo abrimos si estaba cerrado
-        if (panelConfig && !panelConfig.classList.contains("activo")) {
+        if (panelConfig && panelConfig.classList.contains("activo")) {
+            // Si ya estaba abierto, lo cerramos y dejamos que adivine la luz
+            alternardivConfiguracion();
+        } else {
+            // Si estaba cerrado, lo abrimos
             alternardivConfiguracion(); 
+            window.activarMenuInferior(document.getElementById('nav-settings'));
         }
-
-        window.activarMenuInferior(document.getElementById('nav-settings'));
     };
 
 }); //document . addEventListener('DOMContentLoaded', function() {
