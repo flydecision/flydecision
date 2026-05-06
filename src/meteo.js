@@ -8480,601 +8480,598 @@ function inicializarMapaLeaflet() {
     });
 
 
-    // 🔴 INICIO CAPA MAPA DE CALOR PENÍNSULA IBÉRICA
+    // 🔴 INICIO CAPA MAPA DE CALOR PENÍNSULA IBÉRICA (OPTIMIZADA CON SUPERCLUSTER)
     //___________________________________________________________________________________
 
-    const clustergroupMapaDeCalorPeninsulaIberica = L.markerClusterGroup({
-        chunkedLoading: true,      	// Divide la carga en bloques
-        chunkDelay: 100,            // Tiempo entre bloques (ms)
-        showCoverageOnHover: false, // false mejora rendimiento. Muestra el área que ocupan los puntos
-        maxClusterRadius: 80,       // Con menos de este radio en px entre los puntos, se agrupan. Menor = menos agrupación, mayor = más agrupados
-        spiderfyOnMaxZoom: true,    // Con zoom máximo se expanden todos. False mejora rendimiento
-        zoomToBoundsOnClick: false, // Por defecto es true
-        //disableClusteringAtZoom: 15, //A zoom mayor, los marcadores se muestran individualmente, aunque estén cerca. Desactivado porque si no, con 300.000 puntos se bloquea bastante el navegador
-        
-        //Redefinimos la función incorporada en el plugin Leaflet.markercluster llamada iconCreateFunction. Al crear un L.markerClusterGroup() el plugin la ejecuta automáticamente cada vez que genera un icono de clúster, pasándole como argumento el objeto cluster, que contiene todos los marcadores agrupados.
-        
-        iconCreateFunction: function (cluster) {
-            var count = cluster.getChildCount();
-            
-            const clusterTitle = `Grupo de ${count} despegues registrados en XContest`;
-
-            // Escala de color según número de marcadores
-            var max = 1000; 
-            var ratio = 1 - Math.min(count / max, 1); //ratio = 0 → rojo intenso, ratio = 1 → rojo claro
-
-            // Conversión hex a RGB
-            function hexToRGB(hex) {
-                return [
-                    parseInt(hex.substr(1,2),16),
-                    parseInt(hex.substr(3,2),16),
-                    parseInt(hex.substr(5,2),16)
-                ];
-            }
-
-            var darkRGB = hexToRGB("#a91311");   // rojo oscuro
-            var lightRGB = hexToRGB("#f7bd7e");  // rojo claro
-
-            // Interpolación lineal en RGB
-            var r = Math.round(darkRGB[0] + (lightRGB[0]-darkRGB[0])*ratio);
-            var g = Math.round(darkRGB[1] + (lightRGB[1]-darkRGB[1])*ratio);
-            var b = Math.round(darkRGB[2] + (lightRGB[2]-darkRGB[2])*ratio);
-
-            var color = `rgb(${r},${g},${b})`;
-
-            return new L.DivIcon({
-                html: `<div title="${clusterTitle}" style="background:${color}"><span>${count}</span></div>`,
-                className: 'estilobase-custom-cluster-mapadecalor',
-                iconSize: new L.Point(40, 40),
-                iconAnchor: L.point(20, 20) //Centra el icono en el punto
-            });
-        }
-            
-    });
-
-    //Popup al hacer click en un cluster: Coordenadas del centro del cluster		
-    clustergroupMapaDeCalorPeninsulaIberica.on('clusterclick', function (e) {
-        // 1. Obtener los datos del clúster
-        const childCount = e.layer.getChildCount(); // Cuántos marcadores (despegues) hay en el clúster
-        const clusterLatLng = e.layer.getLatLng(); // Coordenadas del centro del clúster
-
-        const popupHtml = `<div style="line-height: 1.2;">
-
-                <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${childCount} Despegues en XContest</b></div>
-                <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}</b></div>
-                <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/wind?${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},14' target='_blank'>Windy</a></div>
-                <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
-                <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${clusterLatLng.lat.toFixed(4)}N${clusterLatLng.lng.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)}' target='_blank'>Google Maps</a></div>
-                <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/OpenTopoMap&pois=${clusterLatLng.lng.toFixed(4)},${clusterLatLng.lat.toFixed(4)}' target='_blank'>Brouter</a></div>
-                <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}' target='_blank'>Nakarte</a></div>
-                <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${clusterLatLng.lng.toFixed(4)}%20${clusterLatLng.lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
-                </div>`
-
-        // 3. Enlazar el popup al clúster y abrirlo
-        // Esto crea un popup dinámicamente solo para este clic
-        e.layer.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 })
-        .openPopup();
-    });	
-
-    const heatpointsMapaDeCalorPeninsulaIberica = []; // array para puntos del heatmap //heatPointsWebGL
-
+    const layerGroupPeninsula = L.layerGroup();
+    let superclusterPeninsula = null;
+    let geoJsonPeninsula = [];
+    const heatpointsMapaDeCalorPeninsulaIberica = [];
     let heatlayerMapaDeCalorPeninsulaIberica;
-
-    // escape para html en popup/label. Esa función convierte caracteres especiales de HTML en sus entidades seguras, evitando que el texto insertado en el DOM se interprete como código HTML (previene inyección de HTML o XSS)
-    function escapeHtml(str){
-    if (!str && str !== 0) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
+    let csvCargadoMapaDeCalorPeninsulaIberica = false;
 
     const iconoDespegueIndividualPeninsulaIberica = L.divIcon({
-    className: 'custom-point-circle', // Una clase CSS para estilizar el círculo
-    html: '<div style="background:#ff0000; border-radius:50%; width:10px; height:10px;"></div>', // El círculo dentro del div
-    iconSize: [10, 10], // Tamaño del icono (igual al div de arriba)
-    iconAnchor: [5, 5] // Centro del icono
+        className: 'custom-point-circle',
+        html: '<div style="background:#ff0000; border-radius:50%; width:10px; height:10px;"></div>',
+        iconSize: [10, 10],
+        iconAnchor: [5, 5]
     });
 
-    // Flag para controlar la carga única del CSV
-    let csvCargadoMapaDeCalorPeninsulaIberica = false; // Usamos un nombre específico para evitar conflictos.
+    function crearIconoClusterPeninsula(count) {
+        const clusterTitle = `Grupo de ${count} despegues registrados en XContest`;
+        let max = 1000; 
+        let ratio = 1 - Math.min(count / max, 1); 
 
-    // Muestra el mensaje de carga en la pantalla
-    function mostrarMensajeCargaMapaDeCalorPeninsulaIberica() {
-        if (mensajeCargaMapaDeCalorPeninsulaIberica) {
-            mensajeCargaMapaDeCalorPeninsulaIberica.style.display = 'block';
-        }
-    }
-
-    //Oculta el mensaje de carga en la pantalla
-    function ocultarmensajeCargaMapaDeCalorPeninsulaIberica() {
-        if (mensajeCargaMapaDeCalorPeninsulaIberica) {
-            setTimeout(function() {mensajeCargaMapaDeCalorPeninsulaIberica.style.display = 'none'}, 2000);
-        }
-    }
-
-    // Carga los datos del CSV y crea los marcadores/capas de calor. Se ejecuta solo la primera vez
-    function cargarDatosMapaDeCalorPeninsulaIberica() {
-        if (csvCargadoMapaDeCalorPeninsulaIberica) {
-            return; // Detener si ya se cargó
+        function hexToRGB(hex) {
+            return [parseInt(hex.substr(1,2),16), parseInt(hex.substr(3,2),16), parseInt(hex.substr(5,2),16)];
         }
 
-        mostrarMensajeCargaMapaDeCalorPeninsulaIberica();	// Mostramos el mensaje de carga antes de la operación asíncrona
+        let darkRGB = hexToRGB("#a91311");   
+        let lightRGB = hexToRGB("#f7bd7e");  
 
-        Papa.parse('map/mapadecalorpeninsulaiberica.csv', {
+        let r = Math.round(darkRGB[0] + (lightRGB[0]-darkRGB[0])*ratio);
+        let g = Math.round(darkRGB[1] + (lightRGB[1]-darkRGB[1])*ratio);
+        let b = Math.round(darkRGB[2] + (lightRGB[2]-darkRGB[2])*ratio);
+        let color = `rgb(${r},${g},${b})`;
 
-            download: true,
-            header: true, // Usa la primera fila como nombres de columnas
-            //dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
-            skipEmptyLines: true,
-            delimiter: ';',
-            encoding: 'utf8',
-
-            complete: function(results) {
-                results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
-                
-                    const lat = parseFloat(row.Latitud);
-                    const lon = parseFloat(row.Longitud);
-                    const fecha = row.Fecha || '';
-                    const hora = row.Hora || '';
-                    const distanciarecorrida = row.DistanciaRecorrida || '';
-                    const urlvuelo = row.URLVuelo || '';
-                    
-                    const marker = L.marker([lat, lon], { icon: iconoDespegueIndividualPeninsulaIberica, riseOnHover: true, title: 'Despegue individual registrado en XContest' });
-                    
-                    const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂<br>Despegue en XContest</b></div>
-                        <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
-                        <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(fecha)}</b></div>
-                        <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(hora)}</b></div>
-                        <div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(distanciarecorrida)} km</b></div>
-                        <div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(urlvuelo)}' target='_blank'>Vuelo en XContest</a></div>
-                        </div>`;
-
-                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }); //de momento no he creado esa clase
-                    clustergroupMapaDeCalorPeninsulaIberica.addLayer(marker);
-                    // Añadir al array de puntos de calor
-                    heatpointsMapaDeCalorPeninsulaIberica.push([lat, lon, 1]); // intensidad = 1
-                });
-            
-            // Crear capa de calor
-                heatlayerMapaDeCalorPeninsulaIberica = L.heatLayer(heatpointsMapaDeCalorPeninsulaIberica, {
-                    radius: 18, blur: 22, maxZoom: 19, minOpacity: 0.3,
-                    gradient: { 0.2: 'yellow', 0.4: 'orange', 0.6: 'red', 1.0: 'darkred' }
-                });//.addTo(map); //No la mostramos inicialmente
-
-                //map.addLayer(clustergroupMapaDeCalorPeninsulaIberica); //No la mostramos inicialmente
-                
-                // Marcar como cargado exitosamente
-                csvCargadoMapaDeCalorPeninsulaIberica = true;
-                ocultarmensajeCargaMapaDeCalorPeninsulaIberica(); // Ocultamos el mensaje si la carga fue exitosa
-                
-                // LLAMADA ADICIONAL: Ya que el usuario marcó el checkbox antes de que se completara la carga,
-                // debemos añadirlas al mapa una vez que estén listas.
-                const checkbox = document.getElementById('checkboxMapaDeCalorPeninsulaIberica');
-                if (checkbox && checkbox.checked) {
-                    if (!map.hasLayer(clustergroupMapaDeCalorPeninsulaIberica)) {
-                        map.addLayer(clustergroupMapaDeCalorPeninsulaIberica);
-                    }
-                    if (!map.hasLayer(heatlayerMapaDeCalorPeninsulaIberica)) {
-                        map.addLayer(heatlayerMapaDeCalorPeninsulaIberica);
-                    }
-                }
-
-            },
-
-            error: function(error) {
-            console.error('Error cargando CSV:', error.message || error);
-            alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
-            ocultarmensajeCargaMapaDeCalorPeninsulaIberica(); // Ocultamos el mensaje si hubo un error en la carga
-            }
-
+        return new L.DivIcon({
+            html: `<div title="${clusterTitle}" style="background:${color}"><span>${count}</span></div>`,
+            className: 'estilobase-custom-cluster-mapadecalor',
+            iconSize: new L.Point(40, 40),
+            iconAnchor: L.point(20, 20)
         });
     }
 
+    function actualizarClusterPeninsula() {
+        if (!csvCargadoMapaDeCalorPeninsulaIberica || !map.hasLayer(layerGroupPeninsula)) return;
 
-    // 🔴 INICIO CAPA MAPA DE CALOR ALPES
-    //___________________________________________________________________________________
+        const bounds = map.getBounds();
+        const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+        const zoom = map.getZoom();
 
-    const clustergroupMapaDeCalorAlpes = L.markerClusterGroup({
-        chunkedLoading: true,      	// Divide la carga en bloques
-        chunkDelay: 100,            // Tiempo entre bloques (ms)
-        showCoverageOnHover: false, // false mejora rendimiento. Muestra el área que ocupan los puntos
-        maxClusterRadius: 80,       // Con menos de este radio en px entre los puntos, se agrupan. Menor = menos agrupación, mayor = más agrupados
-        spiderfyOnMaxZoom: true,    // Con zoom máximo se expanden todos. False mejora rendimiento
-        zoomToBoundsOnClick: false, // Por defecto es true
-        //disableClusteringAtZoom: 15, //A zoom mayor, los marcadores se muestran individualmente, aunque estén cerca. Desactivado porque si no, con 300.000 puntos se bloquea bastante el navegador
-        
-        //Redefinimos la función incorporada en el plugin Leaflet.markercluster llamada iconCreateFunction. Al crear un L.markerClusterGroup() el plugin la ejecuta automáticamente cada vez que genera un icono de clúster, pasándole como argumento el objeto cluster, que contiene todos los marcadores agrupados.
-        
-        iconCreateFunction: function (cluster) {
-            var count = cluster.getChildCount();
-            
-            const clusterTitle = `Grupo de ${count} despegues registrados en XContest`;
+        const clusters = superclusterPeninsula.getClusters(bbox, zoom);
 
-            // Escala de color según número de marcadores
-            var max = 1000; 
-            var ratio = 1 - Math.min(count / max, 1); //ratio = 0 → rojo intenso, ratio = 1 → rojo claro
+        layerGroupPeninsula.clearLayers();
 
-            // Conversión hex a RGB
-            function hexToRGB(hex) {
-                return [
-                    parseInt(hex.substr(1,2),16),
-                    parseInt(hex.substr(3,2),16),
-                    parseInt(hex.substr(5,2),16)
-                ];
-            }
+        clusters.forEach(feature => {
+            const [lon, lat] = feature.geometry.coordinates;
 
-            var darkRGB = hexToRGB("#a91311");   // rojo oscuro
-            var lightRGB = hexToRGB("#f7bd7e");  // rojo claro
+            if (feature.properties.cluster) {
+                const count = feature.properties.point_count;
+                const icon = crearIconoClusterPeninsula(count);
+                const marker = L.marker([lat, lon], { icon: icon });
 
-            // Interpolación lineal en RGB
-            var r = Math.round(darkRGB[0] + (lightRGB[0]-darkRGB[0])*ratio);
-            var g = Math.round(darkRGB[1] + (lightRGB[1]-darkRGB[1])*ratio);
-            var b = Math.round(darkRGB[2] + (lightRGB[2]-darkRGB[2])*ratio);
+                marker.on('click', () => {
+                    const popupHtml = `<div style="line-height: 1.2;">
+                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
+                        <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
+                        <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
+                        <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
+                        <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
+                        <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
+                        </div>`;
+                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
+                });
+                layerGroupPeninsula.addLayer(marker);
 
-            var color = `rgb(${r},${g},${b})`;
-
-            return new L.DivIcon({
-                html: `<div title="${clusterTitle}" style="background:${color}"><span>${count}</span></div>`,
-                className: 'estilobase-custom-cluster-mapadecalor',
-                iconSize: new L.Point(40, 40),
-                iconAnchor: L.point(20, 20) //Centra el icono en el punto
-            });
-        }
-            
-    });
-
-    //Popup al hacer click en un cluster: Coordenadas del centro del cluster		
-    clustergroupMapaDeCalorAlpes.on('clusterclick', function (e) {
-        // 1. Obtener los datos del clúster
-        const childCount = e.layer.getChildCount(); // Cuántos marcadores (despegues) hay en el clúster
-        const clusterLatLng = e.layer.getLatLng(); // Coordenadas del centro del clúster
-
-        const popupHtml = `<div style="line-height: 1.2;">
-
-                <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${childCount} Despegues en XContest</b></div>
-                <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}</b></div>
-                <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/wind?${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},14' target='_blank'>Windy</a></div>
-                <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
-                <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${clusterLatLng.lat.toFixed(4)}N${clusterLatLng.lng.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)}' target='_blank'>Google Maps</a></div>
-                <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/OpenTopoMap&pois=${clusterLatLng.lng.toFixed(4)},${clusterLatLng.lat.toFixed(4)}' target='_blank'>Brouter</a></div>
-                <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}' target='_blank'>Nakarte</a></div>
-                <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${clusterLatLng.lng.toFixed(4)}%20${clusterLatLng.lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
-                </div>`
-
-        // 3. Enlazar el popup al clúster y abrirlo
-        // Esto crea un popup dinámicamente solo para este clic
-        e.layer.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 })
-        .openPopup();
-    });	
-
-    const heatpointsMapaDeCalorAlpes = []; // array para puntos del heatmap //heatPointsWebGL
-
-    let heatlayerMapaDeCalorAlpes;
-
-    // escape para html en popup/label. Esa función convierte caracteres especiales de HTML en sus entidades seguras, evitando que el texto insertado en el DOM se interprete como código HTML (previene inyección de HTML o XSS)
-    function escapeHtml(str){
-    if (!str && str !== 0) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    const iconoDespegueIndividualAlpes = L.divIcon({
-    className: 'custom-point-circle', // Una clase CSS para estilizar el círculo
-    html: '<div style="background:#ff0000; border-radius:50%; width:10px; height:10px;"></div>', // El círculo dentro del div
-    iconSize: [10, 10], // Tamaño del icono (igual al div de arriba)
-    iconAnchor: [5, 5] // Centro del icono
-    });
-
-    // Flag para controlar la carga única del CSV
-    let csvCargadoMapaDeCalorAlpes = false; // Usamos un nombre específico para evitar conflictos.
-
-    // Muestra el mensaje de carga en la pantalla
-    function mostrarMensajeCargaMapaDeCalorAlpes() {
-        if (mensajeCargaMapaDeCalorAlpes) {
-            mensajeCargaMapaDeCalorAlpes.style.display = 'block';
-        }
-    }
-
-    //Oculta el mensaje de carga en la pantalla
-    function ocultarmensajeCargaMapaDeCalorAlpes() {
-        if (mensajeCargaMapaDeCalorAlpes) {
-            setTimeout(function() {mensajeCargaMapaDeCalorAlpes.style.display = 'none'}, 4000);
-        }
-    }
-
-    // Carga los datos del CSV y crea los marcadores/capas de calor. Se ejecuta solo la primera vez
-
-    const isMobileDevice = () => {
-        return /Mobi|Android/i.test(navigator.userAgent);
-    };
-
-    function cargarDatosMapaDeCalorAlpes() {
-        if (csvCargadoMapaDeCalorAlpes) {
-            return; // Detener si ya se cargó
-        }
-        
-        const message = "ℹ️ Cargar la capa 'Mapa de calor Alpes' puede fallar en muchos dispositivos móviles debido a que son casi 1 millón de puntos. \n\nSi necesitas verla en un móvil, con el navegador Firefox tendrás más posibilidades. Si no es posible, tendrás que usar un ordenador.\n\nEn cualquier caso, puedes pulsar Aceptar para probarlo, aunque tardará un rato.";
-        
-        let proceed = true;
-        
-        if (isMobileDevice()) {
-            proceed = confirm(message);
-        }
-        
-        if (proceed) {
-            mostrarMensajeCargaMapaDeCalorAlpes(); // Mostramos el mensaje de carga antes de la operación asíncrona
-
-            Papa.parse('map/mapadecaloralpes.csv', {
-
-                download: true,
-                header: true, // Usa la primera fila como nombres de columnas
-                //dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
-                skipEmptyLines: true,
-                delimiter: ';',
-                encoding: 'utf8',
-
-                complete: function(results) {
-                    results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
-                    
-                        const lat = parseFloat(row.Latitud);
-                        const lon = parseFloat(row.Longitud);
-                        const fecha = row.Fecha || '';
-                        const hora = row.Hora || '';
-                        const distanciarecorrida = row.DistanciaRecorrida || '';
-                        const urlvuelo = row.URLVuelo || '';
-                        
-                        const marker = L.marker([lat, lon], { icon: iconoDespegueIndividualAlpes, riseOnHover: true, title: 'Despegue individual registrado en XContest' });
-                        
-                        const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-                            <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂<br>Despegue en XContest</b></div>
-                            <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
-                            <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(fecha)}</b></div>
-                            <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(hora)}</b></div>
-                            <div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(distanciarecorrida)} km</b></div>
-                            <div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(urlvuelo)}' target='_blank'>Vuelo en XContest</a></div>
-                            </div>`;
-
-                        marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }); //de momento no he creado esa clase
-                        clustergroupMapaDeCalorAlpes.addLayer(marker);
-                        // Añadir al array de puntos de calor
-                        heatpointsMapaDeCalorAlpes.push([lat, lon, 1]); // intensidad = 1
-                    });
-                
-                // Crear capa de calor
-                    heatlayerMapaDeCalorAlpes = L.heatLayer(heatpointsMapaDeCalorAlpes, {
-                        radius: 18, blur: 22, maxZoom: 19, minOpacity: 0.3,
-                        gradient: { 0.2: 'yellow', 0.4: 'orange', 0.6: 'red', 1.0: 'darkred' }
-                    });//.addTo(map); //No la mostramos inicialmente
-
-                    //map.addLayer(clustergroupMapaDeCalorAlpes); //No la mostramos inicialmente
-                    
-                    // Marcar como cargado exitosamente
-                    csvCargadoMapaDeCalorAlpes = true;
-                    ocultarmensajeCargaMapaDeCalorAlpes(); // Ocultamos el mensaje si la carga fue exitosa
-                    
-                    // LLAMADA ADICIONAL: Ya que el usuario marcó el checkbox antes de que se completara la carga,
-                    // debemos añadirlas al mapa una vez que estén listas.
-                    const checkbox = document.getElementById('checkboxMapaDeCalorAlpes');
-                    if (checkbox && checkbox.checked) {
-                        if (!map.hasLayer(clustergroupMapaDeCalorAlpes)) {
-                            map.addLayer(clustergroupMapaDeCalorAlpes);
-                        }
-                        if (!map.hasLayer(heatlayerMapaDeCalorAlpes)) {
-                            map.addLayer(heatlayerMapaDeCalorAlpes);
-                        }
-                    }
-
-                },
-
-                error: function(error) {
-                    console.error('Error cargando CSV:', error.message || error);
-                    alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
-                    ocultarmensajeCargaMapaDeCalorAlpes(); // Ocultamos el mensaje si hubo un error en la carga
-                    
-                    // Si falla la carga, también desmarcamos
-                    if (checkboxMapaDeCalorAlpes) {
-                        checkboxMapaDeCalorAlpes.checked = false;
-                    }
-                }
-
-            });
-            
             } else {
-            // La usuaria pulsó CANCELAR
-            if (checkboxMapaDeCalorAlpes) {
-                checkboxMapaDeCalorAlpes.checked = false;
-            }
-        }		
-    }
+                const p = feature.properties;
+                const marker = L.marker([lat, lon], { icon: iconoDespegueIndividualPeninsulaIberica, riseOnHover: true });
 
-
-    // 🔴 INICIO CAPA MAPA DE CALOR MARRUECOS
-    //___________________________________________________________________________________
-
-    const clustergroupMapaDeCalorMarruecos = L.markerClusterGroup({
-        chunkedLoading: true,      	// Divide la carga en bloques
-        chunkDelay: 100,            // Tiempo entre bloques (ms)
-        showCoverageOnHover: false, // false mejora rendimiento. Muestra el área que ocupan los puntos
-        maxClusterRadius: 80,       // Con menos de este radio en px entre los puntos, se agrupan. Menor = menos agrupación, mayor = más agrupados
-        spiderfyOnMaxZoom: true,    // Con zoom máximo se expanden todos. False mejora rendimiento
-        zoomToBoundsOnClick: false, // Por defecto es true
-        //disableClusteringAtZoom: 15, //A zoom mayor, los marcadores se muestran individualmente, aunque estén cerca. Desactivado porque si no, con 300.000 puntos se bloquea bastante el navegador
-        
-        //Redefinimos la función incorporada en el plugin Leaflet.markercluster llamada iconCreateFunction. Al crear un L.markerClusterGroup() el plugin la ejecuta automáticamente cada vez que genera un icono de clúster, pasándole como argumento el objeto cluster, que contiene todos los marcadores agrupados.
-        
-        iconCreateFunction: function (cluster) {
-            var count = cluster.getChildCount();
-            
-            const clusterTitle = `Grupo de ${count} despegues registrados en XContest`;
-
-            // Escala de color según número de marcadores
-            var max = 1000; 
-            var ratio = 1 - Math.min(count / max, 1); //ratio = 0 → rojo intenso, ratio = 1 → rojo claro
-
-            // Conversión hex a RGB
-            function hexToRGB(hex) {
-                return [
-                    parseInt(hex.substr(1,2),16),
-                    parseInt(hex.substr(3,2),16),
-                    parseInt(hex.substr(5,2),16)
-                ];
-            }
-
-            var darkRGB = hexToRGB("#a91311");   // rojo oscuro
-            var lightRGB = hexToRGB("#f7bd7e");  // rojo claro
-
-            // Interpolación lineal en RGB
-            var r = Math.round(darkRGB[0] + (lightRGB[0]-darkRGB[0])*ratio);
-            var g = Math.round(darkRGB[1] + (lightRGB[1]-darkRGB[1])*ratio);
-            var b = Math.round(darkRGB[2] + (lightRGB[2]-darkRGB[2])*ratio);
-
-            var color = `rgb(${r},${g},${b})`;
-
-            return new L.DivIcon({
-                html: `<div title="${clusterTitle}" style="background:${color}"><span>${count}</span></div>`,
-                className: 'estilobase-custom-cluster-mapadecalor',
-                iconSize: new L.Point(40, 40),
-                iconAnchor: L.point(20, 20) //Centra el icono en el punto
-            });
-        }
-            
-    });
-
-    //Popup al hacer click en un cluster: Coordenadas del centro del cluster		
-    clustergroupMapaDeCalorMarruecos.on('clusterclick', function (e) {
-        // 1. Obtener los datos del clúster
-        const childCount = e.layer.getChildCount(); // Cuántos marcadores (despegues) hay en el clúster
-        const clusterLatLng = e.layer.getLatLng(); // Coordenadas del centro del clúster
-
-        const popupHtml = `<div style="line-height: 1.2;">
-
-                <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${childCount} Despegues en XContest</b></div>
-                <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}</b></div>
-                <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/wind?${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},14' target='_blank'>Windy</a></div>
-                <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
-                <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${clusterLatLng.lat.toFixed(4)}N${clusterLatLng.lng.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${clusterLatLng.lat.toFixed(4)},${clusterLatLng.lng.toFixed(4)}' target='_blank'>Google Maps</a></div>
-                <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/OpenTopoMap&pois=${clusterLatLng.lng.toFixed(4)},${clusterLatLng.lat.toFixed(4)}' target='_blank'>Brouter</a></div>
-                <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${clusterLatLng.lat.toFixed(4)}/${clusterLatLng.lng.toFixed(4)}/${clusterLatLng.lat.toFixed(4)}, ${clusterLatLng.lng.toFixed(4)}' target='_blank'>Nakarte</a></div>
-                <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${clusterLatLng.lng.toFixed(4)}%20${clusterLatLng.lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
-                </div>`
-
-        // 3. Enlazar el popup al clúster y abrirlo
-        // Esto crea un popup dinámicamente solo para este clic
-        e.layer.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 })
-        .openPopup();
-    });	
-
-    const heatpointsMapaDeCalorMarruecos = []; // array para puntos del heatmap //heatPointsWebGL
-
-    let heatlayerMapaDeCalorMarruecos;
-
-    // escape para html en popup/label. Esa función convierte caracteres especiales de HTML en sus entidades seguras, evitando que el texto insertado en el DOM se interprete como código HTML (previene inyección de HTML o XSS)
-    function escapeHtml(str){
-    if (!str && str !== 0) return '';
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    const iconoDespegueIndividualMarruecos = L.divIcon({
-    className: 'custom-point-circle', // Una clase CSS para estilizar el círculo
-    html: '<div style="background:#ff0000; border-radius:50%; width:10px; height:10px;"></div>', // El círculo dentro del div
-    iconSize: [10, 10], // Tamaño del icono (igual al div de arriba)
-    iconAnchor: [5, 5] // Centro del icono
-    });
-
-    // Flag para controlar la carga única del CSV
-    let csvCargadoMapaDeCalorMarruecos = false; // Usamos un nombre específico para evitar conflictos.
-
-    // Muestra el mensaje de carga en la pantalla
-    function mostrarMensajeCargaMapaDeCalorMarruecos() {
-        if (mensajeCargaMapaDeCalorMarruecos) {
-            mensajeCargaMapaDeCalorMarruecos.style.display = 'block';
-        }
-    }
-
-    //Oculta el mensaje de carga en la pantalla
-    function ocultarmensajeCargaMapaDeCalorMarruecos() {
-        if (mensajeCargaMapaDeCalorMarruecos) {
-            setTimeout(function() {mensajeCargaMapaDeCalorMarruecos.style.display = 'none'}, 2000);
-        }
-    }
-
-    // Carga los datos del CSV y crea los marcadores/capas de calor. Se ejecuta solo la primera vez
-    function cargarDatosMapaDeCalorMarruecos() {
-        if (csvCargadoMapaDeCalorMarruecos) {
-            return; // Detener si ya se cargó
-        }
-
-        mostrarMensajeCargaMapaDeCalorMarruecos();	// Mostramos el mensaje de carga antes de la operación asíncrona
-
-        Papa.parse('map/mapadecalormarruecos.csv', {
-
-            download: true,
-            header: true, // Usa la primera fila como nombres de columnas
-            //dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
-            skipEmptyLines: true,
-            delimiter: ';',
-            encoding: 'utf8',
-
-            complete: function(results) {
-                results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
-                
-                    const lat = parseFloat(row.Latitud);
-                    const lon = parseFloat(row.Longitud);
-                    const fecha = row.Fecha || '';
-                    const hora = row.Hora || '';
-                    const distanciarecorrida = row.DistanciaRecorrida || '';
-                    const urlvuelo = row.URLVuelo || '';
-                    
-                    const marker = L.marker([lat, lon], { icon: iconoDespegueIndividualMarruecos, riseOnHover: true, title: 'Despegue individual registrado en XContest' });
-                    
+                marker.on('click', () => {
                     const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
                         <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂<br>Despegue en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
-                        <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(fecha)}</b></div>
-                        <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(hora)}</b></div>
-                        <div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(distanciarecorrida)} km</b></div>
-                        <div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(urlvuelo)}' target='_blank'>Vuelo en XContest</a></div>
+                        <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
+                        <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
+                        <div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(p.dist)} km</b></div>
+                        <div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(p.url)}' target='_blank'>Vuelo en XContest</a></div>
                         </div>`;
-
-                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }); //de momento no he creado esa clase
-                    clustergroupMapaDeCalorMarruecos.addLayer(marker);
-                    // Añadir al array de puntos de calor
-                    heatpointsMapaDeCalorMarruecos.push([lat, lon, 1]); // intensidad = 1
+                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
                 });
-            
-            // Crear capa de calor
+                layerGroupPeninsula.addLayer(marker);
+            }
+        });
+    }
+
+    map.on('moveend', actualizarClusterPeninsula);
+
+    function mostrarMensajeCargaMapaDeCalorPeninsulaIberica() {
+        if (mensajeCargaMapaDeCalorPeninsulaIberica) mensajeCargaMapaDeCalorPeninsulaIberica.style.display = 'block';
+    }
+
+    function ocultarmensajeCargaMapaDeCalorPeninsulaIberica() {
+        if (mensajeCargaMapaDeCalorPeninsulaIberica) {
+            setTimeout(function() {mensajeCargaMapaDeCalorPeninsulaIberica.style.display = 'none'}, 1500);
+        }
+    }
+
+    function cargarDatosMapaDeCalorPeninsulaIberica() {
+        if (csvCargadoMapaDeCalorPeninsulaIberica) return;
+        
+        mostrarMensajeCargaMapaDeCalorPeninsulaIberica();
+
+        superclusterPeninsula = new Supercluster({ radius: 80, maxZoom: 16 });
+
+        Papa.parse('map/mapadecalorpeninsulaiberica.csv', {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            delimiter: ';',
+            encoding: 'utf8',
+            complete: function(results) {
+                results.data.forEach(row => {
+                    const lat = parseFloat(row.Latitud);
+                    const lon = parseFloat(row.Longitud);
+                    
+                    geoJsonPeninsula.push({
+                        type: "Feature",
+                        properties: { fecha: row.Fecha || '', hora: row.Hora || '', dist: row.DistanciaRecorrida || '', url: row.URLVuelo || '' },
+                        geometry: { type: "Point", coordinates: [lon, lat] }
+                    });
+                    
+                    heatpointsMapaDeCalorPeninsulaIberica.push([lat, lon, 1]);
+                });
+                
+                superclusterPeninsula.load(geoJsonPeninsula);
+                
+                heatlayerMapaDeCalorPeninsulaIberica = L.heatLayer(heatpointsMapaDeCalorPeninsulaIberica, {
+                    radius: 18, blur: 22, maxZoom: 19, minOpacity: 0.3,
+                    gradient: { 0.2: 'yellow', 0.4: 'orange', 0.6: 'red', 1.0: 'darkred' }
+                });
+
+                csvCargadoMapaDeCalorPeninsulaIberica = true;
+                ocultarmensajeCargaMapaDeCalorPeninsulaIberica();
+                
+                const checkbox = document.getElementById('checkboxMapaDeCalorPeninsulaIberica');
+                if (checkbox && checkbox.checked) {
+                    if (!map.hasLayer(layerGroupPeninsula)) map.addLayer(layerGroupPeninsula);
+                    if (!map.hasLayer(heatlayerMapaDeCalorPeninsulaIberica)) map.addLayer(heatlayerMapaDeCalorPeninsulaIberica);
+                    actualizarClusterPeninsula();
+                }
+            },
+            error: function(error) {
+                console.error('Error cargando CSV Peninsula:', error);
+                alert('Error al cargar el archivo CSV de Península Ibérica.');
+                ocultarmensajeCargaMapaDeCalorPeninsulaIberica();
+                const checkbox = document.getElementById('checkboxMapaDeCalorPeninsulaIberica');
+                if (checkbox) checkbox.checked = false;
+            }
+        });
+    }
+
+    const checkboxMapaDeCalorPeninsulaIberica = document.getElementById('checkboxMapaDeCalorPeninsulaIberica');
+    if (checkboxMapaDeCalorPeninsulaIberica) {
+        checkboxMapaDeCalorPeninsulaIberica.addEventListener('change', function () {
+            if (this.checked) {
+                if (!csvCargadoMapaDeCalorPeninsulaIberica) {
+                    cargarDatosMapaDeCalorPeninsulaIberica();
+                } else {
+                    if (!map.hasLayer(layerGroupPeninsula)) {
+                        map.addLayer(layerGroupPeninsula);
+                        actualizarClusterPeninsula(); 
+                    }
+                    if (heatlayerMapaDeCalorPeninsulaIberica && !map.hasLayer(heatlayerMapaDeCalorPeninsulaIberica)) {
+                        map.addLayer(heatlayerMapaDeCalorPeninsulaIberica);
+                    }
+                }
+            } else {
+                if (map.hasLayer(layerGroupPeninsula)) map.removeLayer(layerGroupPeninsula);
+                if (heatlayerMapaDeCalorPeninsulaIberica && map.hasLayer(heatlayerMapaDeCalorPeninsulaIberica)) {
+                    map.removeLayer(heatlayerMapaDeCalorPeninsulaIberica);
+                }
+            }
+        });
+    }
+
+    // 🔴 INICIO CAPA MAPA DE CALOR ALPES (OPTIMIZADA CON SUPERCLUSTER)
+    //___________________________________________________________________________________
+
+    // 1. Variables Globales de la capa
+    const layerGroupAlpes = L.layerGroup(); // Contenedor ligero de Leaflet para lo visible
+    let superclusterAlpes = null;           // El cerebro matemático de agrupación
+    let geoJsonAlpes = [];                  // Array puro de datos (bajísimo consumo de RAM)
+    const heatpointsMapaDeCalorAlpes = [];  // Array para el mapa de calor
+    let heatlayerMapaDeCalorAlpes;
+    let csvCargadoMapaDeCalorAlpes = false;
+
+    const iconoDespegueIndividualAlpes = L.divIcon({
+        className: 'custom-point-circle',
+        html: '<div style="background:#ff0000; border-radius:50%; width:10px; height:10px;"></div>',
+        iconSize: [10, 10],
+        iconAnchor: [5, 5]
+    });
+
+    // 2. Función para generar el icono del grupo (Mantiene tus colores exactos)
+    function crearIconoClusterAlpes(count) {
+        const clusterTitle = `Grupo de ${count} despegues registrados en XContest`;
+        let max = 1000; 
+        let ratio = 1 - Math.min(count / max, 1); 
+
+        function hexToRGB(hex) {
+            return [
+                parseInt(hex.substr(1,2),16),
+                parseInt(hex.substr(3,2),16),
+                parseInt(hex.substr(5,2),16)
+            ];
+        }
+
+        let darkRGB = hexToRGB("#a91311");   
+        let lightRGB = hexToRGB("#f7bd7e");  
+
+        let r = Math.round(darkRGB[0] + (lightRGB[0]-darkRGB[0])*ratio);
+        let g = Math.round(darkRGB[1] + (lightRGB[1]-darkRGB[1])*ratio);
+        let b = Math.round(darkRGB[2] + (lightRGB[2]-darkRGB[2])*ratio);
+        let color = `rgb(${r},${g},${b})`;
+
+        return new L.DivIcon({
+            html: `<div title="${clusterTitle}" style="background:${color}"><span>${count}</span></div>`,
+            className: 'estilobase-custom-cluster-mapadecalor',
+            iconSize: new L.Point(40, 40),
+            iconAnchor: L.point(20, 20)
+        });
+    }
+
+    // 3. MOTOR DE DIBUJO: Solo crea los marcadores que caben en la pantalla
+    function actualizarClusterAlpes() {
+        if (!csvCargadoMapaDeCalorAlpes || !map.hasLayer(layerGroupAlpes)) return;
+
+        const bounds = map.getBounds();
+        // Bounding box: [Oeste, Sur, Este, Norte]
+        const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+        const zoom = map.getZoom();
+
+        // Supercluster hace la magia aquí en milisegundos
+        const clusters = superclusterAlpes.getClusters(bbox, zoom);
+
+        // Borramos lo que se veía antes
+        layerGroupAlpes.clearLayers();
+
+        // Dibujamos solo lo necesario
+        clusters.forEach(feature => {
+            const [lon, lat] = feature.geometry.coordinates;
+
+            if (feature.properties.cluster) {
+                // ES UN GRUPO
+                const count = feature.properties.point_count;
+                const icon = crearIconoClusterAlpes(count);
+                const marker = L.marker([lat, lon], { icon: icon });
+
+                // Popup del grupo (Tu lógica original sin hacer zoom)
+                marker.on('click', () => {
+                    const popupHtml = `<div style="line-height: 1.2;">
+                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
+                        <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
+                        <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
+                        <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
+                        <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
+                        <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
+                        </div>`;
+                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
+                });
+                layerGroupAlpes.addLayer(marker);
+
+            } else {
+                // ES UN PUNTO INDIVIDUAL
+                const p = feature.properties;
+                const marker = L.marker([lat, lon], { icon: iconoDespegueIndividualAlpes, riseOnHover: true });
+
+                marker.on('click', () => {
+                    const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
+                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂<br>Despegue en XContest</b></div>
+                        <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
+                        <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
+                        <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
+                        <div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(p.dist)} km</b></div>
+                        <div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(p.url)}' target='_blank'>Vuelo en XContest</a></div>
+                        </div>`;
+                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
+                });
+                layerGroupAlpes.addLayer(marker);
+            }
+        });
+    }
+
+    // 4. Conectar los eventos del mapa a nuestro motor de dibujo
+    map.on('moveend', actualizarClusterAlpes);
+
+    // 5. Carga e indexación de datos
+    function mostrarMensajeCargaMapaDeCalorAlpes() {
+        if (mensajeCargaMapaDeCalorAlpes) mensajeCargaMapaDeCalorAlpes.style.display = 'block';
+    }
+
+    function ocultarmensajeCargaMapaDeCalorAlpes() {
+        if (mensajeCargaMapaDeCalorAlpes) {
+            setTimeout(function() {mensajeCargaMapaDeCalorAlpes.style.display = 'none'}, 1500);
+        }
+    }
+
+    function cargarDatosMapaDeCalorAlpes() {
+        if (csvCargadoMapaDeCalorAlpes) return;
+        
+        mostrarMensajeCargaMapaDeCalorAlpes();
+
+        // Inicializar Supercluster
+        superclusterAlpes = new Supercluster({
+            radius: 80,
+            maxZoom: 16 // Nivel de zoom máximo al que agrupará. Más allá mostrará puntos individuales.
+        });
+
+        Papa.parse('map/mapadecaloralpes.csv', {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            delimiter: ';',
+            encoding: 'utf8',
+            complete: function(results) {
+                // Llenamos el array GeoJSON puro (sin tocar el DOM)
+                results.data.forEach(row => {
+                    const lat = parseFloat(row.Latitud);
+                    const lon = parseFloat(row.Longitud);
+                    
+                    geoJsonAlpes.push({
+                        type: "Feature",
+                        properties: {
+                            fecha: row.Fecha || '',
+                            hora: row.Hora || '',
+                            dist: row.DistanciaRecorrida || '',
+                            url: row.URLVuelo || ''
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: [lon, lat] // Importante: Supercluster usa [lon, lat]
+                        }
+                    });
+                    
+                    // Para el heatmap
+                    heatpointsMapaDeCalorAlpes.push([lat, lon, 1]);
+                });
+                
+                // Cargamos todos los datos en el "cerebro" matemático de golpe
+                superclusterAlpes.load(geoJsonAlpes);
+                
+                heatlayerMapaDeCalorAlpes = L.heatLayer(heatpointsMapaDeCalorAlpes, {
+                    radius: 18, blur: 22, maxZoom: 19, minOpacity: 0.3,
+                    gradient: { 0.2: 'yellow', 0.4: 'orange', 0.6: 'red', 1.0: 'darkred' }
+                });
+
+                csvCargadoMapaDeCalorAlpes = true;
+                ocultarmensajeCargaMapaDeCalorAlpes();
+                
+                const checkbox = document.getElementById('checkboxMapaDeCalorAlpes');
+                if (checkbox && checkbox.checked) {
+                    if (!map.hasLayer(layerGroupAlpes)) map.addLayer(layerGroupAlpes);
+                    if (!map.hasLayer(heatlayerMapaDeCalorAlpes)) map.addLayer(heatlayerMapaDeCalorAlpes);
+                    
+                    // Disparamos el primer dibujo
+                    actualizarClusterAlpes();
+                }
+            },
+            error: function(error) {
+                console.error('Error cargando CSV Alpes:', error);
+                alert('Error al cargar el archivo CSV de Alpes.');
+                ocultarmensajeCargaMapaDeCalorAlpes();
+                const checkbox = document.getElementById('checkboxMapaDeCalorAlpes');
+                if (checkbox) checkbox.checked = false;
+            }
+        });
+    }
+
+    // 6. Lógica del Checkbox
+    const checkboxMapaDeCalorAlpes = document.getElementById('checkboxMapaDeCalorAlpes');
+    if (checkboxMapaDeCalorAlpes) {
+        checkboxMapaDeCalorAlpes.addEventListener('change', function () {
+            if (this.checked) {
+                if (!csvCargadoMapaDeCalorAlpes) {
+                    cargarDatosMapaDeCalorAlpes();
+                } else {
+                    if (!map.hasLayer(layerGroupAlpes)) {
+                        map.addLayer(layerGroupAlpes);
+                        actualizarClusterAlpes(); // Redibujamos al activar
+                    }
+                    if (heatlayerMapaDeCalorAlpes && !map.hasLayer(heatlayerMapaDeCalorAlpes)) {
+                        map.addLayer(heatlayerMapaDeCalorAlpes);
+                    }
+                }
+            } else {
+                if (map.hasLayer(layerGroupAlpes)) map.removeLayer(layerGroupAlpes);
+                if (heatlayerMapaDeCalorAlpes && map.hasLayer(heatlayerMapaDeCalorAlpes)) {
+                    map.removeLayer(heatlayerMapaDeCalorAlpes);
+                }
+            }
+        });
+    }
+
+    // 🔴 INICIO CAPA MAPA DE CALOR MARRUECOS (OPTIMIZADA CON SUPERCLUSTER)
+    //___________________________________________________________________________________
+
+    const layerGroupMarruecos = L.layerGroup();
+    let superclusterMarruecos = null;
+    let geoJsonMarruecos = [];
+    const heatpointsMapaDeCalorMarruecos = [];
+    let heatlayerMapaDeCalorMarruecos;
+    let csvCargadoMapaDeCalorMarruecos = false;
+
+    const iconoDespegueIndividualMarruecos = L.divIcon({
+        className: 'custom-point-circle',
+        html: '<div style="background:#ff0000; border-radius:50%; width:10px; height:10px;"></div>',
+        iconSize: [10, 10],
+        iconAnchor: [5, 5]
+    });
+
+    function crearIconoClusterMarruecos(count) {
+        const clusterTitle = `Grupo de ${count} despegues registrados en XContest`;
+        let max = 1000; 
+        let ratio = 1 - Math.min(count / max, 1); 
+
+        function hexToRGB(hex) {
+            return [parseInt(hex.substr(1,2),16), parseInt(hex.substr(3,2),16), parseInt(hex.substr(5,2),16)];
+        }
+
+        let darkRGB = hexToRGB("#a91311");   
+        let lightRGB = hexToRGB("#f7bd7e");  
+
+        let r = Math.round(darkRGB[0] + (lightRGB[0]-darkRGB[0])*ratio);
+        let g = Math.round(darkRGB[1] + (lightRGB[1]-darkRGB[1])*ratio);
+        let b = Math.round(darkRGB[2] + (lightRGB[2]-darkRGB[2])*ratio);
+        let color = `rgb(${r},${g},${b})`;
+
+        return new L.DivIcon({
+            html: `<div title="${clusterTitle}" style="background:${color}"><span>${count}</span></div>`,
+            className: 'estilobase-custom-cluster-mapadecalor',
+            iconSize: new L.Point(40, 40),
+            iconAnchor: L.point(20, 20)
+        });
+    }
+
+    function actualizarClusterMarruecos() {
+        if (!csvCargadoMapaDeCalorMarruecos || !map.hasLayer(layerGroupMarruecos)) return;
+
+        const bounds = map.getBounds();
+        const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
+        const zoom = map.getZoom();
+
+        const clusters = superclusterMarruecos.getClusters(bbox, zoom);
+
+        layerGroupMarruecos.clearLayers();
+
+        clusters.forEach(feature => {
+            const [lon, lat] = feature.geometry.coordinates;
+
+            if (feature.properties.cluster) {
+                const count = feature.properties.point_count;
+                const icon = crearIconoClusterMarruecos(count);
+                const marker = L.marker([lat, lon], { icon: icon });
+
+                marker.on('click', () => {
+                    const popupHtml = `<div style="line-height: 1.2;">
+                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
+                        <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
+                        <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
+                        <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
+                        <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
+                        <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
+                        </div>`;
+                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
+                });
+                layerGroupMarruecos.addLayer(marker);
+
+            } else {
+                const p = feature.properties;
+                const marker = L.marker([lat, lon], { icon: iconoDespegueIndividualMarruecos, riseOnHover: true });
+
+                marker.on('click', () => {
+                    const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
+                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂<br>Despegue en XContest</b></div>
+                        <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
+                        <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
+                        <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
+                        <div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(p.dist)} km</b></div>
+                        <div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(p.url)}' target='_blank'>Vuelo en XContest</a></div>
+                        </div>`;
+                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
+                });
+                layerGroupMarruecos.addLayer(marker);
+            }
+        });
+    }
+
+    map.on('moveend', actualizarClusterMarruecos);
+
+    function mostrarMensajeCargaMapaDeCalorMarruecos() {
+        if (mensajeCargaMapaDeCalorMarruecos) mensajeCargaMapaDeCalorMarruecos.style.display = 'block';
+    }
+
+    function ocultarmensajeCargaMapaDeCalorMarruecos() {
+        if (mensajeCargaMapaDeCalorMarruecos) {
+            setTimeout(function() {mensajeCargaMapaDeCalorMarruecos.style.display = 'none'}, 1500);
+        }
+    }
+
+    function cargarDatosMapaDeCalorMarruecos() {
+        if (csvCargadoMapaDeCalorMarruecos) return;
+        
+        mostrarMensajeCargaMapaDeCalorMarruecos();
+
+        superclusterMarruecos = new Supercluster({ radius: 80, maxZoom: 16 });
+
+        Papa.parse('map/mapadecalormarruecos.csv', {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            delimiter: ';',
+            encoding: 'utf8',
+            complete: function(results) {
+                results.data.forEach(row => {
+                    const lat = parseFloat(row.Latitud);
+                    const lon = parseFloat(row.Longitud);
+                    
+                    geoJsonMarruecos.push({
+                        type: "Feature",
+                        properties: { fecha: row.Fecha || '', hora: row.Hora || '', dist: row.DistanciaRecorrida || '', url: row.URLVuelo || '' },
+                        geometry: { type: "Point", coordinates: [lon, lat] }
+                    });
+                    
+                    heatpointsMapaDeCalorMarruecos.push([lat, lon, 1]);
+                });
+                
+                superclusterMarruecos.load(geoJsonMarruecos);
+                
                 heatlayerMapaDeCalorMarruecos = L.heatLayer(heatpointsMapaDeCalorMarruecos, {
                     radius: 18, blur: 22, maxZoom: 19, minOpacity: 0.3,
                     gradient: { 0.2: 'yellow', 0.4: 'orange', 0.6: 'red', 1.0: 'darkred' }
-                });//.addTo(map); //No la mostramos inicialmente
+                });
 
-                //map.addLayer(clustergroupMapaDeCalorMarruecos); //No la mostramos inicialmente
-                
-                // Marcar como cargado exitosamente
                 csvCargadoMapaDeCalorMarruecos = true;
-                ocultarmensajeCargaMapaDeCalorMarruecos(); // Ocultamos el mensaje si la carga fue exitosa
+                ocultarmensajeCargaMapaDeCalorMarruecos();
                 
-                // LLAMADA ADICIONAL: Ya que el usuario marcó el checkbox antes de que se completara la carga,
-                // debemos añadirlas al mapa una vez que estén listas.
                 const checkbox = document.getElementById('checkboxMapaDeCalorMarruecos');
                 if (checkbox && checkbox.checked) {
-                    if (!map.hasLayer(clustergroupMapaDeCalorMarruecos)) {
-                        map.addLayer(clustergroupMapaDeCalorMarruecos);
+                    if (!map.hasLayer(layerGroupMarruecos)) map.addLayer(layerGroupMarruecos);
+                    if (!map.hasLayer(heatlayerMapaDeCalorMarruecos)) map.addLayer(heatlayerMapaDeCalorMarruecos);
+                    actualizarClusterMarruecos();
+                }
+            },
+            error: function(error) {
+                console.error('Error cargando CSV Marruecos:', error);
+                alert('Error al cargar el archivo CSV de Marruecos.');
+                ocultarmensajeCargaMapaDeCalorMarruecos();
+                const checkbox = document.getElementById('checkboxMapaDeCalorMarruecos');
+                if (checkbox) checkbox.checked = false;
+            }
+        });
+    }
+
+    const checkboxMapaDeCalorMarruecos = document.getElementById('checkboxMapaDeCalorMarruecos');
+    if (checkboxMapaDeCalorMarruecos) {
+        checkboxMapaDeCalorMarruecos.addEventListener('change', function () {
+            if (this.checked) {
+                if (!csvCargadoMapaDeCalorMarruecos) {
+                    cargarDatosMapaDeCalorMarruecos();
+                } else {
+                    if (!map.hasLayer(layerGroupMarruecos)) {
+                        map.addLayer(layerGroupMarruecos);
+                        actualizarClusterMarruecos(); 
                     }
-                    if (!map.hasLayer(heatlayerMapaDeCalorMarruecos)) {
+                    if (heatlayerMapaDeCalorMarruecos && !map.hasLayer(heatlayerMapaDeCalorMarruecos)) {
                         map.addLayer(heatlayerMapaDeCalorMarruecos);
                     }
                 }
-
-            },
-
-            error: function(error) {
-            console.error('Error cargando CSV:', error.message || error);
-            alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
-            ocultarmensajeCargaMapaDeCalorMarruecos(); // Ocultamos el mensaje si hubo un error en la carga
+            } else {
+                if (map.hasLayer(layerGroupMarruecos)) map.removeLayer(layerGroupMarruecos);
+                if (heatlayerMapaDeCalorMarruecos && map.hasLayer(heatlayerMapaDeCalorMarruecos)) {
+                    map.removeLayer(heatlayerMapaDeCalorMarruecos);
+                }
             }
-
         });
     }
 
@@ -9630,102 +9627,6 @@ function inicializarMapaLeaflet() {
         //retraerOpciones()
         actualizarFiltrosMapa()
     });
-
-    //Checkbox para ocultar/mostrar Mapa de calor Península Ibérica
-    const checkboxMapaDeCalorPeninsulaIberica = document.getElementById('checkboxMapaDeCalorPeninsulaIberica');
-
-    if (checkboxMapaDeCalorPeninsulaIberica) {
-        checkboxMapaDeCalorPeninsulaIberica.addEventListener('change', function () {
-            if (this.checked) {
-                // 1. Si los datos no están cargados, iniciar la carga (la carga los añade al mapa al finalizar)
-                if (!csvCargadoMapaDeCalorPeninsulaIberica) {
-                    cargarDatosMapaDeCalorPeninsulaIberica();
-                } 
-                // 2. Si ya están cargados, simplemente añadir las capas (instantáneamente)
-                else {
-                    if (!map.hasLayer(clustergroupMapaDeCalorPeninsulaIberica)) {
-                        map.addLayer(clustergroupMapaDeCalorPeninsulaIberica);
-                    }
-                    if (heatlayerMapaDeCalorPeninsulaIberica && !map.hasLayer(heatlayerMapaDeCalorPeninsulaIberica)) {
-                        map.addLayer(heatlayerMapaDeCalorPeninsulaIberica);
-                    }
-                }
-            } else {
-                // Ocultar las capas al desmarcar (solo si existen)
-                if (map.hasLayer(clustergroupMapaDeCalorPeninsulaIberica)) {
-                    map.removeLayer(clustergroupMapaDeCalorPeninsulaIberica);
-                }
-                if (heatlayerMapaDeCalorPeninsulaIberica && map.hasLayer(heatlayerMapaDeCalorPeninsulaIberica)) {
-                    map.removeLayer(heatlayerMapaDeCalorPeninsulaIberica);
-                }
-            }
-            //retraerOpciones() 
-        });
-    } 
-
-    //Checkbox para ocultar/mostrar Mapa de calor Alpes
-    const checkboxMapaDeCalorAlpes = document.getElementById('checkboxMapaDeCalorAlpes');
-
-    if (checkboxMapaDeCalorAlpes) {
-        checkboxMapaDeCalorAlpes.addEventListener('change', function () {
-            if (this.checked) {
-                // 1. Si los datos no están cargados, iniciar la carga (la carga los añade al mapa al finalizar)
-                if (!csvCargadoMapaDeCalorAlpes) {
-                    cargarDatosMapaDeCalorAlpes();
-                } 
-                // 2. Si ya están cargados, simplemente añadir las capas (instantáneamente)
-                else {
-                    if (!map.hasLayer(clustergroupMapaDeCalorAlpes)) {
-                        map.addLayer(clustergroupMapaDeCalorAlpes);
-                    }
-                    if (heatlayerMapaDeCalorAlpes && !map.hasLayer(heatlayerMapaDeCalorAlpes)) {
-                        map.addLayer(heatlayerMapaDeCalorAlpes);
-                    }
-                }
-            } else {
-                // Ocultar las capas al desmarcar (solo si existen)
-                if (map.hasLayer(clustergroupMapaDeCalorAlpes)) {
-                    map.removeLayer(clustergroupMapaDeCalorAlpes);
-                }
-                if (heatlayerMapaDeCalorAlpes && map.hasLayer(heatlayerMapaDeCalorAlpes)) {
-                    map.removeLayer(heatlayerMapaDeCalorAlpes);
-                }
-            }
-            //retraerOpciones() // Tu llamada opcional
-        });
-    } 
-
-    //Checkbox para ocultar/mostrar Mapa de calor Marruecos
-    const checkboxMapaDeCalorMarruecos = document.getElementById('checkboxMapaDeCalorMarruecos');
-
-    if (checkboxMapaDeCalorMarruecos) {
-        checkboxMapaDeCalorMarruecos.addEventListener('change', function () {
-            if (this.checked) {
-                // 1. Si los datos no están cargados, iniciar la carga (la carga los añade al mapa al finalizar)
-                if (!csvCargadoMapaDeCalorMarruecos) {
-                    cargarDatosMapaDeCalorMarruecos();
-                } 
-                // 2. Si ya están cargados, simplemente añadir las capas (instantáneamente)
-                else {
-                    if (!map.hasLayer(clustergroupMapaDeCalorMarruecos)) {
-                        map.addLayer(clustergroupMapaDeCalorMarruecos);
-                    }
-                    if (heatlayerMapaDeCalorMarruecos && !map.hasLayer(heatlayerMapaDeCalorMarruecos)) {
-                        map.addLayer(heatlayerMapaDeCalorMarruecos);
-                    }
-                }
-            } else {
-                // Ocultar las capas al desmarcar (solo si existen)
-                if (map.hasLayer(clustergroupMapaDeCalorMarruecos)) {
-                    map.removeLayer(clustergroupMapaDeCalorMarruecos);
-                }
-                if (heatlayerMapaDeCalorMarruecos && map.hasLayer(heatlayerMapaDeCalorMarruecos)) {
-                    map.removeLayer(heatlayerMapaDeCalorMarruecos);
-                }
-            }
-            //retraerOpciones() // Tu llamada opcional
-        });
-    } 
 
     //Checkbox para ocultar/mostrar Notas personales
     document.getElementById('checkboxNotasPersonales').addEventListener('change', function () {
