@@ -525,7 +525,7 @@ input[type="search"]::-webkit-search-cancel-button {
         margin 0.3s ease,
         padding 0.3s ease;
     transform: translate(-50%, var(--vv-offset-top, 0px)); /* Para que, si la usuaria sube la pantalla mientras hay modales abiertos (como el panel de configuración, menú de geolocalización o de conexión), no se salgan del marco de la pantalla */
-    scrollbar-gutter: stable;
+    scrollbar-gutter: stable both-edges;
 }
 
 .div-configuracion.activo {
@@ -533,8 +533,8 @@ input[type="search"]::-webkit-search-cancel-button {
     overflow-y: auto; 
     pointer-events: auto; 
     padding-top: 26px;
-    padding-right: 30px;
-    padding-left: 30px;
+    padding-right: 15px;
+    padding-left: 15px;
     padding-bottom: 8px;
     max-height: calc(100dvh - env(safe-area-inset-bottom) - 100px) !important; 
     -webkit-overflow-scrolling: touch;
@@ -1894,7 +1894,8 @@ span.grados {
 	visibility: hidden;   
     opacity: 0;
 	transition: opacity 0.3s;
-    z-index: 9999999 !important;	
+    z-index: 2147483647 !important;  
+    pointer-events: auto !important;	
 	position:fixed;
 	top:0;
 	left:0;
@@ -2289,55 +2290,55 @@ label.custom-checkbox {
 
 .loader-container {
     position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
+    /* Flota en la parte superior, respetando el "notch" de la cámara del móvil */
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: auto; 
+    height: auto;
     z-index: 2147483647; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
     opacity: 0;
     visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.2s ease, visibility 0s 0.2s;
-    transform: translateY(var(--vv-offset-top, 0px));
+    
+    /* Esto hace que los clics atraviesen el cartel como si fuera un fantasma */
+    pointer-events: none !important; 
+    
+    transition: opacity 0.3s ease;
 }
 
 .loader-activo {
     visibility: visible;
-    pointer-events: all; 
     opacity: 1;
-    transition: opacity 0.6s ease 0.3s, visibility 0s 0s;
-    cursor: wait; 
+    /* Hemos eliminado el "pointer-events: all" para que NUNCA bloquee */
 }
 
 .loader-container::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.1);
+    display: none; 
 }
 
+/* Diseño de la nueva pastilla flotante tipo iPhone */
 .loader-box {
-    position: relative; 
-    background: #fff;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     color: #333;
-    padding: 10px 20px; 
-    border-radius: 50px;
-    font-size: 1.1em; 
-    font-weight: 500;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(0,0,0,0.05);
+    padding: 8px 16px; 
+    border-radius: 20px;
+    font-size: 0.95em; 
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0,0,0,0.1);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
+/* Spinner un poco más pequeño para que sea elegante */
 .spinner {
-    width: 30px;
-    height: 30px;
-    border: 2px solid #f3f3f3; 
-    border-top: 2px solid #0078d4;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #e0e0e0; 
+    border-top: 3px solid #0078d4;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }

@@ -78,6 +78,9 @@ let actualizacionesPendientes = [];
 
 let autoSeleccionInicialHecha = false; // bandera de control para la selección o no automática de un día de la semana al arrancar
 
+// Tiempo máximo (en milisegundos) que la app intentará descargar los datos si la conexión es lenta. Pasado este tiempo, forzará el uso de la caché offline.
+const TIMEOUT_DESCARGA_DATOS_MS = 5000;
+
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
 // Asegúrate de que Capacitor está disponible
 // if (window.Capacitor && window.Capacitor.Plugins.StatusBar) {
@@ -2802,20 +2805,31 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         else {
             // 2. Si no está en RAM, intentamos buscarlo fuera
             try {
+                // --- NUEVO: Cronómetro para mala conexión usando la variable global ---
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => {
+                    controller.abort();
+                    console.warn(`⏳ Red muy lenta (${TIMEOUT_DESCARGA_DATOS_MS/1000}s). Abortando descarga...`);
+                }, TIMEOUT_DESCARGA_DATOS_MS); 
+
                 // Intentamos descargar (Petición de red real)
                 const[res1, res2] = await Promise.all([
-                    fetch(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" }),
-                    fetch(`https://flydecision.com/meteo-datos-ecmwf.json?t=${Date.now()}`, { cache: "no-store" })
+                    fetch(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store", signal: controller.signal }),
+                    fetch(`https://flydecision.com/meteo-datos-ecmwf.json?t=${Date.now()}`, { cache: "no-store", signal: controller.signal })
                 ]);
 
                 if (!res1.ok || !res2.ok) {
                     throw new Error(`⚠️ Error al cargar archivos JSON`);
                 }
 
-                // Si llegamos aquí, hay internet. Parseamos y guardamos en RAM.
+                // Si llegamos aquí, el servidor respondió. Ahora descargamos el "peso" real del JSON.
+                // Si la red 2G es muy lenta, el cronómetro (que sigue vivo) cortará esta descarga.
                 data = await res1.json();
                 dataEcmwf = await res2.json();
                 
+                // Solo apagamos el cronómetro cuando la descarga completa ha finalizado con éxito
+                clearTimeout(timeoutId); 
+
                 DATOS_METEO_CACHE = data; 
                 DATOS_METEO_ECMWF_CACHE = dataEcmwf;
                 esModoOffline = false;
@@ -5436,14 +5450,14 @@ function comprobarAvisoCambiosPuntuacionXC() {
             tipo: 'modal',
             htmlContenido: `
                 <div style="text-align: center;">
-                    <p style="font-size: 1.2em; font-weight: bold;">ℹ️ Novedades en datos XC</p>
-                    <div style="text-align: left; font-size: 0.95em; line-height: 1.5; color: #333;">
-                        <ul style="padding-left: 20px; margin-top: 10px;">
-                            <li><b>La puntuación de Condiciones XC (condiciones térmicas para iniciar vuelo de distancia) es independiente de la puntuación de Condiciones para despegar:</b> Ahora valora solo el potencial térmico (Techo, CAPE y CIN), ignorando la orientación y el viento en el despegue. Solo puntúa 0 en caso de lluvia o riesgo extremo de tormenta.</li>
-                            <li><b>El Techo es altitud (MSL):</b> el Techo ahora muestra la altura respecto al nivel del mar (altitud). Antes mostraba la altura sobre el suelo (AGL). Esto reduce errores, al usar la altitud media de la celda ECMWF y es más útil para planificar XC.</li>
-                            <li><b>Cálculo de Techo más realista:</b> Se aplica una correción 0.85 (15% menos) al Techo original del modelo para compensar la tasa de caída media del parapente.</li>
+                    <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 5px;">ℹ️ Novedades datos XC</p>
+                    <div style="text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;">
+                        <ul style="padding-left: 20px; margin-top: 5px; margin-bottom: 5px;">
+                            <li style="margin-bottom: 6px;"><b>Puntuación XC independiente:</b> Valora solo el potencial térmico (Techo, CAPE, CIN) ignorando el viento del despegue. Solo puntúa 0 con lluvia o tormenta.</li>
+                            <li style="margin-bottom: 6px;"><b>Techo en Altitud (MSL):</b> Ahora indica la altitud sobre el nivel del mar, siendo más útil y preciso para vuelos de distancia.</li>
+                            <li><b>Techo realista:</b> Se reduce un 15% el pronóstico original para compensar la tasa de caída media del parapente.</li>
                         </ul>
-                    <p>💡 Puedes ver esta información, la del resto de datos meteorológicos y la de puntuación, seleccionando los iconos 🌦️ o ⭐ en la cabecera de la tabla.</p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">💡 <i>Más detalles pulsando los iconos 🌦️ o ⭐ en la tabla.</i></p>
                     </div>
                 </div>
             `,
@@ -6058,7 +6072,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
                 // --- 3. DIBUJAR LISTA UNIFICADA ---
                 dataGenElement.innerHTML = `
-                    <ul style="margin: 5px 0 0 0; padding-left: 30px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
+                    <ul style="margin: 5px 0 0 0; padding-left: 27px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
                         <li style="margin-bottom: 8px;">
                             <b>Météo-France:</b> hace <b>${timeAgoMF}</b> <span style="color:#777; font-style:italic;">(ref. ${refMF}Z)</span><br>
                             <span>${textoFuturoMF}</span>
