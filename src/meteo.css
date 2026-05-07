@@ -423,7 +423,7 @@ input[type="search"]::-webkit-search-cancel-button {
     flex-shrink: 0;
     font-weight: bold;
     margin-top: -16px;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
     /* border-bottom: 1px solid #eee; */
     padding-left: 30px;
     padding-right: 30px;
@@ -496,7 +496,7 @@ input[type="search"]::-webkit-search-cancel-button {
     z-index: 9999 !important; /* Asegura que quede encima de todo (filtros, tabla, etc.) */
 
     /* TAMAÑO Y FORMA DE "TARJETA" */
-    max-width: 400px;    /* En PC se queda como una ventana modal elegante */
+    max-width: 365px;    /* En PC se queda como una ventana modal elegante */
     
     background: #ffffff !important; 
     background-color: #ffffff !important;
@@ -678,8 +678,8 @@ input[type="search"]::-webkit-search-cancel-button {
 	border-radius: 10px;
 	box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
     border-width: 1px;
-	max-width: 365px;
-	min-width: 365px;
+	max-width: 335px;
+	min-width: 335px;
 	min-height: 100px;
 	background-color: #d9ebf9;
 }
@@ -724,8 +724,8 @@ details.config-accordion {
     border: 1px solid rgb(51, 51, 51);
     border-radius: 10px;
     box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
-    max-width: 365px;
-    min-width: 365px;
+    max-width: 335px;
+    min-width: 335px;
     background-color: #d9ebf9;
     box-sizing: border-box;
     
