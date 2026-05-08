@@ -2635,7 +2635,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 					htmlContenido: `
 						<p style="font-size: 1.2em; font-weight: bold; text-align:center;">🤔 ¿Es complicado?</p>
 						<p>✅ <b>Uso básico</b>: selecciona tus despegues favoritos la primera vez y ya tendrás siempre la tabla con sus pronósticos y su análisis automático para cada día.</p>
-						<p>✅ <b>Uso intermedio</b>: puedes seleccionar un rango de tiempo (días u horas) y ver la puntuación automática de condiciones para ese intervalo. Puedes filtrar los despegues por puntuación de condiciones y por radio de distancia a tu casa o un lugar cualquiera.</p>
+						<p>✅ <b>Uso intermedio</b>: puedes seleccionar un rango de tiempo (días u horas) y ver la puntuación automática de condiciones para ese intervalo. Puedes filtrar los despegues por radio de distancia a tu casa o un lugar cualquiera.</p>
 						<p>✅ <b>Uso avanzado</b>: puedes personalizar en ⚙️ <i>Configuración</i> los límites predeterminados de viento medio (mínimo, ideal y máximo) y rachas máximas. Tus preferencias se usarán para el análisis, coloreado y puntuación de las condiciones.</p>
 						`,
 					botones: [
