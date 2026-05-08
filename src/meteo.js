@@ -7802,9 +7802,9 @@ function inicializarMapaLeaflet() {
         const etiquetaInfoPanel = document.querySelector('.labelMostrarOpciones');
         const infoPanelPrincipal = document.getElementById('infoPanel');
         
-        if (etiquetaInfoPanel) {
-            etiquetaInfoPanel.style.backgroundColor = hayCualquierFiltro ? ACTIVO_COLOR : ''; 
-        }
+        // if (etiquetaInfoPanel) {
+        //     etiquetaInfoPanel.style.backgroundColor = hayCualquierFiltro ? ACTIVO_COLOR : ''; 
+        // }
 
         // --- NUEVO: BORDE ROJO AL ESTAR RETRAÍDO ---
         if (infoPanelPrincipal) {
