@@ -2766,6 +2766,49 @@ h3 {
     background: rgba(255, 255, 255, 0.7) !important; /* Un poco de transparencia */
 }
 
+/* ==========================================================================
+   🗺️ FIX: BOTÓN CERRAR "X" PARA EL MENÚ DE CAPAS DE LEAFLET
+   ========================================================================== */
+
+/* 1. Nuestro nuevo botón de cerrar (Copia de "Capas y filtros") */
+.cerrar-capas-btn {
+    display: none;
+    position: absolute;
+    top: 0px;            /* Ajustado para igualar al de capas y filtros */
+    right: 0px;          /* Ajustado para igualar al de capas y filtros */
+    width: 30px;         /* Tamaño igual a #buttonCerrar */
+    height: 30px;        /* Tamaño igual a #buttonCerrar */
+    background-color: transparent; /* Fondo transparente */
+    font-size: 1.2em;    /* Tamaño exacto de #buttonCerrar */
+    justify-content: center;
+    align-items: center;
+    border: none;        /* Sin bordes grises */
+    box-shadow: none;    /* Sin sombra */
+    cursor: pointer;
+    z-index: 1000;
+    padding: 0;
+}
+/* 2. Mostrar la X SÓLO cuando la lista esté desplegada */
+.leaflet-control-layers-expanded .cerrar-capas-btn {
+    display: flex;
+}
+/* Efecto al pulsar (opcional, como el botón no tiene fondo, lo omitimos o le damos un leve gris) */
+.cerrar-capas-btn:active {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+.cerrar-capas-btn:active {
+    background-color: #e0e0e0;
+}
+/* 3. Empujar la lista hacia abajo y redondear la caja */
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+    margin-top: 0px !important;
+}
+.leaflet-control-layers-expanded {
+    border-radius: 8px !important;
+    padding: 6px !important;
+}
+
 .info {
 	position: fixed;
 	top: 50%;

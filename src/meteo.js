@@ -8278,7 +8278,22 @@ function inicializarMapaLeaflet() {
     "ESRI Topo + Thermals (KK7)": capaMezcladaWorldTopoMapKK7Thermals,
     "ESRI Topo + Skyways+Thermals (KK7)": capaMezcladaWorldTopoMapKK7SkyWaysThermals
     };
-    L.control.layers(baseMaps, {}, { position: 'topright' }).addTo(map);
+    // 1. Guardamos el control en una variable
+    const controlCapas = L.control.layers(baseMaps, {}, { position: 'topright' }).addTo(map);
+
+    // 2. Creamos NUESTRO propio botón físico "X"
+    const btnCerrarCapas = L.DomUtil.create('div', 'cerrar-capas-btn');
+    btnCerrarCapas.innerHTML = '<span>❌</span>';
+
+    // 3. Lo metemos dentro de la caja principal del menú de mapas
+    const contenedorCapas = controlCapas.getContainer();
+    contenedorCapas.appendChild(btnCerrarCapas);
+
+    // 4. Le damos la orden de cerrar el panel al hacerle clic
+    L.DomEvent.on(btnCerrarCapas, 'click', function(e) {
+        controlCapas.collapse(); // Orden nativa de Leaflet para plegar
+        L.DomEvent.stop(e);      // Evita que el clic traspase al mapa
+    });
         
     //------------------------------------------------------------
 
