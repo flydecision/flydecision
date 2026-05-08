@@ -7800,9 +7800,19 @@ function inicializarMapaLeaflet() {
         // 4. ACTUALIZAR PANEL GLOBAL
         const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroKmMedia;
         const etiquetaInfoPanel = document.querySelector('.labelMostrarOpciones');
+        const infoPanelPrincipal = document.getElementById('infoPanel');
         
         if (etiquetaInfoPanel) {
-            etiquetaInfoPanel.style.backgroundColor = hayCualquierFiltro ? ACTIVO_COLOR : ''; // Deja el color predefinido de CSS si no hay filtros.
+            etiquetaInfoPanel.style.backgroundColor = hayCualquierFiltro ? ACTIVO_COLOR : ''; 
+        }
+
+        // --- NUEVO: BORDE ROJO AL ESTAR RETRAÍDO ---
+        if (infoPanelPrincipal) {
+            if (hayCualquierFiltro) {
+                infoPanelPrincipal.classList.add('borde-rojo-externo');
+            } else {
+                infoPanelPrincipal.classList.remove('borde-rojo-externo');
+            }
         }
     }
 
@@ -8187,34 +8197,54 @@ function inicializarMapaLeaflet() {
 
         options: { position: 'topright' },
         onAdd: function(map) {
+            // 1. Contenedor principal de Leaflet
             const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-            const buttonDiv = L.DomUtil.create('div', 'leaflet-control-button', container);
-            buttonDiv.style.cursor = 'pointer';
-            buttonDiv.title = 'Ajustes'; // Tooltip
+            // Quitamos el borde negro estándar de leaflet-bar para que no haga cosas raras
+            container.style.border = 'none'; 
             
-            // Icono de Engranaje (Gear) SVG
-            buttonDiv.innerHTML = `<svg width="30" height="30" viewBox="-3 -3 30 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                                </svg>`;
-                                
-            buttonDiv.style.padding = '0';
-            buttonDiv.style.display = 'flex';
-            buttonDiv.style.justifyContent = 'center';
-            buttonDiv.style.alignItems = 'center';  
-            buttonDiv.style.backgroundColor = 'white';      
-            buttonDiv.style.borderRadius = '4px';       
-            
-            // --- 3. Capturar el Panel de Configuración Existente por ID
-            // Buscamos el panel de forma segura
+            // 2. Traemos el Panel Blanco de Ajustes desde el HTML
             this._configPanel = document.getElementById('configuracionPanel');
             
             if (this._configPanel) {
+                // Preparamos el panel para recibir elementos "flotantes" dentro
+                this._configPanel.style.position = 'relative';
+                // Añadimos margen superior para que el texto "Ajustes:" no se pise con la X
+                this._configPanel.style.paddingTop = '30px'; 
+                
                 container.appendChild(this._configPanel);
                 this._configPanel.style.display = 'none'; 
             } else {
                 console.error("⚠️ Error: No encuentro el <div id='configuracionPanel'> en el HTML");
             }
+            
+            // 3. El Botón
+            const buttonDiv = L.DomUtil.create('div', 'leaflet-control-button', container);
+            buttonDiv.style.cursor = 'pointer';
+            buttonDiv.title = 'Ajustes'; 
+            
+            // Iconos (Engranaje y X)
+            this._iconGear = `<svg width="30" height="30" viewBox="-3 -3 30 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                </svg>`;
+            this._iconX = `<span style="font-size: 1.2em; line-height: 1;">❌</span>`;
+            
+            // Estilos del Botón (Engranaje por defecto)
+            buttonDiv.innerHTML = this._iconGear;
+            buttonDiv.style.padding = '0';
+            buttonDiv.style.display = 'flex';
+            buttonDiv.style.justifyContent = 'center';
+            buttonDiv.style.alignItems = 'center';  
+            buttonDiv.style.backgroundColor = 'white';      
+            buttonDiv.style.borderRadius = '4px';  
+            buttonDiv.style.width = '30px';  
+            buttonDiv.style.height = '30px'; 
+            
+            // Recuperamos el borde y la sombra original de Leaflet (ya que se lo quitamos al contenedor padre)
+            buttonDiv.style.border = '2px solid rgba(0,0,0,0.2)';
+            buttonDiv.style.backgroundClip = 'padding-box';
+            
+            this._buttonDiv = buttonDiv; 
             
             L.DomEvent.disableClickPropagation(container);
             L.DomEvent.disableScrollPropagation(container);
@@ -8225,11 +8255,8 @@ function inicializarMapaLeaflet() {
             return container;
         },
         
-        // Alternar
         _togglePanel: function(e) {
-            // Prevenimos que el evento se propague si es necesario
             L.DomEvent.stopPropagation(e);
-            
             if (this._configPanel.style.display === 'none') {
                 this._expand();
             } else {
@@ -8237,26 +8264,56 @@ function inicializarMapaLeaflet() {
             }
         },
         
-        // Mostrar
         _expand: function() {
-            // Usamos 'block' para divs normales. Si tu panel usa flex internamente, usa 'block' aquí 
-            // y deja que el CSS del panel maneje su interior, o usa 'flex' si el panel mismo es un flex container.
+            // 1. Mostrar Panel
             this._configPanel.style.display = 'block'; 
+            
+            // 2. Cambiar icono a X
+            this._buttonDiv.innerHTML = this._iconX; 
+            
+            // 3. Quitar bordes para que se funda con el panel blanco
+            this._buttonDiv.style.border = 'none';
+            this._buttonDiv.style.background = 'transparent';
+            
+            // 4. Mover el botón adentro del panel blanco y pegarlo a la esquina superior derecha
+            this._buttonDiv.style.position = 'absolute';
+            this._buttonDiv.style.top = '0px';
+            this._buttonDiv.style.right = '0px';
+            this._buttonDiv.style.zIndex = '1000';
+            
+            // Meter el botón FÍSICAMENTE dentro del panel blanco
+            this._configPanel.appendChild(this._buttonDiv);
         },
         
-        // Ocultar
         _collapse: function() {
+            // 1. Ocultar Panel
             this._configPanel.style.display = 'none';
+            
+            // 2. Restaurar icono Engranaje
+            this._buttonDiv.innerHTML = this._iconGear;
+            
+            // 3. Restaurar bordes y fondo
+            this._buttonDiv.style.border = '2px solid rgba(0,0,0,0.2)';
+            this._buttonDiv.style.backgroundColor = 'white';
+            
+            // 4. Devolver el botón al flujo normal de Leaflet (fuera del panel blanco)
+            this._buttonDiv.style.position = 'relative';
+            this._buttonDiv.style.top = 'auto';
+            this._buttonDiv.style.right = 'auto';
+            
+            // Volver a colocar el botón FÍSICAMENTE fuera del panel blanco, en el contenedor general
+            const container = this._configPanel.parentNode;
+            // Lo insertamos como primer elemento para que el menú de ajustes siga quedando debajo si se abriera de otra forma
+            container.insertBefore(this._buttonDiv, container.firstChild);
         }
     });
 
-    // Función de conveniencia
     L.control.configToggle = function(options) {
         return new L.Control.ConfigToggle(options);
     };
 
     L.control.configToggle({ 
-        position: 'topright' // O donde prefieras
+        position: 'topright' 
     }).addTo(map);
 
 

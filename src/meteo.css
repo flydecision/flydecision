@@ -2608,6 +2608,15 @@ details.config-accordion .accordion-content {
 		padding-bottom: 4.6px !important;
 	}
 }
+/* Heredamos la clase roja para que el panel de filtros cerrado avise de que está actuando */
+.info-panel.retraido.borde-rojo-externo {
+    /* border: 2px solid #ff0000; */
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+    /* Ajuste para compensar el borde y que no cambie de tamaño al iluminarse */
+    padding-top: 2.4px; 
+    padding-bottom: 0.6px;
+}
+
 <!--Antes de integrarlo en los controles leaflet
 #divOpciones {
   max-height: 500px; /* altura máxima cuando está desplegado */
