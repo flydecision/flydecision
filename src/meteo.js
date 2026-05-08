@@ -8190,7 +8190,7 @@ function inicializarMapaLeaflet() {
             const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
             const buttonDiv = L.DomUtil.create('div', 'leaflet-control-button', container);
             buttonDiv.style.cursor = 'pointer';
-            buttonDiv.title = 'Configuración'; // Tooltip
+            buttonDiv.title = 'Ajustes'; // Tooltip
             
             // Icono de Engranaje (Gear) SVG
             buttonDiv.innerHTML = `<svg width="30" height="30" viewBox="-3 -3 30 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -9614,26 +9614,56 @@ function inicializarMapaLeaflet() {
 
     // --- LISTENERS PARA GUARDAR LA CONFIGURACIÓN ---
     
-    // Listener Vuelos (Guarda y actualiza el texto de configuración)
+    // Listener Configuración Vuelos (Guarda, sincroniza y filtra)
     if (sliderVuelosConfig) {
         sliderVuelosConfig.addEventListener('input', function() {
             const indiceActual = this.value;
             const valorReal = obtenerValorReal(indiceActual, ESCALA_VUELOS);
             
-            if(textoVuelosConfig) textoVuelosConfig.innerText = valorReal;
+            // 1. Actualiza el texto en este panel de configuración
+            if (textoVuelosConfig) textoVuelosConfig.innerText = valorReal;
+            
+            // 2. Guarda el dato para la próxima vez
             localStorage.setItem(STORAGE_KEY_VUELOS, indiceActual);
+            
+            // --- NUEVO: APLICAR INMEDIATAMENTE ---
+            // 3. Sincroniza el deslizador del panel principal "Capas y filtros"
+            if (sliderVuelosFiltro) {
+                sliderVuelosFiltro.value = indiceActual;
+                if (textoVuelosFiltro) textoVuelosFiltro.innerText = valorReal;
+            }
+            // 4. Manda la orden al mapa para que oculte/muestre marcadores ya mismo
+            if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+            // ------------------------------------
+
+            // 5. Actualiza los fondos azules
             actualizarEstadoVisualFiltros();
         });
     }
     
-    // Listener Último Vuelo (Guarda y actualiza el texto de configuración)
+    // Listener Configuración Último Vuelo (Guarda, sincroniza y filtra)
     if (sliderUltimoVueloConfig) {
         sliderUltimoVueloConfig.addEventListener('input', function() {
             const indiceActual = this.value;
             const valorReal = obtenerValorReal(indiceActual, ESCALA_ULTIMO_VUELO);
             
-            if(textoUltimoVueloConfig) textoUltimoVueloConfig.innerText = valorReal;
+            // 1. Actualiza el texto en este panel de configuración
+            if (textoUltimoVueloConfig) textoUltimoVueloConfig.innerText = valorReal;
+            
+            // 2. Guarda el dato para la próxima vez
             localStorage.setItem(STORAGE_KEY_ULTIMO_VUELO, indiceActual);
+            
+            // --- NUEVO: APLICAR INMEDIATAMENTE ---
+            // 3. Sincroniza el deslizador del panel principal "Capas y filtros"
+            if (sliderUltimoVueloFiltro) {
+                sliderUltimoVueloFiltro.value = indiceActual;
+                if (textoUltimoVueloFiltro) textoUltimoVueloFiltro.innerText = valorReal;
+            }
+            // 4. Manda la orden al mapa para que oculte/muestre marcadores ya mismo
+            if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+            // ------------------------------------
+
+            // 5. Actualiza los fondos azules
             actualizarEstadoVisualFiltros();
         });
     }
