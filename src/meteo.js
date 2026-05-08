@@ -3888,35 +3888,47 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 Orientación: <b>${svgParaTooltip} <span style='vertical-align:middle;'>${d["Orientación"]}</span></b><br>
                 ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
                 ⛅ <a href='https://meteo-parapente.com/#/${latitud},${longitud},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
-                ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
-                <div style='margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; text-align: center;'>
-                    <a href='#' onclick="abrirMapaIntegrado(${latitud}, ${longitud}, '${safeDespegue}'); return false;" style='display: inline-block; background-color: #007bff; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-weight: bold;'>
-                        🌍 Mapa y más información
-                    </a>
-                </div>
+                ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a>
             `;
 
             // 3. Escapamos todas las comillas dobles para que no rompan el atributo data-tippy-content
             const contenidoEscapado = contenidoTooltip.replace(/"/g, '&quot;');
 
-            const botonMapaHTML = `
-                <button class="btn-info btn-abajo-izquierda" 
-                    style="bottom: 2px; left: 2px;"
+            // Botón de Información ("i")
+            const botonInfoHTML = `
+                <button class="btn-info" 
+                    style="position: absolute; bottom: 2px; left: 2px;"
                     data-tippy-content="${contenidoEscapado}"
                     title="Más información">
-                       <img src="icons/info.svg" alt="Más info" style="width: 20px; height: 20px; vertical-align: middle;">
+                       <img src="icons/info.svg" alt="Más info" style="width: 18px; height: 18px; vertical-align: middle;">
+                </button>
+            `;
+
+            // Botón directo al Mapa (posicionado a la derecha del anterior)
+            const botonMapaDirectoHTML = `
+                <button class="btn-info" 
+                    style="position: absolute; bottom: 2px; left: 23px; width: 27px;" 
+                    onclick="abrirMapaIntegrado(${latitud}, ${longitud}, '${safeDespegue}'); return false;"
+                    title="Ver en el mapa">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" style="vertical-align: middle;">
+                        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                        <line x1="8" y1="2" x2="8" y2="18"></line>
+                        <line x1="16" y1="6" x2="16" y2="22"></line>
+                    </svg>
                 </button>
             `;
 			
-			// Si estamos en modoEdicionFavoritos, no queremos la línea de la provincia
             const provinciaHTML = modoEdicionFavoritos ? "" : `<b style="display:block;">${d.Provincia.toUpperCase()}</b>`;
 
+            // Montamos la celda con los dos botones
             tdDespegue.innerHTML = `
-                ${botonMapaHTML}
+                ${botonInfoHTML}
+                ${botonMapaDirectoHTML}
                 ${provinciaHTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}">${d.Despegue}</div>
 				${svgOrientaciones}
             `;
+
 			// ROWSPAN DINÁMICO
             tdDespegue.rowSpan = totalFilasRowSpan;	
 			tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda");
