@@ -6941,8 +6941,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
         cambiarVista('mapa');
         
         const btnMap = document.getElementById('nav-map');
-        if (btnMap && typeof activarMenuInferior === 'function') {
-            activarMenuInferior(btnMap);
+        if (btnMap && typeof window.activarMenuInferior === 'function') {
+            window.activarMenuInferior(btnMap);
         }
 
         // 4. Lógica de enfoque en el mapa
@@ -6956,7 +6956,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 map.invalidateSize();
                 
                 // Si ya tenemos los marcadores cargados
-                if (markersDespegues && markersDespegues.length > 0) {
+                if (typeof markersDespegues !== 'undefined' && markersDespegues.length > 0) {
                     const normalizar = (t) => t ? t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
                     const term = normalizar(nombreDespegue);
                     
@@ -6967,18 +6967,30 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     }
 
                     if (target) {
-                        // Si está dentro de un cluster, lo abrimos
-                        if (clustergroupDespegues) {
+                        // --- 🚀 SOLUCIÓN: EL MARCADOR FANTASMA ---
+                        
+                        // ¿Está el marcador visible actualmente en el grupo de Leaflet?
+                        if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues.hasLayer(target)) {
+                            // SÍ ESTÁ VISIBLE: Comportamiento normal
                             clustergroupDespegues.zoomToShowLayer(target, function() {
                                 target.openPopup();
                                 map.panTo(target.getLatLng());
                             });
                         } else {
+                            // ESTÁ OCULTO POR UN FILTRO: Lo forzamos a aparecer
                             map.setView([lat, lon], 14);
+                            
+                            // Lo añadimos directamente al mapa (esquivando los filtros)
+                            target.addTo(map); 
                             target.openPopup();
+                            
+                            // Cuando el usuario cierre su popup, lo volvemos a hacer desaparecer
+                            target.once('popupclose', function() {
+                                map.removeLayer(target);
+                            });
                         }
                     } else {
-                        // Si no lo encuentra en la lista (raro), al menos vamos a las coordenadas
+                        // Si no lo encuentra en la lista, al menos vamos a las coordenadas
                         map.setView([lat, lon], 14);
                     }
                 } else {
