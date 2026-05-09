@@ -6957,44 +6957,46 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 
                 // Si ya tenemos los marcadores cargados
                 if (typeof markersDespegues !== 'undefined' && markersDespegues.length > 0) {
-                    const normalizar = (t) => t ? t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
-                    const term = normalizar(nombreDespegue);
                     
-                    // Buscamos el marcador por nombre exacto o parcial
-                    let target = markersDespegues.find(m => normalizar(m.metadata.despegue) === term);
-                    if (!target) {
-                        target = markersDespegues.find(m => normalizar(m.metadata.despegue).includes(term));
+                    // --- NUEVO: BÚSQUEDA ABSOLUTA POR COORDENADAS ---
+                    let target = markersDespegues.find(m => {
+                        const mLat = m.getLatLng().lat;
+                        const mLon = m.getLatLng().lng;
+                        // Margen de 0.0001 (aprox 11 metros) para curarnos en salud con los decimales
+                        return Math.abs(mLat - lat) < 0.0001 && Math.abs(mLon - lon) < 0.0001;
+                    });
+
+                    // Fallback de seguridad extrema (por si en la BBDD las coordenadas estuvieran ligeramente movidas)
+                    if (!target && nombreDespegue) {
+                        const normalizar = (t) => t ? t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
+                        const term = normalizar(nombreDespegue);
+                        target = markersDespegues.find(m => normalizar(m.metadata.despegue) === term);
+                        if (!target) target = markersDespegues.find(m => normalizar(m.metadata.despegue).includes(term));
                     }
 
                     if (target) {
-                        // --- 🚀 SOLUCIÓN: EL MARCADOR FANTASMA ---
-                        
-                        // ¿Está el marcador visible actualmente en el grupo de Leaflet?
+                        // --- SOLUCIÓN: EL MARCADOR FANTASMA ---
                         if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues.hasLayer(target)) {
-                            // SÍ ESTÁ VISIBLE: Comportamiento normal
+                            // SÍ ESTÁ VISIBLE
                             clustergroupDespegues.zoomToShowLayer(target, function() {
                                 target.openPopup();
                                 map.panTo(target.getLatLng());
                             });
                         } else {
-                            // ESTÁ OCULTO POR UN FILTRO: Lo forzamos a aparecer
+                            // ESTÁ OCULTO POR FILTRO
                             map.setView([lat, lon], 14);
-                            
-                            // Lo añadimos directamente al mapa (esquivando los filtros)
                             target.addTo(map); 
                             target.openPopup();
-                            
-                            // Cuando el usuario cierre su popup, lo volvemos a hacer desaparecer
                             target.once('popupclose', function() {
                                 map.removeLayer(target);
                             });
                         }
                     } else {
-                        // Si no lo encuentra en la lista, al menos vamos a las coordenadas
+                        // Si no lo encuentra ni por coordenadas ni por nombre, vamos al lugar ciego
                         map.setView([lat, lon], 14);
                     }
                 } else {
-                    // Si el mapa es virgen y se está cargando por primera vez, vamos a coordenadas
+                    // Si el mapa es virgen, vamos al lugar ciego
                     map.setView([lat, lon], 14);
                 }
             }, 350);
