@@ -2155,13 +2155,6 @@ label.custom-checkbox {
   transition: background-color 0.2s;
 }
 
-@media (min-width: 1025px) {
-  .btn-info:hover {
-    background-color: #0078d4;
-    color: #000;
-  }
-}
-
 .btn-info:active {
     background-color: #0078d4;
     color: #000;

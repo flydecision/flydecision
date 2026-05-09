@@ -2537,11 +2537,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // 🔴 LÓGICA INICIAL (Configurar variables antes de pintar)
         // ---------------------------------------------------------------
 
+        // Comprobamos si venimos de un enlace directo con coordenadas
+        const paramsArranque = new URLSearchParams(window.location.search);
+        const enlaceDirectoMapa = paramsArranque.has('lat') && paramsArranque.has('lon');
+        
         // CASO A: Primera visita (Usuaria nueva)
         if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") && 
             !localStorage.getItem("METEO_FAVORITOS_LISTA") && 
             !modoEdicionFavoritos) { 
             
+            // Aunque sea enlace directo, le damos la configuración técnica base para que no falle nada internamente
             localStorage.setItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ", "true");
             localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO", "10");
             localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN", "20");
@@ -2562,203 +2567,213 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             const panelHorario = document.querySelector('.div-filtro-horario');
             if (panelHorario) panelHorario.style.display = 'none';
 
-            // Mensaje modal: La tabla se generará detrás, pero el modal estará encima.
-            // mostrarConfiguracionInicial();
+            // Si NO es un enlace directo al mapa, mostramos el asistente
+            if (!enlaceDirectoMapa) {
 
-			// Asistente de configuración inicial. Paso 5 Guía rápida
-			// ==========================================================
-			const mostrarPaso6 = function() {
-				GestorMensajes.mostrar({
-					tipo: 'modal',
-					htmlContenido: `
-						<p style="font-size: 1.2em; font-weight: bold; text-align:center;">👍 ¿Qué hago ahora?</p>
-						<p>Tienes que marcar tus despegues favoritos.</p>
-					`,
-					botones: [
-					{
-						texto: '←',
-						estilo: 'secundario',
-						onclick: function() {
-							GestorMensajes.ocultar();
-							mostrarPaso5(); 
-						}
-					},
-					{
-						texto: 'Marcar favoritos →',
-						onclick: function() {
-							GestorMensajes.ocultar();
-							//modoEdicionFavoritos = true; // Pasamos a modo edición
-							//construir_tabla(); // Recargamos para que entre en la lógica de estado > el "CASO B" y muestre el aviso pequeño 
-							activarEdicionFavoritos();
-                            return;
-						}
-					}]
-				});
-			};
+                // Mensaje modal: La tabla se generará detrás, pero el modal estará encima.
+                // mostrarConfiguracionInicial();
 
-			// Asistente de configuración inicial. Paso 4 Guía rápida
-			// ==========================================================
-			const mostrarPaso5 = function() {
-				GestorMensajes.mostrar({
-					tipo: 'modal',
-					htmlContenido: `
-						<p style="font-size: 1.2em; font-weight: bold; text-align:center;">️👉 Ten en cuenta...</p>
-						<p>👉 La tabla mostrará solo los despegues favoritos. Puedes marcarlos todos si lo necesitas, pero puede ralentizar el uso según tu dispositivo.</p>
-						<p>👉️ La tabla estará siempre ordenada automáticamente por la puntuación de condiciones, de mejor (10) a peor (0).</p>
-						<p>👉️ Por el momento no se muestra el dato CBH (base de nube), necesario para saber si estará cubierto el despegue a esa hora (está solicitado a Open-meteo y pendiente). Antes de volar, como sabes, hay que analizar muchos más datos.</p>
-						<p>👉️ Por el momento el ámbito es España, Portugal, Pirineos (incluyendo la parte francesa) y Alpes (franceses, suizos e italianos).</p>
-					    `,
-					botones: [
-					{
-						texto: '←',
-						estilo: 'secundario',
-						onclick: function() {
-							GestorMensajes.ocultar();
-							mostrarPaso4(); 
-						}
-					},
-					{
-						texto: 'Siguiente →',
-						onclick: function() {
-							GestorMensajes.ocultar();
-							mostrarPaso6(); 
-						}
-					}]
-				});
-			};
-
-			// Asistente de configuración inicial. Paso 3 Guía rápida
-			// ==========================================================
-			const mostrarPaso4 = function() {
-				GestorMensajes.mostrar({
-					tipo: 'modal',
-					htmlContenido: `
-						<p style="font-size: 1.2em; font-weight: bold; text-align:center;">🤔 ¿Es complicado?</p>
-						<p>✅ <b>Uso básico</b>: selecciona tus despegues favoritos la primera vez y ya tendrás siempre la tabla con sus pronósticos y su análisis automático para cada día.</p>
-						<p>✅ <b>Uso intermedio</b>: puedes seleccionar un rango de tiempo (días u horas) y ver la puntuación automática de condiciones para ese intervalo. Puedes filtrar los despegues por radio de distancia a tu casa o un lugar cualquiera.</p>
-						<p>✅ <b>Uso avanzado</b>: puedes personalizar en ⚙️ <i>Configuración</i> los límites predeterminados de viento medio (mínimo, ideal y máximo) y rachas máximas. Tus preferencias se usarán para el análisis, coloreado y puntuación de las condiciones.</p>
-						`,
-					botones: [
-					{
-						texto: '←',
-						estilo: 'secundario',
-						onclick: function() {
-							GestorMensajes.ocultar();
-							mostrarPaso3(); 
-						}
-					},
-					{
-						texto: 'Siguiente →',
-						onclick: function() {
-							GestorMensajes.ocultar();
-							mostrarPaso5(); 
-						}
-					}]
-				});
-			};
-
-			// Asistente de configuración inicial. Paso 2 Guía rápida
-			// ==========================================================
-			const mostrarPaso3 = function() {
-				GestorMensajes.mostrar({
-					tipo: 'modal',
-					htmlContenido: `
-					<p>💨️ <b>Datos meteorológicos:</b> pronóstico por horas para 4 días (96h). Se actualiza 8 veces al día con los datos oficiales que emite Météo-France de los modelos Arome-HD 1.3km (0-48h) y Arpege 7km (48-96h) y 4 veces al día con los datos del ECMWF (0-96h).</p>
-					<p>🆓 <b>Coste y privacidad:</b> gratuita 100%, sin suscripciones, sin publicidad y sin rastreo (cookies, telemetría,...). Tus configuraciones se guardan en tu navegador de forma privada. Es un proyecto libre y abierto, operativo desde 2026 y en evolución.</p>
-				    	`,
-					botones: [
-					{
-						texto: '←',
-						estilo: 'secundario',
-						onclick: function() {
-							GestorMensajes.ocultar();
-							mostrarPaso2(); 
-						}
-					},
-					{
-						texto: 'Siguiente →',
-						onclick: function() {
-							GestorMensajes.ocultar();
-							mostrarPaso4(); 
-						}
-					}]
-				});
-			};
-
-			// Asistente de configuración inicial. Paso 1 Guía rápida
-			// ==========================================================
-			const mostrarPaso2 = function() {
-				GestorMensajes.mostrar({
-					tipo: 'modal',
-                    htmlContenido: `
-                        <p style="font-size: 1.2em; font-weight: bold; text-align:center;">🪂 Fly Decision. Análisis automático del pronóstico meteorológico para vuelo en parapente.</p>
-                        <p>🙄 <b>¿Para qué sirve?:</b> para ayudarte a decidir dónde ir a volar. Muestra una tabla con tus despegues favoritos, sus pronósticos y hace un análisis automático de esas <b>condiciones meteorológicas</b>.</p>
-                        <p>🧮 <b>¿Qué análisis hace?:</b> compara el pronóstico con los límites de viento medio y racha máxima configurados y con la orientación de cada despegue; también analiza el viento a alturas cercanas al despegue (80, 120 y 180 m), lo que da idea del gradiente y de la fiabilidad del pronóstico de viento medio. Muestra datos meteo de interés para XC (techo, CAPE y CIN).</p>
-                        <p>Con toda la información, puntúa de 0 a 10 cada despegue y colorea 🟩&nbsp;🟨&nbsp;🟥 los datos para el rango horario o días que elijas. Puedes personalizar todos esos límites para que el análisis se adapte a tus preferencias.</p>
-                            `,
-					botones: [
-					{
-						texto: '←',
-						estilo: 'secundario',
-						onclick: function() {
-							GestorMensajes.ocultar();
-							mostrarPaso1(); 
-						}
-					},
-					{
-						texto: 'Siguiente →',
-						onclick: function() {
-							GestorMensajes.ocultar();
-							mostrarPaso3(); 
-						}
-					}]
-				});
-			};
-
-			// Asistente de configuración inicial. Pantalla inicial
-			// ==========================================================
-			const mostrarPaso1 = function() {
-                GestorMensajes.mostrar({
-                    tipo: 'modal',
-                    htmlContenido: `
-                        <p style="font-size: 1.4em; font-weight: bold; text-align:center;">🪂 Fly Decision<br>¿Dónde ir a volar?</p>
-                        <p>🌦️ Pronóstico para 4 días por horas.</p>
-                        <p>📊 Análisis automático de condiciones para despegar o para iniciar XC.</p>
-                        <p>🗺️ Mapa de despegues.</p>`,
-                    botones: [
+                // Asistente de configuración inicial. Paso 5 Guía rápida
+                // ==========================================================
+                const mostrarPaso6 = function() {
+                    GestorMensajes.mostrar({
+                        tipo: 'modal',
+                        htmlContenido: `
+                            <p style="font-size: 1.2em; font-weight: bold; text-align:center;">👍 ¿Qué hago ahora?</p>
+                            <p>Tienes que marcar tus despegues favoritos.</p>
+                        `,
+                        botones: [
                         {
-                            texto: 'Marcar favoritos',
+                            texto: '←',
+                            estilo: 'secundario',
                             onclick: function() {
                                 GestorMensajes.ocultar();
-                                //modoEdicionFavoritos = true; 
+                                mostrarPaso5(); 
+                            }
+                        },
+                        {
+                            texto: 'Marcar favoritos →',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                //modoEdicionFavoritos = true; // Pasamos a modo edición
+                                //construir_tabla(); // Recargamos para que entre en la lógica de estado > el "CASO B" y muestre el aviso pequeño 
                                 activarEdicionFavoritos();
                                 return;
                             }
-                        },
-                        {
-                            texto: 'Ver la guía general',
-                            estilo: 'secundario',
-                            onclick: function() {
-                                GestorMensajes.ocultar();
-                                mostrarPaso2();
-                            }
-                        },
-                        
-                        {
-                            texto: 'Importar configuración',
-                            estilo: 'secundario',
-                            onclick: function() {
-                                GestorMensajes.ocultar();
-                                importarConfiguracion();
-                                return;
-                            }
-                        }
-                    ],
-                    anchoBotones: 300
-                });
-            };
+                        }]
+                    });
+                };
 
-            mostrarPaso1();
+                // Asistente de configuración inicial. Paso 4 Guía rápida
+                // ==========================================================
+                const mostrarPaso5 = function() {
+                    GestorMensajes.mostrar({
+                        tipo: 'modal',
+                        htmlContenido: `
+                            <p style="font-size: 1.2em; font-weight: bold; text-align:center;">️👉 Ten en cuenta...</p>
+                            <p>👉 La tabla mostrará solo los despegues favoritos. Puedes marcarlos todos si lo necesitas, pero puede ralentizar el uso según tu dispositivo.</p>
+                            <p>👉️ La tabla estará siempre ordenada automáticamente por la puntuación de condiciones, de mejor (10) a peor (0).</p>
+                            <p>👉️ Por el momento no se muestra el dato CBH (base de nube), necesario para saber si estará cubierto el despegue a esa hora (está solicitado a Open-meteo y pendiente). Antes de volar, como sabes, hay que analizar muchos más datos.</p>
+                            <p>👉️ Por el momento el ámbito es España, Portugal, Pirineos (incluyendo la parte francesa) y Alpes (franceses, suizos e italianos).</p>
+                            `,
+                        botones: [
+                        {
+                            texto: '←',
+                            estilo: 'secundario',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                mostrarPaso4(); 
+                            }
+                        },
+                        {
+                            texto: 'Siguiente →',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                mostrarPaso6(); 
+                            }
+                        }]
+                    });
+                };
+
+                // Asistente de configuración inicial. Paso 3 Guía rápida
+                // ==========================================================
+                const mostrarPaso4 = function() {
+                    GestorMensajes.mostrar({
+                        tipo: 'modal',
+                        htmlContenido: `
+                            <p style="font-size: 1.2em; font-weight: bold; text-align:center;">🤔 ¿Es complicado?</p>
+                            <p>✅ <b>Uso básico</b>: selecciona tus despegues favoritos la primera vez y ya tendrás siempre la tabla con sus pronósticos y su análisis automático para cada día.</p>
+                            <p>✅ <b>Uso intermedio</b>: puedes seleccionar un rango de tiempo (días u horas) y ver la puntuación automática de condiciones para ese intervalo. Puedes filtrar los despegues por radio de distancia a tu casa o un lugar cualquiera.</p>
+                            <p>✅ <b>Uso avanzado</b>: puedes personalizar en ⚙️ <i>Configuración</i> los límites predeterminados de viento medio (mínimo, ideal y máximo) y rachas máximas. Tus preferencias se usarán para el análisis, coloreado y puntuación de las condiciones.</p>
+                            `,
+                        botones: [
+                        {
+                            texto: '←',
+                            estilo: 'secundario',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                mostrarPaso3(); 
+                            }
+                        },
+                        {
+                            texto: 'Siguiente →',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                mostrarPaso5(); 
+                            }
+                        }]
+                    });
+                };
+
+                // Asistente de configuración inicial. Paso 2 Guía rápida
+                // ==========================================================
+                const mostrarPaso3 = function() {
+                    GestorMensajes.mostrar({
+                        tipo: 'modal',
+                        htmlContenido: `
+                        <p>💨️ <b>Datos meteorológicos:</b> pronóstico por horas para 4 días (96h). Se actualiza 8 veces al día con los datos oficiales que emite Météo-France de los modelos Arome-HD 1.3km (0-48h) y Arpege 7km (48-96h) y 4 veces al día con los datos del ECMWF (0-96h).</p>
+                        <p>🆓 <b>Coste y privacidad:</b> gratuita 100%, sin suscripciones, sin publicidad y sin rastreo (cookies, telemetría,...). Tus configuraciones se guardan en tu navegador de forma privada. Es un proyecto libre y abierto, operativo desde 2026 y en evolución.</p>
+                            `,
+                        botones: [
+                        {
+                            texto: '←',
+                            estilo: 'secundario',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                mostrarPaso2(); 
+                            }
+                        },
+                        {
+                            texto: 'Siguiente →',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                mostrarPaso4(); 
+                            }
+                        }]
+                    });
+                };
+
+                // Asistente de configuración inicial. Paso 1 Guía rápida
+                // ==========================================================
+                const mostrarPaso2 = function() {
+                    GestorMensajes.mostrar({
+                        tipo: 'modal',
+                        htmlContenido: `
+                            <p style="font-size: 1.2em; font-weight: bold; text-align:center;">🪂 Fly Decision. Análisis automático del pronóstico meteorológico para vuelo en parapente.</p>
+                            <p>🙄 <b>¿Para qué sirve?:</b> para ayudarte a decidir dónde ir a volar. Muestra una tabla con tus despegues favoritos, sus pronósticos y hace un análisis automático de esas <b>condiciones meteorológicas</b>.</p>
+                            <p>🧮 <b>¿Qué análisis hace?:</b> compara el pronóstico con los límites de viento medio y racha máxima configurados y con la orientación de cada despegue; también analiza el viento a alturas cercanas al despegue (80, 120 y 180 m), lo que da idea del gradiente y de la fiabilidad del pronóstico de viento medio. Muestra datos meteo de interés para XC (techo, CAPE y CIN).</p>
+                            <p>Con toda la información, puntúa de 0 a 10 cada despegue y colorea 🟩&nbsp;🟨&nbsp;🟥 los datos para el rango horario o días que elijas. Puedes personalizar todos esos límites para que el análisis se adapte a tus preferencias.</p>
+                                `,
+                        botones: [
+                        {
+                            texto: '←',
+                            estilo: 'secundario',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                mostrarPaso1(); 
+                            }
+                        },
+                        {
+                            texto: 'Siguiente →',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                mostrarPaso3(); 
+                            }
+                        }]
+                    });
+                };
+
+                // Asistente de configuración inicial. Pantalla inicial
+                // ==========================================================
+                const mostrarPaso1 = function() {
+                    GestorMensajes.mostrar({
+                        tipo: 'modal',
+                        htmlContenido: `
+                            <p style="font-size: 1.4em; font-weight: bold; text-align:center;">🪂 Fly Decision<br>¿Dónde ir a volar?</p>
+                            <p>🌦️ Pronóstico para 4 días por horas.</p>
+                            <p>📊 Análisis automático de condiciones para despegar o para iniciar XC.</p>
+                            <p>🗺️ Mapa de despegues.</p>`,
+                        botones: [
+                            {
+                                texto: 'Marcar favoritos',
+                                onclick: function() {
+                                    GestorMensajes.ocultar();
+                                    //modoEdicionFavoritos = true; 
+                                    activarEdicionFavoritos();
+                                    return;
+                                }
+                            },
+                            {
+                                texto: 'Ver la guía general',
+                                estilo: 'secundario',
+                                onclick: function() {
+                                    GestorMensajes.ocultar();
+                                    mostrarPaso2();
+                                }
+                            },
+                            
+                            {
+                                texto: 'Importar configuración',
+                                estilo: 'secundario',
+                                onclick: function() {
+                                    GestorMensajes.ocultar();
+                                    importarConfiguracion();
+                                    return;
+                                }
+                            }
+                        ],
+                        anchoBotones: 300
+                    });
+                };
+
+                mostrarPaso1();
+
+            } else {
+                // Si ES un enlace directo al mapa, no mostramos NADA.
+                // Como 'modoEdicionFavoritos' está en 'true', la tabla se creará en modo edición 
+                // silenciosamente de fondo y pasaremos al mapa automáticamente.
+                // Importante: No marcamos 'METEO_PRIMERA_VISITA_HECHA' para que, si el usuario luego pulsa "Inicio", le salte la advertencia de que necesita favoritos.
+            }
 
         // CASO B: Estamos en Modo Edición (Activado por botón o flujo anterior)
         } else if (modoEdicionFavoritos) {
