@@ -66,7 +66,11 @@ const LIMITES_CIZALLADURA = {
 }
 
 const HorariosMediosActualizacion = ["01:32", "03:02", "06:02", "11:22", "13:32", "16:22", "19:12", "23:22"]; // en UTC-0
-const HorariosMediosActualizacionEcmwf = ["00:45", "07:15", "13:05", "19:15"]; // en UTC-0
+//const HorariosMediosActualizacionEcmwf = ["00:45", "07:15", "13:05", "19:15"]; // en UTC-0
+// gemini const HorariosMediosActualizacionEcmwf = ["00:15", "06:50", "12:30", "18:50"]; // en UTC-0
+//claude
+const HorariosMediosActualizacionEcmwf = ["01:40", "08:00", "13:00", "18:55"]; // en UTC-0
+
 // Nota: aplico 1 min de más. Buscar: const OFFSET_MS = 1 * 60 * 1000;
 
 let esModoOffline = false; // Nueva variable para controlar el estado de red
@@ -746,8 +750,13 @@ function iniciarGuiaPrincipal(forzar = false) {
             { element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
                 popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse en térmicas o iniciar Cross Country (XC).<br><br>Los despegues se reordenan automáticamente por puntuación de Condiciones para despegar.<br><br>En ⚙️ Ajustes puedes personalizar tus límites para el cálculo.' } },
 
-            { element: '.btn-info.btn-abajo-izquierda', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Seleccionando esta <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;"> se muestra información más completa del despegue, enlaces a pronósticos de Windy, Meteo-parapente, Meteoblue y un botón para acceder a su mapa.<br><br>💡 El mapa incluye información adicional y varias utilidades que merece la pena explorar.' } },
+            { element: '.columna-despegue .btn-info', 
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Muestra información más completa del despegue y enlaces a su pronóstico en Windy, Meteo-parapente y Meteoblue.' } },
+
+            { element: '.btn-guia-mapa-directo', 
+                popover: { 
+                    title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg><span>Mapa del despegue</span></div>', 
+                    description: 'Muestra el despegue en el mapa.<br><br>💡 El mapa incluye información adicional sobre el despegue, filtros de diverso tipo, mapa de calor de despegues y varias utilidades que merece la pena explorar.' } },
 
             { element: '#nav-home',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Inicio</span></div>', description: 'Muestra la tabla con todos los despegues favoritos. Si hay búsquedas o filtros activos, los desactiva.<br><br>💡 Si te pierdes con algunas funciones, pulsa este botón para ir a la vista "normal".'} },
@@ -908,8 +917,13 @@ function iniciarGuiaFavoritos(forzar = false) {
             { element: '#tabla thead tr:first-child th:first-child', 
                 popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> ↔ <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Cabecera favoritos', description: 'Permite marcar o desmarcar de una sola vez todos los despegues visibles actualmente en la tabla.<br><br>💡 Ejemplo: con el botón "Buscar" filtras los de "Huesca" y los marcas todos. O con el botón "Distancia" filtras los que estén a 50 km de distancia de tu casa y los marcas todos.' } },
 
-            { element: '.btn-info.btn-abajo-izquierda', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Muestra información más completa del despegue y un botón para acceder a su mapa.' } },
+            { element: '.columna-despegue .btn-info', 
+                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Muestra información más completa del despegue y enlaces a su pronóstico en otras webs de meterología.' } },
+
+            { element: '.btn-guia-mapa-directo', 
+                popover: { 
+                    title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg><span>Mapa del despegue</span></div>', 
+                    description: 'Muestra el despegue en el mapa.<br><br>💡 El mapa incluye información adicional sobre el despegue, filtros de diverso tipo, mapa de calor de despegues y varias utilidades que merece la pena explorar.' } },
 
             { element: '#buscador-wrapper',
                 popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Buscar</span></div>', description: 'Busca despegues escribiendo su región, su provincia o su nombre. Puedes escribir sin tildes para mayor agilidad.'} },
@@ -3921,7 +3935,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
             // Botón directo al Mapa (posicionado a la derecha del anterior)
             const botonMapaDirectoHTML = `
-                <button class="btn-info" 
+                <button class="btn-info btn-guia-mapa-directo" 
                     style="position: absolute; bottom: 2px; left: 23px; width: 27px;" 
                     onclick="abrirMapaIntegrado(${latitud}, ${longitud}, '${safeDespegue}'); return false;"
                     title="Ver en el mapa">
