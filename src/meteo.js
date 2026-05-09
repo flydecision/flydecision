@@ -3882,7 +3882,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
-                <b><span style='font-size: 18px; padding-right: 8px;'>🪂 ${d.Despegue}</b></span><br>
+                <b><span style='font-size: 18px; padding-right: 20px;'>🪂 ${d.Despegue}</b></span><br>
                 Región: <b>${d.Región}</b><br>
                 Provincia: <b>${d.Provincia}</b><br>
                 Orientación: <b>${svgParaTooltip} <span style='vertical-align:middle;'>${d["Orientación"]}</span></b><br>
