@@ -6332,7 +6332,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
     if (typeof tippy === 'function' && typeof tippy.delegate === 'function') {
 
         tippy.delegate('body', {
-            target: '.btn-info, [data-tippy-content]',
+            target: '[data-tippy-content]',
             trigger: 'click',
             theme: 'meteo-custom',
             allowHTML: true,
