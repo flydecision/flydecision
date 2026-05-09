@@ -150,11 +150,37 @@ footer { text-align: center; font-size: 0.8rem; color: #777; margin-top: 20px; m
 
 <!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
 <div class="release">
+<div class="v-header"><span class="v-number">v2.9.0</span><span class="v-date">09 May 2026</span></div>
+
+<div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
+<ul class="lista">
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>20 nuevos despegues en Alpes franceses e italianos, esencialmente. 3 nuevos en Pakistán (test).</b></span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc">Botón directo para ir al mapa de un despegue desde la tabla.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">El botón "capas de mapas" ahora tiene una X para cerrarlas intuitivamente, tanto en móvil como ordenador.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">Si hay activo algún filtro en el mapa, se advierte con borde rojo, como el filtro de distancia.</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">Barra de desplazamiento vertical en Ajustes cuando no cabe por estar desplegadas todas las opciones.</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">Si hay conexión pero es lenta, se mostraba continuamente el icono de espera, en lugar de mostrar la caché de datos meteo. Ahora la muestra pasados 5 seg (como siempre, se refrescan automáticamente datos en reconexión).</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">Ahora tiene preferencia total el cuadro de diálogo de salir de la app.</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">Spinner de carga no permitía interacción.</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">En Ajustes del mapa la configuración no se aplicaba inmediatamente.</span></li>
+</ul>
+</div>
+
+<div class="platform-group"><div class="platform-label">🌐 Web</div>
+<ul class="lista">
+<li><span class="badge novedad">Novedad</span><span class="desc">En la versión web se puede compartir un enlace a un lugar del mapa sin que sea necesario configurar nada en el destino. Útil para compartir un lugar (y el mapa completo) a cualquiera, use o no la aplicación.</span></li>
+</ul>
+</div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
 <div class="v-header"><span class="v-number">v2.8.0</span><span class="v-date">06 May 2026</span></div>
 
 <div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
 <ul class="lista">
-<li><span class="badge novedad">Novedad</span><span class="desc">En Pirineos franceses 47 despegues nuevos, 20 actualizados y 35 aterrizajes añadidos (éstos en capa "Notas" en Mapa).</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>En Pirineos franceses 47 despegues nuevos, 20 actualizados y 35 aterrizajes añadidos (éstos en capa "Notas" en Mapa).</b></span></li>
 <li><span class="badge novedad">Novedad</span><span class="desc">Ya se puede consultar en móviles la capa "Mapa de calor de Alpes" (cambio interno a supercluster Leaflet), que ahora va muchísimo más rápida también en ordenadores. Las otras 2 capas de calor (península y Marruecos), también han sido migradas a supercluster.</span></li>
 <li><span class="badge correccion">Corrección</span><span class="desc">Flujo lógico del menú en ciertas circunstancias.</span></li>
 </ul>
@@ -188,7 +214,7 @@ footer { text-align: center; font-size: 0.8rem; color: #777; margin-top: 20px; m
 
 <div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
 <ul class="lista">
-<li><span class="badge novedad">Novedad</span><span class="desc">Selección automática del rango horario con el día de la semana más lógico según la hora del día, hoy (<=16h) o mañana (>16h). Esto supone además una mejora enorme de la velocidad de carga inicial de la aplicación (unas 4 veces más rápida), además de facilitar la intuición sobre la lógica de funcionamiento habitual (selección de días con los botones).</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Selección automática del rango horario con el día de la semana más lógico según la hora del día, hoy (<=16h) o mañana (>16h). Esto supone además una mejora enorme de la velocidad de carga inicial de la aplicación (unas 4 veces más rápida), además de facilitar la intuición sobre la lógica de funcionamiento habitual (selección de días con los botones).</b></span></li>
 <li><span class="badge cambio">Cambio</span><span class="desc">Ahora al compartir la URL del mapa con cierto zoom y coordenadas, la página de destino va a ese lugar.</span></li>
 <li><span class="badge cambio">Cambio</span><span class="desc">El contador de despegues de la tabla ahora está integrado en la cabecera de "Despegues", ampliando así el espacio disponible.</span></li>
 <li><span class="badge correccion">Corrección</span><span class="desc">Cuando CAPE superaba 1000 no cabía en la celda. En ese caso se ha dividido entre mil y mostrado "k".</span></li>
