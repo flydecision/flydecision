@@ -32,6 +32,10 @@ html {
 input, button, textarea, select {
     font-size: inherit;  /* Hereda del body/html, e.g. 16px */
 }
+/* Para que no aparezca la línea negra bordeando */
+input {
+    outline: none;
+}
 button {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -2594,6 +2598,17 @@ details.config-accordion .accordion-content {
 	}
 }
 
+/* Panel del mapa con filtros activos (Tanto abierto como retraído) */
+.info-panel.borde-rojo-externo {
+    /* 1. Teñimos de rojo el borde de 2px que ya tiene el panel (no suma tamaño) */
+    border-color: #ff0000 !important;
+    
+    /* 2. Añadimos un resplandor o grosor extra HACIA ADENTRO */
+    box-shadow: inset 0 0 0 3px #ff0000 !important; 
+    
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
 .info-panel.retraido {
     width: 140px;
     height: 30px;      /* Altura fija total */
@@ -2609,7 +2624,7 @@ details.config-accordion .accordion-content {
 /* Heredamos la clase roja para que el panel de filtros cerrado avise de que está actuando */
 .info-panel.retraido.borde-rojo-externo {
     /* border: 2px solid #ff0000; */
-    box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+    box-shadow: inset 0 0 0 3px #ff0000 !important;
     box-sizing: border-box; 
 }
 
@@ -3261,3 +3276,4 @@ h3 {
 }
 
 /* 🔴🔴 FIN MAPA */
+
