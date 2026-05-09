@@ -8484,7 +8484,7 @@ function inicializarMapaLeaflet() {
                 
         const popupHtml = `<div style="line-height: 1.2;">
         
-                <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
+                <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
                 <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">Orientación: ${SVGorientaciones} <b>${escapeHtml(orientacion)}</b></div>
                 <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                 <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
@@ -8641,7 +8641,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
@@ -8661,7 +8661,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂<br>Despegue en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂<br>Despegue en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
                         <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
                         <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
@@ -8841,7 +8841,7 @@ function inicializarMapaLeaflet() {
                 // Popup del grupo (Tu lógica original sin hacer zoom)
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
@@ -8862,7 +8862,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂<br>Despegue en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂<br>Despegue en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
                         <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
                         <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
@@ -9049,7 +9049,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
@@ -9069,7 +9069,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂<br>Despegue en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂<br>Despegue en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
                         <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
                         <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
@@ -9270,7 +9270,7 @@ function inicializarMapaLeaflet() {
         const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Notas sobre despegues y aterrizajes' });
 
         const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-            <div style="font-size: 1.3em; margin-bottom: 5px;"><b>✏️ ${escapeHtml(nombre)}</b></div>
+            <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>✏️ ${escapeHtml(nombre)}</b></div>
             <div style="margin-bottom: 5px;">Tipo: <b>${escapeHtml(tipo)}</b></div> 
             <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  		
             <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
@@ -9417,7 +9417,7 @@ function inicializarMapaLeaflet() {
                     
             const popupHtml = `<div style="line-height: 1.2;">
             
-                    <div style="font-size: 1.3em; margin-bottom: 5px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
+                    <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
                     <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">Orientación: ${SVGorientaciones} <b>${escapeHtml(orientacion)}</b></div>
                     <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>

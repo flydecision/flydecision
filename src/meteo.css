@@ -2751,11 +2751,49 @@ h3 {
     margin-bottom: 6px;
 }
 
+/* ==========================================================================
+   🗺️ BOTÓN CERRAR (X) POPUPS DEL MAPA (Mismo estilo que Tippy)
+   ========================================================================== */
+
 .leaflet-container a.leaflet-popup-close-button {
-    top: 3px;
-    right: 3px;
-    font-size: 20px;
-    font-weight: bold;
+    /* 1. Posicionamiento (Ajustamos para que salga del borde como en los modales) */
+    top: 5px !important;
+    right: 5px !important;
+    
+    /* 2. Tamaño y Forma (Círculo perfecto) */
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+
+    /* 3. Centrado del texto (Flexbox no va bien en este elemento de Leaflet, usamos line-height) */
+    display: block !important;
+    text-align: center !important;
+    line-height: 32px !important; /* Misma altura que el botón para centrar la X */
+    padding: 0 !important;
+    margin: 0 !important;
+
+    /* 4. Estilo Visual (Fondo, sombra, blur) */
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(2px) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3) !important;
+    border: none !important;
+
+    /* 5. Texto (La X) */
+    color: #444 !important;
+    font-size: 28px !important;
+    font-weight: normal !important; /* Leaflet lo pone en bold, lo quitamos */
+    font-family: Arial, sans-serif !important; 
+    
+    /* Leaflet obliga a este color, lo sobreescribimos */
+    text-decoration: none !important;
+}
+
+/* Efecto al pulsar o pasar el ratón */
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:active {
+    background-color: #ffffff !important;
+    color: #000 !important;
 }
 
 /* --- RESET ESPECÍFICO PARA EL MINIMAPA DEL MODAL --- */
