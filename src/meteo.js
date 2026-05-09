@@ -8384,7 +8384,7 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
 
-    const clustergroupDespegues = L.markerClusterGroup({
+    clustergroupDespegues = L.markerClusterGroup({
         chunkedLoading: true,      	// Divide la carga en bloques
         chunkDelay: 100,            // Tiempo entre bloques (ms)
         showCoverageOnHover: false, // false mejora rendimiento. Muestra el área que ocupan los puntos
