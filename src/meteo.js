@@ -899,7 +899,7 @@ function iniciarGuiaFavoritos(forzar = false) {
 
         steps: [
             {  
-                popover: { title: '🪂 Pantalla de edición de despegues favoritos', description: 'En esta pantalla tienes todos los despegues disponibles actualmente. Aquí seleccionas los despegues que usas habitualmente. La pantalla de uso normal de la aplicación mostrará solo estos despegues favoritos.<br><br>Realmente podrías seleccionar todos pero, según dispositivo, ralentizará luego las búsquedas y su uso diario.<br><br>Por el momento están los despegues de España, Portugal, Pirineos y parte de Alpes. Esta aplicación es un proyecto en crecimiento.'},            
+                popover: { title: '🪂 Pantalla de edición de despegues favoritos', description: 'En esta pantalla tienes todos los despegues disponibles actualmente. Aquí seleccionas los despegues que usas habitualmente. La pantalla de uso normal de la aplicación mostrará solo estos despegues favoritos.<br><br>Realmente podrías seleccionar todos pero, según dispositivo, ralentizará luego las búsquedas y su uso diario.<br><br>Por el momento están los despegues de España, Portugal, Pirineos y los principales de Alpes. Esta aplicación es un proyecto en crecimiento.'},            
             },
 
             { element: '#tabla tbody tr:nth-child(1) td:first-child', 
@@ -2606,7 +2606,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 						<p>👉 La tabla mostrará solo los despegues favoritos. Puedes marcarlos todos si lo necesitas, pero puede ralentizar el uso según tu dispositivo.</p>
 						<p>👉️ La tabla estará siempre ordenada automáticamente por la puntuación de condiciones, de mejor (10) a peor (0).</p>
 						<p>👉️ Por el momento no se muestra el dato CBH (base de nube), necesario para saber si estará cubierto el despegue a esa hora (está solicitado a Open-meteo y pendiente). Antes de volar, como sabes, hay que analizar muchos más datos.</p>
-						<p>👉️ Por el momento el ámbito es España, Portugal, Pirineos (incluyendo la parte francesa) y parte de Alpes franceses y suizos.</p>
+						<p>👉️ Por el momento el ámbito es España, Portugal, Pirineos (incluyendo la parte francesa) y Alpes (franceses, suizos e italianos).</p>
 					    `,
 					botones: [
 					{
