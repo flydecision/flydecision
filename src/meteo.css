@@ -834,7 +834,6 @@ details.config-accordion .accordion-content {
     padding: 5px 10px;
     background-color: #007bff;
     color: white;
-    border: none;
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
@@ -842,6 +841,7 @@ details.config-accordion .accordion-content {
     box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
     border: 1px solid #333;
     margin-bottom: 4px;
+    border: 2px solid white;
 }
 
 /* 🔴🔴 CONTENEDOR PRINCIPAL TABLA (Contador despegues + Tabla) */
@@ -3294,7 +3294,6 @@ h3 {
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     display: flex;
     align-items: center;
-    gap: 6px;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
 }
