@@ -1,0 +1,454 @@
+{
+  "_meta": {
+    "_nota": "Archivo de traducción base — Español. Generado a partir del análisis de meteo.js e index.html.",
+    "_version": "1.0.0"
+  },
+
+  "menu": {
+    "inicio": "Inicio",
+    "buscar": "Buscar",
+    "distancia": "Distancia",
+    "mapa": "Mapa",
+    "ajustes": "Ajustes"
+  },
+
+  "botones": {
+    "aceptar": "Aceptar",
+    "cancelar": "Cancelar",
+    "siguiente": "Siguiente →",
+    "atras": "←",
+    "finalizar": "Finalizar",
+    "verGuia": "Ver guía",
+    "cerrarGuia": "Cerrar guía",
+    "noGracias": "No",
+    "siMarcar": "Sí, marcar",
+    "siDesmarcar": "Sí, desmarcar",
+    "siSalir": "Sí, salir",
+    "no": "No",
+    "configurarOrigen": "Configurar origen",
+    "marcarFavoritos": "Marcar favoritos",
+    "verGuiaGeneral": "Ver la guía general",
+    "importarConfiguracion": "Importar configuración",
+    "marcarFavoritosFlecha": "Marcar favoritos →",
+    "entendido": "Entendido"
+  },
+
+  "dias": {
+    "domingo": "Domingo",
+    "lunes": "Lunes",
+    "martes": "Martes",
+    "miercoles": "Miércoles",
+    "jueves": "Jueves",
+    "viernes": "Viernes",
+    "sabado": "Sábado",
+    "corto": {
+      "dom": "Dom",
+      "lun": "Lun",
+      "mar": "Mar",
+      "mie": "Mié",
+      "jue": "Jue",
+      "vie": "Vie",
+      "sab": "Sáb"
+    }
+  },
+
+  "offline": {
+    "esperandoConexion": "Esperando conexión...",
+    "sinDatos": "No hay conexión ni datos en caché.",
+    "datosOffline": "Sin conexión. Antigüedad datos: {{tiempo}}."
+  },
+
+  "gps": {
+    "buscando": "⏳ Buscando...",
+    "errorUbicacion": "No se pudo obtener la ubicación.",
+    "activaGps": "Asegúrate de tener el GPS activado.",
+    "revisaPermisos": "Revisa los permisos.",
+    "noSoportado": "Tu navegador no soporta GPS."
+  },
+
+  "buscador": {
+    "placeholder": "🔍 Buscar despegue o provincia...",
+    "placeholderEdicion": "🔍 Buscar región, provincia o despegue...",
+    "sugerenciaTitulo": "💡 No tienes favoritos con * <b>{{termino}}</b> *, pero tienes disponibles en la base de datos de despegues:",
+    "anadirFavorito": "+ Añadir favorito"
+  },
+
+  "favoritos": {
+    "tituloSingular": "<b>{{n}}</b> Favorito",
+    "tituloPlural": "<b>{{n}}</b> Favoritos",
+    "anadirAFavoritos": "Añadir a favoritos",
+    "quitarDeFavoritos": "Quitar de favoritos",
+    "despegueFavorito": "Despegue favorito",
+    "marcarTodos": "Marcar todos los despegues visibles como favoritos",
+    "desmarcarTodos": "Desmarcar todos los despegues visibles como favoritos",
+    "noHayParaDesmarcar": "No hay despegues favoritos para desmarcar",
+    "noHayParaExportar": "No hay despegues favoritos para exportar",
+    "noTienesFavoritos": "<p>No tienes despegues marcados como favoritos ♥️.</p>",
+    "necesarioMarcarUno": "<p>Es necesario marcar al menos un despegue favorito ♥️</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guía'></p>",
+    "confirmacionMasiva": "¿Quieres marcar <span style='font-weight:bold;'>{{cantidad}}</span> despegues como favoritos?",
+    "confirmarDesmarcarTodos": "¿Quieres desmarcar todos tus favoritos?",
+    "anadidoOk": "✅ <b>{{nombre}}</b> añadido",
+    "anadidoOkFallback": "✅ {{nombre}} añadido a favoritos",
+    "importadosOk": "✅ Se han importado {{n}} despegues favoritos",
+    "archivoVacio": "⚠️ El archivo estaba vacío.",
+    "errorArchivo": "⚠️ Error al procesar el archivo.",
+    "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENCIÓN:</b> Importar favoritos sustituirá los actuales.</b><br><br>Si los quieres conservar, cancela este mensaje y usa el botón 💾 <i>Exportar favoritos</i>.</p>",
+    "exportar": {
+      "tituloDialog": "💾 Exportar favoritos",
+      "mensajeDialog": "\nCambia el nombre del archivo o acepta éste:",
+      "guardar": "Guardar",
+      "cancelar": "Cancelar",
+      "okTitulo": "✅ Favoritos guardados con éxito",
+      "okTextoShare": "Aquí tienes mis despegues favoritos de Fly Decision:",
+      "okMensaje": "¿Quieres compartirlo ahora?",
+      "siCompartir": "Sí, compartir",
+      "noCompartir": "No",
+      "tituloShare": "Mis despegues favoritos de Fly Decision",
+      "textoShare": "Aquí tienes mis despegues favoritos:",
+      "dialogTitle": "Compartir con...",
+      "errorShare": "No se pudo abrir el menú de compartir. Intenta usar otro método.",
+      "sinShare": "Tu dispositivo no permite compartir archivos directamente. Asegúrate de tener Telegram instalado.",
+      "errorGuardar": "Vaya, algo ha fallado: "
+    }
+  },
+
+  "tabla": {
+    "tooltips": {
+      "meteoGeneral": "Meteo general (lluvia / nubosidad total)",
+      "precipitacion": "Precipitación en mm (litros/m²)",
+      "probPrecipitacion": "Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²)",
+      "baseNube": "Base de nube AGL (km): Altura de la base de la nube sobre el suelo. Estimación aproximada calculada a partir de la temperatura 2m y punto de rocío 2m.",
+      "viento180m": "Viento medio a 180 m (km/h)",
+      "viento120m": "Viento medio a 120 m (km/h)",
+      "viento80m": "Viento medio a 80 m (km/h)",
+      "viento10m": "Viento medio a 10 m (km/h)",
+      "racha10m": "Racha máxima a 10 m (km/h)",
+      "direccion10m": "Dirección del viento a 10 m",
+      "cizalladura": "Cizalladura de Bajo Nivel por velocidad / Fiabilidad del pronóstico de viento medio",
+      "techo": "Altitud (km) sobre nivel del mar (MSL) del techo de vuelo previsto y usable en parapente (= espesor capa límite BLH x 0.85 + altitud media suelo celda ECMWF 9km)",
+      "cape": "CAPE (J/kg): Energía Potencial Convectiva Disponible (Convective Available Potential Energy)",
+      "cin": "CIN (J/kg): Inhibición Convectiva (Convective INhibition)",
+      "masInfo": "Más información",
+      "verEnMapa": "Ver en el mapa",
+      "notaCondiciones": "Nota Condiciones despegue: {{nota}} puntos"
+    },
+    "cizalladura": {
+      "baja": "Cizalladura baja y Fiabilidad alta",
+      "media": "Cizalladura media y Fiabilidad media",
+      "alta": "Cizalladura alta y Fiabilidad baja",
+      "motivoBajo": "Valores inferiores a los umbrales",
+      "motivoMedio": "Ratio {{ratio}}x > 1.5 Y Δ {{delta}} > 8 km/h",
+      "motivoAlto": "Ratio (<b>{{ratio}}x</b>) > 2.0 &nbsp;<b>Y</b>&nbsp; Δ (<b>{{delta}}</b>) > 12 km/h."
+    },
+    "techoTooltip": "Techo usable en parapente: {{altitudMSL}} m MSL\nCálculo = {{espesorUtil}} m espesor útil AGL ({{pct}}% de la BLH teórica de {{blh}} m) + {{elevacion}} m altitud (suelo medio celda ECMWF 9km)\n",
+    "despegueTooltip": "Provincia: {{provincia}}\nDespegue: {{despegue}}\nOrientación: {{orientacion}}",
+    "cargando": "Cargando..."
+  },
+
+  "contador": {
+    "despeguesFavoritos": "<b>{{n}}</b> despegues favoritos",
+    "despeguesFavoritosFiltrados": "<b>{{n}}</b> de <b>{{total}}</b> despegues favoritos",
+    "despeguesDisponibles": "<b>{{n}}</b> despegues disponibles",
+    "despeguesDisponiblesFiltrados": "<b>{{n}}</b> de <b>{{total}}</b> despegues disponibles",
+    "despeguesFavoritosEdicion": "<b>{{n}}</b> despegues favoritos de <b>{{total}}</b> disponibles",
+    "totalDisponibles": "Total de despegues disponibles: {{n}}",
+    "miniTodosBD": "Número de despegues visibles de la base de datos completa",
+    "miniFavoritos": "Número de despegues favoritos / filtrados"
+  },
+
+  "marcadorMasivo": {
+    "paraMarcarFavoritos": "Para marcar o desmarcar un grupo de favoritos, utiliza la opción:<br>Menú ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoritos]"
+  },
+
+  "guiaPrincipal": {
+    "progreso": "{{current}} de {{total}}",
+    "siguiente": "Siguiente →",
+    "anterior": "←",
+    "cerrar": "Cerrar guía",
+    "preguntaVerGuia": "¿Quieres ver una guía visual sobre esta pantalla?",
+    "podrasVerla": "Puedes verla cuando quieras con el botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> de esta pantalla.",
+    "pasos": {
+      "paso1": {
+        "titulo": "Pantalla principal",
+        "descripcion": "Aquí tienes la tabla con los datos meteorológicos para tus despegues favoritos."
+      },
+      "btnInfo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Información del despegue</span></div>",
+        "descripcion": "Muestra información más completa del despegue y enlaces a su pronóstico en otras webs de meteorología."
+      },
+      "btnMapa": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa del despegue</span></div>",
+        "descripcion": "Muestra el despegue en el mapa.<br><br>💡 El mapa incluye información adicional sobre el despegue, filtros de diverso tipo, mapa de calor de despegues y varias utilidades que merece la pena explorar."
+      },
+      "navHome": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Inicio</span></div>",
+        "descripcion": "Muestra la tabla con todos los despegues favoritos. Si hay búsquedas o filtros activos, los desactiva.<br><br>💡 Si te pierdes con algunas funciones, pulsa este botón para ir a la vista \"normal\"."
+      },
+      "navSearch": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Buscar</span></div>",
+        "descripcion": "Muestra una casilla para buscar despegues por su nombre o por su zona administrativa (normalmente será la provincia). Puedes escribir sin tildes para mayor agilidad."
+      },
+      "navDistance": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
+        "descripcion": "Muestra un deslizador que permite filtrar solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
+        "descripcion": "Es un filtro que te permite mostrar solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para encontrar rápidamente los despegues que estén en un radio de distancia que elijas alrededor de un punto."
+      },
+      "btnOrigen": {
+        "titulo": "Punto de origen",
+        "descripcion": "Aquí eliges el punto de origen del filtro de distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
+      },
+      "btnIncNoFavs": {
+        "titulo": "Incluir no favoritos",
+        "descripcion": "Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>💡 Sirve para buscar rápidamente condiciones de vuelo en despegues de diferentes zonas fuera de nuestra zona de favoritos."
+      },
+      "sliderDistancia": {
+        "titulo": "Distancia al punto",
+        "descripcion": "Arrastrando este deslizador eliges los kilómetros de distancia.<br><br>La tabla mostrará solo los despegues que estén dentro de ese radio de distancia."
+      },
+      "navMap": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
+        "descripcion": "Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1,3 millones de puntos exactos de despegues registrados y mucha otra información."
+      },
+      "navSettings": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Ajustes</span></div>",
+        "descripcion": "Aquí se puede <b>Editar favoritos</b> (para añadir o quitar tus despegues habituales), personalizar parámetros, activar opciones y ver información sobre la actualización de los datos meteorológicos.<br><br>💡 Para cada opción o dato, tienes un botón de información <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'>."
+      }
+    }
+  },
+
+  "guiaFavoritos": {
+    "preguntaVerGuia": "¿Quieres ver una guía visual sobre esta pantalla?",
+    "podrasVerla": "Puedes verla cuando quieras con el botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> de esta pantalla.",
+    "pasos": {
+      "intro": {
+        "titulo": "🪂 Pantalla de edición de despegues favoritos",
+        "descripcion": "En esta pantalla tienes todos los despegues disponibles actualmente. Aquí seleccionas los despegues que usas habitualmente. La pantalla de uso normal de la aplicación mostrará solo estos despegues favoritos.<br><br>Realmente podrías seleccionar todos pero, según dispositivo, ralentizará luego las búsquedas y su uso diario.<br><br>Por el momento están los despegues de España, Portugal, Pirineos y los principales de Alpes. Esta aplicación es un proyecto en crecimiento."
+      },
+      "celdaFavorito": {
+        "titulo": "Favoritos",
+        "descripcion": "Marca o desmarca aquí tus despegues favoritos.<br><br>Los cambios se guardan automáticamente."
+      },
+      "cabeceraFavorito": {
+        "titulo": "Cabecera favoritos",
+        "descripcion": "Permite marcar o desmarcar de una sola vez todos los despegues visibles actualmente en la tabla.<br><br>💡 Ejemplo: con el botón \"Buscar\" filtras los de \"Huesca\" y los marcas todos. O con el botón \"Distancia\" filtras los que estén a 50 km de distancia de tu casa y los marcas todos."
+      },
+      "btnInfoDespegue": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Información del despegue</span></div>",
+        "descripcion": "Muestra información más completa del despegue y enlaces a su pronóstico en otras webs de meteorología."
+      },
+      "btnMapaDespegue": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa del despegue</span></div>",
+        "descripcion": "Muestra el despegue en el mapa.<br><br>💡 El mapa incluye información adicional sobre el despegue, filtros de diverso tipo, mapa de calor de despegues y varias utilidades que merece la pena explorar."
+      },
+      "buscador": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Buscar</span></div>",
+        "descripcion": "Busca despegues escribiendo su región, su provincia o su nombre. Puedes escribir sin tildes para mayor agilidad."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
+        "descripcion": "Es un filtro que te permite mostrar solo despegues alrededor de un punto.<br><br>💡 Puede servirte para encontrar rápidamente los despegues que estén en un radio de distancia que elijas alrededor de un punto."
+      },
+      "btnOrigen": {
+        "titulo": "Punto de origen",
+        "descripcion": "Con este botón eliges el centro del radio de búsqueda por distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
+      },
+      "sliderDistancia": {
+        "titulo": "Distancia al punto",
+        "descripcion": "Arrastrando este deslizador eliges los kilómetros de distancia máxima."
+      },
+      "btnVerSoloFavs": {
+        "titulo": "Ver solo favoritos",
+        "descripcion": "Alterna entre ver solo los despegues favoritos o ver todos los despegues.<br><br>💡 Si tienes ya favoritos, puede servirte para verlos juntos fácilmente y desmarcar alguno."
+      },
+      "btnDesmarcarTodos": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2'><path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'></path><line x1='5' y1='5' x2='19' y2='19' stroke='red' stroke-width='3'></line></svg><span>Desmarcar todos los favoritos</span></div>",
+        "descripcion": "Desmarca de una sola vez todos los favoritos actuales, para luego empezar de nuevo a marcar favoritos."
+      },
+      "btnImportar": {
+        "titulo": "📂 Importar favoritos",
+        "descripcion": "Abre un archivo de despegues favoritos."
+      },
+      "btnExportar": {
+        "titulo": "💾 Exportar favoritos",
+        "descripcion": "Guarda un archivo con los despegues favoritos actuales.<br><br>Nota: Los favoritos realmente se guardan automáticamente cada vez que marcas uno. Este botón sirve para hacer una copia de todos en un archivo externo (como backup o para compartirlo). <br><br>💡 Si te mueves por varias zonas de vuelo distantes, puede interesarte tener los favoritos de cada zona guardados en archivos diferentes."
+      },
+      "btnGuiaEdicion": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/icono_ayuda_60.webp' width='20' height='20' style='display: block;'><span>Guía rápida</span></div>",
+        "descripcion": "Muestra esta guía sobre edición de despegues favoritos."
+      },
+      "btnFinalizar": {
+        "titulo": "🏁 Finalizar edición de favoritos",
+        "descripcion": "Sale a la pantalla de uso normal de la aplicación, que mostrará la tabla con tus favoritos, su pronóstico y puntuación."
+      }
+    }
+  },
+
+  "asistente": {
+    "paso1": {
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>¿Dónde ir a volar?</p><p>🌦️ Pronóstico para 4 días por horas.</p><p>📊 Análisis automático de condiciones para despegar o para iniciar XC.</p><p>🗺️ Mapa de despegues.</p>",
+      "btnPrimario": "Marcar favoritos",
+      "btnSecundario": "Ver la guía general",
+      "btnImportar": "Importar configuración"
+    },
+    "paso2": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>¿Cómo funciona?</p><p>Fly Decision descarga el pronóstico meteorológico de tus despegues favoritos y analiza automáticamente las condiciones hora a hora durante los próximos 4 días.</p><p>👉 La tabla ordena tus despegues de mayor a menor puntuación, para que de un vistazo veas qué días y dónde hay mejores condiciones.</p>"
+    },
+    "paso3": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🟩🟨🟥 Las puntuaciones</p><p>Cada celda de la tabla tiene un color según las condiciones de viento para esa hora en ese despegue:<br><br>🟩 Verde: buenas condiciones.<br>🟨 Amarillo: condiciones aceptables.<br>🟥 Rojo: condiciones malas o lluvia.</p><p>La columna ⭐ resume la puntuación media del despegue para el rango de horas visible.</p>"
+    },
+    "paso4": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>⚙️ Personaliza tus límites</p><p>En <b>Ajustes</b> puedes personalizar:<br>- Tu viento mínimo, ideal y máximo.<br>- La racha máxima tolerable.<br>- Qué datos quieres ver en la tabla.</p><p>El sistema usará tus valores para calcular las puntuaciones y los colores.</p>"
+    },
+    "paso5": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>️👉 Ten en cuenta...</p><p>👉 La tabla mostrará solo los despegues favoritos. Puedes marcarlos todos si lo necesitas, pero puede ralentizar el uso según tu dispositivo.</p><p>👉️ La tabla estará siempre ordenada automáticamente por la puntuación de condiciones, de mejor (10) a peor (0).</p><p>👉️ Por el momento no se muestra el dato CBH (base de nube), necesario para saber si estará cubierto el despegue a esa hora (está solicitado a Open-meteo y pendiente). Antes de volar, como sabes, hay que analizar muchos más datos.</p><p>👉️ Por el momento el ámbito es España, Portugal, Pirineos (incluyendo la parte francesa) y Alpes (franceses, suizos e italianos).</p>"
+    },
+    "paso6": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>👍 ¿Qué hago ahora?</p><p>Tienes que marcar tus despegues favoritos.</p>",
+      "btnPrimario": "Marcar favoritos →",
+      "btnSecundario": "←"
+    }
+  },
+
+  "origen": {
+    "configurarPrimero": "La primera vez se necesita configurar un punto de origen.",
+    "podrasCambiar": "Podrás cambiarlo cuando quieras con el botón"
+  },
+
+  "actualizacion": {
+    "cargando": "Cargando...",
+    "esperando": "🔄 Próxima: <span style='color:#e39300; font-weight:bold;'>Esperando...⌛</span>",
+    "proximaEn": "🔄 Próxima: <b>{{tiempo}}</b>",
+    "horas": "~{{h}} h {{m}} min",
+    "minutos": "~{{m}} min",
+    "sinConexion": "⚠️ No hay conexión a Internet. Antigüedad datos: {{tiempo}}.",
+    "meteoFrance": "Météo-France",
+    "ecmwf": "ECMWF",
+    "hace": "hace <b>{{tiempo}}</b>",
+    "ref": "(ref. {{hora}}Z)"
+  },
+
+  "ajustes": {
+    "probPrecipitacion": "Probabilidad de Precipitación",
+    "vientoAlturas": "Viento a 80, 120 y 180 m",
+    "cizalladura_fiabilidad": "Cizalladura / Fiabilidad",
+    "XC": "XC: Techo MSL, CAPE y CIN",
+    "horarioVueloPref": "Horario de vuelo preferido",
+    "solo_horas_diurnas": "Solo horas diurnas",
+    "ordenar_xc": "Ordenar por Condiciones XC",
+    "titulo": "Ajustes",
+    "editarFavoritos": "Editar favoritos",
+    "importarConfig": "Importar configuración y favoritos",
+    "exportarConfig": "Exportar configuración y favoritos",
+    "restablecerConfig": "Restablecer la configuración (elimina toda la configuración y favoritos)",
+    "viento": "Viento",
+    "rachaMaxima": "Racha máxima",
+    "acordeon": {
+      "vientoRacha": "Límites de Viento y Racha",
+      "datosOpcionales": "Datos meteorológicos opcionales",
+      "otrasOpciones": "Otras opciones",
+      "sobreActualizacion": "Actualizaciones modelos meteo"
+    },
+    "guia": "Guía",
+    "ayuda": "Ayuda",
+    "legal": "Legal"
+  },
+
+  "panelConfiguracion": {
+    "titulo": "Ajustes"
+  },
+
+  "mapa": {
+    "seleccionarOrigen": "Seleccionar origen",
+    "miUbicacion": "Mi ubicación",
+    "irMiUbicacion": "Ir a mi ubicación",
+    "buscadorPlaceholder": "Buscar lugar o coordenadas...",
+    "buscadorTitulo": "Buscador general (poblaciones, lugares y coordenadas)",
+    "ajustes": "Ajustes",
+    "capasYFiltros": "Capas y filtros",
+    "capas": "Capas:",
+    "orientacion": "Orientación:",
+    "cerrarPanel": "Cerrar Panel",
+    "fijarPanel": "Fijar Panel (anula su ocultación al mover mapa)",
+    "masInformacion": "Más información ▼",
+    "volverEdicion": "Volver a Editar favoritos",
+    "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Estás aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "capasCheckbox": {
+      "despegues": "🪂 Despegues",
+      "mapaCalorPeninsula": "🔥 Mapa de calor Península Ibérica",
+      "mapaCalorAlpes": "🔥 Mapa de calor Alpes",
+      "mapaCalorMarruecos": "🔥 Mapa de calor Marruecos",
+      "notas": "✏️ Notas",
+      "despeguesMundo": "🪂 Despegues de Paraglidingearth"
+    },
+    "cargandoCalorPeninsula": "⏳ Cargando mapa de calor Península Ibérica...<br><br>(309.157 despegues registrados)",
+    "cargandoCalorAlpes": "⏳ Cargando mapa de calor Alpes...<br><br>(967.477 despegues registrados)",
+    "cargandoCalorMarruecos": "⏳ Cargando mapa de calor Marruecos...<br><br>(11.006 despegues registrados)",
+    "errorCSV": "Error al cargar el archivo CSV. Consulta la consola para más información.",
+    "errorCSVAlpes": "Error al cargar el archivo CSV de Alpes.",
+    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} Despegues en XContest</b>",
+    "despegueXContest": "🪂<br>Despegue en XContest",
+    "coordenadasMedias": "Coordenadas medias:",
+    "coordenadas": "Coordenadas:",
+    "fecha": "Fecha:",
+    "hora": "Hora:",
+    "distanciaRecorrida": "Distancia recorrida:",
+    "vuelos": "Vuelos en XContest:",
+    "vueloXContest": "🔍 Vuelo en XContest",
+    "orientacionLabel": "Orientación:",
+    "grupoXContestTitle": "Grupo de {{count}} despegues registrados en XContest",
+    "nVuelosXContest": "Nº de vuelos en XContest:",
+    "minVuelosTexto": "Mínimo de vuelos registrados = ",
+    "anioUltimoVueloTexto": "Año del último vuelo >= ",
+    "minKmMediaTexto": "Mínimo de km medios recorridos = ",
+    "todos": "Todos",
+    "titleBuscadorDespegue": "Buscar despegue por su nombre",
+    "buscadorDespegue": "🔍 Despegue"
+  },
+
+  "popupDespegue": {
+    "region": "Región:",
+    "provincia": "Provincia:",
+    "orientacion": "Orientación:",
+    "nivelActividad": "Nivel de actividad:",
+    "nivelActividadTitle": "Nivel de uso del despegue según fecha del último vuelo registrado (referencia: nov-2025): Verde 0–6 meses, Naranja 6–12, Amarillo 12–24, Blanco >24 meses sin vuelos"
+  },
+
+  "html": {
+    "titulo": "Ajustes",
+    "distanciaDesde": "Distancia desde:",
+    "seleccionarOrigen": "Seleccionar origen",
+    "incluirNoFavs": "Incluir despegues no favoritos en el filtro",
+    "resetFiltroDistancia": "Restablecer y ocultar filtro de distancia",
+    "finalizarEdicion": "Finalizar edición de despegues favoritos",
+    "finalizarEdicionTitle": "Finalizar edición de despegues favoritos",
+    "verSoloFavoritos": "Ver solo mis favoritos",
+    "desmarcarFavoritosTitle": "Desmarcar todos los favoritos",
+    "importarFavoritos": "Importar favoritos",
+    "exportarFavoritos": "Exportar favoritos",
+    "guiaEdicionTitle": "Guía de la pantalla de editar despegues favoritos",
+    "esperandoConexion": "Esperando conexión...",
+    "filtroDistanciaInfo": "Muestra solo despegues dentro del radio de distancia que selecciones.<br><br>Usa el botón para establecer la posición de origen. Puedes usar el mapa o la ubicación actual de tu dispositivo."
+  },
+
+  "crash": {
+    "errorCarga": "<div style='text-align: center;'><p>ℹ️ Error al cargar la tabla.</p><p>Posible causa: <b>exceso de favoritos</b> para los recursos disponibles del dispositivo.</p><p>Se va a abrir ahora la <b>Pantalla de edición de despegues favoritos</b> para que puedas desmarcar algunos despegues y disminuir la carga.</p><p>Si crees que es otra causa temporal: selecciona <b><i>Finalizar edición de favoritos</i></b>, reinicia el dispositivo y vuelve a intentarlo.</p></div>",
+    "alertFallback": "La aplicación está teniendo problemas para cargar. Se activará la Edición de favoritos para desmarcar algunos despegues."
+  },
+
+  "salirApp": {
+    "pregunta": "¿Quieres salir de la aplicación?",
+    "no": "No",
+    "si": "Sí, salir"
+  },
+
+  "novedadesXC": {
+    "titulo": "ℹ️ Novedades datos XC",
+    "html": "<div style='text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;'><ul style='padding-left: 20px; margin-top: 5px; margin-bottom: 5px;'><li style='margin-bottom: 6px;'><b>Puntuación XC independiente:</b> Valora solo el potencial térmico (Techo, CAPE, CIN) ignorando el viento del despegue. Solo puntúa 0 con lluvia o tormenta.</li><li style='margin-bottom: 6px;'><b>Techo en Altitud (MSL):</b> Ahora indica la altitud sobre el nivel del mar, siendo más útil y preciso para vuelos de distancia.</li><li><b>Techo realista:</b> Se reduce un 15% el pronóstico original para compensar la tasa de caída media del parapente.</li></ul><p style='margin-top: 10px; font-size: 0.9em;'>💡 <i>Más detalles pulsando los iconos 🌦️ o ⭐ en la tabla.</i></p></div>"
+  },
+
+  "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Puntuaciones (0-10)</b><br><br>El sistema calcula automáticamente dos puntuaciones para cada despegue teniendo en cuenta el rango de tiempo seleccionado. Ambas se muestran coloreadas con una gradación de rojo a verde.<br><br><b>1. Condiciones del despegue (fila superior):</b><br>Valora la viabilidad de despegar analizando el pronóstico de cada hora frente a las preferencias indicadas en ⚙️ Configuración:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Límites de viento medio (mínimo, ideal y máximo).</li><li>Límite de racha máxima.</li><li>Orientación u orientaciones del despegue.</li><li>Lluvia (veto automático y 0 puntos a la hora afectada).</li></ul><b>2. Condiciones para mantenerse en térmicas o iniciar XC (fila inferior):</b><br>Valora la puntuación de Condiciones del despegue y el potencial térmico para vuelos de distancia (Cross Country) usando los datos del modelo ECMWF:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Techo:</b> Premia techos altos sobre la altura media del relieve y penaliza bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Premia los días azules o de cúmulos inofensivos, y penaliza los valores extremos por riesgo de sobredesarrollo o tormenta (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Penaliza la inhibición convectiva alta (inversión) que actúa como tapón frenando la formación de térmicas (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Nota: La puntuación XC es <b>independiente</b> de la orientación o el viento del despegue. Evalúa puramente el potencial térmico de la masa de aire en esa zona. Solo se anula (0 puntos) si hay previsión de lluvia o tormenta severa.</i><br><br>⚠️ <b>Aviso:</b> Faltaría el dato esencial de la base de nube (CBH = Cloud Base Height) para saber si el despegue estará cubierto por nube. Es un valor del ECMWF no disponible aún en la pasarela (solicitado en marzo-2026, pendiente y sin fecha prevista). Deberás consultarlo en otros servicios.<br><br><b>Por defecto, los despegues se reordenan automáticamente por la primera puntuación</b> (Condiciones del despegue), de mayor a menor. Puedes cambiar este comportamiento en: ⚙️ <i>Ajustes</i> > <i>Otras opciones</i> > <i>Ordenar por Condiciones XC</i>."
+
+}

@@ -1,0 +1,454 @@
+{
+  "_meta": {
+    "_nota": "Base translation file — English. Generated from the analysis of meteo.js and index.html.",
+    "_version": "1.0.0"
+  },
+
+  "menu": {
+    "inicio": "Home",
+    "buscar": "Search",
+    "distancia": "Distance",
+    "mapa": "Map",
+    "ajustes": "Settings"
+  },
+
+  "botones": {
+    "aceptar": "OK",
+    "cancelar": "Cancel",
+    "siguiente": "Next →",
+    "atras": "←",
+    "finalizar": "Finish",
+    "verGuia": "See guide",
+    "cerrarGuia": "Close guide",
+    "noGracias": "No, thanks",
+    "siMarcar": "Yes, mark",
+    "siDesmarcar": "Yes, unmark",
+    "siSalir": "Yes, exit",
+    "no": "No",
+    "configurarOrigen": "Set origin",
+    "marcarFavoritos": "Mark favorites",
+    "verGuiaGeneral": "See general guide",
+    "importarConfiguracion": "Import configuration",
+    "marcarFavoritosFlecha": "Mark favorites →",
+    "entendido": "Got it"
+  },
+
+  "dias": {
+    "domingo": "Sunday",
+    "lunes": "Monday",
+    "martes": "Tuesday",
+    "miercoles": "Wednesday",
+    "jueves": "Thursday",
+    "viernes": "Friday",
+    "sabado": "Saturday",
+    "corto": {
+      "dom": "Sun",
+      "lun": "Mon",
+      "mar": "Tue",
+      "mie": "Wed",
+      "jue": "Thu",
+      "vie": "Fri",
+      "sab": "Sat"
+    }
+  },
+
+  "offline": {
+    "esperandoConexion": "Waiting for connection...",
+    "sinDatos": "No connection and no cached data available.",
+    "datosOffline": "No connection. Data age: {{tiempo}}."
+  },
+
+  "gps": {
+    "buscando": "⏳ Searching...",
+    "errorUbicacion": "Could not obtain location.",
+    "activaGps": "Make sure GPS is enabled.",
+    "revisaPermisos": "Check permissions.",
+    "noSoportado": "Your browser does not support GPS."
+  },
+
+  "buscador": {
+    "placeholder": "🔍 Search takeoff or province...",
+    "placeholderEdicion": "🔍 Search region, province or takeoff...",
+    "sugerenciaTitulo": "💡 No favorites found for * <b>{{termino}}</b> *, but these are available in the database:",
+    "anadirFavorito": "+ Add favorite"
+  },
+
+  "favoritos": {
+    "tituloSingular": "<b>{{n}}</b> Favorite",
+    "tituloPlural": "<b>{{n}}</b> Favorites",
+    "anadirAFavoritos": "Add to favorites",
+    "quitarDeFavoritos": "Remove from favorites",
+    "despegueFavorito": "Favorite takeoff",
+    "marcarTodos": "Mark all visible takeoffs as favorites",
+    "desmarcarTodos": "Unmark all visible takeoffs as favorites",
+    "noHayParaDesmarcar": "No favorite takeoffs to unmark",
+    "noHayParaExportar": "No favorite takeoffs to export",
+    "noTienesFavoritos": "<p>No takeoffs marked as favorites ♥️.</p>",
+    "necesarioMarcarUno": "<p>At least one favorite takeoff is required ♥️</p><p>If you want, you can check the quick guide for this screen using the <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guide'> button.</p>",
+    "confirmacionMasiva": "Do you want to mark <span style='font-weight:bold;'>{{cantidad}}</span> takeoffs as favorites?",
+    "confirmarDesmarcarTodos": "Do you want to unmark all your favorites?",
+    "anadidoOk": "✅ <b>{{nombre}}</b> added",
+    "anadidoOkFallback": "✅ {{nombre}} added to favorites",
+    "importadosOk": "✅ {{n}} favorite takeoffs have been imported",
+    "archivoVacio": "⚠️ The file was empty.",
+    "errorArchivo": "⚠️ Error processing the file.",
+    "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ WARNING:</b> Importing favorites will replace the current ones.</b><br><br>If you want to keep them, cancel this message and use the 💾 <i>Export favorites</i> button.</p>",
+    "exportar": {
+      "tituloDialog": "💾 Export favorites",
+      "mensajeDialog": "\nChange the file name or accept this one:",
+      "guardar": "Save",
+      "cancelar": "Cancel",
+      "okTitulo": "✅ Favorites saved successfully",
+      "okTextoShare": "Here are my Fly Decision favorite takeoffs:",
+      "okMensaje": "Do you want to share it now?",
+      "siCompartir": "Yes, share",
+      "noCompartir": "No",
+      "tituloShare": "My Fly Decision favorite takeoffs",
+      "textoShare": "Here are my favorite takeoffs:",
+      "dialogTitle": "Share with...",
+      "errorShare": "Could not open the share menu. Please try another method.",
+      "sinShare": "Your device does not allow direct file sharing. Make sure you have Telegram installed.",
+      "errorGuardar": "Oops, something went wrong: "
+    }
+  },
+
+  "tabla": {
+    "tooltips": {
+      "meteoGeneral": "General weather (rain / total cloud cover)",
+      "precipitacion": "Precipitation in mm (liters/m²)",
+      "probPrecipitacion": "Probability (%) of precipitation exceeding 0.1 mm (liters/m²)",
+      "baseNube": "Cloud Base AGL (km): Estimated height of the cloud base above ground. Calculated from 2m temperature and 2m dew point.",
+      "viento180m": "Mean wind speed at 180 m (km/h)",
+      "viento120m": "Mean wind speed at 120 m (km/h)",
+      "viento80m": "Mean wind speed at 80 m (km/h)",
+      "viento10m": "Mean wind speed at 10 m (km/h)",
+      "racha10m": "Max gusts at 10 m (km/h)",
+      "direccion10m": "Wind direction at 10 m",
+      "cizalladura": "Low-Level Wind Shear (LLWS) / Mean wind forecast reliability",
+      "techo": "Altitude (km) above sea level (MSL) of the usable flight ceiling (= boundary layer thickness BLH x 0.85 + ECMWF 9km cell mean ground altitude)",
+      "cape": "CAPE (J/kg): Convective Available Potential Energy",
+      "cin": "CIN (J/kg): Convective Inhibition",
+      "masInfo": "More information",
+      "verEnMapa": "View on map",
+      "notaCondiciones": "Takeoff Conditions score: {{nota}} points"
+    },
+    "cizalladura": {
+      "baja": "Low Shear and High Reliability",
+      "media": "Moderate Shear and Medium Reliability",
+      "alta": "High Shear and Low Reliability",
+      "motivoBajo": "Values below thresholds",
+      "motivoMedio": "Ratio {{ratio}}x > 1.5 AND Δ {{delta}} > 8 km/h",
+      "motivoAlto": "Ratio (<b>{{ratio}}x</b>) > 2.0 &nbsp;<b>AND</b>&nbsp; Δ (<b>{{delta}}</b>) > 12 km/h."
+    },
+    "techoTooltip": "Usable flight ceiling: {{altitudMSL}} m MSL\nCalculation = {{espesorUtil}} m usable thickness AGL ({{pct}}% of the theoretical {{blh}} m BLH) + {{elevacion}} m altitude (ECMWF 9km cell mean ground level)\n",
+    "despegueTooltip": "Province: {{provincia}}\nTakeoff: {{despegue}}\nOrientation: {{orientacion}}",
+    "cargando": "Loading..."
+  },
+
+  "contador": {
+    "despeguesFavoritos": "<b>{{n}}</b> favorite takeoffs",
+    "despeguesFavoritosFiltrados": "<b>{{n}}</b> of <b>{{total}}</b> favorite takeoffs",
+    "despeguesDisponibles": "<b>{{n}}</b> takeoffs available",
+    "despeguesDisponiblesFiltrados": "<b>{{n}}</b> of <b>{{total}}</b> takeoffs available",
+    "despeguesFavoritosEdicion": "<b>{{n}}</b> favorites of <b>{{total}}</b> available takeoffs",
+    "totalDisponibles": "Total takeoffs available: {{n}}",
+    "miniTodosBD": "Number of visible takeoffs from the full database",
+    "miniFavoritos": "Number of favorite / filtered takeoffs"
+  },
+
+  "marcadorMasivo": {
+    "paraMarcarFavoritos": "To mark or unmark a group of favorites, use the option:<br>Menu ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorites]"
+  },
+
+  "guiaPrincipal": {
+    "progreso": "{{current}} of {{total}}",
+    "siguiente": "Next →",
+    "anterior": "←",
+    "cerrar": "Close guide",
+    "preguntaVerGuia": "Would you like to see a visual guide for this screen?",
+    "podrasVerla": "You can see it anytime using the <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> button on this screen.",
+    "pasos": {
+      "paso1": {
+        "titulo": "Main Screen",
+        "descripcion": "This is the table showing weather data for your favorite takeoffs."
+      },
+      "btnInfo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Takeoff Info</span></div>",
+        "descripcion": "Shows more detailed information about the takeoff and links to its forecast on other weather websites."
+      },
+      "btnMapa": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Takeoff Map</span></div>",
+        "descripcion": "Shows the takeoff on the map.<br><br>💡 The map includes additional info, various filters, heatmaps, and other useful tools to explore."
+      },
+      "navHome": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Home</span></div>",
+        "descripcion": "Shows the table with all your favorite takeoffs. If there are searches or filters active, it clears them.<br><br>💡 If you get lost, use this button to return to the \"normal\" view."
+      },
+      "navSearch": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Search</span></div>",
+        "descripcion": "Use this to search takeoffs by name or administrative area (usually the province). You can type without accents for speed."
+      },
+      "navDistance": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",
+        "descripcion": "Shows a slider to filter takeoffs within a radius around a point.<br><br>👉🏽 I will press this button now to open the filter."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",
+        "descripcion": "This filter lets you see only the takeoffs around a specific point.<br><br>💡 Useful for quickly finding takeoffs within a driving range from your location."
+      },
+      "btnOrigen": {
+        "titulo": "Origin Point",
+        "descripcion": "Select the center point for the distance filter. You can pick it on a map or use your device's current location."
+      },
+      "btnIncNoFavs": {
+        "titulo": "Include Non-favorites",
+        "descripcion": "Allows you to temporarily include all takeoffs in the database (both favorites and non-favorites).<br><br>💡 Useful for checking conditions in new areas."
+      },
+      "sliderDistancia": {
+        "titulo": "Distance Radius",
+        "descripcion": "Drag this slider to choose the maximum distance. The table will show only takeoffs within that radius."
+      },
+      "navMap": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Map</span></div>",
+        "descripcion": "Global takeoff map with search, orientation filters, number of flights, heatmaps with over 1.3 million points, and much more."
+      },
+      "navSettings": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Settings</span></div>",
+        "descripcion": "Here you can <b>Edit Favorites</b>, customize parameters, enable options, and check weather model update status.<br><br>💡 Each option has an information button <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'> for details."
+      }
+    }
+  },
+
+  "guiaFavoritos": {
+    "preguntaVerGuia": "Would you like to see a visual guide for this screen?",
+    "podrasVerla": "You can see it anytime using the <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> button on this screen.",
+    "pasos": {
+      "intro": {
+        "titulo": "🪂 Edit Favorite Takeoffs Screen",
+        "descripcion": "This screen shows all available takeoffs. Select the ones you use regularly. The normal app view will only show these favorites.<br><br>You could select them all, but depending on your device, it might slow down searches and daily usage.<br><br>Currently covers Spain, Portugal, Pyrenees, and major Alpine areas. This is a growing project."
+      },
+      "celdaFavorito": {
+        "titulo": "Favorites",
+        "descripcion": "Mark or unmark your favorites here. Changes are saved automatically."
+      },
+      "cabeceraFavorito": {
+        "titulo": "Header Favorites",
+        "descripcion": "Mark or unmark all currently visible takeoffs at once.<br><br>💡 Example: Filter for \"Huesca\" and mark them all. Or filter by distance and mark all within 50 km."
+      },
+      "btnInfoDespegue": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Takeoff Information</span></div>",
+        "descripcion": "Shows detailed takeoff info and links to forecasts on other sites."
+      },
+      "btnMapaDespegue": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Takeoff Map</span></div>",
+        "descripcion": "View the takeoff on the map with extra tools and heatmaps."
+      },
+      "buscador": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Search</span></div>",
+        "descripcion": "Search by region, province, or name."
+      },
+      "filtroDistancia": {
+        "titulo": "Distance Filter",
+        "descripcion": "Show only takeoffs around a selected point."
+      },
+      "btnOrigen": {
+        "titulo": "Origin Point",
+        "descripcion": "Set the center for the distance search radius."
+      },
+      "sliderDistancia": {
+        "titulo": "Distance",
+        "descripcion": "Drag to set the maximum radius."
+      },
+      "btnVerSoloFavs": {
+        "titulo": "Show Only Favorites",
+        "descripcion": "Toggle between showing only your favorites or all takeoffs."
+      },
+      "btnDesmarcarTodos": {
+        "titulo": "Unmark All",
+        "descripcion": "Remove all takeoffs from your favorites list at once."
+      },
+      "btnImportar": {
+        "titulo": "📂 Import Favorites",
+        "descripcion": "Open a file with favorite takeoffs."
+      },
+      "btnExportar": {
+        "titulo": "💾 Export Favorites",
+        "descripcion": "Save a backup file of your favorites. Useful for sharing or switching zones."
+      },
+      "btnGuiaEdicion": {
+        "titulo": "Quick Guide",
+        "descripcion": "Shows this guide again."
+      },
+      "btnFinalizar": {
+        "titulo": "🏁 Finish Edition",
+        "descripcion": "Exit to the main screen to see the forecast for your selected favorites."
+      }
+    }
+  },
+
+  "asistente": {
+    "paso1": {
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Where to fly?</p><p>🌦️ 4-day hourly forecast.</p><p>📊 Automated condition scoring for Takeoff and XC.</p><p>🗺️ Takeoff map.</p>",
+      "btnPrimario": "Select favorites",
+      "btnSecundario": "View general guide",
+      "btnImportar": "Import settings"
+    },
+    "paso2": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>How does it work?</p><p>Fly Decision downloads the weather forecast for your favorite sites and analyzes the conditions hour by hour for the next 4 days.</p><p>👉 The table sorts your sites from best to worst score, so you can see where to go at a glance.</p>"
+    },
+    "paso3": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🟩🟨🟥 The scores</p><p>Each cell is colored based on wind conditions for that hour:<br><br>🟩 Green: good conditions.<br>🟨 Yellow: acceptable conditions.<br>🟥 Red: bad conditions or rain.</p><p>The ⭐ column summarizes the average score for the visible time range.</p>"
+    },
+    "paso4": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>⚙️ Customize your limits</p><p>In <b>Settings</b> you can set:<br>- Min, ideal, and max wind speed.<br>- Tolerable max gusts.<br>- Optional data to show.</p><p>The system uses your values to calculate scores and colors.</p>"
+    },
+    "paso5": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>️👉 Keep in mind...</p><p>👉 Only favorite takeoffs are shown. You can select them all, but it might slow down the app on some devices.</p><p>👉️ Sorting is automatic by score (10 to 0).</p><p>👉️ Cloud Base (CBH) data is currently pending from the provider. Always check multiple sources before flying.</p><p>👉️ Coverage: Spain, Portugal, Pyrenees, and Alps (French, Swiss, Italian).</p>"
+    },
+    "paso6": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>👍 What now?</p><p>You need to mark your favorite takeoffs.</p>",
+      "btnPrimario": "Select favorites →",
+      "btnSecundario": "←"
+    }
+  },
+
+  "origen": {
+    "configurarPrimero": "You need to set an origin point first.",
+    "podrasCambiar": "You can change it anytime using the button"
+  },
+
+  "actualizacion": {
+    "cargando": "Loading...",
+    "esperando": "🔄 Next: <span style='color:#e39300; font-weight:bold;'>Waiting...⌛</span>",
+    "proximaEn": "🔄 Next: <b>{{tiempo}}</b>",
+    "horas": "~{{h}} h {{m}} min",
+    "minutos": "~{{m}} min",
+    "sinConexion": "⚠️ No internet connection. Data age: {{tiempo}}.",
+    "meteoFrance": "Météo-France",
+    "ecmwf": "ECMWF",
+    "hace": "<b>{{tiempo}}</b> ago",
+    "ref": "(ref. {{hora}}Z)"
+  },
+
+  "ajustes": {
+    "probPrecipitacion": "Precipitation probability",
+    "vientoAlturas": "Wind at 80, 120 y 180 m",    
+    "cizalladura_fiabilidad": "Wind Shear / Reliability",
+    "XC": "XC: MSL Ceiling, CAPE and CIN",
+    "horarioVueloPref": "Preferred flying schedule",
+    "solo_horas_diurnas": "Daylight hours only",
+    "ordenar_xc": "Sort by XC Conditions",
+    "titulo": "Settings",
+    "editarFavoritos": "Edit favorites",
+    "importarConfig": "Import settings & favorites",
+    "exportarConfig": "Export settings & favorites",
+    "restablecerConfig": "Reset settings (deletes all config and favorites)",
+    "viento": "Wind",
+    "rachaMaxima": "Max gusts",
+    "acordeon": {
+      "vientoRacha": "Wind & Gust Limits",
+      "datosOpcionales": "Optional Weather Data",
+      "otrasOpciones": "Other Options",
+      "sobreActualizacion": "Weather model updates"
+    },
+    "guia": "Guide",
+    "ayuda": "Help",
+    "legal": "Legal"
+  },
+
+  "panelConfiguracion": {
+    "titulo": "Settings"
+  },
+
+  "mapa": {
+    "seleccionarOrigen": "Select origin",
+    "miUbicacion": "My location",
+    "irMiUbicacion": "Go to my location",
+    "buscadorPlaceholder": "Search place or coordinates...",
+    "buscadorTitulo": "General search (places and coordinates)",
+    "ajustes": "Settings",
+    "capasYFiltros": "Layers & Filters",
+    "capas": "Layers:",
+    "orientacion": "Orientation:",
+    "cerrarPanel": "Close Panel",
+    "fijarPanel": "Pin Panel (don't hide when moving map)",
+    "masInformacion": "More info ▼",
+    "volverEdicion": "Back to Edit Favorites",
+    "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;You are here&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "capasCheckbox": {
+      "despegues": "🪂 Takeoffs",
+      "mapaCalorPeninsula": "🔥 Iberia Heatmap",
+      "mapaCalorAlpes": "🔥 Alps Heatmap",
+      "mapaCalorMarruecos": "🔥 Morocco Heatmap",
+      "notas": "✏️ Notes",
+      "despeguesMundo": "🪂 Paraglidingearth Takeoffs"
+    },
+    "cargandoCalorPeninsula": "⏳ Loading Iberia Heatmap...<br><br>(309,157 takeoffs registered)",
+    "cargandoCalorAlpes": "⏳ Loading Alps Heatmap...<br><br>(967,477 takeoffs registered)",
+    "cargandoCalorMarruecos": "⏳ Loading Morocco Heatmap...<br><br>(11,006 takeoffs registered)",
+    "errorCSV": "Error loading CSV. Check console for details.",
+    "errorCSVAlpes": "Error loading Alps CSV file.",
+    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} XContest Takeoffs</b>",
+    "despegueXContest": "🪂<br>XContest Takeoff",
+    "coordenadasMedias": "Mean coordinates:",
+    "coordenadas": "Coordinates:",
+    "fecha": "Date:",
+    "hora": "Time:",
+    "distanciaRecorrida": "Distance flown:",
+    "vuelos": "XContest flights:",
+    "vueloXContest": "🔍 View XContest Flight",
+    "orientacionLabel": "Orientation:",
+    "grupoXContestTitle": "Group of {{count}} takeoffs registered in XContest",
+    "nVuelosXContest": "No. of XContest flights:",
+    "minVuelosTexto": "Minimum registered flights = ",
+    "anioUltimoVueloTexto": "Last flight year >= ",
+    "minKmMediaTexto": "Minimum average distance flown = ",
+    "todos": "All",
+    "titleBuscadorDespegue": "Search takeoff by name",
+    "buscadorDespegue": "🔍 Takeoff"
+  },
+
+  "popupDespegue": {
+    "region": "Region:",
+    "provincia": "Province:",
+    "orientacion": "Orientation:",
+    "nivelActividad": "Activity level:",
+    "nivelActividadTitle": "Site activity based on last flight date (ref: Nov 2025): Green 0-6 months, Orange 6-12, Yellow 12-24, White >24 months without flights"
+  },
+
+  "html": {
+    "titulo": "Settings",
+    "distanciaDesde": "Distance from:",
+    "seleccionarOrigen": "Select origin",
+    "incluirNoFavs": "Include non-favorites in filter",
+    "resetFiltroDistancia": "Reset and hide distance filter",
+    "finalizarEdicion": "Finish editing favorites",
+    "finalizarEdicionTitle": "Finish editing favorite takeoffs",
+    "verSoloFavoritos": "View only my favorites",
+    "desmarcarFavoritosTitle": "Unmark all favorites",
+    "importarFavoritos": "Import favorites",
+    "exportarFavoritos": "Export favorites",
+    "guiaEdicionTitle": "Guide to the Edit favorite takeoffs screen",
+    "esperandoConexion": "Waiting for connection...",
+    "filtroDistanciaInfo": "Shows only takeoffs within your chosen radius.<br><br>Use the button to set origin point. Use map or current GPS location."
+  },
+
+  "crash": {
+    "errorCarga": "<div style='text-align: center;'><p>ℹ️ Error loading table.</p><p>Possible cause: <b>too many favorites</b> for your device's resources.</p><p>Edit Favorites screen will open so you can unmark some and reduce load.</p><p>If you think it's temporary: click <b><i>Finish editing favorites</i></b>, restart device and retry.</p></div>",
+    "alertFallback": "The app is having trouble loading. Favorites editor enabled to reduce takeoff count."
+  },
+
+  "salirApp": {
+    "pregunta": "Do you want to exit the application?",
+    "no": "No",
+    "si": "Yes, exit"
+  },
+
+  "novedadesXC": {
+    "titulo": "ℹ️ XC Data News",
+    "html": "<div style='text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;'><ul style='padding-left: 20px; margin-top: 5px; margin-bottom: 5px;'><li style='margin-bottom: 6px;'><b>Independent XC Score:</b> Evaluates only thermal potential (Ceiling, CAPE, CIN) ignoring takeoff wind. Only scores 0 with rain or storm risk.</li><li style='margin-bottom: 6px;'><b>Ceiling in Altitude (MSL):</b> Now shows altitude above sea level, providing better precision for distance planning.</li><li><b>Realistic Ceiling:</b> Forecast is reduced by 15% to compensate for paraglider sink rate.</li></ul><p style='margin-top: 10px; font-size: 0.9em;'>💡 <i>More details by clicking 🌦️ or ⭐ icons in the table.</i></p></div>"
+  },
+
+  "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Scores (0-10)</b><br><br>The system automatically calculates two scores for each takeoff based on the selected time range. Both are color-coded from red to green.<br><br><b>1. Takeoff Conditions (top row):</b><br>Evaluates takeoff viability by analyzing the forecast against your ⚙️ Settings:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Mean wind limits (min, ideal, max).</li><li>Max tolerable gust limit.</li><li>Takeoff orientation(s).</li><li>Rain (automatic veto and 0 points for affected hours).</li></ul><b>2. XC & Thermal Conditions (bottom row):</b><br>Evaluates the thermal potential for Cross Country flights using ECMWF model data:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Ceiling:</b> Rewards high ceilings above terrain and penalizes low ones (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Rewards blue days or harmless clouds, penalizes extremes due to overdevelopment risk (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Penalizes high inhibition (inversions) that blocks thermals (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Note: XC score is <b>independent</b> of wind or takeoff orientation. It purely evaluates air mass potential. Only nulled (0 pts) with rain or severe storm forecasts.</i><br><br>⚠️ <b>Notice:</b> Cloud Base (CBH) data is currently unavailable from the provider (pending since March 2026). Check other sources to ensure takeoffs are not in the clouds.<br><br><b>Takeoffs are sorted by Takeoff Conditions score</b> by default. You can change this in: ⚙️ <i>Settings</i> > <i>Other Options</i> > <i>Sort by XC Conditions</i>."
+
+}

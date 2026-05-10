@@ -50,12 +50,20 @@
 <script src="js/tippy-bundle.umd.min.js" defer></script>
 <script src="js/driver.js.iife.js" defer></script>
 
+<!-- Librerías idiomas i18next -->
+<script src="js/i18next.min.js" defer></script>
+<script src="js/i18nextHttpBackend.min.js" defer></script>
+<script src="js/i18nextBrowserLanguageDetector.min.js" defer></script>
+
+<!-- Nuevo archivo de configuración de idiomas -->
+<script src="js/i18n-setup.js" defer></script>
+
 <!-- API Keys map layers-->
 <script src="js/config.js" defer></script>
 
-<script>window.WEB_VERSION = "2.9.1";</script>
-<link rel="stylesheet" href="meteo.css?v=2.9.1">
-<script src="meteo.js?v=2.9.1" defer></script>
+<script>window.WEB_VERSION = "3.0.0b";</script>
+<link rel="stylesheet" href="meteo.css?v=3.0.0b">
+<script src="meteo.js?v=3.0.0b" defer></script>
 
 </head>
 
@@ -66,7 +74,7 @@
         <path d="M22.61 16.95A5 5 0 0 0 18 10h-1.26a8 8 0 0 0-7.05-6M5 5a8 8 0 0 0 4 7h.5"></path>
         <line x1="2" y1="2" x2="22" y2="22"></line>
     </svg>
-    <span>Esperando conexión...</span>
+    <span data-i18n="offline.esperandoConexion">Esperando conexión...</span>
 </div>
 
 <!-- MENSAJE ACTUALIZANDO... -->
@@ -84,7 +92,7 @@
 	<div id="div-menu" class="div-menu">	
 
 		<!-- BOTÓN FILTRAR: Ahora es un toggle claro -->
-		<button id="btn-filtro-favoritos-toggle" class="group-edit" title="Ver solo mis favoritos" onclick="filtroVerSoloFavoritos()">
+		<button id="btn-filtro-favoritos-toggle" class="group-edit" data-i18n="[title]html.verSoloFavoritos" onclick="filtroVerSoloFavoritos()">
 			<div class="nav-icon-container" id="icon-filter-favs">
 				<!-- Icono: Corazón vacío por defecto -->
 				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="heart-icon-svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -92,21 +100,21 @@
 		</button>
 
     	<!-- BOTÓN DESMARCAR TODO: Icono de acción destructiva -->
-		<button id="btn-desmarcar-favoritos" class="group-edit" title="Desmarcar todos los favoritos" onclick="desmarcarFavoritos()">
+		<button id="btn-desmarcar-favoritos" class="group-edit" data-i18n="[title]html.desmarcarFavoritosTitle" onclick="desmarcarFavoritos()">
 			<div class="nav-icon-container action-remove">
 				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path><line x1="5" y1="5" x2="19" y2="19" stroke="red" stroke-width="3"></line></svg>
 			</div>
 		</button>
 
-		<button id="btn-abrir-favoritos" class="group-edit" title="Importar favoritos" onclick="abrirFavoritos()" style="position: relative;">
+		<button id="btn-abrir-favoritos" class="group-edit" data-i18n="[title]html.importarFavoritos" onclick="abrirFavoritos()" style="position: relative;">
 			<span style="font-size: 20px;">📂</span>
 		</button>
 
-		<button id="btn-guardar-favoritos" class="group-edit" title="Exportar favoritos" onclick="guardarFavoritos()" style="position: relative;">
+		<button id="btn-guardar-favoritos" class="group-edit" data-i18n="[title]html.exportarFavoritos" onclick="guardarFavoritos()" style="position: relative;">
 			<span style="font-size: 20px;">💾</span>
 		</button>
 
-		<button id="btn-guia-edicion-favoritos" class="group-edit" title="Guía de la pantalla de editar despegues favoritos" onclick="sugerirGuiaFavoritos(true)" style="position: relative; margin-left: auto;"> 
+		<button id="btn-guia-edicion-favoritos" class="group-edit" data-i18n="[title]html.guiaEdicionTitle" onclick="sugerirGuiaFavoritos(true)" style="position: relative; margin-left: auto;"> 
 			<img src="icons/icono_ayuda_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
 		</button>
 
@@ -127,17 +135,17 @@
 		<div id="div-filtro-distancia-interno" class="div-paneles-controles-transparente">
 		
 			<div id="titulo-distancia-slider" style="display: flex; align-items: center; gap: 7px; margin-bottom: 5px;">
-				<span style="cursor: pointer;">Distancia desde:</span>
-				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" title="Seleccionar origen">
+				<span style="cursor: pointer;" data-i18n="html.distanciaDesde">Distancia desde:</span>
+				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" data-i18n="[title]html.seleccionarOrigen">
 					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
 				</button>
 				
-				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" title="Incluir despegues no favoritos en el filtro"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
+				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" data-i18n="[title]html.incluirNoFavs"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
 			</div>	
 			
 			<div id="distancia-slider" role="slider" aria-labelledby="titulo-distancia-slider"></div>
 
-			<button id="btn-reset-filtro-distancia" class="btn-reset-filtro btn-abajo-izquierda" style="display:none; bottom: 0px; left: 0px;" title="Restablecer y ocultar filtro de distancia" onclick="resetFiltroDistancia()">
+			<button id="btn-reset-filtro-distancia" class="btn-reset-filtro btn-abajo-izquierda" style="display:none; bottom: 0px; left: 0px;" data-i18n="[title]html.resetFiltroDistancia" onclick="resetFiltroDistancia()">
 				<span><b>↺</b></span>
 			</button>
 			
@@ -164,7 +172,7 @@
 			<input type="search" 
 			id="buscador-despegues-provincias"
 			name="search_query_unique_xyz" 
-			placeholder="🔍 Buscar despegue o provincia..."
+			data-i18n="[placeholder]buscador.placeholder"
 			onkeyup="aplicarFiltrosVisuales()"
 			autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
 			style="width: 371px; height: 40px; border-radius: 10px; padding-left: 10px; font-size: 16px; border: 3px solid #000000; box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);">
@@ -178,7 +186,7 @@
 
 		<span id="contador-favoritos-texto" style="font-size: 18px; font-weight: bold;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> 0</span>
 
-		<button id="btn-finalizar-edicion-favoritos" class="btn-finalizar-edicion-favoritos" title="Finalizar edición de despegues favoritos" onclick="finalizarEdicionFavoritos()">
+		<button id="btn-finalizar-edicion-favoritos" class="btn-finalizar-edicion-favoritos" data-i18n="[title]html.finalizarEdicionTitle;html.finalizarEdicion" onclick="finalizarEdicionFavoritos()">
 			Finalizar edición de despegues favoritos
 		</button>
 
@@ -191,25 +199,25 @@
 <div id="div-configuracion" class="div-configuracion">
 
 	<button class="btn-cerrar-modal" onclick="alternardivConfiguracion(event)">&times;</button>
-	<div class="panel-titulo" style="font-size: 1.4em;">Ajustes</div>
-    
+	<div class="panel-titulo" style="font-size: 1.4em;" data-i18n="ajustes.titulo">Ajustes</div>
+
 	<div class="div-configuracion-subpanel">
 		<div style="display: flex; align-items: center; gap: 8px; width: 100%; max-width: 335px; min-width: 335px; margin-bottom: 8px !important;">
 			
-			<button class="btn-accion" onclick="activarEdicionFavoritos(); " style="height: 34px; display: flex; align-items: center; gap: 6px; font-weight: bold;">
+			<button class="btn-accion" onclick="activarEdicionFavoritos(); " style="height: 34px; display: flex; align-items: center; gap: 6px; font-weight: bold;" data-i18n="ajustes.editarFavoritos">
 				<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width: 16px; height: 16px;">
 				Editar favoritos
 			</button>
 
-			<button class="btn-accion" onclick="importarConfiguracion()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Importar configuración y favoritos">
+			<button class="btn-accion" onclick="importarConfiguracion()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" data-i18n="[title]ajustes.importarConfig">
 				📂
 			</button>
 
-			<button class="btn-accion" onclick="exportarConfiguracion()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" title="Exportar configuración y favoritos">
+			<button class="btn-accion" onclick="exportarConfiguracion()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" data-i18n="[title]ajustes.exportarConfig">
 				💾
 			</button>
 
-			<button class="btn-accion" onclick="btnRestablecerConfiguración()" style="margin-left: auto; color: #ff0000; width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; font-size: 1.1em;" title="Restablecer la configuración (elimina toda la configuración y favoritos)">
+			<button class="btn-accion" onclick="btnRestablecerConfiguración()" style="margin-left: auto; color: #ff0000; width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; font-size: 1.1em;" data-i18n="[title]ajustes.restablecerConfig">
 				🔄
 			</button>
 
@@ -219,7 +227,7 @@
     <!-- 2. NUEVO ACORDEÓN: Viento medio y Racha máxima -->
 	<div class="div-configuracion-subpanel">
 		<details class="config-accordion" style="margin-bottom: 8px;">
-			<summary>Límites de Viento y Racha</summary>
+			<summary data-i18n="ajustes.acordeon.vientoRacha">Límites de Viento y Racha</summary>
 			<div class="accordion-content">
 				<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; padding-top: 5px;">
 					
@@ -227,7 +235,7 @@
 					<div class="div-paneles-controles-sin-pips">
 						<div class="linea-con-bt-info">
 							<div id="titulo-velocidad-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold; margin-left: 2px;">
-								<img src="icons/icono_viento_60.webp" width="20" height="20" style="display: block;"><span>Viento</span>
+								<img src="icons/icono_viento_60.webp" width="20" height="20" style="display: block;"><span data-i18n="ajustes.viento">Viento</span>
 							</div>
 							<button class="btn-info btn-inline" data-tippy-content="
 								<b>Viento medio mínimo, ideal y máximo:</b><br><br>
@@ -250,7 +258,7 @@
 					<div class="div-paneles-controles-sin-pips">
 						<div class="linea-con-bt-info">
 							<div id="titulo-racha-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold; margin-left: 2px;">
-								<img src="icons/icono_racha_60.webp" width="20" style="display: block;"><span>Racha máxima</span>
+								<img src="icons/icono_racha_60.webp" width="20" style="display: block;"><span data-i18n="ajustes.rachaMaxima">Racha máxima</span>
 							</div>
 							<button class="btn-info btn-inline" data-tippy-content="
 								<b>Racha máxima:</b><br><br>
@@ -274,11 +282,11 @@
     <!-- 3. ACORDEÓN EXISTENTE: Datos meteorológicos opcionales -->
 	<div class="div-configuracion-subpanel">
 		<details class="config-accordion">
-			<summary>Datos meteorológicos opcionales</summary>
+			<summary data-i18n="ajustes.acordeon.datosOpcionales">Datos meteorológicos opcionales</summary>
 			<div class="accordion-content">
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarProbPrecipitacion" class="custom-checkbox">
-						<input type="checkbox" id="chkMostrarProbPrecipitacion" onclick="alternarMostrarProbPrecipitacion()"> Probabilidad de Precipitación
+						<input type="checkbox" id="chkMostrarProbPrecipitacion" onclick="alternarMostrarProbPrecipitacion()"> <span data-i18n="ajustes.probPrecipitacion"> Probabilidad de Precipitación</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content="<b>Probabilidad de Precipitación (%)</b><br><br>Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²).<br><br>Dato original del modelo ECMWF.">
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
@@ -286,7 +294,7 @@
 				</div>
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarVientoAlturas" class="custom-checkbox">
-						<input type="checkbox" id="chkMostrarVientoAlturas" onclick="alternarMostrarVientoAlturas()"> Viento a 80, 120 y 180 m
+						<input type="checkbox" id="chkMostrarVientoAlturas" onclick="alternarMostrarVientoAlturas()"> <span data-i18n="ajustes.vientoAlturas"> Viento a 80, 120 y 180 m</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content='<b>Viento a 80, 120 y 180 m (km/h)</b><br><br>Muestra 3 filas con los pronósticos de velocidad de viento medio a 80, 120 y 180 m de altura sobre el suelo. Estas 3 filas se muestran por encima de la fila estándar de velocidad de viento medio a 10 m del suelo.<br><br>Estos valores ofrecen la posibilidad de evaluar el grado de turbulencia por cizalla y también el grado de fiabilidad del pronóstico de viento medio.<br><br>Datos originales del modelo Arome/Arpege (Météo-France).'>
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
@@ -294,7 +302,7 @@
 				</div>
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarCizalladura" class="custom-checkbox">
-						<input type="checkbox" id="chkMostrarCizalladura" onclick="alternarMostrarCizalladura()"> Cizalladura / Fiabilidad
+						<input type="checkbox" id="chkMostrarCizalladura" onclick="alternarMostrarCizalladura()"> <span data-i18n="ajustes.cizalladura_fiabilidad"> Cizalladura / Fiabilidad</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content='<b>Cizalladura / Fiabilidad</b><br><br>Muestra una fina fila debajo de la fila de orientación que muestra un valor calculado: el nivel de Cizalladura de Bajo Nivel (LLWS - Low-Level Wind Shear) y también el grado de Fiabilidad del pronóstico de viento medio a 10 m de altura.<br><br>El sistema analiza los valores de viento medio a 10, 80, 120 y 180 m de altura sobre el suelo y, mediante un algoritmo, muestra un semáforo de colores.<br><br>🟩 Verde: Baja cizalladura por velocidad y alta fiabilidad del pronóstico de velocidad a 10 m.<br>🟧 Naranja: Valores medios de cizalladura y fiabilidad.<br>🟥 Rojo: Alta cizalladura por velocidad y baja fiabilidad del pronóstico de velocidad a 10 m.<br><br>Esta cizalladura ocurre cuando hay un gradiente alto de velocidades cerca del suelo. Ese nivel también es correlativo a la fiabilidad de la velocidad de viento a 10 m del suelo.<br><br>La razón es que, si la masa de aire se mueve a velocidades similares, el grado de turbulencia por cizalladura de velocidad será pequeña y, además, el pronóstico de viento a nivel del suelo será más fiable y viceversa.'>
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
@@ -302,7 +310,7 @@
 				</div>
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarXC" class="custom-checkbox">
-						<input type="checkbox" id="chkMostrarXC" onclick="alternarMostrarXC()"> XC: Techo MSL, CAPE y CIN
+						<input type="checkbox" id="chkMostrarXC" onclick="alternarMostrarXC()"> <span data-i18n="ajustes.XC">XC: Techo MSL, CAPE y CIN</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content="<b>XC: Techo MSL, CAPE, CIN</b><br><br>Muestra un grupo de 3 filas con datos enfocados al vuelo de Cross Country (XC):<ul><li><b>Techo de vuelo MSL (km):</b> Altitud máxima de la capa límite (BLH = Boundary Layer Height)</li><li><b>CAPE (J/kg):</b> Energía Potencial Convectiva Disponible (Convective Available Potential Energy)</li><li><b>CIN (J/kg):</b> Inhibición Convectiva (Convective INhibition)</li></ul>Datos originales del modelo ECMWF.">
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
@@ -312,10 +320,10 @@
 		</details>
 	</div>
 
-    <!-- 4. ACORDEÓN EXISTENTE: Datos calculados y opciones -->
+    <!-- 4. ACORDEÓN EXISTENTE: Otras opciones -->
 	<div class="div-configuracion-subpanel">
 		<details class="config-accordion">
-			<summary>Otras opciones</summary>
+			<summary data-i18n="ajustes.acordeon.otrasOpciones">Otras opciones</summary>
 			<div class="accordion-content">
 				
 				<!-- Panel original de Horario movido aquí dentro -->
@@ -324,7 +332,7 @@
 						<div class="linea-con-bt-info">
 							<div id="titulo-configuracion-horario-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold; margin-left: 2px;">
 								<span style="font-size:1.2em; display: block;">🕜</span>
-								<span>Horario de vuelo preferido</span>
+								<span data-i18n="ajustes.horarioVueloPref"> Horario de vuelo preferido</span>
 							</div>
 							<button class="btn-info btn-inline" data-tippy-content='
 								<b>Horario de vuelo preferido:</b><br><br>
@@ -341,7 +349,7 @@
 
 				<div class="linea-con-bt-info">
 					<label for="chkMostrarSoloHorasDiurnas" class="custom-checkbox">
-						<input type="checkbox" id="chkMostrarSoloHorasDiurnas" onclick="alternarHorasNoche()"> Solo horas diurnas
+						<input type="checkbox" id="chkMostrarSoloHorasDiurnas" onclick="alternarHorasNoche()"> <span data-i18n="ajustes.solo_horas_diurnas"> Solo horas diurnas</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content='<b>Solo horas diurnas</b><br><br>Muestra solo las horas diurnas. Si se desactiva, se muestran las 24 horas del día.<br><br>Se incluye un margen de ±1h al amanecer y atardecer.<br><br>Cambia automáticamente cada mes. En los meses de cambios horarios, además, estas horas se ajustarán automáticamente al cambio de hora oficial (DST).'>
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
@@ -350,7 +358,7 @@
 
 				<div class="linea-con-bt-info">
 					<label for="chkOrdenarPorXC" class="custom-checkbox">
-						<input type="checkbox" id="chkOrdenarPorXC" onclick="alternarOrdenarPorXC()"> Ordenar por Condiciones XC
+						<input type="checkbox" id="chkOrdenarPorXC" onclick="alternarOrdenarPorXC()"> <span data-i18n="ajustes.ordenar_xc"> Ordenar por Condiciones XC</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content='<b>Ordenar por Condiciones XC:</b><br><br>Por defecto, los despegues se ordenan de mejor a peor según la puntuación de <i>Condiciones del despegue</i> (viabilidad para despegar según el viento).<br><br>Si activas esta opción, la tabla pasará a ordenarse de mejor a peor puntuación de <b>Condiciones XC</b> (potencial térmico de la masa de aire), sin importar si el viento en ese despegue es ideal o no.'>
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
@@ -361,9 +369,37 @@
 		</details>
 	</div>
 
+
+	<!-- ACORDEÓN DE IDIOMA -->
+	<div class="div-configuracion-subpanel">
+		<details class="config-accordion" style="margin-bottom: 8px;">
+			<summary>
+				<div style="display: flex; align-items: center; gap: 8px;">
+					Idioma / Language
+				</div>
+			</summary>
+			<div class="accordion-content" style="padding-top: 5px;">
+				
+				<label class="fila-idioma-selector">
+					<input type="radio" name="selector-idioma" value="es" class="radio-idioma" onchange="window.cambiarIdioma('es')">
+					<span class="lang-code">ES</span>
+					<span class="lang-name">Español</span>
+				</label>
+
+				<label class="fila-idioma-selector">
+					<input type="radio" name="selector-idioma" value="en" class="radio-idioma" onchange="window.cambiarIdioma('en')">
+					<span class="lang-code">EN</span>
+					<span class="lang-name">English</span>
+				</label>
+
+			</div>
+		</details>
+	</div>
+
+	<!-- PANEL INFO ACTUALIZACIONES METEO -->
 	<div class="div-configuracion-subpanel">
 		<div class="div-paneles-controles" style="min-height: initial; padding-top: 5px; padding-bottom: 5px;">
-			<span style="font-weight: bold; display: block; text-align: left; padding-bottom: 5px; padding-left: 15px;">Actualizaciones modelos meteo</span>
+			<span style="font-weight: bold; display: block; text-align: left; padding-bottom: 5px; padding-left: 15px;" data-i18n="ajustes.acordeon.sobreActualizacion">Actualizaciones modelos meteo</span>
 			<span id="data_generation_time"></span>
 			<button class="btn-info btn-arriba-derecha" 
 				data-tippy-content="
@@ -389,11 +425,11 @@
 		<div style="border: none; background-color: #ffffff; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: auto; box-sizing: border-box; box-shadow: none;">
 			<!-- Enlaces legales y de ayuda (Fuerza salto de línea con width: 100%) -->
 			<div class="enlaces-legales" style="display: flex; align-items: center; gap: 5px; white-space: nowrap; margin: 0;">
-				<a href="#" onclick="sugerirGuiaPrincipal(true)">Guía</a>
+				<a href="#" onclick="sugerirGuiaPrincipal(true)" data-i18n="ajustes.guia">Guía</a>
 				<span class="separador" style="color: #ccc;">|</span>
-				<a href="https://flydecision.com/ayuda" onclick="abrirLinkExterno(this.href); return false;">Ayuda</a>
+				<a href="https://flydecision.com/ayuda" onclick="abrirLinkExterno(this.href); return false;" data-i18n="ajustes.ayuda">Ayuda</a>
 				<span class="separador" style="color: #ccc;">|</span>
-				<a href="https://flydecision.com/privacidad" onclick="abrirLinkExterno(this.href); return false;">Legal</a>
+				<a href="https://flydecision.com/privacidad" onclick="abrirLinkExterno(this.href); return false;" data-i18n="ajustes.legal">Legal</a>
 				<span class="separador" style="color: #ccc;">|</span>
 				<span id="web-version-text" style="font-size: 12px; color: #666;"></span>
 			</div>
@@ -416,7 +452,7 @@
 <div id="modal-mapa" class="modal-overlay" style="display:none;">
 	<div class="modal-content map-modal-size">
         <div class="modal-header">
-            <h3><svg viewBox="0 0 24 24" width="1.2em" height="1.2em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 5px; color: #0078d4;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> Seleccionar origen</h3>
+            <h3><svg viewBox="0 0 24 24" width="1.2em" height="1.2em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 5px; color: #0078d4;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span data-i18n="mapa.seleccionarOrigen"> Seleccionar origen</span></h3>
             <button id="btn-cerrar-mapa" class="close-x">×</button>
         </div>
         
@@ -425,7 +461,7 @@
 		<div class="modal-footer" style="margin-top: 0; display: flex; justify-content: center;">
             <button id="btn-gps-mapa" class="btn-option" style="width: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0px; margin-bottom: 5px; padding: 0px; padding-bottom: 6px;">
 				<span style="font-size: 1.8rem; margin: 0;">🛰️</span>
-				<span style="font-size: 0.9rem; font-weight: bold; text-align: center; line-height: 1.2;">Mi ubicación</span>
+				<span style="font-size: 0.9rem; font-weight: bold; text-align: center; line-height: 1.2;" data-i18n="mapa.miUbicacion">Mi ubicación</span>
 			</button>
 		</div>
 	</div>
@@ -437,16 +473,16 @@
 	<!-- Botón Flotante para Volver a Edición de favoritos si viene desde ahí-->
     <button id="btn-volver-edicion-mapa" class="btn-volver-flotante" onclick="cambiarVista('tabla')" style="display: none;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        Volver a Editar favoritos
+        <span data-i18n="mapa.volverEdicion">Volver a Editar favoritos</span>
     </button>
     
-    <div id="mensajeCargaMapaDeCalorPeninsulaIberica" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;">
+    <div id="mensajeCargaMapaDeCalorPeninsulaIberica" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;" data-i18n="mapa.cargandoCalorPeninsula">
 	⏳ Cargando mapa de calor Península Ibérica...<br><br>(309.157 despegues registrados)
 	</div>
-	<div id="mensajeCargaMapaDeCalorAlpes" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;">
+	<div id="mensajeCargaMapaDeCalorAlpes" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;" data-i18n="mapa.cargandoCalorAlpes">
 		⏳ Cargando mapa de calor Alpes...<br><br>(967.477 despegues registrados)
 	</div>
-	<div id="mensajeCargaMapaDeCalorMarruecos" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;">
+	<div id="mensajeCargaMapaDeCalorMarruecos" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 15px 30px; border-radius: 8px; z-index: 10000; display: none; font-size: 1.2em; text-align: center;" data-i18n="mapa.cargandoCalorMarruecos">
 		⏳ Cargando mapa de calor Marruecos...<br><br>(11.006 despegues registrados)
 	</div>
 
@@ -454,67 +490,67 @@
 
     <div id="infoPanel" class="info-panel">
 
-		<span id="labelMostrarOpciones" class="labelMostrarOpciones">
+		<span id="labelMostrarOpciones" class="labelMostrarOpciones" data-i18n="mapa.capasYFiltros">
 			Capas y filtros
 		</span>
 					
 		<div id="divOpciones">
 		
-			<button id="buttonCerrar" title="Cerrar Panel">
+			<button id="buttonCerrar" data-i18n="[title]mapa.cerrarPanel">
 					<span>❌</span>
 			</button>			 
 		
-			<button id="buttonFijar" title="Fijar Panel (anula su ocultación al mover mapa)">
+			<button id="buttonFijar"  data-i18n="[title]mapa.fijarPanel"">
 					<span id="iconoFijar">📌</span>
 			</button>			 
 				
 			<div style="font-weight: bold">
-				<a href="https://hikefly.es/despegues-ayuda/" style="color: #fc6668; text-decoration: underline; float: right; padding-right: 33px;" target="_blank"><span style="font-weight: bold;">Ayuda</span></a>
+				<a href="https://hikefly.es/despegues-ayuda/" style="color: #fc6668; text-decoration: underline; float: right; padding-right: 33px;" target="_blank"><span style="font-weight: bold;" data-i18n="ajustes.ayuda">Ayuda</span></a>
 			</div>
 			
 			<div style="font-weight: bold; margin-bottom: 5px;">
-				<br>Capas:
+				<br><span data-i18n="mapa.capas">Capas:</span>
 			</div>
 		
 			<div class="legend-item" title="Despegues de parapente">
 				<label for="checkboxDespegues" class="custom-checkbox">
 				<input type="checkbox" id="checkboxDespegues" class="custom-checkbox" checked>
-				🪂 Despegues
+				<span data-i18n="mapa.capasCheckbox.despegues">🪂 Despegues</span>
 				</label>
 			</div>
 			<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
 				<label for="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
 				<input type="checkbox" id="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
-				🔥 Mapa de calor Península Ibérica
+				<span data-i18n="mapa.capasCheckbox.mapaCalorPeninsula">🔥 Mapa de calor Península Ibérica</span>
 				</label>
 			</div>
 			<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
 				<label for="checkboxMapaDeCalorAlpes" class="custom-checkbox">
 				<input type="checkbox" id="checkboxMapaDeCalorAlpes" class="custom-checkbox">
-				🔥 Mapa de calor Alpes
+				<span data-i18n="mapa.capasCheckbox.mapaCalorAlpes">🔥 Mapa de calor Alpes</span>
 				</label>
 			</div>
 			<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
 				<label for="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
 				<input type="checkbox" id="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
-				🔥 Mapa de calor Marruecos
+				<span data-i18n="mapa.capasCheckbox.mapaCalorMarruecos">🔥 Mapa de calor Marruecos</span>
 				</label>
 			</div>
 			<div class="legend-item" title="Notas personales tomadas sobre despegues y aterrizajes">
 				<label for="checkboxNotasPersonales" class="custom-checkbox">
 				<input type="checkbox" id="checkboxNotasPersonales" class="custom-checkbox">
-				✏️ Notas
+				<span data-i18n="mapa.capasCheckbox.notas">✏️ Notas</span>
 				</label>
 			</div>
 			<div class="legend-item" title="Despegues de Paraglidingearth.com">
 				<label for="checkboxDespeguesMundo" class="custom-checkbox">
 				<input type="checkbox" id="checkboxDespeguesMundo" class="custom-checkbox">
-				🪂 Despegues de Paraglidingearth
+				<span data-i18n="mapa.capasCheckbox.despeguesMundo">🪂 Despegues de Paraglidingearth</span>
 				</label>
 			</div>
 			
 			<div class="control-orientacion-container">
-				<div style="font-weight: bold; margin-bottom: 5px;">
+				<div style="font-weight: bold; margin-bottom: 5px;" data-i18n="mapa.orientacion">
 					Orientación:
 				</div>
 
@@ -564,24 +600,21 @@
 			</div>	
 					
 			<div class="control-vuelos-container" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
-				<label for="sliderVuelos" style="font-weight: bold;">
-					Mínimo de vuelos registrados = <span id="valorVuelosTexto">0</span>
-				</label>
+				<label for="sliderVuelos" style="font-weight: bold;" data-i18n="mapa.minVuelosTexto">
+					Mínimo de vuelos registrados = </label><span id="valorVuelosTexto">0</span>
 				<br>
 				<input type="range" id="sliderVuelos" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
 			</div>
 			
 			<div class="control-ultimovuelo-container" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
-				<label for="sliderUltimoVuelo" style="font-weight: bold; display: block;">
-					Año del último vuelo >= <span id="valorUltimoVueloTexto">Todos</span>
-				</label>
+				<label for="sliderUltimoVuelo" style="font-weight: bold;" data-i18n="mapa.anioUltimoVueloTexto">
+					Año del último vuelo >= </label><span id="valorUltimoVueloTexto" data-i18n="mapa.todos">Todos</span>
 				<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 88%; margin-left: 22px;">
 			</div>
 						
 			<div class="control-KmMedia-container" title="Mostrar solo los despegues con una media de distancia recorrida en los últimos vuelos registrados mayor o igual a los km seleccionados. El valor de referencia está tomado en nov-2025 usando los últimos vuelos disponibles (hasta un máximo de 50). Por el momento, este filtro solo aplica a 'Despegues' y no a la capa 'Despegues de Paraglidingearth'">
-				<label for="sliderKmMedia" style="font-weight: bold;">
-					Mínimo de km medios recorridos = <span id="valorKmMediaTexto">0</span>
-				</label>
+				<label for="sliderKmMedia" style="font-weight: bold;" data-i18n="mapa.minKmMediaTexto">
+					Mínimo de km medios recorridos = </label><span id="valorKmMediaTexto">0</span>
 				<br>
 				<input type="range" id="sliderKmMedia" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
 			</div>
@@ -592,7 +625,7 @@
 
 	<div id="configuracionPanel" class="info-panel" style="font-weight: bold; display: block; border: 2px solid rgba(0, 0, 0, 0.2);">
 
-		<span class="panel-titulo" style="font-size: 1.4em; display:block; text-align:center;">
+		<span class="panel-titulo" style="font-size: 1.4em; display:block; text-align:center;" data-i18n="ajustes.titulo">
 			Ajustes<br>
 		</span>
 					
@@ -600,7 +633,7 @@
 
 			<div class="configuracion-control-vuelos-container">
 				<label for="sliderVuelos" style="font-weight: bold;">
-					Mínimo de vuelos registrados: <span id="valorConfigFiltroNumeroMinimoVuelosTexto">0</span>
+					<span data-i18n="mapa.minVuelosTexto">Mínimo de vuelos registrados: </span><span id="valorConfigFiltroNumeroMinimoVuelosTexto">0</span>
 				</label>
 				<br>
 				<input type="range" id="sliderValorInicialFiltroNumeroMinimoVuelos" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
@@ -608,14 +641,14 @@
 					
 			<div class="configuracion-control-ultimovuelo-container">
 				<label for="sliderUltimoVuelo" style="font-weight: bold;">
-					Año último vuelo >= <span id="valorConfigFiltroUltimoVueloTexto">Todos</span>
+					<span data-i18n="mapa.anioUltimoVueloTexto">Año del último vuelo >= </span><span id="valorConfigFiltroUltimoVueloTexto" data-i18n="mapa.todos">Todos</span>
 				</label>
 				<br>
 				<input type="range" id="sliderValorInicialFiltroUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 88%; margin-left: 22px;">
 			</div>
 					
 			<div>
-				<a href="https://hikefly.es/despegues-ayuda/" style="color: #fc6668; text-decoration: underline;" target="_blank"><span style="font-weight: bold;">Ayuda</span></a>
+				<a href="https://hikefly.es/despegues-ayuda/" style="color: #fc6668; text-decoration: underline;" target="_blank"><span style="font-weight: bold;" data-i18n="ajustes.ayuda">Ayuda</span></a>
 			</div>	
 										
 		</div>
@@ -631,7 +664,7 @@
 		<div class="nav-icon-container">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
 		</div>
-		<span>Inicio</span>
+		<span data-i18n="menu.inicio">Inicio</span>
 	</button>
     
     <!-- 2. BUSCAR -->
@@ -639,7 +672,7 @@
         <div class="nav-icon-container">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </div>
-        <span>Buscar</span>
+        <span data-i18n="menu.buscar">Buscar</span>
     </button>
     
     <!-- 3. DISTANCIA -->
@@ -647,7 +680,7 @@
         <div class="nav-icon-container">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
         </div>
-        <span>Distancia</span>
+        <span data-i18n="menu.distancia">Distancia</span>
     </button>
     
 	<!-- 4. MAPA -->
@@ -655,7 +688,7 @@
 		<div class="nav-icon-container">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
 		</div>
-		<span>Mapa</span>
+		<span data-i18n="menu.mapa">Mapa</span>
 	</button>    
 
     <!-- 5. AJUSTES -->
@@ -663,9 +696,9 @@
         <div class="nav-icon-container">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </div>
-        <span>Ajustes</span>
+        <span data-i18n="menu.ajustes">Ajustes</span>
     </button>
 </nav>
 
 </body>
-</html>
+</html>>

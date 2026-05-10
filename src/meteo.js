@@ -71,7 +71,7 @@ const HorariosMediosActualizacion = ["01:32", "03:02", "06:02", "11:22", "13:32"
 //const HorariosMediosActualizacionEcmwf = ["00:15", "06:50", "12:30", "18:50"]; // en UTC-0
 //claude
 //const HorariosMediosActualizacionEcmwf = ["01:40", "08:00", "13:00", "18:55"]; // en UTC-0
-const HorariosMediosActualizacionEcmwf = ["00:30", "07:10", "12:55", "19:10"]; // en UTC-0
+const HorariosMediosActualizacionEcmwf = ["00:30", "07:10", "12:30", "19:10"]; // en UTC-0
 
 // Nota: aplico 1 min de más. Buscar: const OFFSET_MS = 1 * 60 * 1000;
 
@@ -5292,7 +5292,8 @@ function limpiarBuscador() {
 // ---------------------------------------------------------------
 /* Garantiza que JavaScript se ejecute solo cuando todo el HTML y el CSS (incluidas las clases que definiste) ya están cargados en el navegador.
  */
-document.addEventListener('DOMContentLoaded', function() {
+// En lugar de DOMContentLoaded, esperamos a nuestro evento personalizado
+document.addEventListener('i18nReady', function() {
 	
     // 1. Intentamos poner la versión (si falla, que no rompa lo demás)
     try {
@@ -7659,37 +7660,33 @@ function inicializarMapaLeaflet() {
     function actualizarFiltrosMapa() {
         // A. OBTENER ESTADOS DE LOS FILTROS
         // -------------------------------------------------------
-        // 1. Obtener orientaciones (Tu función existente)
+        // 1. Obtener orientaciones
         const filtrosOrientacion = obtenerOrientacionesSeleccionadas();
         
         // 2. Obtener valor del slider de vuelos
         const slider = document.getElementById('sliderVuelos');
-        
-        // El slider nos da el ÍNDICE (0, 1, 2...), no el valor real.
-        const indice = parseInt(slider.value, 10);
-        
-        // Buscamos el valor real en nuestra escala personalizada
-        // Si el índice falla por algo, usamos 0 como fallback
+        const indice = slider ? parseInt(slider.value, 10) : 0;
         const minVuelos = ESCALA_VUELOS[indice] !== undefined ? ESCALA_VUELOS[indice] : 0;
         
-        // Actualizamos el texto visual del slider
-        document.getElementById('valorVuelosTexto').textContent = minVuelos;
+        // --- SEGURIDAD: Actualizamos el texto solo si el elemento existe ---
+        const elVuelosTexto = document.getElementById('valorVuelosTexto');
+        if (elVuelosTexto) {
+            elVuelosTexto.textContent = minVuelos;
+        }
 
-        // 2. Obtener valor del sliderKmMedia de KmMedia
+        // 3. Obtener valor del sliderKmMedia de KmMedia
         const sliderKmMedia = document.getElementById('sliderKmMedia');
-        
-        // El sliderKmMedia nos da el ÍNDICE (0, 1, 2...), no el valor real.
-        const indiceKmMedia = parseInt(sliderKmMedia.value, 10);
-        
-        // Buscamos el valor real en nuestra escala personalizada
-        // Si el índice falla por algo, usamos 0 como fallback
+        const indiceKmMedia = sliderKmMedia ? parseInt(sliderKmMedia.value, 10) : 0;
         const minKmMedia = ESCALA_KMMEDIA[indiceKmMedia] !== undefined ? ESCALA_KMMEDIA[indiceKmMedia] : 0;
         
-        // Actualizamos el texto visual del sliderKmMedia
-        document.getElementById('valorKmMediaTexto').textContent = minKmMedia;
+        // --- SEGURIDAD: Actualizamos el texto solo si el elemento existe ---
+        const elKmMediaTexto = document.getElementById('valorKmMediaTexto');
+        if (elKmMediaTexto) {
+            elKmMediaTexto.textContent = minKmMedia;
+        }
 
-        // Filtro de Último Vuelo
-        const filtroAnioVuelo = obtenerMinAnioUltimoVuelo(); // { minAnio: YYYY | null, esTodos: boolean }
+        // 4. Filtro de Último Vuelo
+        const filtroAnioVuelo = obtenerMinAnioUltimoVuelo(); 
 
         // B. COMPROBAR Y DEFINIR VISIBILIDAD DE CAPAS
         // -------------------------------------------------------
@@ -7973,10 +7970,10 @@ function inicializarMapaLeaflet() {
 
             // --- Campo de Búsqueda (Input) ---
             const input = L.DomUtil.create('input', 'leaflet-text-search-input', container);
-            const originalPlaceholder = '🔍 Despegue';
+            const originalPlaceholder = t('mapa.buscadorDespegue');
             input.type = 'search';
-            input.placeholder = '🔍 Despegue';
-            input.title = 'Buscar despegue por su nombre';
+            input.placeholder = t('mapa.buscadorDespegue');
+            input.title = t('mapa.titleBuscadorDespegue');
 
             // --- Lista de Autocompletado ---
             const autocompleteList = L.DomUtil.create('div', 'autocomplete-list', container);
@@ -9744,7 +9741,12 @@ function inicializarMapaLeaflet() {
         
         // 2. ÚLTIMO VUELO: Lectura y Conversión
         const indiceUltimoVueloGuardado = localStorage.getItem(STORAGE_KEY_ULTIMO_VUELO) || '0';
-        const valorRealUltimoVuelo = obtenerValorReal(indiceUltimoVueloGuardado, ESCALA_ULTIMO_VUELO); 
+        let valorRealUltimoVuelo = obtenerValorReal(indiceUltimoVueloGuardado, ESCALA_ULTIMO_VUELO); 
+
+        // Si el valor es 'Todos', buscamos la traducción antes de pintarlo
+        if (valorRealUltimoVuelo === 'Todos') {
+            valorRealUltimoVuelo = t('mapa.todos');
+        }
 
         // B. Aplicar a Sliders de CONFIGURACIÓN (Visual)
         if(sliderVuelosConfig && textoVuelosConfig) {
@@ -9889,13 +9891,11 @@ function inicializarMapaLeaflet() {
         const indice = parseInt(slider.value, 10);
         const valor = ESCALA_ULTIMO_VUELO[indice];
 
-        // Si el valor es 'Todos' (índice 0), retornamos un estado de "no filtro"
         if (valor === 'Todos') {
-            document.getElementById('valorUltimoVueloTexto').textContent = 'Todos';
+            document.getElementById('valorUltimoVueloTexto').textContent = t('mapa.todos'); // Usa la traducción
             return { minAnio: null, esTodos: true };
         }
 
-        // Si es un año, lo usamos como filtro.
         document.getElementById('valorUltimoVueloTexto').textContent = valor;
         return { minAnio: valor, esTodos: false };
     }

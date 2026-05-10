@@ -3275,9 +3275,7 @@ h3 {
 
 /* 🔴🔴 FIN MAPA */
 
-/* ==========================================================================
-   🗺️ BOTÓN FLOTANTE "VOLVER" (Módulo Mapa)
-   ========================================================================== */
+/* 🛑 BOTÓN FLOTANTE "VOLVER" (Módulo Mapa) */
 .btn-volver-flotante {
     position: absolute;
     top: max(15px, env(safe-area-inset-top)); 
@@ -3302,4 +3300,32 @@ h3 {
 .btn-volver-flotante:active {
     background-color: #005a9e;
     transform: translateX(-50%) scale(0.95);
+}
+
+/* Estilos para las filas del selector de idioma */
+.fila-idioma-selector {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-left: 4px;
+}
+
+/* 🛑 Idioma */
+
+.fila-idioma-selector:active {
+    background-color: #c2e7ff; /* Color de realce al tocar */
+}
+
+.fila-idioma-selector .flag-icon {
+    font-size: 1.4em;
+    margin-right: 15px;
+    width: 25px;
+    text-align: center;
+}
+
+.fila-idioma-selector .lang-code {
+    font-weight: bold;
+    color: #0078d4;
+    width: 30px;
 }
