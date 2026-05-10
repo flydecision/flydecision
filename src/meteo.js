@@ -8427,11 +8427,32 @@ function inicializarMapaLeaflet() {
     const contenedorCapas = controlCapas.getContainer();
     contenedorCapas.appendChild(btnCerrarCapas);
 
-    // 4. Le damos la orden de cerrar el panel al hacerle clic
+    // 4. Lógica de cierre para nuestra X
     L.DomEvent.on(btnCerrarCapas, 'click', function(e) {
-        controlCapas.collapse(); // Orden nativa de Leaflet para plegar
-        L.DomEvent.stop(e);      // Evita que el clic traspase al mapa
+        L.DomEvent.stopPropagation(e); // Frena el evento para que no baje al mapa
+        L.DomEvent.preventDefault(e);  // Frena acciones por defecto
+        controlCapas.collapse();       // Cierra el panel
     });
+    
+    // 5. FIX TÁCTIL: Prevenir el doble toque fantasma en móviles
+    // Algunos móviles interpretan 'touchstart' y 'click' como eventos separados.
+    // Esto asegura que la X responda al primer toque sin dudarlo.
+    L.DomEvent.on(btnCerrarCapas, 'touchstart', function(e) {
+        L.DomEvent.stopPropagation(e);
+        L.DomEvent.preventDefault(e);
+        controlCapas.collapse();
+    });
+
+    // 6. FIX TÁCTIL PARA ABRIR: Forzar apertura al primer toque
+    // Buscamos el botón original (los cuadraditos)
+    const btnAbrirCapas = contenedorCapas.querySelector('.leaflet-control-layers-toggle');
+    if (btnAbrirCapas) {
+        L.DomEvent.on(btnAbrirCapas, 'touchstart', function(e) {
+            L.DomEvent.stopPropagation(e); // Frena el evento
+            L.DomEvent.preventDefault(e);  // Evita que el móvil intente hacer el "hover"
+            controlCapas.expand();         // Ordena abrir instantáneamente
+        });
+    }
         
     //------------------------------------------------------------
 
