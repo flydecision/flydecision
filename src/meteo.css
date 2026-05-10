@@ -3270,3 +3270,31 @@ h3 {
 
 /* 🔴🔴 FIN MAPA */
 
+/* ==========================================================================
+   🗺️ BOTÓN FLOTANTE "VOLVER" (Módulo Mapa)
+   ========================================================================== */
+.btn-volver-flotante {
+    position: absolute;
+    top: max(15px, env(safe-area-inset-top)); 
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000; /* Por encima de los controles de Leaflet */
+    background-color: #0078d4; /* Tu azul característico */
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 2px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-volver-flotante:active {
+    background-color: #005a9e;
+    transform: translateX(-50%) scale(0.95);
+}

@@ -7398,6 +7398,9 @@ window.cambiarVista = function(vista) {
     const vistaTabla = document.querySelector('.contenedor-principal-tabla');
     const vistaControles = document.querySelector('.contenedor-principal-controles');
     const vistaMapa = document.getElementById('vista-mapa');
+    
+    // El nuevo botón flotante
+    const btnVolver = document.getElementById('btn-volver-edicion-mapa');
 
     if (vista === 'mapa') {
         if (vistaTabla) vistaTabla.style.display = 'none';
@@ -7409,11 +7412,20 @@ window.cambiarVista = function(vista) {
             mapaInicializado = true;
         } 
         
-        // Cuando entramos al mapa, forzamos que la URL muestre las coordenadas actuales
+        // --- LA MAGIA: ¿De dónde venimos? ---
+        if (btnVolver) {
+            // Si estamos en modo edición, encendemos el botón de volver
+            if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+                btnVolver.style.display = 'flex';
+            } else {
+                btnVolver.style.display = 'none';
+            }
+        }
+        
         setTimeout(() => { 
             if (typeof map !== 'undefined' && map) {
                 map.invalidateSize(); 
-                updateURL(map); // <--- Esto pone los parámetros en la barra de direcciones
+                updateURL(map); 
             }
         }, 300);
 
@@ -7423,8 +7435,20 @@ window.cambiarVista = function(vista) {
         if (vistaTabla) vistaTabla.style.display = 'flex'; 
         if (vistaControles) vistaControles.style.display = 'block';
 
-        // Cuando volvemos a la tabla, LIMPIAMOS la URL
-        // Esto quita el ?lat=...&lon=... y deja solo flydecision.com/
+        // Al salir del mapa, apagamos la pastilla siempre
+        if (btnVolver) btnVolver.style.display = 'none';
+
+        // --- LÓGICA INTELIGENTE DE LUCES ---
+        if (typeof window.activarMenuInferior === 'function') {
+            // Si volvemos y estamos en plena edición, la luz va a Ajustes
+            if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+                window.activarMenuInferior(document.getElementById('nav-settings'));
+            } else {
+                // Si no, por defecto a Inicio
+                window.activarMenuInferior(document.getElementById('nav-home'));
+            }
+        }
+
         window.history.replaceState(null, '', window.location.pathname);
     }
 };
