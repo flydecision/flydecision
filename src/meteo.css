@@ -3294,6 +3294,7 @@ h3 {
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     display: flex;
     align-items: center;
+    gap: 6px;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
 }
