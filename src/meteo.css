@@ -1032,6 +1032,11 @@ body.modo-edicion-tabla #header-contador-mini {
     display: none;
 }
 
+/* Ocultar parte del tooltip de distancia cuando estamos editando favoritos */
+body.modo-edicion-tabla .tippy-box .texto-oculto-en-edicion {
+    display: none !important;
+}
+
 /* CLASE PARA FILAS DE DATOS NORMALES (20px) */
 .celda-altura-20px {
     height: 20px !important;
