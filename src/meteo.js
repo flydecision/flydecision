@@ -67,9 +67,11 @@ const LIMITES_CIZALLADURA = {
 
 const HorariosMediosActualizacion = ["01:32", "03:02", "06:02", "11:22", "13:32", "16:22", "19:12", "23:22"]; // en UTC-0
 //const HorariosMediosActualizacionEcmwf = ["00:45", "07:15", "13:05", "19:15"]; // en UTC-0
-// gemini const HorariosMediosActualizacionEcmwf = ["00:15", "06:50", "12:30", "18:50"]; // en UTC-0
+//gemini 
+//const HorariosMediosActualizacionEcmwf = ["00:15", "06:50", "12:30", "18:50"]; // en UTC-0
 //claude
-const HorariosMediosActualizacionEcmwf = ["01:40", "08:00", "13:00", "18:55"]; // en UTC-0
+//const HorariosMediosActualizacionEcmwf = ["01:40", "08:00", "13:00", "18:55"]; // en UTC-0
+const HorariosMediosActualizacionEcmwf = ["00:30", "07:10", "12:55", "19:10"]; // en UTC-0
 
 // Nota: aplico 1 min de más. Buscar: const OFFSET_MS = 1 * 60 * 1000;
 
