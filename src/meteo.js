@@ -8214,7 +8214,7 @@ function inicializarMapaLeaflet() {
                 shadowUrl: 'css/images/marker-shadow.png',
                 shadowSize: [41, 41]
             })
-            }).addTo(map).bindPopup("<b style='font-size:16px;'>Estás aquí&nbsp;&nbsp;</b>", { 
+            }).addTo(map).bindPopup("<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Estás aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>", { 
                 className: 'popup-ajustado', 
                 maxWidth: 'auto' 
             }).openPopup();
