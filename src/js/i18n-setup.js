@@ -7,7 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .use(i18nextHttpBackend)           // Permite cargar archivos .json externos
         .use(i18nextBrowserLanguageDetector) // Detecta el idioma del navegador o el guardado en memoria
         .init({
-            fallbackLng: 'es-ES',
+            fallbackLng: 'es',
+            load: 'languageOnly',       // ← 'en' o 'en-US' mapea a 'en-GB'
             debug: false,                  
             backend: { 
                 loadPath: 'locales/{{lng}}.json' // Buscará literalmente 'es-ES.json' o 'en-GB.json'

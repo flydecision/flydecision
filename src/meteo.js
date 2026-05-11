@@ -1970,6 +1970,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
             const horas = window.horasCrudasRangoHorario;
             const indices = window.indicesHorasRangoHorario;
             const indiceReal = indices[Math.round(val)];
+            
             if (!horas || horas.length === 0 || indiceReal === undefined) return "";
             const horaString = horas[indiceReal]; 
             const d = new Date(horaString.endsWith('Z') ? horaString : horaString + 'Z');
@@ -7880,15 +7881,6 @@ function inicializarMapaLeaflet() {
         if (['popup-despegues', 'popup-despeguesmundo', 'popup-otraclase2'].includes(clase)) {
             popupNode.querySelector('.leaflet-popup-content-wrapper')?.classList.add(clase);
             popupNode.querySelector('.leaflet-popup-tip')?.classList.add(clase);
-        }
-    
-        // e.popup.getElement() obtiene el contenedor HTML del popup
-        const popupContainer = e.popup.getElement();
-        
-        // Verificamos si este popup tiene los elementos plegables (para no afectar a otros popups)
-        if (popupContainer && popupContainer.querySelector('.popup-toggle-header')) {
-            // Inicializamos la lógica de plegado para este popup
-            initPopupToggle(popupContainer);
         }
     });
 

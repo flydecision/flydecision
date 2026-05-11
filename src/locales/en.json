@@ -41,15 +41,13 @@
     "jueves": "Thursday",
     "viernes": "Friday",
     "sabado": "Saturday",
-    "corto": {
-      "dom": "Sun",
-      "lun": "Mon",
-      "mar": "Tue",
-      "mie": "Wed",
-      "jue": "Thu",
-      "vie": "Fri",
-      "sab": "Sat"
-    }
+    "dom": "Sun",
+    "lun": "Mon",
+    "mar": "Tue",
+    "mie": "Wed",
+    "jue": "Thu",
+    "vie": "Fri",
+    "sab": "Sat"
   },
 
   "offline": {
