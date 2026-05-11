@@ -3181,6 +3181,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
         // Traducción. Mapeamos el índice del día a las claves de tu JSON
         const clavesDiasLargos = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+        const diasSemana = clavesDiasLargos.map(clave => t(`dias.${clave}`));
 
 		// Solo iterar sobre las horas si existen
 		if (horas.length > 0 && !modoEdicionFavoritos) {
@@ -3202,7 +3203,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				//const d = new Date(h);
 				const d = new Date(h.endsWith('Z') ? h : h + 'Z'); // Forzamos UTC. garantiza que cualquier hora sin información de zona se trate como UTC, evitando errores al convertir a Date. Si la cadena ya tiene zona horaria, se usa tal cual: h. Si no tiene zona horaria, se agrega Z al final: `${h}Z` → esto fuerza que se interprete como UTC.
 				const dia = d.getDate();
-				const diaSemana = diasSemana[d.getDay()];
+				const diaSemana = t(`dias.${clavesDiasLargos[d.getDay()]}`);
 				
 				// Comprobación de visibilidad
 				const esNoche = esCeldaNoche(d);
@@ -3427,7 +3428,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // Creamos un array que ya sabe si la hora 'i' es de noche o no.
         const cacheEsNoche = [];
         const cacheFechas = [];
-        const cacheTextosFecha =[];
 
         if (horas && horas.length > 0) {
             horas.forEach(h => {
@@ -3436,12 +3436,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 cacheFechas.push(d);
                 // Calculamos si es noche una sola vez
                 cacheEsNoche.push(esCeldaNoche(d));
-
-                // --- PRECALCULAR EL TEXTO DEL TOOLTIP ---
-                const nombreDia = diasSemana[d.getDay()]; // Utiliza el array diasSemana que ya definiste arriba
-                const numeroDia = d.getDate();
-                const horaTexto = String(d.getHours()).padStart(2, '0') + ":00 h";
-                cacheTextosFecha.push(`${nombreDia} ${numeroDia}, ${horaTexto}`);
             });
         }
 
@@ -3497,8 +3491,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
                         // Si necesitas la fecha para algo más abajo, úsala de la caché:
                         const fechaHora = cacheFechas[i]; 
-                        const diaCorto = diasSemana[fechaHora.getDay()].substring(0, 3);
-                        const horaStr = `${diaCorto} ${fechaHora.getDate()}, ${String(fechaHora.getHours()).padStart(2, '0')}h`;
 
                         // ✅ Hora válida
                         horasValidas++; 
