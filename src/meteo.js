@@ -5519,7 +5519,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                         <ul style="padding-left: 20px; margin-top: 5px; margin-bottom: 5px;">
                             <li style="margin-bottom: 6px;"><b>Puntuación XC independiente:</b> Valora solo el potencial térmico (Techo, CAPE, CIN) ignorando el viento del despegue. Solo puntúa 0 con lluvia o tormenta.</li>
                             <li style="margin-bottom: 6px;"><b>Techo en Altitud (MSL):</b> Ahora indica la altitud sobre el nivel del mar, siendo más útil y preciso para vuelos de distancia.</li>
-                            <li><b>Techo realista:</b> Se reduce un 15% el pronóstico original para compensar la tasa de caída media del parapente.</li>
+                            <li><b>Techo más realista:</b> Se reduce un 15% el pronóstico original para compensar la tasa de caída media del parapente.</li>
                         </ul>
                     <p style="margin-top: 10px; font-size: 0.9em;">💡 <i>Más detalles pulsando los iconos 🌦️ o ⭐ en la tabla.</i></p>
                     </div>
