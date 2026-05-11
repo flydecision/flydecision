@@ -142,7 +142,10 @@
     },
     "techoTooltip": "Usable flight ceiling: {{altitudMSL}} m MSL\nCalculation = {{espesorUtil}} m usable thickness AGL ({{pct}}% of the theoretical {{blh}} m BLH) + {{elevacion}} m altitude (ECMWF 9km cell mean ground level)\n",
     "despegueTooltip": "Province: {{provincia}}\nTakeoff: {{despegue}}\nOrientation: {{orientacion}}",
-    "cargando": "Loading..."
+    "cargando": "Loading...",
+    "cabeceraRegion": "Region",
+    "cabeceraProvincia": "Province",
+    "cabeceraDespegue": "Takeoff"
   },
 
   "contador": {
@@ -327,7 +330,7 @@
     "meteoFrance": "Météo-France",
     "ecmwf": "ECMWF",
     "hace": "<b>{{tiempo}}</b> ago",
-    "ref": "(ref. {{hora}}Z)"
+    "ref": "(ref.{{hora}}Z)"
   },
 
   "ajustes": {
@@ -405,8 +408,15 @@
     "minKmMediaTexto": "Minimum average distance flown = ",
     "todos": "All",
     "titleBuscadorDespegue": "Search takeoff by name",
-    "buscadorDespegue": "🔍 Takeoff"
-  },
+    "buscadorDespegue": "🔍 Takeoff",
+    "labelOrientacion": "Orientation:",
+    "labelCoordenadas": "Coordinates:",
+    "labelAltitud": "Approx. altitude:",
+    "labelActividad": "Activity level:",
+    "labelVuelos": "No. of XContest flights:",
+    "labelKmMedia": "Average km distance:",
+    "labelMasInfo": "More information:"
+    },
 
   "popupDespegue": {
     "region": "Region:",
@@ -422,7 +432,7 @@
     "seleccionarOrigen": "Select origin",
     "incluirNoFavs": "Include non-favorites in filter",
     "resetFiltroDistancia": "Reset and hide distance filter",
-    "finalizarEdicion": "Finish editing favorites",
+    "finalizarEdicion": "Finish editing favorite takeoffs",
     "finalizarEdicionTitle": "Finish editing favorite takeoffs",
     "verSoloFavoritos": "View only my favorites",
     "desmarcarFavoritosTitle": "Unmark all favorites",
@@ -449,6 +459,26 @@
     "html": "<div style='text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;'><ul style='padding-left: 20px; margin-top: 5px; margin-bottom: 5px;'><li style='margin-bottom: 6px;'><b>Independent XC Score:</b> Evaluates only thermal potential (Ceiling, CAPE, CIN) ignoring takeoff wind. Only scores 0 with rain or storm risk.</li><li style='margin-bottom: 6px;'><b>Ceiling in Altitude (MSL):</b> Now shows altitude above sea level, providing better precision for distance planning.</li><li><b>Realistic Ceiling:</b> Forecast is reduced by 15% to compensate for paraglider sink rate.</li></ul><p style='margin-top: 10px; font-size: 0.9em;'>💡 <i>More details by clicking 🌦️ or ⭐ icons in the table.</i></p></div>"
   },
 
-  "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Scores (0-10)</b><br><br>The system automatically calculates two scores for each takeoff based on the selected time range. Both are color-coded from red to green.<br><br><b>1. Takeoff Conditions (top row):</b><br>Evaluates takeoff viability by analyzing the forecast against your ⚙️ Settings:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Mean wind limits (min, ideal, max).</li><li>Max tolerable gust limit.</li><li>Takeoff orientation(s).</li><li>Rain (automatic veto and 0 points for affected hours).</li></ul><b>2. XC & Thermal Conditions (bottom row):</b><br>Evaluates the thermal potential for Cross Country flights using ECMWF model data:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Ceiling:</b> Rewards high ceilings above terrain and penalizes low ones (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Rewards blue days or harmless clouds, penalizes extremes due to overdevelopment risk (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Penalizes high inhibition (inversions) that blocks thermals (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Note: XC score is <b>independent</b> of wind or takeoff orientation. It purely evaluates air mass potential. Only nulled (0 pts) with rain or severe storm forecasts.</i><br><br>⚠️ <b>Notice:</b> Cloud Base (CBH) data is currently unavailable from the provider (pending since March 2026). Check other sources to ensure takeoffs are not in the clouds.<br><br><b>Takeoffs are sorted by Takeoff Conditions score</b> by default. You can change this in: ⚙️ <i>Settings</i> > <i>Other Options</i> > <i>Sort by XC Conditions</i>."
+  "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Scores (0-10)</b><br><br>The system automatically calculates two scores for each takeoff based on the selected time range. Both are color-coded from red to green.<br><br><b>1. Takeoff Conditions (top row):</b><br>Evaluates takeoff viability by analyzing the forecast against your ⚙️ Settings:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Mean wind limits (min, ideal, max).</li><li>Max tolerable gust limit.</li><li>Takeoff orientation(s).</li><li>Rain (automatic veto and 0 points for affected hours).</li></ul><b>2. XC & Thermal Conditions (bottom row):</b><br>Evaluates the thermal potential for Cross Country flights using ECMWF model data:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Ceiling:</b> Rewards high ceilings above terrain and penalizes low ones (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Rewards blue days or harmless clouds, penalizes extremes due to overdevelopment risk (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Penalizes high inhibition (inversions) that blocks thermals (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Note: XC score is <b>independent</b> of wind or takeoff orientation. It purely evaluates air mass potential. Only nulled (0 pts) with rain or severe storm forecasts.</i><br><br>⚠️ <b>Notice:</b> Cloud Base (CBH) data is currently unavailable from the provider (pending since March 2026). Check other sources to ensure takeoffs are not in the clouds.<br><br><b>Takeoffs are sorted by Takeoff Conditions score</b> by default. You can change this in: ⚙️ <i>Settings</i> > <i>Other Options</i> > <i>Sort by XC Conditions</i>.",
+
+  "orientaciones": {
+    "N": "N",
+    "NE": "NE",
+    "E": "E",
+    "SE": "SE",
+    "S": "S",
+    "SO": "SW",
+    "O": "W",
+    "NO": "NW",
+    "norte": "North",
+    "noreste": "Northeast",
+    "este": "East",
+    "sureste": "Southeast",
+    "sur": "South",
+    "suroeste": "Southwest",
+    "oeste": "West",
+    "noroeste": "Northwest",
+    "todos_title": "Orientation filters are active. Click to clear all."
+  }
 
 }

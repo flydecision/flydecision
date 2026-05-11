@@ -204,9 +204,9 @@
 	<div class="div-configuracion-subpanel">
 		<div style="display: flex; align-items: center; gap: 8px; width: 100%; max-width: 335px; min-width: 335px; margin-bottom: 8px !important;">
 			
-			<button class="btn-accion" onclick="activarEdicionFavoritos(); " style="height: 34px; display: flex; align-items: center; gap: 6px; font-weight: bold;" data-i18n="ajustes.editarFavoritos">
+			<button class="btn-accion" onclick="activarEdicionFavoritos(); " style="height: 34px; display: flex; align-items: center; gap: 6px; font-weight: bold;">
 				<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width: 16px; height: 16px;">
-				Editar favoritos
+				<span data-i18n="ajustes.editarFavoritos">Editar favoritos</span>
 			</button>
 
 			<button class="btn-accion" onclick="importarConfiguracion()" style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; font-size: 1.1em;" data-i18n="[title]ajustes.importarConfig">
@@ -381,14 +381,12 @@
 			<div class="accordion-content" style="padding-top: 5px;">
 				
 				<label class="fila-idioma-selector">
-					<input type="radio" name="selector-idioma" value="es" class="radio-idioma" onchange="window.cambiarIdioma('es')">
-					<span class="lang-code">ES</span>
+					<input type="radio" name="selector-idioma" value="es-ES" class="radio-idioma" onchange="window.cambiarIdioma('es-ES')">
 					<span class="lang-name">Español</span>
 				</label>
 
 				<label class="fila-idioma-selector">
-					<input type="radio" name="selector-idioma" value="en" class="radio-idioma" onchange="window.cambiarIdioma('en')">
-					<span class="lang-code">EN</span>
+					<input type="radio" name="selector-idioma" value="en-GB" class="radio-idioma" onchange="window.cambiarIdioma('en-GB')">
 					<span class="lang-name">English</span>
 				</label>
 
@@ -411,7 +409,7 @@
 					</ul>
 					<b>Frecuencia de actualización automática:</b> Météo-France cada 3 horas aproximadamente (8 veces al día) y ECMWF cada 6 horas aproximadamente (4 veces al día).<br><br>
 					<b>Pasarela de datos meteorológicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>
-					El valor <i>Ref. HHZ</i> indica la hora UTC±0 (Z) correspondiente al último ciclo de ejecución del modelo en el servidor meteorológico de origen. A partir de ese momento, hay varias horas de cálculo computacional antes de la distribución final y su disponibilidad pública.<br><br>
+					El valor <i>Ref.HHZ</i> indica la hora UTC±0 (Z) correspondiente al último ciclo de ejecución del modelo en el servidor meteorológico de origen. A partir de ese momento, hay varias horas de cálculo computacional antes de la distribución final y su disponibilidad pública.<br><br>
 				">
 				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 			</button>
@@ -555,47 +553,44 @@
 				</div>
 
 				<div id="rosaDeLosVientos">
-					
-					<label class="filtro-orientacion" data-orientacion="NO" title="Noroeste">
+					<label class="filtro-orientacion" data-orientacion="NO" data-i18n="[title]orientaciones.noroeste"> 
 						<input type="checkbox" class="filtro-orientacion-checkbox" value="NO"> 
-						<span>NO</span>
+						<span data-i18n="orientaciones.NO">NO</span> 
 					</label>
-					<label class="filtro-orientacion" data-orientacion="N" title="Norte">
+					<label class="filtro-orientacion" data-orientacion="N" data-i18n="[title]orientaciones.norte"> 
 						<input type="checkbox" class="filtro-orientacion-checkbox" value="N"> 
-						<span>N</span>
+						<span data-i18n="orientaciones.N">N</span> 
 					</label>
-					<label class="filtro-orientacion" data-orientacion="NE" title="Noreste">
+					<label class="filtro-orientacion" data-orientacion="NE" data-i18n="[title]orientaciones.noreste"> 
 						<input type="checkbox" class="filtro-orientacion-checkbox" value="NE"> 
-						<span>NE</span>
+						<span data-i18n="orientaciones.NE">NE</span> 
 					</label>
-
-					<label class="filtro-orientacion" data-orientacion="O" title="Oeste">
+					<label class="filtro-orientacion" data-orientacion="O" data-i18n="[title]orientaciones.oeste"> 
 						<input type="checkbox" class="filtro-orientacion-checkbox" value="O"> 
-						<span>O</span>
+						<span data-i18n="orientaciones.O">O</span> 
 					</label>
 					
-					<label class="centro-rosa filtro-maestro" title="Hay filtros de orientación activos. Haz clic para desactivarlos todos.">
+					<!-- Centro de la rosa (Reset) -->
+					<label class="centro-rosa filtro-maestro" data-i18n="[title]orientaciones.todos_title">
 						<input type="checkbox" id="filtroMaestroOrientacion" class="filtro-orientacion-checkbox" value="TODOS">
 					</label>	
 					
-					<label class="filtro-orientacion" data-orientacion="E" title="Este">
+					<label class="filtro-orientacion" data-orientacion="E" data-i18n="[title]orientaciones.este"> 
 						<input type="checkbox" class="filtro-orientacion-checkbox" value="E"> 
-						<span>E</span>
+						<span data-i18n="orientaciones.E">E</span> 
 					</label>
-
-					<label class="filtro-orientacion" data-orientacion="SO" title="Suroeste">
+					<label class="filtro-orientacion" data-orientacion="SO" data-i18n="[title]orientaciones.suroeste"> 
 						<input type="checkbox" class="filtro-orientacion-checkbox" value="SO"> 
-						<span>SO</span>
+						<span data-i18n="orientaciones.SO">SO</span> 
 					</label>
-					<label class="filtro-orientacion" data-orientacion="S" title="Sur">
+					<label class="filtro-orientacion" data-orientacion="S" data-i18n="[title]orientaciones.sur"> 
 						<input type="checkbox" class="filtro-orientacion-checkbox" value="S"> 
-						<span>S</span>
+						<span data-i18n="orientaciones.S">S</span> 
 					</label>
-					<label class="filtro-orientacion" data-orientacion="SE" title="Sureste">
+					<label class="filtro-orientacion" data-orientacion="SE" data-i18n="[title]orientaciones.sureste"> 
 						<input type="checkbox" class="filtro-orientacion-checkbox" value="SE"> 
-						<span>SE</span>
+						<span data-i18n="orientaciones.SE">SE</span> 
 					</label>
-					
 				</div>	
 			</div>	
 					
@@ -610,13 +605,6 @@
 				<label for="sliderUltimoVuelo" style="font-weight: bold;" data-i18n="mapa.anioUltimoVueloTexto">
 					Año del último vuelo >= </label><span id="valorUltimoVueloTexto" data-i18n="mapa.todos">Todos</span>
 				<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 88%; margin-left: 22px;">
-			</div>
-						
-			<div class="control-KmMedia-container" title="Mostrar solo los despegues con una media de distancia recorrida en los últimos vuelos registrados mayor o igual a los km seleccionados. El valor de referencia está tomado en nov-2025 usando los últimos vuelos disponibles (hasta un máximo de 50). Por el momento, este filtro solo aplica a 'Despegues' y no a la capa 'Despegues de Paraglidingearth'">
-				<label for="sliderKmMedia" style="font-weight: bold;" data-i18n="mapa.minKmMediaTexto">
-					Mínimo de km medios recorridos = </label><span id="valorKmMediaTexto">0</span>
-				<br>
-				<input type="range" id="sliderKmMedia" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
 			</div>
 				
 		</div>

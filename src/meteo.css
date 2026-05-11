@@ -682,8 +682,8 @@ input[type="search"]::-webkit-search-cancel-button {
 	border-radius: 10px;
 	box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
     border-width: 1px;
-	max-width: 335px;
-	min-width: 335px;
+	max-width: 330px;
+	min-width: 329px;
 	min-height: 100px;
 	background-color: #d9ebf9;
 }
@@ -728,8 +728,8 @@ details.config-accordion {
     border: 1px solid rgb(51, 51, 51);
     border-radius: 10px;
     box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
-    max-width: 335px;
-    min-width: 335px;
+    max-width: 330px;
+    min-width: 330px;
     background-color: #d9ebf9;
     box-sizing: border-box;
     
@@ -3031,14 +3031,14 @@ h3 {
 
 /* CONTENEDOR ROSA DE LOS VIENTOS (3x3 Grid) */
 #rosaDeLosVientos {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr); 
-	grid-template-rows: repeat(3, 1fr);
-	width: 80px; 
-	height: 80px;
-	border-radius: 5px;
-	margin-left: 22px;
-	/* overflow: hidden; Esto es clave para que los hijos respeten el radio del padre */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: repeat(3, 1fr);
+    width: 96px;   /* Subimos de 80 a 96 */
+    height: 96px;  /* Subimos de 80 a 96 */
+    border-radius: 5px;
+    margin-left: 15px; /* Ajusta según prefieras el centrado */
+    gap: 1px;      /* Un pequeño espacio entre botones ayuda a la legibilidad */
 }
 
 /* 2. Estilo del contenedor de cada dirección (LABEL) */
@@ -3052,23 +3052,26 @@ h3 {
 	border: 1px solid #00000000;
 	border-radius: 12px;
 }
-/* 🚀 NUEVA REGLA: Estilo del SPAN interno (El contenido visible que será el botón) */
+/* Estilo del SPAN interno (El contenido visible que será el botón) */
 .filtro-orientacion span {
-	padding: 0; /* Ya no necesitamos padding aquí, el flex lo centrará */
-	width: 100%; /* Ocupa todo el ancho disponible */
-	height: 100%; /* Ocupa todo el alto disponible */
-	display: flex; /* Centra el texto dentro del span */
-	justify-content: center;
-	align-items: center;
-	
-	/* 🛑 APLICAR BORDES Y RADIOS AQUÍ para la forma del botón 🛑 */
-	border: 1px solid #ccc; /* Borde del botón */
-	border-radius: 3px; /* Bordes redondeados */
-	background-color: white; /* Fondo blanco por defecto */
-	color: black;
-	
-	transition: all 0.2s ease; /* Transición suave para el cambio de estado */
-	box-sizing: border-box; /* Asegura que el padding/border no desborde el 100% */
+    padding: 0;
+    width: 100%; 
+    height: 100%; 
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    
+    border: 1px solid #ccc; 
+    border-radius: 3px; 
+    background-color: white; 
+    color: black;
+    
+    /* --- AJUSTES PARA IDIOMAS --- */
+    font-size: 14px; /* Bajamos un punto para que "NW" respire mejor */
+    font-weight: bold;
+    
+    transition: all 0.2s ease; 
+    box-sizing: border-box; 
 }
 
 /* 3. Posicionamiento en la Rejilla (Áreas de Grid existentes) */
@@ -3107,7 +3110,7 @@ h3 {
 	cursor: pointer;
 	position: relative;
 	/* Estilo del contenido del centro (el 🧭) */
-	font-size: 1em;
+	font-size: 14px;
 }
 /* 🛑 ESTADO ACTIVO DEL CENTRO 🛑 */
 /* Cuando el checkbox maestro está marcado, aplica el estilo "hundido" al SPAN interno */
@@ -3224,7 +3227,8 @@ h3 {
 
 .control-orientacion-container {  
     margin-bottom: 5px;
-	padding-bottom: 4px;
+    margin-top: 5px;
+	padding: 5px;
 }	
 @media (max-width: 768px) {
 	.control-orientacion-container {
@@ -3239,10 +3243,21 @@ h3 {
 	
 	display: block; /* La convierte en un elemento de bloque que ocupa toda la línea */
     margin-bottom: 5px; /* Opcional: añade un pequeño espacio entre el texto y el slider */	
+    padding: 5px;
 }
 .control-ultimovuelo-container {  
     margin-bottom: 5px;
+    padding: 5px;
 }	
+.configuracion-control-vuelos-container {  
+    margin-bottom: 5px;
+    padding: 5px;
+}	
+.configuracion-control-ultimovuelo-container {  
+    margin-bottom: 5px;
+    padding: 5px;
+}	
+
 /* Ajuste fino posición del la clase original para que coincida con el punto exacto.Original: -20px */
 .leaflet-popup-tip-container { 
 	margin-left: -18px !important;
@@ -3329,3 +3344,4 @@ h3 {
     color: #0078d4;
     width: 30px;
 }
+

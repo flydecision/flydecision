@@ -2474,6 +2474,16 @@ function mostrarAvisoActualizacionMeteo(modelos) {
     }
 }
 
+function traducirCadenaOrientacion(stringOri) {
+    if (!stringOri) return "";
+    // Separamos por comas, traducimos cada código y volvemos a unir
+    // Ejemplo: "O, SO" -> ["O", "SO"] -> ["W", "SW"] -> "W, SW"
+    return stringOri.split(',')
+        .map(s => s.trim())
+        .map(code => t(`orientaciones.${code}`))
+        .join(', ');
+}
+
 // ---------------------------------------------------------------
 // 🔴 BASE DE DATOS INDEXEDDB (Modo Offline sin límite de 5MB)
 // ---------------------------------------------------------------
@@ -2869,6 +2879,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 guardarEnCacheIDB('METEO_DATOS_JSON_CACHE', data);
                 guardarEnCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE', dataEcmwf);
 
+                // Extraemos los timestamps de los JSON recién bajados y pintamos el panel YA ---
+                if(data.timestamp) lastDataGenerationTimestamp = new Date(data.timestamp).getTime();
+                if(data.model_run_ref_time) jsonModelInitTimestamp = new Date(data.model_run_ref_time).getTime();
+                // (Para ECMWF no guardamos ModelRunTime porque lo leemos del .txt del servidor luego)
+
+                if (typeof refrescoPanelInfoActualizaciones === 'function') refrescoPanelInfoActualizaciones();
+
             } catch (error) {
                 // 3. PLAN DE EMERGENCIA: Falló la red, miramos en IndexedDB
                 console.warn("⚠️ Fallo de conexión. Buscando en BD offline (IndexedDB)...");
@@ -2886,6 +2903,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     // Añadimos una marca para saber que estamos en "modo offline"
                     if(data.timestamp) lastDataGenerationTimestamp = new Date(data.timestamp).getTime();
                     if(data.model_run_ref_time) jsonModelInitTimestamp = new Date(data.model_run_ref_time).getTime();
+
+                    // Pintamos el panel YA indicando que estamos offline ---
+                    if (typeof refrescoPanelInfoActualizaciones === 'function') refrescoPanelInfoActualizaciones();
                 } else {
                     console.error("❌ No hay conexión ni datos en la BD offline.");
                     ocultarLoading(); // Importante quitar el loading si fallamos
@@ -3042,7 +3062,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // ---------------------------------------------------------------
 
  		const thRegion = document.createElement("th");
-		thRegion.textContent = "Región";
+		thRegion.textContent = t("tabla.cabeceraRegion");
 		thRegion.rowSpan = 2; // Ocupa las dos filas de la cabecera
 		thRegion.style.fontSize = "18px";
 		thRegion.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda", "borde-grueso-arriba");
@@ -3053,7 +3073,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // ---------------------------------------------------------------
 
  		const thProvincia = document.createElement("th");
-		thProvincia.textContent = "Provincia";
+		thProvincia.textContent = t("tabla.cabeceraProvincia");
 		thProvincia.rowSpan = 2; // Ocupa las dos filas de la cabecera
 		thProvincia.style.fontSize = "18px";
 		thProvincia.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda", "borde-grueso-arriba");
@@ -3069,12 +3089,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         thDespegue.classList.add("borde-grueso-izquierda", "columna-despegue", "borde-grueso-abajo", "borde-grueso-arriba");
 
         if (modoEdicionFavoritos) {
-            thDespegue.textContent = "Despegue";
+            thDespegue.textContent = t("tabla.cabeceraDespegue");
             thDespegue.classList.add("borde-grueso-derecha");
         } else {
             // En vista normal, creamos dos líneas: Título + Mini Contador
             thDespegue.innerHTML = `
-                <div style="line-height: 1.1;">Despegue</div>
+                <div style="line-height: 1.1;">${t("tabla.cabeceraDespegue")}</div>
                 <div id="header-contador-mini" title="Número de despegues favoritos (♥️) mostrados en la tabla"></div>
             `;
         }
@@ -3883,7 +3903,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				
 			const tdDespegue = document.createElement("td");
 						
-			const titleText = `Provincia: ${d.Provincia}\nDespegue: ${d.Despegue}\nOrientación: ${d["Orientación"]}`;
+			const titleText = `Provincia: ${d.Provincia}\nDespegue: ${d.Despegue}\nOrientación: ${traducirCadenaOrientacion(d["Orientación"])}`;
 			
 			tdDespegue.title = titleText;
 			
@@ -3916,7 +3936,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 <b><span style='font-size: 18px; padding-right: 20px;'>🪂 ${d.Despegue}</b></span><br>
                 Región: <b>${d.Región}</b><br>
                 Provincia: <b>${d.Provincia}</b><br>
-                Orientación: <b>${svgParaTooltip} <span style='vertical-align:middle;'>${d["Orientación"]}</span></b><br>
+                Orientación: <b>${svgParaTooltip} <span style='vertical-align:middle;'>${traducirCadenaOrientacion(d["Orientación"])}</span></b><br>
                 ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
                 ⛅ <a href='https://meteo-parapente.com/#/${latitud},${longitud},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
                 ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a>
@@ -6118,11 +6138,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 dataGenElement.innerHTML = `
                     <ul style="margin: 5px 0 0 0; padding-left: 27px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
                         <li style="margin-bottom: 8px;">
-                            <b>Météo-France:</b> hace <b>${timeAgoMF}</b> <span style="color:#777; font-style:italic;">(ref. ${refMF}Z)</span><br>
+                            <b>Météo-France:</b> hace <b>${timeAgoMF}</b> <span style="color:#777; font-style:italic;">(ref.${refMF}Z)</span><br>
                             <span>${textoFuturoMF}</span>
                         </li>
                         <li>
-                            <b>ECMWF:</b> hace <b>${timeAgoEC}</b> <span style="color:#777; font-style:italic;">(ref. ${refEC}Z)</span><br>
+                            <b>ECMWF:</b> hace <b>${timeAgoEC}</b> <span style="color:#777; font-style:italic;">(ref.${refEC}Z)</span><br>
                             <span>${textoFuturoEC}</span>
                         </li>
                     </ul>`;
@@ -6344,17 +6364,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // ===============================================================
     // 6. ARRANQUE
     // ===============================================================
-
-    // Esperamos a que TODA la web (imágenes, estilos, scripts) esté cargada
-    window.addEventListener('load', () => {
-
+    // Como ya estamos dentro del evento i18nReady, sabemos que la web está lista. Lo ejecutamos directamente sin esperar al window.onload.
+    
+    if (typeof iniciarMonitorRedNativo === 'function') {
         iniciarMonitorRedNativo();
-        
-        setTimeout(() => {
-            //iniciarHeartbeat();
+    }
+    
+    // Le damos 1 segundo de respiro para que la tabla se dibuje primero, y luego lanzamos el fetch de los txt
+    setTimeout(() => {
+        if (typeof cicloActualizacion === 'function') {
             cicloActualizacion(); 
-        }, 3000); 
-    });
+        }
+    }, 1000);
 
 	// ---------------------------------------------------------------
 	// 🔴 CONFIGURACIÓN GLOBAL DE TOOLTIPS (TIPPY.JS)
@@ -7009,16 +7030,17 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     if (target) {
                         // --- SOLUCIÓN: EL MARCADOR FANTASMA ---
                         if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues.hasLayer(target)) {
-                            // SÍ ESTÁ VISIBLE
+                            // SÍ ESTÁ VISIBLE: Comportamiento normal
                             clustergroupDespegues.zoomToShowLayer(target, function() {
                                 target.openPopup();
                                 map.panTo(target.getLatLng());
                             });
                         } else {
-                            // ESTÁ OCULTO POR FILTRO
+                            // ESTÁ OCULTO POR UN FILTRO: Lo forzamos a aparecer
                             map.setView([lat, lon], 14);
                             target.addTo(map); 
                             target.openPopup();
+                            
                             target.once('popupclose', function() {
                                 map.removeLayer(target);
                             });
@@ -7622,39 +7644,6 @@ function inicializarMapaLeaflet() {
         layers: [WorldTopoMap] 
     });
 
-    /**
-     * Función que inicializa el comportamiento de plegado/expansión.
-     * Al hacer clic, el contenido se expande y el encabezado desaparece.
-     */
-    function initPopupToggle(popupContainer) {
-        // Buscamos el encabezado y el contenido dentro de ESTE popupContainer
-        const toggleHeader = popupContainer.querySelector('.popup-toggle-header');
-        const content = popupContainer.querySelector('.popup-collapsible-content');
-        
-        if (toggleHeader && content) {
-            // Aseguramos el estado inicial (para el caso de que el popup se reabra sin recargar la página)
-            toggleHeader.style.display = 'block'; 
-            toggleHeader.innerHTML = 'Más información ▼'; // Restauramos texto/icono
-            content.style.display = 'none'; // Aseguramos que el contenido esté oculto inicialmente
-            
-            // Añadir el listener al encabezado UNA SOLA VEZ
-            toggleHeader.addEventListener('click', function() {
-                // Solo actuamos si está contraído
-                if (content.style.display === 'none') {
-                    
-                    // LÓGICA DE EXPANSIÓN
-                    content.style.display = 'block'; // Mostrar el contenido
-                    
-                    // Ocultar completamente la línea del encabezado (texto y borde), 
-                    // eliminando la opción de colapsar
-                    toggleHeader.style.display = 'none'; 
-                    
-                } 
-                // NOTA: No hay 'else' ni lógica de colapso.
-            });
-        }
-    }
-
     // 🛑 FUNCIONES DE ACTUALIZACIÓN DE LOS FILTROS, TANTO EJECUTIVO COMO VISUAL
 
     function actualizarFiltrosMapa() {
@@ -7694,7 +7683,6 @@ function inicializarMapaLeaflet() {
         // Filtros de criterios
         const hayFiltroOrientacion = filtrosOrientacion.length > 0;
         const hayFiltroVuelos = minVuelos > 0;
-        const hayFiltroKmMedia = minKmMedia > 0;
         const hayFiltroAnio = !filtroAnioVuelo.esTodos; // Si no está en 'Todos', hay filtro
 
         // LECTURA CHECKBOX MUNDO (DespeguesMundo)
@@ -7826,12 +7814,6 @@ function inicializarMapaLeaflet() {
         const indiceUltimoVuelo = parseInt(sliderUltimoVuelo.value, 10);
         const hayFiltroAnio = indiceUltimoVuelo !== 0;
 
-        // 3. KmMedia: Comprueba si el valor es mayor que 0
-        const sliderKmMedia = document.getElementById('sliderKmMedia');
-        const indiceKmMedia = parseInt(sliderKmMedia.value, 10);
-        // Asume que ESCALA_VUELOS está disponible globalmente
-        const hayFiltroKmMedia = (ESCALA_KMMEDIA[indiceKmMedia] || 0) > 0; 
-        
         function obtenerValorReal(indice) {
             // La misma lógica de tu función actualizarFiltrosMapa
             const indiceNumerico = parseInt(indice, 10);
@@ -7862,12 +7844,6 @@ function inicializarMapaLeaflet() {
             contUltimoVuelo.style.backgroundColor = hayFiltroAnio ? ACTIVO_COLOR : INACTIVO_COLOR;
         }
 
-        // Contenedor KmMedia
-        const contKmMedia = document.querySelector('.control-KmMedia-container');
-        if (contKmMedia) {
-            contKmMedia.style.backgroundColor = hayFiltroKmMedia ? ACTIVO_COLOR : INACTIVO_COLOR;
-        }
-        
         // Contenedor Configuración Vuelos
         document.querySelector('.configuracion-control-vuelos-container').style.backgroundColor = hayConfiguracionInicialFiltroVuelos ? ACTIVO_COLOR : INACTIVO_COLOR;
 
@@ -7876,7 +7852,7 @@ function inicializarMapaLeaflet() {
 
 
         // 4. ACTUALIZAR PANEL GLOBAL
-        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroKmMedia;
+        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio;
         const etiquetaInfoPanel = document.querySelector('.labelMostrarOpciones');
         const infoPanelPrincipal = document.getElementById('infoPanel');
         
@@ -8555,12 +8531,6 @@ function inicializarMapaLeaflet() {
         const dot = `<span class="dot" style="background:${color}"></span>`;
         const CIRCULOactividad = row.Actividad || '';
 
-        // Guardamos el valor numérico real para el filtro (si es vacío o 0, será 0)
-        const KmMediaValor = parseFloat(row.Km_media) || 0;
-
-        // Creamos el texto que se verá en el popup
-        const KmMediaDisplay = (KmMediaValor === 0) ? "-" : KmMediaValor;
-
         const kmmax = row.Km_máx || '';
         const vuelos = row.Vuelos || '';
         const ultimovuelo = row.Último_vuelo || '';
@@ -8568,6 +8538,12 @@ function inicializarMapaLeaflet() {
 
         const icon = createIconDespegue(despegue, actividad, orientaciones);
         const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
+
+        // 1. Traducimos el nombre largo (noroeste -> northwest). Usamos .toLowerCase() para que coincida con las claves del JSON
+        const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
+
+        // 2. Traducimos los códigos (NO -> NW) usando la función existente
+        const codigosOriTraducidos = traducirCadenaOrientacion(row.Orientaciones);
                 
         const popupHtml = `<div style="line-height: 1.2;">
         
@@ -8588,7 +8564,6 @@ function inicializarMapaLeaflet() {
                     <div style="margin-bottom: 5px;">Altitud aprox.: <b>${escapeHtml(altitud)} m</b></div>
                     <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="Nivel de uso del despegue según fecha del último vuelo registrado (referencia: nov-2025): Verde 0–6 meses, Naranja 6–12, Amarillo 12–24, Blanco >24 meses sin vuelos">Nivel de actividad: ${dot}</div>
                     <div style="margin-bottom: 5px;">Nº de vuelos en XContest: <b>${escapeHtml(vuelos)}</b></div>
-                    <div style="margin-bottom: 5px;">Nº de km medios recorridos: <b>${escapeHtml(KmMediaDisplay)}</b></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
@@ -8600,7 +8575,7 @@ function inicializarMapaLeaflet() {
                 </div>`;		
 
         marker.bindPopup(popupHtml, { className: 'popup-despegues', maxWidth: 300 });
-        marker.metadata = { despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, KmMedia: KmMediaValor, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
+        marker.metadata = { despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
         markersDespegues.push(marker); //inserta marker al grupo markersDespegues
         clustergroupDespegues.addLayer(marker);
     });
@@ -10137,3 +10112,25 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
 }
+
+// --- DELEGADO GLOBAL PARA POPUPS DEL MAPA (MÁS INFO) ---
+document.addEventListener('click', function(e) {
+    // Buscamos si el clic ha sido en un elemento (o dentro de un elemento) con la clase 'popup-toggle-header'
+    const toggleHeader = e.target.closest('.popup-toggle-header');
+    
+    if (toggleHeader) {
+        // Encontramos el hermano que tiene el contenido oculto
+        const content = toggleHeader.nextElementSibling;
+        if (content && content.classList.contains('popup-collapsible-content')) {
+            // Ocultamos el título y mostramos el contenido
+            toggleHeader.style.display = 'none';
+            content.style.display = 'block';
+            
+            // Si quieres que el popup de Leaflet se reajuste a la nueva altura, 
+            // simulamos una pequeña actualización en el mapa
+            if (typeof map !== 'undefined' && map.panBy) {
+                map.panBy([0, 1]); // Micro-movimiento para forzar redibujado de la caja
+            }
+        }
+    }
+});
