@@ -1972,10 +1972,19 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
             const indiceReal = indices[Math.round(val)];
             
             if (!horas || horas.length === 0 || indiceReal === undefined) return "";
+            
             const horaString = horas[indiceReal]; 
             const d = new Date(horaString.endsWith('Z') ? horaString : horaString + 'Z');
-            const diasSemanaCorta = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-            return diasSemanaCorta[d.getDay()] + " " + d.getDate();
+
+            // --- TRADUCCIÓN DE LOS DÍAS ---
+            // Mapeamos el número del día (0-6) a las claves de tu JSON
+            const diasClaves = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"];
+            const diaSemanaIndex = d.getDay(); // 0 es Domingo, 1 Lunes...
+            
+            // Obtenemos la traducción: "dias.corto.lun", etc.
+            const diaTraducido = t(`dias.${diasClaves[diaSemanaIndex]}`);
+            
+            return diaTraducido + " " + d.getDate();
         },
         from: (v) => Number(v)
     };
@@ -3170,7 +3179,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			trDias.appendChild(thMeteo);
 		}
 
-		const diasSemana = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+        // Traducción. Mapeamos el índice del día a las claves de tu JSON
+        const clavesDiasLargos = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
 
 		// Solo iterar sobre las horas si existen
 		if (horas.length > 0 && !modoEdicionFavoritos) {
