@@ -237,8 +237,8 @@ if (btnIncNoFavsDistancia) {
                             </div>
 						`,
 						botones:[
-							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
-                            { texto: 'Configurar origen', onclick: function() { 
+							{ texto: t('botones.cancelar'), estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
+                            { texto: t('botones.configurarOrigen'), onclick: function() { 
                                 GestorMensajes.ocultar(); 
                                 const btnGeo = document.getElementById('btn-abrir-geo-menu');
                                 if (btnGeo) btnGeo.click(); // Simulamos un clic en el botón 📍
@@ -289,7 +289,7 @@ if (btnGpsMapa) {
     btnGpsMapa.addEventListener('click', async function() {
         const isApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
         const textoOriginal = btnGpsMapa.innerHTML;
-        btnGpsMapa.innerHTML = "<span>⏳ Buscando...</span>";
+        btnGpsMapa.innerHTML = `<span>${t('gps.buscando')}</span>`;
 
         const onLocationFound = (lat, lon) => {
             btnGpsMapa.innerHTML = textoOriginal;
@@ -298,7 +298,7 @@ if (btnGpsMapa) {
 
         const onLocationError = (errMsg) => {
             console.error("Error GPS:", errMsg);
-            alert("No se pudo obtener la ubicación. " + errMsg);
+            alert(`${t('gps.errorUbicacion')} ${errMsg}`);
             btnGpsMapa.innerHTML = textoOriginal;
         };
 
@@ -312,11 +312,11 @@ if (btnGpsMapa) {
                 const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: false, timeout: 10000 });
                 onLocationFound(pos.coords.latitude, pos.coords.longitude);
             } catch (err) {
-                onLocationError(err.message.includes("disabled") ? "Asegúrate de tener el GPS activado." : "Revisa los permisos.");
+                onLocationError(err.message.includes("disabled") ? t('gps.activaGps') : t('gps.revisaPermisos'));
             }
         } else { 
             if (!navigator.geolocation) {
-                onLocationError("Tu navegador no soporta GPS.");
+                onLocationError(t('gps.noSoportado'));
                 return;
             }
             navigator.geolocation.getCurrentPosition(
@@ -468,13 +468,13 @@ const GestorMensajes = {
     _obtenerBotonEstandar: function(clave) {
         switch(clave.toUpperCase()) {
             case 'ACEPTAR':
-                return { texto: 'Aceptar', accion: () => this.ocultar() };
+                return { texto: t('botones.aceptar'), accion: () => this.ocultar() };
             case 'SIGUIENTE':
-                return { texto: 'Siguiente', accion: () => this.ocultar() }; // Sobrescribir acción al llamar
+                return { texto: t('botones.siguiente'), accion: () => this.ocultar() }; // Sobrescribir acción al llamar
             case 'TERMINAR':
-                return { texto: 'Finalizar', accion: () => this.ocultar() };
+                return { texto: t('botones.finalizar'), accion: () => this.ocultar() };
             case 'CANCELAR':
-                return { texto: 'Cancelar', accion: () => this.ocultar(), claseExtra: 'btn-secundario' };
+                return { texto: t('botones.cancelar'), accion: () => this.ocultar(), claseExtra: 'btn-secundario' };
             default:
                 return { texto: clave, accion: () => this.ocultar() };
         }
@@ -508,7 +508,7 @@ function mensajeModalAceptar(titulo = '', contenido = '', accionesAceptar = '') 
         `,
         botones: [
             {
-                texto: 'Aceptar',
+                texto: t('botones.aceptar'),
                 onclick: function() {
                     GestorMensajes.ocultar();
 					listaFunciones.forEach(nombreFuncion => {
@@ -552,14 +552,14 @@ function mensajeModalAceptarCancelar(titulo = '', contenido = '', accionesAcepta
         `,
         botones: [
             {
-                texto: 'Cancelar',
+                texto: t('botones.cancelar'),
                 estilo: 'secundario',
                 onclick: function() {
                     GestorMensajes.ocultar();
                 }
             },
             {
-                texto: 'Aceptar',
+                texto: t('botones.aceptar'),
                 onclick: function() {
                     GestorMensajes.ocultar();
                     
@@ -588,12 +588,12 @@ function mostrarConfirmacionMasiva(cantidad) {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2em; margin: 0;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></p>
-                <p>¿Quieres marcar <span style="font-weight:bold;">${cantidad}</span> despegues como favoritos?</p>
+                <p>${t('favoritos.confirmacionMasiva', { cantidad: cantidad })}</p>
             </div>
         `,
         botones: [
             {
-				texto: 'Cancelar',
+				texto: t('botones.cancelar'),
 				onclick: function() {
 					GestorMensajes.ocultar(); // Cierra el modal
 					idsPendientesDeConfirmacion = []; // Limpia memoria
@@ -602,7 +602,7 @@ function mostrarConfirmacionMasiva(cantidad) {
 				estilo: 'secundario'
 			},
             { 
-                texto: 'Sí, marcar', 
+                texto: t('botones.siMarcar'), 
                 onclick: confirmarSeleccionMasiva // función existente
             }
         ]
@@ -624,7 +624,7 @@ function mensajeAvisoRecarga(titulo = '', contenido = '') { // Opcional, puede s
         `,
         botones: [
             {
-                texto: 'Aceptar',
+                texto: t('botones.aceptar'),
                 onclick: function() {
                     GestorMensajes.ocultar();
                     location.reload(); 
@@ -667,7 +667,7 @@ function sugerirGuiaPrincipal(forzar = false) {
             }
         },
         {
-            texto: 'Ver guía',
+            texto: t('botones.verGuia'),
             onclick: function() {
                 GestorMensajes.ocultar();
                 localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true'); // Al verla, ya no la sugerimos más
@@ -863,7 +863,7 @@ function sugerirGuiaFavoritos(forzar = false) {
             }
         },
         {
-            texto: 'Ver guía',
+            texto: t('botones.verGuia'),
             onclick: function() {
                 GestorMensajes.ocultar();
                 localStorage.setItem('METEO_GUIA_FAVORITOS_VISTA', 'true'); // Marcamos como vista al aceptarla
@@ -1035,7 +1035,7 @@ function activarEdicionFavoritos() {
         buscadorVisible = true; // Actualizamos la variable global del buscador
     }
     if (inputBuscador) {
-        inputBuscador.placeholder = "🔍 Buscar región, provincia o despegue...";
+        inputBuscador.placeholder = t('buscador.placeholderEdicion');
     }
 
     document.body.classList.add('modo-edicion-tabla');
@@ -1066,7 +1066,7 @@ function filtroVerSoloFavoritos() {
     const favoritosActuales = obtenerFavoritos();
 
     if (!btn.classList.contains("activo") && favoritosActuales.length === 0) {
-        mensajeModalAceptar('', '<p>No tienes despegues marcados como favoritos ♥️.</p>');
+        mensajeModalAceptar('', t('favoritos.noTienesFavoritos'));
         return;
     }
 
@@ -1109,19 +1109,19 @@ function desmarcarFavoritos() {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2em; margin: 0;"><svg viewBox="0 0 24 24" style="width: 1em; height: 1em;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path><line x1="5" y1="5" x2="19" y2="19" stroke="red" stroke-width="3"></line></svg></p>
-                <p>¿Quieres desmarcar todos tus favoritos?</p>
+                <p>${t('favoritos.confirmarDesmarcarTodos')}</p>
             </div>
         `,
         botones:[
             {
-                texto: 'Cancelar',
+                texto: t('botones.cancelar'),
                 estilo: 'secundario',
                 onclick: function() {
                     GestorMensajes.ocultar();
                 }
             },
             {
-                texto: 'Sí, desmarcar',
+                texto: t('botones.siDesmarcar'),
                 onclick: function() {
                     // 1. Sobrescribimos el localStorage con un array vacío
                     localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify([]));
@@ -1140,7 +1140,7 @@ function desmarcarFavoritos() {
                     const thFavorito = document.getElementById('id-thFavorito');
                     if (thFavorito) {
                         thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
-                        thFavorito.title = "Marcar todos los despegues visibles como favoritos";
+                        thFavorito.title = t('favoritos.marcarTodos');
                     }
 
                     // 4. Reconstruimos la tabla para quitar el fondo verde/clases a todos de golpe
@@ -1193,17 +1193,19 @@ function abrirFavoritos() {
                         localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
                         
                         if (typeof mensajeAvisoRecarga === 'function') {
-                            mensajeAvisoRecarga('', `<div style="text-align: center;">
-                            <p>✅ Se han importado ${nuevosFavoritos.length} despegues favoritos</p>
-                        </div>`);
+                            mensajeAvisoRecarga('', `
+                                <div style="text-align: center;">
+                                    <p>${t('favoritos.importadosOk', { n: nuevosFavoritos.length })}</p>
+                                </div>
+                            `);
                         } else {
                             location.reload();
                         }
                     } else {
-                        alert('⚠️ El archivo estaba vacío.');
+                        alert(t('favoritos.archivoVacio'));
                     }
                 } catch (error) {
-                    alert('⚠️ Error al procesar el archivo.');
+                    alert(t('favoritos.errorArchivo'));
                 }
                 
                 delete window.accionCargarFavoritos; 
@@ -1215,7 +1217,7 @@ function abrirFavoritos() {
 
     mensajeModalAceptarCancelar(
         '', 
-        '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📂</p><p><b>⚠️ ATENCIÓN:</b> Importar favoritos sustituirá los actuales.</b><br><br>Si los quieres conservar, cancela este mensaje y usa el botón 💾 <i>Exportar favoritos</i>.</p>', 
+        t('favoritos.importarAviso'), 
         'accionCargarFavoritos'
     );
 }
@@ -1227,7 +1229,7 @@ async function guardarFavoritos() {
     if (favoritos.length === 0) {
         GestorMensajes.mostrar({
             tipo: 'modal',
-            htmlContenido: '<p style="text-align: center;">No hay despegues favoritos para exportar</p>',
+            htmlContenido: `<p style="text-align: center;">${t('favoritos.noHayParaExportar')}</p>`,
             botones: ['ACEPTAR']
         });
         return;
@@ -1246,11 +1248,11 @@ async function guardarFavoritos() {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
 
             const { value, cancelled } = await Dialog.prompt({
-                title: '💾 Exportar favoritos',
-                message: '\nCambia el nombre del archivo o acepta éste:',
+                title: t('favoritos.exportar.tituloDialog'),
+                message: t('favoritos.exportar.mensajeDialog'),
                 inputText: nombreArchivo,
-                okButtonTitle: 'Guardar',
-                cancelButtonTitle: 'Cancelar'
+                okButtonTitle: t('favoritos.exportar.guardar'),
+                cancelButtonTitle: t('favoritos.exportar.cancelar')
             });
 
             if (cancelled) return;
@@ -1279,11 +1281,11 @@ async function guardarFavoritos() {
             });
 
             const confirmResult = await Dialog.confirm({
-                title: '✅ Favoritos guardados con éxito',
-                text: 'Aquí tienes mis despegues favoritos de Fly Decision:',
-                message: `\n${nombreArchivo}\n\n¿Quieres compartirlo ahora?`,
-                okButtonTitle: 'Sí, compartir',
-                cancelButtonTitle: 'No'
+                title: t('favoritos.exportar.okTitulo'),
+                text: t('favoritos.exportar.okTextoShare'),
+                message: `\n${nombreArchivo}\n\n${t('favoritos.exportar.okMensaje')}`,
+                okButtonTitle: t('favoritos.exportar.siCompartir'),
+                cancelButtonTitle: t('favoritos.exportar.noCompartir')
             });
 
             if (confirmResult.value) {
@@ -1342,13 +1344,11 @@ function actualizarContadorVisualFavoritos() {
         const num = obtenerFavoritos().length;
         let texto = "";
 
-        if (num === 1) {
-            texto = `<b>${num}</b> <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favorito`;
-        } else {
-            texto = `<b>${num}</b> <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos`;
-        }
-        
-        el.innerHTML = texto;
+        texto = (num === 1) 
+            ? t('favoritos.tituloSingular', { n: num }) 
+            : t('favoritos.tituloPlural', { n: num });
+                
+                el.innerHTML = texto;
     }
 }
 
@@ -1379,7 +1379,7 @@ let estadoPendienteDeAplicar = false; // true = marcar, false = desmarcar
 function gestionarClickMasivoFavoritos() {
     
     if (!modoEdicionFavoritos) {
-		mensajeModalAceptar('','<p>Para marcar o desmarcar un grupo de favoritos, utiliza la opción:</p><p>Menú ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos]</p>');
+		mensajeModalAceptar('', t('marcadorMasivo.paraMarcarFavoritos'));
         return;
     }
 
@@ -1462,8 +1462,8 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     if (thFavorito) {
         thFavorito.innerHTML = nuevoEstadoEsFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
         thFavorito.title = nuevoEstadoEsFavorito 
-            ? "Desmarcar todos los despegues visibles como favoritos" 
-            : "Marcar todos los despegues visibles como favoritos";
+            ? t('favoritos.desmarcarTodos') 
+            : t('favoritos.marcarTodos');
     }
 
     // Usamos idsAfectados para buscar solo las filas necesarias, 
@@ -1496,7 +1496,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
         if (celda && celda.dataset.id && setAfectados.has(Number(celda.dataset.id))) {
             
             celda.innerHTML = nuevoEstadoEsFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
-            celda.title = nuevoEstadoEsFavorito ? "Quitar de favoritos" : "Añadir a favoritos";
+            celda.title = nuevoEstadoEsFavorito ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos');
             
             const action = nuevoEstadoEsFavorito ? 'add' : 'remove';
             // Aplicamos la clase "favorito" a TODAS las filas del bloque dinámicamente
@@ -1528,9 +1528,7 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
     favoritos = obtenerFavoritos();
 
     if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { 
-        mensajeModalAceptar('', 
-            '<p>Es necesario marcar al menos un despegue favorito ♥️</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src="icons/icono_ayuda_60.webp" width="20" height="20" style="vertical-align:middle;" alt="Guía"></p>'
-        );
+        mensajeModalAceptar('', t('favoritos.necesarioMarcarUno'));
         return false; 
     }
 
@@ -2628,7 +2626,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             }
                         },
                         {
-                            texto: 'Marcar favoritos →',
+                            texto: t('botones.marcarFavoritosFlecha'),
                             onclick: function() {
                                 GestorMensajes.ocultar();
                                 //modoEdicionFavoritos = true; // Pasamos a modo edición
@@ -2662,7 +2660,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             }
                         },
                         {
-                            texto: 'Siguiente →',
+                            texto: t('botones.siguienteFlecha'),
                             onclick: function() {
                                 GestorMensajes.ocultar();
                                 mostrarPaso6(); 
@@ -2692,7 +2690,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             }
                         },
                         {
-                            texto: 'Siguiente →',
+                            texto: t('botones.siguiente'),
                             onclick: function() {
                                 GestorMensajes.ocultar();
                                 mostrarPaso5(); 
@@ -2720,7 +2718,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             }
                         },
                         {
-                            texto: 'Siguiente →',
+                            texto: t('botones.siguiente'),
                             onclick: function() {
                                 GestorMensajes.ocultar();
                                 mostrarPaso4(); 
@@ -2750,7 +2748,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             }
                         },
                         {
-                            texto: 'Siguiente →',
+                            texto: t('botones.siguiente'),
                             onclick: function() {
                                 GestorMensajes.ocultar();
                                 mostrarPaso3(); 
@@ -2771,7 +2769,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             <p>🗺️ Mapa de despegues.</p>`,
                         botones: [
                             {
-                                texto: 'Marcar favoritos',
+                                texto: t('botones.marcarFavoritos'),
                                 onclick: function() {
                                     GestorMensajes.ocultar();
                                     //modoEdicionFavoritos = true; 
@@ -2780,7 +2778,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                                 }
                             },
                             {
-                                texto: 'Ver la guía general',
+                                texto: t('botones.verGuiaGeneral'),
                                 estilo: 'secundario',
                                 onclick: function() {
                                     GestorMensajes.ocultar();
@@ -2789,7 +2787,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             },
                             
                             {
-                                texto: 'Importar configuración',
+                                texto: t('botones.importarConfiguracion'),
                                 estilo: 'secundario',
                                 onclick: function() {
                                     GestorMensajes.ocultar();
@@ -3058,7 +3056,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
 		if (modoEdicionFavoritos) { // Si se está editando favoritos, que aparezca la mano
 			thFavorito.style.cursor = "pointer";
-			thFavorito.title = "Marcar o desmarcar como favoritos todos los despegues actualmente visibles en la tabla";
+			thFavorito.title = t('favoritos.marcardesmarcarCabecera');
 		} else {
 			thFavorito.style.userSelect = "none";
 			thFavorito.style.cursor = "default";
@@ -3853,10 +3851,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 
                 if (modoEdicionFavoritos) { // Si se está editando favoritos, que aparezca la mano
                     tdFavorito.classList.add("cursor-pointer");
-                    tdFavorito.title = esFavorito ? "Quitar de favoritos" : "Añadir a favoritos";
+                    tdFavorito.title = esFavorito ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos');
                 } else {
                     tdFavorito.classList.add("no-cursor-pointer");
-                    tdFavorito.title = "Despegue favorito";
+                    tdFavorito.title = t('favoritos.despegueFavorito');
                 }
                 
                 //tdFavorito.innerHTML = esFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
@@ -3867,7 +3865,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     const nuevoEstado = toggleFavorito(idDespegue);
 
                     tdFavorito.innerHTML = nuevoEstado ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
-                    tdFavorito.title = nuevoEstado ? "Quitar de favoritos" : "Añadir a favoritos";
+                    tdFavorito.title = nuevoEstado ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos');
 
                     todasLasFilas.forEach(f => f.classList.toggle("favorito", nuevoEstado));
                     
@@ -3906,7 +3904,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				
 			const tdDespegue = document.createElement("td");
 						
-			const titleText = `Provincia: ${d.Provincia}\nDespegue: ${d.Despegue}\nOrientación: ${traducirCadenaOrientacion(d["Orientación"])}`;
+			const titleText = t('tabla.despegueTooltip', { 
+                provincia: d.Provincia, 
+                despegue: d.Despegue, 
+                orientacion: traducirCadenaOrientacion(d["Orientación"]) 
+            });
 			
 			tdDespegue.title = titleText;
 			
@@ -4013,18 +4015,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 };
 
                 // Iconos Grupo 1: ECMWF (Precipitación, Nubes bajas)
-                addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', 'Meteo general (lluvia / nubosidad total)');
-                addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', 'Precipitación en mm (litros/m²)');
-                addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', 'Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²)');
-                //addIconCell(filaBaseNube, '<span style="font-size:16px; font-weight:bold;">☁️↓</span>', 'Nubosidad baja (%): Porcentaje del cielo cubierto por nubes bajas (del suelo hasta 2000 m de altitud)');
-                addIconCell(filaBaseNube, '<span style="font-size:16px; font-weight:bold;">☁️↕</span>', 'Base de nube AGL (km): Altura de la base de la nube sobre el suelo. Estimación aproximada calculada a partir de la temperatura 2m y punto de rocío 2m.');
-                
+                addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', t('tabla.tooltips.meteoGeneral'));
+                addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', t('tabla.tooltips.precipitacion'));
+                addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', t('tabla.tooltips.probPrecipitacion'));
+                addIconCell(filaBaseNube, '<span style="font-size:16px; font-weight:bold;">☁️↕</span>', t('tabla.tooltips.baseNube'));
+
                 // Velocidades alturas
                 if (chkMostrarVientoAlturas) {
                     const alturas = [
-                        { tr: fila180, label: "180 m", title: "Viento medio a 180 m (km/h)" },
-                        { tr: fila120, label: "120 m", title: "Viento medio a 120 m (km/h)" },
-                        { tr: fila80,  label: "80 m",  title: "Viento medio a 80 m (km/h)" }
+                        { tr: fila180, label: t('tabla.viento_altura', { metros: 180 }), title: t('tabla.tooltips.viento180m') },
+                        { tr: fila120, label: t('tabla.viento_altura', { metros: 120 }), title: t('tabla.tooltips.viento120m') },
+                        { tr: fila80,  label: t('tabla.viento_altura', { metros: 80 }),  title: t('tabla.tooltips.viento80m') }
                     ];
 
                     alturas.forEach(item => {
@@ -4038,20 +4039,21 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 }
 
                 // Velocidad 10 m
-				const tdIconoVelocidad = document.createElement("td");
-				tdIconoVelocidad.innerHTML = '<span style="font-size:10px; font-weight:bold;">10 m</span>';
-				tdIconoVelocidad.setAttribute("title", "Viento medio a 10 m (km/h)");
-				tdIconoVelocidad.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
-                //tdIconoVelocidad.style.cursor = "help";
-				
-				filaVel.appendChild(tdIconoVelocidad);	 	 	 	
-				
-				// Racha 10 m
-				const tdIconoRacha = document.createElement("td");	
-                   tdIconoRacha.innerHTML = '<img src="icons/icono_racha_48x42.webp" width="16" height="14">';
-				tdIconoRacha.setAttribute("title", "Racha máxima a 10 m (km/h)");
-				/* Añadir clase para asegurar la posición fija */
-				tdIconoRacha.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
+                const tdIconoVelocidad = document.createElement("td");
+                // Traducimos la etiqueta "10 m" usando la misma lógica que las alturas superiores
+                const label10m = t('tabla.viento_altura', { metros: 10 });
+                tdIconoVelocidad.innerHTML = `<span style="font-size:10px; font-weight:bold;">${label10m}</span>`;
+                tdIconoVelocidad.setAttribute("title", t('tabla.tooltips.viento10m'));
+                tdIconoVelocidad.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
+
+                filaVel.appendChild(tdIconoVelocidad);	 	 	 	
+
+                // Racha 10 m
+                const tdIconoRacha = document.createElement("td");	
+                tdIconoRacha.innerHTML = '<img src="icons/icono_racha_48x42.webp" width="16" height="14">';
+                tdIconoRacha.setAttribute("title", t('tabla.tooltips.racha10m'));
+                /* Añadir clase para asegurar la posición fija */
+                tdIconoRacha.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
 				
                 // Forzamos altura a 20px
                 tdIconoRacha.style.height = "20px";
@@ -4064,10 +4066,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				filaRacha.appendChild(tdIconoRacha);
 
 				// Dirección 10 m
-				const tdIconoDireccion = document.createElement("td");	
-                   tdIconoDireccion.innerHTML = '<img src="icons/icono_direccion_45.webp" width="15" height="15">';
-				tdIconoDireccion.setAttribute("title", "Dirección del viento a 10 m");	
-				tdIconoDireccion.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
+                const tdIconoDireccion = document.createElement("td");	
+                tdIconoDireccion.innerHTML = '<img src="icons/icono_direccion_45.webp" width="15" height="15">';
+                tdIconoDireccion.setAttribute("title", t('tabla.tooltips.direccion10m'));	
+                tdIconoDireccion.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
 
                 // Forzamos altura a 20px
                 tdIconoDireccion.style.height = "20px";
@@ -4075,29 +4077,28 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 tdIconoDireccion.style.maxHeight = "20px";
                 tdIconoDireccion.style.lineHeight = "20px";
                 tdIconoDireccion.style.padding = "0px";
-                tdIconoDireccion.style.boxSizing = "border-box"; // Vital para que los bordes no sumen altura
-				
-				filaDir.appendChild(tdIconoDireccion);
+                tdIconoDireccion.style.boxSizing = "border-box"; 
+
+                filaDir.appendChild(tdIconoDireccion);
 
                 // Cizalladura
-				if (chkMostrarCizalladura) {
-				    const tdIconoCiz = document.createElement("td");	
-				    //tdIconoCiz.innerHTML = '<span style="font-size:4px;">🌪️🎯</span>';
+                if (chkMostrarCizalladura) {
+                    const tdIconoCiz = document.createElement("td");	
                     tdIconoCiz.innerHTML = '';
                     tdIconoCiz.style.background = "linear-gradient(to right, #6befaf 33.3%, #f0c16a 33.3%, #f0c16a 66.6%, #fb796e 66.6%)";
-				    tdIconoCiz.setAttribute("title", "Cizalladura de Bajo Nivel por velocidad / Fiabilidad del pronóstico de viento medio");	
-				    tdIconoCiz.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda", "celda-altura-4px");
+                    tdIconoCiz.setAttribute("title", t('tabla.tooltips.cizalladura'));	
+                    tdIconoCiz.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda", "celda-altura-4px");
                     tdIconoCiz.style.borderTop = "1px solid #000";
                     tdIconoCiz.style.borderBottom = "1px solid #000";
-                    //tdIconoCiz.style.cursor = "help";
 
-				    filaCizalladura.appendChild(tdIconoCiz);
-				}
+                    filaCizalladura.appendChild(tdIconoCiz);
+                }
 
                 // Iconos Grupo 2: XC
-                addIconCell(filaTecho, '<span style="font-size:10px; font-weight:bold;">Techo</span>', 'Altitud (km) sobre nivel del mar (MSL) del techo de vuelo previsto y usable en parapente (= espesor capa límite BLH x 0.85 + altitud media suelo celda ECMWF 9km)');
-                addIconCell(filaCape, '<span style="font-size:10px; font-weight:bold;">CAPE</span>', 'CAPE (J/kg): Energía Potencial Convectiva Disponible (Convective Available Potential Energy)');
-                addIconCell(filaCin, '<span style="font-size:10px; font-weight:bold;">CIN</span>', 'CIN (J/kg): Inhibición Convectiva (Convective INhibition)');
+                // Nota: He creado claves para los nombres de las etiquetas (Techo, CAPE, CIN) para que cambien en inglés
+                addIconCell(filaTecho, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.techo')}</span>`, t('tabla.tooltips.techo'));
+                addIconCell(filaCape, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.cape')}</span>`, t('tabla.tooltips.cape'));
+                addIconCell(filaCin, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.cin')}</span>`, t('tabla.tooltips.cin'));
 
 				// ---------------------------------------------------------------
 				// ⚪ CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Columnas de datos por hora
@@ -4532,23 +4533,31 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 					        let textoCelda = delta > 0 ? `+${delta}` : `${delta}`;
 
                             let iconoResultado = "🟩";
-					        let textoResultado = "Cizalladura baja y Fiabilidad alta";
-					        let motivoCalculo = "Valores inferiores a los umbrales";
+                            let textoResultado = t('tabla.cizalladura.baja');
+                            let motivoCalculo = t('tabla.cizalladura.motivoBajo');
 
-					        // 🔴 ROJO (Peligro alto / Fiabilidad baja)
-					        if (ratio > 2.0 && delta > 12) {
-					            colorCizalladura = "fondo-rojo";
-					            iconoResultado = "🟥";
-					            textoResultado = "Cizalladura alta y Fiabilidad baja";
-					            motivoCalculo = `Ratio (<b>${ratio.toFixed(1)}x</b>) > 2.0 &nbsp;<b>Y</b>&nbsp; Δ (<b>${delta}</b>) > 12 km/h.`;
-					        } 
-					        // 🟡 NARANJA (Atención / Fiabilidad media)
-					        else if (ratio > 1.5 && delta > 8) {
-					            colorCizalladura = "fondo-naranja";
-					            iconoResultado = "🟧";
-					            textoResultado = "Cizalladura media y Fiabilidad media";
-					            motivoCalculo = `Ratio <b>${ratio.toFixed(1)}x</b> > 1.5 &nbsp;<b>Y</b>&nbsp; Δ <b>${delta}</b> > 8 km/h`;
-					        } 
+                            // 🔴 ROJO (Peligro alto / Fiabilidad baja)
+                            if (ratio > 2.0 && delta > 12) {
+                                colorCizalladura = "fondo-rojo";
+                                iconoResultado = "🟥";
+                                textoResultado = t('tabla.cizalladura.alta');
+                                // Pasamos ratio y delta como variables para la traducción
+                                motivoCalculo = t('tabla.cizalladura.motivoAlto', { 
+                                    ratio: ratio.toFixed(1), 
+                                    delta: delta 
+                                });
+                            } 
+                            // 🟡 NARANJA (Atención / Fiabilidad media)
+                            else if (ratio > 1.5 && delta > 8) {
+                                colorCizalladura = "fondo-naranja";
+                                iconoResultado = "🟧";
+                                textoResultado = t('tabla.cizalladura.media');
+                                // Pasamos ratio y delta como variables para la traducción
+                                motivoCalculo = t('tabla.cizalladura.motivoMedio', { 
+                                    ratio: ratio.toFixed(1), 
+                                    delta: delta 
+                                });
+                            } 
 
 					        // PINTADO DE LA CELDA
 
@@ -4587,8 +4596,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                                 let espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
                                 let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
                                 
-                                return `Techo usable en parapente: ${altitudMSL} m MSL\n` +
-                                    `Cálculo = ${espesorUtil} m espesor útil AGL (${Math.round(RATIO_TECHO_UTIL * 100)}% de la BLH teórica de ${espesorBLH} m) + ${Math.round(elevacionModeloECMWF)} m altitud (suelo medio celda ECMWF 9km)\n`;
+                                return t('tabla.techoTooltip', {
+                                    altitudMSL: altitudMSL,
+                                    espesorUtil: espesorUtil,
+                                    pct: Math.round(RATIO_TECHO_UTIL * 100),
+                                    blh: espesorBLH,
+                                    elevacion: Math.round(elevacionModeloECMWF)
+                                });
                             }
                         );
                         // CAPE
@@ -4966,14 +4980,14 @@ function btnRestablecerConfiguración() {
         `,
         botones: [            
             {
-				texto: 'Cancelar',
+				texto: t('botones.cancelar'),
 				onclick: function() {
 					GestorMensajes.ocultar();
 				},
 				estilo: 'secundario'
 			},
 			{ 
-                texto: 'Aceptar', 
+                texto: t('botones.aceptar'), 
 				onclick: function() {
                 GestorMensajes.ocultar();
 				localStorage.clear();
@@ -5118,35 +5132,47 @@ function aplicarFiltrosVisuales() {
     const incluirNoFavs = btnIncNoFavs ? btnIncNoFavs.classList.contains('activo') : false;
 
     if (divContador) {
+        // 1. Iconos y Badge (Traducido)
+        const iconoFiltro = `<img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">`;
+        const heartRed = `<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">`;
+        const heartWhite = `<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">`;
+        
+        // El badge usa visibles como número y el título traducido
+        const htmlNumeroFiltrado = `<span class="contador-badge-filtro" title="${t('mapa.capasYFiltros')}">${iconoFiltro}<b>${visibles}</b></span>`;
+
         if (modoEdicionFavoritos) {
             if (soloFavoritos) {
-                const htmlNumeroFiltrado = `<span class="contador-badge-filtro" title="Filtro activo"><img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro"><b>${visibles}</b></span>`;
-                divContador.innerHTML = `${htmlNumeroFiltrado} despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">) de <b>${totalDespeguesDisponibles}</b> disponibles`;
+                // "X favoritos (❤️) de Y disponibles"
+                divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesFavoritosEdicion', { n: heartRed, total: totalDespeguesDisponibles })}`;
             } else if (visibles < totalDespeguesDisponibles) {
-                const htmlNumeroFiltrado = `<span class="contador-badge-filtro" title="Filtro activo"><img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro"><b>${visibles}</b></span>`;
-                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles`;
+                // "X de Y disponibles"
+                divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesDisponiblesFiltrados', { total: totalDespeguesDisponibles })}`;
             } else {
-                divContador.innerHTML = `<b>${totalDespeguesDisponibles}</b> despegues disponibles`;
+                // "Y disponibles"
+                divContador.innerHTML = t('contador.despeguesDisponibles', { n: totalDespeguesDisponibles });
             }
         } else {
-            let distanciaLimiteParaFavs = 9999;
+            // Lógica de distancia
+            let distLim = 9999;
             if (sliderDistElem && sliderDistElem.noUiSlider) {
-                const idxDist = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
-                distanciaLimiteParaFavs = CORTES_DISTANCIA_GLOBAL[idxDist];
+                distLim = CORTES_DISTANCIA_GLOBAL[Math.round(parseFloat(sliderDistElem.noUiSlider.get()))];
             }
-            const ignorarFiltroFavoritos = (distanciaLimiteParaFavs < 9999 && incluirNoFavs);
+            const ignorarFiltroFavoritos = (distLim < 9999 && incluirNoFavs);
 
             if (ignorarFiltroFavoritos) {
-                const htmlNumeroFiltrado = `<span class="contador-badge-filtro" title="Filtro activo"><img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro"><b>${visibles}</b></span>`;
-                divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalDespeguesDisponibles}</b> despegues disponibles (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">)`;
+                // "X de Y disponibles (❤️+🤍)"
+                const icons = `${heartRed}+${heartWhite}`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesDisponiblesFiltrados', { total: totalDespeguesDisponibles })} (${icons})`;
             } else if (totalFavoritos === 0) {
-                divContador.innerHTML = `Total de despegues disponibles: ${totalDespeguesDisponibles}`;
+                // "Total disponibles: Y"
+                divContador.innerHTML = t('contador.totalDisponibles', { n: totalDespeguesDisponibles });
             } else {
-                if (visibles < totalFavoritos || distanciaLimite < 9999) {
-                    const htmlNumeroFiltrado = `<span class="contador-badge-filtro" title="Filtro activo"><img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro"><b>${visibles}</b></span>`;
-                    divContador.innerHTML = `${htmlNumeroFiltrado} de <b>${totalFavoritos}</b> despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)`;
+                if (visibles < totalFavoritos || distLim < 9999) {
+                    // "X de Z favoritos (❤️)"
+                    divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesFavoritosFiltrados', { total: totalFavoritos })} (${heartRed})`;
                 } else {
-                    divContador.innerHTML = `<b>${visibles}</b> despegues favoritos (<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)`;
+                    // "X favoritos (❤️)"
+                    divContador.innerHTML = `${t('contador.despeguesFavoritos', { n: visibles })} (${heartRed})`;
                 }
             }
         }
@@ -5171,10 +5197,10 @@ function aplicarFiltrosVisuales() {
             // --- MODO "BASE DE DATOS TOTAL" (Corazón oculto) ---
             // Mostramos cuántos se ven respecto al total global de despegues
             miniCounter.innerHTML = `${visibles} de ${totalDespeguesDisponibles}`;
-            miniCounter.title = "Número de despegues visibles de la base de datos completa";
+            miniCounter.title = t('contador.miniTodosBD');
         } else {
             // --- MODO "FAVORITOS" (Corazón visible) ---
-            miniCounter.title = "Número de despegues favoritos / filtrados";
+            miniCounter.title = t('contador.miniFavoritos');
             
             if (hayFiltros) {
                 miniCounter.innerHTML = `${visibles} de ${totalFavs} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
@@ -5207,12 +5233,14 @@ function aplicarFiltrosVisuales() {
         });
 
 		if (coincidenciasGlobales.length > 0) {
-			let html = `<p class="sugerencia-aviso">💡 No tienes favoritos con * <b>${filtroLimpio}</b> *, pero tienes disponibles en la base de datos de despegues:</p><ul class="sugerencia-lista">`;
+			let html = `<p class="sugerencia-aviso">${t('buscador.sugerenciaTitulo', { termino: filtroLimpio })}</p><ul class="sugerencia-lista">`;
 			coincidenciasGlobales.slice(0, 3).forEach(d => {
 				html += `
 					<li class="sugerencia-item">
 						<span class="sugerencia-texto"><b>${d.Despegue}</b> <br><small style="color:#666;">(${d.Provincia})</small></span>
-						<button class="sugerencia-btn" onclick="agregarDespegueDesdeBuscador(${d.ID})">+ Añadir favorito <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></button>
+						<button class="sugerencia-btn" onclick="agregarDespegueDesdeBuscador(${d.ID})">
+                            ${t('buscador.anadirFavorito')} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">
+                        </button>
 					</li>`;
 			});
 			html += `</ul>`;
@@ -5266,6 +5294,7 @@ function agregarDespegueDesdeBuscador(idDespegue) {
             GestorMensajes.mostrar({
                 tipo: 'modal',
                 htmlContenido: `<p>✅ <b>${nombreDespegue}</b> añadido</p>`,
+                htmlContenido: `<p>${t('favoritos.anadidoOk', { nombre: nombreDespegue })}</p>`,
                 botones: [] // Sin botones, porque se cerrará solo
             });
 
@@ -5288,7 +5317,7 @@ function agregarDespegueDesdeBuscador(idDespegue) {
 }
 
 // Función global para limpiar el buscador, restaurar el placeholder. Antes estaba en el ...Listener ('DOMContentLoaded', function() {
-const placeholderOriginal = '🔍 Buscar despegue o provincia...';
+let placeholderOriginal = '🔍 Buscar despegue o provincia...';
 let inputBuscador = null; // Se inicializará al cargar el DOM
 let botonLimpiar = null;  // Se inicializará al cargar el DOM
 //let badge = null;  // Se inicializará al cargar el DOM
@@ -5317,6 +5346,9 @@ function limpiarBuscador() {
  */
 // En lugar de DOMContentLoaded, esperamos a nuestro evento personalizado
 document.addEventListener('i18nReady', function() {
+
+    // --- ASIGNACIÓN DE TRADUCCIONES DIFERIDAS ---
+    placeholderOriginal = t('buscador.placeholder');
 	
     // 1. Intentamos poner la versión (si falla, que no rompa lo demás)
     try {
@@ -5363,7 +5395,7 @@ document.addEventListener('i18nReady', function() {
                         </div>
                     `,
                     botones: [{
-                        texto: 'Aceptar',
+                        texto: t('botones.aceptar'),
                         onclick: function() {
                             GestorMensajes.ocultar();
                             activarEdicionFavoritos();
@@ -5530,7 +5562,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             `,
             botones: [
                 {
-                    texto: 'Entendido',
+                    texto: t('botones.entendido'),
                     onclick: function() {
                         // Guardamos que ya lo ha visto para que no vuelva a salir
                         localStorage.setItem('METEO_AVISO_CAMBIOS_XC_VISTO', 'true');
@@ -5638,8 +5670,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
                             </div>
 						`,
 						botones:[
-							{ texto: 'Cancelar', estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
-                            { texto: 'Configurar origen', onclick: function() { 
+							{ texto: t('botones.cancelar'), estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
+                            { texto: t('botones.configurarOrigen'), onclick: function() { 
                                 GestorMensajes.ocultar(); 
                                 const btnGeo = document.getElementById('btn-abrir-geo-menu');
                                 if (btnGeo) btnGeo.click(); // Simulamos un clic en el botón 📍
@@ -5918,8 +5950,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     // Datos
     let lastStatusTimestamp = 0;
-    let currentStatusText = 'Cargando...'; 
-    let currentStatusTextEcmwf = 'Cargando...'; 
+    let currentStatusText = t('actualizacion.cargando');
+    let currentStatusTextEcmwf = t('actualizacion.cargando'); 
     let lastDataGenerationTimestamp = 0;
     let lastDataGenerationTimestampEcmwf = 0; 
     let jsonModelInitTimestamp = 0; 
@@ -6715,12 +6747,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
             htmlContenido: '<p>¿Quieres salir de la aplicación?</p>',
             botones: [
                 {
-                    texto: 'No',
+                    texto: t('botones.no'),
                     onclick: function() { GestorMensajes.ocultar(); },
                     estilo: 'secundario'
                 },
                 {
-                    texto: 'Sí, salir',
+                    texto: t('botones.siSalir'),
                     estilo: 'background-color: #d32f2f; color: white;', // Rojo para indicar cierre
                     onclick: function() {
                         // Esta orden cierra la App nativa de Android

@@ -15,10 +15,10 @@
   "botones": {
     "aceptar": "OK",
     "cancelar": "Cancel",
-    "siguiente": "Next →",
+    "siguiente": "Next",
+    "siguienteFlecha": "Next →",
     "finalizar": "Finish",
     "verGuia": "See guide",
-    "cerrarGuia": "Close guide",
     "noGracias": "No, thanks",
     "siMarcar": "Yes, mark",
     "siDesmarcar": "Yes, unmark",
@@ -50,9 +50,7 @@
   },
 
   "offline": {
-    "esperandoConexion": "Waiting for connection...",
-    "sinDatos": "No connection and no cached data available.",
-    "datosOffline": "No connection. Data age: {{tiempo}}."
+    "esperandoConexion": "Waiting for connection..."
   },
 
   "gps": {
@@ -71,21 +69,21 @@
   },
 
   "favoritos": {
-    "tituloSingular": "<b>{{n}}</b> Favorite",
-    "tituloPlural": "<b>{{n}}</b> Favorites",
+    "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorite",
+    "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorites",
     "anadirAFavoritos": "Add to favorites",
     "quitarDeFavoritos": "Remove from favorites",
     "despegueFavorito": "Favorite takeoff",
     "marcarTodos": "Mark all visible takeoffs as favorites",
     "desmarcarTodos": "Unmark all visible takeoffs as favorites",
+    "marcardesmarcarCabecera": "Mark or unmark all currently visible takeoffs in the table as favorites",
     "noHayParaDesmarcar": "No favorite takeoffs to unmark",
     "noHayParaExportar": "No favorite takeoffs to export",
-    "noTienesFavoritos": "<p>No takeoffs marked as favorites ♥️.</p>",
+    "noTienesFavoritos": "<p>No takeoffs marked as favorites ♥️</p>",
     "necesarioMarcarUno": "<p>At least one favorite takeoff is required ♥️</p><p>If you want, you can check the quick guide for this screen using the <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guide'> button.</p>",
     "confirmacionMasiva": "Do you want to mark <span style='font-weight:bold;'>{{cantidad}}</span> takeoffs as favorites?",
     "confirmarDesmarcarTodos": "Do you want to unmark all your favorites?",
     "anadidoOk": "✅ <b>{{nombre}}</b> added",
-    "anadidoOkFallback": "✅ {{nombre}} added to favorites",
     "importadosOk": "✅ {{n}} favorite takeoffs have been imported",
     "archivoVacio": "⚠️ The file was empty.",
     "errorArchivo": "⚠️ Error processing the file.",
@@ -129,29 +127,35 @@
       "verEnMapa": "View on map",
       "notaCondiciones": "Takeoff Conditions score: {{nota}} points"
     },
+    "labels": {
+        "techo": "Ceiling",
+        "cape": "CAPE",
+        "cin": "CIN"
+    },
     "cizalladura": {
       "baja": "Low Shear and High Reliability",
       "media": "Moderate Shear and Medium Reliability",
       "alta": "High Shear and Low Reliability",
       "motivoBajo": "Values below thresholds",
       "motivoMedio": "Ratio {{ratio}}x > 1.5 AND Δ {{delta}} > 8 km/h",
-      "motivoAlto": "Ratio (<b>{{ratio}}x</b>) > 2.0 &nbsp;<b>AND</b>&nbsp; Δ (<b>{{delta}}</b>) > 12 km/h."
+      "motivoAlto": "Ratio {{ratio}}x > 2.0 AND Δ {{delta}} > 12 km/h"
     },
     "techoTooltip": "Usable flight ceiling: {{altitudMSL}} m MSL\nCalculation = {{espesorUtil}} m usable thickness AGL ({{pct}}% of the theoretical {{blh}} m BLH) + {{elevacion}} m altitude (ECMWF 9km cell mean ground level)\n",
     "despegueTooltip": "Province: {{provincia}}\nTakeoff: {{despegue}}\nOrientation: {{orientacion}}",
     "cargando": "Loading...",
     "cabeceraRegion": "Region",
     "cabeceraProvincia": "Province",
-    "cabeceraDespegue": "Takeoff"
+    "cabeceraDespegue": "Takeoff",
+    "viento_altura": "{{metros}} m"
   },
 
   "contador": {
     "despeguesFavoritos": "<b>{{n}}</b> favorite takeoffs",
-    "despeguesFavoritosFiltrados": "<b>{{n}}</b> of <b>{{total}}</b> favorite takeoffs",
-    "despeguesDisponibles": "<b>{{n}}</b> takeoffs available",
-    "despeguesDisponiblesFiltrados": "<b>{{n}}</b> of <b>{{total}}</b> takeoffs available",
-    "despeguesFavoritosEdicion": "<b>{{n}}</b> favorites of <b>{{total}}</b> available takeoffs",
-    "totalDisponibles": "Total takeoffs available: {{n}}",
+    "despeguesFavoritosFiltrados": "<b>{{total}}</b> favorite takeoffs",
+    "despeguesDisponibles": "<b>{{n}}</b> available takeoffs",
+    "despeguesDisponiblesFiltrados": "out of <b>{{total}}</b> available takeoffs",
+    "despeguesFavoritosEdicion": "{{n}} favorites out of <b>{{total}}</b> available",
+    "totalDisponibles": "Total takeoffs available: <b>{{n}}</b>",
     "miniTodosBD": "Number of visible takeoffs from the full database",
     "miniFavoritos": "Number of favorite / filtered takeoffs"
   },

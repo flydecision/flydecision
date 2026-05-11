@@ -15,11 +15,11 @@
   "botones": {
     "aceptar": "Aceptar",
     "cancelar": "Cancelar",
-    "siguiente": "Siguiente →",
+    "siguiente": "Siguiente",
+    "siguienteFlecha": "Siguiente →",
     "finalizar": "Finalizar",
     "verGuia": "Ver guía",
-    "cerrarGuia": "Cerrar guía",
-    "noGracias": "No",
+    "noGracias": "No, gracias",
     "siMarcar": "Sí, marcar",
     "siDesmarcar": "Sí, desmarcar",
     "siSalir": "Sí, salir",
@@ -50,9 +50,7 @@
   },
 
   "offline": {
-    "esperandoConexion": "Esperando conexión...",
-    "sinDatos": "No hay conexión ni datos en caché.",
-    "datosOffline": "Sin conexión. Antigüedad datos: {{tiempo}}."
+    "esperandoConexion": "Esperando conexión..."
   },
 
   "gps": {
@@ -71,21 +69,21 @@
   },
 
   "favoritos": {
-    "tituloSingular": "<b>{{n}}</b> Favorito",
-    "tituloPlural": "<b>{{n}}</b> Favoritos",
+    "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorito",
+    "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoritos",
     "anadirAFavoritos": "Añadir a favoritos",
     "quitarDeFavoritos": "Quitar de favoritos",
     "despegueFavorito": "Despegue favorito",
     "marcarTodos": "Marcar todos los despegues visibles como favoritos",
     "desmarcarTodos": "Desmarcar todos los despegues visibles como favoritos",
+    "marcardesmarcarCabecera": "Marcar o desmarcar como favoritos todos los despegues actualmente visibles en la tabla",
     "noHayParaDesmarcar": "No hay despegues favoritos para desmarcar",
     "noHayParaExportar": "No hay despegues favoritos para exportar",
-    "noTienesFavoritos": "<p>No tienes despegues marcados como favoritos ♥️.</p>",
+    "noTienesFavoritos": "<p>No tienes despegues marcados como favoritos ♥️</p>",
     "necesarioMarcarUno": "<p>Es necesario marcar al menos un despegue favorito ♥️</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guía'></p>",
     "confirmacionMasiva": "¿Quieres marcar <span style='font-weight:bold;'>{{cantidad}}</span> despegues como favoritos?",
     "confirmarDesmarcarTodos": "¿Quieres desmarcar todos tus favoritos?",
     "anadidoOk": "✅ <b>{{nombre}}</b> añadido",
-    "anadidoOkFallback": "✅ {{nombre}} añadido a favoritos",
     "importadosOk": "✅ Se han importado {{n}} despegues favoritos",
     "archivoVacio": "⚠️ El archivo estaba vacío.",
     "errorArchivo": "⚠️ Error al procesar el archivo.",
@@ -129,29 +127,35 @@
       "verEnMapa": "Ver en el mapa",
       "notaCondiciones": "Nota Condiciones despegue: {{nota}} puntos"
     },
+    "labels": {
+        "techo": "Techo",
+        "cape": "CAPE",
+        "cin": "CIN"
+    },
     "cizalladura": {
       "baja": "Cizalladura baja y Fiabilidad alta",
       "media": "Cizalladura media y Fiabilidad media",
       "alta": "Cizalladura alta y Fiabilidad baja",
       "motivoBajo": "Valores inferiores a los umbrales",
       "motivoMedio": "Ratio {{ratio}}x > 1.5 Y Δ {{delta}} > 8 km/h",
-      "motivoAlto": "Ratio (<b>{{ratio}}x</b>) > 2.0 &nbsp;<b>Y</b>&nbsp; Δ (<b>{{delta}}</b>) > 12 km/h."
+      "motivoAlto": "Ratio {{ratio}}x > 2.0 Y Δ {{delta}} > 12 km/h"
     },
     "techoTooltip": "Techo usable en parapente: {{altitudMSL}} m MSL\nCálculo = {{espesorUtil}} m espesor útil AGL ({{pct}}% de la BLH teórica de {{blh}} m) + {{elevacion}} m altitud (suelo medio celda ECMWF 9km)\n",
     "despegueTooltip": "Provincia: {{provincia}}\nDespegue: {{despegue}}\nOrientación: {{orientacion}}",
     "cargando": "Cargando...",
     "cabeceraRegion": "Región",
     "cabeceraProvincia": "Provincia",
-    "cabeceraDespegue": "Despegue"
+    "cabeceraDespegue": "Despegue",
+    "viento_altura": "{{metros}} m"
   },
 
   "contador": {
     "despeguesFavoritos": "<b>{{n}}</b> despegues favoritos",
-    "despeguesFavoritosFiltrados": "<b>{{n}}</b> de <b>{{total}}</b> despegues favoritos",
+    "despeguesFavoritosFiltrados": "<b>{{total}}</b> despegues favoritos",
     "despeguesDisponibles": "<b>{{n}}</b> despegues disponibles",
-    "despeguesDisponiblesFiltrados": "<b>{{n}}</b> de <b>{{total}}</b> despegues disponibles",
-    "despeguesFavoritosEdicion": "<b>{{n}}</b> despegues favoritos de <b>{{total}}</b> disponibles",
-    "totalDisponibles": "Total de despegues disponibles: {{n}}",
+    "despeguesDisponiblesFiltrados": "de <b>{{total}}</b> despegues disponibles",
+    "despeguesFavoritosEdicion": "{{n}} favoritos de <b>{{total}}</b> disponibles",
+    "totalDisponibles": "Total de despegues disponibles: <b>{{n}}</b>",
     "miniTodosBD": "Número de despegues visibles de la base de datos completa",
     "miniFavoritos": "Número de despegues favoritos / filtrados"
   },
