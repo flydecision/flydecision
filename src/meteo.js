@@ -3400,31 +3400,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		thCondiciones.style.fontSize = "18px";
 		thCondiciones.classList.add("columna-condiciones", "borde-grueso-izquierda", "borde-grueso-arriba", "borde-grueso-abajo");	
 		thCondiciones.style.userSelect = "none";
-        const tooltipContent = 
-            "<b style='font-size:20px;'>⭐ Puntuaciones (0-10)</b><br><br>" +
-            "El sistema calcula automáticamente dos puntuaciones para cada despegue teniendo en cuenta el rango de tiempo seleccionado. Ambas se muestran coloreadas con una gradación de rojo a verde.<br><br>" +
-            
-            "<b>1. Condiciones del despegue (fila superior):</b><br>" +
-            "Valora la viabilidad de despegar analizando el pronóstico de cada hora frente a las preferencias indicadas en ⚙️ Configuración:" +
-            "<ul style='margin-top: 4px; margin-bottom: 12px;'>" +
-            "<li>Límites de viento medio (mínimo, ideal y máximo).</li>" +
-            "<li>Límite de racha máxima.</li>" +
-            "<li>Orientación u orientaciones del despegue.</li>" +
-            "<li>Lluvia (veto automático y 0 puntos a la hora afectada).</li>" +
-            "</ul>" +
-            
-            "<b>2. Condiciones para mantenerse en térmicas o iniciar XC (fila inferior):</b><br>" +
-            "Valora la puntuación de Condiciones del despegue y el potencial térmico para vuelos de distancia (Cross Country) usando los datos del modelo ECMWF:" +
-            "<ul style='margin-top: 4px; margin-bottom: 8px;'>" +
-            "<li><b>Techo:</b> Premia techos altos sobre la altura media del relieve y penaliza bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li>" +
-            "<li><b>CAPE:</b> Premia los días azules o de cúmulos inofensivos, y penaliza los valores extremos por riesgo de sobredesarrollo o tormenta (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li>" +
-            "<li><b>CIN:</b> Penaliza la inhibición convectiva alta (inversión) que actúa como tapón frenando la formación de térmicas (🟩 &le; 50 | 🟥 > 150 J/kg).</li>" +
-            "</ul>" +
-            "<i style='color: #555;'>Nota: La puntuación XC es <b>independiente</b> de la orientación o el viento del despegue. Evalúa puramente el potencial térmico de la masa de aire en esa zona. Solo se anula (0 puntos) si hay previsión de lluvia o tormenta severa.</i><br><br>" +
-            
-            "⚠️ <b>Aviso:</b> Faltaría el dato esencial de la base de nube (CBH = Cloud Base Height) para saber si el despegue estará cubierto por nube. Es un valor del ECMWF no disponible aún en la pasarela (solicitado en marzo-2026, pendiente y sin fecha prevista). Deberás consultarlo en otros servicios.<br><br>" +
-            
-            "<b>Por defecto, los despegues se reordenan automáticamente por la primera puntuación</b> (Condiciones del despegue), de mayor a menor. Puedes cambiar este comportamiento en: ⚙️ <i>Ajustes</i> > <i>Otras opciones</i> > <i>Ordenar por Condiciones XC</i>.";        
+        const tooltipContent = t('tooltipCondiciones');        
         thCondiciones.setAttribute("data-tippy-content", tooltipContent);
         thCondiciones.setAttribute("tabindex", "0"); 
         thCondiciones.style.cursor = "help"; // Cambia el cursor para indicar que hay info
@@ -5062,12 +5038,7 @@ function btnRestablecerConfiguración() {
 
 	GestorMensajes.mostrar({
         tipo: 'modal',
-        htmlContenido: `
-            <div style="text-align: center;">
-                <p style="font-size: 2em; margin: 0;">🔄</p>
-                <p><b>⚠️ ATENCIÓN:</b> Esta acción reseteará la configuración a la original y desmarcará todos los despegues favoritos.</p>
-            </div>
-        `,
+        htmlContenido: t('ajustes.avisoResetConfigHtml'),
         botones: [            
             {
 				texto: t('botones.cancelar'),
