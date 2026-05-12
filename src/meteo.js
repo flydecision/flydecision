@@ -8258,7 +8258,7 @@ function inicializarMapaLeaflet() {
     onAdd: function(map) {
     var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-locate');
     var link = L.DomUtil.create('a', '', container);
-    link.title = 'Ir a mi ubicación';
+    link.title = t('mapa.irMiUbicacion');
     link.innerHTML =
     '<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
         '<circle cx="12" cy="12" r="6" stroke="#000" stroke-width="2" fill="none"/>' +
@@ -8290,7 +8290,7 @@ function inicializarMapaLeaflet() {
                 shadowUrl: 'css/images/marker-shadow.png',
                 shadowSize: [41, 41]
             })
-            }).addTo(map).bindPopup("<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Estás aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>", { 
+            }).addTo(map).bindPopup(t('mapa.estaAqui'), { 
                 className: 'popup-ajustado', 
                 maxWidth: 'auto' 
             }).openPopup();
@@ -8321,8 +8321,8 @@ function inicializarMapaLeaflet() {
     ;
 
     // Tras añadirlo al mapa, cambio el título del plugin a uno traducido
-    document.querySelector('.leaflet-control-geocoder.leaflet-bar').setAttribute('title', 'Buscador general (poblaciones, lugares y coordenadas)');
-    document.querySelector('.leaflet-control-geocoder-form input[type="search"]').setAttribute('placeholder', 'Buscar lugar o coordenadas...');
+    document.querySelector('.leaflet-control-geocoder.leaflet-bar').setAttribute('title', t('mapa.buscadorTitulo'));
+    document.querySelector('.leaflet-control-geocoder-form input[type="search"]').setAttribute('placeholder', t('mapa.buscadorPlaceholder'));
     document.querySelector('.leaflet-control-geocoder-form input[type="search"]').style.fontSize = '16px';
         
     // 🟡 CONTROL "Configuración" (Despliega #configuracionPanel)
@@ -8353,7 +8353,7 @@ function inicializarMapaLeaflet() {
             // 3. El Botón
             const buttonDiv = L.DomUtil.create('div', 'leaflet-control-button', container);
             buttonDiv.style.cursor = 'pointer';
-            buttonDiv.title = 'Ajustes'; 
+            buttonDiv.title = t('mapa.ajustes'); 
             
             // Iconos (Engranaje y X)
             this._iconGear = `<svg width="30" height="30" viewBox="-3 -3 30 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -8627,22 +8627,22 @@ function inicializarMapaLeaflet() {
         const popupHtml = `<div style="line-height: 1.2;">
         
                 <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
-                <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">Orientación: ${SVGorientaciones} <b>${escapeHtml(orientacion)}</b></div>
+                <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(orientacion)}</b></div>
                 <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                 <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
                 <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
                 
                 <div class="popup-toggle-header" 
                     style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
-                    Más información: ▼
+                    ${t('mapa.masInformacion')}
                 </div>
                 
                 <div class="popup-collapsible-content" style="display: none; overflow-wrap: break-word; ">
 
-                    <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
-                    <div style="margin-bottom: 5px;">Altitud aprox.: <b>${escapeHtml(altitud)} m</b></div>
-                    <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="Nivel de uso del despegue según fecha del último vuelo registrado (referencia: nov-2025): Verde 0–6 meses, Naranja 6–12, Amarillo 12–24, Blanco >24 meses sin vuelos">Nivel de actividad: ${dot}</div>
-                    <div style="margin-bottom: 5px;">Nº de vuelos en XContest: <b>${escapeHtml(vuelos)}</b></div>
+                    <div style="margin-bottom: 5px;">${t('mapa.labelCoordenadas')} <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
+                    <div style="margin-bottom: 5px;">${t('mapa.labelAltitud')} <b>${escapeHtml(altitud)} m</b></div>
+                    <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="${t('popupDespegue.nivelActividadTitle')}">${t('mapa.labelActividad')} ${dot}</div>
+                    <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>

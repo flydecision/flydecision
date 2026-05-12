@@ -395,7 +395,7 @@
     "orientacion": "Orientation:",
     "cerrarPanel": "Close Panel",
     "fijarPanel": "Pin Panel (don't hide when moving map)",
-    "masInformacion": "More info ▼",
+    "masInformacion": "More information ▼",
     "volverEdicion": "Back to Edit Favorites",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;You are here&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "capasCheckbox": {
@@ -513,6 +513,10 @@
     "noroeste": "Northwest",
     "nornoroeste": "North-Northwest",
     "todos_title": "Orientation filters are active. Click to clear all."
+  },
+
+  "cron": {
+    "Actualización en curso... ⏳": "Update in progress... ⏳"
   }
 
 }

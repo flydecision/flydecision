@@ -513,6 +513,10 @@
     "noroeste": "Noroeste",
     "nornoroeste": "Norte-Noroeste",
     "todos_title": "Hay filtros de orientación activos. Haz clic para desactivarlos todos."
+  },
+
+  "cron": {
+    "Actualización en curso... ⏳": "Actualización en curso... ⏳"
   }
 
 }
