@@ -6297,7 +6297,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         let redECMWF = false;
 
         try {
-            const[resMF, resECMWF] = await Promise.all([
+            const [resMF, resECMWF] = await Promise.all([
                 fetch('https://flydecision.com/meteo-status.txt?t=' + Date.now()).catch(() => null),
                 fetch('https://flydecision.com/meteo-status-ecmwf.txt?t=' + Date.now()).catch(() => null)
             ]);
@@ -6308,64 +6308,68 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // --- ESTADO MÉTÉO-FRANCE ---
             if (resMF && resMF.ok) {
                 redMF = true;
-                currentStatusText = (await resMF.text()).trim();
-                const upperText = currentStatusText.toUpperCase();
+                const rawTextMF = (await resMF.text()).trim();
+                
+                // Solo traducimos si es exactamente la frase de "en curso"
+                currentStatusText = (rawTextMF === "Actualización en curso... ⏳") 
+                    ? t('cron.Actualización en curso... ⏳') 
+                    : rawTextMF;
 
+                const upperText = rawTextMF.toUpperCase();
                 if (upperText.includes("OPERATIVO")) {
                     currentlyUpdatingMF = false;
                 } else if (!upperText.includes("ERROR") && !upperText.includes("FATAL") && !upperText.includes("FAILED")) {
                     currentlyUpdatingMF = true;
-                    nuevoIntervalo = 5000; // Aceleramos
+                    nuevoIntervalo = 5000;
                 }
             }
 
             // --- ESTADO ECMWF ---
             if (resECMWF && resECMWF.ok) {
                 redECMWF = true;
-                currentStatusTextEcmwf = (await resECMWF.text()).trim();
-                const upperTextE = currentStatusTextEcmwf.toUpperCase();
+                const rawTextEC = (await resECMWF.text()).trim();
 
+                // Solo traducimos si es exactamente la frase de "en curso"
+                currentStatusTextEcmwf = (rawTextEC === "Actualización en curso... ⏳") 
+                    ? t('cron.Actualización en curso... ⏳') 
+                    : rawTextEC;
+
+                const upperTextE = rawTextEC.toUpperCase();
                 if (upperTextE.includes("OPERATIVO")) {
                     currentlyUpdatingEC = false;
                 } else if (!upperTextE.includes("ERROR") && !upperTextE.includes("FATAL") && !upperTextE.includes("FAILED")) {
                     currentlyUpdatingEC = true;
-                    nuevoIntervalo = 5000; // Aceleramos
+                    nuevoIntervalo = 5000;
                 }
             } else {
-                if (currentStatusTextEcmwf === 'Cargando...') currentStatusTextEcmwf = "Esperando primer dato...";
+                // Texto de fallback en caso de error de red
+                if (currentStatusTextEcmwf === 'Cargando...') {
+                    currentStatusTextEcmwf = t('actualizacion.esperandoPrimerDato');
+                }
             }
 
-            // --- LÓGICA DE AVISO (MODAL) Y CUENTA ATRÁS ---
-            
-            // 1. Detectar si alguno ha terminado de actualizar (pasó de true a false)
+            // --- LÓGICA DE AVISO (MODAL) ---
             const mfTermino = (window.oldUpdatingMF && !currentlyUpdatingMF);
             const ecTermino = (window.oldUpdatingEC && !currentlyUpdatingEC);
 
             let modelosRecientes = [];
-            if (mfTermino) modelosRecientes.push("Viento (Météo-France: Arome-HD y Arpege)");
-            if (ecTermino) modelosRecientes.push("Meteo general y condiciones térmicas XC (ECMWF)");
+            // Traducimos también los nombres de los modelos para el aviso modal
+            if (mfTermino) modelosRecientes.push(t('actualizacion.avisoModelos.viento'));
+            if (ecTermino) modelosRecientes.push(t('actualizacion.avisoModelos.general'));
 
             if (modelosRecientes.length > 0) {
                 if (guiaActiva) {
-                    // Si la guía está activa, guardamos los nombres para mostrarlos luego
                     actualizacionesPendientes = actualizacionesPendientes.concat(modelosRecientes);
-                    // Quitamos duplicados por si acaso se actualizan dos veces en una guía larguísima
                     actualizacionesPendientes = [...new Set(actualizacionesPendientes)];
                 } else {
-                    // Si no hay guía, los mostramos directamente
                     mostrarAvisoActualizacionMeteo(modelosRecientes);
                 }
             }
 
-            // 2. Guardamos el estado en la ventana para leerlo en el siguiente segundo
             window.oldUpdatingMF = currentlyUpdatingMF;
             window.oldUpdatingEC = currentlyUpdatingEC;
-
-            // 3. Modificamos tu variable global para que la UI (la cuenta atrás) se oculte
-            //    si *CUALQUIERA* de los dos está en pleno proceso.
             statusActualizaciónEnCurso = (currentlyUpdatingMF || currentlyUpdatingEC);
 
-            // --- RED ---
             if (!redMF && !redECMWF) {
                 gestionarCambioConexion('offline');
             } else {

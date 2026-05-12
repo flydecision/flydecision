@@ -350,7 +350,12 @@
     "horas": "~{{h}} h {{m}} min",
     "minutos": "~{{m}} min",
     "sinConexion": "⚠️ No hay conexión a Internet. Antigüedad datos: {{tiempo}}.",
-    "hace": "hace <b>{{tiempo}}</b>"
+    "hace": "hace <b>{{tiempo}}</b>",
+    "esperandoPrimerDato": "Esperando primer dato...",
+    "avisoModelos": {
+      "viento": "Viento (Météo-France: Arome-HD y Arpege)",
+      "general": "Meteo general y condiciones térmicas XC (ECMWF)"
+    }
   },
 
   "ajustes": {
