@@ -443,7 +443,25 @@
     "labelActividad": "Activity level:",
     "labelVuelos": "No. of XContest flights:",
     "labelKmMedia": "Average km distance:",
-    "labelMasInfo": "More information:"
+    "labelMasInfo": "More information:",
+
+    "capasBase": {
+      "esriTopo": "ESRI World Topographic",
+      "esriOrto": "ESRI World Imagery",
+      "osmOpenTopo": "OpenStreetMap OpenTopoMap style",
+      "osmCyclOSM": "OpenStreetMap CyclOSM style",
+      "thunderforest": "Thunderforest Outdoors",
+      "ignTopo": "IGN Spain Topographic",
+      "ignClaro": "IGN Spain Topographic (Light)",
+      "ignOrto": "IGN Spain Satellite",
+      "osmStandard": "OpenStreetMap Standard style",
+      "hipsometrico": "Hypsometric Relief",
+      "tracestrack": "Tracestrack Topo",
+      "icgc": "ICGC Catalonia",
+      "esriSkyways": "ESRI Topo + Skyways (KK7)",
+      "esriThermals": "ESRI Topo + Thermals (KK7)",
+      "esriAll": "ESRI Topo + Skyways+Thermals (KK7)"
+    }
   },
 
   "popupDespegue": {

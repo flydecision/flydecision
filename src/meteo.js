@@ -2438,12 +2438,11 @@ async function exportarFavoritos(contenidoTexto) {
 }
 
 async function exportarConfiguracion() {
-    // 1. Recopilamos todas las configuraciones de la app
     const perfilUsuario = {};
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        // Solo cogemos las variables de la app para no mezclar con otras cosas
-        if (key && key.startsWith("METEO_")) {
+        // Cogemos las de la app Y la del idioma
+        if (key && (key.startsWith("METEO_") || key === "i18nextLng")) {
             perfilUsuario[key] = localStorage.getItem(key);
         }
     }
@@ -2537,16 +2536,22 @@ function importarConfiguracion() {
                 try {
                     const perfilImportado = JSON.parse(e.target.result);
 
+                    // Borramos todo lo actual para que la importación sea limpia
                     localStorage.clear(); 
                     
-                    // Verificamos de forma básica que es un backup válido de la app
                     let keysImportadas = 0;
                     for (const key in perfilImportado) {
-                        if (key.startsWith("METEO_")) {
+                        // MODIFICACIÓN: Ahora permitimos también i18nextLng
+                        if (key.startsWith("METEO_") || key === "i18nextLng") {
                             localStorage.setItem(key, perfilImportado[key]);
-                            keysImportadas++;
+                            
+                            // Solo contamos las de la app para la verificación de éxito
+                            if (key.startsWith("METEO_")) {
+                                keysImportadas++;
+                            }
                         }
                     }
+
                     if (keysImportadas > 0) {
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga(``, `<div style="text-align: center;">
@@ -8430,21 +8435,21 @@ function inicializarMapaLeaflet() {
 
     // 🟡 CONTROL "Capas"
     const baseMaps = {
-    "ESRI Mundial topográfico": WorldTopoMap,
-    "ESRI Mundial ortofotos": esri,	
-    "OpenStreetMap estilo OpenTopoMap": OpenTopoMap,
-    "OpenStreetMap estilo CyclOSM": CyclOSM,
-    "Thunderforest Outdoors": ThunderforestOutdoors,
-    "IGN España topográfico": IGNspaintopo,
-    "IGN España topográfico claro": IGNspainbase,
-    "IGN España ortofotos": IGNPNOA,
-    "OpenStreetMap estilo OpenStreetMap": OpenStreetMap,  
-    "Relieve Hipsométrico": Hipsometrico,
-    "Tracestrack Topo": TracesTrackTopo,
-    "ICGC Catalunya": ICGC,
-    "ESRI Topo + Skyways (KK7)": capaMezcladaWorldTopoMapKK7SkyWays,
-    "ESRI Topo + Thermals (KK7)": capaMezcladaWorldTopoMapKK7Thermals,
-    "ESRI Topo + Skyways+Thermals (KK7)": capaMezcladaWorldTopoMapKK7SkyWaysThermals
+        [t('mapa.capasBase.esriTopo')]: WorldTopoMap,
+        [t('mapa.capasBase.esriOrto')]: esri,	
+        [t('mapa.capasBase.osmOpenTopo')]: OpenTopoMap,
+        [t('mapa.capasBase.osmCyclOSM')]: CyclOSM,
+        [t('mapa.capasBase.thunderforest')]: ThunderforestOutdoors,
+        [t('mapa.capasBase.ignTopo')]: IGNspaintopo,
+        [t('mapa.capasBase.ignClaro')]: IGNspainbase,
+        [t('mapa.capasBase.ignOrto')]: IGNPNOA,
+        [t('mapa.capasBase.osmStandard')]: OpenStreetMap,  
+        [t('mapa.capasBase.hipsometrico')]: Hipsometrico,
+        [t('mapa.capasBase.tracestrack')]: TracesTrackTopo,
+        [t('mapa.capasBase.icgc')]: ICGC,
+        [t('mapa.capasBase.esriSkyways')]: capaMezcladaWorldTopoMapKK7SkyWays,
+        [t('mapa.capasBase.esriThermals')]: capaMezcladaWorldTopoMapKK7Thermals,
+        [t('mapa.capasBase.esriAll')]: capaMezcladaWorldTopoMapKK7SkyWaysThermals
     };
     // 1. Guardamos el control en una variable
     const controlCapas = L.control.layers(baseMaps, {}, { position: 'topright' }).addTo(map);

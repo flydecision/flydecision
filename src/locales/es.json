@@ -443,7 +443,25 @@
     "labelActividad": "Nivel de actividad:",
     "labelVuelos": "Nº de vuelos en XContest:",
     "labelKmMedia": "Nº de km medios recorridos:",
-    "labelMasInfo": "Más información:"
+    "labelMasInfo": "Más información:",
+
+    "capasBase": {
+      "esriTopo": "ESRI Mundial topográfico",
+      "esriOrto": "ESRI Mundial ortofotos",
+      "osmOpenTopo": "OpenStreetMap estilo OpenTopoMap",
+      "osmCyclOSM": "OpenStreetMap estilo CyclOSM",
+      "thunderforest": "Thunderforest Outdoors",
+      "ignTopo": "IGN España topográfico",
+      "ignClaro": "IGN España topográfico claro",
+      "ignOrto": "IGN España ortofotos",
+      "osmStandard": "OpenStreetMap estilo OpenStreetMap",
+      "hipsometrico": "Relieve Hipsométrico",
+      "tracestrack": "Tracestrack Topo",
+      "icgc": "ICGC Catalunya",
+      "esriSkyways": "ESRI Topo + Skyways (KK7)",
+      "esriThermals": "ESRI Topo + Thermals (KK7)",
+      "esriAll": "ESRI Topo + Skyways+Thermals (KK7)"
+    }
   },
 
   "popupDespegue": {
