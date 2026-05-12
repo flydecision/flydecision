@@ -382,11 +382,10 @@
     },
     "guia": "Guía",
     "ayuda": "Ayuda",
-    "legal": "Legal"
-  },
-
-  "panelConfiguracion": {
-    "titulo": "Ajustes"
+    "legal": "Legal",
+    "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENCIÓN:</b> Importar un archivo de configuración sustituirá toda tu configuración actual y despegues favoritos.</b></p>",
+    "importadoConfigOk": "✅ Se ha importado la configuración",
+    "errorArchivoConfig": "⚠️ El archivo no parece ser una copia de seguridad válida de Fly Decision."
   },
 
   "mapa": {

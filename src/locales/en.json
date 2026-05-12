@@ -382,11 +382,10 @@
     },
     "guia": "Guide",
     "ayuda": "Help",
-    "legal": "Legal"
-  },
-
-  "panelConfiguracion": {
-    "titulo": "Settings"
+    "legal": "Legal",
+    "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATTENTION:</b> Importing a configuration file will replace all your current settings and favorite takeoffs.</b></p>",
+    "importadoConfigOk": "✅ Configuration has been imported",
+    "errorArchivoConfig": "⚠️ The file does not appear to be a valid Fly Decision backup."
   },
 
   "mapa": {

@@ -2556,14 +2556,14 @@ function importarConfiguracion() {
                     if (keysImportadas > 0) {
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga(``, `<div style="text-align: center;">
-                            <p>✅ Se ha importado la configuración</p>
+                            <p>${t('ajustes.importadoConfigOk')}</p>
                         </div>`);
                         } else {
-                            alert("✅ Se ha importado la configuración");
+                            alert(t('ajustes.importadoConfigOk'));
                             location.reload();
                         }
                     } else {
-                        alert('⚠️ El archivo no parece ser una copia de seguridad válida de Fly Decision.');
+                        alert(t('ajustes.errorArchivoConfig'));
                     }
                 } catch (error) {
                     alert('⚠️ Error al leer el archivo. Asegúrate de que es el archivo .json correcto.');
@@ -2583,7 +2583,7 @@ function importarConfiguracion() {
     } else {
         mensajeModalAceptarCancelar(
         '', 
-        '<div style="text-align: center;"><p style="font-size: 2em; margin: 0;">📂</p><p><b>⚠️ ATENCIÓN:</b> Importar un archivo de configuración sustituirá toda tu configuración actual y despegues favoritos.</b></p>', 
+        t('ajustes.avisoImportarConfig'), 
         'accionCargarPerfil'
         );
     }
@@ -6866,15 +6866,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
     function confirmarSalidaApp() {
         GestorMensajes.mostrar({
             tipo: 'modal',
-            htmlContenido: '<p>¿Quieres salir de la aplicación?</p>',
+            htmlContenido: `<p>${t('salirApp.pregunta')}</p>`,
             botones: [
                 {
-                    texto: t('botones.no'),
+                    texto: t('salirApp.no'),
                     onclick: function() { GestorMensajes.ocultar(); },
                     estilo: 'secundario'
                 },
                 {
-                    texto: t('botones.siSalir'),
+                    texto: t('salirApp.si'),
                     estilo: 'background-color: #d32f2f; color: white;', // Rojo para indicar cierre
                     onclick: function() {
                         // Esta orden cierra la App nativa de Android
