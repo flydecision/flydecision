@@ -174,12 +174,44 @@
     "podrasVerla": "Puedes verla cuando quieras con el botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> de esta pantalla.",
     "pasos": {
       "paso1": {
-        "titulo": "Pantalla principal",
-        "descripcion": "Aquí tienes la tabla con los datos meteorológicos para tus despegues favoritos."
+        "titulo": "🪂 Pantalla principal",
+        "descripcion": "Esta es la pantalla de uso habitual de la aplicación.<br><br>Muestra una tabla con todos los despegues que has seleccionado como favoritos y muestra su pronóstico y puntuación de condiciones (para despegar y para iniciar rutas XC).<br><br>Los despegues están siempre ordenados automáticamente por su puntuación de condiciones para despegar (de mayor a menor)."
+      },
+      "selectorHorario": {
+        "titulo": "🗓️ Selector de rango horario",
+        "descripcion": "Ajusta este deslizador desde ambos extremos para seleccionar el rango horario que te interese.<br><br>La tabla mostrará solo esas horas y la puntuación de condiciones se recalculará para ese intervalo de tiempo concreto."
+      },      
+      "diasSemana": {
+        "titulo": "🗓️ Días de la semana",
+        "descripcion": "Estos botones de día de la semana facilitan la selección del rango horario de ese día. Será el uso habitual de la aplicación: echar un vistazo rápido a los despegues 'posibles' ese día.<br><br>👉🏽 Voy a seleccionar éste como ejemplo para que veas cómo funciona."
+      },
+      "diaSeleccionado": {
+        "titulo": "🗓️ Día seleccionado",
+        "descripcion": "Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>💡 Puedes mover los deslizadores a tu rango horario concreto y así la puntuación será más ajustada. Puedes personalizar ese rango horario diario 'automático' en ⚙️ Ajustes."
+      },
+      "columnaMeteo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><span style='font-size:25px; display: block;'>🌦️</span><span>Columna de meteorología</span></div>",
+        "descripcion": "Muestra los datos meteorológicos.<br><br>Selecciona el icono para ver el significado de cada parámetro."
+      },
+      "filaCizalladura": {
+        "titulo": "🟩🟧🟥 Fila de Cizalladura / Fiabilidad",
+        "descripcion": "Esta fila especial es un indicador combinado. Es un semáforo de colores que muestra simultáneamente dos datos concurrentes: la Cizalladura de Bajo Nivel y la Fiabilidad del pronóstico de viento a 10 m de altura."
+      },
+      "columnaPuntuacion": {
+        "titulo": "⭐ Columna de puntuación",
+        "descripcion": "El sistema calcula dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse en térmicas o iniciar Cross Country (XC).<br><br>Los despegues se reordenan automáticamente por puntuación de Condiciones para despegar.<br><br>En ⚙️ Ajustes puedes personalizar tus límites para el cálculo."
       },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Información del despegue</span></div>",
-        "descripcion": "Muestra información más completa del despegue y enlaces a su pronóstico en otras webs de meteorología."
+        "descripcion": "Muestra información más completa del despegue y enlaces a su pronóstico en Windy, Meteo-parapente y Meteoblue."
+      },
+      "btnOrigen": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Punto de origen",
+        "descripcion": "Aquí eliges el punto de origen del filtro de distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
+      },
+      "btnIncNoFavs": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Incluir no favoritos",
+        "descripcion": "Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>💡 Sirve para buscar rápidamente condiciones de vuelo en despegues de diferentes zonas fuera de nuestra zona de favoritos."
       },
       "btnMapa": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa del despegue</span></div>",
@@ -200,14 +232,6 @@
       "filtroDistancia": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
         "descripcion": "Es un filtro que te permite mostrar solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para encontrar rápidamente los despegues que estén en un radio de distancia que elijas alrededor de un punto."
-      },
-      "btnOrigen": {
-        "titulo": "Punto de origen",
-        "descripcion": "Aquí eliges el punto de origen del filtro de distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
-      },
-      "btnIncNoFavs": {
-        "titulo": "Incluir no favoritos",
-        "descripcion": "Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>💡 Sirve para buscar rápidamente condiciones de vuelo en despegues de diferentes zonas fuera de nuestra zona de favoritos."
       },
       "sliderDistancia": {
         "titulo": "Distancia al punto",

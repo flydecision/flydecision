@@ -711,70 +711,111 @@ function iniciarGuiaPrincipal(forzar = false) {
     const driverObj = window.driver.js.driver({
         
         showProgress: true, 
-        progressText: '{{current}} de {{total}}',
+        progressText: t('guiaPrincipal.progreso'),
         smoothScroll: true,
         overlayClickBehavior: () => {}, 
         overlayColor: 'rgba(0, 0, 0, 0.75)', 
         allowClose: true,      
         stageRadius: 8,   
 
-        nextBtnText: 'Siguiente →',
+        nextBtnText: t('guiaPrincipal.siguiente'),
         prevBtnText: '←',
-        doneBtnText: 'Cerrar guía',
+        doneBtnText: t('guiaPrincipal.cerrar'),
 
         steps: [
-            { popover: { title: '🪂 Pantalla principal', description: 'Esta es la pantalla de uso habitual de la aplicación.<br><br>Muestra una tabla con todos los despegues que has seleccionado como favoritos y muestra su pronóstico y puntuación de condiciones (para despegar y para iniciar rutas XC).<br><br>Los despegues están siempre ordenados automáticamente por su puntuación de condiciones para despegar (de mayor a menor).' },
+            { 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.paso1.titulo'), 
+                    description: t('guiaPrincipal.pasos.paso1.descripcion') 
+                } 
             },
-
-            { element: '.div-paneles-controles-transparente', 
-                popover: { title: '🗓️🕜 Selector de rango horario', description: 'Ajusta este deslizador desde ambos extremos para seleccionar el rango horario que te interese.<br><br>La tabla mostrará solo esas horas y la puntuación de condiciones se recalculará para ese intervalo de tiempo concreto.'} },
-
-            { element: '.noUi-value.noUi-value-horizontal.noUi-value-large', 
-                popover: { title: '🗓️ Días de la semana', description: 'Estos botones de día de la semana facilitan la selección del rango horario de ese día. Será el uso habitual de la aplicación: echar un vistazo rápido a los despegues "posibles" ese día.<br><br>👉🏽 Voy a seleccionar éste como ejemplo para que veas cómo funciona.'},
-
+            { 
+                element: '.div-paneles-controles-transparente', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.selectorHorario.titulo'), 
+                    description: t('guiaPrincipal.pasos.selectorHorario.descripcion')
+                } 
+            },
+            { 
+                element: '.noUi-value.noUi-value-horizontal.noUi-value-large', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.diasSemana.titulo'), 
+                    description: t('guiaPrincipal.pasos.diasSemana.descripcion')
+                },
                 onDeselected: () => {
                     const elementos = document.querySelectorAll('.noUi-value.noUi-value-horizontal.noUi-value-large');
-                    if (elementos[0]) { 
-                        elementos[0].click(); 
-                    }
+                    if (elementos[0]) { elementos[0].click(); }
                 }
             },
-
-            {   popover: { title: '🗓️ Día seleccionado', description: 'Ahora la tabla solo muestra ese día y con el rango horario que se ha seleccionado automáticamente.<br><br>💡 Puedes mover los deslizadores a tu rango horario concreto y así la puntuación será más ajustada. Puedes personalizar ese rango horario diario "automático" en ⚙️ Ajustes.'}, },
-            
-            { element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><span style="font-size:25px; display: block;">🌦️</span><span>Columna de meteorología</span></div>', description: 'Muestra los datos meteorológicos.<br><br>Selecciona el icono para ver el significado de cada parámetro.'},
-            },
-
-            { element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
-                popover: { title: '🟩🟧🟥 Fila de Cizalladura / Fiabilidad', description: 'Esta fila especial es un indicador combinado. Es un semáforo de colores que muestra simultáneamente dos datos concurrentes: la Cizalladura de Bajo Nivel y la Fiabilidad del pronóstico de viento a 10 m de altura.'} },
-
-            { element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
-                popover: { title: '⭐ Columna de puntuación', description: 'El sistema calcula dos puntuaciones (de 0 a 10) para cada despegue y para el rango horario seleccionado: Condiciones para despegar y Condiciones para mantenerse en térmicas o iniciar Cross Country (XC).<br><br>Los despegues se reordenan automáticamente por puntuación de Condiciones para despegar.<br><br>En ⚙️ Ajustes puedes personalizar tus límites para el cálculo.' } },
-
-            { element: '.columna-despegue .btn-info', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Muestra información más completa del despegue y enlaces a su pronóstico en Windy, Meteo-parapente y Meteoblue.' } },
-
-            { element: '.btn-guia-mapa-directo', 
+            {   
                 popover: { 
-                    title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg><span>Mapa del despegue</span></div>', 
-                    description: 'Muestra el despegue en el mapa.<br><br>💡 El mapa incluye información adicional sobre el despegue, filtros de diverso tipo, mapa de calor de despegues y varias utilidades que merece la pena explorar.' } },
-
-            { element: '#nav-home',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Inicio</span></div>', description: 'Muestra la tabla con todos los despegues favoritos. Si hay búsquedas o filtros activos, los desactiva.<br><br>💡 Si te pierdes con algunas funciones, pulsa este botón para ir a la vista "normal".'} },
-
-            { element: '#nav-search',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Buscar</span></div>', description: 'Muestra una casilla para buscar despegues por su nombre o por su zona administrativa (normalmente será la provincia). Puedes escribir sin tildes para mayor agilidad.'} },
-
-            { element: '#nav-distance',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Distancia</span></div>', 
-                    description: 'Muestra un deslizador que permite filtrar solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro.'}
+                    title: t('guiaPrincipal.pasos.diaSeleccionado.titulo'), 
+                    description: t('guiaPrincipal.pasos.diaSeleccionado.descripcion')
+                } 
             },
-
-            { element: '#div-filtro-distancia-interno',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Distancia</span></div>', 
-                    description: 'Es un filtro que te permite mostrar solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para encontrar rápidamente los despegues que estén en un radio de distancia que elijas alrededor de un punto.'},
-                    onHighlighted: () => {
+            { 
+                element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.columnaMeteo.titulo'), 
+                    description: t('guiaPrincipal.pasos.columnaMeteo.descripcion')
+                }
+            },
+            { 
+                element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.filaCizalladura.titulo'), 
+                    description: t('guiaPrincipal.pasos.filaCizalladura.descripcion')
+                } 
+            },
+            { 
+                element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.columnaPuntuacion.titulo'), 
+                    description: t('guiaPrincipal.pasos.columnaPuntuacion.descripcion') 
+                } 
+            },
+            { 
+                element: '.columna-despegue .btn-info', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnInfo.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnInfo.descripcion') 
+                } 
+            },
+            { 
+                element: '.btn-guia-mapa-directo', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnMapa.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnMapa.descripcion') 
+                } 
+            },
+            { 
+                element: '#nav-home',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.navHome.titulo'), 
+                    description: t('guiaPrincipal.pasos.navHome.descripcion')
+                } 
+            },
+            { 
+                element: '#nav-search',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.navSearch.titulo'), 
+                    description: t('guiaPrincipal.pasos.navSearch.descripcion')
+                } 
+            },
+            { 
+                element: '#nav-distance',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.navDistance.titulo'), 
+                    description: t('guiaPrincipal.pasos.navDistance.descripcion')
+                }
+            },
+            { 
+                element: '#div-filtro-distancia-interno',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.filtroDistancia.titulo'), 
+                    description: t('guiaPrincipal.pasos.filtroDistancia.descripcion')
+                },
+                onHighlighted: () => {
                     const panel = document.getElementById('div-filtro-distancia');
                     if (panel && !panel.classList.contains('activo')) {
                         const btn = document.getElementById('nav-distance');
@@ -783,31 +824,48 @@ function iniciarGuiaPrincipal(forzar = false) {
                     setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 300);
                 }
             },
-
-            { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Aquí eliges el punto de origen del filtro de distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual.'},
+            { 
+                element: '#btn-abrir-geo-menu',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnOrigen.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnOrigen.descripcion')
+                }
             },
-
-            { element: '#btn-incluir-no-favs-distancia',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></span> Incluir no favoritos', description: 'Permite incluir temporalmente en el filtro todos los despegues disponibles (favoritos y no favoritos).<br><br>💡 Sirve para buscar rápidamente condiciones de vuelo en despegues de diferentes zonas fuera de nuestra zona de favoritos.'},
+            { 
+                element: '#btn-incluir-no-favs-distancia',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnIncNoFavs.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnIncNoFavs.descripcion')
+                }
             },
-
-            { element: '#distancia-slider',
-                popover: { title: 'Distancia al punto', description: 'Arrastrando este deslizador eliges los kilómetros de distancia.<br><br>La tabla mostrará solo los despegues que estén dentro de ese radio de distancia.' },
+            { 
+                element: '#distancia-slider',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.sliderDistancia.titulo'), 
+                    description: t('guiaPrincipal.pasos.sliderDistancia.descripcion') 
+                },
                 onDeselected: () => {
                     const panel = document.getElementById('div-filtro-distancia');
                     if (panel && panel.classList.contains('activo')) {
                         const btn = document.getElementById('nav-distance');
-                        if (btn) btn.click(); // Cierra el panel
+                        if (btn) btn.click(); 
                     }
                 }
             },
-
-            { element: '#nav-map',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg><span>Mapa</span></div>', description: 'Mapa de despegues de parapente con múltiple información: búsqueda de despegues, filtros por orientación, por nº de vuelos, por año del último vuelo, por distancia media, mapa de calor con más de 1,3 millones de puntos exactos de despegues registrados y mucha otra información.'} },
-
-            { element: '#nav-settings',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span>Ajustes</span></div>', description: 'Aquí se puede <b>Editar favoritos</b> (para añadir o quitar tus despegues habituales), personalizar parámetros, activar opciones y ver información sobre la actualización de los datos meteorológicos.<br><br>💡 Para cada opción o dato, tienes un botón de información <img src="icons/info.svg" width="20" height="20" style="vertical-align: middle; margin-bottom: 2px;">.'} }
+            { 
+                element: '#nav-map',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.navMap.titulo'), 
+                    description: t('guiaPrincipal.pasos.navMap.descripcion')
+                } 
+            },
+            { 
+                element: '#nav-settings',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.navSettings.titulo'), 
+                    description: t('guiaPrincipal.pasos.navSettings.descripcion')
+                } 
+            }
         ],
         
         onDestroyStarted: () => {
@@ -897,16 +955,16 @@ function iniciarGuiaFavoritos(forzar = false) {
     const driverObj = window.driver.js.driver({
         
         showProgress: true, 
-        progressText: '{{current}} de {{total}}',
+        progressText: t('guiaPrincipal.progreso'),
         smoothScroll: true,
         overlayClickBehavior: () => {}, 
         overlayColor: 'rgba(0, 0, 0, 0.75)', 
         allowClose: true,      
         stageRadius: 8,   
 
-        nextBtnText: 'Siguiente →',
+        nextBtnText: t('guiaPrincipal.siguiente'),
         prevBtnText: '←',
-        doneBtnText: 'Cerrar guía',
+        doneBtnText: t('guiaPrincipal.cerrar'),
 
         steps: [
             {  
