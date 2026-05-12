@@ -121,7 +121,9 @@
       "cin": "CIN (J/kg): Inhibición Convectiva (Convective INhibition)",
       "masInfo": "Más información",
       "verEnMapa": "Ver en el mapa",
-      "notaCondiciones": "Nota Condiciones despegue: {{nota}} puntos"
+      "notaCondiciones": "Nota Condiciones despegue: {{nota}} puntos",
+      "tooltipMeteoCompleto": "<b style='font-size:20px;'>🌦️ Meteorología</b><br><br><b>🌦️</b>: Meteo general (nubosidad y precipitación)<br><b>💦</b>: Precipitación en mm (litros/m²)<br><b>💦?</b>: Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>180 m</b>: Viento a 180 m del suelo (km/h)<br><b>120 m</b>: Viento a 120 m del suelo (km/h)<br><b>80 m</b>: Viento a 80 m del suelo (km/h)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>10 m</b>: Viento a 10 m del suelo (km/h)<br><img src='icons/icono_racha_48x42.webp' style='width:16px;height:14px;'> : Racha máxima a 10 m del suelo (km/h)<br><img src='icons/icono_direccion_45.webp' style='width:15px;height:15px;'> : Dirección del viento a 10 m del suelo<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><img src='icons/icono_cizalla_fiabilidad.png' style='width:30px;height:8px;'> : Cizalladura de Bajo Nivel por velocidad / Fiabilidad del pronóstico de viento medio<hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>Techo</b>: Altitud (km) sobre nivel del mar (MSL) del techo de vuelo previsto y usable en parapente (= espesor capa límite BLH x 0.85 + altitud media suelo celda ECMWF 9km)<br><b>CAPE</b>: Energía Potencial Convectiva Disponible (J/kg)<br><b>CIN</b>: Inhibición Convectiva (J/kg en valor absoluto)<br><br><i>Nota: No está disponible aún el dato esencial de la base de nube ☁️↓ (CBH = Cloud Base Height).</i><br>",
+      "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Puntuaciones (0-10)</b><br><br>El sistema calcula automáticamente dos puntuaciones para cada despegue teniendo en cuenta el rango de tiempo seleccionado. Ambas se muestran coloreadas con una gradación de rojo a verde.<br><br><b>1. Condiciones del despegue (fila superior):</b><br>Valora la viabilidad de despegar analizando el pronóstico de cada hora frente a las preferencias indicadas en ⚙️ Configuración:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Límites de viento medio (mínimo, ideal y máximo).</li><li>Límite de racha máxima.</li><li>Orientación u orientaciones del despegue.</li><li>Lluvia (veto automático y 0 puntos a la hora afectada).</li></ul><b>2. Condiciones para mantenerse en térmicas o iniciar XC (fila inferior):</b><br>Valora la puntuación de Condiciones del despegue y el potencial térmico para vuelos de distancia (Cross Country) usando los datos del modelo ECMWF:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Techo:</b> Premia techos altos sobre la altura media del relieve y penaliza bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Premia los días azules o de cúmulos inofensivos, y penaliza los valores extremos por riesgo de sobredesarrollo o tormenta (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Penaliza la inhibición convectiva alta (inversión) que actúa como tapón frenando la formación de térmicas (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Nota: La puntuación XC es <b>independiente</b> de la orientación o el viento del despegue. Evalúa puramente el potencial térmico de la masa de aire en esa zona. Solo se anula (0 puntos) si hay previsión de lluvia o tormenta severa.</i><br><br>⚠️ <b>Aviso:</b> Faltaría el dato esencial de la base de nube (CBH = Cloud Base Height) para saber si el despegue estará cubierto por nube. Es un valor del ECMWF no disponible aún en la pasarela (solicitado en marzo-2026, pendiente y sin fecha prevista). Deberás consultarlo en otros servicios.<br><br><b>Por defecto, los despegues se reordenan automáticamente por la primera puntuación</b> (Condiciones del despegue), de mayor a menor. Puedes cambiar este comportamiento en: ⚙️ <i>Ajustes</i> > <i>Otras opciones</i> > <i>Ordenar por Condiciones XC</i>."
     },
     "labels": {
         "techo": "Techo",
@@ -355,7 +357,8 @@
     "avisoModelos": {
       "viento": "Viento (Météo-France: Arome-HD y Arpege)",
       "general": "Meteo general y condiciones térmicas XC (ECMWF)"
-    }
+    },
+    "avisoNuevoMeteo": "<p>ℹ️ Hay nuevos datos meteorológicos de:</p><p><b>{{modelos}}</b></p><p>¿Actualizar ahora?</p>"
   },
 
   "ajustes": {
@@ -441,7 +444,7 @@
     "labelVuelos": "Nº de vuelos en XContest:",
     "labelKmMedia": "Nº de km medios recorridos:",
     "labelMasInfo": "Más información:"
-    },
+  },
 
   "popupDespegue": {
     "region": "Región:",
@@ -463,7 +466,9 @@
     "importarFavoritos": "Importar favoritos",
     "exportarFavoritos": "Exportar favoritos",
     "guiaEdicionTitle": "Guía de la pantalla de editar despegues favoritos",
-    "esperandoConexion": "Esperando conexión..."
+    "esperandoConexion": "Esperando conexión...",
+
+    "filtroDistanciaCompleto": "<b>Filtro de distancia al despegue:</b><br><br>Muestra solo despegues dentro del radio de distancia que selecciones.<br><br>Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> para establecer la posición de origen. Puedes usar el mapa o la ubicación actual de tu dispositivo.<span class='texto-oculto-en-edicion'><br><br>Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> para incluir despegues no favoritos en el filtro, es decir, para <b>incluir temporalmente todos los despegues</b> disponibles en la base de datos.<br><br>Al activarlo, se aplica un filtro inicial de 100 km para evitar sobrecargar la tabla. Puedes ajustarlo según tus necesidades y el rendimiento de tu dispositivo.</span>"
   },
 
   "crash": {
@@ -481,8 +486,6 @@
     "titulo": "ℹ️ Novedades datos XC",
     "html": "<div style='text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;'><ul style='padding-left: 20px; margin-top: 5px; margin-bottom: 5px;'><li style='margin-bottom: 6px;'><b>Puntuación XC independiente:</b> Valora solo el potencial térmico (Techo, CAPE, CIN) ignorando el viento del despegue. Solo puntúa 0 con lluvia o tormenta.</li><li style='margin-bottom: 6px;'><b>Techo en Altitud (MSL):</b> Ahora indica la altitud sobre el nivel del mar, siendo más útil y preciso para vuelos de distancia.</li><li><b>Techo más realista:</b> Se reduce un 15% el pronóstico original para compensar la tasa de caída media del parapente.</li></ul><p style='margin-top: 10px; font-size: 0.9em;'>💡 <i>Más detalles pulsando los iconos 🌦️ o ⭐ en la tabla.</i></p></div>"
   },
-
-  "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Puntuaciones (0-10)</b><br><br>El sistema calcula automáticamente dos puntuaciones para cada despegue teniendo en cuenta el rango de tiempo seleccionado. Ambas se muestran coloreadas con una gradación de rojo a verde.<br><br><b>1. Condiciones del despegue (fila superior):</b><br>Valora la viabilidad de despegar analizando el pronóstico de cada hora frente a las preferencias indicadas en ⚙️ Configuración:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Límites de viento medio (mínimo, ideal y máximo).</li><li>Límite de racha máxima.</li><li>Orientación u orientaciones del despegue.</li><li>Lluvia (veto automático y 0 puntos a la hora afectada).</li></ul><b>2. Condiciones para mantenerse en térmicas o iniciar XC (fila inferior):</b><br>Valora la puntuación de Condiciones del despegue y el potencial térmico para vuelos de distancia (Cross Country) usando los datos del modelo ECMWF:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Techo:</b> Premia techos altos sobre la altura media del relieve y penaliza bajos (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Premia los días azules o de cúmulos inofensivos, y penaliza los valores extremos por riesgo de sobredesarrollo o tormenta (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Penaliza la inhibición convectiva alta (inversión) que actúa como tapón frenando la formación de térmicas (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Nota: La puntuación XC es <b>independiente</b> de la orientación o el viento del despegue. Evalúa puramente el potencial térmico de la masa de aire en esa zona. Solo se anula (0 puntos) si hay previsión de lluvia o tormenta severa.</i><br><br>⚠️ <b>Aviso:</b> Faltaría el dato esencial de la base de nube (CBH = Cloud Base Height) para saber si el despegue estará cubierto por nube. Es un valor del ECMWF no disponible aún en la pasarela (solicitado en marzo-2026, pendiente y sin fecha prevista). Deberás consultarlo en otros servicios.<br><br><b>Por defecto, los despegues se reordenan automáticamente por la primera puntuación</b> (Condiciones del despegue), de mayor a menor. Puedes cambiar este comportamiento en: ⚙️ <i>Ajustes</i> > <i>Otras opciones</i> > <i>Ordenar por Condiciones XC</i>.",
 
   "orientaciones": {
     "N": "N",

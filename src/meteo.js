@@ -2592,7 +2592,7 @@ function mostrarAvisoActualizacionMeteo(modelos) {
     if (typeof mensajeModalAceptarCancelar === 'function') {
         mensajeModalAceptarCancelar(
             '', 
-            `<p>ℹ️ Hay nuevos datos meteorológicos de:</p><p><b>${textoModelos}</b></p><p>¿Actualizar ahora?</p>`, 
+            t('actualizacion.avisoNuevoMeteo', { modelos: textoModelos }), 
             'recargarPagina'
         );
     }
@@ -3206,33 +3206,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		thMeteo.rowSpan = 2; // Ocupa las dos filas de la cabecera
 		thMeteo.classList.add("columna-meteo", "borde-grueso-abajo", "borde-grueso-arriba", "borde-grueso-izquierda");	
 
-        const tooltipContentMeteo =
-            "<b style='font-size:20px;'>🌦️ Meteorología</b><br><br>" +
-            "<b>🌦️</b>: Meteo general (nubosidad y precipitación)<br>" +
-            "<b>💦</b>: Precipitación en mm (litros/m²)<br>" +
-            "<b>💦?</b>: Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²)<br>" +
-            //"<b>☁️↕</b>: Base de nube AGL (km). Altura de la base de la nube sobre el suelo. Estimación aproximada calculada a partir de la temperatura 2m y punto de rocío 2m<br>" +
-
-            "<hr style='border:none;border-top:1px solid #000;margin:4px 0;'>" +
-
-            "<b>180 m</b>: Viento a 180 m del suelo (km/h)<br>" +
-            "<b>120 m</b>: Viento a 120 m del suelo (km/h)<br>" +
-            "<b>80 m</b>: Viento a 80 m del suelo (km/h)<br>" +
-
-            "<hr style='border:none;border-top:1px solid #000;margin:4px 0;'>" +
-
-            "<b>10 m</b>: Viento a 10 m del suelo (km/h)<br>" +
-            "<img src='icons/icono_racha_48x42.webp' style='width:16px;height:14px;'> : Racha máxima a 10 m del suelo (km/h)<br>" +
-            "<img src='icons/icono_direccion_45.webp' style='width:15px;height:15px;'> : Dirección del viento a 10 m del suelo<br>" +
-
-            "<hr style='border:none;border-top:1px solid #000;margin:4px 0;'>" +
-            "<img src='icons/icono_cizalla_fiabilidad.png' style='width:30px;height:8px;'> : Cizalladura de Bajo Nivel por velocidad / Fiabilidad del pronóstico de viento medio" +
-            "<hr style='border:none;border-top:1px solid #000;margin:4px 0;'>" +
-
-            "<b>Techo</b>: Altitud (km) sobre nivel del mar (MSL) del techo de vuelo previsto y usable en parapente (= espesor capa límite BLH x 0.85 + altitud media suelo celda ECMWF 9km)<br>" +
-            "<b>CAPE</b>: Energía Potencial Convectiva Disponible (J/kg)<br>" +
-            "<b>CIN</b>: Inhibición Convectiva (J/kg en valor absoluto)<br><br>" +
-            "<i>Nota: No está disponible aún el dato esencial de la base de nube ☁️↓ (CBH = Cloud Base Height).</i><br>";
+        const tooltipContentMeteo = t('tabla.tooltips.tooltipMeteoCompleto');
         thMeteo.setAttribute("data-tippy-content", tooltipContentMeteo);
         thMeteo.setAttribute("tabindex", "0"); 
         thMeteo.style.cursor = "help";
@@ -3400,7 +3374,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		thCondiciones.style.fontSize = "18px";
 		thCondiciones.classList.add("columna-condiciones", "borde-grueso-izquierda", "borde-grueso-arriba", "borde-grueso-abajo");	
 		thCondiciones.style.userSelect = "none";
-        const tooltipContent = t('tooltipCondiciones');        
+        const tooltipContent = t('tabla.tooltips.tooltipCondiciones');        
         thCondiciones.setAttribute("data-tippy-content", tooltipContent);
         thCondiciones.setAttribute("tabindex", "0"); 
         thCondiciones.style.cursor = "help"; // Cambia el cursor para indicar que hay info
@@ -4005,9 +3979,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
                 <b><span style='font-size: 18px; padding-right: 20px;'>🪂 ${d.Despegue}</b></span><br>
-                Región: <b>${d.Región}</b><br>
-                Provincia: <b>${d.Provincia}</b><br>
-                Orientación: <b>${svgParaTooltip} <span style='vertical-align:middle;'>${traducirCadenaOrientacion(d["Orientación"])}</span></b><br>
+                ${t('popupDespegue.region')} <b>${d.Región}</b><br>
+                ${t('popupDespegue.provincia')} <b>${d.Provincia}</b><br>
+                ${t('popupDespegue.orientacion')} <b>${svgParaTooltip} <span style='vertical-align:middle;'>${traducirCadenaOrientacion(d["Orientación"])}</span></b><br>
                 ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
                 ⛅ <a href='https://meteo-parapente.com/#/${latitud},${longitud},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
                 ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a>
@@ -4021,8 +3995,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 <button class="btn-info" 
                     style="position: absolute; bottom: 2px; left: 2px;"
                     data-tippy-content="${contenidoEscapado}"
-                    title="Más información">
-                       <img src="icons/info.svg" alt="Más info" style="width: 18px; height: 18px; vertical-align: middle;">
+                    title="${t('tabla.tooltips.masInfo')}">
+                       <img src="icons/info.svg" alt="${t('tabla.tooltips.masInfo')}" style="width: 18px; height: 18px; vertical-align: middle;">
                 </button>
             `;
 
@@ -4031,7 +4005,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 <button class="btn-info btn-guia-mapa-directo" 
                     style="position: absolute; bottom: 2px; left: 23px; width: 27px;" 
                     onclick="abrirMapaIntegrado(${latitud}, ${longitud}, '${safeDespegue}'); return false;"
-                    title="Ver en el mapa">
+                    title="${t('tabla.tooltips.verEnMapa')}">
                     <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" style="vertical-align: middle;">
                         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
                         <line x1="8" y1="2" x2="8" y2="18"></line>
@@ -9563,21 +9537,21 @@ function inicializarMapaLeaflet() {
             const popupHtml = `<div style="line-height: 1.2;">
             
                     <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
-                    <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">Orientación: ${SVGorientaciones} <b>${escapeHtml(orientacion)}</b></div>
+                    <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(orientacion)}</b></div>
                     <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
                     <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
                     
                     <div class="popup-toggle-header" 
                         style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
-                        Más información: ▼
+                        ${t('mapa.masInformacion')}
                     </div>
                     
                     <div class="popup-collapsible-content" style="display: none; overflow-wrap: break-word; ">
 
-                        <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
-                        <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="Nivel de uso del despegue según fecha del último vuelo registrado (referencia: nov-2025): Verde 0–6 meses, Naranja 6–12, Amarillo 12–24, Blanco >24 meses sin vuelos">Nivel de actividad: ${dot}</div>
-                        <div style="margin-bottom: 5px;">Nº de vuelos en XContest: <b>${escapeHtml(vuelos)}</b></div>
+                        <div style="margin-bottom: 5px;">${t('mapa.labelCoordenadas')} <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
+                        <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="${t('popupDespegue.nivelActividadTitle')}">${t('mapa.labelActividad')} ${dot}</div>
+                        <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>

@@ -121,7 +121,9 @@
       "cin": "CIN (J/kg): Convective Inhibition",
       "masInfo": "More information",
       "verEnMapa": "View on map",
-      "notaCondiciones": "Takeoff Conditions score: {{nota}} points"
+      "notaCondiciones": "Takeoff Conditions score: {{nota}} points",
+      "tooltipMeteoCompleto": "<b style='font-size:20px;'>🌦️ Weather Parameters</b><br><br><b>🌦️</b>: General weather (cloud cover and precipitation)<br><b>💦</b>: Precipitation in mm (liters/m²)<br><b>💦?</b>: Probability (%) of precipitation exceeding 0.1 mm (liters/m²)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>180 m</b>: Wind at 180 m above ground (km/h)<br><b>120 m</b>: Wind at 120 m above ground (km/h)<br><b>80 m</b>: Wind at 80 m above ground (km/h)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>10 m</b>: Wind at 10 m above ground (km/h)<br><img src='icons/icono_racha_48x42.webp' style='width:16px;height:14px;'> : Max gusts at 10 m above ground (km/h)<br><img src='icons/icono_direccion_45.webp' style='width:15px;height:15px;'> : Wind direction at 10 m above ground<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><img src='icons/icono_cizalla_fiabilidad.png' style='width:30px;height:8px;'> : Low-Level Wind Shear by speed / Reliability of the mean wind forecast<hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>Ceiling</b>: Altitude (km) above sea level (MSL) of the usable flight ceiling (= boundary layer thickness BLH x 0.85 + ECMWF 9km cell mean ground altitude)<br><b>CAPE</b>: Convective Available Potential Energy (J/kg)<br><b>CIN</b>: Convective Inhibition (J/kg in absolute value)<br><br><i>Note: The essential cloud base data ☁️↓ (CBH = Cloud Base Height) is not available yet.</i><br>",
+      "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Scores (0-10)</b><br><br>The system automatically calculates two scores for each takeoff based on the selected time range. Both are color-coded with a gradient from red to green.<br><br><b>1. Takeoff Conditions (top row):</b><br>Evaluates takeoff viability by analyzing the hourly forecast against the preferences set in ⚙️ Settings:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Mean wind limits (minimum, ideal, and maximum).</li><li>Maximum gust limit.</li><li>Takeoff orientation(s).</li><li>Rain (automatic veto and 0 points for the affected hour).</li></ul><b>2. Conditions for staying in thermals or starting XC (bottom row):</b><br>Evaluates the Takeoff Conditions score and the thermal potential for long-distance flights (Cross Country) using data from the ECMWF model:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Ceiling:</b> Rewards high ceilings above the average relief height and penalizes low ones (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Rewards blue days or harmless cumulus, and penalizes extreme values due to overdevelopment or storm risk (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Penalizes high convective inhibition (inversion) that acts as a cap, hindering thermal formation (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Note: The XC score is <b>independent</b> of takeoff orientation or wind. It purely evaluates the thermal potential of the air mass in that area. It is only zeroed (0 points) if rain or severe storms are forecast.</i><br><br>⚠️ <b>Warning:</b> The essential cloud base data (CBH = Cloud Base Height) is missing to know if the takeoff will be cloud-covered. This is an ECMWF value not yet available in the gateway (requested in March 2026, pending with no scheduled date). You must consult other services.<br><br><b>By default, takeoffs are automatically reordered by the first score</b> (Takeoff Conditions), from highest to lowest. You can change this behavior in: ⚙️ <i>Settings</i> > <i>Other options</i> > <i>Sort by XC Conditions</i>."
     },
     "labels": {
         "techo": "Ceiling",
@@ -355,7 +357,8 @@
     "avisoModelos": {
       "viento": "Wind (Météo-France: Arome-HD and Arpege)",
       "general": "General weather and XC thermal conditions (ECMWF)"
-    }
+    },
+    "avisoNuevoMeteo": "<p>ℹ️ New weather data available for:</p><p><b>{{modelos}}</b></p><p>Update now?</p>"
   },
 
   "ajustes": {
@@ -441,7 +444,7 @@
     "labelVuelos": "No. of XContest flights:",
     "labelKmMedia": "Average km distance:",
     "labelMasInfo": "More information:"
-    },
+  },
 
   "popupDespegue": {
     "region": "Region:",
@@ -463,7 +466,9 @@
     "importarFavoritos": "Import favorites",
     "exportarFavoritos": "Export favorites",
     "guiaEdicionTitle": "Guide to the Edit favorite takeoffs screen",
-    "esperandoConexion": "Waiting for connection..."
+    "esperandoConexion": "Waiting for connection...",
+
+    "filtroDistanciaCompleto": "<b>Takeoff distance filter:</b><br><br>Shows only takeoffs within the distance radius you select.<br><br>Use the button <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> to set the origin position. You can use the map or your device's current location.<span class='texto-oculto-en-edicion'><br><br>Use the button <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> to include non-favorite takeoffs in the filter, meaning to <b>temporarily include all takeoffs</b> available in the database.<br><br>When activated, an initial 100 km filter is applied to avoid overloading the table. You can adjust it based on your needs and device performance.</span>"
   },
 
   "crash": {
@@ -481,8 +486,6 @@
     "titulo": "ℹ️ XC Data News",
     "html": "<div style='text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;'><ul style='padding-left: 20px; margin-top: 5px; margin-bottom: 5px;'><li style='margin-bottom: 6px;'><b>Independent XC Score:</b> Evaluates only thermal potential (Ceiling, CAPE, CIN) ignoring takeoff wind. Only scores 0 with rain or storm risk.</li><li style='margin-bottom: 6px;'><b>Ceiling in Altitude (MSL):</b> Now shows altitude above sea level, providing better precision for distance planning.</li><li><b>Realistic Ceiling:</b> Forecast is reduced by 15% to compensate for paraglider sink rate.</li></ul><p style='margin-top: 10px; font-size: 0.9em;'>💡 <i>More details by clicking 🌦️ or ⭐ icons in the table.</i></p></div>"
   },
-
-  "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Scores (0-10)</b><br><br>The system automatically calculates two scores for each takeoff based on the selected time range. Both are color-coded with a gradient from red to green.<br><br><b>1. Takeoff Conditions (top row):</b><br>Evaluates takeoff viability by analyzing the hourly forecast against the preferences set in ⚙️ Settings:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Mean wind limits (minimum, ideal, and maximum).</li><li>Maximum gust limit.</li><li>Takeoff orientation(s).</li><li>Rain (automatic veto and 0 points for the affected hour).</li></ul><b>2. Conditions for staying in thermals or starting XC (bottom row):</b><br>Evaluates the Takeoff Conditions score and the thermal potential for long-distance flights (Cross Country) using data from the ECMWF model:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Ceiling:</b> Rewards high ceilings above the average relief height and penalizes low ones (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Rewards blue days or harmless cumulus, and penalizes extreme values due to overdevelopment or storm risk (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Penalizes high convective inhibition (inversion) that acts as a cap, hindering thermal formation (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Note: The XC score is <b>independent</b> of takeoff orientation or wind. It purely evaluates the thermal potential of the air mass in that area. It is only zeroed (0 points) if rain or severe storms are forecast.</i><br><br>⚠️ <b>Warning:</b> The essential cloud base data (CBH = Cloud Base Height) is missing to know if the takeoff will be cloud-covered. This is an ECMWF value not yet available in the gateway (requested in March 2026, pending with no scheduled date). You must consult other services.<br><br><b>By default, takeoffs are automatically reordered by the first score</b> (Takeoff Conditions), from highest to lowest. You can change this behavior in: ⚙️ <i>Settings</i> > <i>Other options</i> > <i>Sort by XC Conditions</i>.",
 
   "orientaciones": {
     "N": "N",
