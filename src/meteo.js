@@ -229,13 +229,7 @@ if (btnIncNoFavsDistancia) {
                 
                 GestorMensajes.mostrar({
 						tipo: 'modal',
-						htmlContenido: `
-                            <div style="text-align: center;">
-                            <p style="font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></p>
-							<p>La primera vez se necesita configurar un punto de origen.</p>
-							<p>Podrás cambiarlo cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span></p>
-                            </div>
-						`,
+						htmlContenido: t('origen.avisoInicialHtml'),
 						botones:[
 							{ texto: t('botones.cancelar'), estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
                             { texto: t('botones.configurarOrigen'), onclick: function() { 
@@ -2734,10 +2728,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 const mostrarPaso6 = function() {
                     GestorMensajes.mostrar({
                         tipo: 'modal',
-                        htmlContenido: `
-                            <p style="font-size: 1.2em; font-weight: bold; text-align:center;">👍 ¿Qué hago ahora?</p>
-                            <p>Tienes que marcar tus despegues favoritos.</p>
-                        `,
+                        htmlContenido: t('asistente.paso6.html'),
                         botones: [
                         {
                             texto: '←',
@@ -2765,13 +2756,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 const mostrarPaso5 = function() {
                     GestorMensajes.mostrar({
                         tipo: 'modal',
-                        htmlContenido: `
-                            <p style="font-size: 1.2em; font-weight: bold; text-align:center;">️👉 Ten en cuenta...</p>
-                            <p>👉 La tabla mostrará solo los despegues favoritos. Puedes marcarlos todos si lo necesitas, pero puede ralentizar el uso según tu dispositivo.</p>
-                            <p>👉️ La tabla estará siempre ordenada automáticamente por la puntuación de condiciones, de mejor (10) a peor (0).</p>
-                            <p>👉️ Por el momento no se muestra el dato CBH (base de nube), necesario para saber si estará cubierto el despegue a esa hora (está solicitado a Open-meteo y pendiente). Antes de volar, como sabes, hay que analizar muchos más datos.</p>
-                            <p>👉️ Por el momento el ámbito es España, Portugal, Pirineos (incluyendo la parte francesa) y Alpes (franceses, suizos e italianos).</p>
-                            `,
+                        htmlContenido: t('asistente.paso5.html'),
                         botones: [
                         {
                             texto: '←',
@@ -2796,12 +2781,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 const mostrarPaso4 = function() {
                     GestorMensajes.mostrar({
                         tipo: 'modal',
-                        htmlContenido: `
-                            <p style="font-size: 1.2em; font-weight: bold; text-align:center;">🤔 ¿Es complicado?</p>
-                            <p>✅ <b>Uso básico</b>: selecciona tus despegues favoritos la primera vez y ya tendrás siempre la tabla con sus pronósticos y su análisis automático para cada día.</p>
-                            <p>✅ <b>Uso intermedio</b>: puedes seleccionar un rango de tiempo (días u horas) y ver la puntuación automática de condiciones para ese intervalo. Puedes filtrar los despegues por radio de distancia a tu casa o un lugar cualquiera.</p>
-                            <p>✅ <b>Uso avanzado</b>: puedes personalizar en ⚙️ <i>Configuración</i> los límites predeterminados de viento medio (mínimo, ideal y máximo) y rachas máximas. Tus preferencias se usarán para el análisis, coloreado y puntuación de las condiciones.</p>
-                            `,
+                        htmlContenido: t('asistente.paso4.html'),
                         botones: [
                         {
                             texto: '←',
@@ -2826,10 +2806,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 const mostrarPaso3 = function() {
                     GestorMensajes.mostrar({
                         tipo: 'modal',
-                        htmlContenido: `
-                        <p>💨️ <b>Datos meteorológicos:</b> pronóstico por horas para 4 días (96h). Se actualiza 8 veces al día con los datos oficiales que emite Météo-France de los modelos Arome-HD 1.3km (0-48h) y Arpege 7km (48-96h) y 4 veces al día con los datos del ECMWF (0-96h).</p>
-                        <p>🆓 <b>Coste y privacidad:</b> gratuita 100%, sin suscripciones, sin publicidad y sin rastreo (cookies, telemetría,...). Tus configuraciones se guardan en tu navegador de forma privada. Es un proyecto libre y abierto, operativo desde 2026 y en evolución.</p>
-                            `,
+                        htmlContenido: t('asistente.paso3.html'),
                         botones: [
                         {
                             texto: '←',
@@ -2854,12 +2831,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 const mostrarPaso2 = function() {
                     GestorMensajes.mostrar({
                         tipo: 'modal',
-                        htmlContenido: `
-                            <p style="font-size: 1.2em; font-weight: bold; text-align:center;">🪂 Fly Decision. Análisis automático del pronóstico meteorológico para vuelo en parapente.</p>
-                            <p>🙄 <b>¿Para qué sirve?:</b> para ayudarte a decidir dónde ir a volar. Muestra una tabla con tus despegues favoritos, sus pronósticos y hace un análisis automático de esas <b>condiciones meteorológicas</b>.</p>
-                            <p>🧮 <b>¿Qué análisis hace?:</b> compara el pronóstico con los límites de viento medio y racha máxima configurados y con la orientación de cada despegue; también analiza el viento a alturas cercanas al despegue (80, 120 y 180 m), lo que da idea del gradiente y de la fiabilidad del pronóstico de viento medio. Muestra datos meteo de interés para XC (techo, CAPE y CIN).</p>
-                            <p>Con toda la información, puntúa de 0 a 10 cada despegue y colorea 🟩&nbsp;🟨&nbsp;🟥 los datos para el rango horario o días que elijas. Puedes personalizar todos esos límites para que el análisis se adapte a tus preferencias.</p>
-                                `,
+                        htmlContenido: t('asistente.paso2.html'),
                         botones: [
                         {
                             texto: '←',
@@ -2884,11 +2856,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 const mostrarPaso1 = function() {
                     GestorMensajes.mostrar({
                         tipo: 'modal',
-                        htmlContenido: `
-                            <p style="font-size: 1.4em; font-weight: bold; text-align:center;">🪂 Fly Decision<br>¿Dónde ir a volar?</p>
-                            <p>🌦️ Pronóstico para 4 días por horas.</p>
-                            <p>📊 Análisis automático de condiciones para despegar o para iniciar XC.</p>
-                            <p>🗺️ Mapa de despegues.</p>`,
+                        htmlContenido: t('asistente.paso1.html'),
                         botones: [
                             {
                                 texto: t('botones.marcarFavoritos'),
@@ -5508,14 +5476,7 @@ document.addEventListener('i18nReady', function() {
             if (typeof GestorMensajes !== 'undefined') {
                 GestorMensajes.mostrar({
                     tipo: 'modal',
-                    htmlContenido: `
-                        <div style="text-align: center;">
-                            <p>ℹ️ Error al cargar la tabla.</p>
-                            <p>Posible causa: <b>exceso de favoritos</b> para los recursos disponibles del dispositivo.</p>
-                            <p>Se va a abrir ahora la <b>Pantalla de edición de despegues favoritos</b> para que puedas desmarcar algunos despegues y disminuir la carga.</p>
-                            <p>Si crees que es otra causa temporal: selecciona <b><i>Finalizar edición de favoritos</i></b>, reinicia el dispositivo y vuelve a intentarlo.</p>
-                        </div>
-                    `,
+                    htmlContenido: t('crash.errorCarga'),
                     botones: [{
                         texto: t('botones.aceptar'),
                         onclick: function() {
@@ -5525,7 +5486,7 @@ document.addEventListener('i18nReady', function() {
                     }]
                 });
             } else {
-                alert("La aplicación está teniendo problemas para cargar. Se activará la Edición de favoritos para desmarcar algunos despegues.");
+                alert(t('crash.alertFallback'));
                 activarEdicionFavoritos();
             }
         }
@@ -5671,15 +5632,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
             tipo: 'modal',
             htmlContenido: `
                 <div style="text-align: center;">
-                    <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 5px;">ℹ️ Novedades datos XC</p>
-                    <div style="text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;">
-                        <ul style="padding-left: 20px; margin-top: 5px; margin-bottom: 5px;">
-                            <li style="margin-bottom: 6px;"><b>Puntuación XC independiente:</b> Valora solo el potencial térmico (Techo, CAPE, CIN) ignorando el viento del despegue. Solo puntúa 0 con lluvia o tormenta.</li>
-                            <li style="margin-bottom: 6px;"><b>Techo en Altitud (MSL):</b> Ahora indica la altitud sobre el nivel del mar, siendo más útil y preciso para vuelos de distancia.</li>
-                            <li><b>Techo más realista:</b> Se reduce un 15% el pronóstico original para compensar la tasa de caída media del parapente.</li>
-                        </ul>
-                    <p style="margin-top: 10px; font-size: 0.9em;">💡 <i>Más detalles pulsando los iconos 🌦️ o ⭐ en la tabla.</i></p>
-                    </div>
+                    <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 5px;">${t('novedadesXC.titulo')}</p>
+                    ${t('novedadesXC.html')}
                 </div>
             `,
             botones: [
@@ -5784,13 +5738,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
 					GestorMensajes.mostrar({
 						tipo: 'modal',
-						htmlContenido: `
-                            <div style="text-align: center;">
-                            <p style="font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></p>
-							<p>La primera vez se necesita configurar un punto de origen.</p>
-							<p>Podrás cambiarlo cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span></p>
-                            </div>
-						`,
+						htmlContenido: t('origen.avisoInicialHtml'),
 						botones:[
 							{ texto: t('botones.cancelar'), estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
                             { texto: t('botones.configurarOrigen'), onclick: function() { 
@@ -6175,7 +6123,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                                    ? formatTimeAgo(lastDataGenerationTimestamp, ahoraMs) 
                                    : 'tiempo desconocido';
 
-                dataGenElement.innerHTML = `<span style="color: #ff8400; font-weight: bold; padding-left: 15px; display: block; margin-top: 4px;">⚠️ No hay conexión a Internet. Antigüedad datos: ${timeAgoGen}.</span>`;
+                dataGenElement.innerHTML = `<span style="color: #ff8400; font-weight: bold; padding-left: 15px; display: block; margin-top: 4px;">${t('actualizacion.sinConexion', { tiempo: timeAgoGen })}</span>`;
                 
             } else if (lastDataGenerationTimestamp > 0 && !hayErrorData) {
                 
@@ -6220,7 +6168,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     }
                     
                     if (esInminenteMF) {
-                        textoFuturoMF = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">Esperando...⌛</span>`;
+                        textoFuturoMF = t('actualizacion.esperando');
                     } else {
                         if (!proximaFechaMF) {
                             const [hora, min] = HorariosMediosActualizacion[0].split(':').map(Number);
@@ -6231,12 +6179,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
                         const diffMsMF = (proximaFechaMF.getTime() - ahoraMs) + OFFSET_MS;
                         
                         if (diffMsMF <= 0) {
-                            textoFuturoMF = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">Esperando...⌛</span>`;
+                            textoFuturoMF = t('actualizacion.esperando');
                         } else {
                             const diffMinsMF = Math.floor(diffMsMF / 60000) % 60;
                             const diffHorasMF = Math.floor(Math.floor(diffMsMF / 60000) / 60);
-                            let textoMF = diffHorasMF > 0 ? `~${diffHorasMF} h ${diffMinsMF} min` : `~${diffMinsMF} min`;
-                            textoFuturoMF = `🔄 Próxima: <b>${textoMF}</b>`;
+                            
+                            // Formateamos el tiempo (horas + min o solo min)
+                            let textoMF = diffHorasMF > 0 
+                                ? t('actualizacion.horas', { h: diffHorasMF, m: diffMinsMF }) 
+                                : t('actualizacion.minutos', { m: diffMinsMF });
+
+                            // Montamos la frase final
+                            textoFuturoMF = t('actualizacion.proximaEn', { tiempo: textoMF });
                         }
                     }
                 }
@@ -6270,7 +6224,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     }
                     
                     if (esInminenteEC) {
-                        textoFuturoEC = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">Esperando... ⌛</span>`;
+                        textoFuturoEC = t('actualizacion.esperando');
                     } else {
                         if (!proximaFechaEC) {
                             const [hora, min] = HorariosMediosActualizacionEcmwf[0].split(':').map(Number);
@@ -6281,12 +6235,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
                         const diffMsEC = (proximaFechaEC.getTime() - ahoraMs) + OFFSET_MS;
                         
                         if (diffMsEC <= 0) {
-                            textoFuturoEC = `🔄 Próxima: <span style="color:#e39300; font-weight:bold;">Esperando... ⌛</span>`;
+                            textoFuturoEC = t('actualizacion.esperando');
                         } else {
                             const diffMinsEC = Math.floor(diffMsEC / 60000) % 60;
                             const diffHorasEC = Math.floor(Math.floor(diffMsEC / 60000) / 60);
-                            let textoEC = diffHorasEC > 0 ? `~${diffHorasEC} h ${diffMinsEC} min` : `~${diffMinsEC} min`;
-                            textoFuturoEC = `🔄 Próxima: <b>${textoEC}</b>`;
+                            
+                            // Formateamos el tiempo según si hay horas o solo minutos
+                            let textoEC = diffHorasEC > 0 
+                                ? t('actualizacion.horas', { h: diffHorasEC, m: diffMinsEC }) 
+                                : t('actualizacion.minutos', { m: diffMinsEC });
+
+                            // Montamos la frase final usando la clave "proximaEn"
+                            textoFuturoEC = t('actualizacion.proximaEn', { tiempo: textoEC });
                         }
                     }
                 }
@@ -6295,11 +6255,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 dataGenElement.innerHTML = `
                     <ul style="margin: 5px 0 0 0; padding-left: 27px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
                         <li style="margin-bottom: 8px;">
-                            <b>Météo-France:</b> hace <b>${timeAgoMF}</b> <span style="color:#777; font-style:italic;">(ref.${refMF}Z)</span><br>
+                            <b>Météo-France:</b> ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-style:italic;">(ref.${refMF}Z)</span><br>
                             <span>${textoFuturoMF}</span>
                         </li>
                         <li>
-                            <b>ECMWF:</b> hace <b>${timeAgoEC}</b> <span style="color:#777; font-style:italic;">(ref.${refEC}Z)</span><br>
+                            <b>ECMWF:</b> ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-style:italic;">(ref.${refEC}Z)</span><br>
                             <span>${textoFuturoEC}</span>
                         </li>
                     </ul>`;

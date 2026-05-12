@@ -49,10 +49,6 @@
     "sab": "Sat"
   },
 
-  "offline": {
-    "esperandoConexion": "Waiting for connection..."
-  },
-
   "gps": {
     "buscando": "⏳ Searching...",
     "errorUbicacion": "Could not obtain location.",
@@ -323,13 +319,13 @@
       "btnImportar": "Import settings"
     },
     "paso2": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>How does it work?</p><p>Fly Decision downloads the weather forecast for your favorite sites and analyzes the conditions hour by hour for the next 4 days.</p><p>👉 The table sorts your sites from best to worst score, so you can see where to go at a glance.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Automated weather forecast analysis for paragliding.</p><p>🙄 <b>What is it for?:</b> to help you decide where to fly. It shows a table with your favorite takeoffs, their forecasts, and performs an automated analysis of those <b>weather conditions</b>.</p><p>🧮 <b>What analysis does it perform?:</b> it compares the forecast against your configured mean wind and max gust limits and each takeoff's orientation; it also analyzes wind at altitudes near the takeoff (80, 120, and 180 m), providing insight into wind gradient and forecast reliability. It shows key XC data (ceiling, CAPE, and CIN).</p><p>With all this info, it scores each takeoff from 0 to 10 and color-codes 🟩&nbsp;🟨&nbsp;🟥 the data for your chosen time range. You can customize all limits to match your preferences.</p>"
     },
     "paso3": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🟩🟨🟥 The scores</p><p>Each cell is colored based on wind conditions for that hour:<br><br>🟩 Green: good conditions.<br>🟨 Yellow: acceptable conditions.<br>🟥 Red: bad conditions or rain.</p><p>The ⭐ column summarizes the average score for the visible time range.</p>"
+      "html": "<p>💨️ <b>Weather data:</b> hourly forecast for 4 days (96h). Updated 8 times a day with official Météo-France data from Arome-HD 1.3km (0-48h) and Arpege 7km (48-96h) models, and 4 times a day with ECMWF data (0-96h).</p><p>🆓 <b>Cost and privacy:</b> 100% free, no subscriptions, no ads, and no tracking (cookies, telemetry,...). Your settings are saved privately in your browser. It is a free and open project, operational since 2026 and evolving.</p>"
     },
     "paso4": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>⚙️ Customize your limits</p><p>In <b>Settings</b> you can set:<br>- Min, ideal, and max wind speed.<br>- Tolerable max gusts.<br>- Optional data to show.</p><p>The system uses your values to calculate scores and colors.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🤔 Is it complicated?</p><p>✅ <b>Basic use</b>: select your favorite takeoffs the first time and you will always have the table with their forecasts and automated analysis for each day.</p><p>✅ <b>Intermediate use</b>: you can select a time range (days or hours) and see the automatic condition score for that interval. You can filter takeoffs by distance radius from your home or any location.</p><p>✅ <b>Advanced use</b>: you can customize in ⚙️ <i>Settings</i> the default limits for mean wind (minimum, ideal, and maximum) and maximum gusts. Your preferences will be used for the analysis, coloring, and scoring of conditions.</p>"
     },
     "paso5": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>️👉 Keep in mind...</p><p>👉 Only favorite takeoffs are shown. You can select them all, but it might slow down the app on some devices.</p><p>👉️ Sorting is automatic by score (10 to 0).</p><p>👉️ Cloud Base (CBH) data is currently pending from the provider. Always check multiple sources before flying.</p><p>👉️ Coverage: Spain, Portugal, Pyrenees, and Alps (French, Swiss, Italian).</p>"
@@ -342,6 +338,7 @@
   },
 
   "origen": {
+    "avisoInicialHtml": "<div style='text-align: center;'><p style='font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></p><p>You need to set an origin point for the first time.</p><p>You can change it anytime using the button <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span></p></div>",
     "configurarPrimero": "You need to set an origin point first.",
     "podrasCambiar": "You can change it anytime using the button"
   },
@@ -353,10 +350,7 @@
     "horas": "~{{h}} h {{m}} min",
     "minutos": "~{{m}} min",
     "sinConexion": "⚠️ No internet connection. Data age: {{tiempo}}.",
-    "meteoFrance": "Météo-France",
-    "ecmwf": "ECMWF",
-    "hace": "<b>{{tiempo}}</b> ago",
-    "ref": "(ref.{{hora}}Z)"
+    "hace": "<b>{{tiempo}}</b> ago"
   },
 
   "ajustes": {
@@ -452,7 +446,6 @@
   },
 
   "html": {
-    "titulo": "Settings",
     "distanciaDesde": "Distance from:",
     "seleccionarOrigen": "Select origin",
     "incluirNoFavs": "Include non-favorites in filter",
@@ -464,8 +457,7 @@
     "importarFavoritos": "Import favorites",
     "exportarFavoritos": "Export favorites",
     "guiaEdicionTitle": "Guide to the Edit favorite takeoffs screen",
-    "esperandoConexion": "Waiting for connection...",
-    "filtroDistanciaInfo": "Shows only takeoffs within your chosen radius.<br><br>Use the button to set origin point. Use map or current GPS location."
+    "esperandoConexion": "Waiting for connection..."
   },
 
   "crash": {

@@ -49,10 +49,6 @@
     "sab": "Sáb"
   },
 
-  "offline": {
-    "esperandoConexion": "Esperando conexión..."
-  },
-
   "gps": {
     "buscando": "⏳ Buscando...",
     "errorUbicacion": "No se pudo obtener la ubicación.",
@@ -323,13 +319,13 @@
       "btnImportar": "Importar configuración"
     },
     "paso2": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>¿Cómo funciona?</p><p>Fly Decision descarga el pronóstico meteorológico de tus despegues favoritos y analiza automáticamente las condiciones hora a hora durante los próximos 4 días.</p><p>👉 La tabla ordena tus despegues de mayor a menor puntuación, para que de un vistazo veas qué días y dónde hay mejores condiciones.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Análisis automático del pronóstico meteorológico para vuelo en parapente.</p><p>🙄 <b>¿Para qué sirve?:</b> para ayudarte a decidir dónde ir a volar. Muestra una tabla con tus despegues favoritos, sus pronósticos y hace un análisis automático de esas <b>condiciones meteorológicas</b>.</p><p>🧮 <b>¿Qué análisis hace?:</b> compara el pronóstico con los límites de viento medio y racha máxima configurados y con la orientación de cada despegue; también analiza el viento a alturas cercanas al despegue (80, 120 y 180 m), lo que da idea del gradiente y de la fiabilidad del pronóstico de viento medio. Muestra datos meteo de interés para XC (techo, CAPE y CIN).</p><p>Con toda la información, puntúa de 0 a 10 cada despegue y colorea 🟩&nbsp;🟨&nbsp;🟥 los datos para el rango horario o días que elijas. Puedes personalizar todos esos límites para que el análisis se adapte a tus preferencias.</p>"
     },
     "paso3": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🟩🟨🟥 Las puntuaciones</p><p>Cada celda de la tabla tiene un color según las condiciones de viento para esa hora en ese despegue:<br><br>🟩 Verde: buenas condiciones.<br>🟨 Amarillo: condiciones aceptables.<br>🟥 Rojo: condiciones malas o lluvia.</p><p>La columna ⭐ resume la puntuación media del despegue para el rango de horas visible.</p>"
+      "html": "<p>💨️ <b>Datos meteorológicos:</b> pronóstico por horas para 4 días (96h). Se actualiza 8 veces al día con los datos oficiales que emite Météo-France de los modelos Arome-HD 1.3km (0-48h) y Arpege 7km (48-96h) y 4 veces al día con los datos del ECMWF (0-96h).</p><p>🆓 <b>Coste y privacidad:</b> gratuita 100%, sin suscripciones, sin publicidad y sin rastreo (cookies, telemetría,...). Tus configuraciones se guardan en tu navegador de forma privada. Es un proyecto libre y abierto, operativo desde 2026 y en evolución.</p>"
     },
     "paso4": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>⚙️ Personaliza tus límites</p><p>En <b>Ajustes</b> puedes personalizar:<br>- Tu viento mínimo, ideal y máximo.<br>- La racha máxima tolerable.<br>- Qué datos quieres ver en la tabla.</p><p>El sistema usará tus valores para calcular las puntuaciones y los colores.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🤔 ¿Es complicado?</p><p>✅ <b>Uso básico</b>: selecciona tus despegues favoritos la primera vez y ya tendrás siempre la tabla con sus pronósticos y su análisis automático para cada día.</p><p>✅ <b>Uso intermedio</b>: puedes seleccionar un rango de tiempo (días u horas) y ver la puntuación automática de condiciones para ese intervalo. Puedes filtrar los despegues por radio de distancia a tu casa o un lugar cualquiera.</p><p>✅ <b>Uso avanzado</b>: puedes personalizar en ⚙️ <i>Configuración</i> los límites predeterminados de viento medio (mínimo, ideal y máximo) y rachas máximas. Tus preferencias se usarán para el análisis, coloreado y puntuación de las condiciones.</p>"
     },
     "paso5": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>️👉 Ten en cuenta...</p><p>👉 La tabla mostrará solo los despegues favoritos. Puedes marcarlos todos si lo necesitas, pero puede ralentizar el uso según tu dispositivo.</p><p>👉️ La tabla estará siempre ordenada automáticamente por la puntuación de condiciones, de mejor (10) a peor (0).</p><p>👉️ Por el momento no se muestra el dato CBH (base de nube), necesario para saber si estará cubierto el despegue a esa hora (está solicitado a Open-meteo y pendiente). Antes de volar, como sabes, hay que analizar muchos más datos.</p><p>👉️ Por el momento el ámbito es España, Portugal, Pirineos (incluyendo la parte francesa) y Alpes (franceses, suizos e italianos).</p>"
@@ -342,6 +338,7 @@
   },
 
   "origen": {
+    "avisoInicialHtml": "<div style='text-align: center;'><p style='font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></p><p>La primera vez se necesita configurar un punto de origen.</p><p>Podrás cambiarlo cuando quieras con el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span></p></div>",
     "configurarPrimero": "La primera vez se necesita configurar un punto de origen.",
     "podrasCambiar": "Podrás cambiarlo cuando quieras con el botón"
   },
@@ -353,10 +350,7 @@
     "horas": "~{{h}} h {{m}} min",
     "minutos": "~{{m}} min",
     "sinConexion": "⚠️ No hay conexión a Internet. Antigüedad datos: {{tiempo}}.",
-    "meteoFrance": "Météo-France",
-    "ecmwf": "ECMWF",
-    "hace": "hace <b>{{tiempo}}</b>",
-    "ref": "(ref.{{hora}}Z)"
+    "hace": "hace <b>{{tiempo}}</b>"
   },
 
   "ajustes": {
@@ -452,7 +446,6 @@
   },
 
   "html": {
-    "titulo": "Ajustes",
     "distanciaDesde": "Distancia desde:",
     "seleccionarOrigen": "Seleccionar origen",
     "incluirNoFavs": "Incluir despegues no favoritos en el filtro",
@@ -464,8 +457,7 @@
     "importarFavoritos": "Importar favoritos",
     "exportarFavoritos": "Exportar favoritos",
     "guiaEdicionTitle": "Guía de la pantalla de editar despegues favoritos",
-    "esperandoConexion": "Esperando conexión...",
-    "filtroDistanciaInfo": "Muestra solo despegues dentro del radio de distancia que selecciones.<br><br>Usa el botón para establecer la posición de origen. Puedes usar el mapa o la ubicación actual de tu dispositivo."
+    "esperandoConexion": "Esperando conexión..."
   },
 
   "crash": {
