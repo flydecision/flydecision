@@ -1,0 +1,560 @@
+{
+  "_meta": {
+    "_nota": "Fitxer de traducció base — Català. Generat a partir de l'anàlisi de meteo.js i index.html.",
+    "_version": "1.0.0"
+  },
+
+  "menu": {
+    "inicio": "Inici",
+    "buscar": "Cercar",
+    "distancia": "Distància",
+    "mapa": "Mapa",
+    "ajustes": "Ajustos"
+  },
+
+  "botones": {
+    "aceptar": "D'acord",
+    "cancelar": "Cancel·lar",
+    "siguiente": "Següent",
+    "siguienteFlecha": "Següent →",
+    "finalizar": "Finalitzar",
+    "verGuia": "Veure guia",
+    "noGracias": "No, gràcies",
+    "siMarcar": "Sí, marcar",
+    "siDesmarcar": "Sí, desmarcar",
+    "siSalir": "Sí, sortir",
+    "no": "No",
+    "configurarOrigen": "Configurar origen",
+    "marcarFavoritos": "Marcar preferits",
+    "verGuiaGeneral": "Veure guia general",
+    "importarConfiguracion": "Importar configuració",
+    "marcarFavoritosFlecha": "Marcar preferits →",
+    "entendido": "Entès"
+  },
+
+  "dias": {
+    "domingo": "Diumenge",
+    "lunes": "Dilluns",
+    "martes": "Dimarts",
+    "miercoles": "Dimecres",
+    "jueves": "Dijous",
+    "viernes": "Divendres",
+    "sabado": "Dissabte",
+    "dom": "Diu",
+    "lun": "Dil",
+    "mar": "Dim",
+    "mie": "Dmc",
+    "jue": "Dij",
+    "vie": "Div",
+    "sab": "Dis"
+  },
+
+  "gps": {
+    "buscando": "⏳ Cercant...",
+    "errorUbicacion": "No s'ha pogut obtenir la ubicació.",
+    "activaGps": "Assegura't que el GPS estigui activat.",
+    "revisaPermisos": "Revisa els permisos.",
+    "noSoportado": "El teu navegador no admet GPS."
+  },
+
+  "buscador": {
+    "placeholder": "🔍 Cercar enlairament o província...",
+    "placeholderEdicion": "🔍 Cercar regió, província o enlairament...",
+    "sugerenciaTitulo": "💡 No s'ha trobat cap preferit per a * <b>{{termino}}</b> *, però aquests estan disponibles a la base de dades:",
+    "anadirFavorito": "+ Afegir a preferits"
+  },
+
+  "favoritos": {
+    "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Preferit",
+    "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Preferits",
+    "anadirAFavoritos": "Afegir a preferits",
+    "quitarDeFavoritos": "Treure de preferits",
+    "despegueFavorito": "Enlairament preferit",
+    "marcarTodos": "Marcar tots els enlairaments visibles com a preferits",
+    "desmarcarTodos": "Desmarcar tots els enlairaments visibles com a preferits",
+    "marcardesmarcarCabecera": "Marcar o desmarcar com a preferits tots els enlairaments actualment visibles a la taula",
+    "noHayParaDesmarcar": "No hi ha enlairaments preferits per desmarcar",
+    "noHayParaExportar": "No hi ha enlairaments preferits per exportar",
+    "noTienesFavoritos": "<p>No hi ha enlairaments marcats com a preferits ♥️</p>",
+    "necesarioMarcarUno": "<p>Es requereix almenys un enlairament preferit ♥️</p><p>Si ho desitges, pots consultar la guia ràpida d'aquesta pantalla mitjançant el botó <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guia'>.</p>",
+    "confirmacionMasiva": "Vols marcar <span style='font-weight:bold;'>{{cantidad}}</span> enlairaments com a preferits?",
+    "confirmarDesmarcarTodos": "Vols desmarcar tots els teus preferits?",
+    "anadidoOk": "✅ <b>{{nombre}}</b> afegit",
+    "importadosOk": "✅ S'han importat {{n}} enlairaments preferits",
+    "archivoVacio": "⚠️ El fitxer estava buit.",
+    "errorArchivo": "⚠️ Error en processar el fitxer.",
+    "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENCIÓ:</b> Importar preferits substituirà els actuals.</b><br><br>Si vols conservar-los, cancel·la aquest missatge i utilitza el botó 💾 <i>Exportar preferits</i>.</p>",
+    "exportar": {
+      "tituloDialog": "💾 Exportar preferits",
+      "mensajeDialog": "\nCanvia el nom del fitxer o accepta aquest:",
+      "guardar": "Desar",
+      "cancelar": "Cancel·lar",
+      "okTitulo": "✅ Preferits desats correctament",
+      "okTextoShare": "Aquí tens els meus enlairaments preferits de Fly Decision:",
+      "okMensaje": "Vols compartir-los ara?",
+      "siCompartir": "Sí, compartir",
+      "noCompartir": "No",
+      "tituloShare": "Els meus enlairaments preferits de Fly Decision",
+      "textoShare": "Aquí tens els meus enlairaments preferits:",
+      "dialogTitle": "Compartir amb...",
+      "errorShare": "No s'ha pogut obrir el menú de compartir. Si us plau, prova un altre mètode.",
+      "sinShare": "El teu dispositiu no permet compartir fitxers directament. Assegura't de tenir Telegram instal·lat.",
+      "errorGuardar": "Vaja, alguna cosa ha fallat: "
+    }
+  },
+
+  "tabla": {
+    "tooltips": {
+      "meteoGeneral": "Meteo general (pluja / cobertura total de núvols)",
+      "precipitacion": "Precipitació en mm (litres/m²)",
+      "probPrecipitacion": "Probabilitat (%) de precipitació superior a 0,1 mm (litres/m²)",
+      "baseNube": "Base dels núvols AGL (km): Alçada estimada de la base dels núvols sobre el terra. Calculada a partir de la temperatura a 2m i el punt de rosada a 2m.",
+      "viento180m": "Velocitat mitjana del vent a 180 m (km/h)",
+      "viento120m": "Velocitat mitjana del vent a 120 m (km/h)",
+      "viento80m": "Velocitat mitjana del vent a 80 m (km/h)",
+      "viento10m": "Velocitat mitjana del vent a 10 m (km/h)",
+      "racha10m": "Ratxes màximes a 10 m (km/h)",
+      "direccion10m": "Direcció del vent a 10 m",
+      "cizalladura": "Cisallament del vent a baixes cotes (LLWS) / Fiabilitat de la previsió del vent mitjà",
+      "techo": "Alçada (km) sobre el nivell del mar (MSL) del sostre de vol utilitzable (= gruix de la capa límit BLH x 0,85 + elevació mitjana del terreny de la cel·la ECMWF 9km)",
+      "cape": "CAPE (J/kg): Energia Potencial Convectiva Disponible",
+      "cin": "CIN (J/kg): Inhibició Convectiva",
+      "masInfo": "Més informació",
+      "verEnMapa": "Veure al mapa",
+      "notaCondiciones": "Puntuació de les condicions d'enlairament: {{nota}} punts",
+      "tooltipMeteoCompleto": "<b style='font-size:20px;'>🌦️ Paràmetres meteorològics</b><br><br><b>🌦️</b>: Meteo general (cobertura de núvols i precipitació)<br><b>💦</b>: Precipitació en mm (litres/m²)<br><b>💦?</b>: Probabilitat (%) de precipitació superior a 0,1 mm (litres/m²)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>180 m</b>: Vent a 180 m sobre el terra (km/h)<br><b>120 m</b>: Vent a 120 m sobre el terra (km/h)<br><b>80 m</b>: Vent a 80 m sobre el terra (km/h)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>10 m</b>: Vent a 10 m sobre el terra (km/h)<br><img src='icons/icono_racha_48x42.webp' style='width:16px;height:14px;'> : Ratxes màximes a 10 m sobre el terra (km/h)<br><img src='icons/icono_direccion_45.webp' style='width:15px;height:15px;'> : Direcció del vent a 10 m sobre el terra<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><img src='icons/icono_cizalla_fiabilidad.png' style='width:30px;height:8px;'> : Cisallament del vent a baixes cotes per velocitat / Fiabilitat de la previsió del vent mitjà<hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>Sostre</b>: Alçada (km) sobre el nivell del mar (MSL) del sostre de vol utilitzable (= gruix de la capa límit BLH x 0,85 + elevació mitjana del terreny de la cel·la ECMWF 9km)<br><b>CAPE</b>: Energia Potencial Convectiva Disponible (J/kg)<br><b>CIN</b>: Inhibició Convectiva (J/kg en valor absolut)<br><br><i>Nota: Les dades essencials de la base dels núvols ☁️↓ (CBH = Cloud Base Height) encara no estan disponibles.</i><br>",
+      "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Puntuacions (0-10)</b><br><br>El sistema calcula automàticament dues puntuacions per a cada enlairament en funció de la franja horària seleccionada. Ambdues estan codificades per colors amb un degradat de vermell a verd.<br><br><b>1. Condicions d'enlairament (fila superior):</b><br>Avalua la viabilitat de l'enlairament analitzant la previsió horària respecte a les preferències definides a ⚙️ Ajustos:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Límits de vent mitjà (mínim, ideal i màxim).</li><li>Límit de ratxes màximes.</li><li>Orientació(ns) de l'enlairament.</li><li>Pluja (vet automàtic i 0 punts a l'hora afectada).</li></ul><b>2. Condicions per mantenir-se en tèrmica o començar l'XC (fila inferior):</b><br>Avalua les condicions d'enlairament i el potencial tèrmic per a vols de distància (Cross Country) utilitzant dades del model ECMWF:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Sostre:</b> Premia els sostres alts per sobre de l'alçada mitjana del relleu i penalitza els sostres baixos (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Premia els dies blaus o amb cúmuls inofensius, i penalitza els valors extrems per sobre-desenvolupament o risc de tempesta (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Penalitza la forta inhibició convectiva (inversió) que actua com a tap, dificultant la formació tèrmica (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Nota: La puntuació d'XC és <b>independent</b> de l'orientació de l'enlairament o del vent. Avalua purament el potencial tèrmic de la massa d'aire en aquesta zona. Només es posa a zero (0 punts) si es preveu pluja o tempestes fortes.</i><br><br>⚠️ <b>Avís:</b> Falten les dades essencials de la base dels núvols (CBH = Cloud Base Height) per saber si l'enlairament estarà cobert per núvols. És un valor ECMWF que encara no està disponible a la passarel·la (sol·licitat el març de 2026, pendent sense data prevista). Cal consultar altres serveis.<br><br><b>Per defecte, els enlairaments es reordenen automàticament per la primera puntuació</b> (Condicions d'enlairament), de la més alta a la més baixa. Pots canviar aquest comportament a: ⚙️ <i>Ajustos</i> > <i>Altres opcions</i> > <i>Ordenar per condicions d'XC</i>."
+    },
+    "labels": {
+      "techo": "Sostre",
+      "cape": "CAPE",
+      "cin": "CIN"
+    },
+    "cizalladura": {
+      "baja": "Cisallament baix i alta fiabilitat",
+      "media": "Cisallament moderat i fiabilitat mitjana",
+      "alta": "Cisallament alt i baixa fiabilitat",
+      "motivoBajo": "Valors inferiors als llindars",
+      "motivoMedio": "Ràtio {{ratio}}x > 1.5 I Δ {{delta}} > 8 km/h",
+      "motivoAlto": "Ràtio {{ratio}}x > 2.0 I Δ {{delta}} > 12 km/h"
+    },
+    "techoTooltip": "Sostre de vol utilitzable: {{altitudMSL}} m MSL\nCàlcul = {{espesorUtil}} m de gruix utilitzable AGL ({{pct}}% dels {{blh}} m BLH teòrics) + {{elevacion}} m d'elevació (nivell mitjà del terreny de la cel·la ECMWF 9km)\n",
+    "despegueTooltip": "Província: {{provincia}}\nEnlairament: {{despegue}}\nOrientació: {{orientacion}}",
+    "cargando": "Carregant...",
+    "cabeceraRegion": "Regió",
+    "cabeceraProvincia": "Província",
+    "cabeceraDespegue": "Enlairament",
+    "viento_altura": "{{metros}} m"
+  },
+
+  "contador": {
+    "despeguesFavoritos": "<b>{{n}}</b> enlairaments preferits",
+    "despeguesFavoritosFiltrados": "<b>{{total}}</b> enlairaments preferits",
+    "despeguesDisponibles": "<b>{{n}}</b> enlairaments disponibles",
+    "despeguesDisponiblesFiltrados": "de <b>{{total}}</b> enlairaments disponibles",
+    "despeguesFavoritosEdicion": "{{n}} preferits de <b>{{total}}</b> disponibles",
+    "totalDisponibles": "Total d'enlairaments disponibles: <b>{{n}}</b>",
+    "miniTodosBD": "Nombre d'enlairaments visibles a tota la base de dades",
+    "miniFavoritos": "Nombre d'enlairaments preferits / filtrats"
+  },
+
+  "marcadorMasivo": {
+    "paraMarcarFavoritos": "Per marcar o desmarcar un grup de preferits, utilitza l'opció:<br>Menú ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Preferits]"
+  },
+
+  "guiaPrincipal": {
+    "progreso": "{{current}} de {{total}}",
+    "siguiente": "Següent →",
+    "cerrar": "Tancar guia",
+    "preguntaVerGuia": "Vols veure una guia visual d'aquesta pantalla?",
+    "preguntaVerGuiaPrincipal": "Vols veure una guia visual de la<br>pantalla principal?",
+    "verEnAjustes": "Pots consultar-la en qualsevol moment a:<br><i>⚙️ Ajustos</i> → <i>Guia</i>",
+    "podrasVerla": "Pots consultar-la en qualsevol moment utilitzant el botó <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> d'aquesta pantalla.",
+    "pasos": {
+      "paso1": {
+        "titulo": "🪂 Pantalla principal",
+        "descripcion": "Aquesta és la pantalla d'ús normal de l'aplicació.<br><br>Mostra una taula amb tots els enlairaments que has seleccionat com a preferits, juntament amb la seva previsió i les puntuacions de les condicions (per a l'enlairament i per començar vols d'XC).<br><br>Els enlairaments sempre s'ordenen automàticament per la seva puntuació de condicions d'enlairament (de la més alta a la més baixa)."
+      },
+      "selectorHorario": {
+        "titulo": "🗓️ Selector de franja horària",
+        "descripcion": "Ajusta aquest control lliscant pels dos extrems per seleccionar la franja horària que t'interessi.<br><br>La taula només mostrarà aquestes hores, i la puntuació de les condicions es recalcularà per a aquest interval de temps específic."
+      },
+      "diasSemana": {
+        "titulo": "🗓️ Dies de la setmana",
+        "descripcion": "Aquests botons dels dies de la setmana faciliten la selecció de la franja horària d'aquell dia. Aquest serà l'ús típic de l'aplicació: un cop d'ull ràpid als enlairaments 'possibles' per a aquest dia.<br><br>👉🏽 Seleccionaré aquest com a exemple perquè vegis com funciona."
+      },
+      "diaSeleccionado": {
+        "titulo": "🗓️ Dia seleccionat",
+        "descripcion": "Ara, la taula només mostra aquell dia amb la franja horària seleccionada automàticament.<br><br>💡 Pots moure els controls lliscants a la teva franja horària específica per obtenir una puntuació més precisa. Pots personalitzar aquesta franja horària diària 'automàtica' als ⚙️ Ajustos."
+      },
+      "columnaMeteo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><span style='font-size:25px; display: block;'>🌦️</span><span>Columna de meteo</span></div>",
+        "descripcion": "Mostra les dades meteorològiques.<br><br>Fes clic a la icona per veure el significat de cada paràmetre."
+      },
+      "filaCizalladura": {
+        "titulo": "🟩🟧🟥 Fila Cisallament / Fiabilitat",
+        "descripcion": "Aquesta fila especial és un indicador combinat. És un semàfor codificat per colors que mostra simultàniament dues dades concurrents: el cisallament del vent a baixes cotes i la fiabilitat de la previsió del vent a 10m."
+      },
+      "columnaPuntuacion": {
+        "titulo": "⭐ Columna de puntuació",
+        "descripcion": "El sistema calcula dues puntuacions (de 0 a 10) per a cada enlairament i per a la franja horària seleccionada: Condicions d'enlairament i Condicions per mantenir-se en tèrmica o començar un Cross Country (XC).<br><br>Els enlairaments es reordenen automàticament per la puntuació de condicions d'enlairament.<br><br>Als ⚙️ Ajustos, pots personalitzar els teus límits per al càlcul."
+      },
+      "btnInfo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Informació de l'enlairament</span></div>",
+        "descripcion": "Mostra informació més completa sobre l'enlairament i enllaços a la seva previsió a Windy, Meteo-parapente i Meteoblue."
+      },
+      "btnOrigen": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Punt d'origen",
+        "descripcion": "Aquí tries el punt d'origen per al filtre de distància.<br><br>Pots seleccionar el punt utilitzant un mapa o la teva ubicació actual."
+      },
+      "btnIncNoFavs": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Incloure no preferits",
+        "descripcion": "Et permet incloure temporalment tots els enlairaments disponibles (preferits i no preferits) al filtre.<br><br>💡 Pràctic per cercar ràpidament les condicions de vol en enlairaments de diferents zones fora de la teva zona de preferits."
+      },
+      "btnMapa": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa d'enlairaments</span></div>",
+        "descripcion": "Mostra l'enlairament al mapa.<br><br>💡 El mapa inclou informació addicional, diversos filtres, mapes de calor i altres eines útils per explorar."
+      },
+      "navHome": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Inici</span></div>",
+        "descripcion": "Mostra la taula amb tots els teus enlairaments preferits. Si hi ha cerques o filtres actius, els esborra.<br><br>💡 Si et perds, utilitza aquest botó per tornar a la vista \"normal\"."
+      },
+      "navSearch": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Cercar</span></div>",
+        "descripcion": "Utilitza això per cercar enlairaments per nom o zona administrativa (generalment la província). Pots escriure sense accents per anar més ràpid."
+      },
+      "navDistance": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distància</span></div>",
+        "descripcion": "Mostra un control lliscant per filtrar els enlairaments en un radi al voltant d'un punt.<br><br>👉🏽 Ara premeré aquest botó per obrir el filtre."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distància</span></div>",
+        "descripcion": "Aquest filtre et permet veure només els enlairaments al voltant d'un punt específic.<br><br>💡 Útil per trobar ràpidament enlairaments a una distància en cotxe des de la teva ubicació."
+      },
+      "sliderDistancia": {
+        "titulo": "Radi de distància",
+        "descripcion": "Mou aquest control lliscant per triar la distància màxima.<br><br>La taula només mostrarà els enlairaments dins d'aquest radi."
+      },
+      "navMap": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
+        "descripcion": "Mapa d'enlairaments de parapent amb informació detallada: cerca d'enlairaments, filtres per orientació, nombre de vols, any de l'últim vol, distància mitjana, un mapa de calor amb més d'1,3 milions de punts d'enlairament registrats amb exactitud, i molta més informació."
+      },
+      "navSettings": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Ajustos</span></div>",
+        "descripcion": "Aquí pots <b>Editar preferits</b> (per afegir o eliminar els teus enlairaments habituals), personalitzar paràmetres, activar opcions i veure informació sobre les actualitzacions de les dades meteorològiques.<br><br>💡 Cada opció té un botó d'informació <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'> per veure'n els detalls."
+      }
+    }
+  },
+
+  "guiaFavoritos": {
+    "preguntaVerGuia": "Vols veure una guia visual d'aquesta pantalla?",
+    "podrasVerla": "Pots consultar-la en qualsevol moment utilitzant el botó <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> d'aquesta pantalla.",
+    "pasos": {
+      "intro": {
+        "titulo": "🪂 Pantalla d'edició d'enlairaments preferits",
+        "descripcion": "Aquesta pantalla mostra tots els enlairaments disponibles. Selecciona els que utilitzes habitualment. La vista normal de l'aplicació només mostrarà aquests preferits.<br><br>Podries seleccionar-los tots, però depenent del teu dispositiu, podria alentir les cerques i l'ús diari.<br><br>Actualment cobreix Espanya, Portugal, els Pirineus i les principals zones alpines. És un projecte en creixement."
+      },
+      "celdaFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Preferits",
+        "descripcion": "Marca o desmarca els teus preferits aquí.<br><br>Els canvis es desen automàticament."
+      },
+      "cabeceraFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Preferits de la capçalera",
+        "descripcion": "Marca o desmarca tots els enlairaments actualment visibles alhora.<br><br>💡 Exemple: Filtra per \"Osca\" i marca'ls tots. O filtra per distància i marca tots els que estiguin en un radi de 50 km."
+      },
+      "btnInfoDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/info.svg\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Informació de l'enlairament</span></div>",
+        "descripcion": "Mostra informació detallada sobre l'enlairament i enllaços a previsions d'altres llocs web."
+      },
+      "btnMapaDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"><polygon points=\"1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6\"></polygon><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"18\"></line><line x1=\"16\" y1=\"6\" x2=\"16\" y2=\"22\"></line></svg><span>Mapa d'enlairaments</span></div>",
+        "descripcion": "Mostra l'enlairament al mapa.<br><br>💡 El mapa inclou informació addicional sobre l'enlairament, diversos filtres, mapes de calor d'enlairaments i diverses eines útils que val la pena explorar."
+      },
+      "buscador": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg><span>Cercar</span></div>",
+        "descripcion": "Cerca enlairaments escrivint la regió, la província o el nom. Pots escriure sense accents per anar més ràpid."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distància</span></div>",
+        "descripcion": "Aquest és un filtre que et permet visualitzar només els enlairaments al voltant d'un punt específic.<br><br>💡 Això et pot ajudar a trobar ràpidament enlairaments en un radi de distància que triïs al voltant d'un punt."
+      },
+      "btnOrigen": {
+        "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Punt d'origen",
+        "descripcion": "Aquí tries el punt d'origen per al filtre de distància de dalt.<br><br>Pots seleccionar el punt utilitzant un mapa o la teva ubicació actual."
+      },
+      "sliderDistancia": {
+        "titulo": "Distància al punt",
+        "descripcion": "En moure aquest control lliscant, tries la distància màxima en quilòmetres."
+      },
+      "btnVerSoloFavs": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Veure només preferits",
+        "descripcion": "Alterna entre mostrar només els teus preferits o tots els enlairaments.<br><br>💡 Útil per comprovar els teus preferits seleccionats d'un cop d'ull."
+      },
+      "btnDesmarcarTodos": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z\"></path><line x1=\"5\" y1=\"5\" x2=\"19\" y2=\"19\" stroke=\"red\" stroke-width=\"3\"></line></svg><span>Desmarcar tots els preferits</span></div>",
+        "descripcion": "Elimina tots els enlairaments de la teva llista de preferits alhora."
+      },
+      "btnImportar": {
+        "titulo": "📂 Importar preferits",
+        "descripcion": "Obre un fitxer amb enlairaments preferits."
+      },
+      "btnExportar": {
+        "titulo": "💾 Exportar preferits",
+        "descripcion": "Desa un fitxer amb els teus enlairaments preferits actuals.<br><br>Nota: En realitat, els preferits es desen automàticament cada cop que en marques un. Aquest botó serveix per fer-ne una còpia de tots en un fitxer extern (com a còpia de seguretat o per compartir-la). <br><br>💡 Si viatges a diverses zones de vol allunyades, potser voldràs tenir els preferits de cada zona desats en fitxers diferents."
+      },
+      "btnGuiaEdicion": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/icono_ayuda_60.webp\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Guia ràpida</span></div>",
+        "descripcion": "Torna a mostrar aquesta guia."
+      },
+      "btnFinalizar": {
+        "titulo": "🏁 Finalitzar edició",
+        "descripcion": "Surt a la pantalla principal per veure la previsió dels teus preferits seleccionats."
+      }
+    }
+  },
+
+  "asistente": {
+    "paso1": {
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>On volar?</p><p>🌦️ Previsió horària a 4 dies.</p><p>📊 Avaluació automatitzada de les condicions per a Enlairament i XC.</p><p>🗺️ Mapa d'enlairaments.</p>",
+      "btnPrimario": "Seleccionar preferits",
+      "btnSecundario": "Veure guia general",
+      "btnImportar": "Importar ajustos"
+    },
+    "paso2": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Anàlisi automatitzada de la previsió meteorològica per a parapent.</p><p>🙄 <b>Per a què serveix?:</b> per ajudar-te a decidir on volar. Mostra una taula amb els teus enlairaments preferits, les seves previsions, i realitza una anàlisi automatitzada d'aquestes <b>condicions meteorològiques</b>.</p><p>🧮 <b>Quina anàlisi fa?:</b> compara la previsió amb els teus límits configurats de vent mitjà i ratxes màximes, i l'orientació de cada enlairament; també analitza el vent a altituds properes a l'enlairament (80, 120 i 180 m), proporcionant informació sobre el gradient de vent i la fiabilitat de la previsió. Mostra dades clau d'XC (sostre, CAPE i CIN).</p><p>Amb tota aquesta informació, puntua cada enlairament de 0 a 10 i codifica amb colors 🟩&nbsp;🟨&nbsp;🟥 les dades per a la franja horària triada. Pots personalitzar tots els límits per adaptar-los a les teves preferències.</p>"
+    },
+    "paso3": {
+      "html": "<p>💨️ <b>Dades meteorològiques:</b> previsió horària per a 4 dies (96h). S'actualitza 8 vegades al dia amb dades oficials de Météo-France dels models Arome-HD 1.3km (0-48h) i Arpege 7km (48-96h), i 4 vegades al dia amb dades de l'ECMWF (0-96h).</p><p>🆓 <b>Cost i privacitat:</b> 100% gratuït, sense subscripcions, sense anuncis i sense seguiment (galetes, telemetria...). Els teus ajustos es desen de manera privada al teu navegador. És un projecte lliure i obert, operatiu des de 2026 i en evolució.</p>"
+    },
+    "paso4": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🤔 És complicat?</p><p>✅ <b>Ús bàsic</b>: selecciona els teus enlairaments preferits la primera vegada i sempre tindràs la taula amb les seves previsions i l'anàlisi automatitzada per a cada dia.</p><p>✅ <b>Ús intermedi</b>: pots seleccionar una franja horària (dies o hores) i veure la puntuació automàtica de les condicions per a aquest interval. Pots filtrar els enlairaments per un radi de distància des de casa teva o des de qualsevol lloc.</p><p>✅ <b>Ús avançat</b>: pots personalitzar a ⚙️ <i>Ajustos</i> els límits per defecte per al vent mitjà (mínim, ideal i màxim) i les ratxes màximes. Les teves preferències s'utilitzaran per a l'anàlisi, la coloració i la puntuació de les condicions.</p>"
+    },
+    "paso5": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>️👉 Tingues en compte...</p><p>👉 Només es mostren els enlairaments preferits. Pots seleccionar-los tots, però en alguns dispositius podria alentir l'aplicació.</p><p>👉️ L'ordenació és automàtica per puntuació (de 10 a 0).</p><p>👉️ Les dades de la base dels núvols (CBH) actualment estan pendents del proveïdor. Consulta sempre múltiples fonts abans de volar.</p><p>👉️ Cobertura: Espanya, Portugal, Pirineus i Alps (francesos, suïssos, italians).</p>"
+    },
+    "paso6": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>👍 I ara què?</p><p>Has de marcar els teus enlairaments preferits.</p>",
+      "btnPrimario": "Seleccionar preferits →",
+      "btnSecundario": "←"
+    }
+  },
+
+  "origen": {
+    "avisoInicialHtml": "<div style='text-align: center;'><p style='font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></p><p>Has d'establir un punt d'origen per primera vegada.</p><p>Pots canviar-lo en qualsevol moment mitjançant el botó <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span></p></div>",
+    "configurarPrimero": "Primer has d'establir un punt d'origen.",
+    "podrasCambiar": "Pots canviar-lo en qualsevol moment mitjançant el botó"
+  },
+
+  "actualizacion": {
+    "cargando": "Carregant...",
+    "esperando": "🔄 Següent: <span style='color:#e39300; font-weight:bold;'>Esperant...⌛</span>",
+    "proximaEn": "🔄 Següent: <b>{{tiempo}}</b>",
+    "horas": "~{{h}} h {{m}} min",
+    "minutos": "~{{m}} min",
+    "sinConexion": "⚠️ Sense connexió a Internet. Antiguitat de les dades: {{tiempo}}.",
+    "hace": "Fa <b>{{tiempo}}</b>",
+    "esperandoPrimerDato": "Esperant les primeres dades...",
+    "avisoModelos": {
+      "viento": "Vent (Météo-France: Arome-HD i Arpege)",
+      "general": "Meteo general i condicions tèrmiques d'XC (ECMWF)"
+    },
+    "avisoNuevoMeteo": "<p>ℹ️ Noves dades meteorològiques disponibles per a:</p><p><b>{{modelos}}</b></p><p>Actualitzar ara?</p>"
+  },
+
+  "ajustes": {
+    "probPrecipitacion": "Probabilitat de precipitació",
+    "vientoAlturas": "Vent a 80, 120 i 180 m",    
+    "cizalladura_fiabilidad": "Cisallament del vent / Fiabilitat",
+    "XC": "XC: Sostre MSL, CAPE i CIN",
+    "horarioVueloPref": "Horari de vol preferit",
+    "solo_horas_diurnas": "Només hores diürnes",
+    "ordenar_xc": "Ordenar per condicions d'XC",
+    "titulo": "Ajustos",
+    "editarFavoritos": "Editar preferits",
+    "importarConfig": "Importar ajustos i preferits",
+    "exportarConfig": "Exportar ajustos i preferits",
+    "restablecerConfig": "Restablir ajustos (elimina tota la configuració i els preferits)",
+    "viento": "Vent",
+    "rachaMaxima": "Ratxes màximes",
+    "acordeon": {
+      "vientoRacha": "Límits de vent i ratxes",
+      "datosOpcionales": "Dades meteorològiques opcionals",
+      "otrasOpciones": "Altres opcions",
+      "sobreActualizacion": "Actualitzacions dels models meteorològics"
+    },
+    "guia": "Guia",
+    "ayuda": "Ajuda",
+    "legal": "Legal",
+    "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENCIÓ:</b> Importar un fitxer de configuració substituirà tots els teus ajustos actuals i enlairaments preferits.</b></p>",
+    "importadoConfigOk": "✅ La configuració s'ha importat",
+    "errorArchivoConfig": "⚠️ Sembla que el fitxer no és una còpia de seguretat vàlida de Fly Decision.",
+    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATENCIÓ:</b> Aquesta acció restablirà la configuració als ajustos originals i desmarcarà tots els enlairaments preferits.</p></div>"
+  },
+
+  "mapa": {
+    "seleccionarOrigen": "Seleccionar origen",
+    "miUbicacion": "La meva ubicació",
+    "irMiUbicacion": "Anar a la meva ubicació",
+    "buscadorPlaceholder": "Cercar lloc o coordenades...",
+    "buscadorTitulo": "Cerca general (llocs i coordenades)",
+    "ajustes": "Ajustos",
+    "capasYFiltros": "Capes i Filtres",
+    "capas": "Capes:",
+    "orientacion": "Orientació:",
+    "cerrarPanel": "Tancar Panell",
+    "fijarPanel": "Fixar Panell (no amagar en moure el mapa)",
+    "masInformacion": "Més informació ▼",
+    "volverEdicion": "Tornar a Editar Preferits",
+    "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Ets aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "capasCheckbox": {
+      "despegues": "🪂 Enlairaments",
+      "mapaCalorPeninsula": "🔥 Mapa de Calor Ibèric",
+      "mapaCalorAlpes": "🔥 Mapa de Calor dels Alps",
+      "mapaCalorMarruecos": "🔥 Mapa de Calor del Marroc",
+      "notas": "✏️ Notes",
+      "despeguesMundo": "🪂 Enlairaments Paraglidingearth"
+    },
+    "cargandoCalorPeninsula": "⏳ Carregant Mapa de Calor Ibèric...<br><br>(309.157 enlairaments registrats)",
+    "cargandoCalorAlpes": "⏳ Carregant Mapa de Calor dels Alps...<br><br>(967.477 enlairaments registrats)",
+    "cargandoCalorMarruecos": "⏳ Carregant Mapa de Calor del Marroc...<br><br>(11.006 enlairaments registrats)",
+    "errorCSV": "Error en carregar el CSV. Revisa la consola per veure'n els detalls.",
+    "errorCSVAlpes": "Error en carregar el fitxer CSV dels Alps.",
+    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} Enlairaments XContest</b>",
+    "despegueXContest": "🪂<br>Enlairament XContest",
+    "coordenadasMedias": "Coordenades mitjanes:",
+    "coordenadas": "Coordenades:",
+    "fecha": "Data:",
+    "hora": "Hora:",
+    "distanciaRecorrida": "Distància recorreguda:",
+    "vuelos": "Vols XContest:",
+    "vueloXContest": "🔍 Veure Vol XContest",
+    "orientacionLabel": "Orientació:",
+    "grupoXContestTitle": "Grup de {{count}} enlairaments registrats a XContest",
+    "nVuelosXContest": "Núm. de vols XContest:",
+    "minVuelosTexto": "Mínim de vols registrats = ",
+    "anioUltimoVueloTexto": "Any de l'últim vol >= ",
+    "minKmMediaTexto": "Distància mitjana recorreguda mínima = ",
+    "todos": "Tots",
+    "titleBuscadorDespegue": "Cercar enlairament per nom",
+    "buscadorDespegue": "🔍 Enlairament",
+    "labelOrientacion": "Orientació:",
+    "labelCoordenadas": "Coordenades:",
+    "labelAltitud": "Altitud aprox.:",
+    "labelActividad": "Nivell d'activitat:",
+    "labelVuelos": "Núm. de vols XContest:",
+    "labelKmMedia": "Distància mitjana (km):",
+    "labelMasInfo": "Més informació:",
+
+    "capasBase": {
+      "esriTopo": "ESRI World Topographic",
+      "esriOrto": "ESRI World Imagery",
+      "osmOpenTopo": "Estil OpenStreetMap OpenTopoMap",
+      "osmCyclOSM": "Estil OpenStreetMap CyclOSM",
+      "thunderforest": "Thunderforest Outdoors",
+      "ignTopo": "IGN Espanya Topogràfic",
+      "ignClaro": "IGN Espanya Topogràfic (Clar)",
+      "ignOrto": "IGN Espanya Satèl·lit",
+      "osmStandard": "Estil OpenStreetMap Estàndard",
+      "hipsometrico": "Relleu Hipsomètric",
+      "tracestrack": "Tracestrack Topo",
+      "icgc": "ICGC Catalunya",
+      "esriSkyways": "ESRI Topo + Skyways (KK7)",
+      "esriThermals": "ESRI Topo + Tèrmiques (KK7)",
+      "esriAll": "ESRI Topo + Skyways+Tèrmiques (KK7)"
+    }
+  },
+
+  "popupDespegue": {
+    "region": "Regió:",
+    "provincia": "Província:",
+    "orientacion": "Orientació:",
+    "nivelActividad": "Nivell d'activitat:",
+    "nivelActividadTitle": "Activitat del lloc basada en la data de l'últim vol (ref: nov 2025): Verd 0-6 mesos, Taronja 6-12, Groc 12-24, Blanc >24 mesos sense vols"
+  },
+
+  "html": {
+    "distanciaDesde": "Distància des de:",
+    "seleccionarOrigen": "Seleccionar origen",
+    "incluirNoFavs": "Incloure no preferits al filtre",
+    "resetFiltroDistancia": "Restablir i amagar filtre de distància",
+    "finalizarEdicion": "Finalitzar l'edició d'enlairaments preferits",
+    "finalizarEdicionTitle": "Finalitzar l'edició d'enlairaments preferits",
+    "verSoloFavoritos": "Veure només els meus preferits",
+    "desmarcarFavoritosTitle": "Desmarcar tots els preferits",
+    "importarFavoritos": "Importar preferits",
+    "exportarFavoritos": "Exportar preferits",
+    "guiaEdicionTitle": "Guia de la pantalla d'edició d'enlairaments preferits",
+    "esperandoConexion": "Esperant connexió..."
+  },
+
+  "crash": {
+    "errorCarga": "<div style='text-align: center;'><p>ℹ️ Error en carregar la taula.</p><p>Causa possible: <b>massa preferits</b> per als recursos del teu dispositiu.</p><p>S'obrirà la pantalla d'Edició de Preferits perquè puguis desmarcar-ne alguns i reduir la càrrega.</p><p>Si creus que és temporal: fes clic a <b><i>Finalitzar edició</i></b>, reinicia el dispositiu i torna-ho a provar.</p></div>",
+    "alertFallback": "L'aplicació té problemes per carregar. S'ha activat l'editor de preferits per reduir el nombre d'enlairaments."
+  },
+
+  "salirApp": {
+    "pregunta": "Vols sortir de l'aplicació?",
+    "no": "No",
+    "si": "Sí, sortir"
+  },
+
+  "novedadesXC": {
+    "titulo": "ℹ️ Novetats de Dades d'XC",
+    "html": "<div style='text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;'><ul style='padding-left: 20px; margin-top: 5px; margin-bottom: 5px;'><li style='margin-bottom: 6px;'><b>Puntuació d'XC Independent:</b> Avalua només el potencial tèrmic (Sostre, CAPE, CIN) ignorant el vent a l'enlairament. Només puntua 0 amb pluja o risc de tempesta.</li><li style='margin-bottom: 6px;'><b>Sostre en Altitud (MSL):</b> Ara mostra l'altitud sobre el nivell del mar, proporcionant una millor precisió per planificar distàncies.</li><li><b>Sostre Realista:</b> La previsió es redueix un 15% per compensar la taxa de descens del parapent.</li></ul><p style='margin-top: 10px; font-size: 0.9em;'>💡 <i>Més detalls fent clic a les icones 🌦️ o ⭐ de la taula.</i></p></div>"
+  },
+
+  "orientaciones": {
+    "N": "N",
+    "NNE": "NNE",
+    "NE": "NE",
+    "ENE": "ENE",
+    "E": "E",
+    "ESE": "ESE",
+    "SE": "SE",
+    "SSE": "SSE",
+    "S": "S",
+    "SSO": "SSO",
+    "SO": "SO",
+    "OSO": "OSO",
+    "O": "O",
+    "ONO": "ONO",
+    "NO": "NO",
+    "NNO": "NNO",
+    "norte": "Nord",
+    "nornoreste": "Nord-nord-est",
+    "noreste": "Nord-est",
+    "estenoreste": "Est-nord-est",
+    "este": "Est",
+    "estesureste": "Est-sud-est",
+    "sureste": "Sud-est",
+    "sursureste": "Sud-sud-est",
+    "sur": "Sud",
+    "sursuroeste": "Sud-sud-oest",
+    "suroeste": "Sud-oest",
+    "oestesuroeste": "Oest-sud-oest",
+    "oeste": "Oest",
+    "oestenoroeste": "Oest-nord-oest",
+    "noroeste": "Nord-oest",
+    "nornoroeste": "Nord-nord-oest",
+    "todos_title": "Els filtres d'orientació estan actius. Fes clic per esborrar-los tots."
+  },
+
+  "cron": {
+    "Actualización en curso... ⏳": "Actualització en curs... ⏳"
+  },
+
+  "btn_info": {
+    "tooltipVientoLimites": "<b>Vent mitjà mínim, ideal i màxim:</b><br><br>El sistema automatitzat d'avaluació de condicions tindrà en compte aquests valors.<br><br>El color de les dades a la taula indica visualment l'anàlisi de les condicions en funció dels valors que estableixis aquí (Mínim, Ideal i Màxim).<br><br>🟧 Taronja: vent fluix per sota del teu vent mínim (normalment 0, a menys que necessitis vent específic per a vol de vessant o altres motius).<br>🟩 Verd: Vent ideal, des del mínim fins a un marge de seguretat abans del màxim.<br>🟧 Taronja: vent més fort que s'acosta al màxim (l'últim terç abans d'arribar al màxim).<br>🟥 Vermell: vent molt fort que supera el teu límit de vent màxim.<br><br><b>Definició tècnica estàndard de l'OMM (Organització Meteorològica Mundial) de la velocitat mitjana a 10m</b>:<br><br>És la velocitat mitjana del vent sostingut durant els últims 10 minuts abans de l'hora indicada. Es mesura a una alçada estàndard de 10 metres sobre el terra (per evitar la fricció immediata del terreny). Representa el flux laminar o base.",
+    "filtroDistanciaCompleto": "<b>Filtre de distància d'enlairaments:</b><br><br>Mostra només els enlairaments dins del radi de distància que seleccionis.<br><br>Utilitza el botó <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> per establir la posició d'origen. Pots utilitzar el mapa o la ubicació actual del teu dispositiu.<span class='texto-oculto-en-edicion'><br><br>Utilitza el botó <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> per incloure enlairaments no preferits al filtre, la qual cosa significa <b>incloure temporalment tots els enlairaments</b> disponibles a la base de dades.<br><br>Quan està activat, s'aplica un filtre inicial de 100 km per evitar sobrecarregar la taula. Pots ajustar-ho segons les teves necessitats i el rendiment del teu dispositiu.</span>",
+    "tooltipRachaMaxima": "<b>Ratxa màxima:</b><br><br>El sistema automatitzat d'avaluació de condicions tindrà en compte aquests valors.<br><br>El color de les dades a la taula indica visualment l'anàlisi de les condicions en funció del valor que estableixis aquí.<br><br>🟩 Verd: ratxa màxima segura, lluny del límit.<br>🟧 Taronja: ratxa màxima que s'acosta al teu límit de ratxa màxima.<br>🟥 Vermell: ratxa que supera el teu límit de ratxa màxima.<br><br><b>Definició tècnica estàndard de l'OMM (Organització Meteorològica Mundial) de la ratxa màxima a 10m</b>:<br><br>És el pic màxim de velocitat instantània (amb una durada de 3 segons) registrat en qualsevol moment dins del període de l'hora anterior. Representa les fluctuacions breus i intenses superposades al vent mitjà, associades a la turbulència mecànica o tèrmica (convecció).",
+    "tooltipProbPrecipitacion": "<b>Probabilitat de precipitació (%)</b><br><br>Probabilitat (%) que la precipitació superi els 0,1 mm (litres/m²).<br><br>Dades originals del model ECMWF.",
+    "tooltipVientoAlturas": "<b>Vent a 80, 120 i 180 m (km/h)</b><br><br>Mostra 3 files amb les previsions de la velocitat mitjana del vent a 80, 120 i 180 m sobre el nivell del terra. Aquestes 3 files es mostren a sobre de la fila estàndard de velocitat mitjana del vent a 10m.<br><br>Aquests valors permeten avaluar el grau de turbulència de cisallament i la fiabilitat de la previsió del vent mitjà.<br><br>Dades originals del model Arome/Arpege (Météo-France).",
+    "tooltipCizalladura": "<b>Cisallament del vent / Fiabilitat</b><br><br>Mostra una fila fina sota la fila d'orientació amb un valor calculat: el nivell de Cisallament del Vent a Baixes Cotes (LLWS) i el grau de Fiabilitat de la previsió del vent mitjà a 10 m.<br><br>El sistema analitza els valors de vent mitjà a 10, 80, 120 i 180 m sobre el terra i, mitjançant un algoritme, mostra un indicador codificat per colors.<br><br>🟩 Verd: Cisallament del vent baix per velocitat i alta fiabilitat de la previsió de velocitat a 10 m.<br>🟧 Taronja: Valors de cisallament i fiabilitat moderats.<br>🟥 Vermell: Alt cisallament del vent per velocitat i baixa fiabilitat de la previsió de velocitat a 10 m.<br><br>Aquest cisallament es produeix quan hi ha un alt gradient de velocitat prop del terra. Aquest nivell també està correlacionat amb la fiabilitat de la velocitat del vent a 10 m sobre el terra.<br><br>El motiu és que si la massa d'aire es mou a velocitats similars, el grau de turbulència de cisallament induïda per la velocitat serà baix, la previsió del vent a nivell del terra serà més fiable, i viceversa.",
+    "tooltipXC": "<b>XC: Sostre MSL, CAPE, CIN</b><br><br>Mostra un grup de 3 files amb dades centrades en el vol de distància (Cross Country / XC):<ul><li><b>Sostre de Vol MSL (km):</b> Alçada Màxima de la Capa Límit (BLH)</li><li><b>CAPE (J/kg):</b> Energia Potencial Convectiva Disponible</li><li><b>CIN (J/kg):</b> Inhibició Convectiva</li></ul>Dades originals del model ECMWF.",
+    "tooltipHorarioVuelo": "<b>Horari de vol preferit:</b><br><br>Els valors configurats aquí faran que aquestes hores d'inici i finalització se seleccionin automàticament quan es triï un dia de la setmana (dilluns, dimarts, etc.) al selector de franja horària situat a sobre de la taula.<br><br>Sempre pots ajustar el selector de franja horària manualment; aquest ajust només és una automatització per facilitar la selecció automàtica d'una franja horària típica.<br><br>Tant si es fa manualment com automàticament, només es té en compte la franja horària final seleccionada per al càlcul de la puntuació de <i>Condicions</i>; per tant, la puntuació de cada enlairament serà més realista per a aquesta franja específica.<br><br>Si l'opció <i>Només hores diürnes</i> està activada, la franja seleccionada automàticament amb aquest ajust s'adaptarà per mantenir-se dins dels límits de llum diürna.",
+    "tooltipHorasDiurnas": "<b>Només hores diürnes</b><br><br>Mostra només les hores de llum. Si està desactivat, es mostren les 24 hores del dia.<br><br>S'inclou un marge d'±1h a la sortida i la posta del sol.<br><br>Canvia automàticament cada mes. A més, els mesos amb canvi d'hora, aquestes hores s'ajustaran automàticament a l'horari oficial d'estiu/hivern (DST).",
+    "tooltipOrdenarXC": "<b>Ordenar per Condicions d'XC:</b><br><br>Per defecte, els enlairaments s'ordenen de millor a pitjor segons la puntuació de <i>Condicions d'Enlairament</i> (viabilitat d'enlairar-se segons el vent).<br><br>Si actives aquesta opció, la taula s'ordenarà de millor a pitjor puntuació de <b>Condicions d'XC</b> (potencial tèrmic de la massa d'aire), independentment de si el vent en aquell enlairament és ideal o no.",
+    "tooltipModelosMeteo": "<b>Models meteorològics:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: per a dades de vent en les primeres 0-48h. Cobreix gairebé tota Europa, inclosa la Península Ibèrica, excepte el sud d'Andalusia (en aquesta zona s'utilitza Arpege Europe 7km 0-96h).</li><li><b>Météo-France Arpege Europe 7km</b>: per a dades de vent en les següents 48-96h. Cobreix Europa i el nord d'Àfrica.</li><li><b>ECMWF IFS HRES 9km</b>: per a la resta de dades meteorològiques de 0-96h. Cobreix tot el món.</li></ul><b>Freqüència d'actualització automàtica:</b> Météo-France aproximadament cada 3 hores (8 vegades al dia) i ECMWF aproximadament cada 6 hores (4 vegades al dia).<br><br><b>Passarel·la de dades meteorològiques:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>El valor <i>Ref.HHZ</i> indica l'hora UTC±0 (Z) corresponent a l'últim cicle d'execució del model al servidor meteorològic d'origen. Des d'aquell moment, hi ha diverses hores de càlcul computacional abans de la distribució final i la disponibilitat pública.<br><br>"
+  }
+
+}

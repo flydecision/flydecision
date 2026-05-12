@@ -1,0 +1,560 @@
+{
+  "_meta": {
+    "_nota": "Fichier de traduction de base — Français. Généré à partir de l'analyse de meteo.js et index.html.",
+    "_version": "1.0.0"
+  },
+
+  "menu": {
+    "inicio": "Accueil",
+    "buscar": "Rechercher",
+    "distancia": "Distance",
+    "mapa": "Carte",
+    "ajustes": "Paramètres"
+  },
+
+  "botones": {
+    "aceptar": "OK",
+    "cancelar": "Annuler",
+    "siguiente": "Suivant",
+    "siguienteFlecha": "Suivant →",
+    "finalizar": "Terminer",
+    "verGuia": "Voir le guide",
+    "noGracias": "Non, merci",
+    "siMarcar": "Oui, marquer",
+    "siDesmarcar": "Oui, démarquer",
+    "siSalir": "Oui, quitter",
+    "no": "Non",
+    "configurarOrigen": "Définir l'origine",
+    "marcarFavoritos": "Marquer comme favoris",
+    "verGuiaGeneral": "Voir le guide général",
+    "importarConfiguracion": "Importer la configuration",
+    "marcarFavoritosFlecha": "Marquer comme favoris →",
+    "entendido": "Compris"
+  },
+
+  "dias": {
+    "domingo": "Dimanche",
+    "lunes": "Lundi",
+    "martes": "Mardi",
+    "miercoles": "Mercredi",
+    "jueves": "Jeudi",
+    "viernes": "Vendredi",
+    "sabado": "Samedi",
+    "dom": "Dim",
+    "lun": "Lun",
+    "mar": "Mar",
+    "mie": "Mer",
+    "jue": "Jeu",
+    "vie": "Ven",
+    "sab": "Sam"
+  },
+
+  "gps": {
+    "buscando": "⏳ Recherche en cours...",
+    "errorUbicacion": "Impossible d'obtenir la position.",
+    "activaGps": "Assurez-vous que le GPS est activé.",
+    "revisaPermisos": "Vérifiez les autorisations.",
+    "noSoportado": "Votre navigateur ne supporte pas le GPS."
+  },
+
+  "buscador": {
+    "placeholder": "🔍 Rechercher un décollage ou une province...",
+    "placeholderEdicion": "🔍 Rechercher une région, une province ou un décollage...",
+    "sugerenciaTitulo": "💡 Aucun favori trouvé pour * <b>{{termino}}</b> *, mais ceux-ci sont disponibles dans la base de données :",
+    "anadirFavorito": "+ Ajouter aux favoris"
+  },
+
+  "favoritos": {
+    "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favori",
+    "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoris",
+    "anadirAFavoritos": "Ajouter aux favoris",
+    "quitarDeFavoritos": "Retirer des favoris",
+    "despegueFavorito": "Décollage favori",
+    "marcarTodos": "Marquer tous les décollages visibles comme favoris",
+    "desmarcarTodos": "Démarquer tous les décollages visibles comme favoris",
+    "marcardesmarcarCabecera": "Marquer ou démarquer tous les décollages actuellement visibles dans le tableau comme favoris",
+    "noHayParaDesmarcar": "Aucun décollage favori à démarquer",
+    "noHayParaExportar": "Aucun décollage favori à exporter",
+    "noTienesFavoritos": "<p>Aucun décollage marqué comme favori ♥️</p>",
+    "necesarioMarcarUno": "<p>Au moins un décollage favori est requis ♥️</p><p>Si vous le souhaitez, vous pouvez consulter le guide rapide de cet écran à l'aide du bouton <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guide'>.</p>",
+    "confirmacionMasiva": "Voulez-vous marquer <span style='font-weight:bold;'>{{cantidad}}</span> décollages comme favoris ?",
+    "confirmarDesmarcarTodos": "Voulez-vous démarquer tous vos favoris ?",
+    "anadidoOk": "✅ <b>{{nombre}}</b> ajouté",
+    "importadosOk": "✅ {{n}} décollages favoris ont été importés",
+    "archivoVacio": "⚠️ Le fichier était vide.",
+    "errorArchivo": "⚠️ Erreur lors du traitement du fichier.",
+    "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATTENTION :</b> L'importation de favoris remplacera ceux actuels.</b><br><br>Si vous souhaitez les conserver, annulez ce message et utilisez le bouton 💾 <i>Exporter les favoris</i>.</p>",
+    "exportar": {
+      "tituloDialog": "💾 Exporter les favoris",
+      "mensajeDialog": "\nModifiez le nom du fichier ou acceptez celui-ci :",
+      "guardar": "Enregistrer",
+      "cancelar": "Annuler",
+      "okTitulo": "✅ Favoris enregistrés avec succès",
+      "okTextoShare": "Voici mes décollages favoris Fly Decision :",
+      "okMensaje": "Voulez-vous les partager maintenant ?",
+      "siCompartir": "Oui, partager",
+      "noCompartir": "Non",
+      "tituloShare": "Mes décollages favoris Fly Decision",
+      "textoShare": "Voici mes décollages favoris :",
+      "dialogTitle": "Partager avec...",
+      "errorShare": "Impossible d'ouvrir le menu de partage. Veuillez essayer une autre méthode.",
+      "sinShare": "Votre appareil ne permet pas le partage direct de fichiers. Assurez-vous d'avoir installé Telegram.",
+      "errorGuardar": "Oups, quelque chose s'est mal passé : "
+    }
+  },
+
+  "tabla": {
+    "tooltips": {
+      "meteoGeneral": "Météo générale (pluie / couverture nuageuse totale)",
+      "precipitacion": "Précipitations en mm (litres/m²)",
+      "probPrecipitacion": "Probabilité (%) de précipitations dépassant 0,1 mm (litres/m²)",
+      "baseNube": "Base des nuages AGL (km) : Hauteur estimée de la base des nuages au-dessus du sol. Calculée à partir de la température à 2m et du point de rosée à 2m.",
+      "viento180m": "Vitesse moyenne du vent à 180 m (km/h)",
+      "viento120m": "Vitesse moyenne du vent à 120 m (km/h)",
+      "viento80m": "Vitesse moyenne du vent à 80 m (km/h)",
+      "viento10m": "Vitesse moyenne du vent à 10 m (km/h)",
+      "racha10m": "Rafales max à 10 m (km/h)",
+      "direccion10m": "Direction du vent à 10 m",
+      "cizalladura": "Cisaillement du vent à basse altitude (LLWS) / Fiabilité des prévisions du vent moyen",
+      "techo": "Altitude (km) au-dessus du niveau de la mer (MSL) du plafond de vol utilisable (= épaisseur de la couche limite BLH x 0,85 + altitude moyenne du sol de la cellule ECMWF 9km)",
+      "cape": "CAPE (J/kg) : Énergie Potentielle Convective Disponible",
+      "cin": "CIN (J/kg) : Inhibition Convective",
+      "masInfo": "Plus d'informations",
+      "verEnMapa": "Voir sur la carte",
+      "notaCondiciones": "Note des conditions de décollage : {{nota}} points",
+      "tooltipMeteoCompleto": "<b style='font-size:20px;'>🌦️ Paramètres météorologiques</b><br><br><b>🌦️</b> : Météo générale (couverture nuageuse et précipitations)<br><b>💦</b> : Précipitations en mm (litres/m²)<br><b>💦?</b> : Probabilité (%) de précipitations dépassant 0,1 mm (litres/m²)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>180 m</b> : Vent à 180 m au-dessus du sol (km/h)<br><b>120 m</b> : Vent à 120 m au-dessus du sol (km/h)<br><b>80 m</b> : Vent à 80 m au-dessus du sol (km/h)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>10 m</b> : Vent à 10 m au-dessus du sol (km/h)<br><img src='icons/icono_racha_48x42.webp' style='width:16px;height:14px;'> : Rafales max à 10 m au-dessus du sol (km/h)<br><img src='icons/icono_direccion_45.webp' style='width:15px;height:15px;'> : Direction du vent à 10 m au-dessus du sol<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><img src='icons/icono_cizalla_fiabilidad.png' style='width:30px;height:8px;'> : Cisaillement du vent à basse altitude par vitesse / Fiabilité des prévisions du vent moyen<hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>Plafond</b> : Altitude (km) au-dessus du niveau de la mer (MSL) du plafond de vol utilisable (= épaisseur de la couche limite BLH x 0,85 + altitude moyenne du sol de la cellule ECMWF 9km)<br><b>CAPE</b> : Énergie Potentielle Convective Disponible (J/kg)<br><b>CIN</b> : Inhibition Convective (J/kg en valeur absolue)<br><br><i>Note : Les données essentielles de la base des nuages ☁️↓ (CBH = Cloud Base Height) ne sont pas encore disponibles.</i><br>",
+      "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Notes (0-10)</b><br><br>Le système calcule automatiquement deux notes pour chaque décollage en fonction de la plage horaire sélectionnée. Les deux sont codées par couleur avec un dégradé du rouge au vert.<br><br><b>1. Conditions de décollage (ligne du haut) :</b><br>Évalue la viabilité du décollage en analysant les prévisions horaires par rapport aux préférences définies dans ⚙️ Paramètres :<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Limites de vent moyen (minimum, idéal et maximum).</li><li>Limite de rafales maximales.</li><li>Orientation(s) de décollage.</li><li>Pluie (véto automatique et 0 point pour l'heure affectée).</li></ul><b>2. Conditions pour rester dans les thermiques ou commencer le XC (ligne du bas) :</b><br>Évalue la note des conditions de décollage et le potentiel thermique pour les vols longue distance (Cross Country) à l'aide des données du modèle ECMWF :<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Plafond :</b> Récompense les plafonds élevés au-dessus de la hauteur moyenne du relief et pénalise les plafonds bas (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE :</b> Récompense les journées bleues ou les cumulus inoffensifs, et pénalise les valeurs extrêmes dues au surdéveloppement ou au risque d'orage (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN :</b> Pénalise la forte inhibition convective (inversion) qui agit comme un couvercle, entravant la formation thermique (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Note : La note XC est <b>indépendante</b> de l'orientation du décollage ou du vent. Elle évalue purement le potentiel thermique de la masse d'air dans cette zone. Elle n'est mise à zéro (0 point) que si de la pluie ou des orages violents sont prévus.</i><br><br>⚠️ <b>Avertissement :</b> Les données essentielles de la base des nuages (CBH = Cloud Base Height) sont manquantes pour savoir si le décollage sera couvert de nuages. Il s'agit d'une valeur ECMWF qui n'est pas encore disponible dans la passerelle (demandée en mars 2026, en attente sans date prévue). Vous devez consulter d'autres services.<br><br><b>Par défaut, les décollages sont automatiquement réorganisés par la première note</b> (Conditions de décollage), de la plus élevée à la plus basse. Vous pouvez modifier ce comportement dans : ⚙️ <i>Paramètres</i> > <i>Autres options</i> > <i>Trier par conditions XC</i>."
+    },
+    "labels": {
+      "techo": "Plafond",
+      "cape": "CAPE",
+      "cin": "CIN"
+    },
+    "cizalladura": {
+      "baja": "Faible cisaillement et haute fiabilité",
+      "media": "Cisaillement modéré et fiabilité moyenne",
+      "alta": "Fort cisaillement et faible fiabilité",
+      "motivoBajo": "Valeurs inférieures aux seuils",
+      "motivoMedio": "Ratio {{ratio}}x > 1.5 ET Δ {{delta}} > 8 km/h",
+      "motivoAlto": "Ratio {{ratio}}x > 2.0 ET Δ {{delta}} > 12 km/h"
+    },
+    "techoTooltip": "Plafond de vol utilisable : {{altitudMSL}} m MSL\nCalcul = {{espesorUtil}} m d'épaisseur utilisable AGL ({{pct}}% des {{blh}} m BLH théoriques) + {{elevacion}} m d'altitude (niveau du sol moyen de la cellule ECMWF 9km)\n",
+    "despegueTooltip": "Province : {{provincia}}\nDécollage : {{despegue}}\nOrientation : {{orientacion}}",
+    "cargando": "Chargement...",
+    "cabeceraRegion": "Région",
+    "cabeceraProvincia": "Province",
+    "cabeceraDespegue": "Décollage",
+    "viento_altura": "{{metros}} m"
+  },
+
+  "contador": {
+    "despeguesFavoritos": "<b>{{n}}</b> décollages favoris",
+    "despeguesFavoritosFiltrados": "<b>{{total}}</b> décollages favoris",
+    "despeguesDisponibles": "<b>{{n}}</b> décollages disponibles",
+    "despeguesDisponiblesFiltrados": "sur <b>{{total}}</b> décollages disponibles",
+    "despeguesFavoritosEdicion": "{{n}} favoris sur <b>{{total}}</b> disponibles",
+    "totalDisponibles": "Total des décollages disponibles : <b>{{n}}</b>",
+    "miniTodosBD": "Nombre de décollages visibles dans toute la base de données",
+    "miniFavoritos": "Nombre de décollages favoris / filtrés"
+  },
+
+  "marcadorMasivo": {
+    "paraMarcarFavoritos": "Pour marquer ou démarquer un groupe de favoris, utilisez l'option :<br>Menu ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoris]"
+  },
+
+  "guiaPrincipal": {
+    "progreso": "{{current}} sur {{total}}",
+    "siguiente": "Suivant →",
+    "cerrar": "Fermer le guide",
+    "preguntaVerGuia": "Souhaitez-vous voir un guide visuel pour cet écran ?",
+    "preguntaVerGuiaPrincipal": "Souhaitez-vous voir un guide visuel pour<br>l'écran principal ?",
+    "verEnAjustes": "Vous pouvez le consulter à tout moment dans :<br><i>⚙️ Paramètres</i> → <i>Guide</i>",
+    "podrasVerla": "Vous pouvez le consulter à tout moment en utilisant le bouton <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> sur cet écran.",
+    "pasos": {
+      "paso1": {
+        "titulo": "🪂 Écran principal",
+        "descripcion": "Ceci est l'écran d'utilisation normale de l'application.<br><br>Il affiche un tableau avec tous les décollages que vous avez sélectionnés comme favoris, ainsi que leurs prévisions et leurs notes de condition (pour le décollage et pour le départ de vols XC).<br><br>Les décollages sont toujours automatiquement triés par leur note de condition de décollage (de la plus élevée à la plus basse)."
+      },
+      "selectorHorario": {
+        "titulo": "🗓️ Sélecteur de plage horaire",
+        "descripcion": "Ajustez ce curseur par les deux extrémités pour sélectionner la plage horaire qui vous intéresse.<br><br>Le tableau n'affichera que ces heures, et la note de condition sera recalculée pour cet intervalle de temps spécifique."
+      },
+      "diasSemana": {
+        "titulo": "🗓️ Jours de la semaine",
+        "descripcion": "Ces boutons de jours de la semaine facilitent la sélection de la plage horaire de ce jour-là. Ce sera l'utilisation typique de l'application : un coup d'œil rapide aux décollages 'possibles' pour ce jour-là.<br><br>👉🏽 Je vais sélectionner celui-ci comme exemple pour que vous voyiez comment cela fonctionne."
+      },
+      "diaSeleccionado": {
+        "titulo": "🗓️ Jour sélectionné",
+        "descripcion": "Maintenant, le tableau n'affiche que ce jour-là avec la plage horaire sélectionnée automatiquement.<br><br>💡 Vous pouvez déplacer les curseurs sur votre plage horaire spécifique pour obtenir une note plus précise. Vous pouvez personnaliser cette plage horaire quotidienne 'automatique' dans les ⚙️ Paramètres."
+      },
+      "columnaMeteo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><span style='font-size:25px; display: block;'>🌦️</span><span>Colonne météo</span></div>",
+        "descripcion": "Affiche les données météorologiques.<br><br>Cliquez sur l'icône pour voir la signification de chaque paramètre."
+      },
+      "filaCizalladura": {
+        "titulo": "🟩🟧🟥 Ligne Cisaillement / Fiabilité",
+        "descripcion": "Cette ligne spéciale est un indicateur combiné. C'est un feu tricolore qui affiche simultanément deux données concurrentes : le cisaillement du vent à basse altitude et la fiabilité des prévisions du vent à 10m."
+      },
+      "columnaPuntuacion": {
+        "titulo": "⭐ Colonne de note",
+        "descripcion": "Le système calcule deux notes (de 0 à 10) pour chaque décollage et pour la plage horaire sélectionnée : Conditions de décollage et Conditions pour maintenir les thermiques ou commencer un Cross Country (XC).<br><br>Les décollages sont automatiquement réorganisés par la note de condition de décollage.<br><br>Dans les ⚙️ Paramètres, vous pouvez personnaliser vos limites pour le calcul."
+      },
+      "btnInfo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Informations sur le décollage</span></div>",
+        "descripcion": "Affiche des informations plus complètes sur le décollage et des liens vers ses prévisions sur Windy, Meteo-parapente et Meteoblue."
+      },
+      "btnOrigen": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Point d'origine",
+        "descripcion": "Ici, vous choisissez le point d'origine pour le filtre de distance.<br><br>Vous pouvez choisir le point à l'aide d'une carte ou de votre position actuelle."
+      },
+      "btnIncNoFavs": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Inclure les non-favoris",
+        "descripcion": "Vous permet d'inclure temporairement tous les décollages disponibles (favoris et non-favoris) dans le filtre.<br><br>💡 Pratique pour rechercher rapidement les conditions de vol dans des décollages de différentes zones en dehors de votre zone de favoris."
+      },
+      "btnMapa": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Carte des décollages</span></div>",
+        "descripcion": "Affiche le décollage sur la carte.<br><br>💡 La carte comprend des informations supplémentaires, divers filtres, des cartes de chaleur et d'autres outils utiles à explorer."
+      },
+      "navHome": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Accueil</span></div>",
+        "descripcion": "Affiche le tableau avec tous vos décollages favoris. S'il y a des recherches ou des filtres actifs, cela les efface.<br><br>💡 Si vous êtes perdu, utilisez ce bouton pour revenir à la vue \"normale\"."
+      },
+      "navSearch": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Rechercher</span></div>",
+        "descripcion": "Utilisez ceci pour rechercher des décollages par nom ou zone administrative (généralement la province). Vous pouvez taper sans accents pour plus de rapidité."
+      },
+      "navDistance": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",
+        "descripcion": "Affiche un curseur pour filtrer les décollages dans un rayon autour d'un point.<br><br>👉🏽 Je vais appuyer sur ce bouton maintenant pour ouvrir le filtre."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",
+        "descripcion": "Ce filtre vous permet de voir uniquement les décollages autour d'un point spécifique.<br><br>💡 Utile pour trouver rapidement des décollages à une distance de conduite depuis votre position."
+      },
+      "sliderDistancia": {
+        "titulo": "Rayon de distance",
+        "descripcion": "Faites glisser ce curseur pour choisir la distance maximale.<br><br>Le tableau n'affichera que les décollages dans ce rayon."
+      },
+      "navMap": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Carte</span></div>",
+        "descripcion": "Carte de décollage en parapente avec des informations détaillées : recherche de décollage, filtres par orientation, nombre de vols, année du dernier vol, distance moyenne, une carte thermique avec plus de 1,3 million de points de décollage enregistrés exacts, et bien d'autres informations."
+      },
+      "navSettings": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Paramètres</span></div>",
+        "descripcion": "Ici, vous pouvez <b>Modifier les favoris</b> (pour ajouter ou supprimer vos décollages habituels), personnaliser les paramètres, activer les options et afficher des informations sur les mises à jour des données météorologiques.<br><br>💡 Chaque option a un bouton d'information <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'> pour plus de détails."
+      }
+    }
+  },
+
+  "guiaFavoritos": {
+    "preguntaVerGuia": "Souhaitez-vous voir un guide visuel pour cet écran ?",
+    "podrasVerla": "Vous pouvez le consulter à tout moment en utilisant le bouton <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> sur cet écran.",
+    "pasos": {
+      "intro": {
+        "titulo": "🪂 Écran d'édition des décollages favoris",
+        "descripcion": "Cet écran affiche tous les décollages disponibles. Sélectionnez ceux que vous utilisez régulièrement. La vue normale de l'application n'affichera que ces favoris.<br><br>Vous pourriez tous les sélectionner, mais selon votre appareil, cela pourrait ralentir les recherches et l'utilisation quotidienne.<br><br>Couvre actuellement l'Espagne, le Portugal, les Pyrénées et les principales zones alpines. C'est un projet en pleine croissance."
+      },
+      "celdaFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Favoris",
+        "descripcion": "Marquez ou démarquez vos favoris ici.<br><br>Les modifications sont enregistrées automatiquement."
+      },
+      "cabeceraFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Favoris de l'en-tête",
+        "descripcion": "Marquez ou démarquez tous les décollages actuellement visibles en même temps.<br><br>💡 Exemple : Filtrez par \"Huesca\" et marquez-les tous. Ou filtrez par distance et marquez tous ceux dans un rayon de 50 km."
+      },
+      "btnInfoDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/info.svg\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Informations sur le décollage</span></div>",
+        "descripcion": "Affiche des informations détaillées sur le décollage et des liens vers des prévisions sur d'autres sites."
+      },
+      "btnMapaDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"><polygon points=\"1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6\"></polygon><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"18\"></line><line x1=\"16\" y1=\"6\" x2=\"16\" y2=\"22\"></line></svg><span>Carte des décollages</span></div>",
+        "descripcion": "Affiche le décollage sur la carte.<br><br>💡 La carte comprend des informations supplémentaires sur le décollage, divers filtres, des cartes de chaleur de décollage et plusieurs outils utiles qui valent la peine d'être explorés."
+      },
+      "buscador": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg><span>Rechercher</span></div>",
+        "descripcion": "Recherchez des décollages en tapant la région, la province ou le nom. Vous pouvez taper sans accents pour plus de rapidité."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distance</span></div>",
+        "descripcion": "Ceci est un filtre qui vous permet d'afficher uniquement les décollages autour d'un point spécifique.<br><br>💡 Cela peut vous aider à trouver rapidement des décollages dans un rayon de distance de votre choix autour d'un point."
+      },
+      "btnOrigen": {
+        "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Point d'origine",
+        "descripcion": "Avec ce bouton, vous choisissez le centre du rayon de recherche de distance.<br><br>Vous pouvez sélectionner le point à l'aide d'une carte ou de votre position actuelle."
+      },
+      "sliderDistancia": {
+        "titulo": "Distance au point",
+        "descripcion": "En faisant glisser ce curseur, vous choisissez la distance maximale en kilomètres."
+      },
+      "btnVerSoloFavs": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Afficher uniquement les favoris",
+        "descripcion": "Basculez entre l'affichage de vos favoris uniquement ou de tous les décollages.<br><br>💡 Utile pour vérifier vos favoris sélectionnés en un coup d'œil."
+      },
+      "btnDesmarcarTodos": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z\"></path><line x1=\"5\" y1=\"5\" x2=\"19\" y2=\"19\" stroke=\"red\" stroke-width=\"3\"></line></svg><span>Démarquer tous les favoris</span></div>",
+        "descripcion": "Supprimez tous les décollages de votre liste de favoris en une seule fois."
+      },
+      "btnImportar": {
+        "titulo": "📂 Importer des favoris",
+        "descripcion": "Ouvrez un fichier contenant des décollages favoris."
+      },
+      "btnExportar": {
+        "titulo": "💾 Exporter les favoris",
+        "descripcion": "Enregistre un fichier avec vos décollages favoris actuels.<br><br>Note : Les favoris sont en fait enregistrés automatiquement chaque fois que vous en marquez un. Ce bouton sert à en faire une copie dans un fichier externe (comme sauvegarde ou pour la partager). <br><br>💡 Si vous voyagez dans plusieurs zones de vol éloignées, vous voudrez peut-être enregistrer les favoris de chaque zone dans des fichiers différents."
+      },
+      "btnGuiaEdicion": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/icono_ayuda_60.webp\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Guide rapide</span></div>",
+        "descripcion": "Affiche à nouveau ce guide."
+      },
+      "btnFinalizar": {
+        "titulo": "🏁 Terminer l'édition",
+        "descripcion": "Quittez vers l'écran principal pour voir les prévisions de vos favoris sélectionnés."
+      }
+    }
+  },
+
+  "asistente": {
+    "paso1": {
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Où voler ?</p><p>🌦️ Prévisions horaires sur 4 jours.</p><p>📊 Évaluation automatisée des conditions pour le décollage et le XC.</p><p>🗺️ Carte des décollages.</p>",
+      "btnPrimario": "Sélectionner des favoris",
+      "btnSecundario": "Voir le guide général",
+      "btnImportar": "Importer les paramètres"
+    },
+    "paso2": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Analyse automatisée des prévisions météorologiques pour le parapente.</p><p>🙄 <b>À quoi ça sert ? :</b> à vous aider à décider où voler. Il affiche un tableau avec vos décollages favoris, leurs prévisions, et effectue une analyse automatisée de ces <b>conditions météorologiques</b>.</p><p>🧮 <b>Quelle analyse effectue-t-il ? :</b> il compare les prévisions avec vos limites configurées de vent moyen et de rafales maximales et l'orientation de chaque décollage ; il analyse également le vent à des altitudes proches du décollage (80, 120 et 180 m), donnant un aperçu du gradient de vent et de la fiabilité des prévisions. Il affiche les données clés de XC (plafond, CAPE et CIN).</p><p>Avec toutes ces informations, il note chaque décollage de 0 à 10 et code en couleur 🟩&nbsp;🟨&nbsp;🟥 les données pour la plage horaire choisie. Vous pouvez personnaliser toutes les limites pour correspondre à vos préférences.</p>"
+    },
+    "paso3": {
+      "html": "<p>💨️ <b>Données météorologiques :</b> prévisions horaires sur 4 jours (96h). Mises à jour 8 fois par jour avec les données officielles de Météo-France issues des modèles Arome-HD 1,3 km (0-48h) et Arpège 7 km (48-96h), et 4 fois par jour avec les données du CEPMMT/ECMWF (0-96h).</p><p>🆓 <b>Coût et confidentialité :</b> 100 % gratuit, sans abonnement, sans publicité et sans suivi (cookies, télémétrie,...). Vos paramètres sont enregistrés en privé dans votre navigateur. C'est un projet libre et ouvert, opérationnel depuis 2026 et en évolution.</p>"
+    },
+    "paso4": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🤔 Est-ce compliqué ?</p><p>✅ <b>Utilisation basique</b> : sélectionnez vos décollages favoris la première fois et vous aurez toujours le tableau avec leurs prévisions et leur analyse automatisée pour chaque jour.</p><p>✅ <b>Utilisation intermédiaire</b> : vous pouvez sélectionner une plage horaire (jours ou heures) et voir la note automatique des conditions pour cet intervalle. Vous pouvez filtrer les décollages par rayon de distance depuis votre domicile ou n'importe quel endroit.</p><p>✅ <b>Utilisation avancée</b> : vous pouvez personnaliser dans ⚙️ <i>Paramètres</i> les limites par défaut pour le vent moyen (minimum, idéal et maximum) et les rafales maximales. Vos préférences seront utilisées pour l'analyse, la coloration et la notation des conditions.</p>"
+    },
+    "paso5": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>️👉 Gardez à l'esprit...</p><p>👉 Seuls les décollages favoris sont affichés. Vous pouvez tous les sélectionner, mais cela pourrait ralentir l'application sur certains appareils.</p><p>👉️ Le tri est automatique par note (de 10 à 0).</p><p>👉️ Les données de la base des nuages (CBH) sont actuellement en attente du fournisseur. Vérifiez toujours plusieurs sources avant de voler.</p><p>👉️ Couverture : Espagne, Portugal, Pyrénées et Alpes (françaises, suisses, italiennes).</p>"
+    },
+    "paso6": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>👍 Et maintenant ?</p><p>Vous devez marquer vos décollages favoris.</p>",
+      "btnPrimario": "Sélectionner les favoris →",
+      "btnSecundario": "←"
+    }
+  },
+
+  "origen": {
+    "avisoInicialHtml": "<div style='text-align: center;'><p style='font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></p><p>Vous devez définir un point d'origine pour la première fois.</p><p>Vous pouvez le modifier à tout moment en utilisant le bouton <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span></p></div>",
+    "configurarPrimero": "Vous devez d'abord définir un point d'origine.",
+    "podrasCambiar": "Vous pouvez le modifier à tout moment en utilisant le bouton"
+  },
+
+  "actualizacion": {
+    "cargando": "Chargement...",
+    "esperando": "🔄 Prochain : <span style='color:#e39300; font-weight:bold;'>En attente...⌛</span>",
+    "proximaEn": "🔄 Prochain : <b>{{tiempo}}</b>",
+    "horas": "~{{h}} h {{m}} min",
+    "minutos": "~{{m}} min",
+    "sinConexion": "⚠️ Pas de connexion internet. Âge des données : {{tiempo}}.",
+    "hace": "il y a <b>{{tiempo}}</b>",
+    "esperandoPrimerDato": "En attente des premières données...",
+    "avisoModelos": {
+      "viento": "Vent (Météo-France : Arome-HD et Arpège)",
+      "general": "Météo générale et conditions thermiques XC (CEPMMT/ECMWF)"
+    },
+    "avisoNuevoMeteo": "<p>ℹ️ Nouvelles données météorologiques disponibles pour :</p><p><b>{{modelos}}</b></p><p>Mettre à jour maintenant ?</p>"
+  },
+
+  "ajustes": {
+    "probPrecipitacion": "Probabilité de précipitations",
+    "vientoAlturas": "Vent à 80, 120 et 180 m",    
+    "cizalladura_fiabilidad": "Cisaillement du vent / Fiabilité",
+    "XC": "XC : Plafond MSL, CAPE et CIN",
+    "horarioVueloPref": "Plage horaire de vol préférée",
+    "solo_horas_diurnas": "Heures de jour uniquement",
+    "ordenar_xc": "Trier par conditions XC",
+    "titulo": "Paramètres",
+    "editarFavoritos": "Modifier les favoris",
+    "importarConfig": "Importer les paramètres et favoris",
+    "exportarConfig": "Exporter les paramètres et favoris",
+    "restablecerConfig": "Réinitialiser les paramètres (supprime toute la configuration et les favoris)",
+    "viento": "Vent",
+    "rachaMaxima": "Rafales max",
+    "acordeon": {
+      "vientoRacha": "Limites de vent et de rafales",
+      "datosOpcionales": "Données météorologiques optionnelles",
+      "otrasOpciones": "Autres options",
+      "sobreActualizacion": "Mises à jour des modèles météo"
+    },
+    "guia": "Guide",
+    "ayuda": "Aide",
+    "legal": "Légal",
+    "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATTENTION :</b> L'importation d'un fichier de configuration remplacera tous vos paramètres actuels et vos décollages favoris.</b></p>",
+    "importadoConfigOk": "✅ La configuration a été importée",
+    "errorArchivoConfig": "⚠️ Le fichier ne semble pas être une sauvegarde Fly Decision valide.",
+    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATTENTION :</b> Cette action réinitialisera la configuration aux paramètres d'origine et démarquera tous les décollages favoris.</p></div>"
+  },
+
+  "mapa": {
+    "seleccionarOrigen": "Sélectionner l'origine",
+    "miUbicacion": "Ma position",
+    "irMiUbicacion": "Aller à ma position",
+    "buscadorPlaceholder": "Rechercher un lieu ou des coordonnées...",
+    "buscadorTitulo": "Recherche générale (lieux et coordonnées)",
+    "ajustes": "Paramètres",
+    "capasYFiltros": "Couches et filtres",
+    "capas": "Couches :",
+    "orientacion": "Orientation :",
+    "cerrarPanel": "Fermer le panneau",
+    "fijarPanel": "Épingler le panneau (ne pas cacher lors du déplacement de la carte)",
+    "masInformacion": "Plus d'informations ▼",
+    "volverEdicion": "Retour à l'édition des favoris",
+    "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Vous êtes ici&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "capasCheckbox": {
+      "despegues": "🪂 Décollages",
+      "mapaCalorPeninsula": "🔥 Carte thermique Ibérique",
+      "mapaCalorAlpes": "🔥 Carte thermique Alpes",
+      "mapaCalorMarruecos": "🔥 Carte thermique Maroc",
+      "notas": "✏️ Notes",
+      "despeguesMundo": "🪂 Décollages Paraglidingearth"
+    },
+    "cargandoCalorPeninsula": "⏳ Chargement de la carte thermique Ibérique...<br><br>(309 157 décollages enregistrés)",
+    "cargandoCalorAlpes": "⏳ Chargement de la carte thermique des Alpes...<br><br>(967 477 décollages enregistrés)",
+    "cargandoCalorMarruecos": "⏳ Chargement de la carte thermique du Maroc...<br><br>(11 006 décollages enregistrés)",
+    "errorCSV": "Erreur de chargement du CSV. Vérifiez la console pour plus de détails.",
+    "errorCSVAlpes": "Erreur de chargement du fichier CSV des Alpes.",
+    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} Décollages XContest</b>",
+    "despegueXContest": "🪂<br>Décollage XContest",
+    "coordenadasMedias": "Coordonnées moyennes :",
+    "coordenadas": "Coordonnées :",
+    "fecha": "Date :",
+    "hora": "Heure :",
+    "distanciaRecorrida": "Distance parcourue :",
+    "vuelos": "Vols XContest :",
+    "vueloXContest": "🔍 Voir le vol XContest",
+    "orientacionLabel": "Orientation :",
+    "grupoXContestTitle": "Groupe de {{count}} décollages enregistrés dans XContest",
+    "nVuelosXContest": "Nbr. de vols XContest :",
+    "minVuelosTexto": "Vols enregistrés minimum = ",
+    "anioUltimoVueloTexto": "Année du dernier vol >= ",
+    "minKmMediaTexto": "Distance moyenne parcourue minimum = ",
+    "todos": "Tous",
+    "titleBuscadorDespegue": "Rechercher un décollage par nom",
+    "buscadorDespegue": "🔍 Décollage",
+    "labelOrientacion": "Orientation :",
+    "labelCoordenadas": "Coordonnées :",
+    "labelAltitud": "Altitude approx. :",
+    "labelActividad": "Niveau d'activité :",
+    "labelVuelos": "Nbr. de vols XContest :",
+    "labelKmMedia": "Distance moyenne en km :",
+    "labelMasInfo": "Plus d'informations :",
+
+    "capasBase": {
+      "esriTopo": "ESRI World Topographique",
+      "esriOrto": "ESRI World Imagerie",
+      "osmOpenTopo": "Style OpenStreetMap OpenTopoMap",
+      "osmCyclOSM": "Style OpenStreetMap CyclOSM",
+      "thunderforest": "Thunderforest Outdoors",
+      "ignTopo": "IGN Espagne Topographique",
+      "ignClaro": "IGN Espagne Topographique (Clair)",
+      "ignOrto": "IGN Espagne Satellite",
+      "osmStandard": "Style OpenStreetMap Standard",
+      "hipsometrico": "Relief Hypsométrique",
+      "tracestrack": "Tracestrack Topo",
+      "icgc": "ICGC Catalogne",
+      "esriSkyways": "ESRI Topo + Skyways (KK7)",
+      "esriThermals": "ESRI Topo + Thermiques (KK7)",
+      "esriAll": "ESRI Topo + Skyways+Thermiques (KK7)"
+    }
+  },
+
+  "popupDespegue": {
+    "region": "Région :",
+    "provincia": "Province :",
+    "orientacion": "Orientation :",
+    "nivelActividad": "Niveau d'activité :",
+    "nivelActividadTitle": "Activité du site basée sur la date du dernier vol (réf : nov. 2025) : Vert 0-6 mois, Orange 6-12, Jaune 12-24, Blanc >24 mois sans vols"
+  },
+
+  "html": {
+    "distanciaDesde": "Distance depuis :",
+    "seleccionarOrigen": "Sélectionner l'origine",
+    "incluirNoFavs": "Inclure les non-favoris dans le filtre",
+    "resetFiltroDistancia": "Réinitialiser et masquer le filtre de distance",
+    "finalizarEdicion": "Terminer l'édition des décollages favoris",
+    "finalizarEdicionTitle": "Terminer l'édition des décollages favoris",
+    "verSoloFavoritos": "Afficher uniquement mes favoris",
+    "desmarcarFavoritosTitle": "Démarquer tous les favoris",
+    "importarFavoritos": "Importer des favoris",
+    "exportarFavoritos": "Exporter les favoris",
+    "guiaEdicionTitle": "Guide de l'écran d'édition des décollages favoris",
+    "esperandoConexion": "En attente de connexion..."
+  },
+
+  "crash": {
+    "errorCarga": "<div style='text-align: center;'><p>ℹ️ Erreur de chargement du tableau.</p><p>Cause possible : <b>trop de favoris</b> pour les ressources de votre appareil.</p><p>L'écran Modifier les favoris s'ouvrira afin que vous puissiez en démarquer certains et réduire la charge.</p><p>Si vous pensez que c'est temporaire : cliquez sur <b><i>Terminer l'édition des favoris</i></b>, redémarrez l'appareil et réessayez.</p></div>",
+    "alertFallback": "L'application a des problèmes de chargement. L'éditeur de favoris a été activé pour réduire le nombre de décollages."
+  },
+
+  "salirApp": {
+    "pregunta": "Voulez-vous quitter l'application ?",
+    "no": "Non",
+    "si": "Oui, quitter"
+  },
+
+  "novedadesXC": {
+    "titulo": "ℹ️ Nouveautés des données XC",
+    "html": "<div style='text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;'><ul style='padding-left: 20px; margin-top: 5px; margin-bottom: 5px;'><li style='margin-bottom: 6px;'><b>Note XC indépendante :</b> Évalue uniquement le potentiel thermique (Plafond, CAPE, CIN) en ignorant le vent au décollage. Ne donne la note de 0 qu'en cas de pluie ou de risque d'orage.</li><li style='margin-bottom: 6px;'><b>Plafond en altitude (MSL) :</b> Affiche désormais l'altitude au-dessus du niveau de la mer, offrant une meilleure précision pour la planification des distances.</li><li><b>Plafond réaliste :</b> Les prévisions sont réduites de 15 % pour compenser le taux de chute du parapente.</li></ul><p style='margin-top: 10px; font-size: 0.9em;'>💡 <i>Plus de détails en cliquant sur les icônes 🌦️ ou ⭐ dans le tableau.</i></p></div>"
+  },
+
+  "orientaciones": {
+    "N": "N",
+    "NNE": "NNE",
+    "NE": "NE",
+    "ENE": "ENE",
+    "E": "E",
+    "ESE": "ESE",
+    "SE": "SE",
+    "SSE": "SSE",
+    "S": "S",
+    "SSO": "SSO",
+    "SO": "SO",
+    "OSO": "OSO",
+    "O": "O",
+    "ONO": "ONO",
+    "NO": "NO",
+    "NNO": "NNO",
+    "norte": "Nord",
+    "nornoreste": "Nord-Nord-Est",
+    "noreste": "Nord-Est",
+    "estenoreste": "Est-Nord-Est",
+    "este": "Est",
+    "estesureste": "Est-Sud-Est",
+    "sureste": "Sud-Est",
+    "sursureste": "Sud-Sud-Est",
+    "sur": "Sud",
+    "sursuroeste": "Sud-Sud-Ouest",
+    "suroeste": "Sud-Ouest",
+    "oestesuroeste": "Ouest-Sud-Ouest",
+    "oeste": "Ouest",
+    "oestenoroeste": "Ouest-Nord-Ouest",
+    "noroeste": "Nord-Ouest",
+    "nornoroeste": "Nord-Nord-Ouest",
+    "todos_title": "Les filtres d'orientation sont actifs. Cliquez pour tout effacer."
+  },
+
+  "cron": {
+    "Actualización en curso... ⏳": "Mise à jour en cours... ⏳"
+  },
+
+  "btn_info": {
+    "tooltipVientoLimites": "<b>Vent moyen minimum, idéal et maximum :</b><br><br>Le système automatisé d'évaluation des conditions prendra ces valeurs en compte.<br><br>La couleur des données dans le tableau indique visuellement l'analyse des conditions basée sur les valeurs que vous définissez ici (Min, Idéal et Max).<br><br>🟧 Orange : vent faible inférieur à votre vent minimum (généralement 0, sauf si vous avez besoin d'un vent spécifique pour le vol de pente ou d'autres raisons).<br>🟩 Vert : vent idéal, du minimum jusqu'à une marge de sécurité avant le maximum.<br>🟧 Orange : vent plus fort approchant le maximum (le dernier tiers avant d'atteindre le maximum).<br>🟥 Rouge : vent très fort dépassant votre limite de vent maximum.<br><br><b>Définition technique standard de l'OMM (Organisation Météorologique Mondiale) de la vitesse moyenne à 10 m</b> :<br><br>C'est la vitesse moyenne du vent soutenu au cours des 10 dernières minutes avant l'heure indiquée. Elle est mesurée à une hauteur standard de 10 mètres au-dessus du sol (évitant la friction immédiate du terrain). Elle représente le flux laminaire ou de base.",
+    "filtroDistanciaCompleto": "<b>Filtre de distance des décollages :</b><br><br>N'affiche que les décollages dans le rayon de distance que vous sélectionnez.<br><br>Utilisez le bouton <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> pour définir la position d'origine. Vous pouvez utiliser la carte ou la position actuelle de votre appareil.<span class='texto-oculto-en-edicion'><br><br>Utilisez le bouton <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> pour inclure les décollages non favoris dans le filtre, ce qui signifie <b>inclure temporairement tous les décollages</b> disponibles dans la base de données.<br><br>Lorsqu'il est activé, un filtre initial de 100 km est appliqué pour éviter de surcharger le tableau. Vous pouvez l'ajuster en fonction de vos besoins et des performances de votre appareil.</span>",
+    "tooltipRachaMaxima": "<b>Rafale maximale :</b><br><br>Le système automatisé d'évaluation des conditions prendra ces valeurs en compte.<br><br>La couleur des données dans le tableau indique visuellement l'analyse des conditions basée sur la valeur que vous définissez ici.<br><br>🟩 Vert : rafale maximale sûre, loin de la limite.<br>🟧 Orange : rafale maximale approchant de votre limite de rafale maximale.<br>🟥 Rouge : rafale dépassant votre limite de rafale maximale.<br><br><b>Définition technique standard de l'OMM (Organisation Météorologique Mondiale) de la rafale maximale à 10 m</b> :<br><br>C'est le pic maximum de vitesse instantanée (d'une durée de 3 secondes) enregistré à n'importe quel moment au cours de la période d'une heure précédente. Elle représente les fluctuations brèves et intenses superposées au vent moyen, associées à la turbulence mécanique ou thermique (convection).",
+    "tooltipProbPrecipitacion": "<b>Probabilité de précipitations (%)</b><br><br>Probabilité (%) que les précipitations dépassent 0,1 mm (litres/m²).<br><br>Données originales du modèle CEPMMT (ECMWF).",
+    "tooltipVientoAlturas": "<b>Vent à 80, 120 et 180 m (km/h)</b><br><br>Affiche 3 lignes avec les prévisions de la vitesse moyenne du vent à 80, 120 et 180 m au-dessus du niveau du sol. Ces 3 lignes sont affichées au-dessus de la ligne standard de la vitesse moyenne du vent à 10 m.<br><br>Ces valeurs permettent d'évaluer le degré de turbulence due au cisaillement et la fiabilité de la prévision du vent moyen.<br><br>Données originales du modèle Arome/Arpège (Météo-France).",
+    "tooltipCizalladura": "<b>Cisaillement du vent / Fiabilité</b><br><br>Affiche une fine ligne en dessous de la ligne d'orientation montrant une valeur calculée : le niveau de cisaillement du vent à basse altitude (LLWS) et le degré de fiabilité de la prévision du vent moyen à 10 m.<br><br>Le système analyse les valeurs du vent moyen à 10, 80, 120 et 180 m au-dessus du sol et, grâce à un algorithme, affiche un indicateur à code couleur.<br><br>🟩 Vert : Faible cisaillement du vent par vitesse et haute fiabilité de la prévision de la vitesse à 10 m.<br>🟧 Orange : Valeurs de cisaillement et de fiabilité modérées.<br>🟥 Rouge : Fort cisaillement du vent par vitesse et faible fiabilité de la prévision de la vitesse à 10 m.<br><br>Ce cisaillement se produit lorsqu'il y a un fort gradient de vitesse près du sol. Ce niveau est également corrélé à la fiabilité de la vitesse du vent à 10 m au-dessus du sol.<br><br>La raison est que si la masse d'air se déplace à des vitesses similaires, le degré de turbulence de cisaillement induit par la vitesse sera faible, et la prévision du vent au niveau du sol sera plus fiable, et vice versa.",
+    "tooltipXC": "<b>XC : Plafond MSL, CAPE, CIN</b><br><br>Affiche un groupe de 3 lignes avec des données axées sur le vol de distance (Cross Country / XC) :<ul><li><b>Plafond de vol MSL (km) :</b> Hauteur maximale de la couche limite (BLH)</li><li><b>CAPE (J/kg) :</b> Énergie Potentielle Convective Disponible</li><li><b>CIN (J/kg) :</b> Inhibition Convective</li></ul>Données originales du modèle CEPMMT (ECMWF).",
+    "tooltipHorarioVuelo": "<b>Plage horaire de vol préférée :</b><br><br>Les valeurs configurées ici feront que ces heures de début et de fin seront automatiquement sélectionnées lorsque vous choisirez un jour de la semaine (lundi, mardi, etc.) dans le sélecteur de plage horaire situé au-dessus du tableau.<br><br>Vous pouvez toujours ajuster le sélecteur de plage horaire manuellement ; ce paramètre n'est qu'une automatisation pour faciliter la sélection automatique d'une plage horaire typique.<br><br>Que cela soit fait manuellement ou automatiquement, seule la plage horaire sélectionnée finale est prise en compte pour le calcul de la note de <i>Conditions</i> ; ainsi, la note de chaque décollage sera plus réaliste pour cette plage spécifique.<br><br>Si l'option <i>Heures de jour uniquement</i> est activée, la plage sélectionnée automatiquement avec ce paramètre sera ajustée pour rester dans les limites de la lumière du jour.",
+    "tooltipHorasDiurnas": "<b>Heures de jour uniquement</b><br><br>N'affiche que les heures de la journée. Si désactivée, les 24 heures de la journée sont affichées.<br><br>Une marge de ±1h est incluse au lever et au coucher du soleil.<br><br>Change automatiquement chaque mois. De plus, les mois avec changement d'heure, ces heures s'ajusteront automatiquement à l'heure officielle d'été/hiver.",
+    "tooltipOrdenarXC": "<b>Trier par conditions XC :</b><br><br>Par défaut, les décollages sont triés du meilleur au pire en fonction de la note des <i>Conditions de décollage</i> (faisabilité du décollage en fonction du vent).<br><br>Si vous activez cette option, le tableau sera trié de la meilleure à la pire note des <b>Conditions XC</b> (potentiel thermique de la masse d'air), que le vent à ce décollage soit idéal ou non.",
+    "tooltipModelosMeteo": "<b>Modèles météorologiques :</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1,3 km</b> : pour les données de vent dans les 0-48 premières heures. Couvre presque toute l'Europe, y compris la péninsule ibérique, à l'exception du sud de l'Andalousie (Arpège Europe 7 km 0-96h est utilisé dans cette zone).</li><li><b>Météo-France Arpège Europe 7 km</b> : pour les données de vent dans les 48-96h suivantes. Couvre l'Europe et l'Afrique du Nord.</li><li><b>ECMWF IFS HRES 9 km</b> : pour le reste des données météorologiques de 0-96h. Couvre le monde entier.</li></ul><b>Fréquence de mise à jour automatique :</b> Météo-France environ toutes les 3 heures (8 fois par jour) et ECMWF (CEPMMT) environ toutes les 6 heures (4 fois par jour).<br><br><b>Passerelle de données météo :</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>La valeur <i>Réf.HHZ</i> indique l'heure UTC±0 (Z) correspondant au dernier cycle d'exécution du modèle sur le serveur météo source. À partir de ce moment-là, il y a plusieurs heures de calcul informatique avant la distribution finale et la disponibilité publique.<br><br>"
+  }
+
+}

@@ -194,6 +194,65 @@
 	<button class="btn-cerrar-modal" onclick="alternardivConfiguracion(event)">&times;</button>
 	<div class="panel-titulo" style="font-size: 1.4em;" data-i18n="ajustes.titulo">Ajustes</div>
 
+	<!-- ACORDEÓN DE IDIOMA -->
+    <div class="div-configuracion-subpanel">
+        <details class="config-accordion" style="margin-bottom: 8px;">
+            <summary>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="icons/flag_es_ES.webp" alt="Español" title="Español" style="width: 20px; height: 16px; object-fit: cover;">
+                    <img src="icons/flag_eu_ES.webp" alt="Euskara" title="Euskara" style="width: 20px; height: 16px; object-fit: cover;">
+                    <img src="icons/flag_ca_ES.webp" alt="Català" title="Català" style="width: 20px; height: 16px; object-fit: cover;">
+                    <img src="icons/flag_en_GB.webp" alt="English" title="English" style="width: 20px; height: 16px; object-fit: cover;">
+                    <img src="icons/flag_fr_FR.webp" alt="Français" title="Français" style="width: 20px; height: 16px; object-fit: cover;">
+                    <img src="icons/flag_de_DE.webp" alt="Deutsch" title="Deutsch" style="width: 20px; height: 16px; object-fit: cover;">
+                    <span style="margin-right: 4px;"></span>
+                </div>
+            </summary>
+            <div class="accordion-content" style="padding-top: 5px;">
+
+				<span style="font-weight: bold; display: block; text-align: left; padding-bottom: 5px;">Idioma / Hizkuntza / Llengua / Language / Langue / Sprache</span>
+                
+                <label class="fila-idioma-selector">
+                    <input type="radio" name="selector-idioma" value="es-ES" class="radio-idioma" onchange="window.cambiarIdioma('es-ES')">
+                    <img src="icons/flag_es_ES.webp" alt="Español" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <span class="lang-name">Español</span>
+                </label>
+
+                <label class="fila-idioma-selector">
+                    <input type="radio" name="selector-idioma" value="eu-ES" class="radio-idioma" onchange="window.cambiarIdioma('eu-ES')">
+                    <img src="icons/flag_eu_ES.webp" alt="Euskara" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <span class="lang-name">Euskara</span>
+                </label>
+
+                <label class="fila-idioma-selector">
+                    <input type="radio" name="selector-idioma" value="ca-ES" class="radio-idioma" onchange="window.cambiarIdioma('ca-ES')">
+                    <img src="icons/flag_ca_ES.webp" alt="Català" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <span class="lang-name">Català</span>
+                </label>
+
+                <label class="fila-idioma-selector">
+                    <input type="radio" name="selector-idioma" value="en-GB" class="radio-idioma" onchange="window.cambiarIdioma('en-GB')">
+                    <img src="icons/flag_en_GB.webp" alt="English" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <span class="lang-name">English</span>
+                </label>
+
+                <label class="fila-idioma-selector">
+                    <input type="radio" name="selector-idioma" value="fr-FR" class="radio-idioma" onchange="window.cambiarIdioma('fr-FR')">
+                    <img src="icons/flag_fr_FR.webp" alt="Français" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <span class="lang-name">Français</span>
+                </label>
+
+                <label class="fila-idioma-selector">
+                    <input type="radio" name="selector-idioma" value="de-DE" class="radio-idioma" onchange="window.cambiarIdioma('de-DE')">
+                    <img src="icons/flag_de_DE.webp" alt="Deutsch" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <span class="lang-name">Deutsch</span>
+                </label>
+
+            </div>
+        </details>
+    </div>
+
+	<!-- BOTONES DE EDITAR FAVORITOS, EXPORTAR,... RESETEAR -->
 	<div class="div-configuracion-subpanel">
 		<div style="display: flex; align-items: center; gap: 8px; width: 100%; max-width: 330px; min-width: 330px; margin-bottom: 8px !important;">
 			
@@ -334,31 +393,6 @@
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-
-			</div>
-		</details>
-	</div>
-
-
-	<!-- ACORDEÓN DE IDIOMA -->
-	<div class="div-configuracion-subpanel">
-		<details class="config-accordion" style="margin-bottom: 8px;">
-			<summary>
-				<div style="display: flex; align-items: center; gap: 8px;">
-					Idioma / Language
-				</div>
-			</summary>
-			<div class="accordion-content" style="padding-top: 5px;">
-				
-				<label class="fila-idioma-selector">
-					<input type="radio" name="selector-idioma" value="es-ES" class="radio-idioma" onchange="window.cambiarIdioma('es-ES')">
-					<span class="lang-name">Español</span>
-				</label>
-
-				<label class="fila-idioma-selector">
-					<input type="radio" name="selector-idioma" value="en-GB" class="radio-idioma" onchange="window.cambiarIdioma('en-GB')">
-					<span class="lang-name">English</span>
-				</label>
 
 			</div>
 		</details>

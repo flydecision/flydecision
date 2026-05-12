@@ -1,0 +1,560 @@
+{
+  "_meta": {
+    "_nota": "Basis-Übersetzungsdatei — Deutsch. Generiert aus der Analyse von meteo.js und index.html.",
+    "_version": "1.0.0"
+  },
+
+  "menu": {
+    "inicio": "Startseite",
+    "buscar": "Suchen",
+    "distancia": "Entfernung",
+    "mapa": "Karte",
+    "ajustes": "Einstellungen"
+  },
+
+  "botones": {
+    "aceptar": "OK",
+    "cancelar": "Abbrechen",
+    "siguiente": "Weiter",
+    "siguienteFlecha": "Weiter →",
+    "finalizar": "Beenden",
+    "verGuia": "Anleitung ansehen",
+    "noGracias": "Nein, danke",
+    "siMarcar": "Ja, markieren",
+    "siDesmarcar": "Ja, Markierung aufheben",
+    "siSalir": "Ja, verlassen",
+    "no": "Nein",
+    "configurarOrigen": "Ursprung festlegen",
+    "marcarFavoritos": "Favoriten markieren",
+    "verGuiaGeneral": "Allgemeine Anleitung ansehen",
+    "importarConfiguracion": "Konfiguration importieren",
+    "marcarFavoritosFlecha": "Favoriten markieren →",
+    "entendido": "Verstanden"
+  },
+
+  "dias": {
+    "domingo": "Sonntag",
+    "lunes": "Montag",
+    "martes": "Dienstag",
+    "miercoles": "Mittwoch",
+    "jueves": "Donnerstag",
+    "viernes": "Freitag",
+    "sabado": "Samstag",
+    "dom": "So",
+    "lun": "Mo",
+    "mar": "Di",
+    "mie": "Mi",
+    "jue": "Do",
+    "vie": "Fr",
+    "sab": "Sa"
+  },
+
+  "gps": {
+    "buscando": "⏳ Suchen...",
+    "errorUbicacion": "Standort konnte nicht ermittelt werden.",
+    "activaGps": "Stelle sicher, dass GPS aktiviert ist.",
+    "revisaPermisos": "Überprüfe die Berechtigungen.",
+    "noSoportado": "Dein Browser unterstützt kein GPS."
+  },
+
+  "buscador": {
+    "placeholder": "🔍 Startplatz oder Provinz suchen...",
+    "placeholderEdicion": "🔍 Region, Provinz oder Startplatz suchen...",
+    "sugerenciaTitulo": "💡 Keine Favoriten für * <b>{{termino}}</b> * gefunden, aber diese sind in der Datenbank verfügbar:",
+    "anadirFavorito": "+ Favorit hinzufügen"
+  },
+
+  "favoritos": {
+    "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorit",
+    "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoriten",
+    "anadirAFavoritos": "Zu Favoriten hinzufügen",
+    "quitarDeFavoritos": "Aus Favoriten entfernen",
+    "despegueFavorito": "Favorisierter Startplatz",
+    "marcarTodos": "Alle sichtbaren Startplätze als Favoriten markieren",
+    "desmarcarTodos": "Markierung aller sichtbaren Startplätze als Favoriten aufheben",
+    "marcardesmarcarCabecera": "Alle aktuell sichtbaren Startplätze in der Tabelle als Favoriten markieren oder die Markierung aufheben",
+    "noHayParaDesmarcar": "Keine favorisierten Startplätze zum Aufheben der Markierung",
+    "noHayParaExportar": "Keine favorisierten Startplätze zum Exportieren",
+    "noTienesFavoritos": "<p>Keine Startplätze als Favoriten markiert ♥️</p>",
+    "necesarioMarcarUno": "<p>Mindestens ein favorisierter Startplatz ist erforderlich ♥️</p><p>Wenn du möchtest, kannst du die Kurzanleitung für diesen Bildschirm über die Schaltfläche <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Anleitung'> aufrufen.</p>",
+    "confirmacionMasiva": "Möchtest du <span style='font-weight:bold;'>{{cantidad}}</span> Startplätze als Favoriten markieren?",
+    "confirmarDesmarcarTodos": "Möchtest du die Markierung aller deiner Favoriten aufheben?",
+    "anadidoOk": "✅ <b>{{nombre}}</b> hinzugefügt",
+    "importadosOk": "✅ {{n}} favorisierte Startplätze wurden importiert",
+    "archivoVacio": "⚠️ Die Datei war leer.",
+    "errorArchivo": "⚠️ Fehler beim Verarbeiten der Datei.",
+    "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ACHTUNG:</b> Das Importieren von Favoriten ersetzt die aktuellen.</b><br><br>Wenn du sie behalten möchtest, brich diese Meldung ab und verwende die Schaltfläche 💾 <i>Favoriten exportieren</i>.</p>",
+    "exportar": {
+      "tituloDialog": "💾 Favoriten exportieren",
+      "mensajeDialog": "\nDateinamen ändern oder diesen akzeptieren:",
+      "guardar": "Speichern",
+      "cancelar": "Abbrechen",
+      "okTitulo": "✅ Favoriten erfolgreich gespeichert",
+      "okTextoShare": "Hier sind meine bevorzugten Fly Decision Startplätze:",
+      "okMensaje": "Möchtest du sie jetzt teilen?",
+      "siCompartir": "Ja, teilen",
+      "noCompartir": "Nein",
+      "tituloShare": "Meine bevorzugten Fly Decision Startplätze",
+      "textoShare": "Hier sind meine bevorzugten Startplätze:",
+      "dialogTitle": "Teilen mit...",
+      "errorShare": "Das Teilen-Menü konnte nicht geöffnet werden. Bitte versuche eine andere Methode.",
+      "sinShare": "Dein Gerät erlaubt kein direktes Teilen von Dateien. Stelle sicher, dass Telegram installiert ist.",
+      "errorGuardar": "Hoppla, etwas ist schiefgelaufen: "
+    }
+  },
+
+  "tabla": {
+    "tooltips": {
+      "meteoGeneral": "Allgemeines Wetter (Regen / Gesamtwolkenbedeckung)",
+      "precipitacion": "Niederschlag in mm (Liter/m²)",
+      "probPrecipitacion": "Wahrscheinlichkeit (%) für Niederschlag über 0,1 mm (Liter/m²)",
+      "baseNube": "Wolkenbasis AGL (km): Geschätzte Höhe der Wolkenbasis über dem Boden. Berechnet aus 2m Temperatur und 2m Taupunkt.",
+      "viento180m": "Mittlere Windgeschwindigkeit in 180 m (km/h)",
+      "viento120m": "Mittlere Windgeschwindigkeit in 120 m (km/h)",
+      "viento80m": "Mittlere Windgeschwindigkeit in 80 m (km/h)",
+      "viento10m": "Mittlere Windgeschwindigkeit in 10 m (km/h)",
+      "racha10m": "Maximale Böen in 10 m (km/h)",
+      "direccion10m": "Windrichtung in 10 m",
+      "cizalladura": "Windscherung auf niedriger Ebene (LLWS) / Zuverlässigkeit der mittleren Windvorhersage",
+      "techo": "Höhe (km) über dem Meeresspiegel (MSL) der nutzbaren Flughöhe (= Grenzschichtdicke BLH x 0,85 + mittlere Bodenhöhe der ECMWF 9km-Zelle)",
+      "cape": "CAPE (J/kg): Konvektiv verfügbare potentielle Energie",
+      "cin": "CIN (J/kg): Konvektionshemmung",
+      "masInfo": "Weitere Informationen",
+      "verEnMapa": "Auf Karte ansehen",
+      "notaCondiciones": "Bewertung der Startbedingungen: {{nota}} Punkte",
+      "tooltipMeteoCompleto": "<b style='font-size:20px;'>🌦️ Wetterparameter</b><br><br><b>🌦️</b>: Allgemeines Wetter (Wolkenbedeckung und Niederschlag)<br><b>💦</b>: Niederschlag in mm (Liter/m²)<br><b>💦?</b>: Wahrscheinlichkeit (%) für Niederschlag über 0,1 mm (Liter/m²)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>180 m</b>: Wind in 180 m über dem Boden (km/h)<br><b>120 m</b>: Wind in 120 m über dem Boden (km/h)<br><b>80 m</b>: Wind in 80 m über dem Boden (km/h)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>10 m</b>: Wind in 10 m über dem Boden (km/h)<br><img src='icons/icono_racha_48x42.webp' style='width:16px;height:14px;'> : Maximale Böen in 10 m über dem Boden (km/h)<br><img src='icons/icono_direccion_45.webp' style='width:15px;height:15px;'> : Windrichtung in 10 m über dem Boden<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><img src='icons/icono_cizalla_fiabilidad.png' style='width:30px;height:8px;'> : Windscherung auf niedriger Ebene durch Geschwindigkeit / Zuverlässigkeit der mittleren Windvorhersage<hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>Flughöhe</b>: Höhe (km) über dem Meeresspiegel (MSL) der nutzbaren Flughöhe (= Grenzschichtdicke BLH x 0,85 + mittlere Bodenhöhe der ECMWF 9km-Zelle)<br><b>CAPE</b>: Konvektiv verfügbare potentielle Energie (J/kg)<br><b>CIN</b>: Konvektionshemmung (J/kg im Absolutwert)<br><br><i>Hinweis: Die wesentlichen Daten zur Wolkenbasis ☁️↓ (CBH = Cloud Base Height) sind noch nicht verfügbar.</i><br>",
+      "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Bewertungen (0-10)</b><br><br>Das System berechnet automatisch zwei Bewertungen für jeden Startplatz basierend auf dem ausgewählten Zeitraum. Beide sind farblich mit einem Verlauf von Rot nach Grün gekennzeichnet.<br><br><b>1. Startbedingungen (obere Zeile):</b><br>Bewertet die Durchführbarkeit des Starts durch Analyse der stündlichen Vorhersage im Vergleich zu den in ⚙️ Einstellungen festgelegten Präferenzen:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Grenzwerte für mittleren Wind (Minimum, Ideal und Maximum).</li><li>Grenzwert für maximale Böen.</li><li>Startplatzausrichtung(en).</li><li>Regen (automatisches Veto und 0 Punkte für die betroffene Stunde).</li></ul><b>2. Bedingungen zum Halten in der Thermik oder für den XC-Start (untere Zeile):</b><br>Bewertet die Startbedingungen und das thermische Potenzial für Streckenflüge (Cross Country) anhand von Daten des ECMWF-Modells:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Flughöhe:</b> Belohnt hohe Flughöhen über der durchschnittlichen Reliefhöhe und bestraft niedrige (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Belohnt blaue Tage oder harmlose Kumuluswolken und bestraft Extremwerte durch Überentwicklung oder Gewittergefahr (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Bestraft hohe Konvektionshemmung (Inversion), die wie ein Deckel wirkt und die Thermikbildung behindert (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Hinweis: Die XC-Bewertung ist <b>unabhängig</b> von der Startausrichtung oder dem Wind. Sie bewertet rein das thermische Potenzial der Luftmasse in diesem Bereich. Sie wird nur dann auf null gesetzt (0 Punkte), wenn Regen oder schwere Stürme vorhergesagt werden.</i><br><br>⚠️ <b>Warnung:</b> Die wesentlichen Daten zur Wolkenbasis (CBH = Cloud Base Height) fehlen, um zu wissen, ob der Startplatz in den Wolken liegt. Dies ist ein ECMWF-Wert, der im Gateway noch nicht verfügbar ist (angefordert im März 2026, ausstehend ohne geplantes Datum). Du musst andere Dienste konsultieren.<br><br><b>Standardmäßig werden Startplätze automatisch nach der ersten Bewertung neu sortiert</b> (Startbedingungen), von der höchsten zur niedrigsten. Du kannst dieses Verhalten ändern unter: ⚙️ <i>Einstellungen</i> > <i>Weitere Optionen</i> > <i>Nach XC-Bedingungen sortieren</i>."
+    },
+    "labels": {
+      "techo": "Flughöhe",
+      "cape": "CAPE",
+      "cin": "CIN"
+    },
+    "cizalladura": {
+      "baja": "Geringe Scherung und hohe Zuverlässigkeit",
+      "media": "Mäßige Scherung und mittlere Zuverlässigkeit",
+      "alta": "Hohe Scherung und geringe Zuverlässigkeit",
+      "motivoBajo": "Werte unter den Schwellenwerten",
+      "motivoMedio": "Verhältnis {{ratio}}x > 1.5 UND Δ {{delta}} > 8 km/h",
+      "motivoAlto": "Verhältnis {{ratio}}x > 2.0 UND Δ {{delta}} > 12 km/h"
+    },
+    "techoTooltip": "Nutzbare Flughöhe: {{altitudMSL}} m MSL\nBerechnung = {{espesorUtil}} m nutzbare Dicke AGL ({{pct}}% der theoretischen {{blh}} m BLH) + {{elevacion}} m Höhe (mittlere Bodenhöhe der ECMWF 9km-Zelle)\n",
+    "despegueTooltip": "Provinz: {{provincia}}\nStartplatz: {{despegue}}\nAusrichtung: {{orientacion}}",
+    "cargando": "Laden...",
+    "cabeceraRegion": "Region",
+    "cabeceraProvincia": "Provinz",
+    "cabeceraDespegue": "Startplatz",
+    "viento_altura": "{{metros}} m"
+  },
+
+  "contador": {
+    "despeguesFavoritos": "<b>{{n}}</b> favorisierte Startplätze",
+    "despeguesFavoritosFiltrados": "<b>{{total}}</b> favorisierte Startplätze",
+    "despeguesDisponibles": "<b>{{n}}</b> verfügbare Startplätze",
+    "despeguesDisponiblesFiltrados": "von <b>{{total}}</b> verfügbaren Startplätzen",
+    "despeguesFavoritosEdicion": "{{n}} Favoriten von <b>{{total}}</b> verfügbaren",
+    "totalDisponibles": "Insgesamt verfügbare Startplätze: <b>{{n}}</b>",
+    "miniTodosBD": "Anzahl der sichtbaren Startplätze aus der gesamten Datenbank",
+    "miniFavoritos": "Anzahl der favorisierten / gefilterten Startplätze"
+  },
+
+  "marcadorMasivo": {
+    "paraMarcarFavoritos": "Um eine Gruppe von Favoriten zu markieren oder die Markierung aufzuheben, nutze die Option:<br>Menü ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoriten]"
+  },
+
+  "guiaPrincipal": {
+    "progreso": "{{current}} von {{total}}",
+    "siguiente": "Weiter →",
+    "cerrar": "Anleitung schließen",
+    "preguntaVerGuia": "Möchtest du eine visuelle Anleitung für diesen Bildschirm sehen?",
+    "preguntaVerGuiaPrincipal": "Möchtest du eine visuelle Anleitung für den<br>Hauptbildschirm sehen?",
+    "verEnAjustes": "Du kannst sie jederzeit ansehen unter:<br><i>⚙️ Einstellungen</i> → <i>Anleitung</i>",
+    "podrasVerla": "Du kannst sie jederzeit über die Schaltfläche <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> auf diesem Bildschirm aufrufen.",
+    "pasos": {
+      "paso1": {
+        "titulo": "🪂 Hauptbildschirm",
+        "descripcion": "Dies ist der Bildschirm für die normale Nutzung der Anwendung.<br><br>Er zeigt eine Tabelle mit allen Startplätzen, die du als Favoriten ausgewählt hast, zusammen mit ihrer Vorhersage und den Bewertungen der Bedingungen (für den Start und für den Beginn von XC-Routen).<br><br>Die Startplätze werden immer automatisch nach ihrer Bewertung für die Startbedingungen sortiert (von der höchsten zur niedrigsten)."
+      },
+      "selectorHorario": {
+        "titulo": "🗓️ Zeitraum-Auswahl",
+        "descripcion": "Passe diesen Schieberegler an beiden Enden an, um den gewünschten Zeitraum auszuwählen.<br><br>Die Tabelle zeigt nur diese Stunden an, und die Bewertung der Bedingungen wird für dieses spezifische Zeitintervall neu berechnet."
+      },
+      "diasSemana": {
+        "titulo": "🗓️ Wochentage",
+        "descripcion": "Diese Wochentag-Schaltflächen erleichtern die Auswahl des Zeitraums für diesen Tag. Dies ist die typische Nutzung der App: ein schneller Blick auf die 'möglichen' Startplätze für diesen Tag.<br><br>👉🏽 Ich wähle diesen als Beispiel aus, damit du siehst, wie es funktioniert."
+      },
+      "diaSeleccionado": {
+        "titulo": "🗓️ Ausgewählter Tag",
+        "descripcion": "Jetzt zeigt die Tabelle nur diesen Tag mit dem automatisch ausgewählten Zeitraum an.<br><br>💡 Du kannst die Regler auf deinen spezifischen Zeitraum verschieben, um eine genauere Bewertung zu erhalten. Du kannst diesen 'automatischen' täglichen Zeitraum in den ⚙️ Einstellungen anpassen."
+      },
+      "columnaMeteo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><span style='font-size:25px; display: block;'>🌦️</span><span>Wetter-Spalte</span></div>",
+        "descripcion": "Zeigt Wetterdaten an.<br><br>Klicke auf das Symbol, um die Bedeutung der einzelnen Parameter zu sehen."
+      },
+      "filaCizalladura": {
+        "titulo": "🟩🟧🟥 Zeile Scherung / Zuverlässigkeit",
+        "descripcion": "Diese spezielle Zeile ist ein kombinierter Indikator. Es ist eine farblich gekennzeichnete Ampel, die gleichzeitig zwei zusammenwirkende Datenpunkte anzeigt: Windscherung auf niedriger Ebene und die Zuverlässigkeit der 10m-Windvorhersage."
+      },
+      "columnaPuntuacion": {
+        "titulo": "⭐ Bewertungs-Spalte",
+        "descripcion": "Das System berechnet zwei Bewertungen (0 bis 10) für jeden Startplatz und für den ausgewählten Zeitraum: Startbedingungen und Bedingungen zum Halten in der Thermik oder für den Beginn eines Cross Country (XC).<br><br>Die Startplätze werden automatisch nach der Bewertung der Startbedingungen neu sortiert.<br><br>In den ⚙️ Einstellungen kannst du deine Grenzwerte für die Berechnung anpassen."
+      },
+      "btnInfo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Startplatz-Informationen</span></div>",
+        "descripcion": "Zeigt vollständigere Startplatz-Informationen und Links zur Vorhersage auf Windy, Meteo-parapente und Meteoblue an."
+      },
+      "btnOrigen": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Ursprungspunkt",
+        "descripcion": "Hier wählst du den Ursprungspunkt für den Entfernungsfilter.<br><br>Du kannst den Punkt mithilfe einer Karte oder deines aktuellen Standorts auswählen."
+      },
+      "btnIncNoFavs": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Nicht-Favoriten einbeziehen",
+        "descripcion": "Ermöglicht es dir, vorübergehend alle verfügbaren Startplätze (Favoriten und Nicht-Favoriten) in den Filter aufzunehmen.<br><br>💡 Nützlich, um schnell nach Flugbedingungen an Startplätzen aus verschiedenen Gebieten außerhalb deiner Favoriten-Zone zu suchen."
+      },
+      "btnMapa": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Startplatz-Karte</span></div>",
+        "descripcion": "Zeigt den Startplatz auf der Karte an.<br><br>💡 Die Karte enthält zusätzliche Informationen, verschiedene Filter, Heatmaps und andere nützliche Werkzeuge zum Erkunden."
+      },
+      "navHome": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Startseite</span></div>",
+        "descripcion": "Zeigt die Tabelle mit all deinen favorisierten Startplätzen an. Wenn Suchen oder Filter aktiv sind, werden diese gelöscht.<br><br>💡 Wenn du dich verläufst, verwende diese Schaltfläche, um zur \"normalen\" Ansicht zurückzukehren."
+      },
+      "navSearch": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Suchen</span></div>",
+        "descripcion": "Verwende dies, um Startplätze nach Namen oder Verwaltungsgebiet (normalerweise die Provinz) zu suchen. Für mehr Geschwindigkeit kannst du ohne Akzente tippen."
+      },
+      "navDistance": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Entfernung</span></div>",
+        "descripcion": "Zeigt einen Schieberegler an, um Startplätze in einem Radius um einen Punkt zu filtern.<br><br>👉🏽 Ich werde diese Schaltfläche jetzt drücken, um den Filter zu öffnen."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Entfernung</span></div>",
+        "descripcion": "Mit diesem Filter kannst du nur die Startplätze um einen bestimmten Punkt herum anzeigen.<br><br>💡 Nützlich, um schnell Startplätze zu finden, die von deinem Standort aus mit dem Auto erreichbar sind."
+      },
+      "sliderDistancia": {
+        "titulo": "Entfernungsradius",
+        "descripcion": "Bewege diesen Schieberegler, um die maximale Entfernung zu wählen.<br><br>Die Tabelle zeigt nur Startplätze innerhalb dieses Radius an."
+      },
+      "navMap": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Karte</span></div>",
+        "descripcion": "Gleitschirm-Startplatzkarte mit umfangreichen Informationen: Startplatzsuche, Filter nach Ausrichtung, Anzahl der Flüge, Jahr des letzten Fluges, durchschnittliche Entfernung, eine Heatmap mit mehr als 1,3 Millionen genau aufgezeichneten Startpunkten und viele weitere Informationen."
+      },
+      "navSettings": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Einstellungen</span></div>",
+        "descripcion": "Hier kannst du <b>Favoriten bearbeiten</b> (um deine üblichen Startplätze hinzuzufügen oder zu entfernen), Parameter anpassen, Optionen aktivieren und Informationen über Aktualisierungen der Wetterdaten einsehen.<br><br>💡 Jede Option hat eine Informationsschaltfläche <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'> für Details."
+      }
+    }
+  },
+
+  "guiaFavoritos": {
+    "preguntaVerGuia": "Möchtest du eine visuelle Anleitung für diesen Bildschirm sehen?",
+    "podrasVerla": "Du kannst sie jederzeit über die Schaltfläche <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> auf diesem Bildschirm aufrufen.",
+    "pasos": {
+      "intro": {
+        "titulo": "🪂 Favoriten bearbeiten - Bildschirm",
+        "descripcion": "Dieser Bildschirm zeigt alle verfügbaren Startplätze. Wähle die aus, die du regelmäßig nutzt. Die normale App-Ansicht zeigt dann nur noch diese Favoriten an.<br><br>Du könntest alle auswählen, aber je nach Gerät könnte dies die Suche und die tägliche Nutzung verlangsamen.<br><br>Deckt derzeit Spanien, Portugal, die Pyrenäen und die wichtigsten Alpenregionen ab. Dies ist ein wachsendes Projekt."
+      },
+      "celdaFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Favoriten",
+        "descripcion": "Markiere oder demarkiere deine Favoriten hier.<br><br>Änderungen werden automatisch gespeichert."
+      },
+      "cabeceraFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Kopfzeilen-Favoriten",
+        "descripcion": "Alle aktuell sichtbaren Startplätze auf einmal markieren oder demarkieren.<br><br>💡 Beispiel: Filtere nach \"Huesca\" und markiere sie alle. Oder filtere nach Entfernung und markiere alle im Umkreis von 50 km."
+      },
+      "btnInfoDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/info.svg\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Startplatz-Informationen</span></div>",
+        "descripcion": "Zeigt detaillierte Startplatz-Informationen und Links zu Vorhersagen auf anderen Seiten an."
+      },
+      "btnMapaDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"><polygon points=\"1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6\"></polygon><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"18\"></line><line x1=\"16\" y1=\"6\" x2=\"16\" y2=\"22\"></line></svg><span>Startplatz-Karte</span></div>",
+        "descripcion": "Zeigt den Startplatz auf der Karte an.<br><br>💡 Die Karte enthält zusätzliche Informationen über den Startplatz, verschiedene Filter, Startplatz-Heatmaps und einige nützliche Werkzeuge, die es wert sind, erkundet zu werden."
+      },
+      "buscador": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg><span>Suchen</span></div>",
+        "descripcion": "Suche nach Startplätzen durch Eingabe der Region, Provinz oder des Namens. Du kannst für mehr Geschwindigkeit ohne Akzente tippen."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Entfernung</span></div>",
+        "descripcion": "Dies ist ein Filter, der es dir ermöglicht, nur Startplätze um einen bestimmten Punkt herum anzuzeigen.<br><br>💡 Dies kann dir helfen, schnell Startplätze innerhalb eines Entfernungsradius deiner Wahl um einen Punkt zu finden."
+      },
+      "btnOrigen": {
+        "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Ursprungspunkt",
+        "descripcion": "Hier wählst du den Ursprungspunkt für den obigen Entfernungsfilter aus.<br><br>Du kannst den Punkt mithilfe einer Karte oder deines aktuellen Standorts auswählen."
+      },
+      "sliderDistancia": {
+        "titulo": "Entfernung zum Punkt",
+        "descripcion": "Durch Ziehen dieses Schiebereglers wählst du die maximale Entfernung in Kilometern aus."
+      },
+      "btnVerSoloFavs": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Nur Favoriten anzeigen",
+        "descripcion": "Wechsle zwischen der Anzeige nur deiner Favoriten oder aller Startplätze.<br><br>💡 Nützlich, um deine ausgewählten Favoriten auf einen Blick zu überprüfen."
+      },
+      "btnDesmarcarTodos": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z\"></path><line x1=\"5\" y1=\"5\" x2=\"19\" y2=\"19\" stroke=\"red\" stroke-width=\"3\"></line></svg><span>Alle Favoriten demarkieren</span></div>",
+        "descripcion": "Entferne alle Startplätze auf einmal aus deiner Favoritenliste."
+      },
+      "btnImportar": {
+        "titulo": "📂 Favoriten importieren",
+        "descripcion": "Öffne eine Datei mit favorisierten Startplätzen."
+      },
+      "btnExportar": {
+        "titulo": "💾 Favoriten exportieren",
+        "descripcion": "Speichert eine Datei mit deinen aktuellen favorisierten Startplätzen.<br><br>Hinweis: Favoriten werden tatsächlich jedes Mal automatisch gespeichert, wenn du einen markierst. Diese Schaltfläche dient dazu, eine Kopie von allen in einer externen Datei zu erstellen (als Backup oder zum Teilen). <br><br>💡 Wenn du in mehrere weit entfernte Fluggebiete reist, möchtest du vielleicht die Favoriten für jedes Gebiet in verschiedenen Dateien speichern."
+      },
+      "btnGuiaEdicion": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/icono_ayuda_60.webp\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Kurzanleitung</span></div>",
+        "descripcion": "Zeigt diese Anleitung erneut."
+      },
+      "btnFinalizar": {
+        "titulo": "🏁 Bearbeitung beenden",
+        "descripcion": "Zum Hauptbildschirm zurückkehren, um die Vorhersage für deine ausgewählten Favoriten zu sehen."
+      }
+    }
+  },
+
+  "asistente": {
+    "paso1": {
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Wo fliegen?</p><p>🌦️ Stündliche Vorhersage für 4 Tage.</p><p>📊 Automatisierte Bewertung der Bedingungen für Start und XC.</p><p>🗺️ Startplatz-Karte.</p>",
+      "btnPrimario": "Favoriten auswählen",
+      "btnSecundario": "Allgemeine Anleitung ansehen",
+      "btnImportar": "Einstellungen importieren"
+    },
+    "paso2": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Automatisierte Analyse der Wettervorhersage für Gleitschirmflieger.</p><p>🙄 <b>Wofür ist das?:</b> um dir zu helfen, zu entscheiden, wo du fliegen möchtest. Es zeigt eine Tabelle mit deinen favorisierten Startplätzen, deren Vorhersagen und führt eine automatisierte Analyse dieser <b>Wetterbedingungen</b> durch.</p><p>🧮 <b>Welche Analyse wird durchgeführt?:</b> Es vergleicht die Vorhersage mit deinen konfigurierten Grenzwerten für mittleren Wind und maximale Böen sowie der Ausrichtung jedes Startplatzes; es analysiert auch den Wind in Höhen nahe dem Startplatz (80, 120 und 180 m), was Einblicke in den Windgradienten und die Zuverlässigkeit der Vorhersage gibt. Es zeigt wichtige XC-Daten (Flughöhe, CAPE und CIN).</p><p>Mit all diesen Infos bewertet es jeden Startplatz von 0 bis 10 und farbcodiert 🟩&nbsp;🟨&nbsp;🟥 die Daten für deinen gewählten Zeitraum. Du kannst alle Grenzwerte an deine Vorlieben anpassen.</p>"
+    },
+    "paso3": {
+      "html": "<p>💨️ <b>Wetterdaten:</b> stündliche Vorhersage für 4 Tage (96h). Wird 8-mal täglich mit offiziellen Daten von Météo-France aus den Modellen Arome-HD 1,3km (0-48h) und Arpège 7km (48-96h) aktualisiert, und 4-mal täglich mit ECMWF-Daten (0-96h).</p><p>🆓 <b>Kosten und Datenschutz:</b> 100% kostenlos, keine Abos, keine Werbung und kein Tracking (Cookies, Telemetrie,...). Deine Einstellungen werden privat in deinem Browser gespeichert. Es ist ein freies und offenes Projekt, in Betrieb seit 2026 und in stetiger Weiterentwicklung.</p>"
+    },
+    "paso4": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🤔 Ist es kompliziert?</p><p>✅ <b>Einfache Nutzung</b>: Wähle beim ersten Mal deine favorisierten Startplätze aus und du hast immer die Tabelle mit ihren Vorhersagen und der automatisierten Analyse für jeden Tag.</p><p>✅ <b>Mittlere Nutzung</b>: Du kannst einen Zeitraum (Tage oder Stunden) auswählen und die automatische Bewertung der Bedingungen für dieses Intervall sehen. Du kannst Startplätze nach Entfernungsradius von deinem Zuhause oder jedem anderen Ort filtern.</p><p>✅ <b>Erweiterte Nutzung</b>: Du kannst unter ⚙️ <i>Einstellungen</i> die Standardgrenzwerte für mittleren Wind (Minimum, Ideal und Maximum) und maximale Böen anpassen. Deine Präferenzen werden für die Analyse, Färbung und Bewertung der Bedingungen verwendet.</p>"
+    },
+    "paso5": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>️👉 Bitte beachte...</p><p>👉 Es werden nur favorisierte Startplätze angezeigt. Du kannst alle auswählen, aber auf manchen Geräten könnte das die App verlangsamen.</p><p>👉️ Die Sortierung erfolgt automatisch nach Bewertung (10 bis 0).</p><p>👉️ Daten zur Wolkenbasis (CBH) sind derzeit noch vom Anbieter ausstehend. Überprüfe immer mehrere Quellen, bevor du fliegst.</p><p>👉️ Abdeckung: Spanien, Portugal, Pyrenäen und Alpen (französisch, schweizerisch, italienisch).</p>"
+    },
+    "paso6": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>👍 Was nun?</p><p>Du musst deine favorisierten Startplätze markieren.</p>",
+      "btnPrimario": "Favoriten auswählen →",
+      "btnSecundario": "←"
+    }
+  },
+
+  "origen": {
+    "avisoInicialHtml": "<div style='text-align: center;'><p style='font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></p><p>Du musst beim ersten Mal einen Ursprungspunkt festlegen.</p><p>Du kannst ihn jederzeit über die Schaltfläche ändern <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span></p></div>",
+    "configurarPrimero": "Du musst zuerst einen Ursprungspunkt festlegen.",
+    "podrasCambiar": "Du kannst ihn jederzeit über die Schaltfläche ändern"
+  },
+
+  "actualizacion": {
+    "cargando": "Laden...",
+    "esperando": "🔄 Nächstes: <span style='color:#e39300; font-weight:bold;'>Warten...⌛</span>",
+    "proximaEn": "🔄 Nächstes: <b>{{tiempo}}</b>",
+    "horas": "~{{h}} Std. {{m}} Min.",
+    "minutos": "~{{m}} Min.",
+    "sinConexion": "⚠️ Keine Internetverbindung. Datenalter: {{tiempo}}.",
+    "hace": "vor <b>{{tiempo}}</b>",
+    "esperandoPrimerDato": "Warte auf erste Daten...",
+    "avisoModelos": {
+      "viento": "Wind (Météo-France: Arome-HD und Arpège)",
+      "general": "Allgemeines Wetter und thermische XC-Bedingungen (ECMWF)"
+    },
+    "avisoNuevoMeteo": "<p>ℹ️ Neue Wetterdaten verfügbar für:</p><p><b>{{modelos}}</b></p><p>Jetzt aktualisieren?</p>"
+  },
+
+  "ajustes": {
+    "probPrecipitacion": "Niederschlagswahrscheinlichkeit",
+    "vientoAlturas": "Wind auf 80, 120 und 180 m",    
+    "cizalladura_fiabilidad": "Windscherung / Zuverlässigkeit",
+    "XC": "XC: Flughöhe MSL, CAPE und CIN",
+    "horarioVueloPref": "Bevorzugte Flugzeit",
+    "solo_horas_diurnas": "Nur Tageslichtstunden",
+    "ordenar_xc": "Nach XC-Bedingungen sortieren",
+    "titulo": "Einstellungen",
+    "editarFavoritos": "Favoriten bearbeiten",
+    "importarConfig": "Einstellungen & Favoriten importieren",
+    "exportarConfig": "Einstellungen & Favoriten exportieren",
+    "restablecerConfig": "Einstellungen zurücksetzen (löscht alle Konfigurationen und Favoriten)",
+    "viento": "Wind",
+    "rachaMaxima": "Maximale Böen",
+    "acordeon": {
+      "vientoRacha": "Wind- & Böengrenzwerte",
+      "datosOpcionales": "Optionale Wetterdaten",
+      "otrasOpciones": "Weitere Optionen",
+      "sobreActualizacion": "Updates der Wettermodelle"
+    },
+    "guia": "Anleitung",
+    "ayuda": "Hilfe",
+    "legal": "Rechtliches",
+    "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ACHTUNG:</b> Das Importieren einer Konfigurationsdatei ersetzt alle deine aktuellen Einstellungen und favorisierten Startplätze.</b></p>",
+    "importadoConfigOk": "✅ Konfiguration wurde importiert",
+    "errorArchivoConfig": "⚠️ Die Datei scheint kein gültiges Fly Decision Backup zu sein.",
+    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ACHTUNG:</b> Diese Aktion setzt die Konfiguration auf die ursprünglichen Einstellungen zurück und entfernt die Markierung aller favorisierten Startplätze.</p></div>"
+  },
+
+  "mapa": {
+    "seleccionarOrigen": "Ursprung auswählen",
+    "miUbicacion": "Mein Standort",
+    "irMiUbicacion": "Zu meinem Standort gehen",
+    "buscadorPlaceholder": "Ort oder Koordinaten suchen...",
+    "buscadorTitulo": "Allgemeine Suche (Orte und Koordinaten)",
+    "ajustes": "Einstellungen",
+    "capasYFiltros": "Ebenen & Filter",
+    "capas": "Ebenen:",
+    "orientacion": "Ausrichtung:",
+    "cerrarPanel": "Panel schließen",
+    "fijarPanel": "Panel anheften (beim Bewegen der Karte nicht ausblenden)",
+    "masInformacion": "Weitere Informationen ▼",
+    "volverEdicion": "Zurück zur Favoritenbearbeitung",
+    "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Du bist hier&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "capasCheckbox": {
+      "despegues": "🪂 Startplätze",
+      "mapaCalorPeninsula": "🔥 Iberische Halbinsel Heatmap",
+      "mapaCalorAlpes": "🔥 Alpen Heatmap",
+      "mapaCalorMarruecos": "🔥 Marokko Heatmap",
+      "notas": "✏️ Notizen",
+      "despeguesMundo": "🪂 Paraglidingearth Startplätze"
+    },
+    "cargandoCalorPeninsula": "⏳ Lade Iberische Halbinsel Heatmap...<br><br>(309.157 Startplätze registriert)",
+    "cargandoCalorAlpes": "⏳ Lade Alpen Heatmap...<br><br>(967.477 Startplätze registriert)",
+    "cargandoCalorMarruecos": "⏳ Lade Marokko Heatmap...<br><br>(11.006 Startplätze registriert)",
+    "errorCSV": "Fehler beim Laden der CSV. Details in der Konsole prüfen.",
+    "errorCSVAlpes": "Fehler beim Laden der Alpen-CSV-Datei.",
+    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} XContest Startplätze</b>",
+    "despegueXContest": "🪂<br>XContest Startplatz",
+    "coordenadasMedias": "Mittlere Koordinaten:",
+    "coordenadas": "Koordinaten:",
+    "fecha": "Datum:",
+    "hora": "Uhrzeit:",
+    "distanciaRecorrida": "Geflogene Strecke:",
+    "vuelos": "XContest Flüge:",
+    "vueloXContest": "🔍 XContest Flug ansehen",
+    "orientacionLabel": "Ausrichtung:",
+    "grupoXContestTitle": "Gruppe von {{count}} in XContest registrierten Startplätzen",
+    "nVuelosXContest": "Anzahl der XContest-Flüge:",
+    "minVuelosTexto": "Minimum registrierte Flüge = ",
+    "anioUltimoVueloTexto": "Jahr des letzten Fluges >= ",
+    "minKmMediaTexto": "Minimale durchschnittlich geflogene Strecke = ",
+    "todos": "Alle",
+    "titleBuscadorDespegue": "Startplatz nach Namen suchen",
+    "buscadorDespegue": "🔍 Startplatz",
+    "labelOrientacion": "Ausrichtung:",
+    "labelCoordenadas": "Koordinaten:",
+    "labelAltitud": "Ungefähre Höhe:",
+    "labelActividad": "Aktivitätsniveau:",
+    "labelVuelos": "Anzahl der XContest-Flüge:",
+    "labelKmMedia": "Durchschnittliche km-Distanz:",
+    "labelMasInfo": "Weitere Informationen:",
+
+    "capasBase": {
+      "esriTopo": "ESRI World Topographic",
+      "esriOrto": "ESRI World Imagery",
+      "osmOpenTopo": "OpenStreetMap OpenTopoMap Stil",
+      "osmCyclOSM": "OpenStreetMap CyclOSM Stil",
+      "thunderforest": "Thunderforest Outdoors",
+      "ignTopo": "IGN Spanien Topografisch",
+      "ignClaro": "IGN Spanien Topografisch (Hell)",
+      "ignOrto": "IGN Spanien Satellit",
+      "osmStandard": "OpenStreetMap Standard-Stil",
+      "hipsometrico": "Hypsometrisches Relief",
+      "tracestrack": "Tracestrack Topo",
+      "icgc": "ICGC Katalonien",
+      "esriSkyways": "ESRI Topo + Skyways (KK7)",
+      "esriThermals": "ESRI Topo + Thermals (KK7)",
+      "esriAll": "ESRI Topo + Skyways+Thermals (KK7)"
+    }
+  },
+
+  "popupDespegue": {
+    "region": "Region:",
+    "provincia": "Provinz:",
+    "orientacion": "Ausrichtung:",
+    "nivelActividad": "Aktivitätsniveau:",
+    "nivelActividadTitle": "Standortaktivität basierend auf dem Datum des letzten Fluges (Ref: Nov 2025): Grün 0-6 Monate, Orange 6-12, Gelb 12-24, Weiß >24 Monate ohne Flüge"
+  },
+
+  "html": {
+    "distanciaDesde": "Entfernung von:",
+    "seleccionarOrigen": "Ursprung auswählen",
+    "incluirNoFavs": "Nicht-Favoriten in den Filter einbeziehen",
+    "resetFiltroDistancia": "Entfernungsfilter zurücksetzen und ausblenden",
+    "finalizarEdicion": "Bearbeitung der favorisierten Startplätze beenden",
+    "finalizarEdicionTitle": "Bearbeitung der favorisierten Startplätze beenden",
+    "verSoloFavoritos": "Nur meine Favoriten anzeigen",
+    "desmarcarFavoritosTitle": "Alle Favoriten demarkieren",
+    "importarFavoritos": "Favoriten importieren",
+    "exportarFavoritos": "Favoriten exportieren",
+    "guiaEdicionTitle": "Anleitung zum Bildschirm 'Favoriten bearbeiten'",
+    "esperandoConexion": "Warte auf Verbindung..."
+  },
+
+  "crash": {
+    "errorCarga": "<div style='text-align: center;'><p>ℹ️ Fehler beim Laden der Tabelle.</p><p>Mögliche Ursache: <b>Zu viele Favoriten</b> für die Ressourcen deines Geräts.</p><p>Der Favoriten-Editor wird geöffnet, damit du einige abwählen und die Ladelast verringern kannst.</p><p>Wenn du denkst, dass dies vorübergehend ist: Klicke auf <b><i>Bearbeitung beenden</i></b>, starte das Gerät neu und versuche es noch einmal.</p></div>",
+    "alertFallback": "Die App hat Probleme beim Laden. Der Favoriten-Editor wurde aktiviert, um die Anzahl der Startplätze zu reduzieren."
+  },
+
+  "salirApp": {
+    "pregunta": "Möchtest du die Anwendung verlassen?",
+    "no": "Nein",
+    "si": "Ja, verlassen"
+  },
+
+  "novedadesXC": {
+    "titulo": "ℹ️ Neues zu XC-Daten",
+    "html": "<div style='text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;'><ul style='padding-left: 20px; margin-top: 5px; margin-bottom: 5px;'><li style='margin-bottom: 6px;'><b>Unabhängige XC-Bewertung:</b> Bewertet nur das thermische Potenzial (Flughöhe, CAPE, CIN) und ignoriert den Startwind. Bewertet nur bei Regen oder Gewittergefahr mit 0.</li><li style='margin-bottom: 6px;'><b>Flughöhe (MSL):</b> Zeigt jetzt die Höhe über dem Meeresspiegel an und bietet so eine bessere Präzision für die Distanzplanung.</li><li><b>Realistische Flughöhe:</b> Die Vorhersage wird um 15 % reduziert, um die Sinkrate des Gleitschirms zu kompensieren.</li></ul><p style='margin-top: 10px; font-size: 0.9em;'>💡 <i>Weitere Details durch Klick auf die Symbole 🌦️ oder ⭐ in der Tabelle.</i></p></div>"
+  },
+
+  "orientaciones": {
+    "N": "N",
+    "NNE": "NNO",
+    "NE": "NO",
+    "ENE": "ONO",
+    "E": "O",
+    "ESE": "OSO",
+    "SE": "SO",
+    "SSE": "SSO",
+    "S": "S",
+    "SSO": "SSW",
+    "SO": "SW",
+    "OSO": "WSW",
+    "O": "W",
+    "ONO": "WNW",
+    "NO": "NW",
+    "NNO": "NNW",
+    "norte": "Nord",
+    "nornoreste": "Nordnordost",
+    "noreste": "Nordost",
+    "estenoreste": "Ostnordost",
+    "este": "Ost",
+    "estesureste": "Ostsüdost",
+    "sureste": "Südost",
+    "sursureste": "Südsüdost",
+    "sur": "Süd",
+    "sursuroeste": "Südsüdwest",
+    "suroeste": "Südwest",
+    "oestesuroeste": "Westsüdwest",
+    "oeste": "West",
+    "oestenoroeste": "Westnordwest",
+    "noroeste": "Nordwest",
+    "nornoroeste": "Nordnordwest",
+    "todos_title": "Ausrichtungsfilter sind aktiv. Klicken, um alle zu löschen."
+  },
+
+  "cron": {
+    "Actualización en curso... ⏳": "Aktualisierung läuft... ⏳"
+  },
+
+  "btn_info": {
+    "tooltipVientoLimites": "<b>Minimum, idealer und maximaler mittlerer Wind:</b><br><br>Das automatisierte System zur Bewertung der Bedingungen berücksichtigt diese Werte.<br><br>Die Farbe der Daten in der Tabelle zeigt visuell die Analyse der Bedingungen basierend auf den von dir hier festgelegten Werten an (Min, Ideal und Max).<br><br>🟧 Orange: schwacher Wind unter deinem Minimum (normalerweise 0, es sei denn, du benötigst spezifischen Wind zum Soaring oder aus anderen Gründen).<br>🟩 Grün: Idealer Wind, vom Minimum bis zu einer Sicherheitsmarge vor dem Maximum.<br>🟧 Orange: stärkerer Wind, der sich dem Maximum nähert (das letzte Drittel vor Erreichen des Maximums).<br>🟥 Rot: sehr starker Wind, der dein Wind-Maximum überschreitet.<br><br><b>WMO (Weltorganisation für Meteorologie) technische Standarddefinition der mittleren Windgeschwindigkeit auf 10m</b>:<br><br>Es ist die durchschnittlich anhaltende Windgeschwindigkeit der letzten 10 Minuten vor der angegebenen Zeit. Sie wird in einer Standardhöhe von 10 Metern über dem Boden gemessen (um die unmittelbare Bodenreibung zu vermeiden). Sie repräsentiert die laminare oder Basisströmung.",
+    "filtroDistanciaCompleto": "<b>Startplatz-Entfernungsfilter:</b><br><br>Zeigt nur Startplätze im von dir ausgewählten Entfernungsradius an.<br><br>Verwende die Schaltfläche <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span>, um den Ursprungspunkt festzulegen. Du kannst die Karte oder den aktuellen Standort deines Geräts verwenden.<span class='texto-oculto-en-edicion'><br><br>Verwende die Schaltfläche <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span>, um Nicht-Favoriten in den Filter einzubeziehen, was bedeutet, dass <b>vorübergehend alle in der Datenbank verfügbaren Startplätze</b> einbezogen werden.<br><br>Wenn diese Option aktiviert ist, wird ein anfänglicher Filter von 100 km angewendet, um eine Überlastung der Tabelle zu vermeiden. Du kannst ihn an deine Bedürfnisse und die Leistung deines Geräts anpassen.</span>",
+    "tooltipRachaMaxima": "<b>Maximale Böe:</b><br><br>Das automatisierte System zur Bewertung der Bedingungen berücksichtigt diese Werte.<br><br>Die Farbe der Daten in der Tabelle zeigt visuell die Analyse der Bedingungen basierend auf dem von dir hier festgelegten Wert an.<br><br>🟩 Grün: sichere maximale Böe, weit entfernt vom Limit.<br>🟧 Orange: maximale Böe, die sich deinem Limit nähert.<br>🟥 Rot: Böe, die dein Limit für maximale Böen überschreitet.<br><br><b>WMO (Weltorganisation für Meteorologie) technische Standarddefinition der maximalen Böe auf 10m</b>:<br><br>Es ist die maximale Spitze der momentanen Geschwindigkeit (mit einer Dauer von 3 Sekunden), die zu irgendeinem Zeitpunkt innerhalb der vorherigen Stunde aufgezeichnet wurde. Sie repräsentiert die kurzen und intensiven Schwankungen, die dem mittleren Wind überlagert sind und mit mechanischer oder thermischer Turbulenz (Konvektion) verbunden sind.",
+    "tooltipProbPrecipitacion": "<b>Niederschlagswahrscheinlichkeit (%)</b><br><br>Wahrscheinlichkeit (%), dass der Niederschlag 0,1 mm (Liter/m²) überschreitet.<br><br>Originaldaten des ECMWF-Modells.",
+    "tooltipVientoAlturas": "<b>Wind auf 80, 120 und 180 m (km/h)</b><br><br>Zeigt 3 Zeilen mit Vorhersagen zur mittleren Windgeschwindigkeit in 80, 120 und 180 m über dem Boden. Diese 3 Zeilen werden über der Standardzeile für die mittlere Windgeschwindigkeit auf 10 m angezeigt.<br><br>Diese Werte ermöglichen die Bewertung des Grads der Scherungsturbulenz und der Zuverlässigkeit der mittleren Windvorhersage.<br><br>Originaldaten des Arome/Arpège-Modells (Météo-France).",
+    "tooltipCizalladura": "<b>Windscherung / Zuverlässigkeit</b><br><br>Zeigt eine dünne Zeile unterhalb der Ausrichtungszeile an, die einen berechneten Wert darstellt: das Niveau der Windscherung in niedriger Höhe (LLWS) und den Zuverlässigkeitsgrad der Vorhersage für den mittleren Wind auf 10 m.<br><br>Das System analysiert die mittleren Windwerte in 10, 80, 120 und 180 m über dem Boden und zeigt über einen Algorithmus einen farbcodierten Indikator an.<br><br>🟩 Grün: Geringe Windscherung durch Geschwindigkeit und hohe Zuverlässigkeit der 10m-Geschwindigkeitsvorhersage.<br>🟧 Orange: Moderate Scherungs- und Zuverlässigkeitswerte.<br>🟥 Rot: Hohe Windscherung durch Geschwindigkeit und geringe Zuverlässigkeit der 10m-Geschwindigkeitsvorhersage.<br><br>Diese Scherung tritt auf, wenn es in Bodennähe einen hohen Geschwindigkeitsgradienten gibt. Dieses Niveau korreliert auch mit der Zuverlässigkeit der Windgeschwindigkeit in 10 m über dem Boden.<br><br>Der Grund dafür ist, dass, wenn sich die Luftmasse mit ähnlichen Geschwindigkeiten bewegt, der Grad der durch die Geschwindigkeit induzierten Scherungsturbulenz gering ist, die Vorhersage für den Wind am Boden zuverlässiger ist und umgekehrt.",
+    "tooltipXC": "<b>XC: Flughöhe MSL, CAPE, CIN</b><br><br>Zeigt eine Gruppe von 3 Zeilen mit Daten an, die auf Streckenflüge (Cross Country / XC) ausgerichtet sind:<ul><li><b>MSL Flughöhe (km):</b> Maximale Höhe der Grenzschicht (BLH)</li><li><b>CAPE (J/kg):</b> Konvektiv verfügbare potentielle Energie</li><li><b>CIN (J/kg):</b> Konvektionshemmung</li></ul>Originaldaten des ECMWF-Modells.",
+    "tooltipHorarioVuelo": "<b>Bevorzugte Flugzeit:</b><br><br>Die hier konfigurierten Werte bewirken, dass diese Start- und Endzeiten automatisch ausgewählt werden, wenn ein Wochentag (Montag, Dienstag usw.) in der Zeitraum-Auswahl über der Tabelle gewählt wird.<br><br>Du kannst die Zeitraum-Auswahl jederzeit manuell anpassen; diese Einstellung ist nur eine Automatisierung, um die Auswahl eines typischen Zeitraums zu erleichtern.<br><br>Unabhängig davon, ob dies manuell oder automatisch erfolgt, wird nur der final ausgewählte Zeitraum für die Berechnung der <i>Bedingungen</i>-Bewertung berücksichtigt; somit wird die Bewertung jedes Startplatzes für diesen spezifischen Zeitraum realistischer.<br><br>Wenn die Option <i>Nur Tageslichtstunden</i> aktiviert ist, wird der mit dieser Einstellung automatisch ausgewählte Zeitraum so angepasst, dass er innerhalb der Tageslichtgrenzen bleibt.",
+    "tooltipHorasDiurnas": "<b>Nur Tageslichtstunden</b><br><br>Zeigt nur die Stunden bei Tageslicht an. Wenn diese Option deaktiviert ist, werden alle 24 Stunden des Tages angezeigt.<br><br>Eine Spanne von ±1 Std. beim Sonnenaufgang und Sonnenuntergang ist inbegriffen.<br><br>Ändert sich jeden Monat automatisch. Außerdem werden diese Stunden in Monaten mit Zeitumstellung automatisch an die offizielle Sommer-/Winterzeit (DST) angepasst.",
+    "tooltipOrdenarXC": "<b>Nach XC-Bedingungen sortieren:</b><br><br>Standardmäßig werden die Startplätze basierend auf der Bewertung der <i>Startbedingungen</i> (Durchführbarkeit des Starts in Abhängigkeit vom Wind) von der besten zur schlechtesten sortiert.<br><br>Wenn du diese Option aktivierst, wird die Tabelle nach der besten bis zur schlechtesten Bewertung der <b>XC-Bedingungen</b> (thermisches Potenzial der Luftmasse) sortiert, unabhängig davon, ob der Wind an diesem Startplatz ideal ist oder nicht.",
+    "tooltipModelosMeteo": "<b>Wettermodelle:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1,3km</b>: für Winddaten in den ersten 0-48 Std. Deckt fast ganz Europa ab, einschließlich der Iberischen Halbinsel, mit Ausnahme von Südandalusien (in diesem Gebiet wird Arpège Europe 7km 0-96h verwendet).</li><li><b>Météo-France Arpège Europe 7km</b>: für Winddaten in den folgenden 48-96 Std. Deckt Europa und Nordafrika ab.</li><li><b>ECMWF IFS HRES 9km</b>: für die restlichen Wetterdaten von 0-96 Std. Deckt die ganze Welt ab.</li></ul><b>Automatische Aktualisierungshäufigkeit:</b> Météo-France ca. alle 3 Stunden (8-mal täglich) und ECMWF ca. alle 6 Stunden (4-mal täglich).<br><br><b>Wetterdaten-Gateway:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>Der Wert <i>Ref.HHZ</i> gibt die UTC±0 (Z) Zeit an, die dem letzten Ausführungszyklus des Modells auf dem Quell-Wetterserver entspricht. Ab diesem Moment vergehen mehrere Stunden an Rechenzeit vor der finalen Verteilung und der öffentlichen Verfügbarkeit.<br><br>"
+  }
+
+}

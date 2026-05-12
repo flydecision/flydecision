@@ -1,0 +1,560 @@
+{
+  "_meta": {
+    "_nota": "Oinarrizko itzulpen fitxategia — Euskara. meteo.js eta index.html aztertetik sortua.",
+    "_version": "1.0.0"
+  },
+
+  "menu": {
+    "inicio": "Hasiera",
+    "buscar": "Bilatu",
+    "distancia": "Distantzia",
+    "mapa": "Mapa",
+    "ajustes": "Ezarpenak"
+  },
+
+  "botones": {
+    "aceptar": "Ados",
+    "cancelar": "Utzi",
+    "siguiente": "Hurrengoa",
+    "siguienteFlecha": "Hurrengoa →",
+    "finalizar": "Amaitu",
+    "verGuia": "Gida ikusi",
+    "noGracias": "Ez, eskerrik asko",
+    "siMarcar": "Bai, markatu",
+    "siDesmarcar": "Bai, desmarkatu",
+    "siSalir": "Bai, irten",
+    "no": "Ez",
+    "configurarOrigen": "Jatorria ezarri",
+    "marcarFavoritos": "Gogokoak markatu",
+    "verGuiaGeneral": "Gida orokorra ikusi",
+    "importarConfiguracion": "Konfigurazioa inportatu",
+    "marcarFavoritosFlecha": "Gogokoak markatu →",
+    "entendido": "Ulertuta"
+  },
+
+  "dias": {
+    "domingo": "Igandea",
+    "lunes": "Astelehena",
+    "martes": "Asteartea",
+    "miercoles": "Asteazkena",
+    "jueves": "Osteguna",
+    "viernes": "Ostirala",
+    "sabado": "Larunbata",
+    "dom": "Iga",
+    "lun": "Asl",
+    "mar": "Asr",
+    "mie": "Asz",
+    "jue": "Osg",
+    "vie": "Osr",
+    "sab": "Lar"
+  },
+
+  "gps": {
+    "buscando": "⏳ Bilatzen...",
+    "errorUbicacion": "Ezin izan da kokapena lortu.",
+    "activaGps": "Ziurtatu GPSa aktibatuta dagoela.",
+    "revisaPermisos": "Egiaztatu baimenak.",
+    "noSoportado": "Zure nabigatzaileak ez du GPSa onartzen."
+  },
+
+  "buscador": {
+    "placeholder": "🔍 Bilatu aireratzea edo probintzia...",
+    "placeholderEdicion": "🔍 Bilatu eskualdea, probintzia edo aireratzea...",
+    "sugerenciaTitulo": "💡 Ez da gogokorik aurkitu * <b>{{termino}}</b> * bilaketarako, baina hauek datu-basean daude:",
+    "anadirFavorito": "+ Gogokoetara gehitu"
+  },
+
+  "favoritos": {
+    "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Gogokoa",
+    "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Gogokoak",
+    "anadirAFavoritos": "Gogokoetara gehitu",
+    "quitarDeFavoritos": "Gogokoetatik kendu",
+    "despegueFavorito": "Aireratze gogokoa",
+    "marcarTodos": "Ikusgai dauden aireratze guztiak gogoko gisa markatu",
+    "desmarcarTodos": "Ikusgai dauden aireratze guztien gogoko markaketa kendu",
+    "marcardesmarcarCabecera": "Taulan ikusgai dauden aireratze guztiak gogoko gisa markatu edo desmarkatu",
+    "noHayParaDesmarcar": "Ez dago gogoko aireratzerik desmarkatzeko",
+    "noHayParaExportar": "Ez dago gogoko aireratzerik esportatzeko",
+    "noTienesFavoritos": "<p>Ez dago aireratzerik gogoko gisa markatuta ♥️</p>",
+    "necesarioMarcarUno": "<p>Gutxienez gogoko aireratze bat behar da ♥️</p><p>Nahi baduzu, pantaila honen gida azkarra ikus dezakezu <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Gida'> botoia erabiliz.</p>",
+    "confirmacionMasiva": "<span style='font-weight:bold;'>{{cantidad}}</span> aireratze gogoko gisa markatu nahi dituzu?",
+    "confirmarDesmarcarTodos": "Zure gogoko guztien markaketa kendu nahi duzu?",
+    "anadidoOk": "✅ <b>{{nombre}}</b> gehitu da",
+    "importadosOk": "✅ {{n}} gogoko aireratze inportatu dira",
+    "archivoVacio": "⚠️ Fitxategia hutsik zegoen.",
+    "errorArchivo": "⚠️ Errorea fitxategia prozesatzean.",
+    "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ KONTUZ:</b> Gogokoak inportatzean egungoak ordezkatuko dira.</b><br><br>Gorde nahi badituzu, ezeztatu mezu hau eta erabili 💾 <i>Gogokoak esportatu</i> botoia.</p>",
+    "exportar": {
+      "tituloDialog": "💾 Gogokoak esportatu",
+      "mensajeDialog": "\nAldatu fitxategiaren izena edo onartu hau:",
+      "guardar": "Gorde",
+      "cancelar": "Utzi",
+      "okTitulo": "✅ Gogokoak ongi gorde dira",
+      "okTextoShare": "Hona hemen nire Fly Decision aireratze gogokoak:",
+      "okMensaje": "Orain partekatu nahi dituzu?",
+      "siCompartir": "Bai, partekatu",
+      "noCompartir": "Ez",
+      "tituloShare": "Nire Fly Decision aireratze gogokoak",
+      "textoShare": "Hona hemen nire aireratze gogokoak:",
+      "dialogTitle": "Partekatu honekin...",
+      "errorShare": "Ezin izan da partekatzeko menua ireki. Mesedez, saiatu beste metodo batekin.",
+      "sinShare": "Zure gailuak ez du onartzen fitxategiak zuzenean partekatzea. Ziurtatu Telegram instalatuta duzula.",
+      "errorGuardar": "Ene, zerbait gaizki joan da: "
+    }
+  },
+
+  "tabla": {
+    "tooltips": {
+      "meteoGeneral": "Eguraldi orokorra (euria / hodei-estaldura totala)",
+      "precipitacion": "Prezipitazioa mm-tan (litro/m²)",
+      "probPrecipitacion": "0,1 mm (litro/m²) baino gehiagoko prezipitazioa izateko probabilitatea (%)",
+      "baseNube": "Hodeien oinarria AGL (km): Hodeien oinarriaren altuera estimatua lurzoruaren gainetik. 2m-ko tenperaturatik eta 2m-ko ihintz-puntutik kalkulatua.",
+      "viento180m": "Batez besteko haizearen abiadura 180 m-tan (km/h)",
+      "viento120m": "Batez besteko haizearen abiadura 120 m-tan (km/h)",
+      "viento80m": "Batez besteko haizearen abiadura 80 m-tan (km/h)",
+      "viento10m": "Batez besteko haizearen abiadura 10 m-tan (km/h)",
+      "racha10m": "Gehienezko boladak 10 m-tan (km/h)",
+      "direccion10m": "Haizearen norabidea 10 m-tan",
+      "cizalladura": "Behe-mailako haize-zizailadura (LLWS) / Batez besteko haize-iragarpenaren fidagarritasuna",
+      "techo": "Altuera (km) itsas mailaren gainetik (MSL) hegaldi-sabai erabilgarrirako (= muga-geruzaren lodiera BLH x 0,85 + ECMWF 9km zelularen batez besteko lur-altuera)",
+      "cape": "CAPE (J/kg): Eskuragarri dagoen energia potentzial konbektiboa",
+      "cin": "CIN (J/kg): Inhibizio konbektiboa",
+      "masInfo": "Informazio gehiago",
+      "verEnMapa": "Mapan ikusi",
+      "notaCondiciones": "Aireratze-baldintzen puntuazioa: {{nota}} puntu",
+      "tooltipMeteoCompleto": "<b style='font-size:20px;'>🌦️ Parametro meteorologikoak</b><br><br><b>🌦️</b>: Eguraldi orokorra (hodei-estaldura eta prezipitazioa)<br><b>💦</b>: Prezipitazioa mm-tan (litro/m²)<br><b>💦?</b>: 0,1 mm (litro/m²) baino gehiagoko prezipitazioa izateko probabilitatea (%)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>180 m</b>: Haizea lurretik 180 m-ra (km/h)<br><b>120 m</b>: Haizea lurretik 120 m-ra (km/h)<br><b>80 m</b>: Haizea lurretik 80 m-ra (km/h)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>10 m</b>: Haizea lurretik 10 m-ra (km/h)<br><img src='icons/icono_racha_48x42.webp' style='width:16px;height:14px;'> : Gehienezko boladak lurretik 10 m-ra (km/h)<br><img src='icons/icono_direccion_45.webp' style='width:15px;height:15px;'> : Haizearen norabidea lurretik 10 m-ra<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><img src='icons/icono_cizalla_fiabilidad.png' style='width:30px;height:8px;'> : Behe-mailako haize-zizailadura abiaduraren arabera / Batez besteko haize-iragarpenaren fidagarritasuna<hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>Sabaia</b>: Altuera (km) itsas mailaren gainetik (MSL) hegaldi-sabai erabilgarrirako (= muga-geruzaren lodiera BLH x 0,85 + ECMWF 9km zelularen batez besteko lur-altuera)<br><b>CAPE</b>: Eskuragarri dagoen energia potentzial konbektiboa (J/kg)<br><b>CIN</b>: Inhibizio konbektiboa (J/kg balio absolutuan)<br><br><i>Oharra: Hodeien oinarriari buruzko funtsezko datuak ☁️↓ (CBH = Cloud Base Height) oraindik ez daude eskuragarri.</i><br>",
+      "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Puntuazioak (0-10)</b><br><br>Sistemak automatikoki bi puntuazio kalkulatzen ditu aireratze bakoitzeko, hautatutako ordu-tartearen arabera. Biak kolorez kodetuta daude gorritik berderako gradiente batekin.<br><br><b>1. Aireratze-baldintzak (goiko lerroa):</b><br>Aireratzeko bideragarritasuna ebaluatzen du, orduko iragarpena ⚙️ Ezarpenak atalean zehaztutako hobespenekin alderatuz:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Batez besteko haizearen mugak (gutxienekoa, ideala eta gehienezkoa).</li><li>Gehienezko boladen muga.</li><li>Aireratzearen norabidea(k).</li><li>Euria (beto automatikoa eta 0 puntu eragindako orduan).</li></ul><b>2. Termikan mantentzeko edo XC hasteko baldintzak (beko lerroa):</b><br>Aireratze-baldintzak eta distantzia luzeko hegaldietarako (Cross Country) potentzial termikoa ebaluatzen ditu ECMWF ereduaren datuak erabiliz:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Sabaia:</b> Erliebearen batez besteko altueraren gaineko sabai altuak saritzen ditu eta baxuak zigortzen ditu (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Egun urdinak edo kumulu kaltegabeak saritzen ditu, eta muturreko balioak zigortzen ditu gain-garapenagatik edo ekaitz-arriskuagatik (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Inhibizio konbektibo handia (inbertsioa) zigortzen du, estalki gisa jokatzen baitu eta eraketa termikoa oztopatzen baitu (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Oharra: XC puntuazioa aireratzearen norabidearekiko edo haizearekiko <b>independentea</b> da. Eremu horretako aire-masaren potentzial termikoa soilik ebaluatzen du. Euria edo ekaitz gogorrak iragartzen badira soilik jartzen da zeroan (0 puntu).</i><br><br>⚠️ <b>Abisua:</b> Hodeien oinarriari buruzko funtsezko datuak (CBH = Cloud Base Height) falta dira aireratzea hodeiz estalita egongo den jakiteko. Pasabidean oraindik eskuragarri ez dagoen ECMWF balio bat da (2026ko martxoan eskatua, aurreikusitako datarik gabe itxaroten). Beste zerbitzu batzuk kontsultatu behar dituzu.<br><br><b>Lehenespenez, aireratzeak automatikoki berrantolatzen dira lehen puntuazioaren arabera</b> (Aireratze-baldintzak), altuenetik baxuenera. Portaera hori alda dezakezu hemen: ⚙️ <i>Ezarpenak</i> > <i>Beste aukera batzuk</i> > <i>XC baldintzen arabera ordenatu</i>."
+    },
+    "labels": {
+      "techo": "Sabaia",
+      "cape": "CAPE",
+      "cin": "CIN"
+    },
+    "cizalladura": {
+      "baja": "Zizailadura txikia eta fidagarritasun handia",
+      "media": "Zizailadura ertaina eta fidagarritasun ertaina",
+      "alta": "Zizailadura handia eta fidagarritasun txikia",
+      "motivoBajo": "Atalaseen azpiko balioak",
+      "motivoMedio": "{{ratio}}x erlazioa > 1.5 ETA Δ {{delta}} > 8 km/h",
+      "motivoAlto": "{{ratio}}x erlazioa > 2.0 ETA Δ {{delta}} > 12 km/h"
+    },
+    "techoTooltip": "Hegaldi-sabai erabilgarria: {{altitudMSL}} m MSL\nKalkulua = {{espesorUtil}} m lodiera erabilgarria AGL ({{blh}} m BLH teorikoaren %{{pct}}) + {{elevacion}} m altuera (ECMWF 9km zelularen batez besteko lur-maila)\n",
+    "despegueTooltip": "Probintzia: {{provincia}}\nAireratzea: {{despegue}}\nNorabidea: {{orientacion}}",
+    "cargando": "Kargatzen...",
+    "cabeceraRegion": "Eskualdea",
+    "cabeceraProvincia": "Probintzia",
+    "cabeceraDespegue": "Aireratzea",
+    "viento_altura": "{{metros}} m"
+  },
+
+  "contador": {
+    "despeguesFavoritos": "<b>{{n}}</b> aireratze gogoko",
+    "despeguesFavoritosFiltrados": "<b>{{total}}</b> aireratze gogoko",
+    "despeguesDisponibles": "<b>{{n}}</b> aireratze erabilgarri",
+    "despeguesDisponiblesFiltrados": "<b>{{total}}</b> aireratze erabilgarritatik",
+    "despeguesFavoritosEdicion": "{{n}} gogoko erabilgarri dauden <b>{{total}}</b>-etatik",
+    "totalDisponibles": "Guztira dauden aireratzeak: <b>{{n}}</b>",
+    "miniTodosBD": "Datu-base osoan ikusgai dauden aireratze kopurua",
+    "miniFavoritos": "Gogoko / iragazitako aireratze kopurua"
+  },
+
+  "marcadorMasivo": {
+    "paraMarcarFavoritos": "Gogoko talde bat markatu edo desmarkatzeko, erabili aukera hau:<br>Menua ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Gogokoak]"
+  },
+
+  "guiaPrincipal": {
+    "progreso": "{{current}} / {{total}}",
+    "siguiente": "Hurrengoa →",
+    "cerrar": "Gida itxi",
+    "preguntaVerGuia": "Pantaila honetarako gida bisual bat ikusi nahi duzu?",
+    "preguntaVerGuiaPrincipal": "Pantaila nagusirako gida bisual bat<br>ikusi nahi duzu?",
+    "verEnAjustes": "Edozein unetan kontsulta dezakezu hemen:<br><i>⚙️ Ezarpenak</i> → <i>Gida</i>",
+    "podrasVerla": "Edozein unetan kontsulta dezakezu pantaila honetako <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> botoia erabiliz.",
+    "pasos": {
+      "paso1": {
+        "titulo": "🪂 Pantaila nagusia",
+        "descripcion": "Hau da aplikazioaren erabilera normalaren pantaila.<br><br>Gogoko gisa hautatu dituzun aireratze guztiak dituen taula bat erakusten du, haien iragarpenekin eta baldintzen puntuazioekin batera (aireratzeko eta XC hegaldiak hasteko).<br><br>Aireratzeak beti automatikoki ordenatzen dira aireratze-baldintzen puntuazioaren arabera (altuenetik baxuenera)."
+      },
+      "selectorHorario": {
+        "titulo": "🗓️ Ordu-tartearen hautatzailea",
+        "descripcion": "Doitu graduatzaile hau bi muturretatik interesatzen zaizun ordu-tartea hautatzeko.<br><br>Taulak ordu horiek soilik erakutsiko ditu, eta baldintzen puntuazioa denbora-tarte zehatz horretarako berriro kalkulatuko da."
+      },
+      "diasSemana": {
+        "titulo": "🗓️ Asteko egunak",
+        "descripcion": "Asteko egunetako botoi hauek egun horretako ordu-tartea hautatzea errazten dute. Hau izango da aplikazioaren erabilera tipikoa: egun horretarako 'posible' diren aireratzeei begiratu azkar bat ematea.<br><br>👉🏽 Hau adibide gisa hautatuko dut, nola funtzionatzen duen ikus dezazun."
+      },
+      "diaSeleccionado": {
+        "titulo": "🗓️ Hautatutako eguna",
+        "descripcion": "Orain, taulak egun hori bakarrik erakusten du, automatikoki hautatutako ordu-tartearekin.<br><br>💡 Graduatzaileak zure ordu-tarte zehatzera eraman ditzakezu puntuazio zehatzagoa lortzeko. Eguneroko ordu-tarte 'automatiko' hau ⚙️ Ezarpenak atalean pertsonaliza dezakezu."
+      },
+      "columnaMeteo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><span style='font-size:25px; display: block;'>🌦️</span><span>Eguraldiaren zutabea</span></div>",
+        "descripcion": "Datu meteorologikoak erakusten ditu.<br><br>Egin klik ikonoan parametro bakoitzaren esanahia ikusteko."
+      },
+      "filaCizalladura": {
+        "titulo": "🟩🟧🟥 Zizailadura / Fidagarritasuna lerroa",
+        "descripcion": "Lerro berezi hau adierazle konbinatu bat da. Kolorez kodetutako semaforo bat da, aldi berean elkarrekin erlazionatutako bi datu erakusten dituena: behe-mailako haize-zizailadura eta 10m-ko haizearen iragarpenaren fidagarritasuna."
+      },
+      "columnaPuntuacion": {
+        "titulo": "⭐ Puntuazioaren zutabea",
+        "descripcion": "Sistemak bi puntuazio (0-tik 10-era) kalkulatzen ditu aireratze bakoitzeko eta hautatutako ordu-tarterako: Aireratze-baldintzak eta Termikan mantentzeko edo Cross Country (XC) bat hasteko baldintzak.<br><br>Aireratzeak automatikoki berrantolatzen dira aireratze-baldintzen puntuazioaren arabera.<br><br>⚙️ Ezarpenak atalean, zure mugak pertsonaliza ditzakezu kalkulurako."
+      },
+      "btnInfo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Aireratzeari buruzko informazioa</span></div>",
+        "descripcion": "Aireratzeari buruzko informazio osatuagoa eta Windy, Meteo-parapente eta Meteoblue webguneetako iragarpenetarako estekak erakusten ditu."
+      },
+      "btnOrigen": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Jatorri-puntua",
+        "descripcion": "Hemen distantzia-iragazkirako jatorri-puntua aukeratzen duzu.<br><br>Puntua mapa baten laguntzaz edo zure uneko kokapena erabiliz hauta dezakezu."
+      },
+      "btnIncNoFavs": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Gogoko ez direnak sartu",
+        "descripcion": "Erabilgarri dauden aireratze guztiak (gogokoak eta gogoko ez direnak) iragazkian aldi baterako sartzeko aukera ematen dizu.<br><br>💡 Oso erabilgarria zure gogokoen eremutik kanpo dauden eremuetako hegaldien baldintzak azkar bilatzeko."
+      },
+      "btnMapa": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Aireratzeen mapa</span></div>",
+        "descripcion": "Aireratzea mapan erakusten du.<br><br>💡 Mapak informazio gehigarria, hainbat iragazki, bero-mapak eta arakatzeko moduko beste tresna erabilgarri batzuk ditu."
+      },
+      "navHome": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Hasiera</span></div>",
+        "descripcion": "Zure aireratze gogoko guztiekin taula erakusten du. Bilaketa edo iragazki aktiborik badago, garbitu egingo ditu.<br><br>💡 Galtzen bazara, erabili botoi hau ikuspegi \"normalera\" itzultzeko."
+      },
+      "navSearch": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Bilatu</span></div>",
+        "descripcion": "Erabili hau aireratzeak izenaren edo eremu administratiboaren (normalean probintzia) arabera bilatzeko. Azkarrago idazteko azenturik gabe idatz dezakezu."
+      },
+      "navDistance": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distantzia</span></div>",
+        "descripcion": "Puntu baten inguruko erradio batean aireratzeak iragazteko graduatzaile bat erakusten du.<br><br>👉🏽 Orain botoi hau sakatuko dut iragazkia irekitzeko."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distantzia</span></div>",
+        "descripcion": "Iragazki honek puntu zehatz baten inguruko aireratzeak soilik ikusteko aukera ematen dizu.<br><br>💡 Oso erabilgarria zure kokapenetik autoz joateko distantziara dauden aireratzeak azkar aurkitzeko."
+      },
+      "sliderDistancia": {
+        "titulo": "Distantziaren erradioa",
+        "descripcion": "Mugitu graduatzaile hau gehienezko distantzia aukeratzeko.<br><br>Taulak erradio horren barruan dauden aireratzeak soilik erakutsiko ditu."
+      },
+      "navMap": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
+        "descripcion": "Parapente aireratzeen mapa informazio zehatzarekin: aireratzeen bilaketa, norabidearen araberako iragazkiak, hegaldi kopurua, azken hegaldiaren urtea, batez besteko distantzia, zehaztasunez erregistratutako 1,3 milioi aireratze-puntu baino gehiagoko bero-mapa bat, eta informazio askoz gehiago."
+      },
+      "navSettings": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Ezarpenak</span></div>",
+        "descripcion": "Hemen <b>Gogokoak edita ditzakezu</b> (zure ohiko aireratzeak gehitu edo kentzeko), parametroak pertsonalizatu, aukerak aktibatu eta eguraldi datuen eguneratzeei buruzko informazioa ikusi.<br><br>💡 Aukera bakoitzak informazio-botoi bat du <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'> xehetasun gehiagorako."
+      }
+    }
+  },
+
+  "guiaFavoritos": {
+    "preguntaVerGuia": "Pantaila honetarako gida bisual bat ikusi nahi duzu?",
+    "podrasVerla": "Edozein unetan kontsulta dezakezu pantaila honetako <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> botoia erabiliz.",
+    "pasos": {
+      "intro": {
+        "titulo": "🪂 Aireratze gogokoen edizio pantaila",
+        "descripcion": "Pantaila honek erabilgarri dauden aireratze guztiak erakusten ditu. Hautatu aldian-aldian erabiltzen dituzunak. Aplikazioaren ikuspegi normalak gogoko horiek soilik erakutsiko ditu.<br><br>Guztiak hauta ditzakezu, baina zure gailuaren arabera, bilaketak eta eguneroko erabilera motel ditzake.<br><br>Gaur egun Espainia, Portugal, Pirinioak eta Alpeetako eremu nagusiak hartzen ditu barne. Hau etengabe hazten ari den proiektu bat da."
+      },
+      "celdaFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Gogokoak",
+        "descripcion": "Markatu edo desmarkatu zure gogokoak hemen.<br><br>Aldaketak automatikoki gordetzen dira."
+      },
+      "cabeceraFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Goiburuko gogokoak",
+        "descripcion": "Ikusgai dauden aireratze guztiak aldi berean markatu edo desmarkatu.<br><br>💡 Adibidea: Iragazi \"Huesca\"-ren arabera eta markatu guztiak. Edo iragazi distantziaren arabera eta markatu 50 km-ko erradioan dauden guztiak."
+      },
+      "btnInfoDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/info.svg\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Aireratzeari buruzko informazioa</span></div>",
+        "descripcion": "Aireratzeari buruzko informazio zehatza eta beste webgune batzuetako iragarpenetarako estekak erakusten ditu."
+      },
+      "btnMapaDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"><polygon points=\"1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6\"></polygon><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"18\"></line><line x1=\"16\" y1=\"6\" x2=\"16\" y2=\"22\"></line></svg><span>Aireratzeen mapa</span></div>",
+        "descripcion": "Aireratzea mapan erakusten du.<br><br>💡 Mapak aireratzeari buruzko informazio gehigarria, hainbat iragazki, aireratzeen bero-mapak eta arakatzea merezi duten tresna erabilgarri batzuk ditu."
+      },
+      "buscador": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg><span>Bilatu</span></div>",
+        "descripcion": "Bilatu aireratzeak eskualdea, probintzia edo izena idatziz. Azkarrago idazteko azenturik gabe idatz dezakezu."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distantzia</span></div>",
+        "descripcion": "Hau iragazki bat da, puntu zehatz baten inguruko aireratzeak soilik bistaratzeko aukera ematen dizuna.<br><br>💡 Honek puntu baten inguruan zuk aukeratutako distantzia-erradio batean dauden aireratzeak azkar aurkitzen lagun diezazuke."
+      },
+      "btnOrigen": {
+        "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Jatorri-puntua",
+        "descripcion": "Hemen goiko distantzia-iragazkirako jatorri-puntua aukeratzen duzu.<br><br>Puntua mapa baten laguntzaz edo zure uneko kokapena erabiliz hauta dezakezu."
+      },
+      "sliderDistancia": {
+        "titulo": "Punturako distantzia",
+        "descripcion": "Graduatzaile hau mugituz, gehienezko distantzia kilometrotan aukeratzen duzu."
+      },
+      "btnVerSoloFavs": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Gogokoak bakarrik erakutsi",
+        "descripcion": "Zure gogokoak bakarrik edo aireratze guztiak erakustearen artean txandakatu.<br><br>💡 Oso erabilgarria hautatutako gogokoak begirada batean egiaztatzeko."
+      },
+      "btnDesmarcarTodos": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z\"></path><line x1=\"5\" y1=\"5\" x2=\"19\" y2=\"19\" stroke=\"red\" stroke-width=\"3\"></line></svg><span>Gogoko guztien markaketa kendu</span></div>",
+        "descripcion": "Kendu aireratze guztiak zure gogokoen zerrendatik aldi berean."
+      },
+      "btnImportar": {
+        "titulo": "📂 Gogokoak inportatu",
+        "descripcion": "Ireki gogoko aireratzeak dituen fitxategi bat."
+      },
+      "btnExportar": {
+        "titulo": "💾 Gogokoak esportatu",
+        "descripcion": "Zure egungo gogoko aireratzeekin fitxategi bat gordetzen du.<br><br>Oharra: Gogokoak automatikoki gordetzen dira bat markatzen duzun bakoitzean. Botoi hau guztien kopia bat kanpoko fitxategi batean egiteko erabiltzen da (babeskopia gisa edo partekatzeko). <br><br>💡 Urrutiko hainbat hegaldi-eremutara bidaiatzen baduzu, baliteke eremu bakoitzeko gogokoak fitxategi ezberdinetan gorde nahi izatea."
+      },
+      "btnGuiaEdicion": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/icono_ayuda_60.webp\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Gida azkarra</span></div>",
+        "descripcion": "Gida hau berriro erakusten du."
+      },
+      "btnFinalizar": {
+        "titulo": "🏁 Edizioa amaitu",
+        "descripcion": "Irten pantaila nagusira hautatutako gogokoen iragarpena ikusteko."
+      }
+    }
+  },
+
+  "asistente": {
+    "paso1": {
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Non hegan egin?</p><p>🌦️ 4 eguneko orduko iragarpena.</p><p>📊 Baldintzen ebaluazio automatizatua Aireratzerako eta XC-rako.</p><p>🗺️ Aireratzeen mapa.</p>",
+      "btnPrimario": "Hautatu gogokoak",
+      "btnSecundario": "Ikusi gida orokorra",
+      "btnImportar": "Inportatu ezarpenak"
+    },
+    "paso2": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Parapenterako eguraldi iragarpenaren analisi automatizatua.</p><p>🙄 <b>Zertarako balio du?:</b> non hegan egin erabakitzen laguntzeko. Zure aireratze gogokoen taula bat erakusten du, haien iragarpenekin, eta <b>eguraldi baldintza</b> horien analisi automatizatua egiten du.</p><p>🧮 <b>Zer analisi egiten du?:</b> iragarpena zuk konfiguratutako batez besteko haizearen eta gehienezko boladen mugekin eta aireratze bakoitzaren norabidearekin alderatzen du; aireratzetik gertu dauden altueretako haizea ere aztertzen du (80, 120 eta 180 m), haize-gradientearen eta iragarpenaren fidagarritasunaren ikuspegia emanez. XC datu gakoak erakusten ditu (sabaia, CAPE eta CIN).</p><p>Informazio honekin guztiarekin, aireratze bakoitza 0-tik 10-era puntuatzen du eta kolorez kodetzen ditu 🟩&nbsp;🟨&nbsp;🟥 datuak zuk aukeratutako ordu-tarterako. Muga guztiak pertsonaliza ditzakezu zure hobespenetara egokitzeko.</p>"
+    },
+    "paso3": {
+      "html": "<p>💨️ <b>Eguraldi datuak:</b> orduko iragarpena 4 egunetarako (96 ordu). Egunean 8 aldiz eguneratzen da Météo-France-ren Arome-HD 1.3km (0-48 ordu) eta Arpege 7km (48-96 ordu) ereduen datu ofizialekin, eta egunean 4 aldiz ECMWF datuekin (0-96 ordu).</p><p>🆓 <b>Kostua eta pribatutasuna:</b> %100 doakoa, harpidetzarik gabe, iragarkirik gabe eta jarraipenik gabe (cookieak, telemetria...). Zure ezarpenak modu pribatuan gordetzen dira zure nabigatzailean. Proiektu libre eta irekia da, 2026tik martxan eta garatzen.</p>"
+    },
+    "paso4": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🤔 Konplikatua al da?</p><p>✅ <b>Oinarrizko erabilera</b>: hautatu zure aireratze gogokoak lehenengo aldian eta beti izango duzu haien iragarpenen taula eta egun bakoitzeko analisi automatizatua.</p><p>✅ <b>Erabilera ertaina</b>: ordu-tarte bat (egunak edo orduak) hauta dezakezu eta tarte horretako baldintzen puntuazio automatikoa ikusi. Aireratzeak distantzia-erradioaren arabera iragazi ditzakezu zure etxetik edo edozein kokapenetatik.</p><p>✅ <b>Erabilera aurreratua</b>: ⚙️ <i>Ezarpenak</i> atalean batez besteko haizerako (gutxienekoa, ideala eta gehienezkoa) eta gehienezko boladetarako lehenetsitako mugak pertsonaliza ditzakezu. Zure hobespenak baldintzen analisirako, koloreztatzeko eta puntuatzeko erabiliko dira.</p>"
+    },
+    "paso5": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>️👉 Kontuan izan...</p><p>👉 Aireratze gogokoak soilik erakusten dira. Guztiak hauta ditzakezu, baina gailu batzuetan aplikazioa moteldu dezake.</p><p>👉️ Ordenazioa automatikoa da puntuazioaren arabera (10-etik 0-ra).</p><p>👉️ Hodeien oinarriaren (CBH) datuak hornitzailearen zain daude une honetan. Hegaldia egin aurretik, egiaztatu beti iturri anitzak.</p><p>👉️ Estaldura: Espainia, Portugal, Pirinioak eta Alpeak (Frantziakoak, Suitzakoak, Italiakoak).</p>"
+    },
+    "paso6": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>👍 Eta orain zer?</p><p>Zure aireratze gogokoak markatu behar dituzu.</p>",
+      "btnPrimario": "Hautatu gogokoak →",
+      "btnSecundario": "←"
+    }
+  },
+
+  "origen": {
+    "avisoInicialHtml": "<div style='text-align: center;'><p style='font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></p><p>Jatorri-puntu bat ezarri behar duzu lehenengo aldian.</p><p>Edozein unetan alda dezakezu botoia erabiliz <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span></p></div>",
+    "configurarPrimero": "Lehenik jatorri-puntu bat ezarri behar duzu.",
+    "podrasCambiar": "Edozein unetan alda dezakezu botoia erabiliz"
+  },
+
+  "actualizacion": {
+    "cargando": "Kargatzen...",
+    "esperando": "🔄 Hurrengoa: <span style='color:#e39300; font-weight:bold;'>Itxaroten...⌛</span>",
+    "proximaEn": "🔄 Hurrengoa: <b>{{tiempo}}</b>",
+    "horas": "~{{h}} ordu {{m}} min",
+    "minutos": "~{{m}} min",
+    "sinConexion": "⚠️ Interneteko konexiorik ez. Datuen adina: {{tiempo}}.",
+    "hace": "Duela <b>{{tiempo}}</b>",
+    "esperandoPrimerDato": "Lehenengo datuen zain...",
+    "avisoModelos": {
+      "viento": "Haizea (Météo-France: Arome-HD eta Arpege)",
+      "general": "Eguraldi orokorra eta XC baldintza termikoak (ECMWF)"
+    },
+    "avisoNuevoMeteo": "<p>ℹ️ Eguraldi datu berriak eskuragarri honetarako:</p><p><b>{{modelos}}</b></p><p>Orain eguneratu?</p>"
+  },
+
+  "ajustes": {
+    "probPrecipitacion": "Prezipitazio probabilitatea",
+    "vientoAlturas": "Haizea 80, 120 eta 180 m-tan",    
+    "cizalladura_fiabilidad": "Haize-zizailadura / Fidagarritasuna",
+    "XC": "XC: MSL Sabaia, CAPE eta CIN",
+    "horarioVueloPref": "Hegaldi-ordutegi hobetsia",
+    "solo_horas_diurnas": "Eguneko orduak soilik",
+    "ordenar_xc": "Ordenatu XC baldintzen arabera",
+    "titulo": "Ezarpenak",
+    "editarFavoritos": "Editatu gogokoak",
+    "importarConfig": "Inportatu ezarpenak eta gogokoak",
+    "exportarConfig": "Esportatu ezarpenak eta gogokoak",
+    "restablecerConfig": "Berrezarri ezarpenak (konfigurazio eta gogoko guztiak ezabatzen ditu)",
+    "viento": "Haizea",
+    "rachaMaxima": "Gehienezko boladak",
+    "acordeon": {
+      "vientoRacha": "Haizearen eta boladen mugak",
+      "datosOpcionales": "Aukerako eguraldi datuak",
+      "otrasOpciones": "Beste aukera batzuk",
+      "sobreActualizacion": "Eguraldi ereduen eguneratzeak"
+    },
+    "guia": "Gida",
+    "ayuda": "Laguntza",
+    "legal": "Legezkoa",
+    "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ KONTUZ:</b> Konfigurazio-fitxategi bat inportatzeak zure uneko ezarpen eta aireratze gogoko guztiak ordezkatuko ditu.</b></p>",
+    "importadoConfigOk": "✅ Konfigurazioa inportatu da",
+    "errorArchivoConfig": "⚠️ Badirudi fitxategia ez dela baliozko Fly Decision babeskopia bat.",
+    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ KONTUZ:</b> Ekintza honek konfigurazioa jatorrizko ezarpenetara berrezarriko du eta aireratze gogoko guztien markaketa kenduko du.</p></div>"
+  },
+
+  "mapa": {
+    "seleccionarOrigen": "Hautatu jatorria",
+    "miUbicacion": "Nire kokapena",
+    "irMiUbicacion": "Joan nire kokapenera",
+    "buscadorPlaceholder": "Bilatu lekua edo koordenatuak...",
+    "buscadorTitulo": "Bilaketa orokorra (lekuak eta koordenatuak)",
+    "ajustes": "Ezarpenak",
+    "capasYFiltros": "Geruzak eta Iragazkiak",
+    "capas": "Geruzak:",
+    "orientacion": "Norabidea:",
+    "cerrarPanel": "Itxi panela",
+    "fijarPanel": "Finkatu panela (ez ezkutatu mapa mugitzean)",
+    "masInformacion": "Informazio gehiago ▼",
+    "volverEdicion": "Itzuli Gogokoen Ediziora",
+    "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Hemen zaude&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "capasCheckbox": {
+      "despegues": "🪂 Aireratzeak",
+      "mapaCalorPeninsula": "🔥 Iberiar Penintsulako Bero Mapa",
+      "mapaCalorAlpes": "🔥 Alpeetako Bero Mapa",
+      "mapaCalorMarruecos": "🔥 Marokoko Bero Mapa",
+      "notas": "✏️ Oharrak",
+      "despeguesMundo": "🪂 Paraglidingearth Aireratzeak"
+    },
+    "cargandoCalorPeninsula": "⏳ Iberiar Penintsulako Bero Mapa kargatzen...<br><br>(309.157 aireratze erregistratuta)",
+    "cargandoCalorAlpes": "⏳ Alpeetako Bero Mapa kargatzen...<br><br>(967.477 aireratze erregistratuta)",
+    "cargandoCalorMarruecos": "⏳ Marokoko Bero Mapa kargatzen...<br><br>(11.006 aireratze erregistratuta)",
+    "errorCSV": "Errorea CSV-a kargatzean. Egiaztatu kontsola xehetasunetarako.",
+    "errorCSVAlpes": "Errorea Alpeetako CSV fitxategia kargatzean.",
+    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} XContest Aireratze</b>",
+    "despegueXContest": "🪂<br>XContest Aireratzea",
+    "coordenadasMedias": "Batez besteko koordenatuak:",
+    "coordenadas": "Koordenatuak:",
+    "fecha": "Data:",
+    "hora": "Ordua:",
+    "distanciaRecorrida": "Egindako distantzia:",
+    "vuelos": "XContest hegaldiak:",
+    "vueloXContest": "🔍 Ikusi XContest Hegaldia",
+    "orientacionLabel": "Norabidea:",
+    "grupoXContestTitle": "XContest-en erregistratutako {{count}} aireratzez osatutako taldea",
+    "nVuelosXContest": "XContest hegaldi kopurua:",
+    "minVuelosTexto": "Gutxienezko erregistratutako hegaldiak = ",
+    "anioUltimoVueloTexto": "Azken hegaldiaren urtea >= ",
+    "minKmMediaTexto": "Gutxienezko batez besteko distantzia egina = ",
+    "todos": "Guztiak",
+    "titleBuscadorDespegue": "Bilatu aireratzea izenaren arabera",
+    "buscadorDespegue": "🔍 Aireratzea",
+    "labelOrientacion": "Norabidea:",
+    "labelCoordenadas": "Koordenatuak:",
+    "labelAltitud": "Gutxi gorabeherako altuera:",
+    "labelActividad": "Jarduera maila:",
+    "labelVuelos": "XContest hegaldi kopurua:",
+    "labelKmMedia": "Batez besteko distantzia (km):",
+    "labelMasInfo": "Informazio gehiago:",
+
+    "capasBase": {
+      "esriTopo": "ESRI World Topographic",
+      "esriOrto": "ESRI World Imagery",
+      "osmOpenTopo": "OpenStreetMap OpenTopoMap estiloa",
+      "osmCyclOSM": "OpenStreetMap CyclOSM estiloa",
+      "thunderforest": "Thunderforest Outdoors",
+      "ignTopo": "IGN Espainia Topografikoa",
+      "ignClaro": "IGN Espainia Topografikoa (Argia)",
+      "ignOrto": "IGN Espainia Satelitea",
+      "osmStandard": "OpenStreetMap estilo estandarra",
+      "hipsometrico": "Erliebe Hipsometrikoa",
+      "tracestrack": "Tracestrack Topo",
+      "icgc": "ICGC Katalunia",
+      "esriSkyways": "ESRI Topo + Skyways (KK7)",
+      "esriThermals": "ESRI Topo + Termikak (KK7)",
+      "esriAll": "ESRI Topo + Skyways+Termikak (KK7)"
+    }
+  },
+
+  "popupDespegue": {
+    "region": "Eskualdea:",
+    "provincia": "Probintzia:",
+    "orientacion": "Norabidea:",
+    "nivelActividad": "Jarduera maila:",
+    "nivelActividadTitle": "Gunearen jarduera azken hegaldiaren datan oinarrituta (erref: 2025eko aza.): Berdea 0-6 hilabete, Laranja 6-12, Horia 12-24, Zuria >24 hilabete hegaldirik gabe"
+  },
+
+  "html": {
+    "distanciaDesde": "Distantzia hemendik:",
+    "seleccionarOrigen": "Hautatu jatorria",
+    "incluirNoFavs": "Sartu gogoko ez direnak iragazkian",
+    "resetFiltroDistancia": "Berrezarri eta ezkutatu distantziaren iragazkia",
+    "finalizarEdicion": "Amaitu aireratze gogokoen edizioa",
+    "finalizarEdicionTitle": "Amaitu aireratze gogokoen edizioa",
+    "verSoloFavoritos": "Ikusi nire gogokoak soilik",
+    "desmarcarFavoritosTitle": "Gogoko guztien markaketa kendu",
+    "importarFavoritos": "Inportatu gogokoak",
+    "exportarFavoritos": "Esportatu gogokoak",
+    "guiaEdicionTitle": "Aireratze gogokoak editatzeko pantailaren gida",
+    "esperandoConexion": "Konexioaren zain..."
+  },
+
+  "crash": {
+    "errorCarga": "<div style='text-align: center;'><p>ℹ️ Errorea taula kargatzean.</p><p>Kausa posiblea: <b>gogoko gehiegi</b> zure gailuaren baliabideetarako.</p><p>Gogokoak Editatzeko pantaila irekiko da batzuk desmarkatu eta karga murriztu ahal izateko.</p><p>Aldi baterakoa dela uste baduzu: sakatu <b><i>Amaitu edizioa</i></b>, berrabiarazi gailua eta saiatu berriro.</p></div>",
+    "alertFallback": "Aplikazioak arazoak ditu kargatzeko. Gogokoen editorea aktibatu da aireratze kopurua murrizteko."
+  },
+
+  "salirApp": {
+    "pregunta": "Aplikaziotik irten nahi duzu?",
+    "no": "Ez",
+    "si": "Bai, irten"
+  },
+
+  "novedadesXC": {
+    "titulo": "ℹ️ XC Datuen Berritasunak",
+    "html": "<div style='text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;'><ul style='padding-left: 20px; margin-top: 5px; margin-bottom: 5px;'><li style='margin-bottom: 6px;'><b>XC Puntuazio Independentea:</b> Potentzial termikoa soilik ebaluatzen du (Sabaia, CAPE, CIN) aireratze-haizea alde batera utziz. Euria edo ekaitz arriskua badago soilik puntuatzen du 0.</li><li style='margin-bottom: 6px;'><b>Sabaia Altueran (MSL):</b> Orain itsas mailaren gaineko altuera erakusten du, distantziak planifikatzeko zehaztasun hobea eskainiz.</li><li><b>Sabai Errealista:</b> Iragarpena %15 murrizten da parapentearen hondoratze-tasa konpentsatzeko.</li></ul><p style='margin-top: 10px; font-size: 0.9em;'>💡 <i>Xehetasun gehiago taulako 🌦️ edo ⭐ ikonoetan klik eginez.</i></p></div>"
+  },
+
+  "orientaciones": {
+    "N": "I",
+    "NNE": "IIE",
+    "NE": "IE",
+    "ENE": "EIE",
+    "E": "E",
+    "ESE": "EHE",
+    "SE": "HE",
+    "SSE": "HHE",
+    "S": "H",
+    "SSO": "HHM",
+    "SO": "HM",
+    "OSO": "MHM",
+    "O": "M",
+    "ONO": "MIM",
+    "NO": "IM",
+    "NNO": "IIM",
+    "norte": "Iparra",
+    "nornoreste": "Ipar-ipar-ekialdea",
+    "noreste": "Ipar-ekialdea",
+    "estenoreste": "Ekialde-ipar-ekialdea",
+    "este": "Ekialdea",
+    "estesureste": "Ekialde-hego-ekialdea",
+    "sureste": "Hego-ekialdea",
+    "sursureste": "Hego-hego-ekialdea",
+    "sur": "Hegoa",
+    "sursuroeste": "Hego-hego-mendebaldea",
+    "suroeste": "Hego-mendebaldea",
+    "oestesuroeste": "Mendebalde-hego-mendebaldea",
+    "oeste": "Mendebaldea",
+    "oestenoroeste": "Mendebalde-ipar-mendebaldea",
+    "noroeste": "Ipar-mendebaldea",
+    "nornoroeste": "Ipar-ipar-mendebaldea",
+    "todos_title": "Norabide-iragazkiak aktibo daude. Egin klik guztiak garbitzeko."
+  },
+
+  "cron": {
+    "Actualización en curso... ⏳": "Eguneratzea abian... ⏳"
+  },
+
+  "btn_info": {
+    "tooltipVientoLimites": "<b>Gutxieneko batez besteko haizea, ideala eta gehienezkoa:</b><br><br>Baldintzen ebaluazio automatizatuko sistemak balio horiek kontuan hartuko ditu.<br><br>Taulako datuen koloreak baldintzen analisia ikusmenean adierazten du, hemen ezartzen dituzun balioetan oinarrituta (Gutxienekoa, Ideala eta Gehienezkoa).<br><br>🟧 Laranja: haize ahula zure Gutxieneko haizearen azpitik (normalean 0, hegaldi dinamikorako edo beste arrazoi batzuengatik haize zehatz bat behar ez baduzu behintzat).<br>🟩 Berdea: Haize ideala, gutxienekotik gehienezkoaren aurreko segurtasun marjinaraino.<br>🟧 Laranja: gehienezko mugara hurbiltzen ari den haize indartsuagoa (gehienezko mugara iritsi aurreko azken herena).<br>🟥 Gorria: zure Gehienezko haizearen muga gainditzen duen haize oso indartsua.<br><br><b>WMOren (Munduko Erakunde Meteorologikoa) 10 metroko batez besteko abiaduraren definizio tekniko estandarra</b>:<br><br>Adierazitako orduaren aurreko azken 10 minutuetan mantendutako batez besteko haizearen abiadura da. Lurretik 10 metroko altuera estandarrean neurtzen da (lurzoruarekiko berehalako marruskadura saihesteko). Fluxu laminarra edo oinarrizkoa irudikatzen du.",
+    "filtroDistanciaCompleto": "<b>Aireratzeen distantziaren iragazkia:</b><br><br>Hautatzen duzun distantzia-erradioaren barruan dauden aireratzeak soilik erakusten ditu.<br><br>Erabili <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> botoia jatorriaren posizioa ezartzeko. Mapa edo zure gailuaren uneko kokapena erabil dezakezu.<span class='texto-oculto-en-edicion'><br><br>Erabili <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> botoia iragazkian gogoko ez diren aireratzeak sartzeko, hau da, datu-basean dauden <b>aireratze guztiak aldi baterako sartzeko</b>.<br><br>Aktibatuta dagoenean, hasierako 100 km-ko iragazki bat aplikatzen da taula ez gainkargatzeko. Zure beharren eta gailuaren errendimenduaren arabera doi dezakezu.</span>",
+    "tooltipRachaMaxima": "<b>Gehienezko bolada:</b><br><br>Baldintzen ebaluazio automatizatuko sistemak balio horiek kontuan hartuko ditu.<br><br>Taulako datuen koloreak baldintzen analisia ikusmenean adierazten du, hemen ezartzen duzun balioan oinarrituta.<br><br>🟩 Berdea: gehienezko bolada segurua, mugatik urrun.<br>🟧 Laranja: gehienezko bolada zure Gehienezko boladaren mugara hurbiltzen.<br>🟥 Gorria: zure Gehienezko boladaren muga gainditzen duen bolada.<br><br><b>WMOren (Munduko Erakunde Meteorologikoa) 10 metroko gehienezko boladaren definizio tekniko estandarra</b>:<br><br>Aurreko orduko epean edonoiz erregistratutako bat-bateko abiaduraren (3 segundoko iraupenekoa) gehienezko gailurra da. Batez besteko haizeari gainjartzen zaizkion gorabehera labur eta intentsiboak irudikatzen ditu, turbulentzia mekaniko edo termikoarekin (konbekzioarekin) erlazionatuta.",
+    "tooltipProbPrecipitacion": "<b>Prezipitazio probabilitatea (%)</b><br><br>Prezipitazioak 0,1 mm (litro/m²) gainditzeko probabilitatea (%).<br><br>ECMWF ereduaren jatorrizko datuak.",
+    "tooltipVientoAlturas": "<b>Haizea 80, 120 eta 180 m-tan (km/h)</b><br><br>3 lerro erakusten ditu lurretik 80, 120 eta 180 m-ko batez besteko haize-abiaduraren iragarpenekin. 3 lerro hauek 10 m-ko batez besteko haize-abiaduraren lerro estandarraren gainean erakusten dira.<br><br>Balio hauek zizailadura-turbulentziaren gradua eta batez besteko haize-iragarpenaren fidagarritasuna ebaluatzeko aukera ematen dute.<br><br>Arome/Arpege ereduaren (Météo-France) jatorrizko datuak.",
+    "tooltipCizalladura": "<b>Haize-zizailadura / Fidagarritasuna</b><br><br>Norabidearen lerroaren azpian lerro mehe bat erakusten du, kalkulatutako balio batekin: Behe-mailako haize-zizailaduraren (LLWS) maila eta 10 m-ko batez besteko haizearen iragarpenaren Fidagarritasun gradua.<br><br>Sistemak lurretik 10, 80, 120 eta 180 m-ko batez besteko haize-balioak aztertzen ditu eta, algoritmo baten bidez, kolorez kodetutako adierazle bat erakusten du.<br><br>🟩 Berdea: Haize-zizailadura txikia abiaduragatik eta 10 m-ko abiadura-iragarpenaren fidagarritasun handia.<br>🟧 Laranja: Zizailadura eta fidagarritasun balio ertainak.<br>🟥 Gorria: Haize-zizailadura handia abiaduragatik eta 10 m-ko abiadura-iragarpenaren fidagarritasun txikia.<br><br>Zizailadura hau lurretik gertu abiadura-gradiente handia dagoenean gertatzen da. Maila hau ere lurretik 10 m-ko haizearen abiaduraren fidagarritasunarekin erlazionatuta dago.<br><br>Arrazoia da aire-masa antzeko abiaduretan mugitzen bada, abiadurak eragindako zizailadura-turbulentziaren maila txikia izango dela, eta lur mailako haizearen iragarpena fidagarriagoa izango dela, eta alderantziz.",
+    "tooltipXC": "<b>XC: MSL Sabaia, CAPE, CIN</b><br><br>Distantzia luzeko hegaldiari (Cross Country / XC) bideratutako datuak dituzten 3 lerroko talde bat erakusten du:<ul><li><b>MSL Hegaldi Sabaia (km):</b> Muga-geruzaren (BLH) gehienezko altuera</li><li><b>CAPE (J/kg):</b> Eskuragarri dagoen energia potentzial konbektiboa</li><li><b>CIN (J/kg):</b> Inhibizio konbektiboa</li></ul>ECMWF ereduaren jatorrizko datuak.",
+    "tooltipHorarioVuelo": "<b>Hegaldi-ordutegi hobetsia:</b><br><br>Hemen konfiguratutako balioek taularen gainean dagoen ordu-tartearen hautatzailean asteko egun bat (astelehena, asteartea, etab.) aukeratzean hasiera- eta amaiera-ordu horiek automatikoki hautatzea eragingo dute.<br><br>Ordu-tartearen hautatzailea eskuz doitu dezakezu beti; ezarpen hau ordu-tarte tipiko baten hautaketa automatikoa errazteko automatizazio bat besterik ez da.<br><br>Eskuz edo automatikoki egin, azken hautatutako ordu-tartea bakarrik hartzen da kontuan <i>Baldintzak</i> puntuazioaren kalkulurako; horrela, aireratze bakoitzaren puntuazioa errealistagoa izango da tarte zehatz horretarako.<br><br><i>Eguneko orduak soilik</i> aukera aktibatuta badago, ezarpen honekin automatikoki hautatutako tartea eguneko argiaren mugen barruan mantentzeko doituko da.",
+    "tooltipHorasDiurnas": "<b>Eguneko orduak soilik</b><br><br>Eguneko orduak soilik erakusten ditu. Desaktibatuta badago, eguneko 24 orduak erakutsiko dira.<br><br>Egunsentian eta ilunabarrean ±1 orduko marjina sartzen da.<br><br>Hilabetero automatikoki aldatzen da. Horrez gain, ordu-aldaketak dauden hiletan, ordu horiek ordu-aldaketa ofizialera (DST) egokituko dira automatikoki.",
+    "tooltipOrdenarXC": "<b>Ordenatu XC baldintzen arabera:</b><br><br>Lehenespenez, aireratzeak onenetik okerrenera ordenatzen dira <i>Aireratze-baldintzen</i> puntuazioaren arabera (aireratzeko bideragarritasuna haizearen arabera).<br><br>Aukera hau aktibatzen baduzu, taula <b>XC Baldintzen</b> puntuaziorik onenetik okerrenera ordenatuko da (aire-masaren potentzial termikoa), aireratze horretan haizea ideala den ala ez kontuan hartu gabe.",
+    "tooltipModelosMeteo": "<b>Eguraldi ereduak:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: lehenengo 0-48 orduetako haize-datuetarako. Europa ia osoa hartzen du, Iberiar Penintsula barne, Andaluzia hegoaldea izan ezik (Arpege Europe 7km 0-96h erabiltzen da eremu horretan).</li><li><b>Météo-France Arpege Europe 7km</b>: hurrengo 48-96 orduetako haize-datuetarako. Europa eta Ipar Afrika hartzen ditu.</li><li><b>ECMWF IFS HRES 9km</b>: gainerako eguraldi datuetarako 0-96 orduetan. Mundu osoa hartzen du.</li></ul><b>Eguneratze automatikoaren maiztasuna:</b> Météo-France 3 orduz behin gutxi gorabehera (egunean 8 aldiz) eta ECMWF 6 orduz behin gutxi gorabehera (egunean 4 aldiz).<br><br><b>Eguraldi datuen pasabidea:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br><i>Ref.HHZ</i> balioak ereduak jatorrizko eguraldi-zerbitzarian izandako azken exekuzio-zikloari dagokion UTC±0 (Z) ordua adierazten du. Une horretatik aurrera, hainbat orduko kalkulu konputazionala dago behin betiko banaketaren eta erabilgarritasun publikoaren aurretik.<br><br>"
+  }
+
+}

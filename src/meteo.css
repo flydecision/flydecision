@@ -2764,6 +2764,32 @@ h3 {
     margin-bottom: 6px;
 }
 
+/* Unificar el estilo del cuadro de búsqueda de despegues con el de capas y filtros */
+.leaflet-text-search-container {
+    /* Forzamos el mismo borde que tiene el .info-panel */
+    border: 2px solid rgba(0, 0, 0, 0.2) !important;
+    border-radius: 4px !important;
+    
+    /* Evitamos que la clase 'leaflet-bar' herede estilos que cortan el borde inferior */
+    background-clip: padding-box;
+    
+    /* Aseguramos que el fondo sea blanco puro */
+    background-color: #ffffff;
+    
+    /* Ajuste de altura para que coincida visualmente */
+    height: 30px !important; 
+    display: flex;
+    align-items: center;
+}
+
+/* Ajuste del input interno para que no pise el nuevo borde */
+.leaflet-text-search-input {
+    border: none !important;
+    height: 100% !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
 /* ==========================================================================
    🗺️ BOTÓN CERRAR (X) POPUPS DEL MAPA (Mismo estilo que Tippy)
    ========================================================================== */
