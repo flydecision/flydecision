@@ -1,0 +1,560 @@
+{
+  "_meta": {
+    "_nota": "Ficheiro de tradução base — Português. Gerado a partir da análise de meteo.js e index.html.",
+    "_version": "1.0.0"
+  },
+
+  "menu": {
+    "inicio": "Início",
+    "buscar": "Procurar",
+    "distancia": "Distância",
+    "mapa": "Mapa",
+    "ajustes": "Definições"
+  },
+
+  "botones": {
+    "aceptar": "OK",
+    "cancelar": "Cancelar",
+    "siguiente": "Seguinte",
+    "siguienteFlecha": "Seguinte →",
+    "finalizar": "Concluir",
+    "verGuia": "Ver guia",
+    "noGracias": "Não, obrigado",
+    "siMarcar": "Sim, marcar",
+    "siDesmarcar": "Sim, desmarcar",
+    "siSalir": "Sim, sair",
+    "no": "Não",
+    "configurarOrigen": "Configurar origem",
+    "marcarFavoritos": "Marcar favoritos",
+    "verGuiaGeneral": "Ver guia geral",
+    "importarConfiguracion": "Importar configuração",
+    "marcarFavoritosFlecha": "Marcar favoritos →",
+    "entendido": "Entendido"
+  },
+
+  "dias": {
+    "domingo": "Domingo",
+    "lunes": "Segunda-feira",
+    "martes": "Terça-feira",
+    "miercoles": "Quarta-feira",
+    "jueves": "Quinta-feira",
+    "viernes": "Sexta-feira",
+    "sabado": "Sábado",
+    "dom": "Dom",
+    "lun": "Seg",
+    "mar": "Ter",
+    "mie": "Qua",
+    "jue": "Qui",
+    "vie": "Sex",
+    "sab": "Sáb"
+  },
+
+  "gps": {
+    "buscando": "⏳ A procurar...",
+    "errorUbicacion": "Não foi possível obter a localização.",
+    "activaGps": "Certifique-se de que o GPS está ativado.",
+    "revisaPermisos": "Verifique as permissões.",
+    "noSoportado": "O seu navegador não suporta GPS."
+  },
+
+  "buscador": {
+    "placeholder": "🔍 Procurar descolagem ou província...",
+    "placeholderEdicion": "🔍 Procurar região, província ou descolagem...",
+    "sugerenciaTitulo": "💡 Não foram encontrados favoritos para * <b>{{termino}}</b> *, mas estes estão disponíveis na base de dados:",
+    "anadirFavorito": "+ Adicionar aos favoritos"
+  },
+
+  "favoritos": {
+    "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorito",
+    "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoritos",
+    "anadirAFavoritos": "Adicionar aos favoritos",
+    "quitarDeFavoritos": "Remover dos favoritos",
+    "despegueFavorito": "Descolagem favorita",
+    "marcarTodos": "Marcar todas as descolagens visíveis como favoritas",
+    "desmarcarTodos": "Desmarcar todas as descolagens visíveis como favoritas",
+    "marcardesmarcarCabecera": "Marcar ou desmarcar como favoritas todas as descolagens atualmente visíveis na tabela",
+    "noHayParaDesmarcar": "Não há descolagens favoritas para desmarcar",
+    "noHayParaExportar": "Não há descolagens favoritas para exportar",
+    "noTienesFavoritos": "<p>Não há descolagens marcadas como favoritas ♥️</p>",
+    "necesarioMarcarUno": "<p>É necessária pelo menos uma descolagem favorita ♥️</p><p>Se desejar, pode consultar o guia rápido deste ecrã utilizando o botão <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guia'>.</p>",
+    "confirmacionMasiva": "Deseja marcar <span style='font-weight:bold;'>{{cantidad}}</span> descolagens como favoritas?",
+    "confirmarDesmarcarTodos": "Deseja desmarcar todos os seus favoritos?",
+    "anadidoOk": "✅ <b>{{nombre}}</b> adicionado",
+    "importadosOk": "✅ Foram importadas {{n}} descolagens favoritas",
+    "archivoVacio": "⚠️ O ficheiro estava vazio.",
+    "errorArchivo": "⚠️ Erro ao processar o ficheiro.",
+    "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENÇÃO:</b> Importar favoritos irá substituir os atuais.</b><br><br>Se deseja mantê-los, cancele esta mensagem e utilize o botão 💾 <i>Exportar favoritos</i>.</p>",
+    "exportar": {
+      "tituloDialog": "💾 Exportar favoritos",
+      "mensajeDialog": "\nAltere o nome do ficheiro ou aceite este:",
+      "guardar": "Guardar",
+      "cancelar": "Cancelar",
+      "okTitulo": "✅ Favoritos guardados com sucesso",
+      "okTextoShare": "Aqui estão as minhas descolagens favoritas do Fly Decision:",
+      "okMensaje": "Deseja partilhá-los agora?",
+      "siCompartir": "Sim, partilhar",
+      "noCompartir": "Não",
+      "tituloShare": "As minhas descolagens favoritas do Fly Decision",
+      "textoShare": "Aqui estão as minhas descolagens favoritas:",
+      "dialogTitle": "Partilhar com...",
+      "errorShare": "Não foi possível abrir o menu de partilha. Por favor, tente outro método.",
+      "sinShare": "O seu dispositivo não permite a partilha direta de ficheiros. Certifique-se de que tem o Telegram instalado.",
+      "errorGuardar": "Ups, algo correu mal: "
+    }
+  },
+
+  "tabla": {
+    "tooltips": {
+      "meteoGeneral": "Meteo geral (chuva / cobertura total de nuvens)",
+      "precipitacion": "Precipitação em mm (litros/m²)",
+      "probPrecipitacion": "Probabilidade (%) de precipitação superior a 0,1 mm (litros/m²)",
+      "baseNube": "Base das nuvens AGL (km): Altura estimada da base das nuvens acima do solo. Calculada a partir da temperatura a 2m e do ponto de orvalho a 2m.",
+      "viento180m": "Velocidade média do vento a 180 m (km/h)",
+      "viento120m": "Velocidade média do vento a 120 m (km/h)",
+      "viento80m": "Velocidade média do vento a 80 m (km/h)",
+      "viento10m": "Velocidade média do vento a 10 m (km/h)",
+      "racha10m": "Rajadas máximas a 10 m (km/h)",
+      "direccion10m": "Direção do vento a 10 m",
+      "cizalladura": "Cisalhamento do vento a baixas altitudes (LLWS) / Fiabilidade da previsão do vento médio",
+      "techo": "Altura (km) acima do nível do mar (MSL) do teto de voo utilizável (= espessura da camada limite BLH x 0,85 + elevação média do terreno da célula ECMWF 9km)",
+      "cape": "CAPE (J/kg): Energia Potencial Convectiva Disponível",
+      "cin": "CIN (J/kg): Inibição Convectiva",
+      "masInfo": "Mais informações",
+      "verEnMapa": "Ver no mapa",
+      "notaCondiciones": "Pontuação das condições de descolagem: {{nota}} pontos",
+      "tooltipMeteoCompleto": "<b style='font-size:20px;'>🌦️ Parâmetros meteorológicos</b><br><br><b>🌦️</b>: Meteo geral (cobertura de nuvens e precipitação)<br><b>💦</b>: Precipitação em mm (litros/m²)<br><b>💦?</b>: Probabilidade (%) de precipitação superior a 0,1 mm (litros/m²)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>180 m</b>: Vento a 180 m acima do solo (km/h)<br><b>120 m</b>: Vento a 120 m acima do solo (km/h)<br><b>80 m</b>: Vento a 80 m acima do solo (km/h)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>10 m</b>: Vento a 10 m acima do solo (km/h)<br><img src='icons/icono_racha_48x42.webp' style='width:16px;height:14px;'> : Rajadas máximas a 10 m acima do solo (km/h)<br><img src='icons/icono_direccion_45.webp' style='width:15px;height:15px;'> : Direção do vento a 10 m acima do solo<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><img src='icons/icono_cizalla_fiabilidad.png' style='width:30px;height:8px;'> : Cisalhamento do vento a baixas altitudes por velocidade / Fiabilidade da previsão do vento médio<hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>Teto</b>: Altura (km) acima do nível do mar (MSL) do teto de voo utilizável (= espessura da camada limite BLH x 0,85 + elevação média do terreno da célula ECMWF 9km)<br><b>CAPE</b>: Energia Potencial Convectiva Disponível (J/kg)<br><b>CIN</b>: Inibição Convectiva (J/kg em valor absoluto)<br><br><i>Nota: Os dados essenciais da base das nuvens ☁️↓ (CBH = Cloud Base Height) ainda não estão disponíveis.</i><br>",
+      "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Pontuações (0-10)</b><br><br>O sistema calcula automaticamente duas pontuações para cada descolagem com base na janela de tempo selecionada. Ambas são codificadas por cores com um gradiente de vermelho a verde.<br><br><b>1. Condições de descolagem (linha superior):</b><br>Avalia a viabilidade da descolagem analisando a previsão horária em relação às preferências definidas em ⚙️ Definições:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Limites de vento médio (mínimo, ideal e máximo).</li><li>Limite de rajadas máximas.</li><li>Orientação(ões) da descolagem.</li><li>Chuva (veto automático e 0 pontos na hora afetada).</li></ul><b>2. Condições para manter-se em térmica ou iniciar o XC (linha inferior):</b><br>Avalia as condições de descolagem e o potencial térmico para voos de distância (Cross Country) utilizando dados do modelo ECMWF:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Teto:</b> Premia os tetos altos acima da altura média do relevo e penaliza os tetos baixos (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Premia os dias azuis ou com cúmulos inofensivos, e penaliza os valores extremos por sobredesenvolvimento ou risco de trovoada (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Penaliza a forte inibição convectiva (inversão) que atua como uma tampa, dificultando a formação térmica (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Nota: A pontuação de XC é <b>independente</b> da orientação da descolagem ou do vento. Avalia puramente o potencial térmico da massa de ar nessa zona. Apenas é colocada a zero (0 pontos) se for prevista chuva ou trovoadas fortes.</i><br><br>⚠️ <b>Aviso:</b> Faltam os dados essenciais da base das nuvens (CBH = Cloud Base Height) para saber se a descolagem estará coberta por nuvens. É um valor ECMWF que ainda não está disponível na plataforma (solicitado em março de 2026, pendente sem data prevista). É necessário consultar outros serviços.<br><br><b>Por predefinição, as descolagens são reordenadas automaticamente pela primeira pontuação</b> (Condições de descolagem), da mais alta para a mais baixa. Pode alterar este comportamento em: ⚙️ <i>Definições</i> > <i>Outras opções</i> > <i>Ordenar por condições de XC</i>."
+    },
+    "labels": {
+      "techo": "Teto",
+      "cape": "CAPE",
+      "cin": "CIN"
+    },
+    "cizalladura": {
+      "baja": "Cisalhamento baixo e alta fiabilidade",
+      "media": "Cisalhamento moderado e fiabilidade média",
+      "alta": "Cisalhamento alto e baixa fiabilidade",
+      "motivoBajo": "Valores inferiores aos limiares",
+      "motivoMedio": "Rácio {{ratio}}x > 1.5 E Δ {{delta}} > 8 km/h",
+      "motivoAlto": "Rácio {{ratio}}x > 2.0 E Δ {{delta}} > 12 km/h"
+    },
+    "techoTooltip": "Teto de voo utilizável: {{altitudMSL}} m MSL\nCálculo = {{espesorUtil}} m de espessura utilizável AGL ({{pct}}% dos {{blh}} m BLH teóricos) + {{elevacion}} m de elevação (nível médio do terreno da célula ECMWF 9km)\n",
+    "despegueTooltip": "Província: {{provincia}}\nDescolagem: {{despegue}}\nOrientação: {{orientacion}}",
+    "cargando": "A carregar...",
+    "cabeceraRegion": "Região",
+    "cabeceraProvincia": "Província",
+    "cabeceraDespegue": "Descolagem",
+    "viento_altura": "{{metros}} m"
+  },
+
+  "contador": {
+    "despeguesFavoritos": "<b>{{n}}</b> descolagens favoritas",
+    "despeguesFavoritosFiltrados": "<b>{{total}}</b> descolagens favoritas",
+    "despeguesDisponibles": "<b>{{n}}</b> descolagens disponíveis",
+    "despeguesDisponiblesFiltrados": "de <b>{{total}}</b> descolagens disponíveis",
+    "despeguesFavoritosEdicion": "{{n}} favoritos de <b>{{total}}</b> disponíveis",
+    "totalDisponibles": "Total de descolagens disponíveis: <b>{{n}}</b>",
+    "miniTodosBD": "Número de descolagens visíveis em toda a base de dados",
+    "miniFavoritos": "Número de descolagens favoritas / filtradas"
+  },
+
+  "marcadorMasivo": {
+    "paraMarcarFavoritos": "Para marcar ou desmarcar um grupo de favoritos, utilize a opção:<br>Menu ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoritos]"
+  },
+
+  "guiaPrincipal": {
+    "progreso": "{{current}} de {{total}}",
+    "siguiente": "Seguinte →",
+    "cerrar": "Fechar guia",
+    "preguntaVerGuia": "Deseja ver um guia visual deste ecrã?",
+    "preguntaVerGuiaPrincipal": "Deseja ver um guia visual do<br>ecrã principal?",
+    "verEnAjustes": "Pode consultá-lo a qualquer momento em:<br><i>⚙️ Definições</i> → <i>Guia</i>",
+    "podrasVerla": "Pode consultá-lo a qualquer momento utilizando o botão <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> neste ecrã.",
+    "pasos": {
+      "paso1": {
+        "titulo": "🪂 Ecrã principal",
+        "descripcion": "Este é o ecrã de utilização normal da aplicação.<br><br>Mostra uma tabela com todas as descolagens que selecionou como favoritas, juntamente com a sua previsão e as pontuações das condições (para a descolagem e para iniciar voos de XC).<br><br>As descolagens são sempre ordenadas automaticamente pela sua pontuação de condições de descolagem (da mais alta para a mais baixa)."
+      },
+      "selectorHorario": {
+        "titulo": "🗓️ Seletor de janela de tempo",
+        "descripcion": "Ajuste este controlo deslizante em ambas as extremidades para selecionar a janela de tempo que lhe interessa.<br><br>A tabela mostrará apenas essas horas, e a pontuação das condições será recalculada para esse intervalo de tempo específico."
+      },
+      "diasSemana": {
+        "titulo": "🗓️ Dias da semana",
+        "descripcion": "Estes botões dos dias da semana facilitam a seleção da janela de tempo desse dia. Esta será a utilização típica da aplicação: uma vista de olhos rápida às descolagens 'possíveis' para esse dia.<br><br>👉🏽 Vou selecionar este como exemplo para que veja como funciona."
+      },
+      "diaSeleccionado": {
+        "titulo": "🗓️ Dia selecionado",
+        "descripcion": "Agora, a tabela mostra apenas esse dia com a janela de tempo selecionada automaticamente.<br><br>💡 Pode mover os controlos deslizantes para a sua janela de tempo específica para obter uma pontuação mais precisa. Pode personalizar esta janela de tempo diária 'automática' nas ⚙️ Definições."
+      },
+      "columnaMeteo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><span style='font-size:25px; display: block;'>🌦️</span><span>Coluna de meteo</span></div>",
+        "descripcion": "Mostra os dados meteorológicos.<br><br>Clique no ícone para ver o significado de cada parâmetro."
+      },
+      "filaCizalladura": {
+        "titulo": "🟩🟧🟥 Linha Cisalhamento / Fiabilidade",
+        "descripcion": "Esta linha especial é um indicador combinado. É um semáforo codificado por cores que mostra simultaneamente dois dados concorrentes: o cisalhamento do vento a baixas altitudes e a fiabilidade da previsão do vento a 10m."
+      },
+      "columnaPuntuacion": {
+        "titulo": "⭐ Coluna de pontuação",
+        "descripcion": "O sistema calcula duas pontuações (de 0 a 10) para cada descolagem e para a janela de tempo selecionada: Condições de descolagem e Condições para manter-se em térmica ou iniciar um Cross Country (XC).<br><br>As descolagens são reordenadas automaticamente pela pontuação de condições de descolagem.<br><br>Nas ⚙️ Definições, pode personalizar os seus limites para o cálculo."
+      },
+      "btnInfo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Informação da descolagem</span></div>",
+        "descripcion": "Mostra informações mais completas sobre a descolagem e links para a sua previsão no Windy, Meteo-parapente e Meteoblue."
+      },
+      "btnOrigen": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Ponto de origem",
+        "descripcion": "Aqui escolhe o ponto de origem para o filtro de distância.<br><br>Pode selecionar o ponto utilizando um mapa ou a sua localização atual."
+      },
+      "btnIncNoFavs": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Incluir não favoritos",
+        "descripcion": "Permite-lhe incluir temporariamente todas as descolagens disponíveis (favoritas e não favoritas) no filtro.<br><br>💡 Prático para procurar rapidamente as condições de voo em descolagens de diferentes zonas fora da sua zona de favoritos."
+      },
+      "btnMapa": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa de descolagens</span></div>",
+        "descripcion": "Mostra a descolagem no mapa.<br><br>💡 O mapa inclui informações adicionais, vários filtros, mapas de calor e outras ferramentas úteis para explorar."
+      },
+      "navHome": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Início</span></div>",
+        "descripcion": "Mostra a tabela com todas as suas descolagens favoritas. Se existirem pesquisas ou filtros ativos, estes serão limpos.<br><br>💡 Se se perder, utilize este botão para regressar à vista \"normal\"."
+      },
+      "navSearch": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Procurar</span></div>",
+        "descripcion": "Utilize isto para procurar descolagens por nome ou zona administrativa (geralmente a província). Pode escrever sem acentos para ser mais rápido."
+      },
+      "navDistance": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distância</span></div>",
+        "descripcion": "Mostra um controlo deslizante para filtrar as descolagens num raio à volta de um ponto.<br><br>👉🏽 Agora vou pressionar este botão para abrir o filtro."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distância</span></div>",
+        "descripcion": "Este filtro permite-lhe ver apenas as descolagens à volta de um ponto específico.<br><br>💡 Útil para encontrar rapidamente descolagens a uma distância de carro a partir da sua localização."
+      },
+      "sliderDistancia": {
+        "titulo": "Raio de distância",
+        "descripcion": "Mova este controlo deslizante para escolher a distância máxima.<br><br>A tabela mostrará apenas as descolagens dentro desse raio."
+      },
+      "navMap": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
+        "descripcion": "Mapa de descolagens de parapente com informações detalhadas: pesquisa de descolagens, filtros por orientação, número de voos, ano do último voo, distância média, um mapa de calor com mais de 1,3 milhões de pontos de descolagem registados com exatidão e muita mais informação."
+      },
+      "navSettings": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Definições</span></div>",
+        "descripcion": "Aqui pode <b>Editar favoritos</b> (para adicionar ou remover as suas descolagens habituais), personalizar parâmetros, ativar opções e ver informações sobre as atualizações dos dados meteorológicos.<br><br>💡 Cada opção tem um botão de informação <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'> para ver os detalhes."
+      }
+    }
+  },
+
+  "guiaFavoritos": {
+    "preguntaVerGuia": "Deseja ver um guia visual deste ecrã?",
+    "podrasVerla": "Pode consultá-lo a qualquer momento utilizando o botão <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> neste ecrã.",
+    "pasos": {
+      "intro": {
+        "titulo": "🪂 Ecrã de edição de descolagens favoritas",
+        "descripcion": "Este ecrã mostra todas as descolagens disponíveis. Selecione as que utiliza habitualmente. A vista normal da aplicação mostrará apenas esses favoritos.<br><br>Poderia selecioná-las a todas, mas, dependendo do seu dispositivo, isso poderia tornar as pesquisas e a utilização diária mais lentas.<br><br>Atualmente cobre a Espanha, Portugal, os Pirenéus e as principais zonas alpinas. É um projeto em crescimento."
+      },
+      "celdaFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Favoritos",
+        "descripcion": "Marque ou desmarque os seus favoritos aqui.<br><br>As alterações são guardadas automaticamente."
+      },
+      "cabeceraFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Favoritos do cabeçalho",
+        "descripcion": "Marque ou desmarque todas as descolagens atualmente visíveis de uma só vez.<br><br>💡 Exemplo: Filtre por \"Huesca\" e marque-as a todas. Ou filtre por distância e marque todas as que se encontram num raio de 50 km."
+      },
+      "btnInfoDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/info.svg\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Informação da descolagem</span></div>",
+        "descripcion": "Mostra informações detalhadas sobre a descolagem e links para previsões noutros sites."
+      },
+      "btnMapaDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"><polygon points=\"1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6\"></polygon><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"18\"></line><line x1=\"16\" y1=\"6\" x2=\"16\" y2=\"22\"></line></svg><span>Mapa de descolagens</span></div>",
+        "descripcion": "Mostra a descolagem no mapa.<br><br>💡 O mapa inclui informações adicionais sobre a descolagem, vários filtros, mapas de calor de descolagens e várias ferramentas úteis que vale a pena explorar."
+      },
+      "buscador": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg><span>Procurar</span></div>",
+        "descripcion": "Procure descolagens digitando a região, a província ou o nome. Pode escrever sem acentos para ser mais rápido."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distância</span></div>",
+        "descripcion": "Este é um filtro que lhe permite visualizar apenas as descolagens à volta de um ponto específico.<br><br>💡 Isto pode ajudá-lo a encontrar rapidamente descolagens num raio de distância à sua escolha à volta de um ponto."
+      },
+      "btnOrigen": {
+        "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Ponto de origem",
+        "descripcion": "Aqui escolhe o ponto de origem para o filtro de distância acima.<br><br>Pode selecionar o ponto utilizando um mapa ou a sua localização atual."
+      },
+      "sliderDistancia": {
+        "titulo": "Distância ao ponto",
+        "descripcion": "Ao arrastar este controlo deslizante, escolhe a distância máxima em quilómetros."
+      },
+      "btnVerSoloFavs": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Ver apenas favoritos",
+        "descripcion": "Alterne entre mostrar apenas os seus favoritos ou todas as descolagens.<br><br>💡 Útil para verificar os seus favoritos selecionados num piscar de olhos."
+      },
+      "btnDesmarcarTodos": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z\"></path><line x1=\"5\" y1=\"5\" x2=\"19\" y2=\"19\" stroke=\"red\" stroke-width=\"3\"></line></svg><span>Desmarcar todos os favoritos</span></div>",
+        "descripcion": "Remova todas as descolagens da sua lista de favoritos de uma só vez."
+      },
+      "btnImportar": {
+        "titulo": "📂 Importar favoritos",
+        "descripcion": "Abra um ficheiro com descolagens favoritas."
+      },
+      "btnExportar": {
+        "titulo": "💾 Exportar favoritos",
+        "descripcion": "Guarda um ficheiro com as suas descolagens favoritas atuais.<br><br>Nota: Na verdade, os favoritos são guardados automaticamente cada vez que marca um. Este botão serve para fazer uma cópia de todos num ficheiro externo (como cópia de segurança ou para partilhar). <br><br>💡 Se viajar para várias zonas de voo distantes, pode querer ter os favoritos de cada zona guardados em ficheiros diferentes."
+      },
+      "btnGuiaEdicion": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/icono_ayuda_60.webp\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Guia rápido</span></div>",
+        "descripcion": "Mostra este guia novamente."
+      },
+      "btnFinalizar": {
+        "titulo": "🏁 Concluir edição",
+        "descripcion": "Sair para o ecrã principal para ver a previsão dos seus favoritos selecionados."
+      }
+    }
+  },
+
+  "asistente": {
+    "paso1": {
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Onde voar?</p><p>🌦️ Previsão horária a 4 dias.</p><p>📊 Avaliação automatizada das condições para Descolagem e XC.</p><p>🗺️ Mapa de descolagens.</p>",
+      "btnPrimario": "Selecionar favoritos",
+      "btnSecundario": "Ver guia geral",
+      "btnImportar": "Importar definições"
+    },
+    "paso2": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Análise automatizada da previsão meteorológica para parapente.</p><p>🙄 <b>Para que serve?:</b> para ajudá-lo a decidir onde voar. Mostra uma tabela com as suas descolagens favoritas, as respetivas previsões, e realiza uma análise automatizada destas <b>condições meteorológicas</b>.</p><p>🧮 <b>Que análise faz?:</b> compara a previsão com os seus limites configurados de vento médio e rajadas máximas, e a orientação de cada descolagem; também analisa o vento a altitudes próximas da descolagem (80, 120 e 180 m), fornecendo informações sobre o gradiente de vento e a fiabilidade da previsão. Mostra dados essenciais de XC (teto, CAPE e CIN).</p><p>Com toda esta informação, pontua cada descolagem de 0 a 10 e codifica com cores 🟩&nbsp;🟨&nbsp;🟥 os dados para a janela de tempo escolhida. Pode personalizar todos os limites para adaptá-los às suas preferências.</p>"
+    },
+    "paso3": {
+      "html": "<p>💨️ <b>Dados meteorológicos:</b> previsão horária para 4 dias (96h). Atualiza 8 vezes por dia com dados oficiais da Météo-France dos modelos Arome-HD 1.3km (0-48h) e Arpege 7km (48-96h), e 4 vezes por dia com dados do ECMWF (0-96h).</p><p>🆓 <b>Custo e privacidade:</b> 100% gratuito, sem subscrições, sem anúncios e sem rastreio (cookies, telemetria...). As suas definições são guardadas de forma privada no seu navegador. É um projeto livre e aberto, em funcionamento desde 2026 e em evolução.</p>"
+    },
+    "paso4": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🤔 É complicado?</p><p>✅ <b>Utilização básica</b>: selecione as suas descolagens favoritas na primeira vez e terá sempre a tabela com as respetivas previsões e a análise automatizada para cada dia.</p><p>✅ <b>Utilização intermédia</b>: pode selecionar uma janela de tempo (dias ou horas) e ver a pontuação automática das condições para esse intervalo. Pode filtrar as descolagens por um raio de distância a partir de sua casa ou de qualquer lugar.</p><p>✅ <b>Utilização avançada</b>: pode personalizar em ⚙️ <i>Definições</i> os limites predefinidos para o vento médio (mínimo, ideal e máximo) e rajadas máximas. As suas preferências serão utilizadas para a análise, a coloração e a pontuação das condições.</p>"
+    },
+    "paso5": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>️👉 Tenha em atenção...</p><p>👉 Apenas são mostradas as descolagens favoritas. Pode selecioná-las a todas, mas em alguns dispositivos isso poderá tornar a aplicação mais lenta.</p><p>👉️ A ordenação é automática por pontuação (de 10 a 0).</p><p>👉️ Os dados da base das nuvens (CBH) estão atualmente pendentes do fornecedor. Consulte sempre múltiplas fontes antes de voar.</p><p>👉️ Cobertura: Espanha, Portugal, Pirenéus e Alpes (franceses, suíços, italianos).</p>"
+    },
+    "paso6": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>👍 E agora?</p><p>Tem de marcar as suas descolagens favoritas.</p>",
+      "btnPrimario": "Selecionar favoritos →",
+      "btnSecundario": "←"
+    }
+  },
+
+  "origen": {
+    "avisoInicialHtml": "<div style='text-align: center;'><p style='font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></p><p>Tem de definir um ponto de origem na primeira vez.</p><p>Pode alterá-lo a qualquer momento através do botão <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span></p></div>",
+    "configurarPrimero": "Primeiro tem de definir um ponto de origem.",
+    "podrasCambiar": "Pode alterá-lo a qualquer momento através do botão"
+  },
+
+  "actualizacion": {
+    "cargando": "A carregar...",
+    "esperando": "🔄 Seguinte: <span style='color:#e39300; font-weight:bold;'>A aguardar...⌛</span>",
+    "proximaEn": "🔄 Seguinte: <b>{{tiempo}}</b>",
+    "horas": "~{{h}} h {{m}} min",
+    "minutos": "~{{m}} min",
+    "sinConexion": "⚠️ Sem ligação à Internet. Antiguidade dos dados: {{tiempo}}.",
+    "hace": "Há <b>{{tiempo}}</b>",
+    "esperandoPrimerDato": "A aguardar os primeiros dados...",
+    "avisoModelos": {
+      "viento": "Vento (Météo-France: Arome-HD e Arpege)",
+      "general": "Meteo geral e condições térmicas de XC (ECMWF)"
+    },
+    "avisoNuevoMeteo": "<p>ℹ️ Novos dados meteorológicos disponíveis para:</p><p><b>{{modelos}}</b></p><p>Atualizar agora?</p>"
+  },
+
+  "ajustes": {
+    "probPrecipitacion": "Probabilidade de precipitação",
+    "vientoAlturas": "Vento a 80, 120 e 180 m",    
+    "cizalladura_fiabilidad": "Cisalhamento do vento / Fiabilidade",
+    "XC": "XC: Teto MSL, CAPE e CIN",
+    "horarioVueloPref": "Horário de voo preferido",
+    "solo_horas_diurnas": "Apenas horas diurnas",
+    "ordenar_xc": "Ordenar por condições de XC",
+    "titulo": "Definições",
+    "editarFavoritos": "Editar favoritos",
+    "importarConfig": "Importar definições e favoritos",
+    "exportarConfig": "Exportar definições e favoritos",
+    "restablecerConfig": "Repor definições (apaga todas as configurações e favoritos)",
+    "viento": "Vento",
+    "rachaMaxima": "Rajadas máximas",
+    "acordeon": {
+      "vientoRacha": "Limites de vento e rajadas",
+      "datosOpcionales": "Dados meteorológicos opcionais",
+      "otrasOpciones": "Outras opções",
+      "sobreActualizacion": "Atualizações dos modelos meteorológicos"
+    },
+    "guia": "Guia",
+    "ayuda": "Ajuda",
+    "legal": "Legal",
+    "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENÇÃO:</b> Importar um ficheiro de configuração irá substituir todas as suas definições e descolagens favoritas atuais.</b></p>",
+    "importadoConfigOk": "✅ A configuração foi importada",
+    "errorArchivoConfig": "⚠️ O ficheiro não parece ser uma cópia de segurança válida do Fly Decision.",
+    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATENÇÃO:</b> Esta ação irá repor a configuração para as definições originais e desmarcará todas as descolagens favoritas.</p></div>"
+  },
+
+  "mapa": {
+    "seleccionarOrigen": "Selecionar origem",
+    "miUbicacion": "A minha localização",
+    "irMiUbicacion": "Ir para a minha localização",
+    "buscadorPlaceholder": "Procurar local ou coordenadas...",
+    "buscadorTitulo": "Pesquisa geral (locais e coordenadas)",
+    "ajustes": "Definições",
+    "capasYFiltros": "Camadas e Filtros",
+    "capas": "Camadas:",
+    "orientacion": "Orientação:",
+    "cerrarPanel": "Fechar Painel",
+    "fijarPanel": "Fixar Painel (não ocultar ao mover o mapa)",
+    "masInformacion": "Mais informações ▼",
+    "volverEdicion": "Voltar a Editar Favoritos",
+    "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Você está aqui&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "capasCheckbox": {
+      "despegues": "🪂 Descolagens",
+      "mapaCalorPeninsula": "🔥 Mapa de Calor Ibérico",
+      "mapaCalorAlpes": "🔥 Mapa de Calor dos Alpes",
+      "mapaCalorMarruecos": "🔥 Mapa de Calor de Marrocos",
+      "notas": "✏️ Notas",
+      "despeguesMundo": "🪂 Descolagens Paraglidingearth"
+    },
+    "cargandoCalorPeninsula": "⏳ A carregar Mapa de Calor Ibérico...<br><br>(309.157 descolagens registadas)",
+    "cargandoCalorAlpes": "⏳ A carregar Mapa de Calor dos Alpes...<br><br>(967.477 descolagens registadas)",
+    "cargandoCalorMarruecos": "⏳ A carregar Mapa de Calor de Marrocos...<br><br>(11.006 descolagens registadas)",
+    "errorCSV": "Erro ao carregar o CSV. Verifique a consola para mais detalhes.",
+    "errorCSVAlpes": "Erro ao carregar o ficheiro CSV dos Alpes.",
+    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} Descolagens XContest</b>",
+    "despegueXContest": "🪂<br>Descolagem XContest",
+    "coordenadasMedias": "Coordenadas médias:",
+    "coordenadas": "Coordenadas:",
+    "fecha": "Data:",
+    "hora": "Hora:",
+    "distanciaRecorrida": "Distância percorrida:",
+    "vuelos": "Voos XContest:",
+    "vueloXContest": "🔍 Ver Voo XContest",
+    "orientacionLabel": "Orientação:",
+    "grupoXContestTitle": "Grupo de {{count}} descolagens registadas no XContest",
+    "nVuelosXContest": "N.º de voos XContest:",
+    "minVuelosTexto": "Mínimo de voos registados = ",
+    "anioUltimoVueloTexto": "Ano do último voo >= ",
+    "minKmMediaTexto": "Distância média percorrida mínima = ",
+    "todos": "Todos",
+    "titleBuscadorDespegue": "Procurar descolagem por nome",
+    "buscadorDespegue": "🔍 Descolagem",
+    "labelOrientacion": "Orientação:",
+    "labelCoordenadas": "Coordenadas:",
+    "labelAltitud": "Altitude aprox.:",
+    "labelActividad": "Nível de atividade:",
+    "labelVuelos": "N.º de voos XContest:",
+    "labelKmMedia": "Distância média (km):",
+    "labelMasInfo": "Mais informações:",
+
+    "capasBase": {
+      "esriTopo": "ESRI World Topographic",
+      "esriOrto": "ESRI World Imagery",
+      "osmOpenTopo": "Estilo OpenStreetMap OpenTopoMap",
+      "osmCyclOSM": "Estilo OpenStreetMap CyclOSM",
+      "thunderforest": "Thunderforest Outdoors",
+      "ignTopo": "IGN Espanha Topográfico",
+      "ignClaro": "IGN Espanha Topográfico (Claro)",
+      "ignOrto": "IGN Espanha Satélite",
+      "osmStandard": "Estilo OpenStreetMap Padrão",
+      "hipsometrico": "Relevo Hipsométrico",
+      "tracestrack": "Tracestrack Topo",
+      "icgc": "ICGC Catalunha",
+      "esriSkyways": "ESRI Topo + Skyways (KK7)",
+      "esriThermals": "ESRI Topo + Térmicas (KK7)",
+      "esriAll": "ESRI Topo + Skyways+Térmicas (KK7)"
+    }
+  },
+
+  "popupDespegue": {
+    "region": "Região:",
+    "provincia": "Província:",
+    "orientacion": "Orientação:",
+    "nivelActividad": "Nível de atividade:",
+    "nivelActividadTitle": "Atividade do local baseada na data do último voo (ref: nov 2025): Verde 0-6 meses, Laranja 6-12, Amarelo 12-24, Branco >24 meses sem voos"
+  },
+
+  "html": {
+    "distanciaDesde": "Distância desde:",
+    "seleccionarOrigen": "Selecionar origem",
+    "incluirNoFavs": "Incluir não favoritos no filtro",
+    "resetFiltroDistancia": "Repor e ocultar filtro de distância",
+    "finalizarEdicion": "Concluir a edição de descolagens favoritas",
+    "finalizarEdicionTitle": "Concluir a edição de descolagens favoritas",
+    "verSoloFavoritos": "Ver apenas os meus favoritos",
+    "desmarcarFavoritosTitle": "Desmarcar todos os favoritos",
+    "importarFavoritos": "Importar favoritos",
+    "exportarFavoritos": "Exportar favoritos",
+    "guiaEdicionTitle": "Guia do ecrã de edição de descolagens favoritas",
+    "esperandoConexion": "A aguardar ligação..."
+  },
+
+  "crash": {
+    "errorCarga": "<div style='text-align: center;'><p>ℹ️ Erro ao carregar a tabela.</p><p>Causa possível: <b>demasiados favoritos</b> para os recursos do seu dispositivo.</p><p>O ecrã de Edição de Favoritos será aberto para que possa desmarcar alguns e reduzir a carga.</p><p>Se acha que é temporário: clique em <b><i>Concluir edição</i></b>, reinicie o dispositivo e tente novamente.</p></div>",
+    "alertFallback": "A aplicação está com problemas de carregamento. O editor de favoritos foi ativado para reduzir o número de descolagens."
+  },
+
+  "salirApp": {
+    "pregunta": "Deseja sair da aplicação?",
+    "no": "Não",
+    "si": "Sim, sair"
+  },
+
+  "novedadesXC": {
+    "titulo": "ℹ️ Novidades de Dados XC",
+    "html": "<div style='text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;'><ul style='padding-left: 20px; margin-top: 5px; margin-bottom: 5px;'><li style='margin-bottom: 6px;'><b>Pontuação XC Independente:</b> Avalia apenas o potencial térmico (Teto, CAPE, CIN) ignorando o vento na descolagem. Apenas pontua 0 com chuva ou risco de trovoada.</li><li style='margin-bottom: 6px;'><b>Teto em Altitude (MSL):</b> Agora mostra a altitude acima do nível do mar, proporcionando uma melhor precisão para planear distâncias.</li><li><b>Teto Realista:</b> A previsão é reduzida em 15% para compensar a taxa de afundamento do parapente.</li></ul><p style='margin-top: 10px; font-size: 0.9em;'>💡 <i>Mais detalhes clicando nos ícones 🌦️ ou ⭐ na tabela.</i></p></div>"
+  },
+
+  "orientaciones": {
+    "N": "N",
+    "NNE": "NNE",
+    "NE": "NE",
+    "ENE": "ENE",
+    "E": "E",
+    "ESE": "ESE",
+    "SE": "SE",
+    "SSE": "SSE",
+    "S": "S",
+    "SSO": "SSO",
+    "SO": "SO",
+    "OSO": "OSO",
+    "O": "O",
+    "ONO": "ONO",
+    "NO": "NO",
+    "NNO": "NNO",
+    "norte": "Norte",
+    "nornoreste": "Nor-nordeste",
+    "noreste": "Nordeste",
+    "estenoreste": "Lés-nordeste",
+    "este": "Este",
+    "estesureste": "Lés-sudeste",
+    "sureste": "Sudeste",
+    "sursureste": "Sul-sudeste",
+    "sur": "Sul",
+    "sursuroeste": "Sul-sudoeste",
+    "suroeste": "Sudoeste",
+    "oestesuroeste": "Oés-sudoeste",
+    "oeste": "Oeste",
+    "oestenoroeste": "Oés-noroeste",
+    "noroeste": "Noroeste",
+    "nornoroeste": "Nor-noroeste",
+    "todos_title": "Os filtros de orientação estão ativos. Clique para limpar todos."
+  },
+
+  "cron": {
+    "Actualización en curso... ⏳": "Atualização em curso... ⏳"
+  },
+
+  "btn_info": {
+    "tooltipVientoLimites": "<b>Vento médio mínimo, ideal e máximo:</b><br><br>O sistema automatizado de avaliação de condições terá em conta estes valores.<br><br>A cor dos dados na tabela indica visualmente a análise das condições com base nos valores que definir aqui (Mínimo, Ideal e Máximo).<br><br>🟧 Laranja: vento fraco abaixo do seu vento mínimo (normalmente 0, a menos que precise de vento específico para voo de encosta ou outros motivos).<br>🟩 Verde: Vento ideal, desde o mínimo até a uma margem de segurança antes do máximo.<br>🟧 Laranja: vento mais forte que se aproxima do máximo (o último terço antes de atingir o máximo).<br>🟥 Vermelho: vento muito forte que excede o seu limite de vento máximo.<br><br><b>Definição técnica padrão da OMM (Organização Meteorológica Mundial) da velocidade média a 10m</b>:<br><br>É a velocidade média do vento sustentado durante os últimos 10 minutos antes da hora indicada. É medido a uma altura padrão de 10 metros acima do solo (para evitar a fricção imediata do terreno). Representa o fluxo laminar ou base.",
+    "filtroDistanciaCompleto": "<b>Filtro de distância de descolagens:</b><br><br>Mostra apenas as descolagens dentro do raio de distância que selecionar.<br><br>Utilize o botão <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> para definir a posição de origem. Pode utilizar o mapa ou a localização atual do seu dispositivo.<span class='texto-oculto-en-edicion'><br><br>Utilize o botão <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> para incluir descolagens não favoritas no filtro, o que significa <b>incluir temporariamente todas as descolagens</b> disponíveis na base de dados.<br><br>Quando ativado, é aplicado um filtro inicial de 100 km para evitar sobrecarregar a tabela. Pode ajustá-lo consoante as suas necessidades e o desempenho do seu dispositivo.</span>",
+    "tooltipRachaMaxima": "<b>Rajada máxima:</b><br><br>O sistema automatizado de avaliação de condições terá em conta estes valores.<br><br>A cor dos dados na tabela indica visualmente a análise das condições com base no valor que definir aqui.<br><br>🟩 Verde: rajada máxima segura, longe do limite.<br>🟧 Laranja: rajada máxima que se aproxima do seu limite de rajada máxima.<br>🟥 Vermelho: rajada que excede o seu limite de rajada máxima.<br><br><b>Definição técnica padrão da OMM (Organização Meteorológica Mundial) da rajada máxima a 10m</b>:<br><br>É o pico máximo de velocidade instantânea (com uma duração de 3 segundos) registado em qualquer momento dentro do período da hora anterior. Representa as flutuações curtas e intensas sobrepostas ao vento médio, associadas à turbulência mecânica ou térmica (convecção).",
+    "tooltipProbPrecipitacion": "<b>Probabilidade de precipitação (%)</b><br><br>Probabilidade (%) de a precipitação exceder os 0,1 mm (litros/m²).<br><br>Dados originais do modelo ECMWF.",
+    "tooltipVientoAlturas": "<b>Vento a 80, 120 e 180 m (km/h)</b><br><br>Mostra 3 linhas com as previsões da velocidade média do vento a 80, 120 e 180 m acima do nível do solo. Estas 3 linhas são mostradas acima da linha padrão de velocidade média do vento a 10m.<br><br>Estes valores permitem avaliar o grau de turbulência de cisalhamento e a fiabilidade da previsão do vento médio.<br><br>Dados originais do modelo Arome/Arpege (Météo-France).",
+    "tooltipCizalladura": "<b>Cisalhamento do vento / Fiabilidade</b><br><br>Mostra uma linha fina sob a linha de orientação com um valor calculado: o nível de Cisalhamento do Vento a Baixas Altitudes (LLWS) e o grau de Fiabilidade da previsão do vento médio a 10 m.<br><br>O sistema analisa os valores de vento médio a 10, 80, 120 e 180 m acima do solo e, através de um algoritmo, mostra um indicador codificado por cores.<br><br>🟩 Verde: Baixo cisalhamento do vento por velocidade e alta fiabilidade da previsão de velocidade a 10 m.<br>🟧 Laranja: Valores de cisalhamento e fiabilidade moderados.<br>🟥 Vermelho: Alto cisalhamento do vento por velocidade e baixa fiabilidade da previsão de velocidade a 10 m.<br><br>Este cisalhamento ocorre quando existe um elevado gradiente de velocidade perto do solo. Este nível também está correlacionado com a fiabilidade da velocidade do vento a 10 m acima do solo.<br><br>O motivo é que, se a massa de ar se mover a velocidades semelhantes, o grau de turbulência de cisalhamento induzida pela velocidade será baixo, a previsão do vento ao nível do solo será mais fiável e vice-versa.",
+    "tooltipXC": "<b>XC: Teto MSL, CAPE, CIN</b><br><br>Mostra um grupo de 3 linhas com dados focados no voo de distância (Cross Country / XC):<ul><li><b>Teto de Voo MSL (km):</b> Altura Máxima da Camada Limite (BLH)</li><li><b>CAPE (J/kg):</b> Energia Potencial Convectiva Disponível</li><li><b>CIN (J/kg):</b> Inibição Convectiva</li></ul>Dados originais do modelo ECMWF.",
+    "tooltipHorarioVuelo": "<b>Horário de voo preferido:</b><br><br>Os valores configurados aqui farão com que estas horas de início e fim sejam selecionadas automaticamente ao escolher um dia da semana (segunda-feira, terça-feira, etc.) no seletor de janela de tempo localizado acima da tabela.<br><br>Pode sempre ajustar o seletor de janela de tempo manualmente; esta configuração é apenas uma automatização para facilitar a seleção automática de uma janela de tempo típica.<br><br>Quer seja feito manual ou automaticamente, apenas a janela de tempo final selecionada é tida em conta para o cálculo da pontuação de <i>Condições</i>; portanto, a pontuação de cada descolagem será mais realista para esse intervalo específico.<br><br>Se a opção <i>Apenas horas diurnas</i> estiver ativada, o intervalo selecionado automaticamente com esta configuração será ajustado para se manter dentro dos limites da luz diurna.",
+    "tooltipHorasDiurnas": "<b>Apenas horas diurnas</b><br><br>Mostra apenas as horas de luz. Se estiver desativado, são mostradas as 24 horas do dia.<br><br>Está incluída uma margem de ±1h ao nascer e ao pôr do sol.<br><br>Muda automaticamente todos os meses. Além disso, nos meses com mudança de hora, estas horas serão ajustadas automaticamente ao horário oficial de verão/inverno (DST).",
+    "tooltipOrdenarXC": "<b>Ordenar por Condições de XC:</b><br><br>Por predefinição, as descolagens são ordenadas da melhor para a pior com base na pontuação de <i>Condições de Descolagem</i> (viabilidade de descolar de acordo com o vento).<br><br>Se ativar esta opção, a tabela será ordenada da melhor para a pior pontuação de <b>Condições de XC</b> (potencial térmico da massa de ar), independentemente de o vento nessa descolagem ser o ideal ou não.",
+    "tooltipModelosMeteo": "<b>Modelos meteorológicos:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: para dados de vento nas primeiras 0-48h. Cobre quase toda a Europa, incluindo a Península Ibérica, exceto o sul da Andaluzia (Arpege Europe 7km 0-96h é utilizado nessa zona).</li><li><b>Météo-France Arpege Europe 7km</b>: para dados de vento nas seguintes 48-96h. Cobre a Europa e o Norte de África.</li><li><b>ECMWF IFS HRES 9km</b>: para o resto dos dados meteorológicos das 0-96h. Cobre o mundo inteiro.</li></ul><b>Frequência de atualização automática:</b> Météo-France aproximadamente a cada 3 horas (8 vezes por dia) e ECMWF aproximadamente a cada 6 horas (4 vezes por dia).<br><br><b>Plataforma de dados meteorológicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>O valor <i>Ref.HHZ</i> indica a hora UTC±0 (Z) correspondente ao último ciclo de execução do modelo no servidor meteorológico de origem. A partir desse momento, há várias horas de cálculo computacional antes da distribuição final e da disponibilidade pública.<br><br>"
+  }
+
+}

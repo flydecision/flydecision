@@ -1,0 +1,560 @@
+{
+  "_meta": {
+    "_nota": "Ficheiro de tradución base — Galego. Xerado a partir da análise de meteo.js e index.html.",
+    "_version": "1.0.0"
+  },
+
+  "menu": {
+    "inicio": "Inicio",
+    "buscar": "Buscar",
+    "distancia": "Distancia",
+    "mapa": "Mapa",
+    "ajustes": "Axustes"
+  },
+
+  "botones": {
+    "aceptar": "Aceptar",
+    "cancelar": "Cancelar",
+    "siguiente": "Seguinte",
+    "siguienteFlecha": "Seguinte →",
+    "finalizar": "Finalizar",
+    "verGuia": "Ver guía",
+    "noGracias": "Non, grazas",
+    "siMarcar": "Si, marcar",
+    "siDesmarcar": "Si, desmarcar",
+    "siSalir": "Si, saír",
+    "no": "Non",
+    "configurarOrigen": "Configurar orixe",
+    "marcarFavoritos": "Marcar favoritos",
+    "verGuiaGeneral": "Ver guía xeral",
+    "importarConfiguracion": "Importar configuración",
+    "marcarFavoritosFlecha": "Marcar favoritos →",
+    "entendido": "Entendido"
+  },
+
+  "dias": {
+    "domingo": "Domingo",
+    "lunes": "Luns",
+    "martes": "Martes",
+    "miercoles": "Mércores",
+    "jueves": "Xoves",
+    "viernes": "Venres",
+    "sabado": "Sábado",
+    "dom": "Dom",
+    "lun": "Lun",
+    "mar": "Mar",
+    "mie": "Mér",
+    "jue": "Xov",
+    "vie": "Ven",
+    "sab": "Sáb"
+  },
+
+  "gps": {
+    "buscando": "⏳ Buscando...",
+    "errorUbicacion": "Non se puido obter a localización.",
+    "activaGps": "Asegúrate de que o GPS estea activado.",
+    "revisaPermisos": "Revisa os permisos.",
+    "noSoportado": "O teu navegador non soporta GPS."
+  },
+
+  "buscador": {
+    "placeholder": "🔍 Buscar engalaxe ou provincia...",
+    "placeholderEdicion": "🔍 Buscar rexión, provincia ou engalaxe...",
+    "sugerenciaTitulo": "💡 Non se atoparon favoritos para * <b>{{termino}}</b> *, pero estes están dispoñibles na base de datos:",
+    "anadirFavorito": "+ Engadir a favoritos"
+  },
+
+  "favoritos": {
+    "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorito",
+    "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoritos",
+    "anadirAFavoritos": "Engadir a favoritos",
+    "quitarDeFavoritos": "Quitar de favoritos",
+    "despegueFavorito": "Engalaxe favorita",
+    "marcarTodos": "Marcar todas as engalaxes visibles como favoritas",
+    "desmarcarTodos": "Desmarcar todas as engalaxes visibles como favoritas",
+    "marcardesmarcarCabecera": "Marcar ou desmarcar como favoritas todas as engalaxes actualmente visibles na táboa",
+    "noHayParaDesmarcar": "Non hai engalaxes favoritas para desmarcar",
+    "noHayParaExportar": "Non hai engalaxes favoritas para exportar",
+    "noTienesFavoritos": "<p>Non hai engalaxes marcadas como favoritas ♥️</p>",
+    "necesarioMarcarUno": "<p>Requírese polo menos unha engalaxe favorita ♥️</p><p>Se o desexas, podes consultar a guía rápida desta pantalla mediante o botón <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guía'>.</p>",
+    "confirmacionMasiva": "Desexas marcar <span style='font-weight:bold;'>{{cantidad}}</span> engalaxes como favoritas?",
+    "confirmarDesmarcarTodos": "Desexas desmarcar todos os teus favoritos?",
+    "anadidoOk": "✅ <b>{{nombre}}</b> engadido",
+    "importadosOk": "✅ Importáronse {{n}} engalaxes favoritas",
+    "archivoVacio": "⚠️ O ficheiro estaba baleiro.",
+    "errorArchivo": "⚠️ Erro ao procesar o ficheiro.",
+    "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENCIÓN:</b> Importar favoritos substituirá os actuais.</b><br><br>Se desexas conservalos, cancela esta mensaxe e utiliza o botón 💾 <i>Exportar favoritos</i>.</p>",
+    "exportar": {
+      "tituloDialog": "💾 Exportar favoritos",
+      "mensajeDialog": "\nCambia o nome do ficheiro ou acepta este:",
+      "guardar": "Gardar",
+      "cancelar": "Cancelar",
+      "okTitulo": "✅ Favoritos gardados correctamente",
+      "okTextoShare": "Aquí tes as miñas engalaxes favoritas de Fly Decision:",
+      "okMensaje": "Desexas compartilos agora?",
+      "siCompartir": "Si, compartir",
+      "noCompartir": "Non",
+      "tituloShare": "As miñas engalaxes favoritas de Fly Decision",
+      "textoShare": "Aquí tes as miñas engalaxes favoritas:",
+      "dialogTitle": "Compartir con...",
+      "errorShare": "Non se puido abrir o menú de compartir. Por favor, proba con outro método.",
+      "sinShare": "O teu dispositivo non permite compartir ficheiros directamente. Asegúrate de ter Telegram instalado.",
+      "errorGuardar": "Vaia, algo saíu mal: "
+    }
+  },
+
+  "tabla": {
+    "tooltips": {
+      "meteoGeneral": "Meteo xeral (choiva / cobertura total de nubes)",
+      "precipitacion": "Precipitación en mm (litros/m²)",
+      "probPrecipitacion": "Probabilidade (%) de precipitación superior a 0,1 mm (litros/m²)",
+      "baseNube": "Base das nubes AGL (km): Altura estimada da base das nubes sobre o chan. Calculada a partir da temperatura a 2m e do punto de orballo a 2m.",
+      "viento180m": "Velocidade media do vento a 180 m (km/h)",
+      "viento120m": "Velocidade media do vento a 120 m (km/h)",
+      "viento80m": "Velocidade media do vento a 80 m (km/h)",
+      "viento10m": "Velocidade media do vento a 10 m (km/h)",
+      "racha10m": "Refachos máximos a 10 m (km/h)",
+      "direccion10m": "Dirección do vento a 10 m",
+      "cizalladura": "Cisalladura do vento a baixas cotas (LLWS) / Fiabilidade da previsión do vento medio",
+      "techo": "Altura (km) sobre o nivel do mar (MSL) do teito de voo utilizable (= grosor da capa límite BLH x 0,85 + elevación media do terreo da cela ECMWF 9km)",
+      "cape": "CAPE (J/kg): Enerxía Potencial Convectiva Dispoñible",
+      "cin": "CIN (J/kg): Inhibición Convectiva",
+      "masInfo": "Máis información",
+      "verEnMapa": "Ver no mapa",
+      "notaCondiciones": "Puntuación das condicións de engalaxe: {{nota}} puntos",
+      "tooltipMeteoCompleto": "<b style='font-size:20px;'>🌦️ Parámetros meteorolóxicos</b><br><br><b>🌦️</b>: Meteo xeral (cobertura de nubes e precipitación)<br><b>💦</b>: Precipitación en mm (litros/m²)<br><b>💦?</b>: Probabilidade (%) de precipitación superior a 0,1 mm (litros/m²)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>180 m</b>: Vento a 180 m sobre o chan (km/h)<br><b>120 m</b>: Vento a 120 m sobre o chan (km/h)<br><b>80 m</b>: Vento a 80 m sobre o chan (km/h)<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>10 m</b>: Vento a 10 m sobre o chan (km/h)<br><img src='icons/icono_racha_48x42.webp' style='width:16px;height:14px;'> : Refachos máximos a 10 m sobre o chan (km/h)<br><img src='icons/icono_direccion_45.webp' style='width:15px;height:15px;'> : Dirección do vento a 10 m sobre o chan<br><hr style='border:none;border-top:1px solid #000;margin:4px 0;'><img src='icons/icono_cizalla_fiabilidad.png' style='width:30px;height:8px;'> : Cisalladura do vento a baixas cotas por velocidade / Fiabilidade da previsión do vento medio<hr style='border:none;border-top:1px solid #000;margin:4px 0;'><b>Teito</b>: Altura (km) sobre o nivel do mar (MSL) do teito de voo utilizable (= grosor da capa límite BLH x 0,85 + elevación media do terreo da cela ECMWF 9km)<br><b>CAPE</b>: Enerxía Potencial Convectiva Dispoñible (J/kg)<br><b>CIN</b>: Inhibición Convectiva (J/kg en valor absoluto)<br><br><i>Nota: Os datos esenciais da base das nubes ☁️↓ (CBH = Cloud Base Height) aínda non están dispoñibles.</i><br>",
+      "tooltipCondiciones": "<b style='font-size:20px;'>⭐ Puntuacións (0-10)</b><br><br>O sistema calcula automaticamente dúas puntuacións para cada engalaxe en función da franxa horaria seleccionada. Ambas están codificadas por cores cun degradado de vermello a verde.<br><br><b>1. Condicións de engalaxe (fila superior):</b><br>Avalía a viabilidade da engalaxe analizando a previsión horaria respecto ás preferencias definidas en ⚙️ Axustes:<ul style='margin-top: 4px; margin-bottom: 12px;'><li>Límites de vento medio (mínimo, ideal e máximo).</li><li>Límite de refachos máximos.</li><li>Orientación(s) da engalaxe.</li><li>Choiva (veto automático e 0 puntos na hora afectada).</li></ul><b>2. Condicións para manterse en térmica ou comezar o XC (fila inferior):</b><br>Avalía as condicións de engalaxe e o potencial térmico para voos de distancia (Cross Country) utilizando datos do modelo ECMWF:<ul style='margin-top: 4px; margin-bottom: 8px;'><li><b>Teito:</b> Premia os teitos altos por riba da altura media do relevo e penaliza os teitos baixos (🟩 &ge; 1500m | 🟥 &le; 800m).</li><li><b>CAPE:</b> Premia os días azuis ou con cúmulos inofensivos, e penaliza os valores extremos por sobredesenvolvemento ou risco de treboada (🟩 0-400 | 🟧 400-800 | 🟥 > 800 J/kg).</li><li><b>CIN:</b> Penaliza a forte inhibición convectiva (inversión) que actúa como tapón, dificultando a formación térmica (🟩 &le; 50 | 🟥 > 150 J/kg).</li></ul><i style='color: #555;'>Nota: A puntuación de XC é <b>independente</b> da orientación da engalaxe ou do vento. Avalía puramente o potencial térmico da masa de aire nesa zona. Só se pon a cero (0 puntos) se se prevé choiva ou treboadas fortes.</i><br><br>⚠️ <b>Aviso:</b> Faltan os datos esenciais da base das nubes (CBH = Cloud Base Height) para saber se a engalaxe estará cuberta por nubes. É un valor ECMWF que aínda non está dispoñible na pasarela (solicitado en marzo de 2026, pendente sen data prevista). Cómpre consultar outros servizos.<br><br><b>Por defecto, as engalaxes reordénanse automaticamente pola primeira puntuación</b> (Condicións de engalaxe), da máis alta á máis baixa. Podes cambiar este comportamento en: ⚙️ <i>Axustes</i> > <i>Outras opcións</i> > <i>Ordenar por condicións de XC</i>."
+    },
+    "labels": {
+      "techo": "Teito",
+      "cape": "CAPE",
+      "cin": "CIN"
+    },
+    "cizalladura": {
+      "baja": "Cisalladura baixa e alta fiabilidade",
+      "media": "Cisalladura moderada e fiabilidade media",
+      "alta": "Cisalladura alta e baixa fiabilidade",
+      "motivoBajo": "Valores inferiores aos limiares",
+      "motivoMedio": "Ratio {{ratio}}x > 1.5 E Δ {{delta}} > 8 km/h",
+      "motivoAlto": "Ratio {{ratio}}x > 2.0 E Δ {{delta}} > 12 km/h"
+    },
+    "techoTooltip": "Teito de voo utilizable: {{altitudMSL}} m MSL\nCálculo = {{espesorUtil}} m de grosor utilizable AGL ({{pct}}% dos {{blh}} m BLH teóricos) + {{elevacion}} m de elevación (nivel medio do terreo da cela ECMWF 9km)\n",
+    "despegueTooltip": "Provincia: {{provincia}}\nEngalaxe: {{despegue}}\nOrientación: {{orientacion}}",
+    "cargando": "Cargando...",
+    "cabeceraRegion": "Rexión",
+    "cabeceraProvincia": "Provincia",
+    "cabeceraDespegue": "Engalaxe",
+    "viento_altura": "{{metros}} m"
+  },
+
+  "contador": {
+    "despeguesFavoritos": "<b>{{n}}</b> engalaxes favoritas",
+    "despeguesFavoritosFiltrados": "<b>{{total}}</b> engalaxes favoritas",
+    "despeguesDisponibles": "<b>{{n}}</b> engalaxes dispoñibles",
+    "despeguesDisponiblesFiltrados": "de <b>{{total}}</b> engalaxes dispoñibles",
+    "despeguesFavoritosEdicion": "{{n}} favoritos de <b>{{total}}</b> dispoñibles",
+    "totalDisponibles": "Total de engalaxes dispoñibles: <b>{{n}}</b>",
+    "miniTodosBD": "Número de engalaxes visibles en toda a base de datos",
+    "miniFavoritos": "Número de engalaxes favoritas / filtradas"
+  },
+
+  "marcadorMasivo": {
+    "paraMarcarFavoritos": "Para marcar ou desmarcar un grupo de favoritos, utiliza a opción:<br>Menú ☰ &nbsp;&nbsp;➔&nbsp;&nbsp; [<img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoritos]"
+  },
+
+  "guiaPrincipal": {
+    "progreso": "{{current}} de {{total}}",
+    "siguiente": "Seguinte →",
+    "cerrar": "Pechar guía",
+    "preguntaVerGuia": "Desexas ver unha guía visual desta pantalla?",
+    "preguntaVerGuiaPrincipal": "Desexas ver unha guía visual da<br>pantalla principal?",
+    "verEnAjustes": "Podes consultala en calquera momento en:<br><i>⚙️ Axustes</i> → <i>Guía</i>",
+    "podrasVerla": "Podes consultala en calquera momento utilizando o botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> nesta pantalla.",
+    "pasos": {
+      "paso1": {
+        "titulo": "🪂 Pantalla principal",
+        "descripcion": "Esta é a pantalla de uso normal da aplicación.<br><br>Mostra unha táboa con todas as engalaxes que seleccionaches como favoritas, xunto coa súa previsión e as puntuacións das condicións (para a engalaxe e para comezar voos de XC).<br><br>As engalaxes sempre se ordenan automaticamente pola súa puntuación de condicións de engalaxe (da máis alta á máis baixa)."
+      },
+      "selectorHorario": {
+        "titulo": "🗓️ Selector de franxa horaria",
+        "descripcion": "Axusta este control desprazable por ambos extremos para seleccionar a franxa horaria que che interese.<br><br>A táboa só mostrará esas horas, e a puntuación das condicións recalcularase para ese intervalo de tempo específico."
+      },
+      "diasSemana": {
+        "titulo": "🗓️ Días da semana",
+        "descripcion": "Estes botóns dos días da semana facilitan a selección da franxa horaria dese día. Este será o uso típico da aplicación: unha ollada rápida ás engalaxes 'posibles' para ese día.<br><br>👉🏽 Vou seleccionar este como exemplo para que vexas como funciona."
+      },
+      "diaSeleccionado": {
+        "titulo": "🗓️ Día seleccionado",
+        "descripcion": "Agora, a táboa só mostra ese día coa franxa horaria seleccionada automaticamente.<br><br>💡 Podes mover os controis desprazables á túa franxa horaria específica para obter unha puntuación máis precisa. Podes personalizar esta franxa horaria diaria 'automática' nos ⚙️ Axustes."
+      },
+      "columnaMeteo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><span style='font-size:25px; display: block;'>🌦️</span><span>Columna de meteo</span></div>",
+        "descripcion": "Mostra os datos meteorolóxicos.<br><br>Fai clic na icona para ver o significado de cada parámetro."
+      },
+      "filaCizalladura": {
+        "titulo": "🟩🟧🟥 Fila Cisalladura / Fiabilidade",
+        "descripcion": "Esta fila especial é un indicador combinado. É un semáforo codificado por cores que mostra simultaneamente dous datos concorrentes: a cisalladura do vento a baixas cotas e a fiabilidade da previsión do vento a 10m."
+      },
+      "columnaPuntuacion": {
+        "titulo": "⭐ Columna de puntuación",
+        "descripcion": "O sistema calcula dúas puntuacións (de 0 a 10) para cada engalaxe e para a franxa horaria seleccionada: Condicións de engalaxe e Condicións para manterse en térmica ou comezar un Cross Country (XC).<br><br>As engalaxes reordénanse automaticamente pola puntuación de condicións de engalaxe.<br><br>Nos ⚙️ Axustes, podes personalizar os teus límites para o cálculo."
+      },
+      "btnInfo": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Información da engalaxe</span></div>",
+        "descripcion": "Mostra información máis completa sobre a engalaxe e ligazóns á súa previsión en Windy, Meteo-parapente e Meteoblue."
+      },
+      "btnOrigen": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Punto de orixe",
+        "descripcion": "Aquí elixes o punto de orixe para o filtro de distancia.<br><br>Podes seleccionar o punto utilizando un mapa ou a túa localización actual."
+      },
+      "btnIncNoFavs": {
+        "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Incluír non favoritos",
+        "descripcion": "Permíteche incluír temporalmente todas as engalaxes dispoñibles (favoritas e non favoritas) no filtro.<br><br>💡 Práctico para buscar rapidamente as condicións de voo en engalaxes de diferentes zonas fóra da túa zona de favoritos."
+      },
+      "btnMapa": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa de engalaxes</span></div>",
+        "descripcion": "Mostra a engalaxe no mapa.<br><br>💡 O mapa inclúe información adicional, diversos filtros, mapas de calor e outras ferramentas útiles para explorar."
+      },
+      "navHome": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Inicio</span></div>",
+        "descripcion": "Mostra a táboa con todas as túas engalaxes favoritas. Se hai buscas ou filtros activos, limparanse.<br><br>💡 Se te perdes, utiliza este botón para volver á vista \"normal\"."
+      },
+      "navSearch": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Buscar</span></div>",
+        "descripcion": "Utiliza isto para buscar engalaxes por nome ou zona administrativa (xeralmente a provincia). Podes escribir sen acentos para ir máis rápido."
+      },
+      "navDistance": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
+        "descripcion": "Mostra un control desprazable para filtrar as engalaxes nun radio ao redor dun punto.<br><br>👉🏽 Agora premerei este botón para abrir o filtro."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
+        "descripcion": "Este filtro permíteche ver só as engalaxes ao redor dun punto específico.<br><br>💡 Útil para atopar rapidamente engalaxes a unha distancia en coche desde a túa localización."
+      },
+      "sliderDistancia": {
+        "titulo": "Radio de distancia",
+        "descripcion": "Move este control desprazable para elixir a distancia máxima.<br><br>A táboa só mostrará as engalaxes dentro dese radio."
+      },
+      "navMap": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
+        "descripcion": "Mapa de engalaxes de parapente con información detallada: busca de engalaxes, filtros por orientación, número de voos, ano do último voo, distancia media, un mapa de calor con máis de 1,3 millóns de puntos de engalaxe rexistrados con exactitude, e moita máis información."
+      },
+      "navSettings": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Axustes</span></div>",
+        "descripcion": "Aquí podes <b>Editar favoritos</b> (para engadir ou eliminar as túas engalaxes habituais), personalizar parámetros, activar opcións e ver información sobre as actualizacións dos datos meteorolóxicos.<br><br>💡 Cada opción ten un botón de información <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'> para ver os detalles."
+      }
+    }
+  },
+
+  "guiaFavoritos": {
+    "preguntaVerGuia": "Desexas ver unha guía visual desta pantalla?",
+    "podrasVerla": "Podes consultala en calquera momento utilizando o botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> nesta pantalla.",
+    "pasos": {
+      "intro": {
+        "titulo": "🪂 Pantalla de edición de engalaxes favoritas",
+        "descripcion": "Esta pantalla mostra todas as engalaxes dispoñibles. Selecciona as que utilizas habitualmente. A vista normal da aplicación só mostrará eses favoritos.<br><br>Poderías seleccionalas todas, pero dependendo do teu dispositivo, iso podería retardar as buscas e o uso diario.<br><br>Actualmente cobre España, Portugal, os Pireneos e as principais zonas alpinas. É un proxecto en crecemento."
+      },
+      "celdaFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Favoritos",
+        "descripcion": "Marca ou desmarca os teus favoritos aquí.<br><br>Os cambios gárdanse automaticamente."
+      },
+      "cabeceraFavorito": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Favoritos do cabeceiro",
+        "descripcion": "Marca ou desmarca todas as engalaxes actualmente visibles á vez.<br><br>💡 Exemplo: Filtra por \"Huesca\" e márcaas todas. Ou filtra por distancia e marca todas as que estean nun radio de 50 km."
+      },
+      "btnInfoDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/info.svg\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Información da engalaxe</span></div>",
+        "descripcion": "Mostra información detallada sobre a engalaxe e ligazóns a previsións noutros sitios web."
+      },
+      "btnMapaDespegue": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"><polygon points=\"1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6\"></polygon><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"18\"></line><line x1=\"16\" y1=\"6\" x2=\"16\" y2=\"22\"></line></svg><span>Mapa de engalaxes</span></div>",
+        "descripcion": "Mostra a engalaxe no mapa.<br><br>💡 O mapa inclúe información adicional sobre a engalaxe, diversos filtros, mapas de calor de engalaxes e varias ferramentas útiles que paga a pena explorar."
+      },
+      "buscador": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg><span>Buscar</span></div>",
+        "descripcion": "Busca engalaxes escribindo a rexión, a provincia ou o nome. Podes escribir sen acentos para ir máis rápido."
+      },
+      "filtroDistancia": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distancia</span></div>",
+        "descripcion": "Este é un filtro que che permite visualizar só as engalaxes ao redor dun punto específico.<br><br>💡 Isto pode axudarche a atopar rapidamente engalaxes nun radio de distancia que elixas ao redor dun punto."
+      },
+      "btnOrigen": {
+        "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Punto de orixe",
+        "descripcion": "Aquí elixes o punto de orixe para o filtro de distancia de arriba.<br><br>Podes seleccionar o punto utilizando un mapa ou a túa localización actual."
+      },
+      "sliderDistancia": {
+        "titulo": "Distancia ao punto",
+        "descripcion": "Ao mover este control desprazable, elixes a distancia máxima en quilómetros."
+      },
+      "btnVerSoloFavs": {
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Ver só favoritos",
+        "descripcion": "Alterna entre mostrar só os teus favoritos ou todas as engalaxes.<br><br>💡 Útil para comprobar os teus favoritos seleccionados dunha ollada."
+      },
+      "btnDesmarcarTodos": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z\"></path><line x1=\"5\" y1=\"5\" x2=\"19\" y2=\"19\" stroke=\"red\" stroke-width=\"3\"></line></svg><span>Desmarcar todos os favoritos</span></div>",
+        "descripcion": "Elimina todas as engalaxes da túa lista de favoritos á vez."
+      },
+      "btnImportar": {
+        "titulo": "📂 Importar favoritos",
+        "descripcion": "Abre un ficheiro con engalaxes favoritas."
+      },
+      "btnExportar": {
+        "titulo": "💾 Exportar favoritos",
+        "descripcion": "Garda un ficheiro coas túas engalaxes favoritas actuais.<br><br>Nota: En realidade, os favoritos gárdanse automaticamente cada vez que marcas un. Este botón serve para facer unha copia de todos nun ficheiro externo (como copia de seguranza ou para compartir). <br><br>💡 Se viaxas a varias zonas de voo afastadas, quizais queiras ter os favoritos de cada zona gardados en ficheiros diferentes."
+      },
+      "btnGuiaEdicion": {
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/icono_ayuda_60.webp\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Guía rápida</span></div>",
+        "descripcion": "Mostra esta guía de novo."
+      },
+      "btnFinalizar": {
+        "titulo": "🏁 Finalizar edición",
+        "descripcion": "Saír á pantalla principal para ver a previsión dos teus favoritos seleccionados."
+      }
+    }
+  },
+
+  "asistente": {
+    "paso1": {
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Onde voar?</p><p>🌦️ Previsión horaria a 4 días.</p><p>📊 Avaliación automatizada das condicións para Engalaxe e XC.</p><p>🗺️ Mapa de engalaxes.</p>",
+      "btnPrimario": "Seleccionar favoritos",
+      "btnSecundario": "Ver guía xeral",
+      "btnImportar": "Importar axustes"
+    },
+    "paso2": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Análise automatizada da previsión meteorolóxica para parapente.</p><p>🙄 <b>Para que serve?:</b> para axudarche a decidir onde voar. Mostra unha táboa coas túas engalaxes favoritas, as súas previsións, e realiza unha análise automatizada destas <b>condicións meteorolóxicas</b>.</p><p>🧮 <b>Que análise fai?:</b> compara a previsión cos teus límites configurados de vento medio e refachos máximos, e a orientación de cada engalaxe; tamén analiza o vento a altitudes próximas á engalaxe (80, 120 e 180 m), proporcionando información sobre o gradiente de vento e a fiabilidade da previsión. Mostra datos clave de XC (teito, CAPE e CIN).</p><p>Con toda esta información, puntúa cada engalaxe de 0 a 10 e codifica con cores 🟩&nbsp;🟨&nbsp;🟥 os datos para a franxa horaria escollida. Podes personalizar todos os límites para adaptalos ás túas preferencias.</p>"
+    },
+    "paso3": {
+      "html": "<p>💨️ <b>Datos meteorolóxicos:</b> previsión horaria para 4 días (96h). Actualízase 8 veces ao día con datos oficiais da Météo-France dos modelos Arome-HD 1.3km (0-48h) e Arpege 7km (48-96h), e 4 veces ao día con datos do ECMWF (0-96h).</p><p>🆓 <b>Custo e privacidade:</b> 100% gratuíto, sen subscricións, sen anuncios e sen rastrexo (cookies, telemetría...). Os teus axustes gárdanse de forma privada no teu navegador. É un proxecto libre e aberto, operativo desde 2026 e en evolución.</p>"
+    },
+    "paso4": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🤔 É complicado?</p><p>✅ <b>Uso básico</b>: selecciona as túas engalaxes favoritas a primeira vez e sempre terás a táboa coas súas previsións e a análise automatizada para cada día.</p><p>✅ <b>Uso intermedio</b>: podes seleccionar unha franxa horaria (días ou horas) e ver a puntuación automática das condicións para ese intervalo. Podes filtrar as engalaxes por un radio de distancia desde a túa casa ou desde calquera lugar.</p><p>✅ <b>Uso avanzado</b>: podes personalizar en ⚙️ <i>Axustes</i> os límites por defecto para o vento medio (mínimo, ideal e máximo) e os refachos máximos. As túas preferencias utilizaranse para a análise, a coloración e a puntuación das condicións.</p>"
+    },
+    "paso5": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>️👉 Ten en conta...</p><p>👉 Só se mostran as engalaxes favoritas. Podes seleccionalas todas, pero nalgúns dispositivos podería retardar a aplicación.</p><p>👉️ A ordenación é automática por puntuación (de 10 a 0).</p><p>👉️ Os datos da base das nubes (CBH) están actualmente pendentes do provedor. Consulta sempre múltiples fontes antes de voar.</p><p>👉️ Cobertura: España, Portugal, Pireneos e Alpes (franceses, suízos, italianos).</p>"
+    },
+    "paso6": {
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>👍 E agora que?</p><p>Tes que marcar as túas engalaxes favoritas.</p>",
+      "btnPrimario": "Seleccionar favoritos →",
+      "btnSecundario": "←"
+    }
+  },
+
+  "origen": {
+    "avisoInicialHtml": "<div style='text-align: center;'><p style='font-size: 2.5em; margin: 0 0 10px 0; color: #0078d4;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></p><p>Tes que establecer un punto de orixe a primeira vez.</p><p>Podes cambialo en calquera momento mediante o botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span></p></div>",
+    "configurarPrimero": "Primeiro tes que establecer un punto de orixe.",
+    "podrasCambiar": "Podes cambialo en calquera momento mediante o botón"
+  },
+
+  "actualizacion": {
+    "cargando": "Cargando...",
+    "esperando": "🔄 Seguinte: <span style='color:#e39300; font-weight:bold;'>Agardando...⌛</span>",
+    "proximaEn": "🔄 Seguinte: <b>{{tiempo}}</b>",
+    "horas": "~{{h}} h {{m}} min",
+    "minutos": "~{{m}} min",
+    "sinConexion": "⚠️ Sen conexión a Internet. Antigüidade dos datos: {{tiempo}}.",
+    "hace": "Hai <b>{{tiempo}}</b>",
+    "esperandoPrimerDato": "Agardando os primeiros datos...",
+    "avisoModelos": {
+      "viento": "Vento (Météo-France: Arome-HD e Arpege)",
+      "general": "Meteo xeral e condicións térmicas de XC (ECMWF)"
+    },
+    "avisoNuevoMeteo": "<p>ℹ️ Novos datos meteorolóxicos dispoñibles para:</p><p><b>{{modelos}}</b></p><p>Actualizar agora?</p>"
+  },
+
+  "ajustes": {
+    "probPrecipitacion": "Probabilidade de precipitação",
+    "vientoAlturas": "Vento a 80, 120 e 180 m",    
+    "cizalladura_fiabilidad": "Cisalladura do vento / Fiabilidade",
+    "XC": "XC: Teito MSL, CAPE e CIN",
+    "horarioVueloPref": "Horario de voo preferido",
+    "solo_horas_diurnas": "Só horas diúrnas",
+    "ordenar_xc": "Ordenar por condicións de XC",
+    "titulo": "Axustes",
+    "editarFavoritos": "Editar favoritos",
+    "importarConfig": "Importar axustes e favoritos",
+    "exportarConfig": "Exportar axustes e favoritos",
+    "restablecerConfig": "Restablecer axustes (elimina toda a configuración e os favoritos)",
+    "viento": "Vento",
+    "rachaMaxima": "Refachos máximos",
+    "acordeon": {
+      "vientoRacha": "Límites de vento e refachos",
+      "datosOpcionales": "Datos meteorolóxicos opcionais",
+      "otrasOpciones": "Outras opcións",
+      "sobreActualizacion": "Actualizacións dos modelos meteorolóxicos"
+    },
+    "guia": "Guía",
+    "ayuda": "Axuda",
+    "legal": "Legal",
+    "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENCIÓN:</b> Importar un ficheiro de configuración substituirá todos os teus axustes actuais e engalaxes favoritas.</b></p>",
+    "importadoConfigOk": "✅ A configuración importouse",
+    "errorArchivoConfig": "⚠️ Parece que o ficheiro non é unha copia de seguranza válida de Fly Decision.",
+    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATENCIÓN:</b> Esta acción restablecerá a configuración aos axustes orixinais e desmarcará todas as engalaxes favoritas.</p></div>"
+  },
+
+  "mapa": {
+    "seleccionarOrigen": "Seleccionar orixe",
+    "miUbicacion": "A miña localización",
+    "irMiUbicacion": "Ir á miña localización",
+    "buscadorPlaceholder": "Buscar lugar ou coordenadas...",
+    "buscadorTitulo": "Busca xeral (lugares e coordenadas)",
+    "ajustes": "Axustes",
+    "capasYFiltros": "Capas e Filtros",
+    "capas": "Capas:",
+    "orientacion": "Orientación:",
+    "cerrarPanel": "Pechar Panel",
+    "fijarPanel": "Fixar Panel (non ocultar ao mover o mapa)",
+    "masInformacion": "Máis información ▼",
+    "volverEdicion": "Volver a Editar Favoritos",
+    "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Estás aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "capasCheckbox": {
+      "despegues": "🪂 Engalaxes",
+      "mapaCalorPeninsula": "🔥 Mapa de Calor Ibérico",
+      "mapaCalorAlpes": "🔥 Mapa de Calor dos Alpes",
+      "mapaCalorMarruecos": "🔥 Mapa de Calor de Marrocos",
+      "notas": "✏️ Notas",
+      "despeguesMundo": "🪂 Engalaxes Paraglidingearth"
+    },
+    "cargandoCalorPeninsula": "⏳ Cargando Mapa de Calor Ibérico...<br><br>(309.157 engalaxes rexistradas)",
+    "cargandoCalorAlpes": "⏳ Cargando Mapa de Calor dos Alpes...<br><br>(967.477 engalaxes rexistradas)",
+    "cargandoCalorMarruecos": "⏳ Cargando Mapa de Calor de Marrocos...<br><br>(11.006 engalaxes rexistradas)",
+    "errorCSV": "Erro ao cargar o CSV. Revisa a consola para máis detalles.",
+    "errorCSVAlpes": "Erro ao cargar o ficheiro CSV dos Alpes.",
+    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} Engalaxes XContest</b>",
+    "despegueXContest": "🪂<br>Engalaxe XContest",
+    "coordenadasMedias": "Coordenadas medias:",
+    "coordenadas": "Coordenadas:",
+    "fecha": "Data:",
+    "hora": "Hora:",
+    "distanciaRecorrida": "Distancia percorrida:",
+    "vuelos": "Voos XContest:",
+    "vueloXContest": "🔍 Ver Voo XContest",
+    "orientacionLabel": "Orientación:",
+    "grupoXContestTitle": "Grupo de {{count}} engalaxes rexistradas en XContest",
+    "nVuelosXContest": "Núm. de voos XContest:",
+    "minVuelosTexto": "Mínimo de voos rexistrados = ",
+    "anioUltimoVueloTexto": "Ano do último voo >= ",
+    "minKmMediaTexto": "Distancia media percorrida mínima = ",
+    "todos": "Todos",
+    "titleBuscadorDespegue": "Buscar engalaxe por nome",
+    "buscadorDespegue": "🔍 Engalaxe",
+    "labelOrientacion": "Orientación:",
+    "labelCoordenadas": "Coordenadas:",
+    "labelAltitud": "Altitude aprox.:",
+    "labelActividad": "Nivel de actividade:",
+    "labelVuelos": "Núm. de voos XContest:",
+    "labelKmMedia": "Distancia media (km):",
+    "labelMasInfo": "Máis información:",
+
+    "capasBase": {
+      "esriTopo": "ESRI World Topographic",
+      "esriOrto": "ESRI World Imagery",
+      "osmOpenTopo": "Estilo OpenStreetMap OpenTopoMap",
+      "osmCyclOSM": "Estilo OpenStreetMap CyclOSM",
+      "thunderforest": "Thunderforest Outdoors",
+      "ignTopo": "IGN España Topográfico",
+      "ignClaro": "IGN España Topográfico (Claro)",
+      "ignOrto": "IGN España Satélite",
+      "osmStandard": "Estilo OpenStreetMap Estándar",
+      "hipsometrico": "Relevo Hipsométrico",
+      "tracestrack": "Tracestrack Topo",
+      "icgc": "ICGC Cataluña",
+      "esriSkyways": "ESRI Topo + Skyways (KK7)",
+      "esriThermals": "ESRI Topo + Térmicas (KK7)",
+      "esriAll": "ESRI Topo + Skyways+Térmicas (KK7)"
+    }
+  },
+
+  "popupDespegue": {
+    "region": "Rexión:",
+    "provincia": "Provincia:",
+    "orientacion": "Orientación:",
+    "nivelActividad": "Nivel de actividade:",
+    "nivelActividadTitle": "Actividade do sitio baseada na data do último voo (ref: nov 2025): Verde 0-6 meses, Laranxa 6-12, Amarelo 12-24, Branco >24 meses sen voos"
+  },
+
+  "html": {
+    "distanciaDesde": "Distancia desde:",
+    "seleccionarOrigen": "Seleccionar orixe",
+    "incluirNoFavs": "Incluír non favoritos no filtro",
+    "resetFiltroDistancia": "Restablecer e ocultar filtro de distancia",
+    "finalizarEdicion": "Finalizar a edición de engalaxes favoritas",
+    "finalizarEdicionTitle": "Finalizar a edición de engalaxes favoritas",
+    "verSoloFavoritos": "Ver só os meus favoritos",
+    "desmarcarFavoritosTitle": "Desmarcar todos os favoritos",
+    "importarFavoritos": "Importar favoritos",
+    "exportarFavoritos": "Exportar favoritos",
+    "guiaEdicionTitle": "Guía da pantalla de edición de engalaxes favoritas",
+    "esperandoConexion": "Agardando conexión..."
+  },
+
+  "crash": {
+    "errorCarga": "<div style='text-align: center;'><p>ℹ️ Erro ao cargar a táboa.</p><p>Causa posible: <b>demasiados favoritos</b> para os recursos do teu dispositivo.</p><p>Abrirase a pantalla de Edición de Favoritos para que poidas desmarcar algúns e reducir a carga.</p><p>Se cres que é temporal: fai clic en <b><i>Finalizar edición</i></b>, reinicia o dispositivo e volve tentalo.</p></div>",
+    "alertFallback": "A aplicación ten problemas para cargar. Activouse o editor de favoritos para reducir o número de engalaxes."
+  },
+
+  "salirApp": {
+    "pregunta": "Desexas saír da aplicación?",
+    "no": "Non",
+    "si": "Si, saír"
+  },
+
+  "novedadesXC": {
+    "titulo": "ℹ️ Novidades de Datos XC",
+    "html": "<div style='text-align: left; font-size: 0.95em; line-height: 1.4; color: #333;'><ul style='padding-left: 20px; margin-top: 5px; margin-bottom: 5px;'><li style='margin-bottom: 6px;'><b>Puntuación XC Independente:</b> Avalía só o potencial térmico (Teito, CAPE, CIN) ignorando o vento na engalaxe. Só puntúa 0 con choiva ou risco de treboada.</li><li style='margin-bottom: 6px;'><b>Teito en Altitude (MSL):</b> Agora mostra a altitude sobre o nivel do mar, proporcionando unha mellor precisión para planificar distancias.</li><li><b>Teito Realista:</b> A previsión redúcese un 15% para compensar a taxa de afundimento do parapente.</li></ul><p style='margin-top: 10px; font-size: 0.9em;'>💡 <i>Máis detalles facendo clic nas iconas 🌦️ ou ⭐ na táboa.</i></p></div>"
+  },
+
+  "orientaciones": {
+    "N": "N",
+    "NNE": "NNE",
+    "NE": "NL",
+    "ENE": "LNL",
+    "E": "L",
+    "ESE": "LSL",
+    "SE": "SL",
+    "SSE": "SSL",
+    "S": "S",
+    "SSO": "SSO",
+    "SO": "SO",
+    "OSO": "OSO",
+    "O": "O",
+    "ONO": "ONO",
+    "NO": "NO",
+    "NNO": "NNO",
+    "norte": "Norte",
+    "nornoreste": "Nor-nordés",
+    "noreste": "Nordés",
+    "estenoreste": "Lés-nordés",
+    "este": "Leste",
+    "estesureste": "Lés-sueste",
+    "sureste": "Sueste",
+    "sursureste": "Sur-sueste",
+    "sur": "Sur",
+    "sursuroeste": "Sur-suroeste",
+    "suroeste": "Suroeste",
+    "oestesuroeste": "Oés-suroeste",
+    "oeste": "Oeste",
+    "oestenoroeste": "Oés-noroeste",
+    "noroeste": "Noroeste",
+    "nornoroeste": "Nor-noroeste",
+    "todos_title": "Os filtros de orientación están activos. Fai clic para limpalos todos."
+  },
+
+  "cron": {
+    "Actualización en curso... ⏳": "Actualización en curso... ⏳"
+  },
+
+  "btn_info": {
+    "tooltipVientoLimites": "<b>Vento medio mínimo, ideal e máximo:</b><br><br>O sistema automatizado de avaliación de condicións terá en conta estes valores.<br><br>A cor dos datos na táboa indica visualmente a análise das condicións en función dos valores que establezas aquí (Mínimo, Ideal e Máximo).<br><br>🟧 Laranxa: vento frouxo por debaixo do teu vento mínimo (normalmente 0, a menos que necesites vento específico para voo de ladeira ou outros motivos).<br>🟩 Verde: Vento ideal, desde o mínimo ata unha marxe de seguranza antes do máximo.<br>🟧 Laranxa: vento máis forte que se achega ao máximo (o último terzo antes de chegar ao máximo).<br>🟥 Vermello: vento moi forte que excede o teu límite de vento máximo.<br><br><b>Definición técnica estándar da OMM (Organización Meteorolóxica Mundial) da velocidade media a 10m</b>:<br><br>É a velocidade media do vento sostido durante os últimos 10 minutos antes da hora indicada. Mídese a unha altura estándar de 10 metros sobre o chan (para evitar a fricción inmediata do terreo). Representa o fluxo laminar ou base.",
+    "filtroDistanciaCompleto": "<b>Filtro de distancia de engalaxes:</b><br><br>Mostra só as engalaxes dentro do radio de distancia que selecciones.<br><br>Utiliza o botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='1em' height='1em' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: -0.125em;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> para establecer a posición de orixe. Podes utilizar o mapa ou a localización actual do teu dispositivo.<span class='texto-oculto-en-edicion'><br><br>Utiliza o botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> para incluír engalaxes non favoritas no filtro, o que significa <b>incluír temporalmente todas as engalaxes</b> dispoñibles na base de datos.<br><br>Cando está activado, aplícase un filtro inicial de 100 km para evitar sobrecargar a táboa. Podes axustalo consonte as túas necesidades e o rendemento do teu dispositivo.</span>",
+    "tooltipRachaMaxima": "<b>Refacho máximo:</b><br><br>O sistema automatizado de avaliación de condicións terá en conta estes valores.<br><br>A cor dos datos na táboa indica visualmente a análise das condicións en función do valor que establezas aquí.<br><br>🟩 Verde: refacho máximo seguro, lonxe do límite.<br>🟧 Laranxa: refacho máximo que se achega ao teu límite de refacho máximo.<br>🟥 Vermello: refacho que excede o teu límite de refacho máximo.<br><br><b>Defición técnica estándar da OMM (Organización Meteorolóxica Mundial) do refacho máximo a 10m</b>:<br><br>É o pico máximo de velocidade instantánea (cunha duración de 3 segundos) rexistrado en calquera momento dentro do período da hora anterior. Representa as flutuacións curtas e intensas superpostas ao vento medio, asociadas á turbulencia mecánica ou térmica (convección).",
+    "tooltipProbPrecipitacion": "<b>Probabilidade de precipitación (%)</b><br><br>Probabilidade (%) de que a precipitación exceda os 0,1 mm (litros/m²).<br><br>Datos orixinais do modelo ECMWF.",
+    "tooltipVientoAlturas": "<b>Vento a 80, 120 e 180 m (km/h)</b><br><br>Mostra 3 filas coas previsións da velocidade media do vento a 80, 120 e 180 m sobre o nivel do chan. Estas 3 filas móstranse por riba da fila estándar de velocidade media do vento a 10m.<br><br>Estes valores permiten avaliar o grao de turbulencia de cisalladura e a fiabilidade da previsión do vento medio.<br><br>Datos orixinais do modelo Arome/Arpege (Météo-France).",
+    "tooltipCizalladura": "<b>Cisalladura do vento / Fiabilidade</b><br><br>Mostra unha liña fina baixo a liña de orientación cun valor calculado: o nivel de Cisalladura do Vento a Baixas Cotas (LLWS) e o grao de Fiabilidade da previsión do vento medio a 10 m.<br><br>O sistema analiza os valores de vento medio a 10, 80, 120 e 180 m sobre o chan e, a través dun algoritmo, mostra un indicador codificado por cores.<br><br>🟩 Verde: Baixa cisalladura do vento por velocidade e alta fiabilidade da previsión de velocidade a 10 m.<br>🟧 Laranxa: Valores de cisalladura e fiabilidade moderados.<br>🟥 Vermello: Alta cisalladura do vento por velocidade e baixa fiabilidade da previsión de velocidade a 10 m.<br><br>Esta cisalladura ocorre cando existe un elevado gradiente de velocidade preto do chan. Este nivel tamén está correlacionado coa fiabilidade da velocidade do vento a 10 m sobre o chan.<br><br>O motivo é que, se a masa de aire se move a velocidades semellantes, o grao de turbulencia de cisalladura inducida pola velocidade será baixo, a previsión do vento ao nivel do chan será máis fiable e viceversa.",
+    "tooltipXC": "<b>XC: Teito MSL, CAPE, CIN</b><br><br>Mostra un grupo de 3 filas con datos centrados no voo de distancia (Cross Country / XC):<ul><li><b>Teito de Voo MSL (km):</b> Altura Máxima da Capa Límite (BLH)</li><li><b>CAPE (J/kg):</b> Enerxía Potencial Convectiva Dispoñible</li><li><b>CIN (J/kg):</b> Inhibición Convectiva</li></ul>Datos orixinais do modelo ECMWF.",
+    "tooltipHorarioVuelo": "<b>Horario de voo preferido:</b><br><br>Os valores configurados aquí farán que estas horas de inicio e fin se seleccionen automaticamente ao escoller un día da semana (luns, martes, etc.) no selector de franxa horaria situado enriba da táboa.<br><br>Sempre podes axustar o selector de franxa horaria manualmente; esta configuración é só unha automatización para facilitar a selección automática dunha franxa horaria típica.<br><br>Tanto se se fai manual como automaticamente, só a franxa horaria final seleccionada tense en conta para o cálculo da puntuación de <i>Condicións</i>; polo tanto, a puntuación de cada engalaxe será máis realista para ese intervalo específico.<br><br>Se a opción <i>Só horas diúrnas</i> está activada, o intervalo seleccionado automaticamente con esta configuración axustarase para manterse dentro dos límites da luz diúrna.",
+    "tooltipHorasDiurnas": "<b>Só horas diúrnas</b><br><br>Mostra só as horas de luz. Se está desactivado, móstranse as 24 horas do día.<br><br>Inclúese unha marxe de ±1h ao amencer e ao solpor.<br><br>Cambia automaticamente todos os meses. Ademais, nos meses con cambio de hora, estas horas axustaranse automaticamente ao horario oficial de verán/inverno (DST).",
+    "tooltipOrdenarXC": "<b>Ordenar por Condicións de XC:</b><br><br>Por defecto, as engalaxes ordénanse da mellor á peor baseándose na puntuación de <i>Condicións de Engalaxe</i> (viabilidade de engalar de acordo co vento).<br><br>Se activas esta opción, a táboa ordenarase da mellor á peor puntuación de <b>Condicións de XC</b> (potencial térmico da masa de aire), independentemente de se o vento nesa engalaxe é o ideal ou non.",
+    "tooltipModelosMeteo": "<b>Modelos meteorolóxicos:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: para datos de vento nas primeiras 0-48h. Cobre case toda Europa, incluíndo a Península Ibérica, agás o sur de Andalucía (Arpege Europe 7km 0-96h utilízase nesa zona).</li><li><b>Météo-France Arpege Europe 7km</b>: para datos de vento nas seguintes 48-96h. Cobre Europa e o Norte de África.</li><li><b>ECMWF IFS HRES 9km</b>: para o resto dos datos meteorolóxicos das 0-96h. Cobre o mundo enteiro.</li></ul><b>Frecuencia de actualización automática:</b> Météo-France aproximadamente cada 3 horas (8 veces ao día) e ECMWF aproximadamente cada 6 horas (4 veces ao día).<br><br><b>Pasarela de datos meteorolóxicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>O valor <i>Ref.HHZ</i> indica a hora UTC±0 (Z) correspondente ao último ciclo de execución do modelo no servidor meteorolóxico de orixe. A partir dese momento, hai varias horas de cálculo computacional antes da distribución final e da dispoñibilidade pública.<br><br>"
+  }
+
+}
