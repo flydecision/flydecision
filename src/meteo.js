@@ -968,59 +968,123 @@ function iniciarGuiaFavoritos(forzar = false) {
 
         steps: [
             {  
-                popover: { title: '🪂 Pantalla de edición de despegues favoritos', description: 'En esta pantalla tienes todos los despegues disponibles actualmente. Aquí seleccionas los despegues que usas habitualmente. La pantalla de uso normal de la aplicación mostrará solo estos despegues favoritos.<br><br>Realmente podrías seleccionar todos pero, según dispositivo, ralentizará luego las búsquedas y su uso diario.<br><br>Por el momento están los despegues de España, Portugal, Pirineos y los principales de Alpes. Esta aplicación es un proyecto en crecimiento.'},            
+                popover: { 
+                    title: t('guiaFavoritos.pasos.intro.titulo'), 
+                    description: t('guiaFavoritos.pasos.intro.descripcion')
+                },            
             },
 
-            { element: '#tabla tbody tr:nth-child(1) td:first-child', 
-                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> ↔ <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Favoritos', description: 'Marca o desmarca aquí tus despegues favoritos.<br><br>Los cambios se guardan automáticamente.'} },
-
-            { element: '#tabla thead tr:first-child th:first-child', 
-                popover: { title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> ↔ <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Cabecera favoritos', description: 'Permite marcar o desmarcar de una sola vez todos los despegues visibles actualmente en la tabla.<br><br>💡 Ejemplo: con el botón "Buscar" filtras los de "Huesca" y los marcas todos. O con el botón "Distancia" filtras los que estén a 50 km de distancia de tu casa y los marcas todos.' } },
-
-            { element: '.columna-despegue .btn-info', 
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/info.svg" width="20" height="20" style="display: block;"><span>Información del despegue</span></div>', description: 'Muestra información más completa del despegue y enlaces a su pronóstico en otras webs de meterología.' } },
-
-            { element: '.btn-guia-mapa-directo', 
+            { 
+                element: '#tabla tbody tr:nth-child(1) td:first-child', 
                 popover: { 
-                    title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg><span>Mapa del despegue</span></div>', 
-                    description: 'Muestra el despegue en el mapa.<br><br>💡 El mapa incluye información adicional sobre el despegue, filtros de diverso tipo, mapa de calor de despegues y varias utilidades que merece la pena explorar.' } },
-
-            { element: '#buscador-wrapper',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Buscar</span></div>', description: 'Busca despegues escribiendo su región, su provincia o su nombre. Puedes escribir sin tildes para mayor agilidad.'} },
-
-            { element: '#div-filtro-distancia-interno',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>Distancia</span></div>', 
-                    description: 'Es un filtro que te permite mostrar solo despegues alrededor de un punto.<br><br>💡 Puede servirte para encontrar rápidamente los despegues que estén en un radio de distancia que elijas alrededor de un punto.'} },
-
-            { element: '#btn-abrir-geo-menu',
-                popover: { title: '<span style="background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;"><svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.125em;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></span> Punto de origen', description: 'Con este botón eliges el centro del radio de búsqueda por distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual.'} },
-
-            { element: '#distancia-slider',
-                popover: { title: 'Distancia al punto', description: 'Arrastrando este deslizador eliges los kilómetros de distancia máxima.'} },
-
-            { element: '#btn-filtro-favoritos-toggle',
-                popover: { 
-                    title: '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"> ↔ <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> Ver solo favoritos</span></div>', 
-                    description: 'Alterna entre ver solo los despegues favoritos o ver todos los despegues.<br><br>💡 Si tienes ya favoritos, puede servirte para verlos juntos fácilmente y desmarcar alguno.'} 
+                    title: t('guiaFavoritos.pasos.celdaFavorito.titulo'), 
+                    description: t('guiaFavoritos.pasos.celdaFavorito.descripcion')
+                } 
             },
 
-            { element: '#btn-desmarcar-favoritos',
+            { 
+                element: '#tabla thead tr:first-child th:first-child', 
                 popover: { 
-                    title: '<div style="display: flex; align-items: center; gap: 8px;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path><line x1="5" y1="5" x2="19" y2="19" stroke="red" stroke-width="3"></line></svg><span>Desmarcar todos los favoritos</span></div>', 
-                    description: 'Desmarca de una sola vez todos los favoritos actuales, para luego empezar de nuevo a marcar favoritos.'} 
+                    title: t('guiaFavoritos.pasos.cabeceraFavorito.titulo'), 
+                    description: t('guiaFavoritos.pasos.cabeceraFavorito.descripcion') 
+                } 
             },
 
-            { element: '#btn-abrir-favoritos',
-                popover: { title: '📂 Importar favoritos', description: 'Abre un archivo de despegues favoritos.' } },
+            { 
+                element: '.columna-despegue .btn-info', 
+                popover: { 
+                    title: t('guiaFavoritos.pasos.btnInfoDespegue.titulo'), 
+                    description: t('guiaFavoritos.pasos.btnInfoDespegue.descripcion') 
+                } 
+            },
 
-            { element: '#btn-guardar-favoritos',
-                popover: { title: '💾 Exportar favoritos', description: 'Guarda un archivo con los despegues favoritos actuales.<br><br>Nota: Los favoritos realmente se guardan automáticamente cada vez que marcas uno. Este botón sirve para hacer una copia de todos en un archivo externo (como backup o para compartirlo). <br><br>💡 Si te mueves por varias zonas de vuelo distantes, puede interesarte tener los favoritos de cada zona guardados en archivos diferentes.' } },
+            { 
+                element: '.btn-guia-mapa-directo', 
+                popover: { 
+                    title: t('guiaFavoritos.pasos.btnMapaDespegue.titulo'), 
+                    description: t('guiaFavoritos.pasos.btnMapaDespegue.descripcion') 
+                } 
+            },
 
-            { element: '#btn-guia-edicion-favoritos',
-                popover: { title: '<div style="display: flex; align-items: center; gap: 8px;"><img src="icons/icono_ayuda_60.webp" width="20" height="20" style="display: block;"><span>Guía rápida</span></div>', description: 'Muestra esta guía sobre edición de despegues favoritos.' } },
+            { 
+                element: '#buscador-wrapper',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.buscador.titulo'), 
+                    description: t('guiaFavoritos.pasos.buscador.descripcion')
+                } 
+            },
 
-            { element: '#btn-finalizar-edicion-favoritos',
-                popover: { title: '🏁 Finalizar edición de favoritos', description: 'Sale a la pantalla de uso normal de la aplicación, que mostrará la tabla con tus favoritos, su pronóstico y puntuación.' } }
+            { 
+                element: '#div-filtro-distancia-interno',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.filtroDistancia.titulo'), 
+                    description: t('guiaFavoritos.pasos.filtroDistancia.descripcion')
+                } 
+            },
+
+            { 
+                element: '#btn-abrir-geo-menu',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.btnOrigen.titulo'), 
+                    description: t('guiaFavoritos.pasos.btnOrigen.descripcion')
+                } 
+            },
+
+            { 
+                element: '#distancia-slider',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.sliderDistancia.titulo'), 
+                    description: t('guiaFavoritos.pasos.sliderDistancia.descripcion')
+                } 
+            },
+
+            { 
+                element: '#btn-filtro-favoritos-toggle',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.btnVerSoloFavs.titulo'), 
+                    description: t('guiaFavoritos.pasos.btnVerSoloFavs.descripcion')
+                } 
+            },
+
+            { 
+                element: '#btn-desmarcar-favoritos',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.btnDesmarcarTodos.titulo'), 
+                    description: t('guiaFavoritos.pasos.btnDesmarcarTodos.descripcion')
+                } 
+            },
+
+            { 
+                element: '#btn-abrir-favoritos',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.btnImportar.titulo'), 
+                    description: t('guiaFavoritos.pasos.btnImportar.descripcion') 
+                } 
+            },
+
+            { 
+                element: '#btn-guardar-favoritos',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.btnExportar.titulo'), 
+                    description: t('guiaFavoritos.pasos.btnExportar.descripcion') 
+                } 
+            },
+
+            { 
+                element: '#btn-guia-edicion-favoritos',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.btnGuiaEdicion.titulo'), 
+                    description: t('guiaFavoritos.pasos.btnGuiaEdicion.descripcion') 
+                } 
+            },
+
+            { 
+                element: '#btn-finalizar-edicion-favoritos',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.btnFinalizar.titulo'), 
+                    description: t('guiaFavoritos.pasos.btnFinalizar.descripcion') 
+                } 
+            }
         ],
         
         onDestroyStarted: () => {

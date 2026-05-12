@@ -257,43 +257,43 @@
         "descripcion": "This screen shows all available takeoffs. Select the ones you use regularly. The normal app view will only show these favorites.<br><br>You could select them all, but depending on your device, it might slow down searches and daily usage.<br><br>Currently covers Spain, Portugal, Pyrenees, and major Alpine areas. This is a growing project."
       },
       "celdaFavorito": {
-        "titulo": "Favorites",
-        "descripcion": "Mark or unmark your favorites here. Changes are saved automatically."
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Favorites",
+        "descripcion": "Mark or unmark your favorites here.<br><br>Changes are saved automatically."
       },
       "cabeceraFavorito": {
-        "titulo": "Header Favorites",
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Header Favorites",
         "descripcion": "Mark or unmark all currently visible takeoffs at once.<br><br>💡 Example: Filter for \"Huesca\" and mark them all. Or filter by distance and mark all within 50 km."
       },
       "btnInfoDespegue": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Takeoff Information</span></div>",
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/info.svg\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Takeoff Information</span></div>",
         "descripcion": "Shows detailed takeoff info and links to forecasts on other sites."
       },
       "btnMapaDespegue": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Takeoff Map</span></div>",
-        "descripcion": "View the takeoff on the map with extra tools and heatmaps."
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"#333\" stroke-width=\"2.5\" stroke-linecap=\"round\"><polygon points=\"1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6\"></polygon><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"18\"></line><line x1=\"16\" y1=\"6\" x2=\"16\" y2=\"22\"></line></svg><span>Takeoff Map</span></div>",
+        "descripcion": "Shows the takeoff on the map.<br><br>💡 The map includes additional info about the takeoff, various filters, takeoff heatmaps, and several useful tools worth exploring."
       },
       "buscador": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Search</span></div>",
-        "descripcion": "Search by region, province, or name."
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><circle cx=\"11\" cy=\"11\" r=\"8\"></circle><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"></line></svg><span>Search</span></div>",
+        "descripcion": "Search for takeoffs by typing the region, province, or name. You can type without accents for speed."
       },
       "filtroDistancia": {
-        "titulo": "Distance Filter",
-        "descripcion": "Show only takeoffs around a selected point."
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distance</span></div>",
+        "descripcion": "This is a filter that allows you to show only takeoffs around a specific point.<br><br>💡 It can help you quickly find takeoffs within a distance radius of your choice around a point."
       },
       "btnOrigen": {
-        "titulo": "Origin Point",
-        "descripcion": "Set the center for the distance search radius."
+        "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Origin point",
+        "descripcion": "With this button, you choose the center of the distance search radius.<br><br>You can select the point using a map or your current location."
       },
       "sliderDistancia": {
-        "titulo": "Distance",
-        "descripcion": "Drag to set the maximum radius."
+        "titulo": "Distance to point",
+        "descripcion": "By dragging this slider, you choose the maximum distance in kilometers."
       },
       "btnVerSoloFavs": {
-        "titulo": "Show Only Favorites",
-        "descripcion": "Toggle between showing only your favorites or all takeoffs."
+        "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Show Only Favorites",
+        "descripcion": "Toggle between showing only your favorites or all takeoffs.<br><br>💡 Useful for checking your selected favorites at a glance."
       },
       "btnDesmarcarTodos": {
-        "titulo": "Unmark All",
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z\"></path><line x1=\"5\" y1=\"5\" x2=\"19\" y2=\"19\" stroke=\"red\" stroke-width=\"3\"></line></svg><span>Unmark All Favorites</span></div>",
         "descripcion": "Remove all takeoffs from your favorites list at once."
       },
       "btnImportar": {
@@ -301,11 +301,11 @@
         "descripcion": "Open a file with favorite takeoffs."
       },
       "btnExportar": {
-        "titulo": "💾 Export Favorites",
-        "descripcion": "Save a backup file of your favorites. Useful for sharing or switching zones."
+        "titulo": "💾 Export favorites",
+        "descripcion": "Saves a file with your current favorite takeoffs.<br><br>Note: Favorites are actually saved automatically every time you mark one. This button is used to make a copy of all of them in an external file (as a backup or to share it). <br><br>💡 If you travel across several distant flight zones, you might want to have the favorites for each zone saved in different files."
       },
       "btnGuiaEdicion": {
-        "titulo": "Quick Guide",
+        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><img src=\"icons/icono_ayuda_60.webp\" width=\"20\" height=\"20\" style=\"display: block;\"><span>Quick Guide</span></div>",
         "descripcion": "Shows this guide again."
       },
       "btnFinalizar": {
