@@ -367,6 +367,74 @@ details.faq-card:target {
     min-height: 200px; 
 }
 
+
+.selector-idioma-ayuda {
+    /* Usa 'absolute' si quieres que se quede arriba, 
+       o 'fixed' si quieres que baje contigo al hacer scroll */
+    position: absolute; 
+    top: 20px;   /* Separación desde arriba */
+    right: 20px; /* Separación desde la derecha */
+    display: inline-block;
+    font-family: sans-serif;
+    z-index: 1000; /* Asegura que quede por encima de otros textos/imágenes */
+}
+
+.btn-idioma-actual {
+    background: white;
+    border: 1px solid #ccc;
+    padding: 4px 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Hacemos la bandera un pelín más grande ya que no hay texto */
+.btn-idioma-actual img, .dropdown-contenido-idiomas button img {
+    width: 20px;
+    height: 15px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.flecha-abajo {
+    font-size: 10px;
+    color: #666;
+}
+
+.dropdown-contenido-idiomas {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 5px;
+    background-color: white;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border-radius: 6px;
+    z-index: 1000;
+    
+    /* Diseño en cuadrícula de 2 columnas */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    padding: 6px;
+    gap: 4px;
+}
+
+.dropdown-contenido-idiomas button {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centra la bandera en su casilla */
+    border-radius: 4px;
+}
+
+.dropdown-contenido-idiomas button:hover {
+    background-color: #f1f1f1;
+}
+
 </style>
 
 <script>
@@ -412,12 +480,74 @@ details.faq-card:target {
             console.error('Error al copiar: ', err);
         });
     }
+
+    function toggleMenuIdioma() {
+        const menu = document.getElementById("dropdown-idiomas");
+        menu.style.display = menu.style.display === "none" ? "flex" : "none";
+    }
+
+    // Cerrar el menú si se hace clic fuera
+    document.addEventListener('click', function(event) {
+        const selector = document.querySelector('.selector-idioma-ayuda');
+        if (!selector.contains(event.target)) {
+            document.getElementById("dropdown-idiomas").style.display = "none";
+        }
+    });
+
+    function cambiarIdiomaAyuda(codigo) {
+        // 1. Actualizar solo la bandera del botón principal
+        document.getElementById("bandera-actual").src = `/icons/flag_${codigo.replace('-', '_')}.webp`;
+        
+        // 2. Cerrar menú
+        document.getElementById("dropdown-idiomas").style.display = "none";
+        
+        // 3. Ejecutar el cambio real
+        if (window.cambiarIdioma) {
+            window.cambiarIdioma(codigo); 
+        }
+    }
+
 </script>
 
 </head>
 <body>
 
 <div class="container">
+
+<div class="selector-idioma-ayuda">
+    <button class="btn-idioma-actual" onclick="toggleMenuIdioma()">
+        <img id="bandera-actual" src="/icons/flag_es_ES.webp" alt="Idioma">
+        <span id="texto-idioma-actual"></span>
+        <span class="flecha-abajo">▼</span>
+    </button>
+    
+    <div id="dropdown-idiomas" class="dropdown-contenido-idiomas" style="display: none;">
+        <button onclick="cambiarIdiomaAyuda('es-ES', 'Español')">
+            <img src="/icons/flag_es_ES.webp" alt="Español">
+        </button>
+        <button onclick="cambiarIdiomaAyuda('eu-ES', 'Euskara')">
+            <img src="/icons/flag_eu_ES.webp" alt="Euskara">
+        </button>
+        <button onclick="cambiarIdiomaAyuda('ca-ES', 'Català')">
+            <img src="/icons/flag_ca_ES.webp" alt="Català">
+        </button>
+        <button onclick="cambiarIdiomaAyuda('gl-ES', 'Galego')">
+            <img src="/icons/flag_gl_ES.webp" alt="Galego">
+        </button>
+        <button onclick="cambiarIdiomaAyuda('en-GB', 'English')">
+            <img src="/icons/flag_en_GB.webp" alt="English">
+        </button>
+        <button onclick="cambiarIdiomaAyuda('fr-FR', 'Français')">
+            <img src="/icons/flag_fr_FR.webp" alt="Français">
+        </button>
+        <button onclick="cambiarIdiomaAyuda('de-DE', 'Deutsch')">
+            <img src="/icons/flag_de_DE.webp" alt="Deutsch">
+        </button>
+        <button onclick="cambiarIdiomaAyuda('pt-PT', 'Português')">
+            <img src="/icons/flag_pt_PT.webp" alt="Português">
+        </button>
+    </div>
+</div>
 
 <div class="center">
     <a href="https://flydecision.com/" target="_blank" rel="noopener"><img src="https://flydecision.com/icons/logo_192px.png" width="40" height="40" alt="Logo"></a>
