@@ -650,12 +650,12 @@ function sugerirGuiaPrincipal(forzar = false) {
 
     // Eliminamos el checkbox y simplificamos el texto de ayuda
     const htmlAyuda = !forzar 
-        ? `<p style="color: #555; margin-top: 10px;">Puedes verla cuando quieras en:<br><i>⚙️ Ajustes</i> → <i>Guía</i></p>`
-        : ''; 
+        ? `<p style="color: #555; margin-top: 10px;">${t('guiaPrincipal.verEnAjustes')}</p>`
+        : '';
 
     const botonesModal =[
         {
-            texto: forzar ? 'Cancelar' : 'No', 
+            texto: forzar ? t('botones.cancelar') : t('botones.no'), 
             estilo: 'secundario',
             onclick: function() {
                 // Si el usuario pulsa "No" en la sugerencia automática, 
@@ -686,7 +686,7 @@ function sugerirGuiaPrincipal(forzar = false) {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2.5em; margin: 0 0 10px 0;">💡</p>
-                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">¿Quieres ver una guía visual sobre la<br>Pantalla principal?</p>
+                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">${t('guiaPrincipal.preguntaVerGuiaPrincipal')}</p>
                 ${htmlAyuda}
             </div>
         `,
@@ -846,12 +846,12 @@ function sugerirGuiaFavoritos(forzar = false) {
 
     // Eliminamos el checkbox y ajustamos el texto informativo
     const htmlAyuda = !forzar 
-        ? `<p style="color: #555; margin-top: 10px;">Puedes verla cuando quieras con el botón <img src="icons/icono_ayuda_60.webp" width="18" height="18" style="vertical-align:middle;"> de esta pantalla.</p>`
-        : ''; 
+        ? `<p style="color: #555; margin-top: 10px;">${t('guiaPrincipal.podrasVerla')}</p>`
+        : '';
 
     const botonesModal =[
         {
-            texto: forzar ? 'Cancelar' : 'No',
+            texto: forzar ? t('botones.cancelar') : t('botones.no'),
             estilo: 'secundario',
             onclick: function() {
                 // Si es la sugerencia automática (!forzar) y pulsa No, 
@@ -877,7 +877,7 @@ function sugerirGuiaFavoritos(forzar = false) {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2.5em; margin: 0 0 10px 0;">💡</p>
-                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">¿Quieres ver una guía visual sobre esta pantalla?</p>
+                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">${t('guiaPrincipal.preguntaVerGuia')}</p>
                 ${htmlAyuda}
             </div>
         `,

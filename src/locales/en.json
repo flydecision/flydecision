@@ -167,9 +167,10 @@
   "guiaPrincipal": {
     "progreso": "{{current}} of {{total}}",
     "siguiente": "Next →",
-    "anterior": "←",
     "cerrar": "Close guide",
     "preguntaVerGuia": "Would you like to see a visual guide for this screen?",
+    "preguntaVerGuiaPrincipal": "Would you like to see a visual guide for the<br>Main Screen?",
+    "verEnAjustes": "You can see it anytime in:<br><i>⚙️ Settings</i> → <i>Guide</i>",
     "podrasVerla": "You can see it anytime using the <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> button on this screen.",
     "pasos": {
       "paso1": {

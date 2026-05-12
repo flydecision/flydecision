@@ -167,9 +167,10 @@
   "guiaPrincipal": {
     "progreso": "{{current}} de {{total}}",
     "siguiente": "Siguiente →",
-    "anterior": "←",
     "cerrar": "Cerrar guía",
     "preguntaVerGuia": "¿Quieres ver una guía visual sobre esta pantalla?",
+    "preguntaVerGuiaPrincipal": "¿Quieres ver una guía visual sobre la<br>Pantalla principal?",
+    "verEnAjustes": "Puedes verla cuando quieras en:<br><i>⚙️ Ajustes</i> → <i>Guía</i>",
     "podrasVerla": "Puedes verla cuando quieras con el botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> de esta pantalla.",
     "pasos": {
       "paso1": {
