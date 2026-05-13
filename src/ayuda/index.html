@@ -73,26 +73,6 @@ h2 {
     font-size: 1.2rem;
 }
 
-.center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    max-height: 50px;
-}
-
-.center h2 {
-    margin: 0;
-    padding: 0;
-    line-height: 1;
-    font-size: 1.2rem;
-}
-
-.center a {
-    display: flex;
-    line-height: 0;
-}
-
 .header-seccion {
     display: flex;
     flex-direction: column;
@@ -125,6 +105,10 @@ h2 {
     padding: 0;
     line-height: 1;
     font-size: 20px;
+}
+
+.subtitulo-header {
+    font-size: 1.2rem; /* Tamaño normal para ordenadores y tablets */
 }
 
 /* =========================================
@@ -194,6 +178,58 @@ a, a:link, a:visited, a:hover, a:active, a:focus {
     display: inline-block;
     transition: transform 0.2s ease, opacity 0.2s ease;
     text-decoration: none !important;
+}
+
+/* =========================================
+   NUEVA BARRA SUPERIOR (HEADER)
+   ========================================= */
+.header-top-bar {
+    display: flex;
+    justify-content: space-between; /* Envía un bloque a la izq y otro a la der */
+    align-items: center; /* Centra verticalmente los elementos */
+    width: 100%;
+    margin-bottom: 10px;
+    gap: 15px; /* Evita que el título y la bandera se peguen */
+}
+
+/* Bloque Izquierdo: Logo y texto */
+.header-logo-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-logo-title a {
+    display: flex; /* Quita el margen fantasma de la imagen */
+    flex-shrink: 0; /* Evita que el logo se encoja si falta espacio */
+}
+
+.header-logo-title p {
+    font-size: 35px;
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.2;
+    /* Si el texto es excesivamente largo, saltará de línea sin romper la caja */
+    word-break: break-word; 
+}
+
+/* Bloque Derecho: Selector de idiomas */
+.selector-idioma-ayuda {
+    position: relative; /* Clave para que el dropdown se alinee respecto a este botón */
+    display: inline-block;
+    font-family: sans-serif;
+    z-index: 1000;
+    flex-shrink: 0; /* Evita que el botón se aplaste en móviles pequeños */
+}
+
+/* Ajustes para móviles muy pequeños */
+@media (max-width: 480px) {
+    .header-logo-title p {
+        font-size: 21px; /* Reducimos la letra en móviles para que quepa mejor */
+    }
+    .subtitulo-header {
+        font-size: 1em; /* Tamaño reducido solo en móviles */
+    }
 }
 
 /* =========================================
@@ -370,16 +406,6 @@ details[open] .faq-answer {
 /* =========================================
     SELECTOR DE IDIOMAS (VERSIÓN VERTICAL)
     ========================================= */
-.selector-idioma-ayuda {
-    position: absolute; 
-    top: 50%;                 /* Centramos verticalmente respecto al div .center */
-    transform: translateY(-50%); /* Ajuste fino del centrado vertical */
-    right: 0px;               /* Alineado a la derecha de la caja central */
-    display: inline-block;
-    font-family: sans-serif;
-    z-index: 1000; 
-}
-
 .btn-idioma-actual {
     background: white;
     border: 1px solid #ccc;
@@ -603,54 +629,39 @@ details[open] .faq-answer {
 
 <div class="container">
 
-<!-- CONTENEDOR DEL TÍTULO Y LOGO -->
-<div class="center" style="position: relative; width: 100%;">
-
-    <!-- LOGO Y TÍTULO -->
-    <a href="https://flydecision.com/" target="_blank" rel="noopener"><img src="https://flydecision.com/icons/logo_192px.png" width="40" height="40" alt="Logo"></a>
-    <p style="font-size: 22px; font-weight: bold;" data-i18n="header.titulo">Ayuda Fly Decision</p>
-
-    <!-- SELECTOR DE IDIOMAS -->
-    <div class="selector-idioma-ayuda">
-    <!-- Botón principal: Solo bandera y flecha -->
-    <button class="btn-idioma-actual" onclick="toggleMenuIdioma()">
-        <img id="bandera-actual" src="/icons/flag_es_ES.webp" alt="Idioma">
-        <span class="flecha-abajo">▼</span>
-    </button>
+<!-- CONTENEDOR PRINCIPAL: Flexbox repartiendo izquierda y derecha -->
+<div class="header-top-bar">
     
-    <!-- Menú desplegable: Lista vertical con bandera + texto -->
-    <div id="dropdown-idiomas" class="dropdown-contenido-idiomas" style="display: none;">
-        <button onclick="cambiarIdiomaAyuda('es')">
-            <img src="/icons/flag_es_ES.webp" alt="Español"> <span>Español</span>
+    <!-- BLOQUE IZQUIERDO: Logo y Título -->
+    <div class="header-logo-title">
+        <a href="https://flydecision.com/" target="_blank" rel="noopener">
+            <img src="https://flydecision.com/icons/logo_192px.png" width="40" height="40" alt="Logo">
+        </a>
+        <p data-i18n="header.titulo">Ayuda Fly Decision</p>
+    </div>
+
+    <!-- BLOQUE DERECHO: Selector de idiomas -->
+    <div class="selector-idioma-ayuda">
+        <button class="btn-idioma-actual" onclick="toggleMenuIdioma()">
+            <img id="bandera-actual" src="/icons/flag_es_ES.webp" alt="Idioma">
+            <span class="flecha-abajo">▼</span>
         </button>
-        <button onclick="cambiarIdiomaAyuda('eu')">
-            <img src="/icons/flag_eu_ES.webp" alt="Euskara"> <span>Euskara</span>
-        </button>
-        <button onclick="cambiarIdiomaAyuda('ca')">
-            <img src="/icons/flag_ca_ES.webp" alt="Català"> <span>Català</span>
-        </button>
-        <button onclick="cambiarIdiomaAyuda('gl')">
-            <img src="/icons/flag_gl_ES.webp" alt="Galego"> <span>Galego</span>
-        </button>
-        <button onclick="cambiarIdiomaAyuda('en')">
-            <img src="/icons/flag_en_GB.webp" alt="English"> <span>English</span>
-        </button>
-        <button onclick="cambiarIdiomaAyuda('fr')">
-            <img src="/icons/flag_fr_FR.webp" alt="Français"> <span>Français</span>
-        </button>
-        <button onclick="cambiarIdiomaAyuda('de')">
-            <img src="/icons/flag_de_DE.webp" alt="Deutsch"> <span>Deutsch</span>
-        </button>
-        <button onclick="cambiarIdiomaAyuda('pt')">
-            <img src="/icons/flag_pt_PT.webp" alt="Português"> <span>Português</span>
-        </button>
+        
+        <div id="dropdown-idiomas" class="dropdown-contenido-idiomas" style="display: none;">
+            <button onclick="cambiarIdiomaAyuda('es')"><img src="/icons/flag_es_ES.webp" alt="Español"> <span>Español</span></button>
+            <button onclick="cambiarIdiomaAyuda('eu')"><img src="/icons/flag_eu_ES.webp" alt="Euskara"> <span>Euskara</span></button>
+            <button onclick="cambiarIdiomaAyuda('ca')"><img src="/icons/flag_ca_ES.webp" alt="Català"> <span>Català</span></button>
+            <button onclick="cambiarIdiomaAyuda('gl')"><img src="/icons/flag_gl_ES.webp" alt="Galego"> <span>Galego</span></button>
+            <button onclick="cambiarIdiomaAyuda('en')"><img src="/icons/flag_en_GB.webp" alt="English"> <span>English</span></button>
+            <button onclick="cambiarIdiomaAyuda('fr')"><img src="/icons/flag_fr_FR.webp" alt="Français"> <span>Français</span></button>
+            <button onclick="cambiarIdiomaAyuda('de')"><img src="/icons/flag_de_DE.webp" alt="Deutsch"> <span>Deutsch</span></button>
+            <button onclick="cambiarIdiomaAyuda('pt')"><img src="/icons/flag_pt_PT.webp" alt="Português"> <span>Português</span></button>
+        </div>
     </div>
 </div>
 
-</div>
-
 <!-- SUBTÍTULO -->
-<h2 style="color:#fff; font-size:1rem; text-align:center;" data-i18n="header.subtitulo">
+<h2 class="subtitulo-header" style="color:#fff; text-align:left;" data-i18n="header.subtitulo">
     Pronóstico, análisis automático y mapas de despegues de parapente
 </h2><br>
 
