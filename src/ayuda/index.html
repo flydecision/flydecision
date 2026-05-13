@@ -485,146 +485,148 @@ details[open] .faq-answer {
 </style>
 
 <script>
-    // CONFIGURACIÓN DE i18next EXCLUSIVA PARA LA PÁGINA DE AYUDA
-    document.addEventListener("DOMContentLoaded", () => {
-        const savedLng = localStorage.getItem('i18nextLng') || 'es';
-
-        i18next
-            .use(i18nextHttpBackend)
-            .use(i18nextBrowserLanguageDetector)
-            .init({
-                lng: savedLng,
-                fallbackLng: 'es',
-                supportedLngs: ['es', 'en', 'ca', 'eu', 'fr', 'de', 'gl', 'pt'],
-                load: 'languageOnly',
-                backend: { 
-                    // Ruta absoluta buscando el archivo específico de ayuda
-                    loadPath: '/locales/ayuda_{{lng}}.json' 
-                }, 
-                interpolation: { escapeValue: false },
-                detection: {
-                    order: ['localStorage', 'navigator'],
-                    lookupLocalStorage: 'i18nextLng',
-                    caches: ['localStorage'] 
-                }
-            })
-            .then(() => {
-                // Traducir HTML
-                const elementos = document.querySelectorAll('[data-i18n]');
-                elementos.forEach(el => {
-                    const data = el.getAttribute('data-i18n');
-                    const partes = data.split(';');
-                    partes.forEach(parte => {
-                        const attrMatch = parte.match(/^\[(.+)\](.*)$/);
-                        if (attrMatch) {
-                            el.setAttribute(attrMatch[1], i18next.t(attrMatch[2]));
-                        } else {
-                            el.innerHTML = i18next.t(parte);
-                        }
-                    });
-                });
-
-                // Traducir etiquetas Meta
-                document.title = i18next.t("meta.title");
-                document.querySelector('html').lang = i18next.language.split('-')[0];
-                
-                const metaDesc = document.querySelector('meta[name="description"]');
-                if(metaDesc) metaDesc.setAttribute("content", i18next.t("meta.description"));
-                
-                const ogDesc = document.querySelector('meta[property="og:description"]');
-                if(ogDesc) ogDesc.setAttribute("content", i18next.t("meta.description"));
-
-                // Actualizar UI del selector
-                actualizarUI_Idioma(i18next.language.split('-')[0]);
-
-                // Activar Splide
-                new Splide( '.splide', {
-                    type   : 'loop',
-                    perPage: 5,
-                    gap    : '20px',
-                    focus  : 'center',
-                    autoplay: true,
-                    interval: 3000,
-                    pagination: true,
-                    breakpoints: {
-                        1024: { perPage: 5, gap: '8px' }, 
-                        768:  { perPage: 4, gap: '6px' },  
-                        480:  { perPage: 3, gap: '10px' } 
-                    },
-                }).mount();
-
-                // Lógica de Scroll (si viene de URL hash)
-                if (window.location.hash) {
-                    const targetDetails = document.querySelector(window.location.hash);
-                    if (targetDetails && targetDetails.tagName === 'DETAILS') {
-                        targetDetails.open = true;
-                        setTimeout(() => {
-                            targetDetails.scrollIntoView({ behavior: "smooth", block: "start" });
-                        }, 100);
+// CONFIGURACIÓN DE i18next EXCLUSIVA PARA LA PÁGINA DE AYUDA
+document.addEventListener("DOMContentLoaded", () => {
+    
+    i18next
+        .use(i18nextHttpBackend)
+        .use(i18nextBrowserLanguageDetector) // Detecta automáticamente el idioma del navegador (o de Webview en el caso de la app capacitor)
+        .init({
+            // ELIMINAMOS la propiedad 'lng'. Así obligamos a actuar al detector.
+            fallbackLng: 'es', // Si el idioma del navegador no está en tu lista, usará español
+            supportedLngs: ['es', 'en', 'ca', 'eu', 'fr', 'de', 'gl', 'pt'],
+            load: 'languageOnly', // Si el móvil está en en-US, buscará 'en.json'
+            backend: { 
+                loadPath: '/locales/ayuda_{{lng}}.json' 
+            }, 
+            interpolation: { escapeValue: false },
+            detection: {
+                // ORDEN DE BÚSQUEDA: 
+                // 1º: localStorage (por si el usuario lo cambió a mano)
+                // 2º: navigator (detecta el idioma del navegador o del sistema Android)
+                order: ['localStorage', 'navigator'],
+                lookupLocalStorage: 'i18nextLng',
+                caches: ['localStorage'] // Guarda el idioma detectado automáticamente
+            }
+        })
+        .then(() => {
+            // Traducir HTML
+            const elementos = document.querySelectorAll('[data-i18n]');
+            elementos.forEach(el => {
+                const data = el.getAttribute('data-i18n');
+                const partes = data.split(';');
+                partes.forEach(parte => {
+                    const attrMatch = parte.match(/^\[(.+)\](.*)$/);
+                    if (attrMatch) {
+                        el.setAttribute(attrMatch[1], i18next.t(attrMatch[2]));
+                    } else {
+                        el.innerHTML = i18next.t(parte);
                     }
-                }
+                });
             });
-    });
 
-    // FUNCIONES DEL MENÚ DE IDIOMAS
-    function toggleMenuIdioma() {
+            // Traducir etiquetas Meta
+            document.title = i18next.t("meta.title");
+            document.querySelector('html').lang = i18next.language.split('-')[0];
+            
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if(metaDesc) metaDesc.setAttribute("content", i18next.t("meta.description"));
+
+            const ogDesc = document.querySelector('meta[property="og:description"]');
+            if(ogDesc) ogDesc.setAttribute("content", i18next.t("meta.description"));
+
+            // Actualizar la bandera del selector usando el idioma detectado
+            actualizarUI_Idioma(i18next.language.split('-')[0]);
+
+            // Activar Splide
+            new Splide( '.splide', {
+                type   : 'loop',
+                perPage: 5,
+                gap    : '20px',
+                focus  : 'center',
+                autoplay: true,
+                interval: 3000,
+                pagination: true,
+                breakpoints: {
+                    1024: { perPage: 5, gap: '8px' }, 
+                    768:  { perPage: 4, gap: '6px' },  
+                    480:  { perPage: 3, gap: '10px' } 
+                },
+            }).mount();
+
+            // Lógica de Scroll (si viene de URL hash)
+            if (window.location.hash) {
+                const targetDetails = document.querySelector(window.location.hash);
+                if (targetDetails && targetDetails.tagName === 'DETAILS') {
+                    targetDetails.open = true;
+                    setTimeout(() => {
+                        targetDetails.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 100);
+                }
+            }
+        });
+});
+
+// FUNCIONES DEL MENÚ DE IDIOMAS
+function toggleMenuIdioma() {
+    const menu = document.getElementById("dropdown-idiomas");
+    menu.style.display = menu.style.display === "none" ? "flex" : "none";
+}
+
+document.addEventListener('click', function(event) {
+    const selector = document.querySelector('.selector-idioma-ayuda');
+    if (selector && !selector.contains(event.target)) {
         const menu = document.getElementById("dropdown-idiomas");
-        menu.style.display = menu.style.display === "none" ? "flex" : "none";
+        if(menu) menu.style.display = "none";
     }
+});
 
-    document.addEventListener('click', function(event) {
-        const selector = document.querySelector('.selector-idioma-ayuda');
-        if (selector && !selector.contains(event.target)) {
-            const menu = document.getElementById("dropdown-idiomas");
-            if(menu) menu.style.display = "none";
-        }
+function cambiarIdiomaAyuda(lng) {
+    const langCod = lng.split('-')[0];
+    localStorage.setItem('i18nextLng', langCod);
+    i18next.changeLanguage(langCod).then(() => {
+        location.reload(); 
     });
+}
 
-    function cambiarIdiomaAyuda(lng) {
-        const langCod = lng.split('-')[0];
-        localStorage.setItem('i18nextLng', langCod);
-        i18next.changeLanguage(langCod).then(() => {
-            location.reload(); 
-        });
-    }
+function actualizarUI_Idioma(lng) {
+    const mapIdiomas = {
+        'es': { bandera: 'flag_es_ES.webp' },
+        'en': { bandera: 'flag_en_GB.webp' },
+        'fr': { bandera: 'flag_fr_FR.webp' },
+        'ca': { bandera: 'flag_ca_ES.webp' },
+        'eu': { bandera: 'flag_eu_ES.webp' },
+        'de': { bandera: 'flag_de_DE.webp' },
+        'gl': { bandera: 'flag_gl_ES.webp' },
+        'pt': { bandera: 'flag_pt_PT.webp' }
+    };
+    
+    const config = mapIdiomas[lng] || mapIdiomas['es'];
+    // Solo actualizamos la imagen de la bandera
+    document.getElementById("bandera-actual").src = `/icons/${config.bandera}`;
+}
+// FUNCIÓN: Copiar enlace
+function copyFaqLink(btn) {
+    const details = btn.closest('details');
+    if (!details || !details.id) return;
 
-    function actualizarUI_Idioma(lng) {
-        const mapIdiomas = {
-            'es': { bandera: 'flag_es_ES.webp' },
-            'en': { bandera: 'flag_en_GB.webp' },
-            'fr': { bandera: 'flag_fr_FR.webp' },
-            'ca': { bandera: 'flag_ca_ES.webp' },
-            'eu': { bandera: 'flag_eu_ES.webp' },
-            'de': { bandera: 'flag_de_DE.webp' },
-            'gl': { bandera: 'flag_gl_ES.webp' },
-            'pt': { bandera: 'flag_pt_PT.webp' }
-        };
-        
-        const config = mapIdiomas[lng] || mapIdiomas['es'];
-        // Solo actualizamos la imagen de la bandera
-        document.getElementById("bandera-actual").src = `/icons/${config.bandera}`;
-    }
-    // FUNCIÓN: Copiar enlace
-    function copyFaqLink(btn) {
-        const details = btn.closest('details');
-        if (!details || !details.id) return;
+    const url = window.location.origin + window.location.pathname + '#' + details.id;
+    navigator.clipboard.writeText(url).then(() => {
+        const originalText = btn.innerHTML;
+        btn.classList.add('copied');
+        // Usamos i18next.t() en JS
+        btn.innerHTML = i18next.t('botones.copiado');
 
-        const url = window.location.origin + window.location.pathname + '#' + details.id;
-        navigator.clipboard.writeText(url).then(() => {
-            const originalText = btn.innerHTML;
-            btn.classList.add('copied');
-            // Usamos i18next.t() en JS
-            btn.innerHTML = i18next.t('botones.copiado');
-
-            setTimeout(() => {
-                btn.classList.remove('copied');
-                btn.innerHTML = originalText;
-            }, 2000);
-        });
-    }
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = originalText;
+        }, 2000);
+    });
+}
 </script>
 
 </head>
+
 <body>
 
 <div class="container">
