@@ -372,8 +372,9 @@ details[open] .faq-answer {
     ========================================= */
 .selector-idioma-ayuda {
     position: absolute; 
-    top: 20px;   
-    right: 20px; 
+    top: 50%;                 /* Centramos verticalmente respecto al div .center */
+    transform: translateY(-50%); /* Ajuste fino del centrado vertical */
+    right: 0px;               /* Alineado a la derecha de la caja central */
     display: inline-block;
     font-family: sans-serif;
     z-index: 1000; 
@@ -602,7 +603,15 @@ details[open] .faq-answer {
 
 <div class="container">
 
-<div class="selector-idioma-ayuda">
+<!-- CONTENEDOR DEL TÍTULO Y LOGO -->
+<div class="center" style="position: relative; width: 100%;">
+
+    <!-- LOGO Y TÍTULO -->
+    <a href="https://flydecision.com/" target="_blank" rel="noopener"><img src="https://flydecision.com/icons/logo_192px.png" width="40" height="40" alt="Logo"></a>
+    <p style="font-size: 22px; font-weight: bold;" data-i18n="header.titulo">Ayuda Fly Decision</p>
+
+    <!-- SELECTOR DE IDIOMAS -->
+    <div class="selector-idioma-ayuda">
     <!-- Botón principal: Solo bandera y flecha -->
     <button class="btn-idioma-actual" onclick="toggleMenuIdioma()">
         <img id="bandera-actual" src="/icons/flag_es_ES.webp" alt="Idioma">
@@ -638,11 +647,9 @@ details[open] .faq-answer {
     </div>
 </div>
 
-<div class="center">
-    <a href="https://flydecision.com/" target="_blank" rel="noopener"><img src="https://flydecision.com/icons/logo_192px.png" width="40" height="40" alt="Logo"></a>
-    <p style="font-size: 22px; font-weight: bold;" data-i18n="header.titulo">Ayuda Fly Decision</p>
 </div>
 
+<!-- SUBTÍTULO -->
 <h2 style="color:#fff; font-size:1rem; text-align:center;" data-i18n="header.subtitulo">
     Pronóstico, análisis automático y mapas de despegues de parapente
 </h2><br>
