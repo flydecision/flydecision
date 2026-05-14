@@ -34,7 +34,7 @@
     },
     "android": {
       "pregunta": "📱 Existe App para Android?",
-      "respuesta": "<p><b>Sim.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Disponível no Google Play' src='https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png' width='180'></a><p>A web <b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> e a app funcionam de igual forma. Pode usar a que mais lhe convier, embora a app tenha a pequena vantagem de manter os dados offline caso perca a rede e de ser visualizada em ecrã inteiro.</p>"
+      "respuesta": "<p><b>Sim.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Disponível no Google Play' src='/icons/GetItOnGooglePlay_Badge_Web_color_Portuguese-Portugal.png' width='180'></a><p>A web <b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> e a app funcionam de igual forma. Pode usar a que mais lhe convier, embora a app tenha a pequena vantagem de manter os dados offline caso perca a rede e de ser visualizada em ecrã inteiro.</p>"
     },
     "iphone": {
       "pregunta": "📱 Existe app para iPhone (iOS)?",
@@ -84,5 +84,8 @@
       "pregunta": "⚠️ Aviso importante: Funcionamento e Isenção de Responsabilidade",
       "respuesta": "<p><b>Resumo: Esta aplicação é uma ferramenta de apoio informativo. As previsões meteorológicas podem falhar, a pontuação de condições pode ser incorreta e quem pilota é a única pessoa responsável por avaliar as condições reais e tomar a decisão final antes de voar.</b></p><p><b>Como funciona o sistema? (Uso previsto)</b></p><ul><li>O Fly Decision é uma ferramenta de apoio à decisão final da pessoa, oferecendo a previsão e realizando uma <b>análise automática das condições gerais</b> para zonas de descolagem de parapente.</li><li>O sistema avalia parâmetros previstos (como a precipitação, velocidade do vento, as rajadas e a direção), comparando-os com <b>limites de segurança configuráveis</b> definidos por si.</li><li>Oferece previsões por horas e classifica cada faixa horária através de uma <b>escala visual de cores</b> para facilitar a compreensão num relance.</li></ul><p><b>🛑 Isenção de responsabilidade (Disclaimer)</b></p><ul><li><b>Apenas para fins informativos:</b> Este software é fornecido exclusivamente para fins informativos e <b>em nenhuma circunstância deve ser usado como um sistema de segurança de voo</b>, nem como a única base para tomar decisões que afetem a sua segurança.</li><li><b>Limitações das previsões:</b> Os dados meteorológicos provêm de modelos numéricos. Estas previsões <b>podem conter erros significativos</b> e podem não representar corretamente os efeitos locais reais ou a aerologia da zona.</li><li><b>Responsabilidade exclusiva de quem pilota</b>, que deve avaliar as condições reais e atuais no local de descolagem e tomar a decisão final sobre se é seguro voar ou não.</li></ul>"
     }
+  },
+  "icons": {
+      "src_logo_google_play": "/icons/GetItOnGooglePlay_Badge_Web_color_Portuguese-Portugal.png"
   }
 }

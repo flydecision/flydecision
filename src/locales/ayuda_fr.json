@@ -34,7 +34,7 @@
     },
     "android": {
       "pregunta": "📱 Y a-t-il une application Android ?",
-      "respuesta": "<p><b>Oui.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Disponible sur Google Play' src='https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_French.png' width='180'></a><p>Le site <b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> et l'application fonctionnent de la même manière. Vous pouvez utiliser ce qui vous convient le mieux, bien que l'application ait le léger avantage de conserver les données hors ligne si vous perdez la connexion, et de s'afficher en plein écran.</p>"
+      "respuesta": "<p><b>Oui.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Disponible sur Google Play' src='/icons/GetItOnGooglePlay_Badge_Web_color_French.png' width='180'></a><p>Le site <b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> et l'application fonctionnent de la même manière. Vous pouvez utiliser ce qui vous convient le mieux, bien que l'application ait le léger avantage de conserver les données hors ligne si vous perdez la connexion, et de s'afficher en plein écran.</p>"
     },
     "iphone": {
       "pregunta": "📱 Y a-t-il une application pour iPhone (iOS) ?",
@@ -84,5 +84,8 @@
       "pregunta": "⚠️ Avis important : Fonctionnement et Clause de Non-responsabilité",
       "respuesta": "<p><b>Résumé : Cette application est un outil d'aide informatif. Les prévisions météorologiques peuvent être fausses, le score peut être incorrect, et le pilote est le seul responsable d'évaluer les conditions réelles et de prendre la décision finale avant de voler.</b></p><p><b>Comment fonctionne le système ? (Usage prévu)</b></p><ul><li>Fly Decision est un outil d'aide à la décision personnelle, offrant les prévisions et une <b>analyse automatique des conditions générales</b> pour les zones de décollage de parapente.</li><li>Le système évalue les paramètres prévus (précipitations, vent, rafales, direction) en les comparant à <b>vos limites de sécurité configurables</b>.</li><li>Il propose des prévisions horaires et classe chaque plage via une <b>échelle visuelle de couleurs</b>.</li></ul><p><b>🛑 Clause de non-responsabilité (Disclaimer)</b></p><ul><li><b>À des fins informatives uniquement :</b> Ce logiciel est fourni exclusivement à des fins informatives et <b>en aucun cas il ne doit être utilisé comme un système de sécurité de vol</b> ni comme base unique pour prendre des décisions affectant votre sécurité.</li><li><b>Limites des prévisions :</b> Les données météo proviennent de modèles numériques. Ces prévisions <b>peuvent contenir des erreurs significatives</b> et peuvent ne pas représenter correctement les effets locaux ou l'aérologie réelle.</li><li><b>Responsabilité exclusive du pilote</b>, qui doit évaluer les conditions réelles sur le site de décollage et prendre la décision finale de voler ou non.</li></ul>"
     }
+  },
+  "icons": {
+      "src_logo_google_play": "/icons/GetItOnGooglePlay_Badge_Web_color_French.png"
   }
 }

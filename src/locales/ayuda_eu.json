@@ -34,7 +34,7 @@
     },
     "android": {
       "pregunta": "📱 Ba al dago Androiderako App-rik?",
-      "respuesta": "<p><b>Bai.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Google Play-n eskuragarri' src='https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png' width='180'></a><p><b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> webguneak eta aplikazioak berdin funtzionatzen dute. Hobekien datorkizuna erabil dezakezu, nahiz eta aplikazioak abantaila txiki bat duen: datuak lineaz kanpo mantentzen ditu estaldura galtzen baduzu une batean eta pantaila osoan ikusten dela.</p>"
+      "respuesta": "<p><b>Bai.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Google Play-n eskuragarri' src='/icons/GetItOnGooglePlay_Badge_Web_color_Basque.png' width='180'></a><p><b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> webguneak eta aplikazioak berdin funtzionatzen dute. Hobekien datorkizuna erabil dezakezu, nahiz eta aplikazioak abantaila txiki bat duen: datuak lineaz kanpo mantentzen ditu estaldura galtzen baduzu une batean eta pantaila osoan ikusten dela.</p>"
     },
     "iphone": {
       "pregunta": "📱 Ba al dago app-rik iPhonerako (iOS)?",
@@ -84,5 +84,8 @@
       "pregunta": "⚠️ Ohar garrantzitsua: Funtzionamendua eta Erantzukizun-salbuespena",
       "respuesta": "<p><b>Laburpena: Aplikazio hau informazio-laguntzarako tresna bat da. Iragarpen meteorologikoek huts egin dezakete, baldintzen puntuazioa okerra izan daiteke eta pilotatzen duena da hegan egin aurretik benetako baldintzak ebaluatzeko eta azken erabakia hartzeko arduradun bakarra.</b></p><p><b>Nola funtzionatzen du sistemak? (Aurreikusitako erabilera)</b></p><ul><li>Fly Decision pertsonaren azken erabakia hartzen laguntzeko tresna bat da, iragarpena eskainiz eta parapente aireratze guneetarako <b>baldintza orokorren analisi automatikoa</b> eginez.</li><li>Sistemak aurreikusitako parametroak (esaterako, prezipitazioa, haizearen abiadura, boladak eta norabidea) ebaluatzen ditu, zuk definitutako <b>segurtasun muga pertsonalizagarriekin</b> alderatuz.</li><li>Ordukako iragarpenak eskaintzen ditu eta ordu-tarte bakoitza sailkatzen du <b>kolore eskalako ebaluazio bisual</b> baten bidez, begiratu batean erraz ulertzeko.</li></ul><p><b>🛑 Erantzukizun-salbuespena (Disclaimer)</b></p><ul><li><b>Informazio helburuetarako soilik:</b> Software hau informazio-helburuetarako soilik ematen da eta <b>inola ere ez da erabili behar hegaldiko segurtasun sistema gisa</b>, ezta zure segurtasunari eragiten dioten erabakiak hartzeko oinarri bakar gisa ere.</li><li><b>Iragarpenen mugak:</b> Datu meteorologikoak eredu numerikoetatik datoz. Iragarpen hauek <b>akats esanguratsuak izan ditzakete</b> eta baliteke benetako tokiko efektuak edo inguruko aerologia behar bezala ez irudikatzea.</li><li><b>Pilotatzen duenaren ardura esklusiboa</b> da, eta aireratze lekuan dauden benetako eta uneko baldintzak ebaluatu behar ditu, eta hegan egitea segurua den ala ez erabakitzeko azken erabakia hartu.</li></ul>"
     }
+  },
+  "icons": {
+      "src_logo_google_play": "/icons/GetItOnGooglePlay_Badge_Web_color_Basque.png"
   }
 }

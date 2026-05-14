@@ -34,7 +34,7 @@
     },
     "android": {
       "pregunta": "📱 Is there an Android App?",
-      "respuesta": "<p><b>Yes.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Get it on Google Play' src='https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_English.png' width='180'></a><p>The website <b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> and the app work the same way. You can use whichever suits you best, although the app has the slight advantage of keeping data offline if you lose coverage and running in full screen.</p>"
+      "respuesta": "<p><b>Yes.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Get it on Google Play' src='/icons/GetItOnGooglePlay_Badge_Web_color_English.png' width='180'></a><p>The website <b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> and the app work the same way. You can use whichever suits you best, although the app has the slight advantage of keeping data offline if you lose coverage and running in full screen.</p>"
     },
     "iphone": {
       "pregunta": "📱 Is there an iPhone (iOS) app?",
@@ -84,5 +84,8 @@
       "pregunta": "⚠️ Important Notice: Operation and Disclaimer",
       "respuesta": "<p><b>Summary: This application is an informative support tool. Weather forecasts can fail, condition scoring can be incorrect, and the pilot is the only person responsible for evaluating real conditions and making the final decision before flying.</b></p><p><b>How does the system work? (Intended use)</b></p><ul><li>Fly Decision is a support tool for personal final decision-making, offering the forecast and performing an <b>automatic analysis of general conditions</b> for paragliding takeoff areas.</li><li>The system evaluates predicted parameters (such as precipitation, wind speed, gusts, and direction) by comparing them with <b>configurable safety limits</b> defined by you.</li><li>It offers hourly predictions and classifies each time slot using a <b>visual color scale</b> for easy at-a-glance understanding.</li></ul><p><b>🛑 Disclaimer</b></p><ul><li><b>For informational purposes only:</b> This software is provided exclusively for informational purposes and <b>under no circumstances should it be used as a flight safety system</b> or as the sole basis for making decisions affecting your safety.</li><li><b>Forecast limitations:</b> Weather data comes from numerical models. These forecasts <b>may contain significant errors</b> and may not correctly represent actual local effects or the aerology of the area.</li><li><b>Exclusive responsibility of the pilot</b>, who must evaluate the actual and current conditions at the takeoff site and make the final decision on whether it is safe to fly or not.</li></ul>"
     }
+  },
+  "icons": {
+      "src_logo_google_play": "/icons/GetItOnGooglePlay_Badge_Web_color_English.png"
   }
 }

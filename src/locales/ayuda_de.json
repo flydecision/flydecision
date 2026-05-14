@@ -34,7 +34,7 @@
     },
     "android": {
       "pregunta": "📱 Gibt es eine Android-App?",
-      "respuesta": "<p><b>Ja.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Jetzt bei Google Play' src='https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png' width='180'></a><p>Die Website <b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> und die App funktionieren gleich. Du kannst nutzen, was dir am besten passt, obwohl die App den kleinen Vorteil hat, dass sie Daten offline behält, falls du mal den Empfang verlierst, und im Vollbildmodus läuft.</p>"
+      "respuesta": "<p><b>Ja.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Jetzt bei Google Play' src='/icons/GetItOnGooglePlay_Badge_Web_color_German.png' width='180'></a><p>Die Website <b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> und die App funktionieren gleich. Du kannst nutzen, was dir am besten passt, obwohl die App den kleinen Vorteil hat, dass sie Daten offline behält, falls du mal den Empfang verlierst, und im Vollbildmodus läuft.</p>"
     },
     "iphone": {
       "pregunta": "📱 Gibt es eine App für das iPhone (iOS)?",
@@ -84,5 +84,8 @@
       "pregunta": "⚠️ Wichtiger Hinweis: Funktionsweise und Haftungsausschluss",
       "respuesta": "<p><b>Zusammenfassung: Diese Anwendung ist ein informatives Unterstützungstool. Wettervorhersagen können falsch sein, die Punktzahl der Bedingungen kann fehlerhaft sein und der Pilot ist die einzige Person, die dafür verantwortlich ist, die tatsächlichen Bedingungen zu beurteilen und die endgültige Entscheidung vor dem Fliegen zu treffen.</b></p><p><b>Wie funktioniert das System? (Verwendungszweck)</b></p><ul><li>Fly Decision ist ein Tool zur Unterstützung der persönlichen Endentscheidung, indem es die Vorhersage bereitstellt und eine <b>automatische Analyse der allgemeinen Bedingungen</b> für Gleitschirm-Startgebiete durchführt.</li><li>Das System bewertet vorhergesagte Parameter (wie Niederschlag, Windgeschwindigkeit, Böen und Richtung), indem es sie mit <b>konfigurierbaren Sicherheitsgrenzen</b> vergleicht, die von dir definiert werden.</li><li>Es bietet stündliche Vorhersagen und klassifiziert jedes Zeitfenster durch eine <b>visuelle Farbskala</b>, um das Verständnis auf einen Blick zu erleichtern.</li></ul><p><b>🛑 Haftungsausschluss (Disclaimer)</b></p><ul><li><b>Nur zu Informationszwecken:</b> Diese Software wird ausschließlich zu Informationszwecken bereitgestellt und <b>darf unter keinen Umständen als Flugsicherheitssystem</b> oder als einzige Grundlage für Entscheidungen, die deine Sicherheit betreffen, verwendet werden.</li><li><b>Einschränkungen der Vorhersagen:</b> Die Wetterdaten stammen aus numerischen Modellen. Diese Vorhersagen <b>können erhebliche Fehler enthalten</b> und lokale tatsächliche Effekte oder die Aerologie des Gebiets möglicherweise nicht richtig darstellen.</li><li><b>Ausschließliche Verantwortung des Piloten:</b> Es liegt in der Verantwortung des Piloten, die tatsächlichen und aktuellen Bedingungen am Startplatz zu beurteilen und die endgültige Entscheidung zu treffen, ob das Fliegen sicher ist oder nicht.</li></ul>"
     }
+  },
+  "icons": {
+      "src_logo_google_play": "/icons/GetItOnGooglePlay_Badge_Web_color_German.png"
   }
 }

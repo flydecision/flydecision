@@ -34,7 +34,7 @@
     },
     "android": {
       "pregunta": "📱 Hi ha App per a Android?",
-      "respuesta": "<p><b>Sí.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Disponible a Google Play' src='https://flydecision.com/GetItOnGooglePlay_Badge_Web_color_Spanish.png' width='180'></a><p>La web <b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> i l'app funcionen igual. Pots fer servir la que més et convingui, tot i que l'app té el petit avantatge que manté les dades fora de línia si perds la cobertura en algun moment i que es veu a pantalla completa.</p>"
+      "respuesta": "<p><b>Sí.</b></p><a href='https://play.google.com/store/apps/details?id=com.flydecision' target='_blank' rel='noopener' class='badge-google-play'><img alt='Disponible a Google Play' src='/icons/GetItOnGooglePlay_Badge_Web_color_Catalan.png' width='180'></a><p>La web <b><a href='https://flydecision.com/' target='_blank' rel='noopener'>flydecision.com</a></b> i l'app funcionen igual. Pots fer servir la que més et convingui, tot i que l'app té el petit avantatge que manté les dades fora de línia si perds la cobertura en algun moment i que es veu a pantalla completa.</p>"
     },
     "iphone": {
       "pregunta": "📱 Hi ha app per a iPhone (iOS)?",
@@ -84,5 +84,8 @@
       "pregunta": "⚠️ Avís important: Funcionament i Exempció de Responsabilitat",
       "respuesta": "<p><b>Resum: Aquesta aplicació és una eina de suport informatiu. Els pronòstics meteorològics poden fallar, la puntuació de condicions pot ser incorrecta i qui pilota és l'única persona responsable d'avaluar les condicions reals i prendre la decisió final abans de volar.</b></p><p><b>Com funciona el sistema? (Ús previst)</b></p><ul><li>Fly Decision és una eina de suport a la decisió final de la persona, oferint el pronòstic i realitzant una <b>anàlisi automàtica de les condicions generals</b> per a zones d'enlairament de parapent.</li><li>El sistema avalua paràmetres previstos (com la precipitació, velocitat del vent, les ratxes i la direcció) comparant-los amb <b>límits de seguretat configurables</b> definits per tu.</li><li>Ofereix prediccions per hores i classifica cada franja horària mitjançant una <b>escala visual de colors</b> per facilitar la comprensió d'un cop d'ull.</li></ul><p><b>🛑 Exempció de responsabilitat (Disclaimer)</b></p><ul><li><b>Només per a fins informatius:</b> Aquest programari es proporciona exclusivament amb fins informatius i <b>sota cap circumstància s'ha d'utilitzar com un sistema de seguretat de vol</b> ni com l'única base per prendre decisions que afectin la teva seguretat.</li><li><b>Limitacions dels pronòstics:</b> Les dades meteorològiques provenen de models numèrics. Aquests pronòstics <b>poden contenir errors significatius</b> i és possible que no representin correctament els efectes locals reals o l'aerologia de la zona.</li><li><b>Responsabilitat exclusiva de qui pilota</b>, que requereix avaluar les condicions reals i actuals al lloc d'enlairament i de prendre la decisió final de si és segur volar o no.</li></ul>"
     }
+  },
+  "icons": {
+      "src_logo_google_play": "/icons/GetItOnGooglePlay_Badge_Web_color_Catalan.png"
   }
 }
