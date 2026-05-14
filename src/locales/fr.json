@@ -358,7 +358,7 @@
       "viento": "Vent (Météo-France : Arome-HD et Arpège)",
       "general": "Météo générale et conditions thermiques XC (CEPMMT/ECMWF)"
     },
-    "avisoNuevoMeteo": "<p>ℹ️ Nouvelles données météorologiques disponibles pour :</p><p><b>{{modelos}}</b></p><p>Mettre à jour maintenant ?</p>"
+    "avisoNuevoMeteo": "<p>ℹ️ Nouvelles données météorologiques disponibles pour:</p><p><b>{{modelos}}</b></p><p>Mettre à jour maintenant ?</p>"
   },
 
   "ajustes": {
