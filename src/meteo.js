@@ -7770,7 +7770,7 @@ function inicializarMapaLeaflet() {
 
     const OpenAIP = L.tileLayer(`https://api.tiles.openaip.net/api/data/openaip/{z}/{x}/{y}.png?apiKey=${MAP_API_KEYS.OpenAIP}`, {
         maxZoom: 20,
-        attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a> | <a href="https://www.openaip.net" target="_blank">OpenAIP</a>'
+        attribution: '© <a href="https://www.openaip.net" target="_blank">OpenAIP</a>'
     });
     // const Enaire = L.esri.featureLayer({
     //     url: 'https://servais.enaire.es/insignia/rest/services/NSF_SRV/SRV_UAS_ZG_V0/MapServer/2',
