@@ -7790,7 +7790,7 @@ function inicializarMapaLeaflet() {
         const p = feature.properties;
 
         // Alturas
-        const limInf = (p.lower === 0 || p.lower === null) ? 'SFC' : `${p.lower} m`;
+        const limInf = (p.lower <= 60 || p.lower === null) ? 'SFC' : `${p.lower} m`;
         const limSup = p.upper != null ? `${p.upper} m ${p.upperReference || 'AGL'}` : '—';
         const alturas = `${limInf} – ${limSup}`;
 
@@ -7815,7 +7815,6 @@ function inicializarMapaLeaflet() {
 
         layer.bindPopup(`
             <b>${p.name || p.otherReasonInfo || p.identifier || '—'}</b><br><br>
-            Prohibido volar entre:<br>${alturas}
         `);
     }
 
