@@ -10,7 +10,8 @@
   "botones": {
     "compartir": "Teilen",
     "copiarLink": "Direktlink kopieren",
-    "copiado": "Link kopiert!"
+    "copiado": "Link kopiert!",
+    "volverArriba": "Nach oben"
   },
   "footer": {
     "texto": "<b><a href='https://flydecision.com/' target='_blank' rel='noopener'>FlyDecision.com</a></b> © Fly Decision 2026 | <a href='https://flydecision.com/changelog/' target='_blank' rel='noopener'>Änderungsprotokoll</a> | <a href='https://flydecision.com/privacidad' target='_blank' rel='noopener'>Impressum und Datenschutzrichtlinie</a>"

@@ -10,7 +10,8 @@
   "botones": {
     "compartir": "Compartir",
     "copiarLink": "Copiar enllaç directe",
-    "copiado": "Enllaç copiat!"
+    "copiado": "Enllaç copiat!",
+    "volverArriba": "Tornar a dalt"
   },
   "footer": {
     "texto": "<b><a href='https://flydecision.com/' target='_blank' rel='noopener'>FlyDecision.com</a></b> © Fly Decision 2026 | <a href='https://flydecision.com/changelog/' target='_blank' rel='noopener'>Historial de canvis</a> | <a href='https://flydecision.com/privacidad' target='_blank' rel='noopener'>Avís Legal i Política de privacitat</a>"
