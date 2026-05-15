@@ -461,7 +461,8 @@
       "esriSkyways": "ESRI Topo + Skyways (KK7)",
       "esriThermals": "ESRI Topo + Térmicas (KK7)",
       "esriAll": "ESRI Topo + Skyways+Térmicas (KK7)",
-      "capaMezcladaWorldTopoMapEnaireRestricciones": "Restrições AESA / ENAIRE (Espanha)"
+      "capaMezcladaWorldTopoMapEnaire": "Restrições AESA / ENAIRE (Espanha)",
+      "capaMezcladaWorldTopoMapOpenAIP": "Restrições OpenAIP (Mundo)"
     }
   },
 

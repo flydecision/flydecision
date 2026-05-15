@@ -7767,16 +7767,22 @@ function inicializarMapaLeaflet() {
         tms: true,
         attribution: 'thermal.kk7.ch <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY-NC-SA></a>'
     });
-    // const EnaireRestricciones = L.esri.featureLayer({
+
+    const OpenAIP = L.tileLayer(`https://api.tiles.openaip.net/api/data/openaip/{z}/{x}/{y}.png?apiKey=${MAP_API_KEYS.OpenAIP}`, {
+        maxZoom: 20,
+        attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a> | <a href="https://www.openaip.net" target="_blank">OpenAIP</a>'
+    });
+    // const Enaire = L.esri.featureLayer({
     //     url: 'https://servais.enaire.es/insignia/rest/services/NSF_SRV/SRV_UAS_ZG_V0/MapServer/2',
     //     style: estiloZona,
     //     onEachFeature: popupZona
     // });
-    const EnaireRestricciones = L.esri.featureLayer({
+    const Enaire = L.esri.featureLayer({
         url: 'https://servais.enaire.es/insignia/rest/services/NSF_SRV/SRV_UAS_ZG_V0/MapServer/2',
         where: "name LIKE 'CTR%' OR name LIKE 'ATZ%' OR name LIKE 'CTA%' OR name LIKE 'TMA%'",
         style: estiloZona,
-        onEachFeature: popupZona
+        onEachFeature: popupZona,
+        attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>'
     });
 
     // Añadir bajo "onEachFeature: popupZona" esto si se quiere ver en Consola y popup de cada zona los datos de salida del servidor:
@@ -7822,7 +7828,8 @@ function inicializarMapaLeaflet() {
     const capaMezcladaWorldTopoMapKK7Thermals = L.layerGroup([WorldTopoMap, KK7Thermals]);
     const capaMezcladaWorldTopoMapKK7SkyWaysThermals = L.layerGroup([WorldTopoMap, KK7SkyWays, KK7Thermals]);
 
-    const capaMezcladaWorldTopoMapEnaireRestricciones = L.layerGroup([WorldTopoMap, EnaireRestricciones]);
+    const capaMezcladaWorldTopoMapEnaire = L.layerGroup([WorldTopoMap, Enaire]);
+    const capaMezcladaWorldTopoMapOpenAIP = L.layerGroup([WorldTopoMap, OpenAIP]);
 
     //Calcular antes el zoom, según sea móvil u ordenador
     //const isMobile = window.innerWidth < 768;
@@ -8600,7 +8607,8 @@ function inicializarMapaLeaflet() {
         [t('mapa.capasBase.esriSkyways')]: capaMezcladaWorldTopoMapKK7SkyWays,
         [t('mapa.capasBase.esriThermals')]: capaMezcladaWorldTopoMapKK7Thermals,
         [t('mapa.capasBase.esriAll')]: capaMezcladaWorldTopoMapKK7SkyWaysThermals,
-        [t('mapa.capasBase.capaMezcladaWorldTopoMapEnaireRestricciones')]: capaMezcladaWorldTopoMapEnaireRestricciones
+        [t('mapa.capasBase.capaMezcladaWorldTopoMapEnaire')]: capaMezcladaWorldTopoMapEnaire,
+        [t('mapa.capasBase.capaMezcladaWorldTopoMapOpenAIP')]: capaMezcladaWorldTopoMapOpenAIP
     };
 
     // 1. Guardamos el control en una variable
