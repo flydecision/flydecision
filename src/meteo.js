@@ -4048,7 +4048,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		
 			const nombreParaURL = encodeURIComponent(d.Despegue);
 			
-            const URLDespegue = `https://flydecision.com/map/?lat=${latitud}&lon=${longitud}&zoom=14&q=${nombreParaURL}`;
             const svgOrientaciones = createOrientationSVG(d["Orientación"]);
             const svgParaTooltip = svgOrientaciones.replaceAll('"', "'");
             
