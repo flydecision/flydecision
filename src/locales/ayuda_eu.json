@@ -79,7 +79,7 @@
     },
     "desarrollo": {
       "pregunta": "💡 Etorkizuneko garapen posibleak",
-      "respuesta": "<ul><li>Alpeetako aireratzeak eskaini ahal izateko, gune horretako eredu fidagarriena gehitu behar da: ICON-D2. Ereduak nahastea konplexua da eta, gainera, meteo pasabideko aipatutako muga ekonomikoak daude; beraz, gai hori aztertzen ari da.</li><li>Mapari ordu-tartearen iragazkia gehitzea, aireratzeak automatikoki koloreztatu daitezen baldintzen arabera. Era berean, baldintza-iragazki bat (0-10) gehitzea.</li><li>Frantziako gainerako, Portugalgo eta Alpeetako aireratzeak gehitzea.</li><li>Datu hauek berberak edozein puntutarako lortzeko aukera, ez bakarrik datu-basean eskuragarri dauden aireratze-puntu finkoetarako. Berez, hori jada inplementatuta dago barnean, baina ezin da publiko egin, gorago aipatutako Open-Meteo doako zerbitzuaren mugekin talka egingo lukeelako.</li></ul>"
+      "respuesta": "<ul><li>Gehitu ICON-D2 eredu meteorologikoa Alpeetako gunerako. Ereduak nahastea konplexua da eta, gainera, meteo pasabideko aipatutako muga ekonomikoak daude; beraz, gai hori aztertzen ari da.</li><li>Mapari ordu-tartearen iragazkia gehitzea, aireratzeak automatikoki koloreztatu daitezen baldintzen arabera. Era berean, baldintza-iragazki bat (0-10) gehitzea.</li><li>Frantziako gainerako, Portugalgo eta Alpeetako aireratzeak gehitzea.</li><li>Datu hauek berberak edozein puntutarako lortzeko aukera, ez bakarrik datu-basean eskuragarri dauden aireratze-puntu finkoetarako. Berez, hori jada inplementatuta dago barnean, baina ezin da publiko egin, gorago aipatutako Open-Meteo doako zerbitzuaren mugekin talka egingo lukeelako.</li></ul>"
     },
     "responsabilidad": {
       "pregunta": "⚠️ Ohar garrantzitsua: Funtzionamendua eta Erantzukizun-salbuespena",

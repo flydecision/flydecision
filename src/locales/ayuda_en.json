@@ -79,7 +79,7 @@
     },
     "desarrollo": {
       "pregunta": "💡 Possible future development",
-      "respuesta": "<ul><li>To offer Alpine takeoffs, the most reliable model in that area needs to be added: ICON-D2. Mixing models is complex and, furthermore, there are the aforementioned economic limitations of the weather gateway, so this topic is under study.</li><li>Add a time range filter to the map so takeoffs are automatically colored based on conditions. Also add a condition filter (0-10).</li><li>Add takeoffs from the rest of France, Portugal, and the Alps.</li><li>The possibility of obtaining this same data but for any point, not just for the fixed takeoff points available in the database. Actually, this is already implemented internally but it's not possible to make it public as it would clash with the limitations of the free Open-Meteo service mentioned above.</li></ul>"
+      "respuesta": "<ul><li>Add the ICON-D2 weather model for the Alps region. Mixing models is complex and, furthermore, there are the aforementioned economic limitations of the weather gateway, so this topic is under study.</li><li>Add a time range filter to the map so takeoffs are automatically colored based on conditions. Also add a condition filter (0-10).</li><li>Add takeoffs from the rest of France, Portugal, and the Alps.</li><li>The possibility of obtaining this same data but for any point, not just for the fixed takeoff points available in the database. Actually, this is already implemented internally but it's not possible to make it public as it would clash with the limitations of the free Open-Meteo service mentioned above.</li></ul>"
     },
     "responsabilidad": {
       "pregunta": "⚠️ Important Notice: Operation and Disclaimer",

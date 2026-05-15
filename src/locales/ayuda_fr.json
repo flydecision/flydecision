@@ -79,7 +79,7 @@
     },
     "desarrollo": {
       "pregunta": "💡 Développements futurs possibles",
-      "respuesta": "<ul><li>Pour proposer les décollages alpins, le modèle le plus fiable de cette région (ICON-D2) doit être ajouté. Mélanger les modèles est complexe et lié aux limites économiques de la passerelle météo.</li><li>Ajouter un filtre de plage horaire sur la carte pour que les décollages se colorent automatiquement selon les conditions. Ajouter également un filtre de score (0-10).</li><li>Ajouter les décollages du reste de la France, du Portugal et des Alpes.</li><li>Possibilité d'obtenir ces mêmes données pour n'importe quel point (pas seulement les décollages). Déjà implémenté en interne, mais impossible à rendre public sans saturer la passerelle Open-Meteo gratuite.</li></ul>"
+      "respuesta": "<ul><li>Ajouter le modèle météorologique ICON-D2 pour la zone des Alpes. Mélanger les modèles est complexe et lié aux limites économiques de la passerelle météo.</li><li>Ajouter un filtre de plage horaire sur la carte pour que les décollages se colorent automatiquement selon les conditions. Ajouter également un filtre de score (0-10).</li><li>Ajouter les décollages du reste de la France, du Portugal et des Alpes.</li><li>Possibilité d'obtenir ces mêmes données pour n'importe quel point (pas seulement les décollages). Déjà implémenté en interne, mais impossible à rendre public sans saturer la passerelle Open-Meteo gratuite.</li></ul>"
     },
     "responsabilidad": {
       "pregunta": "⚠️ Avis important : Fonctionnement et Clause de Non-responsabilité",
