@@ -117,5 +117,10 @@
   },
   "icons": {
       "src_logo_google_play": "/icons/GetItOnGooglePlay_Badge_Web_color_Basque.png"
+  },
+  "categorias": {
+    "app": "Aplikazioaren erabilera",
+    "mapa": "Mapa interaktiboa",
+    "tecnico": "Instalazioa eta atal teknikoa"
   }
 }

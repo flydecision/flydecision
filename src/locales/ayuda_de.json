@@ -117,5 +117,10 @@
 },
 "icons": {
       "src_logo_google_play": "/icons/GetItOnGooglePlay_Badge_Web_color_German.png"
-  }
+  },
+"categorias": {
+    "app": "Utilisation de l'Application",
+    "mapa": "Carte Interactive",
+    "tecnico": "Installation et Technique"
+}
 }

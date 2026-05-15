@@ -117,5 +117,10 @@
   },
   "icons": {
       "src_logo_google_play": "/icons/GetItOnGooglePlay_Badge_Web_color_Catalan.png"
+  },
+  "categorias": {
+    "app": "Ús de l'Aplicació",
+    "mapa": "Mapa Interactiu",
+    "tecnico": "Instal·lació i Tècnic"
   }
 }
