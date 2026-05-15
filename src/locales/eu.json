@@ -460,7 +460,8 @@
       "icgc": "ICGC Katalunia",
       "esriSkyways": "ESRI Topo + Skyways (KK7)",
       "esriThermals": "ESRI Topo + Termikak (KK7)",
-      "esriAll": "ESRI Topo + Skyways+Termikak (KK7)"
+      "esriAll": "ESRI Topo + Skyways+Termikak (KK7)",
+      "capaMezcladaWorldTopoMapEnaireRestricciones": "AESA / ENAIRE murrizketak (Espainia)"
     }
   },
 

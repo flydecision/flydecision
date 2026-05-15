@@ -460,7 +460,8 @@
       "icgc": "ICGC Catalunya",
       "esriSkyways": "ESRI Topo + Skyways (KK7)",
       "esriThermals": "ESRI Topo + Thermals (KK7)",
-      "esriAll": "ESRI Topo + Skyways+Thermals (KK7)"
+      "esriAll": "ESRI Topo + Skyways+Thermals (KK7)",
+      "capaMezcladaWorldTopoMapEnaireRestricciones": "Restricciones AESA / ENAIRE (España)"
     }
   },
 

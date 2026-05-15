@@ -2613,6 +2613,31 @@ function traducirCadenaOrientacion(stringOri) {
         .join(', ');
 }
 
+function estiloZona(feature) {
+    const p = feature.properties;
+    const tipo = (p.type || '').toUpperCase();
+    const motivo = (p.reasons || '').toUpperCase();
+    const proveedor = (p.provider || '').toUpperCase();
+
+    // Zonas prohibidas (espacio aéreo militar, etc.)
+    if (tipo === 'PROHIBITED') 
+        return { color: '#cc0000', fillColor: '#cc0000', fillOpacity: 0.3, weight: 2 };
+
+    // Zonas que requieren autorización (aeropuertos, CTR, TMA...)
+    if (tipo === 'REQ_AUTHORISATION' || motivo === 'AIR_TRAFFIC') 
+        return { color: '#cc0000', fillColor: '#cc0000', fillOpacity: 0.2, weight: 2 };
+
+    // Zonas condicionales (ADIF, infraestructuras, espacios naturales...)
+    if (tipo === 'CONDITIONAL') 
+        return { color: '#ff8800', fillColor: '#ff8800', fillOpacity: 0.15, weight: 1.5, dashArray: '5,5' };
+
+    // Sin restricción
+    if (tipo === 'NO_RESTRICTION') 
+        return { color: '#00aa44', fillColor: '#00aa44', fillOpacity: 0.1, weight: 1 };
+
+    return { color: '#888', fillColor: '#888', fillOpacity: 0.1, weight: 1 };
+}
+
 // ---------------------------------------------------------------
 // 🔴 BASE DE DATOS INDEXEDDB (Modo Offline sin límite de 5MB)
 // ---------------------------------------------------------------
@@ -7742,10 +7767,63 @@ function inicializarMapaLeaflet() {
         tms: true,
         attribution: 'thermal.kk7.ch <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY-NC-SA></a>'
     });
+    // const EnaireRestricciones = L.esri.featureLayer({
+    //     url: 'https://servais.enaire.es/insignia/rest/services/NSF_SRV/SRV_UAS_ZG_V0/MapServer/2',
+    //     style: estiloZona,
+    //     onEachFeature: popupZona
+    // });
+    const EnaireRestricciones = L.esri.featureLayer({
+        url: 'https://servais.enaire.es/insignia/rest/services/NSF_SRV/SRV_UAS_ZG_V0/MapServer/2',
+        where: "name LIKE 'CTR%' OR name LIKE 'ATZ%' OR name LIKE 'CTA%' OR name LIKE 'TMA%'",
+        style: estiloZona,
+        onEachFeature: popupZona
+    });
+
+    // Añadir bajo "onEachFeature: popupZona" esto si se quiere ver en Consola y popup de cada zona los datos de salida del servidor:
+    // onEachFeature: (feature, layer) => {
+    //     console.log('ENAIRE feature:', feature.properties);
+    //     layer.bindPopup(JSON.stringify(feature.properties, null, 2));
+    //     }
+
+    // Las feature.properties del mapa se ven en https://servais.enaire.es/insignia/rest/services/NSF_SRV/SRV_UAS_ZG_V0/MapServer/2?f=json
+    function popupZona(feature, layer) {
+        const p = feature.properties;
+
+        // Alturas
+        const limInf = (p.lower === 0 || p.lower === null) ? 'SFC' : `${p.lower} m`;
+        const limSup = p.upper != null ? `${p.upper} m ${p.upperReference || 'AGL'}` : '—';
+        const alturas = `${limInf} – ${limSup}`;
+
+        // siteURL viene como HTML crudo — extraemos URL y texto con regex
+        let enlaceHTML = '';
+        let gestor = '—';
+
+        if (p.siteURL) {
+            const hrefMatch  = p.siteURL.match(/href=['"]([^'"]+)['"]/);
+            const textoMatch = p.siteURL.match(/>([^<>]+)<\/a>/);
+
+            if (hrefMatch) {
+                const url   = hrefMatch[1];
+                const texto = textoMatch ? textoMatch[1].trim() : 'Más info';
+                enlaceHTML  = `<br><a href="${url}" target="_blank">${texto}</a>`;
+            }
+
+            // Gestor: texto plano antes del primer tag HTML (ej: "Ministerio de Defensa")
+            const textoPlano = p.siteURL.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+            if (textoPlano) gestor = textoPlano.split(/[,(]/)[0].trim();
+        }
+
+        layer.bindPopup(`
+            <b>${p.name || p.otherReasonInfo || p.identifier || '—'}</b><br><br>
+            Prohibido volar entre:<br>${alturas}
+        `);
+    }
 
     const capaMezcladaWorldTopoMapKK7SkyWays = L.layerGroup([WorldTopoMap, KK7SkyWays]);
     const capaMezcladaWorldTopoMapKK7Thermals = L.layerGroup([WorldTopoMap, KK7Thermals]);
     const capaMezcladaWorldTopoMapKK7SkyWaysThermals = L.layerGroup([WorldTopoMap, KK7SkyWays, KK7Thermals]);
+
+    const capaMezcladaWorldTopoMapEnaireRestricciones = L.layerGroup([WorldTopoMap, EnaireRestricciones]);
 
     //Calcular antes el zoom, según sea móvil u ordenador
     //const isMobile = window.innerWidth < 768;
@@ -8522,8 +8600,10 @@ function inicializarMapaLeaflet() {
         [t('mapa.capasBase.icgc')]: ICGC,
         [t('mapa.capasBase.esriSkyways')]: capaMezcladaWorldTopoMapKK7SkyWays,
         [t('mapa.capasBase.esriThermals')]: capaMezcladaWorldTopoMapKK7Thermals,
-        [t('mapa.capasBase.esriAll')]: capaMezcladaWorldTopoMapKK7SkyWaysThermals
+        [t('mapa.capasBase.esriAll')]: capaMezcladaWorldTopoMapKK7SkyWaysThermals,
+        [t('mapa.capasBase.capaMezcladaWorldTopoMapEnaireRestricciones')]: capaMezcladaWorldTopoMapEnaireRestricciones
     };
+
     // 1. Guardamos el control en una variable
     const controlCapas = L.control.layers(baseMaps, {}, { position: 'topright' }).addTo(map);
 
