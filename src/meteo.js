@@ -7646,6 +7646,10 @@ window.cambiarVista = function(vista) {
                 if (btnFiltros) btnFiltros.style.display = 'none';
                 if (btnCerrar)  btnCerrar.style.display  = 'flex';
                 document.getElementById('vista-mapa')?.classList.add('filtros-abiertos');
+
+                const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
+                if (divPunt) divPunt.style.display = '';
+                setTimeout(() => inicializarSliderPuntuacionMapa(), 150);
             } else {
                 // Cerrado por defecto
                 divFH.style.display = 'none';
@@ -7685,6 +7689,8 @@ window.cambiarVista = function(vista) {
             divFH.style.display = '';
             divFH.classList.remove('flotando-en-mapa');
             contenedorControles.insertBefore(divFH, divDistancia);
+            const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
+            if (divPunt) divPunt.style.display = 'none';
         }
         
         const btnCerrar = document.getElementById('btn-cerrar-filtros-mapa');
@@ -7712,7 +7718,7 @@ window.toggleFiltrosMapa = function() {
 
     const visible = divFH.classList.contains('flotando-en-mapa');
 
-    if (visible) {
+    if (visible) { // Cerrarlo
         divFH.style.display = 'none';
         divFH.classList.remove('flotando-en-mapa');
         if (btnFiltros) btnFiltros.style.display = '';
@@ -7727,7 +7733,9 @@ window.toggleFiltrosMapa = function() {
         const sliderPunt = document.getElementById('puntuacion-mapa-slider');
         if (sliderPunt && sliderPunt.noUiSlider) sliderPunt.noUiSlider.set(0);
         filtrarMarkersPorPuntuacion();
-    } else {
+
+    } else { // Abrirlo
+
         divFH.style.display = '';
         divFH.classList.add('flotando-en-mapa');
         if (btnFiltros) btnFiltros.style.display = 'none';
@@ -7738,7 +7746,7 @@ window.toggleFiltrosMapa = function() {
         // Mostrar el slider de puntuación y inicializarlo si es la primera vez
         const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
         if (divPunt) divPunt.style.display = '';
-        inicializarSliderPuntuacionMapa();
+        setTimeout(() => inicializarSliderPuntuacionMapa(), 150);
 
         document.getElementById('vista-mapa')?.classList.add('filtros-abiertos');
     }
@@ -7856,7 +7864,8 @@ let puntuacionMinimaMapa = 0;
 
 function inicializarSliderPuntuacionMapa() {
     const sliderEl = document.getElementById('puntuacion-mapa-slider');
-    if (!sliderEl || sliderEl.noUiSlider) return;
+    if (!sliderEl) return;
+    if (sliderEl.noUiSlider) return;
 
     noUiSlider.create(sliderEl, {
         start: [0],

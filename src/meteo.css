@@ -3478,7 +3478,10 @@ h3 {
 }
 
 #puntuacion-mapa-slider {
-    height: 6px; /* igual que el horario */
+    height: 6px;
+    min-width: 200px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* La barra izquierda (antes del handle) en blanco */
