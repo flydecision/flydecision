@@ -395,6 +395,8 @@
     "seleccionarOrigen": "Sélectionner l'origine",
     "miUbicacion": "Ma position",
     "irMiUbicacion": "Aller à ma position",
+    "titlebtnFiltrosMeteo": "Filtres par Conditions météorologiques",
+    "filtros": "Météo",
     "buscadorPlaceholder": "Rechercher un lieu ou des coordonnées...",
     "buscadorTitulo": "Recherche générale (lieux et coordonnées)",
     "ajustes": "Paramètres",

@@ -7596,6 +7596,7 @@ function updateURL(mapInstance) {
 }
 
 let mapaInicializado = false;
+let filtrosMapaAbiertos = false;
 
 window.cambiarVista = function(vista) {
     const vistaTabla = document.querySelector('.contenedor-principal-tabla');
@@ -7632,13 +7633,26 @@ window.cambiarVista = function(vista) {
             }
         }, 300);
 
-        // Mover el slider horario al mapa (oculto hasta que se pulse Filtros)
         const divFH = document.getElementById('div-filtro-horario');
         const vistaMapa2 = document.getElementById('vista-mapa');
         if (divFH && vistaMapa2) {
-            divFH.style.display = 'none';
-            divFH.classList.remove('flotando-en-mapa');
             vistaMapa2.appendChild(divFH);
+            const btnFiltros = document.getElementById('btn-filtros-mapa');
+            const btnCerrar  = document.getElementById('btn-cerrar-filtros-mapa');
+            if (filtrosMapaAbiertos) {
+                // Restaurar estado abierto
+                divFH.style.display = '';
+                divFH.classList.add('flotando-en-mapa');
+                if (btnFiltros) btnFiltros.style.display = 'none';
+                if (btnCerrar)  btnCerrar.style.display  = 'flex';
+                document.getElementById('vista-mapa')?.classList.add('filtros-abiertos');
+            } else {
+                // Cerrado por defecto
+                divFH.style.display = 'none';
+                divFH.classList.remove('flotando-en-mapa');
+                if (btnFiltros) btnFiltros.style.display = '';
+                if (btnCerrar)  btnCerrar.style.display  = 'none';
+            }
         }
 
     } 
@@ -7672,6 +7686,13 @@ window.cambiarVista = function(vista) {
             divFH.classList.remove('flotando-en-mapa');
             contenedorControles.insertBefore(divFH, divDistancia);
         }
+        
+        const btnCerrar = document.getElementById('btn-cerrar-filtros-mapa');
+        if (btnCerrar) btnCerrar.style.display = 'none';
+        const btnFiltros = document.getElementById('btn-filtros-mapa');
+        if (btnFiltros) btnFiltros.style.display = '';
+
+        document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
     }
 };
 
@@ -7692,18 +7713,20 @@ window.toggleFiltrosMapa = function() {
     const visible = divFH.classList.contains('flotando-en-mapa');
 
     if (visible) {
-        // Cerrar: ocultar panel, mostrar botón Filtros
         divFH.style.display = 'none';
         divFH.classList.remove('flotando-en-mapa');
         if (btnFiltros) btnFiltros.style.display = '';
         if (btnCerrar)  btnCerrar.style.display  = 'none';
+        filtrosMapaAbiertos = false;
+        document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
     } else {
-        // Abrir: mostrar panel, ocultar botón Filtros
         divFH.style.display = '';
         divFH.classList.add('flotando-en-mapa');
         if (btnFiltros) btnFiltros.style.display = 'none';
         if (btnCerrar)  btnCerrar.style.display  = 'flex';
+        filtrosMapaAbiertos = true;
         aplicarPuntuacionEnMapa();
+        document.getElementById('vista-mapa')?.classList.add('filtros-abiertos');
     }
 };
 
@@ -8775,12 +8798,10 @@ function inicializarMapaLeaflet() {
             buttonDiv.style.justifyContent = 'center';
             buttonDiv.style.alignItems = 'center';  
             buttonDiv.style.backgroundColor = 'white';      
-            buttonDiv.style.borderRadius = '4px';  
             buttonDiv.style.width = '30px';  
             buttonDiv.style.height = '30px'; 
             
             // Recuperamos el borde y la sombra original de Leaflet (ya que se lo quitamos al contenedor padre)
-            buttonDiv.style.border = '2px solid rgba(0,0,0,0.2)';
             buttonDiv.style.backgroundClip = 'padding-box';
             
             this._buttonDiv = buttonDiv; 
@@ -8832,7 +8853,6 @@ function inicializarMapaLeaflet() {
             this._buttonDiv.innerHTML = this._iconGear;
             
             // 3. Restaurar bordes y fondo
-            this._buttonDiv.style.border = '2px solid rgba(0,0,0,0.2)';
             this._buttonDiv.style.backgroundColor = 'white';
             
             // 4. Devolver el botón al flujo normal de Leaflet (fuera del panel blanco)

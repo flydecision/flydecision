@@ -395,6 +395,8 @@
     "seleccionarOrigen": "Hautatu jatorria",
     "miUbicacion": "Nire kokapena",
     "irMiUbicacion": "Joan nire kokapenera",
+    "titlebtnFiltrosMeteo": "Baldintza meteorologikoen araberako iragazkiak",
+    "filtros": "Meteo",
     "buscadorPlaceholder": "Bilatu lekua edo koordenatuak...",
     "buscadorTitulo": "Bilaketa orokorra (lekuak eta koordenatuak)",
     "ajustes": "Ezarpenak",

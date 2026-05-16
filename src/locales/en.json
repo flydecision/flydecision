@@ -395,6 +395,8 @@
     "seleccionarOrigen": "Select origin",
     "miUbicacion": "My location",
     "irMiUbicacion": "Go to my location",
+    "titlebtnFiltrosMeteo": "Filters by Weather conditions",
+    "filtros": "Wheather",
     "buscadorPlaceholder": "Search place or coordinates...",
     "buscadorTitulo": "General search (places and coordinates)",
     "ajustes": "Settings",
