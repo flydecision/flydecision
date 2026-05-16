@@ -3467,3 +3467,30 @@ h3 {
         margin-top: 110px;
     }
 }
+
+/* =====================================================
+   FILTRO PUNTUACIÓN EN MAPA
+   ===================================================== */
+
+
+.div-filtro-puntuacion-mapa {
+    border-top: 1px solid #e0e0e0;
+}
+
+#puntuacion-mapa-slider {
+    height: 6px; /* igual que el horario */
+}
+
+/* La barra izquierda (antes del handle) en blanco */
+#puntuacion-mapa-slider .noUi-connect {
+    background: white !important;
+}
+
+/* La barra derecha (después del handle) con el gradiente de notas */
+#puntuacion-mapa-slider .noUi-base {
+    background: linear-gradient(to right,
+        #fb796e, #f9876d, #f7966c, #f4a46c, #f2b36b,
+        #f0c16a, #d5ca78, #bbd386, #a0dd93, #86e6a1, #6befaf
+    );
+    border-radius: 3px;
+}

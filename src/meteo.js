@@ -7719,6 +7719,14 @@ window.toggleFiltrosMapa = function() {
         if (btnCerrar)  btnCerrar.style.display  = 'none';
         filtrosMapaAbiertos = false;
         document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
+
+        // Ocultar slider de puntuación y restaurar markers
+        const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
+        if (divPunt) divPunt.style.display = 'none';
+        puntuacionMinimaMapa = 0;
+        const sliderPunt = document.getElementById('puntuacion-mapa-slider');
+        if (sliderPunt && sliderPunt.noUiSlider) sliderPunt.noUiSlider.set(0);
+        filtrarMarkersPorPuntuacion();
     } else {
         divFH.style.display = '';
         divFH.classList.add('flotando-en-mapa');
@@ -7726,6 +7734,12 @@ window.toggleFiltrosMapa = function() {
         if (btnCerrar)  btnCerrar.style.display  = 'flex';
         filtrosMapaAbiertos = true;
         aplicarPuntuacionEnMapa();
+
+        // Mostrar el slider de puntuación y inicializarlo si es la primera vez
+        const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
+        if (divPunt) divPunt.style.display = '';
+        inicializarSliderPuntuacionMapa();
+
         document.getElementById('vista-mapa')?.classList.add('filtros-abiertos');
     }
 };
@@ -7834,6 +7848,50 @@ function aplicarPuntuacionEnMapa() {
     if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
         clustergroupDespegues.refreshClusters();
     }
+
+    filtrarMarkersPorPuntuacion();
+}
+
+let puntuacionMinimaMapa = 0;
+
+function inicializarSliderPuntuacionMapa() {
+    const sliderEl = document.getElementById('puntuacion-mapa-slider');
+    if (!sliderEl || sliderEl.noUiSlider) return;
+
+    noUiSlider.create(sliderEl, {
+        start: [0],
+        connect: 'lower',
+        step: 1,
+        range: { min: 0, max: 10 },
+        format: { to: v => Math.round(v), from: v => Number(v) }
+    });
+
+    sliderEl.noUiSlider.on('update', function(values) {
+        const val = Math.round(Number(values[0]));
+        puntuacionMinimaMapa = val;
+        const etiqueta = document.getElementById('puntuacion-mapa-etiqueta');
+        if (etiqueta) etiqueta.textContent = val > 0 ? `${val}⭐` : '';
+    });
+
+    sliderEl.noUiSlider.on('change', function() {
+        filtrarMarkersPorPuntuacion();
+    });
+}
+
+function filtrarMarkersPorPuntuacion() {
+    markersDespegues.forEach(marker => {
+        const nota = marker._notaMapa !== undefined ? marker._notaMapa : -1;
+        const visible = nota < 0 || nota >= puntuacionMinimaMapa;
+        if (visible) {
+            if (!clustergroupDespegues.hasLayer(marker)) {
+                clustergroupDespegues.addLayer(marker);
+            }
+        } else {
+            if (clustergroupDespegues.hasLayer(marker)) {
+                clustergroupDespegues.removeLayer(marker);
+            }
+        }
+    });
 }
 
 // ---------------------------------------------------------------
