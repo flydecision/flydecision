@@ -1382,10 +1382,11 @@ span.grados {
 /* 🟡 SLIDERS. Modificación clases generales noUi -------------------------------- */
 
 .noUi-horizontal {
-    margin-top: 44px !important;
+    margin-top: 4px !important;
     height: 17px !important;
     margin-left: 18px !important;
     margin-right: 18px !important;
+    /* margin-bottom: 10px; */
 }
 .noUi-horizontal .noUi-handle {
     width: 28px !important;   /* Antes 20px */
@@ -3471,17 +3472,30 @@ h3 {
 /* =====================================================
    FILTRO PUNTUACIÓN EN MAPA
    ===================================================== */
-
-
 .div-filtro-puntuacion-mapa {
     border-top: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    max-width: 365px;
+    min-width: 365px;
+    padding: 10px 0 10px 0;
+    box-sizing: border-box;
+    gap: 8px;
+    padding-bottom: 15px;
 }
 
 #puntuacion-mapa-slider {
+    flex: 1;
     height: 6px;
-    min-width: 200px;
-    width: 100%;
-    box-sizing: border-box;
+    min-width: 0;
+}
+
+#puntuacion-mapa-etiqueta {
+    min-width: 32px;
+    font-size: 1em;
+    text-align: left;
+    line-height: 6px; /* igual que la altura de la barra */
+    align-self: center;
 }
 
 /* La barra izquierda (antes del handle) en blanco */
