@@ -7684,19 +7684,25 @@ let mapaSliderIndiceInicio = 0;
 let mapaSliderIndiceFin = 99999;
 
 window.toggleFiltrosMapa = function() {
-    const btn = document.getElementById('btn-filtros-mapa');
-    const divFH = document.getElementById('div-filtro-horario');
+    const btnFiltros = document.getElementById('btn-filtros-mapa');
+    const btnCerrar  = document.getElementById('btn-cerrar-filtros-mapa');
+    const divFH      = document.getElementById('div-filtro-horario');
     if (!divFH) return;
 
-    const visible = divFH.style.display !== 'none';
+    const visible = divFH.classList.contains('flotando-en-mapa');
+
     if (visible) {
+        // Cerrar: ocultar panel, mostrar botón Filtros
         divFH.style.display = 'none';
         divFH.classList.remove('flotando-en-mapa');
-        if (btn) btn.classList.remove('activo');
+        if (btnFiltros) btnFiltros.style.display = '';
+        if (btnCerrar)  btnCerrar.style.display  = 'none';
     } else {
+        // Abrir: mostrar panel, ocultar botón Filtros
         divFH.style.display = '';
         divFH.classList.add('flotando-en-mapa');
-        if (btn) btn.classList.add('activo');
+        if (btnFiltros) btnFiltros.style.display = 'none';
+        if (btnCerrar)  btnCerrar.style.display  = 'flex';
         aplicarPuntuacionEnMapa();
     }
 };
