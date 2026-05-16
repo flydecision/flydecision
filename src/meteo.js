@@ -1867,6 +1867,9 @@ function clickOnPip(sliderElement) {
     }
     
     construir_tabla();
+    if (typeof aplicarPuntuacionEnMapa === 'function') {
+        aplicarPuntuacionEnMapa();
+    }
 }
 
 // Función que adjunta el evento Y AHORA TAMBIÉN FORZA LA POSICIÓN VISUAL
@@ -2211,6 +2214,10 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 				window.sliderHorasValues = valoresNuevos;
 				construir_tabla(false, false);
 			}
+            // Si estamos en el mapa con filtros activos, recalcular colores
+            if (typeof aplicarPuntuacionEnMapa === 'function') {
+                aplicarPuntuacionEnMapa();
+            }
 		});
 
         sliderHoras.noUiSlider.on('slide', function () {
@@ -3118,6 +3125,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
         // Guardamos todos los despegues en la variable global para el buscador
 		window.bdGlobalDespegues = data.despegues;
+
+        // 🗺️ Guardar datos para puntuación en mapa
+        window.respuestasGlobalMapa = data.respuestas;
+        window.respuestasEcmwfGlobalMapa = dataEcmwf.respuestas;
 		
 		totalDespeguesDisponibles = data.despegues.length;
 		
@@ -7621,6 +7632,15 @@ window.cambiarVista = function(vista) {
             }
         }, 300);
 
+        // Mover el slider horario al mapa (oculto hasta que se pulse Filtros)
+        const divFH = document.getElementById('div-filtro-horario');
+        const vistaMapa2 = document.getElementById('vista-mapa');
+        if (divFH && vistaMapa2) {
+            divFH.style.display = 'none';
+            divFH.classList.remove('flotando-en-mapa');
+            vistaMapa2.appendChild(divFH);
+        }
+
     } 
     else if (vista === 'tabla') {
         if (vistaMapa) vistaMapa.style.display = 'none';
@@ -7642,8 +7662,248 @@ window.cambiarVista = function(vista) {
         }
 
         window.history.replaceState(null, '', window.location.pathname);
+
+        // Devolver el slider horario al contenedor principal
+        const divFH = document.getElementById('div-filtro-horario');
+        const contenedorControles = document.querySelector('.contenedor-principal-controles');
+        const divDistancia = document.getElementById('div-filtro-distancia');
+        if (divFH && contenedorControles) {
+            divFH.style.display = '';
+            divFH.classList.remove('flotando-en-mapa');
+            contenedorControles.insertBefore(divFH, divDistancia);
+        }
     }
 };
+
+// ---------------------------------------------------------------
+// 🗺️ BOTÓN FILTROS + SLIDER HORARIO EN MAPA
+// ---------------------------------------------------------------
+
+let mapaFiltrosSlider = null;
+let mapaSliderIndiceInicio = 0;
+let mapaSliderIndiceFin = 99999;
+
+window.toggleFiltrosMapa = function() {
+    const btn = document.getElementById('btn-filtros-mapa');
+    const divFH = document.getElementById('div-filtro-horario');
+    if (!divFH) return;
+
+    const visible = divFH.style.display !== 'none';
+    if (visible) {
+        divFH.style.display = 'none';
+        divFH.classList.remove('flotando-en-mapa');
+        if (btn) btn.classList.remove('activo');
+    } else {
+        divFH.style.display = '';
+        divFH.classList.add('flotando-en-mapa');
+        if (btn) btn.classList.add('activo');
+        aplicarPuntuacionEnMapa();
+    }
+};
+
+function inicializarSliderMapaHorario() {
+    const sliderEl = document.getElementById('mapa-horario-slider');
+    if (!sliderEl || !window.horasCrudasRangoHorario || window.horasCrudasRangoHorario.length === 0) return;
+
+    // Si ya existe, lo destruimos para recrear
+    if (sliderEl.noUiSlider) {
+        sliderEl.noUiSlider.destroy();
+    }
+
+    const horas = window.horasCrudasRangoHorario;
+    const indices = window.indicesHorasRangoHorario;
+    if (!indices || indices.length === 0) return;
+
+    const maxSteps = indices.length - 1;
+
+    // Leemos los valores actuales del slider principal
+    const sliderPrincipal = document.getElementById('horario-slider');
+    let startVals = [0, maxSteps];
+    if (sliderPrincipal && sliderPrincipal.noUiSlider) {
+        const vals = sliderPrincipal.noUiSlider.get().map(v => Math.round(Number(v)));
+        startVals = [Math.min(vals[0], maxSteps), Math.min(vals[1], maxSteps)];
+    }
+
+    noUiSlider.create(sliderEl, {
+        start: startVals,
+        connect: true,
+        step: 1,
+        range: { min: 0, max: maxSteps },
+        behaviour: 'drag'
+    });
+
+    // Etiqueta
+    function actualizarEtiquetaMapa(vals) {
+        const i0 = indices[Math.round(vals[0])];
+        const i1 = indices[Math.round(vals[1])];
+        const h0 = horas[i0] ? new Date(horas[i0].endsWith('Z') ? horas[i0] : horas[i0] + 'Z').getHours() : '?';
+        const h1 = horas[i1] ? new Date(horas[i1].endsWith('Z') ? horas[i1] : horas[i1] + 'Z').getHours() : '?';
+        const etiqueta = document.getElementById('mapa-horario-etiqueta');
+        if (etiqueta) etiqueta.textContent = `${h0}:00 – ${h1}:00 h`;
+        return [i0, i1];
+    }
+
+    actualizarEtiquetaMapa(startVals);
+
+    sliderEl.noUiSlider.on('update', function(values) {
+        const [i0, i1] = actualizarEtiquetaMapa(values.map(Number));
+        mapaSliderIndiceInicio = i0;
+        mapaSliderIndiceFin = i1;
+    });
+
+    sliderEl.noUiSlider.on('change', function() {
+        aplicarPuntuacionEnMapa();
+    });
+
+    // Calculamos con los valores iniciales
+    const [i0, i1] = actualizarEtiquetaMapa(startVals);
+    mapaSliderIndiceInicio = i0;
+    mapaSliderIndiceFin = i1;
+    aplicarPuntuacionEnMapa();
+}
+
+function aplicarPuntuacionEnMapa() {
+    const horas = window.horasCrudasRangoHorario;
+    const respuestas = window.respuestasGlobalMapa;
+    const respuestasEcmwf = window.respuestasEcmwfGlobalMapa;
+    const despegues = window.bdGlobalDespegues;
+    if (!horas || !respuestas || !despegues || markersDespegues.length === 0) return;
+
+    // Leer índices DESDE EL SLIDER PRINCIPAL
+    let indiceInicio = 0, indiceFin = 99999;
+    const sliderHoras = document.getElementById('horario-slider');
+    if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario.length > 0) {
+        const vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
+        indiceInicio = window.indicesHorasRangoHorario[vals[0]];
+        indiceFin    = window.indicesHorasRangoHorario[vals[1]];
+    }
+
+    const idxPorId = new Map();
+    despegues.forEach((d, i) => idxPorId.set(Number(d.ID), i));
+
+    markersDespegues.forEach(marker => {
+        const meta = marker.metadata;
+        if (!meta) return;
+
+        const despObj = despegues.find(d => d.Despegue === meta.despegue);
+        if (!despObj) return;
+
+        const idx = idxPorId.get(Number(despObj.ID));
+        if (idx === undefined) return;
+
+        const hourlyData  = respuestas[idx] ? respuestas[idx].hourly : null;
+        const hourlyEcmwf = respuestasEcmwf && respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
+
+        const nota  = calcularNotaMapa(despObj, hourlyData, hourlyEcmwf, horas, indiceInicio, indiceFin);
+        const color = colorNotaMapa(nota);
+
+        // setIcon funciona aunque el marker esté en un cluster o fuera del viewport
+        marker.setIcon(createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones, color));
+    });
+}
+
+// ---------------------------------------------------------------
+// 🗺️ PUNTUACIÓN DE CONDICIONES PARA EL MAPA
+// ---------------------------------------------------------------
+
+const COLORES_NOTA_MAPA = [
+    "#fb796e","#f9876d","#f7966c","#f4a46c","#f2b36b",
+    "#f0c16a","#d5ca78","#bbd386","#a0dd93","#86e6a1","#6befaf"
+];
+
+function calcularNotaMapa(despegueObj, hourlyData, hourlyEcmwf, horas, indiceInicio, indiceFin) {
+    if (!hourlyData || !horas || horas.length === 0) return null;
+
+    const velArray   = hourlyData.wind_speed_10m;
+    const rachaArray = hourlyData.wind_gusts_10m;
+    const dirArray   = hourlyData.wind_direction_10m;
+    const orientaciones = despegueObj.Orientaciones_Grados
+        ? despegueObj.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()))
+        : [];
+
+    let puntosAcumulados = 0;
+    let horasValidas = 0;
+
+    horas.forEach((h, i) => {
+        if (i < indiceInicio || i > indiceFin) return;
+        if (velArray[i] === undefined || velArray[i] === null) return;
+
+        horasValidas++;
+
+        const velocidad      = Math.round(Math.max(0, velArray[i]));
+        const rachaCorregida = Math.round(Math.max(0, rachaArray[i]));
+        const dirCorregida   = dirArray[i];
+
+        // — DIRECCIÓN —
+        let minimoAngulo = orientaciones.length > 0
+            ? Math.min(...orientaciones.map(o => diferenciaAngular(dirCorregida, o)))
+            : 180;
+
+        if (orientaciones.length > 1) {
+            const UMBRAL_CONTIGUAS = 46;
+            const oriOrdenadas = [...orientaciones].sort((a, b) => a - b);
+            for (let j = 0; j < oriOrdenadas.length; j++) {
+                let o1 = oriOrdenadas[j];
+                let o2 = oriOrdenadas[(j + 1) % oriOrdenadas.length];
+                let diff = (o2 - o1 + 360) % 360;
+                if (diff > 180) { diff = 360 - diff; let tmp = o1; o1 = o2; o2 = tmp; }
+                if (diff <= UMBRAL_CONTIGUAS) {
+                    let diffViento = (dirCorregida - o1 + 360) % 360;
+                    if (diffViento <= diff) { minimoAngulo = 0; break; }
+                }
+            }
+        }
+
+        let ptsDir = 0, ratioDir = 1;
+        let vetoActivado = false, motivoVeto = '';
+
+        if (minimoAngulo > 120) {
+            ptsDir = 0; vetoActivado = true; motivoVeto = 'Viento de cola > 120°';
+        } else if (minimoAngulo > 100) { ptsDir = 5;  ratioDir = 0.2;
+        } else if (minimoAngulo > 80)  { ptsDir = 10; ratioDir = 0.3;
+        } else if (minimoAngulo > 45)  { ptsDir = 15; ratioDir = 0.4;
+        } else if (minimoAngulo > 22)  { ptsDir = 35; ratioDir = 0.6;
+        } else if (minimoAngulo > 10)  { ptsDir = 45; ratioDir = 0.9;
+        } else                          { ptsDir = 50; ratioDir = 1;   }
+
+        // — RACHA —
+        let ptsRacha = 0, ratioRacha = 1;
+        if (!vetoActivado) {
+            if (rachaCorregida > RachaMax * 1.5) {
+                ptsRacha = 0; vetoActivado = true; motivoVeto = 'Racha peligrosa';
+            } else if (rachaCorregida > RachaMax * 1.1) { ptsRacha = 0;  ratioRacha = 0.2;
+            } else if (rachaCorregida > RachaMax)        { ptsRacha = 5;  ratioRacha = 0.5;
+            } else if (rachaCorregida > RachaMax * 0.8)  { ptsRacha = 20; ratioRacha = 0.8;
+            } else                                        { ptsRacha = 30; }
+        }
+
+        // — VELOCIDAD —
+        let ptsVel = 0;
+        if (!vetoActivado) {
+            if      (velocidad > VelocidadMax * 2)   { ptsVel = 0; vetoActivado = true; motivoVeto = 'Viento muy fuerte'; }
+            else if (velocidad > VelocidadMax * 1.5)  { ptsVel = 3; }
+            else if (velocidad > VelocidadMax)         { ptsVel = 5; }
+            else if (velocidad > VelocidadMin)         { ptsVel = 20; }
+            else                                       { ptsVel = 15; }
+        }
+
+        // — PRECIPITACIÓN (veto supremo) —
+        if (hourlyEcmwf && hourlyEcmwf.precipitation && Number(hourlyEcmwf.precipitation[i]) > 0) {
+            vetoActivado = true;
+        }
+
+        const ptsHora = vetoActivado ? 0 : (ptsDir + ptsRacha + ptsVel) * ratioDir * ratioRacha;
+        puntosAcumulados += ptsHora;
+    });
+
+    if (horasValidas === 0) return null;
+    return (puntosAcumulados / (horasValidas * 100)) * 10;
+}
+
+function colorNotaMapa(nota) {
+    if (nota === null) return '#ffffff';
+    return COLORES_NOTA_MAPA[Math.min(10, Math.round(nota))];
+}
 
 // 🌍 VARIABLES GLOBALES DEL MAPA
 let map;
@@ -8704,23 +8964,19 @@ function inicializarMapaLeaflet() {
     }
 
     // crea icono compuesto (dot + etiqueta) usando L.divIcon
-    function createIconDespegue(despegue, actividad, orientacionesMetadata) {
-        // 1. 🧭 Generar el círculo de orientación (NUEVO)
+    window.createIconDespegue = function(despegue, actividad, orientacionesMetadata, bgColor) {
         const orientacionHTML = createOrientationSVG(orientacionesMetadata);
-
-        // 2. Círculo de Actividad (Existente)
         const color = actividadToColor(actividad);
         const dot = `<span class="dot" style="background:${color}"></span>`;
-
-        // 3. Combinar todo en la etiqueta
-        const labelHTML = `<span class='label-large-despegues'>${orientacionHTML}${dot}${escapeHtml(despegue)}</span>`;
+        const bgStyle = bgColor ? ` style="background-color:${bgColor}"` : '';
+        const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}${dot}${escapeHtml(despegue)}</span>`;
 
         return L.divIcon({
             html: labelHTML,
             className: 'custom-div-icon',
             iconAnchor: [0, 40] // ajusta según dimensiones reales
         });
-    }
+    };
 
     // escape para html en popup/label. Esa función convierte caracteres especiales de HTML en sus entidades seguras, evitando que el texto insertado en el DOM se interprete como código HTML (previene inyección de HTML o XSS)
     function escapeHtml(str){

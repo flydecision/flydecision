@@ -3371,3 +3371,56 @@ h3 {
     width: 30px;
 }
 
+/* =====================================================
+   BOTÓN FILTROS MAPA + PANEL HORARIO
+   ===================================================== */
+
+.btn-filtros-mapa {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: #fff;
+    border: 1.8px solid #007aff;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 0.95em;
+    font-weight: bold;
+    color: #007aff;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+.btn-filtros-mapa.activo {
+    background: #007aff;
+    color: #fff;
+}
+
+/* =====================================================
+   FILTRO HORARIO FLOTANTE EN MAPA
+   ===================================================== */
+
+/* Estado por defecto: en tabla, se comporta como antes */
+#div-filtro-horario {
+    position: static;
+}
+
+/* Cuando está flotando sobre el mapa */
+#div-filtro-horario.flotando-en-mapa {
+    position: fixed;
+    top: 52px;          /* justo debajo del botón Filtros */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1100;
+    max-width: 480px;
+    width: calc(100% - 20px);
+    background: rgba(255, 255, 255, 0.97);
+    border: 1.5px solid #007aff;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    padding: 8px 10px 10px 10px;
+    box-sizing: border-box;
+}
