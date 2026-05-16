@@ -2654,17 +2654,23 @@ function estiloZona(feature) {
 // 🔴 FUNCIÓN GLOBAL PARA CALCULAR LA NOTA METEO PARA EL MAPA (Replica exactamente la lógica de construir_tabla() pero devuelve solo el número)
 // ---------------------------------------------------------------
 
-window.obtenerNotaDespegueMeteo = function(idDespegue) {
-    // 1. Verificamos que los datos estén descargados
+window.obtenerNotaDespegueMeteo = function(nombreDespegue) {
     if (!DATOS_METEO_CACHE || !DATOS_METEO_ECMWF_CACHE) return null;
-    if (!window.sliderHorasValues || !window.indicesHorasRangoHorario) return null;
 
-    // 2. Localizamos los índices reales seleccionados en el slider
-    const idxInicio = window.indicesHorasRangoHorario[window.sliderHorasValues[0]];
-    const idxFin = window.indicesHorasRangoHorario[window.sliderHorasValues[1]];
+    // --- NUEVO: Leer el slider en tiempo real ---
+    let vals = window.sliderHorasValues;
+    const sliderHoras = document.getElementById('horario-slider');
+    if (sliderHoras && sliderHoras.noUiSlider) {
+        // Cogemos los valores exactos del slider en este milisegundo
+        vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
+    }
+    if (!vals || !window.indicesHorasRangoHorario) return null;
 
-    // 3. Localizamos el despegue en la caché
-    const dIndex = DATOS_METEO_CACHE.despegues.findIndex(x => Number(x.ID) === Number(idDespegue));
+    const idxInicio = window.indicesHorasRangoHorario[vals[0]];
+    const idxFin = window.indicesHorasRangoHorario[vals[1]];
+
+    // --- NUEVO: Buscar por Nombre en vez de ID ---
+    const dIndex = DATOS_METEO_CACHE.despegues.findIndex(x => x.Despegue === nombreDespegue);
     if (dIndex === -1) return null;
 
     const d = DATOS_METEO_CACHE.despegues[dIndex];
@@ -2680,7 +2686,6 @@ window.obtenerNotaDespegueMeteo = function(idDespegue) {
     let horasValidas = 0;
     let puntosAcumulados = 0;
 
-    // 4. BUCLE DE HORAS (Matemática idéntica a la tabla)
     for (let i = idxInicio; i <= idxFin; i++) {
         const h = horas[i];
         const fecha = new Date(h.endsWith('Z') ? h : h + 'Z');
@@ -2693,7 +2698,6 @@ window.obtenerNotaDespegueMeteo = function(idDespegue) {
         let rachaCorregida = Math.round(Math.max(0, hourlyData.wind_gusts_10m[i]));
         let dirCorregida = hourlyData.wind_direction_10m[i];
 
-        // A) Lógica de ladera y ángulo
         let minimoAngulo = 180;
         if (orientaciones.length > 0) {
             minimoAngulo = Math.min(...orientaciones.map(o => diferenciaAngular(dirCorregida, o)));
@@ -2713,7 +2717,6 @@ window.obtenerNotaDespegueMeteo = function(idDespegue) {
             }
         }
 
-        // B) Puntuación base
         let ptsHora = 0;
         let vetoActivado = false;
 
@@ -2755,10 +2758,9 @@ window.obtenerNotaDespegueMeteo = function(idDespegue) {
     }
 
     if (horasValidas > 0) {
-        // Devolvemos la nota exacta (de 0 a 10)
         return Math.round((puntosAcumulados / (horasValidas * 100)) * 10);
     }
-    return null; // Sin datos
+    return null;
 };
 
 // ---------------------------------------------------------------
@@ -8916,29 +8918,27 @@ function inicializarMapaLeaflet() {
     }
 
     // crea icono compuesto (dot + etiqueta) usando L.divIcon
-    function createIconDespegue(despegue, actividad, orientacionesMetadata, idDespegue) {
-        // 1. 🧭 Generar el círculo de orientación (NUEVO)
+    function createIconDespegue(despegue, actividad, orientacionesMetadata, pintarMeteo = false) {
         const orientacionHTML = createOrientationSVG(orientacionesMetadata);
-
-        // 2. Círculo de Actividad (Existente)
         const color = actividadToColor(actividad);
         const dot = `<span class="dot" style="background:${color}"></span>`;
 
-        // --- NUEVO: Calculamos la nota e inyectamos los estilos de color ---
+        // --- NUEVO: Calculamos la nota solo si nos piden pintarMeteo ---
         let styleStr = "";
-        const nota = window.obtenerNotaDespegueMeteo(idDespegue);
-        if (nota !== null && nota >= 0 && nota <= 10) {
-            const coloresNota = ["#fb796e", "#f9876d", "#f7966c", "#f4a46c", "#f2b36b", "#f0c16a", "#d5ca78", "#bbd386", "#a0dd93", "#86e6a1", "#6befaf"];
-            styleStr = `style="--nota-bg: ${coloresNota[nota]}; --nota-border: ${coloresNota[nota]}; --nota-text: #000000;"`;
+        if (pintarMeteo) {
+            const nota = window.obtenerNotaDespegueMeteo(despegue); // Le pasamos el nombre directo
+            if (nota !== null && nota >= 0 && nota <= 10) {
+                const coloresNota = ["#fb796e", "#f9876d", "#f7966c", "#f4a46c", "#f2b36b", "#f0c16a", "#d5ca78", "#bbd386", "#a0dd93", "#86e6a1", "#6befaf"];
+                styleStr = `style="--nota-bg: ${coloresNota[nota]}; --nota-border: ${coloresNota[nota]}; --nota-text: #000000;"`;
+            }
         }
 
-        // 3. Combinar todo en la etiqueta (Añadiendo styleStr)
         const labelHTML = `<span class='label-large-despegues' ${styleStr}>${orientacionHTML}${dot}${escapeHtml(despegue)}</span>`;
 
         return L.divIcon({
             html: labelHTML,
             className: 'custom-div-icon',
-            iconAnchor: [0, 40] // ajusta según dimensiones reales
+            iconAnchor: [0, 40] 
         });
     }
 
@@ -8948,14 +8948,12 @@ function inicializarMapaLeaflet() {
     window.actualizarColoresMapaMeteo = function(activarColores = true) {
         if (typeof markersDespegues !== 'undefined') {
             markersDespegues.forEach(marker => {
-                if (marker.metadata && marker.metadata.id) {
-                    // Si activarColores es false, pasamos 'null' para que vuelva a ser blanco
-                    const idUsar = activarColores ? marker.metadata.id : null;
+                if (marker.metadata && marker.metadata.despegue) {
                     const newIcon = createIconDespegue(
                         marker.metadata.despegue, 
                         marker.metadata.actividad, 
                         marker.metadata.orientaciones, 
-                        idUsar
+                        activarColores // Le pasamos true o false
                     );
                     marker.setIcon(newIcon);
                 }
@@ -9006,7 +9004,7 @@ function inicializarMapaLeaflet() {
                 if (match) idDespegue = match.ID;
             }
 
-            const icon = createIconDespegue(despegue, actividad, orientaciones, idDespegue); 
+            const icon = createIconDespegue(despegue, actividad, orientaciones, false); 
             const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Despegue de parapente' });
 
             // 1. Traducimos el nombre largo (noroeste -> northwest). Usamos .toLowerCase() para que coincida con las claves del JSON
