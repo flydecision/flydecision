@@ -7734,6 +7734,9 @@ window.toggleFiltrosMapa = function() {
         if (sliderPunt && sliderPunt.noUiSlider) sliderPunt.noUiSlider.set(0);
         filtrarMarkersPorPuntuacion();
 
+        const divPunt2 = document.getElementById('div-filtro-puntuacion-mapa');
+        if (divPunt2) divPunt2.classList.remove('borde-rojo-externo');
+
     } else { // Abrirlo
 
         divFH.style.display = '';
@@ -7882,6 +7885,8 @@ function inicializarSliderPuntuacionMapa() {
         puntuacionMinimaMapa = val;
         const etiqueta = document.getElementById('puntuacion-mapa-etiqueta');
         if (etiqueta) etiqueta.textContent = val > 0 ? `${val}⭐` : '';
+        const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
+        if (divPunt) divPunt.classList.toggle('borde-rojo-externo', val > 0);
     });
 
     sliderEl.noUiSlider.on('change', function() {
