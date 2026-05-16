@@ -7856,11 +7856,13 @@ function aplicarPuntuacionEnMapa() {
     if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
         clustergroupDespegues.refreshClusters();
     }
-
-    filtrarMarkersPorPuntuacion();
+    if (puntuacionMinimaMapa > 0 && typeof actualizarFiltrosMapa === 'function') {
+        actualizarFiltrosMapa();
+    }
 }
 
 let puntuacionMinimaMapa = 0;
+window.markersBloqueadosPorPuntuacion = new Set();
 
 function inicializarSliderPuntuacionMapa() {
     const sliderEl = document.getElementById('puntuacion-mapa-slider');
@@ -7888,19 +7890,7 @@ function inicializarSliderPuntuacionMapa() {
 }
 
 function filtrarMarkersPorPuntuacion() {
-    markersDespegues.forEach(marker => {
-        const nota = marker._notaMapa !== undefined ? marker._notaMapa : -1;
-        const visible = nota < 0 || nota >= puntuacionMinimaMapa;
-        if (visible) {
-            if (!clustergroupDespegues.hasLayer(marker)) {
-                clustergroupDespegues.addLayer(marker);
-            }
-        } else {
-            if (clustergroupDespegues.hasLayer(marker)) {
-                clustergroupDespegues.removeLayer(marker);
-            }
-        }
-    });
+    if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
 }
 
 // ---------------------------------------------------------------
@@ -8299,6 +8289,14 @@ function inicializarMapaLeaflet() {
         // FUNCIÓN AUXILIAR DE FILTRADO (Lógica central reutilizable)
         // Se extrae la lógica de filtrado para aplicarla dos veces sin repetir código.
         const pasaFiltros = (marker) => {
+
+            // --- 0. FILTRO DE PUNTUACIÓN MÍNIMA ---
+            if (puntuacionMinimaMapa > 0) {
+                const nota = marker._notaMapa !== undefined ? marker._notaMapa : -1;
+                if (nota >= 0 && nota < puntuacionMinimaMapa) return false;
+            }
+            if (window.markersBloqueadosPorPuntuacion && window.markersBloqueadosPorPuntuacion.has(marker)) return false;
+
             // --- 1. VALIDACIÓN DE VUELOS ---
             const vuelosMarker = marker.metadata.vuelos || 0; 
             if (vuelosMarker < minVuelos) return false;
@@ -8370,10 +8368,9 @@ function inicializarMapaLeaflet() {
         clustergroupDespegues.addLayers(markersFiltradosDespegues);
         
         // 2. Actualizar capa MUNDO (DespeguesMundo)
-        // 🚩 FLAG 6: ACTUALIZACIÓN INDEPENDIENTE
         clustergroupDespeguesMundo.clearLayers();
         clustergroupDespeguesMundo.addLayers(markersFiltradosDespeguesMundo);
-        
+
         // Nota: El 'if (typeof clustergroupDespeguesMundo !== 'undefined')' ya no es necesario aquí.
     }
 
