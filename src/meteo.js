@@ -1866,7 +1866,13 @@ function clickOnPip(sliderElement) {
         window.sliderHorasValues = [finalStart, finalEnd];
     }
     
-    construir_tabla();
+    construir_tabla(false, true); // Recarga tabla en silencio
+
+    // --- AÑADIDO: Actualizar mapa si el filtro flotante está abierto ---
+    const contenedorMapaFloat = document.getElementById('contenedor-filtro-mapa-float');
+    if (contenedorMapaFloat && contenedorMapaFloat.style.display === 'block') {
+        window.actualizarColoresMapaMeteo(true);
+    }
 }
 
 // Función que adjunta el evento Y AHORA TAMBIÉN FORZA LA POSICIÓN VISUAL
