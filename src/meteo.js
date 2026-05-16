@@ -2210,6 +2210,12 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 			if (haCambiado) {
 				window.sliderHorasValues = valoresNuevos;
 				construir_tabla(false, false);
+
+                // REPINTAR MAPA AL SOLTAR EL DEDO
+                const btnFiltroMapa = document.getElementById('btn-toggle-filtro-mapa');
+                if (btnFiltroMapa && btnFiltroMapa.classList.contains('activo') && typeof window.actualizarColoresMapaMeteo === 'function') {
+                    window.actualizarColoresMapaMeteo(true);
+                }
 			}
 		});
 
@@ -2220,6 +2226,12 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 
             if (typeof window.Capacitor !== 'undefined') { 
                 window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); 
+            }
+
+            // REPINTAR MAPA AL ARRASTRAR
+            const btnFiltroMapa = document.getElementById('btn-toggle-filtro-mapa');
+            if (btnFiltroMapa && btnFiltroMapa.classList.contains('activo') && typeof window.actualizarColoresMapaMeteo === 'function') {
+                window.actualizarColoresMapaMeteo(true);
             }
         });
 
@@ -2637,6 +2649,117 @@ function estiloZona(feature) {
 
     return { color: '#888', fillColor: '#888', fillOpacity: 0.1, weight: 1 };
 }
+
+// ---------------------------------------------------------------
+// 🔴 FUNCIÓN GLOBAL PARA CALCULAR LA NOTA METEO PARA EL MAPA (Replica exactamente la lógica de construir_tabla() pero devuelve solo el número)
+// ---------------------------------------------------------------
+
+window.obtenerNotaDespegueMeteo = function(idDespegue) {
+    // 1. Verificamos que los datos estén descargados
+    if (!DATOS_METEO_CACHE || !DATOS_METEO_ECMWF_CACHE) return null;
+    if (!window.sliderHorasValues || !window.indicesHorasRangoHorario) return null;
+
+    // 2. Localizamos los índices reales seleccionados en el slider
+    const idxInicio = window.indicesHorasRangoHorario[window.sliderHorasValues[0]];
+    const idxFin = window.indicesHorasRangoHorario[window.sliderHorasValues[1]];
+
+    // 3. Localizamos el despegue en la caché
+    const dIndex = DATOS_METEO_CACHE.despegues.findIndex(x => Number(x.ID) === Number(idDespegue));
+    if (dIndex === -1) return null;
+
+    const d = DATOS_METEO_CACHE.despegues[dIndex];
+    const hourlyData = DATOS_METEO_CACHE.respuestas[dIndex]?.hourly;
+    const hourlyEcmwf = DATOS_METEO_ECMWF_CACHE.respuestas[dIndex]?.hourly;
+
+    if (!hourlyData) return null;
+
+    const horas = hourlyData.time; 
+    const soloHorasDeLuz = localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") === "true";
+    const orientaciones = d.Orientaciones_Grados ? d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim())) : [];
+
+    let horasValidas = 0;
+    let puntosAcumulados = 0;
+
+    // 4. BUCLE DE HORAS (Matemática idéntica a la tabla)
+    for (let i = idxInicio; i <= idxFin; i++) {
+        const h = horas[i];
+        const fecha = new Date(h.endsWith('Z') ? h : h + 'Z');
+        
+        if (soloHorasDeLuz && esCeldaNoche(fecha)) continue;
+
+        horasValidas++;
+
+        let velocidad = Math.round(Math.max(0, hourlyData.wind_speed_10m[i]));
+        let rachaCorregida = Math.round(Math.max(0, hourlyData.wind_gusts_10m[i]));
+        let dirCorregida = hourlyData.wind_direction_10m[i];
+
+        // A) Lógica de ladera y ángulo
+        let minimoAngulo = 180;
+        if (orientaciones.length > 0) {
+            minimoAngulo = Math.min(...orientaciones.map(o => diferenciaAngular(dirCorregida, o)));
+            if (orientaciones.length > 1) {
+                const UMBRAL_CONTIGUAS = 46;
+                const oriOrdenadas = [...orientaciones].sort((a, b) => a - b);
+                for (let j = 0; j < oriOrdenadas.length; j++) {
+                    let o1 = oriOrdenadas[j];
+                    let o2 = oriOrdenadas[(j + 1) % oriOrdenadas.length];
+                    let diff = (o2 - o1 + 360) % 360;
+                    if (diff > 180) { diff = 360 - diff; let temp = o1; o1 = o2; o2 = temp; }
+                    if (diff <= UMBRAL_CONTIGUAS) {
+                        let diffViento = (dirCorregida - o1 + 360) % 360;
+                        if (diffViento <= diff) { minimoAngulo = 0; break; }
+                    }
+                }
+            }
+        }
+
+        // B) Puntuación base
+        let ptsHora = 0;
+        let vetoActivado = false;
+
+        let ptsDir = 0, ratioDir = 1, ratioRacha = 1;
+        if (minimoAngulo > 120) { ptsDir = 0; vetoActivado = true; }
+        else if (minimoAngulo > 100) { ptsDir = 5; ratioDir = 0.2; }
+        else if (minimoAngulo > 80) { ptsDir = 10; ratioDir = 0.3; }
+        else if (minimoAngulo > 45) { ptsDir = 15; ratioDir = 0.4; }
+        else if (minimoAngulo > 22) { ptsDir = 35; ratioDir = 0.6; }
+        else if (minimoAngulo > 10) { ptsDir = 45; ratioDir = 0.9; }
+        else { ptsDir = 50; ratioDir = 1; }
+
+        let ptsRacha = 0;
+        if (!vetoActivado) {
+            if (rachaCorregida > RachaMax * 1.5) { ptsRacha = 0; vetoActivado = true; }
+            else if (rachaCorregida > RachaMax * 1.1) { ptsRacha = 0; ratioRacha = 0.2; }
+            else if (rachaCorregida > RachaMax) { ptsRacha = 5; ratioRacha = 0.5; }
+            else if (rachaCorregida > RachaMax * 0.8) { ptsRacha = 20; ratioRacha = 0.8; }
+            else { ptsRacha = 30; }
+        }
+
+        let ptsVel = 0;
+        if (!vetoActivado) {
+            if (velocidad > VelocidadMax * 2) { ptsVel = 0; vetoActivado = true; }
+            else if (velocidad > VelocidadMax * 1.5) { ptsVel = 3; }
+            else if (velocidad > VelocidadMax) { ptsVel = 5; }
+            else if (velocidad > VelocidadMin) { ptsVel = 20; }
+            else { ptsVel = 15; }
+        }
+
+        let precipitacion = (hourlyEcmwf && hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] !== null) ? Number(hourlyEcmwf.precipitation[i]) : 0;
+        if (precipitacion > 0) { vetoActivado = true; }
+
+        if (!vetoActivado) {
+            ptsHora = (ptsDir + ptsRacha + ptsVel) * ratioDir * ratioRacha;
+        }
+
+        puntosAcumulados += ptsHora;
+    }
+
+    if (horasValidas > 0) {
+        // Devolvemos la nota exacta (de 0 a 10)
+        return Math.round((puntosAcumulados / (horasValidas * 100)) * 10);
+    }
+    return null; // Sin datos
+};
 
 // ---------------------------------------------------------------
 // 🔴 BASE DE DATOS INDEXEDDB (Modo Offline sin límite de 5MB)
@@ -7396,7 +7519,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         window.activarMenuInferior(btnInicio);
     };
 
-// 2️⃣ BOTÓN BUSCAR
+    // 2️⃣ BOTÓN BUSCAR
     window.clicBotonBuscar = function() {
         cerrarAjustesSilencioso(); 
         const searchContainer = document.getElementById('floating-search-container');
@@ -7534,6 +7657,54 @@ function comprobarAvisoCambiosPuntuacionXC() {
         }
     };
 
+    // ---------------------------------------------------------------
+	// 🔴 CONEXIÓN FILTRO HORARIO EN MAPA
+	// ---------------------------------------------------------------
+    const btnToggleFiltroMapa = document.getElementById('btn-toggle-filtro-mapa');
+    
+    if (btnToggleFiltroMapa) {
+        btnToggleFiltroMapa.addEventListener('click', function() {
+            const contenedorMapa = document.getElementById('contenedor-filtro-mapa');
+            const filtroHorarioDOM = document.querySelector('.div-filtro-horario');
+            const sliderHoras = document.getElementById('horario-slider');
+            
+            this.classList.toggle('activo');
+            const activo = this.classList.contains('activo');
+
+            if (activo) {
+                this.style.backgroundColor = '#007aff';
+                this.style.color = 'white';
+                this.style.boxShadow = 'inset 0 2px 4px rgba(0, 0, 0, 0.4)';
+                
+                contenedorMapa.style.display = 'block';
+                contenedorMapa.appendChild(filtroHorarioDOM);
+                filtroHorarioDOM.style.display = 'flex';
+                
+                setTimeout(() => {
+                    if (sliderHoras && sliderHoras.noUiSlider) {
+                        sliderHoras.noUiSlider.updateOptions({}, true);
+                    }
+                }, 50);
+
+                // Llamamos a la función indicando que SÍ queremos colores
+                if (typeof window.actualizarColoresMapaMeteo === 'function') {
+                    window.actualizarColoresMapaMeteo(true);
+                }
+            } else {
+                this.style.backgroundColor = '#f0f0f0';
+                this.style.color = 'black';
+                this.style.boxShadow = '1px 1px 3px rgba(0,0,0,0.2)';
+                
+                contenedorMapa.style.display = 'none';
+                
+                // Llamamos a la función indicando que NO queremos colores (blanco)
+                if (typeof window.actualizarColoresMapaMeteo === 'function') {
+                    window.actualizarColoresMapaMeteo(false);
+                }
+            }
+        });
+    }
+
 }); //document . addEventListener('DOMContentLoaded', function() {
 
 // ---------------------------------------------------------------
@@ -7593,6 +7764,11 @@ window.cambiarVista = function(vista) {
     
     // El nuevo botón flotante
     const btnVolver = document.getElementById('btn-volver-edicion-mapa');
+    
+    // Elementos para la "mudanza" del filtro horario
+    const filtroHorarioDOM = document.querySelector('.div-filtro-horario');
+    const contenedorMapa = document.getElementById('contenedor-filtro-mapa');
+    const contenedorTabla = document.querySelector('.contenedor-principal-controles'); // Su casa original
 
     if (vista === 'mapa') {
         if (vistaTabla) vistaTabla.style.display = 'none';
@@ -7604,7 +7780,7 @@ window.cambiarVista = function(vista) {
             mapaInicializado = true;
         } 
         
-        // --- LA MAGIA: ¿De dónde venimos? ---
+        // ¿De dónde venimos?
         if (btnVolver) {
             // Si estamos en modo edición, encendemos el botón de volver
             if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
@@ -7612,6 +7788,21 @@ window.cambiarVista = function(vista) {
             } else {
                 btnVolver.style.display = 'none';
             }
+        }
+
+        // --- NUEVO: Mudar el filtro al Mapa (Si está activado) ---
+        const btnToggleFiltroMapa = document.getElementById('btn-toggle-filtro-mapa');
+        if (btnToggleFiltroMapa && btnToggleFiltroMapa.classList.contains('activo') && filtroHorarioDOM && contenedorMapa) {
+            contenedorMapa.appendChild(filtroHorarioDOM);
+            filtroHorarioDOM.style.display = 'flex';
+            
+            // Forzar actualización visual de NoUiSlider por el cambio de DOM
+            setTimeout(() => {
+                const sliderHoras = document.getElementById('horario-slider');
+                if (sliderHoras && sliderHoras.noUiSlider) {
+                    sliderHoras.noUiSlider.updateOptions({}, true);
+                }
+            }, 50);
         }
         
         setTimeout(() => { 
@@ -7627,16 +7818,37 @@ window.cambiarVista = function(vista) {
         if (vistaTabla) vistaTabla.style.display = 'flex'; 
         if (vistaControles) vistaControles.style.display = 'block';
 
-        // Al salir del mapa, apagamos la pastilla siempre
         if (btnVolver) btnVolver.style.display = 'none';
 
-        // --- LÓGICA INTELIGENTE DE LUCES ---
+        // --- NUEVO: Devolver el filtro a la Tabla ---
+        if (filtroHorarioDOM && contenedorTabla) {
+            // Lo devolvemos a la segunda posición (después del menú oculto)
+            const menuOculto = document.getElementById('div-menu');
+            if (menuOculto && menuOculto.nextSibling) {
+                contenedorTabla.insertBefore(filtroHorarioDOM, menuOculto.nextSibling);
+            } else {
+                contenedorTabla.appendChild(filtroHorarioDOM);
+            }
+            
+            // Si estábamos en modo edición, en la tabla debe ocultarse
+            if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+                filtroHorarioDOM.style.display = 'none';
+            } else {
+                filtroHorarioDOM.style.display = 'flex';
+                // Forzar repintado del slider al volver
+                setTimeout(() => {
+                    const sliderHoras = document.getElementById('horario-slider');
+                    if (sliderHoras && sliderHoras.noUiSlider) {
+                        sliderHoras.noUiSlider.updateOptions({}, true);
+                    }
+                }, 50);
+            }
+        }
+
         if (typeof window.activarMenuInferior === 'function') {
-            // Si volvemos y estamos en plena edición, la luz va a Ajustes
             if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
                 window.activarMenuInferior(document.getElementById('nav-settings'));
             } else {
-                // Si no, por defecto a Inicio
                 window.activarMenuInferior(document.getElementById('nav-home'));
             }
         }
@@ -8704,7 +8916,7 @@ function inicializarMapaLeaflet() {
     }
 
     // crea icono compuesto (dot + etiqueta) usando L.divIcon
-    function createIconDespegue(despegue, actividad, orientacionesMetadata) {
+    function createIconDespegue(despegue, actividad, orientacionesMetadata, idDespegue) {
         // 1. 🧭 Generar el círculo de orientación (NUEVO)
         const orientacionHTML = createOrientationSVG(orientacionesMetadata);
 
@@ -8712,8 +8924,16 @@ function inicializarMapaLeaflet() {
         const color = actividadToColor(actividad);
         const dot = `<span class="dot" style="background:${color}"></span>`;
 
-        // 3. Combinar todo en la etiqueta
-        const labelHTML = `<span class='label-large-despegues'>${orientacionHTML}${dot}${escapeHtml(despegue)}</span>`;
+        // --- NUEVO: Calculamos la nota e inyectamos los estilos de color ---
+        let styleStr = "";
+        const nota = window.obtenerNotaDespegueMeteo(idDespegue);
+        if (nota !== null && nota >= 0 && nota <= 10) {
+            const coloresNota = ["#fb796e", "#f9876d", "#f7966c", "#f4a46c", "#f2b36b", "#f0c16a", "#d5ca78", "#bbd386", "#a0dd93", "#86e6a1", "#6befaf"];
+            styleStr = `style="--nota-bg: ${coloresNota[nota]}; --nota-border: ${coloresNota[nota]}; --nota-text: #000000;"`;
+        }
+
+        // 3. Combinar todo en la etiqueta (Añadiendo styleStr)
+        const labelHTML = `<span class='label-large-despegues' ${styleStr}>${orientacionHTML}${dot}${escapeHtml(despegue)}</span>`;
 
         return L.divIcon({
             html: labelHTML,
@@ -8722,6 +8942,27 @@ function inicializarMapaLeaflet() {
         });
     }
 
+    // =====================================================================
+    // 🟢 FUNCIÓN PARA ACTUALIZAR LOS COLORES DEL MAPA DE GOLPE
+    // =====================================================================
+    window.actualizarColoresMapaMeteo = function(activarColores = true) {
+        if (typeof markersDespegues !== 'undefined') {
+            markersDespegues.forEach(marker => {
+                if (marker.metadata && marker.metadata.id) {
+                    // Si activarColores es false, pasamos 'null' para que vuelva a ser blanco
+                    const idUsar = activarColores ? marker.metadata.id : null;
+                    const newIcon = createIconDespegue(
+                        marker.metadata.despegue, 
+                        marker.metadata.actividad, 
+                        marker.metadata.orientaciones, 
+                        idUsar
+                    );
+                    marker.setIcon(newIcon);
+                }
+            });
+        }
+    };
+
     // escape para html en popup/label. Esa función convierte caracteres especiales de HTML en sus entidades seguras, evitando que el texto insertado en el DOM se interprete como código HTML (previene inyección de HTML o XSS)
     function escapeHtml(str){
     if (!str && str !== 0) return '';
@@ -8729,46 +8970,53 @@ function inicializarMapaLeaflet() {
     }
 
     Papa.parse('map/despegues.csv', {
-    download: true,
-    header: true, // Usa la primera fila como nombres de columnas
-    //dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
-    skipEmptyLines: true,
-    delimiter: ';',
-    encoding: 'utf8',
-    complete: function(results) {
-    results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
-        
-        const lat = parseFloat(row.Latitud);
-        const lon = parseFloat(row.Longitud);
-        const altitud = row.Altitud || '';	
-        const region = row.Región || ''; //asigna el contenido de la columna “Nombre_clásico” si existe; si no existe, deja la variable como cadena vacía. || → operador lógico “o”: devuelve el primer valor existente y no vacío.
-        const provincia = row.Provincia || '';
-        const despegue = row.Despegue || '';
-        const SVGorientaciones = createOrientationSVG(row.Orientaciones);
-        const orientacion = row.Orientación || '';
-        const orientaciones = row.Orientaciones || '';
-        const OrientacionesGrados = row.Orientaciones_Grados || '';
-        const actividad = row.Actividad || '';
-        const color = actividadToColor(row.Actividad);
-        const dot = `<span class="dot" style="background:${color}"></span>`;
-        const CIRCULOactividad = row.Actividad || '';
+        download: true,
+        header: true, // Usa la primera fila como nombres de columnas
+        //dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
+        skipEmptyLines: true,
+        delimiter: ';',
+        encoding: 'utf8',
+        complete: function(results) {
+        results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
+            
+            const lat = parseFloat(row.Latitud);
+            const lon = parseFloat(row.Longitud);
+            const altitud = row.Altitud || '';	
+            const region = row.Región || ''; //asigna el contenido de la columna “Nombre_clásico” si existe; si no existe, deja la variable como cadena vacía. || → operador lógico “o”: devuelve el primer valor existente y no vacío.
+            const provincia = row.Provincia || '';
+            const despegue = row.Despegue || '';
+            const SVGorientaciones = createOrientationSVG(row.Orientaciones);
+            const orientacion = row.Orientación || '';
+            const orientaciones = row.Orientaciones || '';
+            const OrientacionesGrados = row.Orientaciones_Grados || '';
+            const actividad = row.Actividad || '';
+            const color = actividadToColor(row.Actividad);
+            const dot = `<span class="dot" style="background:${color}"></span>`;
+            const CIRCULOactividad = row.Actividad || '';
 
-        const kmmax = row.Km_máx || '';
-        const vuelos = row.Vuelos || '';
-        const ultimovuelo = row.Último_vuelo || '';
-        const info = row.Más_información || '';
+            const kmmax = row.Km_máx || '';
+            const vuelos = row.Vuelos || '';
+            const ultimovuelo = row.Último_vuelo || '';
+            const info = row.Más_información || '';
 
-        const icon = createIconDespegue(despegue, actividad, orientaciones);
-        const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
+            // Extraer ID o buscarlo si el CSV no lo tiene
+            let idDespegue = row.ID;
+            if (!idDespegue && window.bdGlobalDespegues) {
+                const match = window.bdGlobalDespegues.find(d => d.Despegue === despegue);
+                if (match) idDespegue = match.ID;
+            }
 
-        // 1. Traducimos el nombre largo (noroeste -> northwest). Usamos .toLowerCase() para que coincida con las claves del JSON
-        const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
+            const icon = createIconDespegue(despegue, actividad, orientaciones, idDespegue); 
+            const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Despegue de parapente' });
 
-        // 2. Traducimos los códigos (NO -> NW) usando la función existente
-        const codigosOriTraducidos = traducirCadenaOrientacion(row.Orientaciones);
-                
-        const popupHtml = `<div style="line-height: 1.2;">
-        
+            // 1. Traducimos el nombre largo (noroeste -> northwest). Usamos .toLowerCase() para que coincida con las claves del JSON
+            const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
+
+            // 2. Traducimos los códigos (NO -> NW) usando la función existente
+            const codigosOriTraducidos = traducirCadenaOrientacion(row.Orientaciones);
+                    
+            const popupHtml = `<div style="line-height: 1.2;">
+            
                 <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
                 <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
                 <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
@@ -8796,11 +9044,11 @@ function inicializarMapaLeaflet() {
                 
                 </div>`;		
 
-        marker.bindPopup(popupHtml, { className: 'popup-despegues', maxWidth: 300 });
-        marker.metadata = { despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
-        markersDespegues.push(marker); //inserta marker al grupo markersDespegues
-        clustergroupDespegues.addLayer(marker);
-    });
+            marker.bindPopup(popupHtml, { className: 'popup-despegues', maxWidth: 300 });
+            marker.metadata = { id: idDespegue, despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
+            markersDespegues.push(marker); //inserta marker al grupo markersDespegues
+            clustergroupDespegues.addLayer(marker);
+        });
 
         map.addLayer(clustergroupDespegues);
     
@@ -9697,7 +9945,7 @@ function inicializarMapaLeaflet() {
             const info = row.Más_información || '';
 
             const icon = createIconDespeguesMundo(despegue, actividad, orientaciones);
-            const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
+            const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Despegue de parapente' });
                     
             const popupHtml = `<div style="line-height: 1.2;">
             

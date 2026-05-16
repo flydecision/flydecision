@@ -2522,21 +2522,27 @@ details.config-accordion .accordion-content {
 	padding: 2px 3px 4px 3px;
 	border-radius: 5px;
 	white-space: nowrap;
-	background-color: #ffffff;
+    /* Usamos variables CSS con blanco por defecto */
+	background-color: var(--nota-bg, #ffffff);
+    color: var(--nota-text, #000000);
 	box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
-	border: 1.8px solid #007AFF;
+    /* Usamos variable CSS con tu azul original por defecto */
+	border: 1.8px solid var(--nota-border, #007AFF);
+    transition: background-color 0.3s ease, border-color 0.3s ease; /* Transición suave al colorearse */
 }
 
 .label-large-despegues::after {
   content: '';
   position: absolute;
-  left: 0.1em;          /* controla desplazamiento horizontal de la flecha */
-  bottom: -14px;        /* saca la punta fuera del cuadro */
+  left: 0.1em; /* controla desplazamiento horizontal de la flecha */
+  bottom: -14px; /* saca la punta fuera del cuadro */
   width: 0;
   height: 0;
   border-left: 13px solid transparent; /* dimensiones: Ancho del triángulo = border-left + border-right. Altura del triángulo = border-top  */
   border-right: 13px solid transparent;
-  border-top: 13px solid #007AFF; /* color del borde */
+  /* La flechita hereda el mismo color del borde */
+  border-top: 13px solid var(--nota-border, #007AFF);
+  transition: border-top-color 0.3s ease;
 }
 
 .label-large-despeguesmundo {
