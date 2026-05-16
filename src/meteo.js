@@ -2661,14 +2661,25 @@ function estiloZona(feature) {
 window.obtenerNotaDespegueMeteo = function(idDespegue) {
     if (!DATOS_METEO_CACHE || !DATOS_METEO_ECMWF_CACHE) return null;
 
-    // --- NUEVO: Leer el slider en tiempo real ---
+    // 1. Intentamos leer el slider. Si no está listo, usamos window.sliderHorasValues
+    // Si tampoco hay values, calculamos un rango de emergencia (10h-20h)
     let vals = window.sliderHorasValues;
     const sliderHoras = document.getElementById('horario-slider');
+    
     if (sliderHoras && sliderHoras.noUiSlider) {
-        // Cogemos los valores exactos del slider en este milisegundo
-        vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
+        try {
+            vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
+        } catch(e) { vals = window.sliderHorasValues; }
     }
-    if (!vals || !window.indicesHorasRangoHorario) return null;
+
+    if (!window.indicesHorasRangoHorario || window.indicesHorasRangoHorario.length === 0) return null;
+    
+    // Si no hay valores (arranque directo en mapa), seleccionamos el primer día completo
+    if (!vals) {
+        const indices = window.indicesHorasRangoHorario;
+        // Buscamos las primeras 24h disponibles
+        vals = [0, Math.min(23, indices.length - 1)];
+    }
 
     const idxInicio = window.indicesHorasRangoHorario[vals[0]];
     const idxFin = window.indicesHorasRangoHorario[vals[1]];
@@ -2680,7 +2691,7 @@ window.obtenerNotaDespegueMeteo = function(idDespegue) {
     const hourlyData = DATOS_METEO_CACHE.respuestas[dIndex]?.hourly;
     const hourlyEcmwf = DATOS_METEO_ECMWF_CACHE.respuestas[dIndex]?.hourly;
 
-    if (!hourlyData) return null;
+    if (!hourlyData || !hourlyEcmwf) return null;
 
     const horas = hourlyData.time; 
     const soloHorasDeLuz = localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") === "true";
@@ -2692,11 +2703,9 @@ window.obtenerNotaDespegueMeteo = function(idDespegue) {
     for (let i = idxInicio; i <= idxFin; i++) {
         const h = horas[i];
         const fecha = new Date(h.endsWith('Z') ? h : h + 'Z');
-        
         if (soloHorasDeLuz && esCeldaNoche(fecha)) continue;
 
         horasValidas++;
-
         let velocidad = Math.round(Math.max(0, hourlyData.wind_speed_10m[i]));
         let rachaCorregida = Math.round(Math.max(0, hourlyData.wind_gusts_10m[i]));
         let dirCorregida = hourlyData.wind_direction_10m[i];
@@ -2721,49 +2730,23 @@ window.obtenerNotaDespegueMeteo = function(idDespegue) {
         }
 
         let ptsHora = 0;
-        let vetoActivado = false;
-
-        let ptsDir = 0, ratioDir = 1, ratioRacha = 1;
-        if (minimoAngulo > 120) { ptsDir = 0; vetoActivado = true; }
-        else if (minimoAngulo > 100) { ptsDir = 5; ratioDir = 0.2; }
-        else if (minimoAngulo > 80) { ptsDir = 10; ratioDir = 0.3; }
-        else if (minimoAngulo > 45) { ptsDir = 15; ratioDir = 0.4; }
-        else if (minimoAngulo > 22) { ptsDir = 35; ratioDir = 0.6; }
-        else if (minimoAngulo > 10) { ptsDir = 45; ratioDir = 0.9; }
-        else { ptsDir = 50; ratioDir = 1; }
-
-        let ptsRacha = 0;
-        if (!vetoActivado) {
-            if (rachaCorregida > RachaMax * 1.5) { ptsRacha = 0; vetoActivado = true; }
-            else if (rachaCorregida > RachaMax * 1.1) { ptsRacha = 0; ratioRacha = 0.2; }
-            else if (rachaCorregida > RachaMax) { ptsRacha = 5; ratioRacha = 0.5; }
-            else if (rachaCorregida > RachaMax * 0.8) { ptsRacha = 20; ratioRacha = 0.8; }
-            else { ptsRacha = 30; }
-        }
-
-        let ptsVel = 0;
-        if (!vetoActivado) {
-            if (velocidad > VelocidadMax * 2) { ptsVel = 0; vetoActivado = true; }
-            else if (velocidad > VelocidadMax * 1.5) { ptsVel = 3; }
-            else if (velocidad > VelocidadMax) { ptsVel = 5; }
-            else if (velocidad > VelocidadMin) { ptsVel = 20; }
-            else { ptsVel = 15; }
-        }
-
-        let precipitacion = (hourlyEcmwf && hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] !== null) ? Number(hourlyEcmwf.precipitation[i]) : 0;
-        if (precipitacion > 0) { vetoActivado = true; }
+        let vetoActivado = (hourlyEcmwf.precipitation && Number(hourlyEcmwf.precipitation[i]) > 0);
 
         if (!vetoActivado) {
+            let ptsDir = (minimoAngulo > 120) ? 0 : (minimoAngulo > 100) ? 5 : (minimoAngulo > 80) ? 10 : (minimoAngulo > 45) ? 15 : (minimoAngulo > 22) ? 35 : (minimoAngulo > 10) ? 45 : 50;
+            let ratioDir = (minimoAngulo > 120) ? 1 : (minimoAngulo > 100) ? 0.2 : (minimoAngulo > 80) ? 0.3 : (minimoAngulo > 45) ? 0.4 : (minimoAngulo > 22) ? 0.6 : (minimoAngulo > 10) ? 0.9 : 1;
+            
+            let ptsRacha = (rachaCorregida > RachaMax * 1.5) ? 0 : (rachaCorregida > RachaMax * 1.1) ? 0 : (rachaCorregida > RachaMax) ? 5 : (rachaCorregida > RachaMax * 0.8) ? 20 : 30;
+            let ratioRacha = (rachaCorregida > RachaMax * 1.5) ? 1 : (rachaCorregida > RachaMax * 1.1) ? 0.2 : (rachaCorregida > RachaMax) ? 0.5 : (rachaCorregida > RachaMax * 0.8) ? 0.8 : 1;
+
+            let ptsVel = (velocidad > VelocidadMax * 2) ? 0 : (velocidad > VelocidadMax * 1.5) ? 3 : (velocidad > VelocidadMax) ? 5 : (velocidad > VelocidadMin) ? 20 : 15;
+
             ptsHora = (ptsDir + ptsRacha + ptsVel) * ratioDir * ratioRacha;
         }
-
         puntosAcumulados += ptsHora;
     }
 
-    if (horasValidas > 0) {
-        return Math.round((puntosAcumulados / (horasValidas * 100)) * 10);
-    }
-    return null;
+    return (horasValidas > 0) ? Math.round((puntosAcumulados / (horasValidas * 100)) * 10) : null;
 };
 
 // ---------------------------------------------------------------
@@ -7663,46 +7646,80 @@ function comprobarAvisoCambiosPuntuacionXC() {
     };
 
     // ---------------------------------------------------------------
-	// 🔴 CONEXIÓN FILTRO HORARIO EN MAPA (BOTONES FLOTANTES)
-	// ---------------------------------------------------------------
+    // 🔴 CONEXIÓN FILTROS METEO EN MAPA (BOTONES FLOTANTES Y SLIDER 0-10)
+    // ---------------------------------------------------------------
     const btnToggleFiltroMapa = document.getElementById('btn-toggle-filtro-mapa-float');
     const btnCerrarFiltroMapa = document.getElementById('btn-cerrar-filtro-mapa-float');
-    const contenedorMapa = document.getElementById('contenedor-filtro-mapa-float');
+    const contenedorMapaFloat = document.getElementById('contenedor-filtro-mapa-float');
+    const sliderFiltroNota = document.getElementById('slider-filtro-nota');
     
-    if (btnToggleFiltroMapa && btnCerrarFiltroMapa) {
-        
-        // ABRIR (Pulsa la píldora)
-        btnToggleFiltroMapa.addEventListener('click', function() {
-            const filtroHorarioDOM = document.querySelector('.div-filtro-horario');
-            const sliderHoras = document.getElementById('horario-slider');
-            
-            this.style.display = 'none'; // Ocultar píldora
-            contenedorMapa.style.display = 'block'; // Mostrar caja con el slider
-            
-            contenedorMapa.appendChild(filtroHorarioDOM);
-            filtroHorarioDOM.style.display = 'flex';
-            
-            setTimeout(() => {
-                if (sliderHoras && sliderHoras.noUiSlider) {
-                    sliderHoras.noUiSlider.updateOptions({}, true);
-                    // Reconectar clics en el slider
-                    if (typeof adjuntarEventoPips === 'function') adjuntarEventoPips(sliderHoras);
-                }
-            }, 50);
-
-            if (typeof window.actualizarColoresMapaMeteo === 'function') {
-                window.actualizarColoresMapaMeteo(true);
-            }
+    // --- 1. Crear Slider de Nota (0-10) ---
+    if (sliderFiltroNota && !sliderFiltroNota.noUiSlider) {
+        noUiSlider.create(sliderFiltroNota, {
+            start: 0, 
+            connect: 'lower',
+            step: 1,
+            range: { min: 0, max: 10 },
+            tooltips: [true],
+            format: { to: v => Math.round(v), from: v => Number(v) },
+            pips: { mode: 'values', values: [0, 5, 10], density: 10 }
         });
 
-        // CERRAR (Pulsa la X)
-        btnCerrarFiltroMapa.addEventListener('click', function() {
-            contenedorMapa.style.display = 'none'; // Ocultar caja
-            btnToggleFiltroMapa.style.display = 'block'; // Mostrar píldora
+        // Al mover este slider, llamamos a la función de filtrar el mapa (la que oculta/muestra)
+        sliderFiltroNota.noUiSlider.on('slide', () => {
+            if (typeof Capacitor !== 'undefined') Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
+            if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+        });
+        sliderFiltroNota.noUiSlider.on('change', () => {
+            if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+        });
+    }
+
+    // --- 2. Lógica de los botones de la Píldora Abrir/Cerrar ---
+    if (btnToggleFiltroMapa && btnCerrarFiltroMapa) {
+        
+        btnToggleFiltroMapa.addEventListener('click', function() {
+            const filtroHorarioDOM = document.querySelector('.div-filtro-horario');
             
-            if (typeof window.actualizarColoresMapaMeteo === 'function') {
-                window.actualizarColoresMapaMeteo(false); // Vuelve el mapa a blanco
+            this.style.display = 'none'; // Escondemos la píldora
+            contenedorMapaFloat.style.display = 'block'; // Mostramos la caja
+            
+            const ancla = document.getElementById('ancla-slider-horario');
+            if (ancla && filtroHorarioDOM) {
+                contenedorMapaFloat.insertBefore(filtroHorarioDOM, ancla);
+                
+                // Limpieza visual para evitar la "línea delgada"
+                filtroHorarioDOM.style.display = 'flex';
+                filtroHorarioDOM.style.maxHeight = 'none';
+                filtroHorarioDOM.style.opacity = '1';
+                filtroHorarioDOM.style.marginTop = '10px';
             }
+            
+            setTimeout(() => {
+                const sliderHoras = document.getElementById('horario-slider');
+                if (sliderHoras && sliderHoras.noUiSlider) {
+                    sliderHoras.noUiSlider.updateOptions({}, true);
+                    if (typeof adjuntarEventoPips === 'function') adjuntarEventoPips(sliderHoras);
+                }
+                // Coloreamos el mapa al abrir
+                window.actualizarColoresMapaMeteo(true);
+                // Aplicamos filtros (por si el slider de nota no estaba en 0)
+                if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+            }, 100);
+        });
+
+        btnCerrarFiltroMapa.addEventListener('click', function() {
+            contenedorMapaFloat.style.display = 'none'; 
+            btnToggleFiltroMapa.style.display = 'block'; 
+            
+            // Al cerrar, reseteamos el filtro de nota para que vuelvan a aparecer todos
+            if (sliderFiltroNota && sliderFiltroNota.noUiSlider) {
+                sliderFiltroNota.noUiSlider.set(0);
+            }
+            
+            // Volvemos el mapa a blanco y quitamos filtros de nota
+            if (typeof window.actualizarColoresMapaMeteo === 'function') window.actualizarColoresMapaMeteo(false);
+            if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
         });
     }
 
@@ -7789,15 +7806,19 @@ window.cambiarVista = function(vista) {
         }
 
         // Mudar al Mapa
-        if (contenedorMapa && contenedorMapa.style.display === 'block' && filtroHorarioDOM) {
-            contenedorMapa.appendChild(filtroHorarioDOM);
+        if (contenedorMapa && contenedorMapa.style.display === 'block' && filtroHorarioDOM && anclaHorario) {
+            contenedorMapa.insertBefore(filtroHorarioDOM, anclaHorario);
+            
+            // --- FIX VISUAL: Forzamos que se vea bien en el mapa ---
             filtroHorarioDOM.style.display = 'flex';
+            filtroHorarioDOM.style.maxHeight = 'none'; // Evita la "línea delgada"
+            filtroHorarioDOM.style.opacity = '1';
+            filtroHorarioDOM.style.marginTop = '10px';
             
             setTimeout(() => {
                 const sliderHoras = document.getElementById('horario-slider');
                 if (sliderHoras && sliderHoras.noUiSlider) {
                     sliderHoras.noUiSlider.updateOptions({}, true);
-                    // --- FIX CLICS ---
                     if (typeof adjuntarEventoPips === 'function') adjuntarEventoPips(sliderHoras);
                 }
             }, 50);
@@ -8162,6 +8183,16 @@ function inicializarMapaLeaflet() {
                 const anioMarker = parseInt(fechaUltimoVueloStr.substring(fechaUltimoVueloStr.length - 4), 10);
                 if (anioMarker < filtroAnioVuelo.minAnio) return false; 
             }       
+
+            // --- FILTRO DE NOTA ---
+            const sliderNota = document.getElementById('slider-filtro-nota');
+            if (sliderNota && sliderNota.noUiSlider) {
+                const minNota = parseInt(sliderNota.noUiSlider.get());
+                if (minNota > 0) {
+                    const notaActual = window.obtenerNotaDespegueMeteo(marker.metadata.id);
+                    if (notaActual === null || notaActual < minNota) return false;
+                }
+            }
 
             // --- 4. VALIDACIÓN DE ORIENTACIÓN ---
             if (!hayFiltroOrientacion) {
@@ -9000,7 +9031,12 @@ function inicializarMapaLeaflet() {
                 if (match) idDespegue = match.ID;
             }
 
-            const icon = createIconDespegue(despegue, actividad, orientaciones, idDespegue, false); 
+            // Detectar si el filtro del mapa está activo al cargar ---
+            const btnFiltroMapa = document.getElementById('btn-toggle-filtro-mapa-float');
+            const filtroMeteoActivoAlCargar = btnFiltroMapa && btnFiltroMapa.style.display === 'none';
+
+            // Pasamos idDespegue y el estado del botón (si está activo, pinta)
+            const icon = createIconDespegue(despegue, actividad, orientaciones, idDespegue, filtroMeteoActivoAlCargar); 
             const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Despegue de parapente' });
 
             // 1. Traducimos el nombre largo (noroeste -> northwest). Usamos .toLowerCase() para que coincida con las claves del JSON
