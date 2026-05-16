@@ -2211,9 +2211,8 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 				window.sliderHorasValues = valoresNuevos;
 				construir_tabla(false, false);
 
-                // REPINTAR MAPA AL SOLTAR EL DEDO
-                const btnFiltroMapa = document.getElementById('btn-toggle-filtro-mapa');
-                if (btnFiltroMapa && btnFiltroMapa.classList.contains('activo') && typeof window.actualizarColoresMapaMeteo === 'function') {
+                const contenedorMapaFloat = document.getElementById('contenedor-filtro-mapa-float');
+                if (contenedorMapaFloat && contenedorMapaFloat.style.display === 'block' && typeof window.actualizarColoresMapaMeteo === 'function') {
                     window.actualizarColoresMapaMeteo(true);
                 }
 			}
@@ -2228,9 +2227,8 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
                 window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); 
             }
 
-            // REPINTAR MAPA AL ARRASTRAR
-            const btnFiltroMapa = document.getElementById('btn-toggle-filtro-mapa');
-            if (btnFiltroMapa && btnFiltroMapa.classList.contains('activo') && typeof window.actualizarColoresMapaMeteo === 'function') {
+            const contenedorMapaFloat = document.getElementById('contenedor-filtro-mapa-float');
+            if (contenedorMapaFloat && contenedorMapaFloat.style.display === 'block' && typeof window.actualizarColoresMapaMeteo === 'function') {
                 window.actualizarColoresMapaMeteo(true);
             }
         });
@@ -2654,7 +2652,7 @@ function estiloZona(feature) {
 // 🔴 FUNCIÓN GLOBAL PARA CALCULAR LA NOTA METEO PARA EL MAPA (Replica exactamente la lógica de construir_tabla() pero devuelve solo el número)
 // ---------------------------------------------------------------
 
-window.obtenerNotaDespegueMeteo = function(nombreDespegue) {
+window.obtenerNotaDespegueMeteo = function(idDespegue) {
     if (!DATOS_METEO_CACHE || !DATOS_METEO_ECMWF_CACHE) return null;
 
     // --- NUEVO: Leer el slider en tiempo real ---
@@ -2669,8 +2667,7 @@ window.obtenerNotaDespegueMeteo = function(nombreDespegue) {
     const idxInicio = window.indicesHorasRangoHorario[vals[0]];
     const idxFin = window.indicesHorasRangoHorario[vals[1]];
 
-    // --- NUEVO: Buscar por Nombre en vez de ID ---
-    const dIndex = DATOS_METEO_CACHE.despegues.findIndex(x => x.Despegue === nombreDespegue);
+    const dIndex = DATOS_METEO_CACHE.despegues.findIndex(x => Number(x.ID) === Number(idDespegue));
     if (dIndex === -1) return null;
 
     const d = DATOS_METEO_CACHE.despegues[dIndex];
@@ -8910,15 +8907,15 @@ function inicializarMapaLeaflet() {
     }
 
     // crea icono compuesto (dot + etiqueta) usando L.divIcon
-    function createIconDespegue(despegue, actividad, orientacionesMetadata, pintarMeteo = false) {
+    function createIconDespegue(despegue, actividad, orientacionesMetadata, idDespegue, pintarMeteo = false) {
         const orientacionHTML = createOrientationSVG(orientacionesMetadata);
         const color = actividadToColor(actividad);
         const dot = `<span class="dot" style="background:${color}"></span>`;
 
-        // --- NUEVO: Calculamos la nota solo si nos piden pintarMeteo ---
+        // --- Calculamos la nota solo si nos piden pintarMeteo ---
         let styleStr = "";
-        if (pintarMeteo) {
-            const nota = window.obtenerNotaDespegueMeteo(despegue); // Le pasamos el nombre directo
+        if (pintarMeteo && idDespegue) {
+            const nota = window.obtenerNotaDespegueMeteo(idDespegue); // Volvemos a pasarle el ID
             if (nota !== null && nota >= 0 && nota <= 10) {
                 const coloresNota = ["#fb796e", "#f9876d", "#f7966c", "#f4a46c", "#f2b36b", "#f0c16a", "#d5ca78", "#bbd386", "#a0dd93", "#86e6a1", "#6befaf"];
                 styleStr = `style="--nota-bg: ${coloresNota[nota]}; --nota-border: ${coloresNota[nota]}; --nota-text: #000000;"`;
@@ -8940,12 +8937,13 @@ function inicializarMapaLeaflet() {
     window.actualizarColoresMapaMeteo = function(activarColores = true) {
         if (typeof markersDespegues !== 'undefined') {
             markersDespegues.forEach(marker => {
-                if (marker.metadata && marker.metadata.despegue) {
+                if (marker.metadata && marker.metadata.id) {
                     const newIcon = createIconDespegue(
                         marker.metadata.despegue, 
                         marker.metadata.actividad, 
                         marker.metadata.orientaciones, 
-                        activarColores // Le pasamos true o false
+                        marker.metadata.id,  // <-- AQUÍ PASAMOS EL ID
+                        activarColores 
                     );
                     marker.setIcon(newIcon);
                 }
@@ -8996,7 +8994,7 @@ function inicializarMapaLeaflet() {
                 if (match) idDespegue = match.ID;
             }
 
-            const icon = createIconDespegue(despegue, actividad, orientaciones, false); 
+            const icon = createIconDespegue(despegue, actividad, orientaciones, idDespegue, false); 
             const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Despegue de parapente' });
 
             // 1. Traducimos el nombre largo (noroeste -> northwest). Usamos .toLowerCase() para que coincida con las claves del JSON
