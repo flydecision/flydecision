@@ -8225,7 +8225,7 @@ function inicializarMapaLeaflet() {
 
     // 🛑 FUNCIONES DE ACTUALIZACIÓN DE LOS FILTROS, TANTO EJECUTIVO COMO VISUAL
 
-    function actualizarFiltrosMapa() {
+    window.actualizarFiltrosMapa = function actualizarFiltrosMapa() {
         // A. OBTENER ESTADOS DE LOS FILTROS
         // -------------------------------------------------------
         // 1. Obtener orientaciones
@@ -8293,7 +8293,7 @@ function inicializarMapaLeaflet() {
             // --- 0. FILTRO DE PUNTUACIÓN MÍNIMA ---
             if (puntuacionMinimaMapa > 0) {
                 const nota = marker._notaMapa !== undefined ? marker._notaMapa : -1;
-                if (nota >= 0 && nota < puntuacionMinimaMapa) return false;
+                if (nota >= 0 && Math.round(nota) < puntuacionMinimaMapa) return false;
             }
             if (window.markersBloqueadosPorPuntuacion && window.markersBloqueadosPorPuntuacion.has(marker)) return false;
 
