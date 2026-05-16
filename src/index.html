@@ -485,6 +485,20 @@
 <!-- 🟦🟦 MAPA (oculto por defecto) -->
 <div id="vista-mapa" style="display: none; flex-grow: 1; width: 100%; position: relative; z-index: 1;">
 
+	<!-- CONTENEDOR FLOTANTE TOP-CENTER PARA EL FILTRO METEO -->
+    <div id="map-top-center-container" style="position: absolute; top: max(15px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 2000; display: flex; flex-direction: column; align-items: center; width: 95%; max-width: 400px; pointer-events: none;">
+        
+        <button id="btn-toggle-filtro-mapa-float" style="pointer-events: auto; padding: 8px 16px; background: rgba(255,255,255,0.95); border: 2px solid rgba(0,0,0,0.2); border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 16px; color: #333; transition: all 0.2s; backdrop-filter: blur(4px);">
+            🕜 Filtro Condiciones Meteo
+        </button>
+
+        <div id="contenedor-filtro-mapa-float" style="pointer-events: auto; display: none; width: 100%; background: rgba(255, 255, 255, 0.95); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); padding: 5px 35px 5px 5px; position: relative; border: 1px solid rgba(0,0,0,0.1); backdrop-filter: blur(4px);">
+            <!-- La X para cerrar -->
+            <button id="btn-cerrar-filtro-mapa-float" style="position: absolute; top: 5px; right: 5px; background: transparent; border: none; font-size: 22px; cursor: pointer; color: #666; z-index: 10; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">&times;</button>
+            <!-- Aquí se inyectará el slider -->
+        </div>
+    </div>
+
 	<!-- Botón Flotante para Volver a Edición de favoritos si viene desde ahí-->
     <button id="btn-volver-edicion-mapa" class="btn-volver-flotante" onclick="cambiarVista('tabla')" style="display: none;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -526,26 +540,6 @@
 			<div style="font-weight: bold; margin-bottom: 5px;">
 				<br><span data-i18n="mapa.capas">Capas:</span>
 			</div>
-
-			<!-- BOTÓN FILTRO HORARIO -->
-			<button id="btn-toggle-filtro-mapa" style="
-                width: 100%; 
-                margin-top: 5px; 
-                margin-bottom: 10px; 
-                padding: 6px; 
-                background: #f0f0f0; 
-                border: 1px solid #333; 
-                border-radius: 5px; 
-                font-weight: bold; 
-                cursor: pointer;
-                box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-            ">
-                🕜 Filtro Condiciones Meteo
-            </button>
-            <div id="contenedor-filtro-mapa" style="display: none; width: 100%; margin-bottom: 10px;">
-                <!-- Aquí mudaremos temporalmente el slider -->
-            </div>
-		
 			<div class="legend-item" title="Despegues de parapente">
 				<label for="checkboxDespegues" class="custom-checkbox">
 				<input type="checkbox" id="checkboxDespegues" class="custom-checkbox" checked>

@@ -7660,49 +7660,45 @@ function comprobarAvisoCambiosPuntuacionXC() {
     };
 
     // ---------------------------------------------------------------
-	// 🔴 CONEXIÓN FILTRO HORARIO EN MAPA
+	// 🔴 CONEXIÓN FILTRO HORARIO EN MAPA (BOTONES FLOTANTES)
 	// ---------------------------------------------------------------
-    const btnToggleFiltroMapa = document.getElementById('btn-toggle-filtro-mapa');
+    const btnToggleFiltroMapa = document.getElementById('btn-toggle-filtro-mapa-float');
+    const btnCerrarFiltroMapa = document.getElementById('btn-cerrar-filtro-mapa-float');
+    const contenedorMapa = document.getElementById('contenedor-filtro-mapa-float');
     
-    if (btnToggleFiltroMapa) {
+    if (btnToggleFiltroMapa && btnCerrarFiltroMapa) {
+        
+        // ABRIR (Pulsa la píldora)
         btnToggleFiltroMapa.addEventListener('click', function() {
-            const contenedorMapa = document.getElementById('contenedor-filtro-mapa');
             const filtroHorarioDOM = document.querySelector('.div-filtro-horario');
             const sliderHoras = document.getElementById('horario-slider');
             
-            this.classList.toggle('activo');
-            const activo = this.classList.contains('activo');
-
-            if (activo) {
-                this.style.backgroundColor = '#007aff';
-                this.style.color = 'white';
-                this.style.boxShadow = 'inset 0 2px 4px rgba(0, 0, 0, 0.4)';
-                
-                contenedorMapa.style.display = 'block';
-                contenedorMapa.appendChild(filtroHorarioDOM);
-                filtroHorarioDOM.style.display = 'flex';
-                
-                setTimeout(() => {
-                    if (sliderHoras && sliderHoras.noUiSlider) {
-                        sliderHoras.noUiSlider.updateOptions({}, true);
-                    }
-                }, 50);
-
-                // Llamamos a la función indicando que SÍ queremos colores
-                if (typeof window.actualizarColoresMapaMeteo === 'function') {
-                    window.actualizarColoresMapaMeteo(true);
+            this.style.display = 'none'; // Ocultar píldora
+            contenedorMapa.style.display = 'block'; // Mostrar caja con el slider
+            
+            contenedorMapa.appendChild(filtroHorarioDOM);
+            filtroHorarioDOM.style.display = 'flex';
+            
+            setTimeout(() => {
+                if (sliderHoras && sliderHoras.noUiSlider) {
+                    sliderHoras.noUiSlider.updateOptions({}, true);
+                    // Reconectar clics en el slider
+                    if (typeof adjuntarEventoPips === 'function') adjuntarEventoPips(sliderHoras);
                 }
-            } else {
-                this.style.backgroundColor = '#f0f0f0';
-                this.style.color = 'black';
-                this.style.boxShadow = '1px 1px 3px rgba(0,0,0,0.2)';
-                
-                contenedorMapa.style.display = 'none';
-                
-                // Llamamos a la función indicando que NO queremos colores (blanco)
-                if (typeof window.actualizarColoresMapaMeteo === 'function') {
-                    window.actualizarColoresMapaMeteo(false);
-                }
+            }, 50);
+
+            if (typeof window.actualizarColoresMapaMeteo === 'function') {
+                window.actualizarColoresMapaMeteo(true);
+            }
+        });
+
+        // CERRAR (Pulsa la X)
+        btnCerrarFiltroMapa.addEventListener('click', function() {
+            contenedorMapa.style.display = 'none'; // Ocultar caja
+            btnToggleFiltroMapa.style.display = 'block'; // Mostrar píldora
+            
+            if (typeof window.actualizarColoresMapaMeteo === 'function') {
+                window.actualizarColoresMapaMeteo(false); // Vuelve el mapa a blanco
             }
         });
     }
@@ -7764,13 +7760,12 @@ window.cambiarVista = function(vista) {
     const vistaControles = document.querySelector('.contenedor-principal-controles');
     const vistaMapa = document.getElementById('vista-mapa');
     
-    // El nuevo botón flotante
     const btnVolver = document.getElementById('btn-volver-edicion-mapa');
     
-    // Elementos para la "mudanza" del filtro horario
+    // Elementos para la mudanza
     const filtroHorarioDOM = document.querySelector('.div-filtro-horario');
-    const contenedorMapa = document.getElementById('contenedor-filtro-mapa');
-    const contenedorTabla = document.querySelector('.contenedor-principal-controles'); // Su casa original
+    const contenedorMapa = document.getElementById('contenedor-filtro-mapa-float');
+    const contenedorTabla = document.querySelector('.contenedor-principal-controles'); 
 
     if (vista === 'mapa') {
         if (vistaTabla) vistaTabla.style.display = 'none';
@@ -7782,9 +7777,7 @@ window.cambiarVista = function(vista) {
             mapaInicializado = true;
         } 
         
-        // ¿De dónde venimos?
         if (btnVolver) {
-            // Si estamos en modo edición, encendemos el botón de volver
             if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
                 btnVolver.style.display = 'flex';
             } else {
@@ -7792,17 +7785,17 @@ window.cambiarVista = function(vista) {
             }
         }
 
-        // --- NUEVO: Mudar el filtro al Mapa (Si está activado) ---
-        const btnToggleFiltroMapa = document.getElementById('btn-toggle-filtro-mapa');
-        if (btnToggleFiltroMapa && btnToggleFiltroMapa.classList.contains('activo') && filtroHorarioDOM && contenedorMapa) {
+        // Mudar al Mapa
+        if (contenedorMapa && contenedorMapa.style.display === 'block' && filtroHorarioDOM) {
             contenedorMapa.appendChild(filtroHorarioDOM);
             filtroHorarioDOM.style.display = 'flex';
             
-            // Forzar actualización visual de NoUiSlider por el cambio de DOM
             setTimeout(() => {
                 const sliderHoras = document.getElementById('horario-slider');
                 if (sliderHoras && sliderHoras.noUiSlider) {
                     sliderHoras.noUiSlider.updateOptions({}, true);
+                    // --- FIX CLICS ---
+                    if (typeof adjuntarEventoPips === 'function') adjuntarEventoPips(sliderHoras);
                 }
             }, 50);
         }
@@ -7822,9 +7815,8 @@ window.cambiarVista = function(vista) {
 
         if (btnVolver) btnVolver.style.display = 'none';
 
-        // --- NUEVO: Devolver el filtro a la Tabla ---
+        // Devolver a la Tabla
         if (filtroHorarioDOM && contenedorTabla) {
-            // Lo devolvemos a la segunda posición (después del menú oculto)
             const menuOculto = document.getElementById('div-menu');
             if (menuOculto && menuOculto.nextSibling) {
                 contenedorTabla.insertBefore(filtroHorarioDOM, menuOculto.nextSibling);
@@ -7832,16 +7824,16 @@ window.cambiarVista = function(vista) {
                 contenedorTabla.appendChild(filtroHorarioDOM);
             }
             
-            // Si estábamos en modo edición, en la tabla debe ocultarse
             if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
                 filtroHorarioDOM.style.display = 'none';
             } else {
                 filtroHorarioDOM.style.display = 'flex';
-                // Forzar repintado del slider al volver
                 setTimeout(() => {
                     const sliderHoras = document.getElementById('horario-slider');
                     if (sliderHoras && sliderHoras.noUiSlider) {
                         sliderHoras.noUiSlider.updateOptions({}, true);
+                        // --- FIX CLICS ---
+                        if (typeof adjuntarEventoPips === 'function') adjuntarEventoPips(sliderHoras);
                     }
                 }, 50);
             }
