@@ -7827,8 +7827,13 @@ function aplicarPuntuacionEnMapa() {
         const color = colorNotaMapa(nota);
 
         // setIcon funciona aunque el marker esté en un cluster o fuera del viewport
-        marker.setIcon(createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones, color));
+        marker._notaMapa = (nota !== null) ? nota : -1;
+        marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones, color));
     });
+
+    if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
+        clustergroupDespegues.refreshClusters();
+    }
 }
 
 // ---------------------------------------------------------------
@@ -8955,13 +8960,24 @@ function inicializarMapaLeaflet() {
         iconCreateFunction: function (cluster) {
             const count = cluster.getChildCount();
             const clusterTitle = `Grupo de ${count} lugares de despegue`;
+
+            // Nota máxima entre los markers del cluster
+            let notaMax = -1;
+            cluster.getAllChildMarkers().forEach(m => {
+                if (m._notaMapa !== undefined && m._notaMapa > notaMax) {
+                    notaMax = m._notaMapa;
+                }
+            });
+            const bgColor = (notaMax >= 0) ? colorNotaMapa(notaMax) : 'white';
+            const borderColor = (notaMax >= 0) ? 'transparent' : '#007aff';
+
             return L.divIcon({
                 html: `
                     <div title="${clusterTitle}" style="
                         position: relative;
-                        background-color: white;
+                        background-color: ${bgColor};
                         color: black;
-                        border: 1.8px solid #007aff;
+                        border: 1.8px solid ${borderColor};
                         border-radius: 50%;
                         width: 35px;
                         height: 35px;
