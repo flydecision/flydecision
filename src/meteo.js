@@ -7605,7 +7605,7 @@ function updateURL(mapInstance) {
 }
 
 let mapaInicializado = false;
-let filtrosMapaAbiertos = false;
+let filtrosMapaAbiertos = true;
 
 window.cambiarVista = function(vista) {
     const vistaTabla = document.querySelector('.contenedor-principal-tabla');
@@ -7659,6 +7659,10 @@ window.cambiarVista = function(vista) {
                 const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
                 if (divPunt) divPunt.style.display = '';
                 setTimeout(() => inicializarSliderPuntuacionMapa(), 150);
+                setTimeout(() => {
+                    marcarOperativosEnMarkers();
+                    aplicarPuntuacionEnMapa();
+                }, 800);
             } else {
                 // Cerrado por defecto
                 divFH.style.display = 'none';
