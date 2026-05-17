@@ -8328,8 +8328,11 @@ function inicializarMapaLeaflet() {
             }
             if (window.markersBloqueadosPorPuntuacion && window.markersBloqueadosPorPuntuacion.has(marker)) return false;
 
-            // --- 0b. OCULTAR NO-OPERATIVOS SI EL FILTRO ESTÁ ACTIVO ---
-            if (filtrosMapaAbiertos && marker._esOperativo === false) return false;
+            // --- 0b. CON FILTRO ACTIVO: solo operativos, saltar filtros de vuelos/año/orientación ---
+            if (filtrosMapaAbiertos) {
+                if (marker._esOperativo !== true) return false;
+                return true; // Los operativos pasan directamente
+            }
 
             // --- 1. VALIDACIÓN DE VUELOS ---
             const vuelosMarker = marker.metadata.vuelos || 0; 
