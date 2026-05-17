@@ -7405,15 +7405,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
         if (necesitaReconstruir) {
             construir_tabla(); 
         } else if (yaEnInicio) {
-            // Si el usuario ya estaba en inicio y no hizo falta reconstruir, 
-            // hacemos el comportamiento estándar de las Apps: Scroll suave arriba del todo.
             const wrapper = document.querySelector('.tabla-wrapper');
             const principal = document.querySelector('.contenedor-principal-tabla');
             const scrollOptions = { top: 0, behavior: 'smooth' };
-
             if (wrapper) wrapper.scrollTo(scrollOptions);
             if (principal) principal.scrollTo(scrollOptions);
             window.scrollTo(scrollOptions);
+        } else {
+            // Venía del mapa u otra vista: reconstruir tabla con el estado correcto
+            construir_tabla();
         }
 
         // 8. Iluminar botón inicio
@@ -7464,7 +7464,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
         } else {
             // Queremos ir al buscador (y abrirlo si estaba cerrado)
             cambiarVista('tabla');
-            if (!isSearchOpen) {
+                construir_tabla();
+                if (!isSearchOpen) {
                 window.toggleBuscadorFlotante();
             } else if (searchInput) {
                 // Si ya estaba abierto, le devolvemos el foco al texto
@@ -7517,7 +7518,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
         } else {
             // Queremos ir a Distancia (y abrirlo si estaba cerrado)
             cambiarVista('tabla');
-            if (!isDistanceOpen && panelDistancia) {
+                construir_tabla();
+                if (!isDistanceOpen && panelDistancia) {
                 panelDistancia.classList.add("activo");
                 setTimeout(() => {
                     if (sliderDistancia && sliderDistancia.noUiSlider) {
