@@ -7842,7 +7842,11 @@ function aplicarPuntuacionEnMapa() {
         if (!meta) return;
 
         const despObj = despegues.find(d => d.Despegue === meta.despegue);
-        if (!despObj) return;
+        marker._esOperativo = !!despObj;
+        if (!despObj) {
+            marker._notaMapa = undefined;
+            return;
+        }
 
         const idx = idxPorId.get(Number(despObj.ID));
         if (idx === undefined) return;
@@ -7906,6 +7910,7 @@ function limpiarColoresMapa() {
         if (!meta) return;
         marker._notaMapa = undefined;
         marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones));
+        marker._esOperativo = undefined;
     });
     if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
     if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
@@ -8314,6 +8319,9 @@ function inicializarMapaLeaflet() {
                 if (nota >= 0 && Math.round(nota) < puntuacionMinimaMapa) return false;
             }
             if (window.markersBloqueadosPorPuntuacion && window.markersBloqueadosPorPuntuacion.has(marker)) return false;
+
+            // --- 0b. OCULTAR NO-OPERATIVOS SI EL FILTRO ESTÁ ACTIVO ---
+            if (filtrosMapaAbiertos && marker._esOperativo === false) return false;
 
             // --- 1. VALIDACIÓN DE VUELOS ---
             const vuelosMarker = marker.metadata.vuelos || 0; 
