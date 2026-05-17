@@ -7865,7 +7865,7 @@ function aplicarPuntuacionEnMapa() {
     if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
         clustergroupDespegues.refreshClusters();
     }
-    if (puntuacionMinimaMapa > 0 && typeof actualizarFiltrosMapa === 'function') {
+    if (typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || filtrosMapaAbiertos)) {
         actualizarFiltrosMapa();
     }
 }
