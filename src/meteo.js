@@ -7823,10 +7823,21 @@ function inicializarSliderMapaHorario() {
 function marcarOperativosEnMarkers() {
     const operativos = window.bdGlobalDespegues;
     if (!operativos || markersDespegues.length === 0) return;
-    const nombresOperativos = new Set(operativos.map(d => d.Despegue));
+
+    // Índice por lat+lon redondeados (4 decimales)
+    const porCoords = new Map();
+    operativos.forEach(d => {
+        const key = `${parseFloat(d.Latitud).toFixed(4)}_${parseFloat(d.Longitud).toFixed(4)}`;
+        porCoords.set(key, d);
+    });
+
     markersDespegues.forEach(marker => {
-        const meta = marker.metadata;
-        marker._esOperativo = !!(meta && meta.despegue && nombresOperativos.has(meta.despegue));
+        const lat = marker.getLatLng().lat.toFixed(4);
+        const lon = marker.getLatLng().lng.toFixed(4);
+        const despObj = porCoords.get(`${lat}_${lon}`);
+        marker._esOperativo = !!despObj;
+        // Guardar referencia al objeto del JSON para scoring y nombre
+        marker._despObj = despObj || null;
     });
 }
 
@@ -7854,11 +7865,9 @@ function aplicarPuntuacionEnMapa() {
 
         if (!meta) return;
 
-        const despObj = despegues.find(d => d.Despegue === meta.despegue);
-        if (!despObj) {
-            marker._notaMapa = undefined;
-            return;
-        }
+        // Usar el despObj ya cruzado por coordenadas
+        const despObj = marker._despObj || null;
+        if (!despObj) return;
 
         const idx = idxPorId.get(Number(despObj.ID));
         if (idx === undefined) return;
@@ -7870,7 +7879,8 @@ function aplicarPuntuacionEnMapa() {
         const color = colorNotaMapa(nota);
 
         marker._notaMapa = (nota !== null) ? nota : -1;
-        marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones, color));
+        const nombreMostrar = despObj ? despObj.Despegue : meta.despegue;
+        marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color));
     });
 
     if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
@@ -7906,7 +7916,7 @@ function inicializarSliderPuntuacionMapa() {
         if (divPunt) divPunt.classList.toggle('borde-rojo-externo', val > 0);
     });
 
-    sliderEl.noUiSlider.on('change', function() {
+    sliderEl.noUiSlider.on('update', function() {
         filtrarMarkersPorPuntuacion();
     });
 }
