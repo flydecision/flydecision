@@ -58,6 +58,12 @@ let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_P
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
 let chkOrdenarPorXC = localStorage.getItem("METEO_CHECKBOX_ORDENAR_POR_XC") === "true"; // false por defecto
 
+// Si entra por url mapa con coordenadas y no hay configuración se marca este flag
+const paramsArranque = new URLSearchParams(window.location.search);
+if (paramsArranque.has('lat') && paramsArranque.has('lon')) {
+    sessionStorage.setItem('METEO_ENTRO_POR_MAPA_YA_VISITADO', 'true');
+}
+
 // UMBRALES DE CIZALLADURA (Factor multiplicador)
 const LIMITES_CIZALLADURA = {
     "180 m": { naranja: 1.8, rojo: 2.3 }, // +80% / +130%
@@ -2734,9 +2740,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             !modoEdicionFavoritos) { 
 
             // Si viene por enlace directo, no mostrar asistente ni forzar edición
-            if (enlaceDirectoMapa || sessionStorage.getItem('METEO_ENTRO_POR_MAPA_YA_VISITADO')) {
-                // Vino por enlace directo o sigue en esa sesión: ir silencioso
-                sessionStorage.setItem('METEO_ENTRO_POR_MAPA_YA_VISITADO', 'true');
+            if (sessionStorage.getItem('METEO_ENTRO_POR_MAPA_YA_VISITADO')) {
                 soloFavoritos = false;
                 modoEdicionFavoritos = false;
             } else {
@@ -7674,7 +7678,7 @@ window.cambiarVista = function(vista) {
 
     } 
     else if (vista === 'tabla') {
-        sessionStorage.removeItem('METEO_ENTRO_POR_MAPA'); // Eliminamos el flag de que entró vía URL directa al mapa (contenía "lat o lon") pero no tenía favoritos.
+        sessionStorage.removeItem('METEO_ENTRO_POR_MAPA_YA_VISITADO'); // Eliminamos el flag de que entró vía URL directa al mapa (contenía "lat o lon") pero no tenía favoritos.
         if (vistaMapa) vistaMapa.style.display = 'none';
         if (vistaTabla) vistaTabla.style.display = 'flex'; 
         if (vistaControles) vistaControles.style.display = 'block';
