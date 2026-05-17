@@ -1382,11 +1382,15 @@ span.grados {
 /* 🟡 SLIDERS. Modificación clases generales noUi -------------------------------- */
 
 .noUi-horizontal {
-    margin-top: 4px !important;
+    margin-top: 44px !important;
     height: 17px !important;
     margin-left: 18px !important;
     margin-right: 18px !important;
     /* margin-bottom: 10px; */
+}
+
+.div-filtro-puntuacion-mapa .noUi-horizontal {
+    margin-top: 4px !important;
 }
 .noUi-horizontal .noUi-handle {
     width: 28px !important;   /* Antes 20px */
