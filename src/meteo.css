@@ -3495,7 +3495,7 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     display: flex;
     align-items: center;
     max-width: 365px;
-    min-width: 365px;
+    min-width: 270px;
     padding: 10px 0 10px 0;
     box-sizing: border-box;
     gap: 8px;
@@ -3520,6 +3520,7 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     align-self: center;
     font-weight: bold;
     text-align: right;
+    padding-right: 10px;
 }
 
 /* La barra izquierda (antes del handle) en blanco */
