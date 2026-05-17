@@ -1372,7 +1372,7 @@ span.grados {
     background-color: #f0f0f0;
     border: 1px solid #333;
     border-radius: 5px;
-    width: 170px;
+    width: 200px;
     height: 30px;
     box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2);
 }
@@ -3510,12 +3510,16 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     min-width: 0;
 }
 
+
+
 #puntuacion-mapa-etiqueta {
     min-width: 32px;
     font-size: 1em;
     text-align: left;
     line-height: 6px; /* igual que la altura de la barra */
     align-self: center;
+    font-weight: bold;
+    text-align: right;
 }
 
 /* La barra izquierda (antes del handle) en blanco */
