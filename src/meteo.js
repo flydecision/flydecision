@@ -3126,6 +3126,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // Guardamos todos los despegues en la variable global para el buscador
 		window.bdGlobalDespegues = data.despegues;
 
+        // Despegues operativos: se guardan UNA SOLA VEZ al cargar el JSON, no cambian. se guardan por su nombre, no por su ID
+        if (!window.nombresOperativosGlobal) {
+            window.nombresOperativosGlobal = new Set(data.despegues.map(d => d.Despegue));
+        }
+
         // 🗺️ Guardar datos para puntuación en mapa
         window.respuestasGlobalMapa = data.respuestas;
         window.respuestasEcmwfGlobalMapa = dataEcmwf.respuestas;
@@ -3207,7 +3212,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			respuestas = [];
             respuestasEcmwf =[];
 		}
-	
+
 		// ---------------------------------------------------------------
 		// 🔴 LECTURA DEL SLIDER RANGO HORARIO (necesario para la construcción de la tabla)
 		// ---------------------------------------------------------------
@@ -7839,10 +7844,14 @@ function aplicarPuntuacionEnMapa() {
 
     markersDespegues.forEach(marker => {
         const meta = marker.metadata;
+
+        // Marcar operativo SIEMPRE, por nombre (única asignación)
+        marker._esOperativo = !!(meta && meta.despegue && window.nombresOperativosGlobal &&
+                                window.nombresOperativosGlobal.has(meta.despegue));
+
         if (!meta) return;
 
         const despObj = despegues.find(d => d.Despegue === meta.despegue);
-        marker._esOperativo = !!despObj;
         if (!despObj) {
             marker._notaMapa = undefined;
             return;
@@ -7857,7 +7866,6 @@ function aplicarPuntuacionEnMapa() {
         const nota  = calcularNotaMapa(despObj, hourlyData, hourlyEcmwf, horas, indiceInicio, indiceFin);
         const color = colorNotaMapa(nota);
 
-        // setIcon funciona aunque el marker esté en un cluster o fuera del viewport
         marker._notaMapa = (nota !== null) ? nota : -1;
         marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones, color));
     });
