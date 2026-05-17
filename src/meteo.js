@@ -3126,9 +3126,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // Guardamos todos los despegues en la variable global para el buscador
 		window.bdGlobalDespegues = data.despegues;
 
-        // Despegues operativos: se guardan UNA SOLA VEZ al cargar el JSON, no cambian. se guardan por su nombre, no por su ID
-        if (!window.nombresOperativosGlobal) {
-            window.nombresOperativosGlobal = new Set(data.despegues.map(d => d.Despegue));
+        // Marcar operativos en markers del mapa (una sola vez)
+        if (!window._operativosMarcados) {
+            marcarOperativosEnMarkers();
+            window._operativosMarcados = true;
         }
 
         // 🗺️ Guardar datos para puntuación en mapa
@@ -7823,6 +7824,16 @@ function inicializarSliderMapaHorario() {
     aplicarPuntuacionEnMapa();
 }
 
+function marcarOperativosEnMarkers() {
+    const operativos = window.bdGlobalDespegues;
+    if (!operativos || markersDespegues.length === 0) return;
+    const nombresOperativos = new Set(operativos.map(d => d.Despegue));
+    markersDespegues.forEach(marker => {
+        const meta = marker.metadata;
+        marker._esOperativo = !!(meta && meta.despegue && nombresOperativos.has(meta.despegue));
+    });
+}
+
 function aplicarPuntuacionEnMapa() {
     const horas = window.horasCrudasRangoHorario;
     const respuestas = window.respuestasGlobalMapa;
@@ -7844,10 +7855,6 @@ function aplicarPuntuacionEnMapa() {
 
     markersDespegues.forEach(marker => {
         const meta = marker.metadata;
-
-        // Marcar operativo SIEMPRE, por nombre (única asignación)
-        marker._esOperativo = !!(meta && meta.despegue && window.nombresOperativosGlobal &&
-                                window.nombresOperativosGlobal.has(meta.despegue));
 
         if (!meta) return;
 
@@ -7918,7 +7925,6 @@ function limpiarColoresMapa() {
         if (!meta) return;
         marker._notaMapa = undefined;
         marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones));
-        marker._esOperativo = undefined;
     });
     if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
     if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
@@ -9199,7 +9205,7 @@ function inicializarMapaLeaflet() {
                 </div>`;		
 
         marker.bindPopup(popupHtml, { className: 'popup-despegues', maxWidth: 300 });
-        marker.metadata = { despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
+        marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
         markersDespegues.push(marker); //inserta marker al grupo markersDespegues
         clustergroupDespegues.addLayer(marker);
     });
