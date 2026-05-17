@@ -3126,12 +3126,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // Guardamos todos los despegues en la variable global para el buscador
 		window.bdGlobalDespegues = data.despegues;
 
-        // Marcar operativos en markers del mapa (una sola vez)
-        if (!window._operativosMarcados) {
-            marcarOperativosEnMarkers();
-            window._operativosMarcados = true;
-        }
-
         // 🗺️ Guardar datos para puntuación en mapa
         window.respuestasGlobalMapa = data.respuestas;
         window.respuestasEcmwfGlobalMapa = dataEcmwf.respuestas;
@@ -7752,6 +7746,8 @@ window.toggleFiltrosMapa = function() {
         if (btnFiltros) btnFiltros.style.display = 'none';
         if (btnCerrar)  btnCerrar.style.display  = 'flex';
         filtrosMapaAbiertos = true;
+        // Marcar operativos (siempre al abrir, los markers ya existen)
+        marcarOperativosEnMarkers();
         aplicarPuntuacionEnMapa();
 
         // Mostrar el slider de puntuación y inicializarlo si es la primera vez
@@ -8334,11 +8330,8 @@ function inicializarMapaLeaflet() {
             }
             if (window.markersBloqueadosPorPuntuacion && window.markersBloqueadosPorPuntuacion.has(marker)) return false;
 
-            // --- 0b. CON FILTRO ACTIVO: solo operativos, saltar filtros de vuelos/año/orientación ---
-            if (filtrosMapaAbiertos) {
-                if (marker._esOperativo !== true) return false;
-                return true; // Los operativos pasan directamente
-            }
+            // --- 0b. OCULTAR NO-OPERATIVOS SI EL FILTRO ESTÁ ACTIVO ---
+            if (filtrosMapaAbiertos && marker._esOperativo !== true) return false;
 
             // --- 1. VALIDACIÓN DE VUELOS ---
             const vuelosMarker = marker.metadata.vuelos || 0; 
