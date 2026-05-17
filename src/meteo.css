@@ -320,7 +320,7 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
 input[type="search"] {
   -webkit-appearance: none; /* Elimina sombras y bordes nativos de Apple */
   appearance: none;
-  border-radius: 0; /* O el radius que tú quieras, pero quita el defecto */
+  /* border-radius: 0; O el radius que tú quieras, pero quita el defecto */
 }
 
 /* Quitar la "X" automática que sale en Chrome/Safari */
@@ -2591,6 +2591,7 @@ details.config-accordion .accordion-content {
 	padding-right: 8px;
 	padding-bottom: 8px;
 	padding-top: 8px;
+    border-radius: 10px;
 }	
 @media (max-width: 768px) {
 	.info-panel {
@@ -2623,6 +2624,7 @@ details.config-accordion .accordion-content {
 
     white-space: nowrap; /* evita salto de línea */
     overflow: visible;   /* permite que sobresalga */
+    border-radius: 10px;
 }
 /* Heredamos la clase roja para que el panel de filtros cerrado avise de que está actuando */
 .info-panel.retraido.borde-rojo-externo {
@@ -2746,6 +2748,8 @@ h3 {
 }
 .leaflet-control-locate {
 	margin-top: 8px;
+    border-radius: 10px !important;
+    overflow: hidden;
 }
 .leaflet-control-locate a {
 	display: flex;
@@ -2795,14 +2799,14 @@ h3 {
 
 /* Ajuste del input interno para que no pise el nuevo borde */
 .leaflet-text-search-input {
-    border: none !important;
     height: 100% !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
 }
 
 .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
-    border: none;
+    border: 1px solid #6e6e6e !important;
+    border-radius: 10px !important;
 }
 
 /* ==========================================================================
@@ -3065,6 +3069,7 @@ h3 {
 	padding-bottom: 6.6px;
 	padding-left: 10px;
 	font-weight: bold;
+    border-radius: 10px;
 }
 .leaflet-text-search-input::placeholder {
 	color: black;
@@ -3259,13 +3264,18 @@ h3 {
 	margin-right: 0 !important;
 	
 	/* Bordes redondeados estándar */
-	border-radius: 4px !important;
+	border-radius: 10px !important;
+    overflow: hidden;
 	border: none !important; /* Leaflet usa boxShadow, no border sólido usualmente */
 	
 	/* Fondo blanco puro */
 	background-color: #fff !important;
 }
 
+.leaflet-control-geocoder {
+    border-radius: 10px !important;
+    overflow: hidden;
+}
 .control-orientacion-container {  
     margin-bottom: 5px;
     margin-top: 5px;
@@ -3410,6 +3420,8 @@ h3 {
     white-space: nowrap;
     /* margin-top: 3px; */
     height: 30px;
+    border: 1px solid #6e6e6e;
+    border-radius: 10px;
 }
 
 /* =====================================================
@@ -3431,7 +3443,6 @@ h3 {
     width: calc(100% - 8px);
     background-color: rgba(255, 255, 255);
     border-radius: 10px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
     padding: 5px 10px 0px 10px;
     box-sizing: border-box;
     max-width: 411px;

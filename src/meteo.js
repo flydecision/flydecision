@@ -8760,6 +8760,7 @@ function inicializarMapaLeaflet() {
     L.Control.Locate = L.Control.extend({
     onAdd: function(map) {
     var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-locate');
+    container.style.borderRadius = '10px';
     var link = L.DomUtil.create('a', '', container);
     link.title = t('mapa.irMiUbicacion');
     link.innerHTML =
@@ -8877,6 +8878,8 @@ function inicializarMapaLeaflet() {
             
             // Recuperamos el borde y la sombra original de Leaflet (ya que se lo quitamos al contenedor padre)
             buttonDiv.style.backgroundClip = 'padding-box';
+            // buttonDiv.style.border = '1px solid #6e6e6e';
+            buttonDiv.style.borderRadius = '10px';
             
             this._buttonDiv = buttonDiv; 
             
