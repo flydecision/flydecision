@@ -7737,6 +7737,8 @@ window.toggleFiltrosMapa = function() {
         const divPunt2 = document.getElementById('div-filtro-puntuacion-mapa');
         if (divPunt2) divPunt2.classList.remove('borde-rojo-externo');
 
+        limpiarColoresMapa();
+
     } else { // Abrirlo
 
         divFH.style.display = '';
@@ -7896,6 +7898,17 @@ function inicializarSliderPuntuacionMapa() {
 
 function filtrarMarkersPorPuntuacion() {
     if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+}
+
+function limpiarColoresMapa() {
+    markersDespegues.forEach(marker => {
+        const meta = marker.metadata;
+        if (!meta) return;
+        marker._notaMapa = undefined;
+        marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones));
+    });
+    if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+    if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
 }
 
 // ---------------------------------------------------------------
