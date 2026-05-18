@@ -2879,12 +2879,10 @@ h3 {
 .cerrar-capas-btn {
     display: none;
     position: absolute;
-    top: 0px;            /* Ajustado para igualar al de capas y filtros */
-    right: 0px;          /* Ajustado para igualar al de capas y filtros */
-    width: 30px;         /* Tamaño igual a #buttonCerrar */
-    height: 30px;        /* Tamaño igual a #buttonCerrar */
-    background-color: transparent; /* Fondo transparente */
-    font-size: 1.2em;    /* Tamaño exacto de #buttonCerrar */
+    top: 1px;
+    right: 1px;
+    width: 32px;
+    height: 32px;
     justify-content: center;
     align-items: center;
     border: none;        /* Sin bordes grises */
@@ -2892,6 +2890,12 @@ h3 {
     cursor: pointer;
     z-index: 1000;
     padding: 0;
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+	border-radius: 50%;
+	backdrop-filter: blur(2px);
+	background: rgba(255, 255, 255, 0.9);
+	font-size: 16px;
 }
 /* 2. Mostrar la X SÓLO cuando la lista esté desplegada */
 .leaflet-control-layers-expanded .cerrar-capas-btn {
@@ -3196,13 +3200,24 @@ h3 {
 	cursor: pointer;
 }
 #buttonCerrar {
-	font-size: 1.2em;
-	float: right;
-	width: 30px;
-	height: 30px;
-	padding: 0;
-	margin-left: 10px;
-	cursor: pointer;
+    float: right;
+    margin-left: 10px;
+    top: 1px;
+    right: 1px;
+    width: 32px;
+    height: 32px;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    z-index: 1101;
+    padding: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    backdrop-filter: blur(2px);
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    margin-top: -2px;
 }
 
 #filtroMaestroOrientacion {
@@ -3458,15 +3473,13 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
 }
 
 /* Botón cerrar del panel filtros flotante en mapa */
-#btn-cerrar-filtros-mapa {
+.div-mapa-close-btn {
     display: flex;
     position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 30px;
-    height: 30px;
-    background-color: transparent;
-    font-size: 1.2em;
+    top: 1px;
+    right: 1px;
+    width: 32px;
+    height: 32px;
     justify-content: center;
     align-items: center;
     border: none;
@@ -3474,8 +3487,13 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     cursor: pointer;
     z-index: 1101;
     padding: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+	border-radius: 50%;
+	backdrop-filter: blur(2px);
+	background: rgba(255, 255, 255, 0.9);
+	font-size: 16px;
 }
-#btn-cerrar-filtros-mapa:active {
+.div-mapa-close-btn:active {
     background-color: #e0e0e0;
     border-radius: 4px;
 }
