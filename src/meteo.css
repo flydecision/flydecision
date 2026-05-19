@@ -1392,6 +1392,15 @@ span.grados {
 .div-filtro-puntuacion-mapa .noUi-horizontal {
     margin-top: 4px !important;
 }
+
+/* Tocar áreas izquierda o derecha para mover slider */
+.zona-tap-slider {
+    flex: 0 0 30px;
+    height: 40px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
 .noUi-horizontal .noUi-handle {
     width: 28px !important;   /* Antes 20px */
     height: 28px !important;  /* Antes 24px */

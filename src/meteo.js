@@ -7829,10 +7829,6 @@ function inicializarSliderMapaHorario() {
         mapaSliderIndiceFin = i1;
     });
 
-    sliderEl.noUiSlider.on('change', function() {
-        aplicarPuntuacionEnMapa();
-    });
-
     // Calculamos con los valores iniciales
     const [i0, i1] = actualizarEtiquetaMapa(startVals);
     mapaSliderIndiceInicio = i0;
@@ -7938,6 +7934,17 @@ function inicializarSliderPuntuacionMapa() {
 
     sliderEl.noUiSlider.on('update', function() {
         filtrarMarkersPorPuntuacion();
+    });
+
+    // Zonas táctiles laterales
+    const sliderRef = sliderEl;
+    document.getElementById('zona-tap-izq')?.addEventListener('click', () => {
+        const actual = Math.round(Number(sliderRef.noUiSlider.get()));
+        sliderRef.noUiSlider.set(Math.max(0, actual - 1));
+    });
+    document.getElementById('zona-tap-der')?.addEventListener('click', () => {
+        const actual = Math.round(Number(sliderRef.noUiSlider.get()));
+        sliderRef.noUiSlider.set(Math.min(10, actual + 1));
     });
 }
 
