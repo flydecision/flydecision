@@ -1517,6 +1517,29 @@ span.grados {
     margin-top: -32px;  
 }
 
+#botones-dias-slider {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 6px;
+}
+
+.pip-dia-btn {
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    background: #fff;
+    padding: 4px 10px;
+    font-size: 0.85em;
+    cursor: pointer;
+    flex: 1;
+}
+
+.pip-dia-btn.pip-activo {
+    background: #007aff;
+    color: #fff;
+    border-color: #007aff;
+}
+
 /* 🟡 SLIDERS. Personalizados. Configuración Horario -------------------------------- */
 #configuracion-horario-slider.noUi-horizontal {
     margin-top: 30px !important;

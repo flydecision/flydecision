@@ -40,6 +40,8 @@ if (localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN') === null)
 
 let sliderHorasValues = null; 
 let indicesHorasRangoHorario = []; // Contiene los índices válidos (ej: [5, 6, 7, 8, ...])
+window.indicesDiaActualSlider = []; // Índices del día visible en el slider
+window.diaSeleccionadoSlider = null; // null = usar el automático inicial
 
 // Variable global para almacenar todos los despegues (sin filtrar)
 let bdGlobalDespegues = [];
@@ -1798,84 +1800,83 @@ function alternarOrdenarPorXC() {
 // 🔴 SLIDERS. RANGO HORARIO. Lógica para poder hacer clic en los pips de los días semanales y seleccionar así sus rango horario completo (tiene en cuenta chk día/noche) con un toque
 // ---------------------------------------------------------------
 
+function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
+    const contenedor = document.getElementById('botones-dias-slider');
+    if (!contenedor) return;
+    contenedor.innerHTML = '';
+
+    const horas = window.horasCrudasRangoHorario;
+    const indices = window.indicesHorasRangoHorario;
+    const diasClaves = ["dom","lun","mar","mie","jue","vie","sab"];
+
+    pipIndices.forEach((startIdx, i) => {
+        const idxReal = indices[startIdx];
+        const d = new Date(horas[idxReal].endsWith('Z') ? horas[idxReal] : horas[idxReal] + 'Z');
+        const label = t(`dias.${diasClaves[d.getDay()]}`) + " " + d.getDate();
+
+        const btn = document.createElement('button');
+        btn.textContent = label;
+        btn.className = 'pip-dia-btn' + (i === diaSeleccionado ? ' pip-activo' : '');
+        btn.dataset.diaIndex = i;
+
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.pip-dia-btn').forEach(b => b.classList.remove('pip-activo'));
+            this.classList.add('pip-activo');
+            clickOnDia(sliderElement, parseInt(this.dataset.diaIndex));
+        });
+
+        contenedor.appendChild(btn);
+    });
+}
+
 const chkDiaNoche = document.getElementById('chkDiaNoche');
 
-// AHORA RECIBE EL ELEMENTO DEL SLIDER COMO ARGUMENTO
-function clickOnPip(sliderElement) {
-    // 1. Obtener el índice de inicio (el pip clicado)
-    const startSliderIndex = Number(this.getAttribute('data-value'));
+function clickOnDia(sliderElement, diaIndex) {
+    window.diaSeleccionadoSlider = diaIndex;
+    const dayRanges = sliderElement.dayRanges;
+    if (!dayRanges || !dayRanges[diaIndex]) return;
 
-    // --- Gestión de estilos visuales ---
-    const pips = sliderElement.querySelectorAll('.noUi-value');
-    pips.forEach(p => p.classList.remove('pip-activo')); // Limpiar todos
-    this.classList.add('pip-activo'); // Marcar el actual
-    
-    // 2. Obtener los índices de inicio de día guardados
-    const dayStartIndices = sliderElement.dayStartIndices || [];
-    
-    // 3. Determinar la posición del día clicado en el array de índices
-    const currentDayIndexInArray = dayStartIndices.indexOf(startSliderIndex);
-    
-    if (currentDayIndexInArray === -1) return; 
+    const { startIdx, endIdx } = dayRanges[diaIndex];
 
-    // --- CÁLCULO DEL RANGO COMPLETO DEL DÍA (Tu lógica original) ---
-    let endSliderIndex;
-    const nextDayIndexInArray = currentDayIndexInArray + 1;
-    
-    if (nextDayIndexInArray < dayStartIndices.length) {
-        endSliderIndex = dayStartIndices[nextDayIndexInArray] - 1;
-    } else {
-        endSliderIndex = sliderElement.noUiSlider.options.range.max;
-    }
+    // Actualizar índices del día
+    window.indicesDiaActualSlider = window.indicesHorasRangoHorario.slice(startIdx, endIdx + 1);
 
-    let finalStart = startSliderIndex;
-    let finalEnd = endSliderIndex;
+    const newMax = window.indicesDiaActualSlider.length - 1;
+
+    // Actualizar rango del slider
+    sliderElement.noUiSlider.updateOptions({
+        range: { min: 0, max: newMax }
+    });
+
+    // Aplicar preferencias horarias
+    let finalStart = 0;
+    let finalEnd = newMax;
 
     const rawInicio = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
-    const rawFin = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
+    const rawFin    = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
 
-    // Si el usuario HA movido el slider de configuración alguna vez (no es null)
     if (rawInicio !== null && rawFin !== null) {
         const prefInicio = parseInt(rawInicio);
-        const prefFin = parseInt(rawFin);
-        
-        const indices = window.indicesHorasRangoHorario;
-        const horas = window.horasCrudasRangoHorario;
+        const prefFin    = parseInt(rawFin);
 
-        // Recorremos los índices de este día para aplicar el recorte de horas preferidas
-        for (let i = startSliderIndex; i <= endSliderIndex; i++) {
-            const idxReal = indices[i];
-            const fecha = new Date(horas[idxReal].endsWith('Z') ? horas[idxReal] : horas[idxReal] + 'Z');
-            const h = fecha.getHours();
-            
-            // Si la preferencia es 0, nos quedamos en el borde izquierdo (startSliderIndex)
-            if (prefInicio === 0) {
-                finalStart = startSliderIndex;
-            } else if (h < prefInicio) {
-                finalStart = i + 1; 
-            }
-            
-            if (h <= prefFin) {
-                finalEnd = i;
-            }
-        }
-        
-        // Seguridad para no cruzar valores
-        if (finalStart > endSliderIndex) finalStart = endSliderIndex;
+        window.indicesDiaActualSlider.forEach((idxReal, i) => {
+            const h = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z')
+                ? window.horasCrudasRangoHorario[idxReal]
+                : window.horasCrudasRangoHorario[idxReal] + 'Z').getHours();
+            if (prefInicio === 0) { finalStart = 0; }
+            else if (h < prefInicio) finalStart = i + 1;
+            if (h <= prefFin) finalEnd = i;
+        });
+
+        if (finalStart > newMax) finalStart = newMax;
         if (finalEnd < finalStart) finalEnd = finalStart;
     }
 
-    // 5. Establecer los valores finales en el slider
-    sliderElement.noUiSlider.set([finalStart, finalEnd]); 
-    
-    if (window.sliderHorasValues) {
-        window.sliderHorasValues = [finalStart, finalEnd];
-    }
-    
+    sliderElement.noUiSlider.set([finalStart, finalEnd]);
+    window.sliderHorasValues = [finalStart, finalEnd];
+
     construir_tabla();
-    if (typeof aplicarPuntuacionEnMapa === 'function') {
-        aplicarPuntuacionEnMapa();
-    }
+    if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
 }
 
 // Función que adjunta el evento Y AHORA TAMBIÉN FORZA LA POSICIÓN VISUAL
@@ -2087,6 +2088,21 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
             }
         }
     }
+
+    // Guardar rangos por día (start/end en indicesHorasRangoHorario)
+    sliderHoras.dayRanges = pipIndices.map((startIdx, i) => ({
+        startIdx,
+        endIdx: pipIndices[i + 1] !== undefined ? pipIndices[i + 1] - 1 : maxSteps
+    }));
+
+    // Día inicial
+    const ahora = new Date();
+    const diaAutoInicial = (!autoSeleccionInicialHecha && ahora.getHours() >= 16) ? 1 : 0;
+    const diaObjetivoInicial = (window.diaSeleccionadoSlider !== null) 
+        ? Math.min(window.diaSeleccionadoSlider, sliderHoras.dayRanges.length - 1)
+        : diaAutoInicial;
+    const rangoInicial = sliderHoras.dayRanges[Math.min(diaObjetivoInicial, sliderHoras.dayRanges.length - 1)];
+    window.indicesDiaActualSlider = window.indicesHorasRangoHorario.slice(rangoInicial.startIdx, rangoInicial.endIdx + 1);
     
     const pipsFormatter = {
         to: function(val) {
@@ -2169,26 +2185,23 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
                 if (finalStart > idxFinDia) finalStart = idxFinDia;
                 if (finalEnd < finalStart) finalEnd = finalStart;
 
-                startIndices = [finalStart, finalEnd];
+                startIndices = [finalStart - rangoInicial.startIdx, finalEnd - rangoInicial.startIdx];
                 autoSeleccionInicialHecha = true; // Bloqueamos para que no lo vuelva a hacer al actualizar
             }
         }
 
         // Crear el slider ya con el rango recortado
         noUiSlider.create(sliderHoras, {
-            start: startIndices, 
+            start: startIndices,
             connect: true,
             step: 1,
-            range: { min: 0, max: maxSteps },
+            range: { min: 0, max: window.indicesDiaActualSlider.length - 1 },
             tooltips: [tooltipFormatter, tooltipFormatter],
-            format: { to: (v) => Math.round(v), from: (v) => Number(v) },
-            pips: {
-                mode: 'values',
-                values: pipIndices,
-                density: 100,
-                format: pipsFormatter
-            }
+            format: { to: (v) => Math.round(v), from: (v) => Number(v) }
+            // SIN pips — los botones son HTML externo
         });
+
+        crearBotonesDia(sliderHoras, pipIndices, diaObjetivoInicial);
         
         // --- Iluminar el botón inicial en el arranque ---
         if (autoSeleccionInicialHecha) {
@@ -2209,8 +2222,6 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 
         // Sincronizar la variable global de valores inmediatamente
         window.sliderHorasValues = startIndices;
-
-        adjuntarEventoPips(sliderHoras);
 
         // Listener de cambios manuales
 		sliderHoras.noUiSlider.on('change', function(values) {
@@ -2255,40 +2266,38 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 
         // Si ha cambiado algo, actualizamos
         if (haCambiadoLongitud || hanCambiadoFechas) {
-            
-            // Guardamos el nuevo timestamp de referencia para la próxima vez
+
             sliderHoras.dayStartTimestamp = primerTimestampNuevo;
-            sliderHoras.dayStartIndices = pipIndices;
-            
-            let newStart = [0, maxSteps];
-            
-            // Intentamos mantener la selección del usuario si tiene sentido
+            sliderHoras.dayRanges = pipIndices.map((startIdx, i) => ({
+                startIdx,
+                endIdx: pipIndices[i + 1] !== undefined ? pipIndices[i + 1] - 1 : maxSteps
+            }));
+
+            // Respetar día seleccionado o usar el primero
+            const diaActual = (window.diaSeleccionadoSlider !== null)
+                ? Math.min(window.diaSeleccionadoSlider, sliderHoras.dayRanges.length - 1)
+                : 0;
+            const rango = sliderHoras.dayRanges[diaActual];
+            window.indicesDiaActualSlider = window.indicesHorasRangoHorario.slice(rango.startIdx, rango.endIdx + 1);
+
+            const newMax = window.indicesDiaActualSlider.length - 1;
+
+            // Mantener la selección del usuario si tiene sentido
+            let newStart = [0, newMax];
             if (window.sliderHorasValues) {
-                let v1 = Math.min(window.sliderHorasValues[0], maxSteps);
-                let v2 = Math.min(window.sliderHorasValues[1], maxSteps);
-                if (v2 < v1) v2 = v1; 
+                let v1 = Math.min(window.sliderHorasValues[0], newMax);
+                let v2 = Math.min(window.sliderHorasValues[1], newMax);
+                if (v2 < v1) v2 = v1;
                 newStart = [v1, v2];
             }
 
-            // FORZAMOS LA ACTUALIZACIÓN DE OPCIONES
-            // Al pasarle 'pips' de nuevo, redibujará las etiquetas con los datos nuevos de window.horasCrudasRangoHorario
             sliderHoras.noUiSlider.updateOptions({
-                range: { min: 0, max: maxSteps },
-                start: newStart,
-                pips: {
-                    mode: 'values',
-                    values: pipIndices,
-                    density: 100,
-                    format: pipsFormatter // Este formatter leerá los nuevos datos globales
-                }
+                range: { min: 0, max: window.indicesDiaActualSlider.length - 1 },
+                start: newStart
+                // SIN pips
             });
-            
-            // Solo si ha cambiado la longitud reseteamos posiciones, 
-            // si solo han cambiado las fechas (mismo número de horas), 
-            // updateOptions a veces respeta la posición, pero por seguridad:
-            // sliderHoras.noUiSlider.set(newStart); // Opcional, según comportamiento deseado
-            
-            adjuntarEventoPips(sliderHoras);            
+
+            crearBotonesDia(sliderHoras, pipIndices, diaActual);
         }
     }
 
@@ -3238,8 +3247,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             const vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
             
             // 2. Asignamos el valor (SIN poner 'let' ni 'var' aquí)
-            indiceInicioRangoHorario = window.indicesHorasRangoHorario[vals[0]];
-            indiceFinRangoHorario    = window.indicesHorasRangoHorario[vals[1]];
+            indiceInicioRangoHorario = window.indicesDiaActualSlider[vals[0]];
+            indiceFinRangoHorario    = window.indicesDiaActualSlider[vals[1]];
             
         } else {
             // Fallback
@@ -7869,8 +7878,8 @@ function aplicarPuntuacionEnMapa() {
     const sliderHoras = document.getElementById('horario-slider');
     if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario.length > 0) {
         const vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
-        indiceInicio = window.indicesHorasRangoHorario[vals[0]];
-        indiceFin    = window.indicesHorasRangoHorario[vals[1]];
+        indiceInicio = window.indicesDiaActualSlider[vals[0]];
+        indiceFin    = window.indicesDiaActualSlider[vals[1]];
     }
 
     const idxPorId = new Map();
