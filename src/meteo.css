@@ -3528,7 +3528,7 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
 @media (max-width: 722px) {
     #vista-mapa.filtros-abiertos .leaflet-top {
         transition: margin-top 0.2s ease;
-        margin-top: calc(135px + var(--safe-area-inset-top, 25px));
+        margin-top: calc(152px + var(--safe-area-inset-top, 25px));
     }
 }
 
@@ -3546,7 +3546,7 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     padding-bottom: 15px;
     border-radius: 10px;
     margin-bottom: 9px;
-    margin-top: 19px;
+    margin-top: 15px;
 }
 
 #puntuacion-mapa-slider {
