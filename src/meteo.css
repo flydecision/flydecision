@@ -1395,7 +1395,7 @@ span.grados {
 
 /* Tocar áreas izquierda o derecha para mover slider */
 .zona-tap-slider {
-    flex: 0 0 60px;
+    flex: 0 0 50px;
     height: 40px;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
