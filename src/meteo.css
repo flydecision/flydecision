@@ -2949,8 +2949,8 @@ h3 {
 .cerrar-capas-btn {
     display: none;
     position: absolute;
-    top: 1px;
-    right: 1px;
+    top: 4px;
+    right: 4px;
     width: 32px;
     height: 32px;
     justify-content: center;

@@ -2336,25 +2336,37 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 // ---------------------------------------------------------------
 
 let modoVerTodosLosDias = false;
+let ultimoDiaSeleccionado = 0; // 💾 Almacena el índice del último día que estuvo activo
 
 window.toggleVerTodosLosDias = function() {
     const btnCal = document.getElementById('btn-ver-todos-dias');
     const panelFiltro = document.getElementById('div-filtro-horario');
     
-    // Si ya estaba activo, al volver a pulsar no hacemos nada (o podríamos volver al día 1)
-    // Para que actúe como un selector estricto:
-    if (modoVerTodosLosDias) return; 
+    if (modoVerTodosLosDias) {
+        // 🔄 Si ya estaba activo y volvemos a pulsar: APAGAMOS el modo Calendario
+        modoVerTodosLosDias = false;
+        btnCal.classList.remove('activo');
+        panelFiltro.classList.remove('ocultar-slider-por-calendario');
+        
+        // Simulamos un clic automático en el botón del día en que estábamos
+        const botones = document.querySelectorAll('.pip-dia-btn');
+        if (botones.length > 0) {
+            const idx = Math.min(ultimoDiaSeleccionado, botones.length - 1);
+            botones[idx].click(); // Esto restaura el slider, el día azul y reconstruye la tabla
+        }
+        return;
+    } 
+
+    // Antes de activar el calendario, guardamos el día exacto en el que está el usuario
+    ultimoDiaSeleccionado = window.diaSeleccionadoSlider !== null ? window.diaSeleccionadoSlider : 0;
 
     modoVerTodosLosDias = true;
     
-    // 1. Estética del botón Calendario
+    // Estética del botón Calendario
     btnCal.classList.add('activo');
     panelFiltro.classList.add('ocultar-slider-por-calendario');
 
-    // 2. 💡 QUITAR activo de los botones de días
-    document.querySelectorAll('.pip-dia-btn').forEach(b => b.classList.remove('pip-activo'));
-
-    // 3. Reconstruir
+    // Reconstruir la tabla mostrando todo
     construir_tabla();
 };
 
@@ -7694,6 +7706,8 @@ window.cambiarVista = function(vista) {
             vistaMapa2.appendChild(divFH);
             const btnFiltros = document.getElementById('btn-filtros-mapa');
             const btnCerrar  = document.getElementById('btn-cerrar-filtros-mapa');
+            
+            
             if (filtrosMapaAbiertos) {
                 // Restaurar estado abierto
                 divFH.style.display = '';
