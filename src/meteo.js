@@ -1843,7 +1843,6 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 const chkDiaNoche = document.getElementById('chkDiaNoche');
 
 function clickOnDia(sliderElement, diaIndex) {
-    const mismodia = window.diaSeleccionadoSlider === diaIndex;
     window.diaSeleccionadoSlider = diaIndex;
     const dayRanges = sliderElement.dayRanges;
     if (!dayRanges || !dayRanges[diaIndex]) return;
@@ -1862,8 +1861,8 @@ function clickOnDia(sliderElement, diaIndex) {
     let finalStart = 0;
     let finalEnd = newMax;
 
-    if (mismodia || window.restaurarRangoDesdeCalendario) {
-        const rangoRestaurar = window.sliderHorasValues || window.ultimoRangoSlider;
+    if (window.restaurarRangoDesdeCalendario) {
+        const rangoRestaurar = window.ultimoRangoSlider || window.sliderHorasValues;
         if (rangoRestaurar) {
             finalStart = Math.min(rangoRestaurar[0], newMax);
             finalEnd   = Math.min(rangoRestaurar[1], newMax);
