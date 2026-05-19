@@ -1522,16 +1522,18 @@ span.grados {
     gap: 6px;
     justify-content: center;
     margin-bottom: 6px;
+    margin-right: 30px;
+    margin-left: 30px;
 }
 
 .pip-dia-btn {
     border: 1.5px solid #ccc;
     border-radius: 8px;
     background: #fff;
-    padding: 4px 10px;
-    font-size: 0.85em;
+    padding: 4px 0px;
     cursor: pointer;
     flex: 1;
+    font-weight: bold;
 }
 
 .pip-dia-btn.pip-activo {
