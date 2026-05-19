@@ -1843,7 +1843,7 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 const chkDiaNoche = document.getElementById('chkDiaNoche');
 
 function clickOnDia(sliderElement, diaIndex) {
-
+    const mismodia = window.diaSeleccionadoSlider === diaIndex;
     window.diaSeleccionadoSlider = diaIndex;
     const dayRanges = sliderElement.dayRanges;
     if (!dayRanges || !dayRanges[diaIndex]) return;
@@ -1862,33 +1862,43 @@ function clickOnDia(sliderElement, diaIndex) {
     let finalStart = 0;
     let finalEnd = newMax;
 
-    const rawInicio = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
-    const rawFin    = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
+    if (mismodia || window.restaurarRangoDesdeCalendario) {
+        const rangoRestaurar = window.sliderHorasValues || window.ultimoRangoSlider;
+        if (rangoRestaurar) {
+            finalStart = Math.min(rangoRestaurar[0], newMax);
+            finalEnd   = Math.min(rangoRestaurar[1], newMax);
+            if (finalEnd < finalStart) finalEnd = finalStart;
+        }
+    } else {
+        const rawInicio = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
+        const rawFin    = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
 
-    if (rawInicio !== null && rawFin !== null) {
-        const prefInicio = parseInt(rawInicio);
-        const prefFin    = parseInt(rawFin);
+        if (rawInicio !== null && rawFin !== null) {
+            const prefInicio = parseInt(rawInicio);
+            const prefFin    = parseInt(rawFin);
+            let encontradoInicio = false;
 
-        let encontradoInicio = false;
+            window.indicesDiaActualSlider.forEach((idxReal, i) => {
+                const h = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z')
+                    ? window.horasCrudasRangoHorario[idxReal]
+                    : window.horasCrudasRangoHorario[idxReal] + 'Z').getHours();
 
-        window.indicesDiaActualSlider.forEach((idxReal, i) => {
-            const h = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z') ? window.horasCrudasRangoHorario[idxReal] : window.horasCrudasRangoHorario[idxReal] + 'Z').getHours();
-
-            if (!encontradoInicio) {
-                if (prefInicio === 0 || h >= prefInicio) {
-                    finalStart = i;
-                    encontradoInicio = true;
+                if (!encontradoInicio) {
+                    if (prefInicio === 0 || h >= prefInicio) { finalStart = i; encontradoInicio = true; }
                 }
-            }
-            if (h <= prefFin) finalEnd = i;
-        });
+                if (h <= prefFin) finalEnd = i;
+            });
 
-        if (finalStart > newMax) finalStart = newMax;
-        if (finalEnd < finalStart) finalEnd = finalStart;
+            if (finalStart > newMax) finalStart = newMax;
+            if (finalEnd < finalStart) finalEnd = finalStart;
+        }
     }
 
     sliderElement.noUiSlider.set([finalStart, finalEnd]);
     window.sliderHorasValues = [finalStart, finalEnd];
+
+    window.ultimoRangoSlider = null;
+    window.restaurarRangoDesdeCalendario = false;
 
     construir_tabla();
     if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
@@ -2364,6 +2374,8 @@ window.toggleVerTodosLosDias = function() {
 
     // Antes de activar el calendario, guardamos el día exacto en el que está el usuario
     ultimoDiaSeleccionado = window.diaSeleccionadoSlider !== null ? window.diaSeleccionadoSlider : 0;
+    window.ultimoRangoSlider = window.sliderHorasValues ? [...window.sliderHorasValues] : null;
+    window.restaurarRangoDesdeCalendario = true;
 
     modoVerTodosLosDias = true;
     
