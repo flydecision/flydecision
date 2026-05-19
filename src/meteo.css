@@ -708,6 +708,7 @@ input[type="search"]::-webkit-search-cancel-button {
 	position: relative;
 	border: 0px solid #000;
     margin-bottom: 5px;
+    margin-top: 2px;
 }
 
 .div-paneles-controles-botones {
@@ -1452,7 +1453,7 @@ span.grados {
 
 /* 🟡 SLIDERS. Personalizados. Horario -------------------------------- */
 #horario-slider.noUi-horizontal {
-    margin-top: 33px !important;
+    margin-top: 35px !important;
 }
 #horario-slider .noUi-tooltip {
 	background: transparent;
