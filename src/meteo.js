@@ -2110,7 +2110,8 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
     const pipsFormatter = {
         to: function(val) {
             const horas = window.horasCrudasRangoHorario;
-            const indices = window.indicesHorasRangoHorario;
+            // Usamos el array del día actual en lugar del array de toda la semana
+            const indices = window.indicesDiaActualSlider; 
             const indiceReal = indices[Math.round(val)];
             
             if (!horas || horas.length === 0 || indiceReal === undefined) return "";
@@ -2131,7 +2132,8 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
     const tooltipFormatter = {
         to: function(val) {
             const horas = window.horasCrudasRangoHorario;
-            const indices = window.indicesHorasRangoHorario;
+            // Usamos el array del día actual en lugar del array de toda la semana
+            const indices = window.indicesDiaActualSlider;
             const indiceReal = indices[Math.round(val)];
             if (!horas || horas.length === 0 || indiceReal === undefined) return "";
             const horaString = horas[indiceReal]; 
