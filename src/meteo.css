@@ -379,7 +379,6 @@ input[type="search"]::-webkit-search-cancel-button {
 
 /* 🔴 FILTRO CONDICIONES Y DISTANCIA -------------------------------- */
 
-.div-filtro-condiciones, 
 .div-filtro-distancia {
     display: flex; 
     flex-wrap: wrap;
@@ -411,11 +410,10 @@ input[type="search"]::-webkit-search-cancel-button {
         padding 0.3s ease;
 }
 
-.div-filtro-condiciones.activo, 
 .div-filtro-distancia.activo {
     max-height: 120px; /* Un valor superior al contenido real */
     opacity: 1;
-    margin-top: 6px;
+    margin-top: 0px;
     margin-bottom: 2px;
     padding: 4px;
 }
@@ -1440,7 +1438,7 @@ span.grados {
 .noUi-handle .noUi-tooltip {
     display: flex !important;
     align-items: center !important;
-	padding: 3px;
+	padding: 0px;
 }
 
 /* 🟡 SLIDERS. Personalizados. Horario -------------------------------- */
@@ -2502,7 +2500,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     pointer-events: none;
 }
 
-.div-filtro-distancia, .div-filtro-condiciones {
+.div-filtro-distancia {
     z-index: 9998;
 }
 
@@ -3548,6 +3546,7 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     padding-bottom: 15px;
     border-radius: 10px;
     margin-bottom: 9px;
+    margin-top: 19px;
 }
 
 #puntuacion-mapa-slider {
@@ -3556,7 +3555,9 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     min-width: 0;
 }
 
-
+#div-filtro-puntuacion-mapa .noUi-tooltip {
+    border: none !important;
+}
 
 #puntuacion-mapa-etiqueta {
     min-width: 32px;

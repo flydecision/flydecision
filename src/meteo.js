@@ -2423,7 +2423,6 @@ function setModoEnfoque(activarBlur) {
     const selectores = [
         ".contenedor-principal-tabla",
         ".div-filtro-horario",
-        ".div-filtro-condiciones", 
         ".div-filtro-distancia"    
     ];
 
@@ -6668,19 +6667,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
 	// 🔴 LISTENER PARA CERRAR PANELES ABIERTOS AL TOCAR ÁREA VACÍA DEL MENÚ
 	// ---------------------------------------------------------------
 	
-	function cerrarTodosLosPaneles() { // En desuso
-		
-        // Deshundo botones
-        document.getElementById("btn-div-filtro-condiciones-toggle").classList.remove("activo");
-        document.getElementById("btn-div-filtro-distancia-toggle").classList.remove("activo");
-        document.getElementById("btn-div-configuracion-toggle").classList.remove("activo");
-        
-        // Cierro paneles
-        document.getElementById("div-filtro-condiciones").classList.remove("activo");
-        document.getElementById("div-filtro-distancia").classList.remove("activo");
-        document.getElementById("div-configuracion").classList.remove("activo");
-	}
-
     document.getElementById("chkMostrarVientoAlturas").checked = chkMostrarVientoAlturas;
     document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
     
@@ -7927,26 +7913,32 @@ function inicializarSliderPuntuacionMapa() {
         connect: 'lower',
         step: 1,
         range: { min: 0, max: 10 },
+        // 🆕 Añadimos el tooltip configurado con la estrella
+        tooltips: [{
+            to: function(val) {
+                const num = Math.round(val);
+                return num >= 0 ? `≥${num}⭐` : '⭐';
+            }
+        }],
         format: { to: v => Math.round(v), from: v => Number(v) }
     });
 
     sliderEl.noUiSlider.on('update', function(values) {
         const val = Math.round(Number(values[0]));
         puntuacionMinimaMapa = val;
-        const etiqueta = document.getElementById('puntuacion-mapa-etiqueta');
-        if (etiqueta) etiqueta.textContent = val > 0 ? `${val}⭐` : '⭐';
-        const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
-        //if (divPunt) divPunt.classList.toggle('borde-rojo-externo', val > 0);
-    });
+        
+        // 🗑️ Eliminamos la lógica que actualizaba 'puntuacion-mapa-etiqueta' 
+        // ya que ahora el tooltip se encarga de todo.
 
-    sliderEl.noUiSlider.on('update', function() {
+        const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
+        
         if (typeof window.Capacitor !== 'undefined') { 
-                window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); 
-            }
+            window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); 
+        }
         filtrarMarkersPorPuntuacion();
     });
 
-    // Zonas táctiles laterales
+    // Zonas táctiles laterales siguen funcionando igual
     const sliderRef = sliderEl;
     document.getElementById('zona-tap-izq')?.addEventListener('click', () => {
         const actual = Math.round(Number(sliderRef.noUiSlider.get()));
