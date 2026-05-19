@@ -2115,6 +2115,11 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
     const diaObjetivoInicial = (window.diaSeleccionadoSlider !== null) 
         ? Math.min(window.diaSeleccionadoSlider, sliderHoras.dayRanges.length - 1)
         : diaAutoInicial;
+
+    // Guardar siempre el día seleccionado para que persista al volver del mapa
+    if (window.diaSeleccionadoSlider === null) {
+        window.diaSeleccionadoSlider = diaObjetivoInicial;
+    }
     const rangoInicial = sliderHoras.dayRanges[Math.min(diaObjetivoInicial, sliderHoras.dayRanges.length - 1)];
     window.indicesDiaActualSlider = window.indicesHorasRangoHorario.slice(rangoInicial.startPos, rangoInicial.endPos + 1);
     
@@ -7722,6 +7727,11 @@ window.cambiarVista = function(vista) {
                 setTimeout(() => {
                     marcarOperativosEnMarkers();
                     aplicarPuntuacionEnMapa();
+                    // Restaurar botón de día activo
+                    const diaActivo = window.diaSeleccionadoSlider || 0;
+                    document.querySelectorAll('.pip-dia-btn').forEach((btn, i) => {
+                        btn.classList.toggle('pip-activo', i === diaActivo);
+                    });
                 }, 800);
             } else {
                 // Cerrado por defecto
