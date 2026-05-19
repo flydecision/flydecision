@@ -7933,6 +7933,9 @@ function inicializarSliderPuntuacionMapa() {
     });
 
     sliderEl.noUiSlider.on('update', function() {
+        if (typeof window.Capacitor !== 'undefined') { 
+                window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); 
+            }
         filtrarMarkersPorPuntuacion();
     });
 
