@@ -39,6 +39,7 @@ if (localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN') === null)
 }
 
 let sliderHorasValues = null; 
+window.rangoHorarioPersonalizado = false; //flag
 let indicesHorasRangoHorario = []; // Contiene los índices válidos (ej: [5, 6, 7, 8, ...])
 window.indicesDiaActualSlider = []; // Índices del día visible en el slider
 window.diaSeleccionadoSlider = null; // null = usar el automático inicial
@@ -1843,6 +1844,7 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 const chkDiaNoche = document.getElementById('chkDiaNoche');
 
 function clickOnDia(sliderElement, diaIndex) {
+    const mismodia = window.diaSeleccionadoSlider === diaIndex;
     window.diaSeleccionadoSlider = diaIndex;
     const dayRanges = sliderElement.dayRanges;
     if (!dayRanges || !dayRanges[diaIndex]) return;
@@ -1862,13 +1864,21 @@ function clickOnDia(sliderElement, diaIndex) {
     let finalEnd = newMax;
 
     if (window.restaurarRangoDesdeCalendario) {
+        // Venimos del calendario: restaurar rango guardado
         const rangoRestaurar = window.ultimoRangoSlider || window.sliderHorasValues;
         if (rangoRestaurar) {
             finalStart = Math.min(rangoRestaurar[0], newMax);
             finalEnd   = Math.min(rangoRestaurar[1], newMax);
             if (finalEnd < finalStart) finalEnd = finalStart;
         }
+    } else if (!mismodia && window.rangoHorarioPersonalizado && window.sliderHorasValues) {
+        // Día diferente con rango personalizado: mantenerlo
+        finalStart = Math.min(window.sliderHorasValues[0], newMax);
+        finalEnd   = Math.min(window.sliderHorasValues[1], newMax);
+        if (finalEnd < finalStart) finalEnd = finalStart;
     } else {
+        // Predeterminado: mismo día 2 veces, o día nuevo sin rango personalizado
+        window.rangoHorarioPersonalizado = false;
         const rawInicio = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
         const rawFin    = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
 
@@ -2254,6 +2264,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 		sliderHoras.noUiSlider.on('change', function(values) {
 			const valoresNuevos = values.map(Number);
 			const haCambiado = valoresNuevos.some((val, i) => val !== window.sliderHorasValues[i]);
+            window.rangoHorarioPersonalizado = true;
 			if (haCambiado) {
 				window.sliderHorasValues = valoresNuevos;
 				construir_tabla(false, false);
