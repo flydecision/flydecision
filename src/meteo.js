@@ -7662,8 +7662,8 @@ window.cambiarVista = function(vista) {
                 if (btnCerrar)  btnCerrar.style.display  = 'flex';
                 document.getElementById('vista-mapa')?.classList.add('filtros-abiertos');
 
-                const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
-                if (divPunt) divPunt.style.display = '';
+                const divPunt = document.getElementById('wrapper-filtro-puntuacion-mapa');
+                if (divPunt) divPunt.style.display = 'flex';
                 setTimeout(() => inicializarSliderPuntuacionMapa(), 150);
                 setTimeout(() => {
                     marcarOperativosEnMarkers();
@@ -7709,7 +7709,7 @@ window.cambiarVista = function(vista) {
             divFH.style.display = '';
             divFH.classList.remove('flotando-en-mapa');
             contenedorControles.insertBefore(divFH, divDistancia);
-            const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
+            const divPunt = document.getElementById('wrapper-filtro-puntuacion-mapa');
             if (divPunt) divPunt.style.display = 'none';
         }
         
@@ -7747,7 +7747,7 @@ window.toggleFiltrosMapa = function() {
         document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
 
         // Ocultar slider de puntuación y restaurar markers
-        const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
+        const divPunt = document.getElementById('wrapper-filtro-puntuacion-mapa');
         if (divPunt) divPunt.style.display = 'none';
         puntuacionMinimaMapa = 0;
         const sliderPunt = document.getElementById('puntuacion-mapa-slider');
@@ -7771,8 +7771,8 @@ window.toggleFiltrosMapa = function() {
         aplicarPuntuacionEnMapa();
 
         // Mostrar el slider de puntuación y inicializarlo si es la primera vez
-        const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
-        if (divPunt) divPunt.style.display = '';
+        const divPunt = document.getElementById('wrapper-filtro-puntuacion-mapa');
+        if (divPunt) divPunt.style.display = 'flex';
         setTimeout(() => inicializarSliderPuntuacionMapa(), 150);
 
         document.getElementById('vista-mapa')?.classList.add('filtros-abiertos');
