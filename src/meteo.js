@@ -1820,6 +1820,11 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
         btn.dataset.diaIndex = i;
 
         btn.addEventListener('click', function() {
+            // 🆕 Si pulsamos un día, apagamos el modo "Ver todos los días"
+            modoVerTodosLosDias = false;
+            document.getElementById('btn-ver-todos-dias').classList.remove('activo');
+            document.getElementById('div-filtro-horario').classList.remove('ocultar-slider-por-calendario');
+            
             document.querySelectorAll('.pip-dia-btn').forEach(b => b.classList.remove('pip-activo'));
             this.classList.add('pip-activo');
             clickOnDia(sliderElement, parseInt(this.dataset.diaIndex));
@@ -2319,6 +2324,34 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
     }
 	
 }
+
+// ---------------------------------------------------------------
+// 🟡 SLIDERS. FILTRO RANGO HORARIO. Botón calendario 4 días
+// ---------------------------------------------------------------
+
+let modoVerTodosLosDias = false;
+
+window.toggleVerTodosLosDias = function() {
+    const btn = document.getElementById('btn-ver-todos-dias');
+    const panelFiltro = document.getElementById('div-filtro-horario');
+    
+    modoVerTodosLosDias = !modoVerTodosLosDias;
+    
+    btn.classList.toggle('activo', modoVerTodosLosDias);
+    panelFiltro.classList.toggle('ocultar-slider-por-calendario', modoVerTodosLosDias);
+
+    // Si activamos "Ver todos", quitamos el resaltado azul de los botones de días individuales
+    if (modoVerTodosLosDias) {
+        document.querySelectorAll('.pip-dia-btn').forEach(b => b.classList.remove('pip-activo'));
+    } else {
+        // Si desactivamos, restauramos el día 0 por defecto o el que estaba
+        const botones = document.querySelectorAll('.pip-dia-btn');
+        if (botones.length > 0) botones[0].click(); 
+        return; // El click ya dispara construir_tabla
+    }
+
+    construir_tabla();
+};
 
 // ---------------------------------------------------------------
 // 🔴 FUNCIONES GLOBALES (hay otras más, pero éstas tienen que estar antes de construir la tabla)
@@ -3240,21 +3273,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		
 		const sliderHoras = document.getElementById('horario-slider');
 
-		// Declaramos las variables FUERA (usamos let porque su valor va a cambiar)
-        let indiceInicioRangoHorario;
-        let indiceFinRangoHorario;
+		// Declaramos las variables FUERA
+        let indiceInicioRangoHorario = 0;
+        let indiceFinRangoHorario = 99999;
 
-        if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario.length > 0) {
-            const vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
-            
-            // 2. Asignamos el valor (SIN poner 'let' ni 'var' aquí)
-            indiceInicioRangoHorario = window.indicesDiaActualSlider[vals[0]];
-            indiceFinRangoHorario    = window.indicesDiaActualSlider[vals[1]];
-            
-        } else {
-            // Fallback
+        // 🆕 Lógica condicionada por el botón Calendario
+        if (modoVerTodosLosDias) {
+            // Si el botón está hundido, mostramos TODO el rango disponible (0 a 999)
             indiceInicioRangoHorario = 0;
             indiceFinRangoHorario = 99999;
+        } else {
+            // Lógica normal: leer del slider
+            if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario.length > 0) {
+                const vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
+                indiceInicioRangoHorario = window.indicesDiaActualSlider[vals[0]];
+                indiceFinRangoHorario    = window.indicesDiaActualSlider[vals[1]];
+            }
         }
 
         // ---------------------------------------------------------------
@@ -7615,6 +7649,14 @@ window.cambiarVista = function(vista) {
     const btnVolver = document.getElementById('btn-volver-edicion-mapa');
 
     if (vista === 'mapa') {
+           
+        // Resetear modo calendario al ir al mapa
+        modoVerTodosLosDias = false;
+        const btnCal = document.getElementById('btn-ver-todos-dias');
+        if (btnCal) btnCal.classList.remove('activo');
+        const panelF = document.getElementById('div-filtro-horario');
+        if (panelF) panelF.classList.remove('ocultar-slider-por-calendario');
+
         if (vistaTabla) vistaTabla.style.display = 'none';
         if (vistaControles) vistaControles.style.display = 'none';
         if (vistaMapa) vistaMapa.style.display = 'flex';
