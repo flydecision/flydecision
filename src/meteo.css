@@ -1394,14 +1394,6 @@ span.grados {
     margin-top: 4px !important;
 }
 
-/* Tocar áreas izquierda o derecha para mover slider */
-.zona-tap-slider {
-    flex: 0 0 50px;
-    height: 40px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-}
-
 .noUi-horizontal .noUi-handle {
     width: 28px !important;   /* Antes 20px */
     height: 28px !important;  /* Antes 24px */
@@ -3549,7 +3541,7 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     display: flex;
     align-items: center;
     max-width: 365px;
-    min-width: 270px;
+    min-width: 365px;
     padding: 10px 0 10px 0;
     box-sizing: border-box;
     gap: 8px;

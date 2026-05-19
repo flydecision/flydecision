@@ -7762,7 +7762,7 @@ window.toggleFiltrosMapa = function() {
         filtrarMarkersPorPuntuacion();
 
         const divPunt2 = document.getElementById('div-filtro-puntuacion-mapa');
-        if (divPunt2) divPunt2.classList.remove('borde-rojo-externo');
+        //if (divPunt2) divPunt2.classList.remove('borde-rojo-externo');
 
         limpiarColoresMapa();
 
@@ -7936,7 +7936,7 @@ function inicializarSliderPuntuacionMapa() {
         const etiqueta = document.getElementById('puntuacion-mapa-etiqueta');
         if (etiqueta) etiqueta.textContent = val > 0 ? `${val}⭐` : '⭐';
         const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
-        if (divPunt) divPunt.classList.toggle('borde-rojo-externo', val > 0);
+        //if (divPunt) divPunt.classList.toggle('borde-rojo-externo', val > 0);
     });
 
     sliderEl.noUiSlider.on('update', function() {
