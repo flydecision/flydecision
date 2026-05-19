@@ -1816,15 +1816,21 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 
         const btn = document.createElement('button');
         btn.textContent = label;
-        btn.className = 'pip-dia-btn' + (i === diaSeleccionado ? ' pip-activo' : '');
+        
+        // Si el modo "Ver todos los días" está activo, obligamos a que ningún día se pinte de azul
+        const esActivo = (!modoVerTodosLosDias && i === diaSeleccionado);
+        
+        btn.className = 'pip-dia-btn' + (esActivo ? ' pip-activo' : '');
         btn.dataset.diaIndex = i;
 
         btn.addEventListener('click', function() {
-            // 🆕 Si pulsamos un día, apagamos el modo "Ver todos los días"
+            // 1. APAGAR el modo calendario si se pulsa un día
             modoVerTodosLosDias = false;
-            document.getElementById('btn-ver-todos-dias').classList.remove('activo');
+            const btnCal = document.getElementById('btn-ver-todos-dias');
+            if (btnCal) btnCal.classList.remove('activo');
             document.getElementById('div-filtro-horario').classList.remove('ocultar-slider-por-calendario');
-            
+
+            // 2. Lógica normal de días
             document.querySelectorAll('.pip-dia-btn').forEach(b => b.classList.remove('pip-activo'));
             this.classList.add('pip-activo');
             clickOnDia(sliderElement, parseInt(this.dataset.diaIndex));
@@ -2332,24 +2338,23 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 let modoVerTodosLosDias = false;
 
 window.toggleVerTodosLosDias = function() {
-    const btn = document.getElementById('btn-ver-todos-dias');
+    const btnCal = document.getElementById('btn-ver-todos-dias');
     const panelFiltro = document.getElementById('div-filtro-horario');
     
-    modoVerTodosLosDias = !modoVerTodosLosDias;
+    // Si ya estaba activo, al volver a pulsar no hacemos nada (o podríamos volver al día 1)
+    // Para que actúe como un selector estricto:
+    if (modoVerTodosLosDias) return; 
+
+    modoVerTodosLosDias = true;
     
-    btn.classList.toggle('activo', modoVerTodosLosDias);
-    panelFiltro.classList.toggle('ocultar-slider-por-calendario', modoVerTodosLosDias);
+    // 1. Estética del botón Calendario
+    btnCal.classList.add('activo');
+    panelFiltro.classList.add('ocultar-slider-por-calendario');
 
-    // Si activamos "Ver todos", quitamos el resaltado azul de los botones de días individuales
-    if (modoVerTodosLosDias) {
-        document.querySelectorAll('.pip-dia-btn').forEach(b => b.classList.remove('pip-activo'));
-    } else {
-        // Si desactivamos, restauramos el día 0 por defecto o el que estaba
-        const botones = document.querySelectorAll('.pip-dia-btn');
-        if (botones.length > 0) botones[0].click(); 
-        return; // El click ya dispara construir_tabla
-    }
+    // 2. 💡 QUITAR activo de los botones de días
+    document.querySelectorAll('.pip-dia-btn').forEach(b => b.classList.remove('pip-activo'));
 
+    // 3. Reconstruir
     construir_tabla();
 };
 

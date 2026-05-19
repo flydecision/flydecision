@@ -381,7 +381,7 @@ input[type="search"]::-webkit-search-cancel-button {
 
 .btn-calendario-flotante {
     position: absolute;
-    right: 8px;
+    right: 6px;
     top: 6px; /* Alineado con los botones de días */
     width: 30px;
     height: 30px;
@@ -1575,6 +1575,7 @@ span.grados {
     background: #007aff;
     color: #fff;
     border-color: #007aff;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 /* 🟡 SLIDERS. Personalizados. Configuración Horario -------------------------------- */
@@ -3546,8 +3547,8 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
 .div-mapa-close-btn {
     display: flex;
     position: absolute;
-    top: 1px;
-    right: 1px;
+    top: 5px;
+    right: 5px;
     width: 32px;
     height: 32px;
     justify-content: center;
