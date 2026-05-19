@@ -1811,7 +1811,8 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 
     pipIndices.forEach((startIdx, i) => {
         const idxReal = indices[startIdx];
-        const d = new Date(horas[idxReal].endsWith('Z') ? horas[idxReal] : horas[idxReal] + 'Z');
+        const safeH = horas[idxReal].replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+        const d = new Date(safeH);
         const label = t(`dias.${diasClaves[d.getDay()]}`) + " " + d.getDate();
 
         const btn = document.createElement('button');
@@ -1832,15 +1833,6 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 const chkDiaNoche = document.getElementById('chkDiaNoche');
 
 function clickOnDia(sliderElement, diaIndex) {
-
-console.log('Día', diaIndex, '→ primeras 3 horas:', 
-    window.indicesDiaActualSlider.slice(0,3).map(idx => 
-        new Date(window.horasCrudasRangoHorario[idx].endsWith('Z') 
-            ? window.horasCrudasRangoHorario[idx] 
-            : window.horasCrudasRangoHorario[idx] + 'Z').getHours()
-    )
-);
-
 
     window.diaSeleccionadoSlider = diaIndex;
     const dayRanges = sliderElement.dayRanges;
@@ -1870,9 +1862,8 @@ console.log('Día', diaIndex, '→ primeras 3 horas:',
         let encontradoInicio = false;
 
         window.indicesDiaActualSlider.forEach((idxReal, i) => {
-            const h = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z')
-                ? window.horasCrudasRangoHorario[idxReal]
-                : window.horasCrudasRangoHorario[idxReal] + 'Z').getHours();
+            const safeH = window.horasCrudasRangoHorario[idxReal].replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+            const h = new Date(safeH).getHours();
 
             if (!encontradoInicio) {
                 if (prefInicio === 0 || h >= prefInicio) {
@@ -1952,7 +1943,8 @@ window.calcularIndicesPreferencia = function(diaObjetivo) {
     // 1. Detectar qué día queremos analizar
     // Si no nos pasan día, cogemos el día del primer dato disponible
     if (!diaObjetivo) {
-        const fechaPrimerDato = new Date(horas[indices[0]].endsWith('Z') ? horas[indices[0]] : horas[indices[0]] + 'Z');
+        const safeH = horas[indices[0]].replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+        const fechaPrimerDato = new Date(safeH);
         diaObjetivo = fechaPrimerDato.getDate();
     }
 
@@ -1962,7 +1954,8 @@ window.calcularIndicesPreferencia = function(diaObjetivo) {
 
     for (let i = 0; i < indices.length; i++) {
         const idxReal = indices[i];
-        const fecha = new Date(horas[idxReal].endsWith('Z') ? horas[idxReal] : horas[idxReal] + 'Z');
+        const safeH = horas[idxReal].replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+        const fecha = new Date(safeH);
         
         if (fecha.getDate() === diaObjetivo) {
             if (indiceInicioDia === -1) indiceInicioDia = i; // Primer match
@@ -2001,7 +1994,8 @@ window.calcularIndicesPreferencia = function(diaObjetivo) {
 
     for (let i = indiceInicioDia; i <= indiceFinDia; i++) {
         const idxReal = indices[i];
-        const fecha = new Date(horas[idxReal].endsWith('Z') ? horas[idxReal] : horas[idxReal] + 'Z');
+        const safeH = horas[idxReal].replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+        const fecha = new Date(safeH);
         const h = fecha.getHours();
         
         if (prefInicio === 0) {
@@ -2042,8 +2036,8 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         const ultimoIndice = horasFiltradasPermanentemente.length - 1;
         const ultimaHora = horasFiltradasPermanentemente[ultimoIndice];
         
-        // Obtenemos qué día es el último del array
-        const ultimaFechaLocal = new Date(ultimaHora.endsWith('Z') ? ultimaHora : ultimaHora + 'Z');
+        const safeUltima = ultimaHora.replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+        const ultimaFechaLocal = new Date(safeUltima);
         const diaUltimo = ultimaFechaLocal.getDate();
 
         let horasEnUltimoDia = 0;
@@ -2052,7 +2046,8 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         // Contamos cuántas horas hay en ese último día y dónde empieza
         for (let i = ultimoIndice; i >= 0; i--) {
             const h = horasFiltradasPermanentemente[i];
-            const d = new Date(h.endsWith('Z') ? h : h + 'Z');
+            const safeH = h.replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+            const d = new Date(safeH);
             if (d.getDate() === diaUltimo) {
                 horasEnUltimoDia++;
             } else {
@@ -2074,7 +2069,8 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
     window.indicesHorasRangoHorario = [];
     if (horasCrudasRangoHorario.length > 0) {
         horasCrudasRangoHorario.forEach((h, i) => {
-            const d = new Date(h.endsWith('Z') ? h : h + 'Z');
+            const safeH = h.replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+            const d = new Date(safeH);
             const esNoche = esCeldaNoche(d);
             if (soloHorasDeLuz && esNoche) return; 
             window.indicesHorasRangoHorario.push(i);
@@ -2090,12 +2086,14 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
     pipIndices.push(0);
     if (window.indicesHorasRangoHorario.length > 0) {
         const primerIndiceReal = window.indicesHorasRangoHorario[0];
-        const primerDia = new Date(horasCrudasRangoHorario[primerIndiceReal].endsWith('Z') ? horasCrudasRangoHorario[primerIndiceReal] : horasCrudasRangoHorario[primerIndiceReal] + 'Z').getDate();
+        const safeH0 = horasCrudasRangoHorario[primerIndiceReal].replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+        const primerDia = new Date(safeH0).getDate();
         let diaActual = primerDia;
         
         for (let i = 1; i < window.indicesHorasRangoHorario.length; i++) {
             const indiceReal = window.indicesHorasRangoHorario[i];
-            const d = new Date(horasCrudasRangoHorario[indiceReal].endsWith('Z') ? horasCrudasRangoHorario[indiceReal] : horasCrudasRangoHorario[indiceReal] + 'Z');
+            const safeH = horasCrudasRangoHorario[indiceReal].replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+            const d = new Date(safeH);
             const diaNuevo = d.getDate();
             if (diaNuevo !== diaActual) {
                 pipIndices.push(i);
@@ -2109,11 +2107,6 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         startPos,
         endPos: pipIndices[i + 1] !== undefined ? pipIndices[i + 1] - 1 : maxSteps
     }));
-
-console.log('dayRanges:', sliderHoras.dayRanges.map(r => ({
-    startPos: r.startPos,
-    endPos: r.endPos
-})));
 
     // Día inicial
     const ahora = new Date();
@@ -2133,14 +2126,12 @@ console.log('dayRanges:', sliderHoras.dayRanges.map(r => ({
             if (!horas || horas.length === 0 || indiceReal === undefined) return "";
             
             const horaString = horas[indiceReal]; 
-            const d = new Date(horaString.endsWith('Z') ? horaString : horaString + 'Z');
+            const safeH = horaString.replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+            const d = new Date(safeH);
 
             // --- TRADUCCIÓN DE LOS DÍAS ---
-            // Mapeamos el número del día (0-6) a las claves de tu JSON
             const diasClaves = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"];
-            const diaSemanaIndex = d.getDay(); // 0 es Domingo, 1 Lunes...
-            
-            // Obtenemos la traducción: "dias.corto.lun", etc.
+            const diaSemanaIndex = d.getDay(); 
             const diaTraducido = t(`dias.${diasClaves[diaSemanaIndex]}`);
             
             return diaTraducido + " " + d.getDate();
@@ -2155,7 +2146,8 @@ console.log('dayRanges:', sliderHoras.dayRanges.map(r => ({
             const indiceReal = indices[Math.round(val)];
             if (!horas || horas.length === 0 || indiceReal === undefined) return "";
             const horaString = horas[indiceReal]; 
-            const d = new Date(horaString.endsWith('Z') ? horaString : horaString + 'Z');
+            const safeH = horaString.replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+            const d = new Date(safeH);
             const hora = String(d.getHours()).padStart(2, '0');
             return `${hora}`;
         }
@@ -2170,7 +2162,7 @@ console.log('dayRanges:', sliderHoras.dayRanges.map(r => ({
         
         sliderHoras.dayStartIndices = pipIndices;
         sliderHoras.dayStartTimestamp = window.horasCrudasRangoHorario.length > 0 
-        ? new Date(window.horasCrudasRangoHorario[0].endsWith('Z') ? window.horasCrudasRangoHorario[0] : window.horasCrudasRangoHorario[0] + 'Z').getTime() 
+        ? new Date(window.horasCrudasRangoHorario[0].replace('Z', '').replace(/-/g, '/').replace('T', ' ')).getTime() 
         : 0;
 
         // --- 🚀 CÁLCULO PREVIO DEL RANGO INICIAL DIRECTO ---
@@ -2195,7 +2187,8 @@ console.log('dayRanges:', sliderHoras.dayRanges.map(r => ({
                 // Buscamos dentro de los índices de ese día cuáles coinciden con las horas del usuario
                 for (let i = idxInicioDia; i <= idxFinDia; i++) {
                     const idxReal = window.indicesHorasRangoHorario[i];
-                    const fecha = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z') ? window.horasCrudasRangoHorario[idxReal] : window.horasCrudasRangoHorario[idxReal] + 'Z');
+                    const safeH = window.horasCrudasRangoHorario[idxReal].replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+                    const fecha = new Date(safeH);
                     const h = fecha.getHours();
                     
                     if (h < prefInicio) finalStart = i + 1;
@@ -2279,7 +2272,7 @@ console.log('dayRanges:', sliderHoras.dayRanges.map(r => ({
         // Comparamos el primer timestamp que tiene el slider guardado vs el nuevo
         const primerTimestampAntiguo = sliderHoras.dayStartTimestamp || 0;
         const primerTimestampNuevo = window.horasCrudasRangoHorario.length > 0 
-            ? new Date(window.horasCrudasRangoHorario[0].endsWith('Z') ? window.horasCrudasRangoHorario[0] : window.horasCrudasRangoHorario[0] + 'Z').getTime() 
+            ? new Date(window.horasCrudasRangoHorario[0].replace('Z', '').replace(/-/g, '/').replace('T', ' ')).getTime() 
             : 0;
             
         const hanCambiadoFechas = primerTimestampAntiguo !== primerTimestampNuevo;
@@ -2329,8 +2322,11 @@ console.log('dayRanges:', sliderHoras.dayRanges.map(r => ({
         // Obtenemos el rango del primer día (ya sea 0-23 o solar)
         const rangoActual = window.calcularIndicesPreferencia(null);
         
-        const hInicio = new Date(window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[0]]].endsWith('Z') ? window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[0]]] : window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[0]]] + 'Z').getHours();
-        const hFin = new Date(window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[1]]].endsWith('Z') ? window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[1]]] : window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[1]]] + 'Z').getHours();
+        const safeHInicio = window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[0]]].replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+        const hInicio = new Date(safeHInicio).getHours();
+        
+        const safeHFin = window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[rangoActual[1]]].replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+        const hFin = new Date(safeHFin).getHours();
         
         // Movemos el slider de configuración al rango actual SIN disparar el guardado
         sliderConfig.noUiSlider.set([hInicio, hFin], false);
@@ -3419,8 +3415,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 					return;
 				}
 
-				//const d = new Date(h);
-				const d = new Date(h.endsWith('Z') ? h : h + 'Z'); // Forzamos UTC. garantiza que cualquier hora sin información de zona se trate como UTC, evitando errores al convertir a Date. Si la cadena ya tiene zona horaria, se usa tal cual: h. Si no tiene zona horaria, se agrega Z al final: `${h}Z` → esto fuerza que se interprete como UTC.
+				const safeH = h.replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+				const d = new Date(safeH);
 				const dia = d.getDate();
 				const diaSemana = t(`dias.${clavesDiasLargos[d.getDay()]}`);
 				
@@ -3562,11 +3558,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				/* 🕜 Filtro del slider de rango horario */
 				if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
 
-				//const d = new Date(h);
-				const d = new Date(h.endsWith('Z') ? h : h + 'Z'); // Forzamos UTC. garantiza que cualquier hora sin información de zona se trate como UTC, evitando errores al convertir a Date. Si la cadena ya tiene zona horaria, se usa tal cual: h. Si no tiene zona horaria, se agrega Z al final: `${h}Z` → esto fuerza que se interprete como UTC.
+				const safeH = h.replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+				const d = new Date(safeH);
 
 				const th = document.createElement("th");
-				const hora = d.getHours();  // getHours() devuelve la hora local.
+				const hora = d.getHours();  
 				const dia = d.getDate();
 
 				// 1. Detección de cambio de día (se activa newDayStarted)
@@ -3626,10 +3622,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
         if (horas && horas.length > 0) {
             horas.forEach(h => {
-                // Convertimos el texto a Objeto Fecha una sola vez
-                const d = new Date(h.endsWith('Z') ? h : h + 'Z');
+                const safeH = h.replace('Z', '').replace(/-/g, '/').replace('T', ' ');
+                const d = new Date(safeH);
                 cacheFechas.push(d);
-                // Calculamos si es noche una sola vez
                 cacheEsNoche.push(esCeldaNoche(d));
             });
         }
@@ -7843,8 +7838,8 @@ function inicializarSliderMapaHorario() {
     function actualizarEtiquetaMapa(vals) {
         const i0 = indices[Math.round(vals[0])];
         const i1 = indices[Math.round(vals[1])];
-        const h0 = horas[i0] ? new Date(horas[i0].endsWith('Z') ? horas[i0] : horas[i0] + 'Z').getHours() : '?';
-        const h1 = horas[i1] ? new Date(horas[i1].endsWith('Z') ? horas[i1] : horas[i1] + 'Z').getHours() : '?';
+        const h0 = horas[i0] ? new Date(horas[i0].replace('Z', '').replace(/-/g, '/').replace('T', ' ')).getHours() : '?';
+        const h1 = horas[i1] ? new Date(horas[i1].replace('Z', '').replace(/-/g, '/').replace('T', ' ')).getHours() : '?';
         const etiqueta = document.getElementById('mapa-horario-etiqueta');
         if (etiqueta) etiqueta.textContent = `${h0}:00 – ${h1}:00 h`;
         return [i0, i1];
