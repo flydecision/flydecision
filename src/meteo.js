@@ -1832,6 +1832,16 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 const chkDiaNoche = document.getElementById('chkDiaNoche');
 
 function clickOnDia(sliderElement, diaIndex) {
+
+console.log('Día', diaIndex, '→ primeras 3 horas:', 
+    window.indicesDiaActualSlider.slice(0,3).map(idx => 
+        new Date(window.horasCrudasRangoHorario[idx].endsWith('Z') 
+            ? window.horasCrudasRangoHorario[idx] 
+            : window.horasCrudasRangoHorario[idx] + 'Z').getHours()
+    )
+);
+
+
     window.diaSeleccionadoSlider = diaIndex;
     const dayRanges = sliderElement.dayRanges;
     if (!dayRanges || !dayRanges[diaIndex]) return;
@@ -1859,12 +1869,19 @@ function clickOnDia(sliderElement, diaIndex) {
         const prefInicio = parseInt(rawInicio);
         const prefFin    = parseInt(rawFin);
 
+        let encontradoInicio = false;
+
         window.indicesDiaActualSlider.forEach((idxReal, i) => {
             const h = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z')
                 ? window.horasCrudasRangoHorario[idxReal]
                 : window.horasCrudasRangoHorario[idxReal] + 'Z').getHours();
-            if (prefInicio === 0) { finalStart = 0; }
-            else if (h < prefInicio) finalStart = i + 1;
+
+            if (!encontradoInicio) {
+                if (prefInicio === 0 || h >= prefInicio) {
+                    finalStart = i;
+                    encontradoInicio = true;
+                }
+            }
             if (h <= prefFin) finalEnd = i;
         });
 
@@ -2094,6 +2111,11 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         startIdx,
         endIdx: pipIndices[i + 1] !== undefined ? pipIndices[i + 1] - 1 : maxSteps
     }));
+
+    console.log('dayRanges:', sliderHoras.dayRanges.map(r => ({
+        start: window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[r.startIdx]],
+        end: window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[r.endIdx]]
+    })));
 
     // Día inicial
     const ahora = new Date();
