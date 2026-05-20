@@ -1664,7 +1664,7 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
         resetFiltroDistancia(false); 
     }
 
-    // 🔍 CERRAR BUSCADOR (Desactivado para hacerlo permanente)
+    // BOTÓN BUSCAR DESACTIVADO. 🔍 CERRAR BUSCADOR (Desactivado para hacerlo permanente)
     // const searchContainer = document.getElementById('floating-search-container');
     // if (searchContainer) {
     //     searchContainer.classList.add('floating-search-hidden');

@@ -2488,7 +2488,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 25%; /* 4 botones visibles = 25% cada uno */
+    width: 25%; /* BOTÓN BUSCAR DESACTIVADO. 4 botones visibles = 25% cada uno */
     height: 100%;
     background: transparent;
     border: none;
