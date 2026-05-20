@@ -2457,8 +2457,8 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     left: 50%;
     transform: translateX(-50%); /* Centrado perfecto */
     width: calc(100% - 8px); /* Margen a los lados en móviles */
-    max-width: 500px; /* Tamaño máximo en ordenadores/tablets para que no sea kilométrico */
-    min-width: 365px; /* Como el filtro de rango horario */
+    max-width: 350px; /* Tamaño máximo en ordenadores/tablets para que no sea kilométrico */
+    min-width: 350px; /* Como el filtro de rango horario */
     
     /* El efecto Cristal (Transparencia + Desenfocado) */
     background-color: #ffffff73; 
