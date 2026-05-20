@@ -280,14 +280,16 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
 
 #buscador-despegues-provincias {
     padding: 5px;
-	border: 1px solid black;
-    border-radius: 4px;
-    width: 80px; 
 	padding-right: 30px; /* Deja espacio para el botón de borrado */
 	transition: background-color 0.2s, border-color 0.2s;
     background-color: #FFFFFF;
     text-indent: 0px; 
     padding-left: 10px; /* Espacio general interno */
+    border: 1.5px solid #ccc;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 259px;
+    height: 35px;
 }
 #buscador-despegues-provincias.filtrado {
     border-color: #ff0000;
@@ -301,7 +303,7 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
     color: #888 !important;
     opacity: 1;
     /* Empuja el texto 12px a la derecha para que el cursor no lo tape */
-    text-indent: 12px; 
+    text-indent: 0px; 
     transition: opacity 0.2s ease;
 }
 
@@ -337,18 +339,20 @@ input[type="search"]::-webkit-search-cancel-button {
 
 /* Estilo de la X (el botón de limpiar) */
 #limpiar-buscador {
-    position: absolute;
-    right: -1px; /* Ajusta la posición desde la derecha */
-    top: 50%; /* Centrado vertical */
+    /* position: absolute; */
+    right: -1px;
+    top: 50%;
     transform: translateY(-50%);
-	display: none;  /* se muestra solo si hay texto */
-    background: transparent;
-    border: none;
+    display: none;
+    /* background: transparent; */
+    /* border: none; */
     cursor: pointer;
-    font-size: 35px;
+    /* font-size: 35px; */
     outline: none;
-    color: #999; 
-    z-index: 10; /* Asegura que está por encima del input */
+    /* color: #999; */
+    /* z-index: 10; */
+    width: 28px;
+    height: 28px;
 }
 
 #limpiar-buscador:hover {
@@ -739,7 +743,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .div-paneles-controles-transparente {
-    padding-bottom: 12px;
+    padding-bottom: 10px;
 	border-radius: 10px;
     border-width: 1px;
 	max-width: 365px;
@@ -1569,6 +1573,10 @@ span.grados {
     font-weight: bold;
     height: 30px;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    max-width: 68px;
+    /* Recomendado para evitar que el texto salte de línea si el botón se encoge mucho */
+    white-space: nowrap; 
+    overflow: hidden;
 }
 
 .pip-dia-btn.pip-activo {
@@ -2525,15 +2533,16 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
    ========================================================================== */
 #floating-search-container {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     width: 100%;
     overflow: hidden;
     /* Estado visible: */
     max-height: 60px; 
     opacity: 1;
     padding-top: 4px;
-    padding-bottom: 12px;
+    padding-bottom: 10px;
     transition: max-height 0.3s ease-in-out, opacity 0.2s ease, padding 0.3s ease;
+    margin-left: 40px;
 }
 
 .floating-search-hidden {
@@ -3590,7 +3599,6 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     gap: 8px;
     padding-bottom: 15px;
     border-radius: 10px;
-    margin-bottom: 9px;
     margin-top: 15px;
 }
 

@@ -58,8 +58,8 @@
   },
 
   "buscador": {
-    "placeholder": "🔍 Startplatz oder Provinz suchen...",
-    "placeholderEdicion": "🔍 Region, Provinz oder Startplatz suchen...",
+    "placeholder": "🔍 Startplatz oder Provinz...",
+    "placeholderEdicion": "🔍 Region, Provinz oder Startplatz...",
     "sugerenciaTitulo": "💡 Keine Favoriten für * <b>{{termino}}</b> * gefunden, aber diese sind in der Datenbank verfügbar:",
     "anadirFavorito": "+ Favorit hinzufügen"
   },

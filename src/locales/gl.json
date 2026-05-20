@@ -58,8 +58,8 @@
   },
 
   "buscador": {
-    "placeholder": "🔍 Buscar engalaxe ou provincia...",
-    "placeholderEdicion": "🔍 Buscar rexión, provincia ou engalaxe...",
+    "placeholder": "🔍 Engalaxe ou provincia...",
+    "placeholderEdicion": "🔍 Rexión, provincia ou engalaxe...",
     "sugerenciaTitulo": "💡 Non se atoparon favoritos para * <b>{{termino}}</b> *, pero estes están dispoñibles na base de datos:",
     "anadirFavorito": "+ Engadir a favoritos"
   },

@@ -58,8 +58,8 @@
   },
 
   "buscador": {
-    "placeholder": "🔍 Rechercher un décollage ou une province...",
-    "placeholderEdicion": "🔍 Rechercher une région, une province ou un décollage...",
+    "placeholder": "🔍 Décollage ou province...",
+    "placeholderEdicion": "🔍 Région, province ou décollage...",
     "sugerenciaTitulo": "💡 Aucun favori trouvé pour * <b>{{termino}}</b> *, mais ceux-ci sont disponibles dans la base de données :",
     "anadirFavorito": "+ Ajouter aux favoris"
   },

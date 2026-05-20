@@ -58,8 +58,8 @@
   },
 
   "buscador": {
-    "placeholder": "🔍 Buscar despegue o provincia...",
-    "placeholderEdicion": "🔍 Buscar región, provincia o despegue...",
+    "placeholder": "🔍 Despegue o provincia...",
+    "placeholderEdicion": "🔍 Región, provincia o despegue...",
     "sugerenciaTitulo": "💡 No tienes favoritos con * <b>{{termino}}</b> *, pero tienes disponibles en la base de datos de despegues:",
     "anadirFavorito": "+ Añadir favorito"
   },
