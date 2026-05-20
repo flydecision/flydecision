@@ -143,6 +143,19 @@
 		</div>
 	</div>
 
+	<!-- 🔍 BUSCADOR -->
+	<div id="floating-search-container"> <!-- BOTÓN BUSCAR DESACTIVADO. Eliminado para ocultarlo class="floating-search-hidden" -->
+		<div id="buscador-wrapper" class="buscador-con-boton" style="position: relative;">
+			<input type="search" 
+			id="buscador-despegues-provincias"
+			name="search_query_unique_xyz" 
+			data-i18n="[placeholder]buscador.placeholder"
+			onkeyup="aplicarFiltrosVisuales()"
+			autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+			<button id="limpiar-buscador" class="div-mapa-close-btn" type="button" style="display: none; right: 4px;">❌</button>
+		</div>
+	</div>
+
 	<!-- 🟦 FILTRO DISTANCIA  -->
 	<div id="div-filtro-distancia" class="div-filtro-distancia">
 
@@ -171,19 +184,6 @@
 
 		</div>
 			
-	</div>
-
-	<!-- 🔍 BUSCADOR FLOTANTE (Oculto por defecto) -->
-	<div id="floating-search-container"> <!-- BOTÓN BUSCAR DESACTIVADO. Eliminado para ocultarlo class="floating-search-hidden" -->
-		<div id="buscador-wrapper" class="buscador-con-boton" style="position: relative;">
-			<input type="search" 
-			id="buscador-despegues-provincias"
-			name="search_query_unique_xyz" 
-			data-i18n="[placeholder]buscador.placeholder"
-			onkeyup="aplicarFiltrosVisuales()"
-			autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-			<button id="limpiar-buscador" class="div-mapa-close-btn" type="button" style="display: none; right: 4px;">❌</button>
-		</div>
 	</div>
 
 	<!-- 🟦 MENÚ2 EDICIÓN FAVORITOS  -->

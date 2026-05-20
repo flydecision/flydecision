@@ -7806,11 +7806,11 @@ window.cambiarVista = function(vista) {
         // Devolver el slider horario al contenedor principal
         const divFH = document.getElementById('div-filtro-horario');
         const contenedorControles = document.querySelector('.contenedor-principal-controles');
-        const divDistancia = document.getElementById('div-filtro-distancia');
+        const divBuscador = document.getElementById('floating-search-container'); // <-- CAMBIO AQUÍ
         if (divFH && contenedorControles) {
             divFH.style.display = '';
             divFH.classList.remove('flotando-en-mapa');
-            contenedorControles.insertBefore(divFH, divDistancia);
+            contenedorControles.insertBefore(divFH, divBuscador); // <-- CAMBIO AQUÍ
             const divPunt = document.getElementById('wrapper-filtro-puntuacion-mapa');
             if (divPunt) divPunt.style.display = 'none';
         }
