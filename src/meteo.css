@@ -969,7 +969,7 @@ details.config-accordion .accordion-content {
     -webkit-overflow-scrolling: touch;
     /* 2. Para asegurar que la tabla no se esconda detrás del menú flotante,
    le damos espacio vacío abajo al contenedor de la tabla, sea Android, iOS o PC */
-    padding-bottom: calc(env(safe-area-inset-bottom) + 90px) !important;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 83px) !important;
     scrollbar-gutter: stable both-edges; /* reserva espacio a ambos lados para que la tabla siempre esté centrada aunque haya o no barra de desplazamiento */
 }
 
@@ -2462,7 +2462,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 /* 1. Estilo General (La "pastilla" flotante) */
 .bottom-nav.compact-nav {
     position: fixed; /* Forzamos a que flote sobre todo */
-    bottom: calc(12px + env(safe-area-inset-bottom, 0px)); /* Separado del fondo y respetando la barra de iOS/Android */
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px)); /* Separado del fondo y respetando la barra de iOS/Android */
     left: 50%;
     transform: translateX(-50%); /* Centrado perfecto */
     width: calc(100% - 8px); /* Margen a los lados en móviles */

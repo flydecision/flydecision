@@ -5069,6 +5069,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			localStorage.removeItem('METEO_CRASH_COUNTER');
 		}		
 
+        // --- ACTUALIZAR MAPA SI ESTABA VISIBLE (Para reconexiones y recargas) ---
+        const vistaMapa = document.getElementById('vista-mapa');
+        if (vistaMapa && vistaMapa.style.display === 'flex' && typeof marcarOperativosEnMarkers === 'function') {
+            if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
+                marcarOperativosEnMarkers();
+                aplicarPuntuacionEnMapa();
+            } else {
+                actualizarFiltrosMapa();
+            }
+        }
+
 	} // cierre de: try {	
 
 	catch (error) {
@@ -7806,11 +7817,12 @@ window.cambiarVista = function(vista) {
         // Devolver el slider horario al contenedor principal
         const divFH = document.getElementById('div-filtro-horario');
         const contenedorControles = document.querySelector('.contenedor-principal-controles');
-        const divBuscador = document.getElementById('floating-search-container'); // <-- CAMBIO AQUÍ
+        const divBuscador = document.getElementById('floating-search-container');
         if (divFH && contenedorControles) {
-            divFH.style.display = '';
+            // SI ESTAMOS EN MODO EDICIÓN, SE QUEDA OCULTO; SI NO, SE MUESTRA
+            divFH.style.display = modoEdicionFavoritos ? 'none' : ''; 
             divFH.classList.remove('flotando-en-mapa');
-            contenedorControles.insertBefore(divFH, divBuscador); // <-- CAMBIO AQUÍ
+            contenedorControles.insertBefore(divFH, divBuscador);
             const divPunt = document.getElementById('wrapper-filtro-puntuacion-mapa');
             if (divPunt) divPunt.style.display = 'none';
         }
@@ -9400,7 +9412,13 @@ function inicializarMapaLeaflet() {
             }, 600); // Pequeña pausa para asegurar que los clusters están dibujados
         }
     
-        actualizarFiltrosMapa();
+        // APLICAR COLORES A LOS MARCADORES RECIÉN CREADOS
+        if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
+            marcarOperativosEnMarkers();
+            aplicarPuntuacionEnMapa();
+        } else {
+            actualizarFiltrosMapa();
+        }
     },
 
     error: function(error) {
