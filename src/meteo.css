@@ -460,7 +460,6 @@ input[type="search"]::-webkit-search-cancel-button {
     max-height: 120px; /* Un valor superior al contenido real */
     opacity: 1;
     margin-top: 0px;
-    margin-bottom: 2px;
     padding: 4px;
 }
 
@@ -1659,7 +1658,7 @@ span.grados {
 	background: #0078d4;
 }
 #distancia-slider.noUi-horizontal {
-    margin-top: 33px !important;
+    margin-top: 31px !important;
 }
 #distancia-slider .noUi-pips-horizontal {
     padding: 0px !important;
@@ -2489,7 +2488,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 20%; /* 5 botones = 20% cada uno */
+    width: 25%; /* 4 botones visibles = 25% cada uno */
     height: 100%;
     background: transparent;
     border: none;
@@ -2545,13 +2544,19 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     margin-left: 40px;
 }
 
-.floating-search-hidden {
-    /* Estado oculto: */
+/* BOTÓN BUSCAR DESACTIVADO. .floating-search-hidden { */
+
+    /* Desactivado para hacer el buscador permanente */
+    /* Estado oculto:
     max-height: 0 !important;
     opacity: 0 !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
-    pointer-events: none;
+    pointer-events: none; */
+/* } */
+
+#nav-search {
+    display: none !important; /* Oculta el botón Buscar de la barra inferior */
 }
 
 .div-filtro-distancia {

@@ -1664,12 +1664,12 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
         resetFiltroDistancia(false); 
     }
 
-    // 🔍 CERRAR BUSCADOR
-    const searchContainer = document.getElementById('floating-search-container');
-    if (searchContainer) {
-        searchContainer.classList.add('floating-search-hidden');
-        buscadorVisible = false;
-    }
+    // 🔍 CERRAR BUSCADOR (Desactivado para hacerlo permanente)
+    // const searchContainer = document.getElementById('floating-search-container');
+    // if (searchContainer) {
+    //     searchContainer.classList.add('floating-search-hidden');
+    //     buscadorVisible = false;
+    // }
     
     document.body.classList.remove('modo-edicion-tabla');
     const divMenu = document.getElementById('div-menu');
@@ -6785,17 +6785,21 @@ function comprobarAvisoCambiosPuntuacionXC() {
         if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo'); // Quitar borde panel
 		if (btnReset) btnReset.style.display = 'none'; // Ocultar botón de reset
 
+        // BOTÓN BUSCAR DESACTIVADO. Recalcular botón azul al resetear y cerrar el panel
+        // if (typeof window.activarMenuInferior === 'function') {
+        //     const searchContainer = document.getElementById('floating-search-container');
+        //     const isSearchVisible = searchContainer && !searchContainer.classList.contains('floating-search-hidden');
+            
+        //     if (isSearchVisible) {
+        //         window.activarMenuInferior(document.getElementById('nav-search'));
+        //     } else {
+        //         window.activarMenuInferior(document.getElementById('nav-home'));
+        //     }
+        // }
+
         // Recalcular botón azul al resetear y cerrar el panel
         if (typeof window.activarMenuInferior === 'function') {
-            const searchContainer = document.getElementById('floating-search-container');
-            const isSearchVisible = searchContainer && !searchContainer.classList.contains('floating-search-hidden');
-            
-            // Si el buscador está abierto, iluminamos 'Buscar'. Si no, iluminamos 'Inicio'.
-            if (isSearchVisible) {
-                window.activarMenuInferior(document.getElementById('nav-search'));
-            } else {
-                window.activarMenuInferior(document.getElementById('nav-home'));
-            }
+            window.activarMenuInferior(document.getElementById('nav-home'));
         }
 
         if (reconstruir) { construir_tabla(); }
@@ -6940,25 +6944,33 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 return;
             }
 
-            // B. Buscador Flotante
-            const searchContainer = document.getElementById('floating-search-container');
+            // BOTÓN BUSCAR DESACTIVADO. B. Buscador Flotante
+            // const searchContainer = document.getElementById('floating-search-container');
+            // const searchInput = document.getElementById('buscador-despegues-provincias');
+            // if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
+            //     let tieneTexto = searchInput && searchInput.value.trim() !== '';
+                
+            //     if (tieneTexto) {
+            //         if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
+            //     }
+                
+            //     searchContainer.classList.add('floating-search-hidden');
+            //     if (typeof buscadorVisible !== 'undefined') buscadorVisible = false;
+            //     if (searchInput) searchInput.blur();
+                
+            //     if (panelDistancia && panelDistancia.classList.contains("activo")) {
+            //         window.activarMenuInferior(document.getElementById('nav-distance'));
+            //     } else {
+            //         window.activarMenuInferior(document.getElementById('nav-home'));
+            //     }
+            //     return;
+            // }
+
+            // B. Buscador Flotante (Permanente)
             const searchInput = document.getElementById('buscador-despegues-provincias');
-            if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
-                let tieneTexto = searchInput && searchInput.value.trim() !== '';
-                
-                if (tieneTexto) {
-                    if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
-                }
-                
-                searchContainer.classList.add('floating-search-hidden');
-                if (typeof buscadorVisible !== 'undefined') buscadorVisible = false;
-                if (searchInput) searchInput.blur();
-                
-                if (panelDistancia && panelDistancia.classList.contains("activo")) {
-                    window.activarMenuInferior(document.getElementById('nav-distance'));
-                } else {
-                    window.activarMenuInferior(document.getElementById('nav-home'));
-                }
+            if (searchInput && searchInput.value.trim() !== '') {
+                if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
+                searchInput.blur();
                 return;
             }
 
@@ -7462,9 +7474,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
             if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
         }
         
-        if (typeof buscadorVisible !== 'undefined' && buscadorVisible) {
-            window.toggleBuscadorFlotante(); 
-        }
+        // BOTÓN BUSCAR DESACTIVADO. if (typeof buscadorVisible !== 'undefined' && buscadorVisible) {
+        //     window.toggleBuscadorFlotante(); 
+        // }
 
         // 5. Cerrar panel de configuración silenciosamente
         cerrarAjustesSilencioso();
@@ -7568,24 +7580,28 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const vistaMapa = document.getElementById('vista-mapa');
         const estaEnMapa = vistaMapa && vistaMapa.style.display === 'flex';
 
-        // --- 🧹 LIMPIEZA CRUZADA: Si Buscador está abierto pero VACÍO, lo cerramos ---
-        if (isSearchOpen && !searchHasText) {
-            searchContainer.classList.add('floating-search-hidden');
-            if (typeof buscadorVisible !== 'undefined') buscadorVisible = false;
-            if (searchInput) searchInput.blur();
-        }
+        // BOTÓN BUSCAR DESACTIVADO.  --- 🧹 LIMPIEZA CRUZADA: Si Buscador está abierto pero VACÍO, lo cerramos ---
+        // if (isSearchOpen && !searchHasText) {
+        //     searchContainer.classList.add('floating-search-hidden');
+        //     if (typeof buscadorVisible !== 'undefined') buscadorVisible = false;
+        //     if (searchInput) searchInput.blur();
+        // }
+
+        // if (!estaEnMapa && isDistanceOpen && !distModificada) {
+        //     // Estaba abierto y sin usar, el usuario lo quiere cerrar
+        //     panelDistancia.classList.remove("activo");
+            
+        //     if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
+        //         window.activarMenuInferior(document.getElementById('nav-search'));
+        //     } else {
+        //         window.activarMenuInferior(document.getElementById('nav-home'));
+        //     }
 
         // Lógica propia de Distancia
         if (!estaEnMapa && isDistanceOpen && !distModificada) {
             // Estaba abierto y sin usar, el usuario lo quiere cerrar
             panelDistancia.classList.remove("activo");
-            
-            // Decidir qué luz dejar encendida
-            if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
-                window.activarMenuInferior(document.getElementById('nav-search'));
-            } else {
-                window.activarMenuInferior(document.getElementById('nav-home'));
-            }
+            window.activarMenuInferior(document.getElementById('nav-home'));
         } else {
             // Queremos ir a Distancia (y abrirlo si estaba cerrado)
             cambiarVista('tabla');
