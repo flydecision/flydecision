@@ -952,25 +952,54 @@ details.config-accordion .accordion-content {
 
 /* 🔴 TABLA -------------------------------- */
 
+/* 1. Estilo base del contenedor de la tabla */
 .tabla-wrapper {
-    flex: 1; /* Ocupa todo el espacio vertical restante */
-	margin-left: 3px;
+    flex: 1;
+    margin-left: 3px;
     margin-bottom: 3px; 
     margin-right: 3px;
     padding-right: 1px;
-	margin-top: 10px;
-	flex-grow: 1;       /* Se estira para llenar el hueco dejado por el contador */
-    overflow: auto;     /* Aquí aparecen las barras de scroll si hace falta */
-	height: 100%;       /* Asegura que ocupe el contenedor */
+    margin-top: 10px;
+    flex-grow: 1;       
+    overflow: auto;     
+    height: 100%;       
     width: auto;
-	box-sizing: border-box;
-    
-    /* Ajustes para móviles. Sumamos los 56px del menú compacto al margen. */
+    box-sizing: border-box;
     -webkit-overflow-scrolling: touch;
-    /* 2. Para asegurar que la tabla no se esconda detrás del menú flotante,
-   le damos espacio vacío abajo al contenedor de la tabla, sea Android, iOS o PC */
     padding-bottom: calc(env(safe-area-inset-bottom) + 83px) !important;
-    scrollbar-gutter: stable both-edges; /* reserva espacio a ambos lados para que la tabla siempre esté centrada aunque haya o no barra de desplazamiento */
+    
+    /* Evitamos "both-edges" para corregir definitivamente el bug del rebote */
+    scrollbar-gutter: stable; 
+}
+
+/* 2. 💻 BALANCEO DE SIMETRÍA Y ESTILO EN ORDENADORES (PC/Desktop) */
+@media (min-width: 768px) {
+    .tabla-wrapper {
+        /* Añadimos 8px a la izquierda para equilibrar perfectamente los 8px del scrollbar derecho */
+        padding-left: 8px;
+    }
+    
+    /* Rediseñamos la barra para que mida exactamente 8px de ancho (estilo elegante y fino) */
+    .tabla-wrapper::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    .tabla-wrapper::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .tabla-wrapper::-webkit-scrollbar-thumb {
+        background: #999;
+        border-radius: 4px;
+        border: 1px solid transparent;
+    }
+    .tabla-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #666;
+    }
+    
+    /* Compatibilidad de barra fina para Firefox */
+    .tabla-wrapper {
+        scrollbar-width: thin;
+    }
 }
 
 #tabla { 
