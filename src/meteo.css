@@ -289,7 +289,7 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     width: 259px;
-    height: 35px;
+    height: 37px;
 }
 #buscador-despegues-provincias.filtrado {
     border-color: #ff0000;
@@ -459,7 +459,7 @@ input[type="search"]::-webkit-search-cancel-button {
 .div-filtro-distancia.activo {
     max-height: 120px; /* Un valor superior al contenido real */
     opacity: 1;
-    margin-top: 0px;
+    margin-top: -3px;
     padding: 4px;
 }
 
@@ -1654,12 +1654,18 @@ span.grados {
 
 /* 🟡 SLIDERS. Personalizados. Distancia -------------------------------- */
 
+
+#div-filtro-distancia-interno #distancia-slider.noUi-horizontal {
+    margin-top: 31px !important;
+    width: 259px !important; /* Deja unos 25px por lado respecto a los 365px del contenedor */
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
 #distancia-slider .noUi-connect {
 	background: #0078d4;
 }
-#distancia-slider.noUi-horizontal {
-    margin-top: 31px !important;
-}
+
 #distancia-slider .noUi-pips-horizontal {
     padding: 0px !important;
     height: 45px !important;

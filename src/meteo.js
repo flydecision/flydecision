@@ -275,7 +275,7 @@ if (btnIncNoFavsDistancia) {
                 const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
                 if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
                 const btnReset = document.getElementById('btn-reset-filtro-distancia');
-                if (btnReset) btnReset.style.display = 'block';
+                if (btnReset) btnReset.style.display = 'flex';
 
                 construir_tabla(false, false);
             } 
@@ -5855,7 +5855,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 				if (btnToggle) btnToggle.classList.add('filtro-aplicado'); // Solo si existe
 				if (navDistance) navDistance.classList.add('filtro-aplicado'); // Ponemos rojo el de abajo
 				if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
-				if (btnReset) btnReset.style.display = 'block';
+				if (btnReset) btnReset.style.display = 'flex';
 			} else {
 				if (btnToggle) btnToggle.classList.remove('filtro-aplicado');
 				if (navDistance) navDistance.classList.remove('filtro-aplicado');
