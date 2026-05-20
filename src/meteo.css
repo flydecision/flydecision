@@ -197,6 +197,7 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
 #div-menu.mode-editing {
     display: flex;
     transition: background-color 0.3s ease;
+    margin-bottom: 4px;
 }
 
 /* 🟡 BOTONES -------------------------------- */
@@ -290,6 +291,7 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
     border-radius: 8px;
     width: 259px;
     height: 37px;
+    font-size: 0.9em;
 }
 #buscador-despegues-provincias.filtrado {
     border-color: #ff0000;
@@ -887,6 +889,7 @@ details.config-accordion .accordion-content {
     border: 1px solid #333;
     margin-bottom: 4px;
     border: 2px solid white;
+    margin-right: 3px;
 }
 
 /* 🔴🔴 CONTENEDOR PRINCIPAL TABLA (Contador despegues + Tabla) */
