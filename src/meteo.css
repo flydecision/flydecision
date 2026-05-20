@@ -975,8 +975,8 @@ details.config-accordion .accordion-content {
 /* 2. 💻 BALANCEO DE SIMETRÍA Y ESTILO EN ORDENADORES (PC/Desktop) */
 @media (min-width: 768px) {
     .tabla-wrapper {
-        /* Añadimos 8px a la izquierda para equilibrar perfectamente los 8px del scrollbar derecho */
-        padding-left: 8px;
+        /* Eliminamos el padding-left y usamos un borde sólido azul como máscara de recorte */
+        border-left: 8px solid #d9ebf9; 
     }
     
     /* Rediseñamos la barra para que mida exactamente 8px de ancho (estilo elegante y fino) */
