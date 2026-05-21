@@ -2491,7 +2491,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 /* 1. Estilo General (La "pastilla" flotante) */
 .bottom-nav.compact-nav {
     position: fixed; /* Forzamos a que flote sobre todo */
-    bottom: calc(18px + env(safe-area-inset-bottom, 0px)); /* Separado del fondo y respetando la barra de iOS/Android */
+    bottom: calc(3px + env(safe-area-inset-bottom, 0px)); /* Reducido a 3px para Android/iOS */
     left: 50%;
     transform: translateX(-50%); /* Centrado perfecto */
     width: calc(100% - 8px); /* Margen a los lados en móviles */
@@ -2518,6 +2518,13 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     max-height: 60px;
     padding-bottom: 0; 
     margin: 0; /* Limpiamos márgenes antiguos */
+}
+
+/* 💻 Ajuste para ordenadores y tablets grandes: mantiene la barra a 18px del borde inferior */
+@media (min-width: 768px) {
+    .bottom-nav.compact-nav {
+        bottom: 18px;
+    }
 }
 
 /* 3. Estilo de los botones internos */
@@ -3586,7 +3593,7 @@ h3 {
     border-radius: 10px;
     padding: 5px 10px 0px 10px;
     box-sizing: border-box;
-    max-width: 411px;
+    max-width: 410px;
     border: 1px solid #6e6e6e;
 }
 
@@ -3624,7 +3631,7 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
 @media (max-width: 722px) {
     #vista-mapa.filtros-abiertos .leaflet-top {
         transition: margin-top 0.2s ease;
-        margin-top: calc(152px + var(--safe-area-inset-top, 25px));
+        margin-top: calc(141px + var(--safe-area-inset-top, 25px));
     }
 }
 
