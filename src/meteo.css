@@ -164,6 +164,7 @@ body, header, .offline-badge {
 /* 🔴🔴 CONTENEDOR PRINCIPAL CONTROLES (Menú + Filtro horario + Configuración filtros + Configuración) */
 
 .contenedor-principal-controles {
+    box-sizing: border-box; /* Forzamos a que el borde de 2px se calcule por dentro */
     width: calc(100% - 8px);
     margin: 0 auto;
     position: sticky;
