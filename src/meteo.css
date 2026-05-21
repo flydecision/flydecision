@@ -757,6 +757,10 @@ input[type="search"]::-webkit-search-cancel-button {
     margin-top: 2px;
 }
 
+#div-filtro-distancia .div-paneles-controles-transparente {
+    padding-bottom: 5px;
+}
+
 .div-paneles-controles-botones {
 	position: relative; 
 	border: 1px solid transparent;
@@ -1521,7 +1525,7 @@ span.grados {
 
 /* 🟡 SLIDERS. Personalizados. Horario -------------------------------- */
 #horario-slider.noUi-horizontal {
-    margin-top: 35px !important;
+    margin-top: 32px !important;
 }
 #horario-slider .noUi-tooltip {
 	background: transparent;
@@ -1689,7 +1693,7 @@ span.grados {
 
 
 #div-filtro-distancia-interno #distancia-slider.noUi-horizontal {
-    margin-top: 31px !important;
+    margin-top: 24px !important;
     width: 259px !important; /* Deja unos 25px por lado respecto a los 365px del contenedor */
     margin-left: auto !important;
     margin-right: auto !important;

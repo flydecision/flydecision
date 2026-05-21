@@ -98,21 +98,22 @@ p { margin-bottom: 15px; }
     font-style: italic;
 }
 
-.literal {
-    font-family: monospace;
-    white-space: pre-wrap;
-    background: #f5f5f5;
-    padding: 7px;
-    border-radius: 6px;
-    font-style: italic;
-    font-size: smaller;
-}
-
 .badge-google-play {
     display: inline-block;
     transition: transform 0.2s ease, opacity 0.2s ease;
     /* Evita que el enlace subraye la imagen en tu web (por tu CSS global) */
     text-decoration: none !important; 
+}
+
+pre.literal {
+  background-color: #f8f9fa;       /* Fondo gris muy suave */
+  border-left: 4px solid #adb5bd;  /* Línea vertical a la izquierda tipo cita */
+  padding: 15px 5px;              /* Espacio interior para que respire el texto */
+  margin: 20px 0;                  /* Separación exterior arriba y abajo */
+  color: #495057;                  /* Color de texto ligeramente atenuado */
+  white-space: pre-wrap;           /* Hace que el texto baje de línea si no cabe en pantalla */
+  font-family: inherit;            /* Usa el mismo tipo de letra que tu web, o pon 'monospace' si prefieres estilo código */
+  font-style: italic;              /* Opcional: le da un toque extra de "cita" */
 }
 
 </style>
