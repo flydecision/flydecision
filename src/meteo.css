@@ -1743,6 +1743,11 @@ span.grados {
     display: none !important;
 }
 
+/* Oculta las letras "km" únicamente cuando el tooltip muestra el símbolo de infinito */
+#distancia-slider.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after {
+    content: "" !important;
+}
+
 /* 🟡 SLIDERS. Personalizados. Distancia. Botones localización origen -------------------------------- */
 
 /* 1. Botón configuración origen */
