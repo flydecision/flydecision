@@ -8471,25 +8471,26 @@ function inicializarMapaLeaflet() {
         }
 
         // -----------------------------------------------------------------------
+        // -----------------------------------------------------------------------
         // FUNCIÓN AUXILIAR DE FILTRADO (Lógica central reutilizable)
         // Se extrae la lógica de filtrado para aplicarla dos veces sin repetir código.
-        const pasaFiltros = (marker) => {
+        const pasaFiltros = (marker, esDespegueMundo = false) => {
 
-            // --- 0. FILTRO DE PUNTUACIÓN MÍNIMA ---
-            if (puntuacionMinimaMapa > 0) {
-                const nota = marker._notaMapa !== undefined ? marker._notaMapa : -1;
-                if (nota >= 0 && Math.round(nota) < puntuacionMinimaMapa) return false;
+            // Los despegues del mundo NO tienen pronóstico meteo, por lo que 
+            // ignoramos los filtros de puntuación y operatividad para ellos.
+            if (!esDespegueMundo) {
+                // --- 0. FILTRO DE PUNTUACIÓN MÍNIMA ---
+                if (puntuacionMinimaMapa > 0) {
+                    const nota = marker._notaMapa !== undefined ? marker._notaMapa : -1;
+                    if (nota >= 0 && Math.round(nota) < puntuacionMinimaMapa) return false;
+                }
+                if (window.markersBloqueadosPorPuntuacion && window.markersBloqueadosPorPuntuacion.has(marker)) return false;
+
+                // --- 0b. OCULTAR NO-OPERATIVOS SI EL FILTRO ESTÁ ACTIVO ---
+                if (filtrosMapaAbiertos && marker._esOperativo !== true) return false;
             }
-            if (window.markersBloqueadosPorPuntuacion && window.markersBloqueadosPorPuntuacion.has(marker)) return false;
-
-            // --- 0b. OCULTAR NO-OPERATIVOS SI EL FILTRO ESTÁ ACTIVO ---
-            if (filtrosMapaAbiertos && marker._esOperativo !== true) return false;
 
             // --- 1. VALIDACIÓN DE VUELOS ---
-            const vuelosMarker = marker.metadata.vuelos || 0; 
-            if (vuelosMarker < minVuelos) return false;
-            
-            // --- 2. VALIDACIÓN DE VUELOS ---
             const KmMediaMarker = marker.metadata.KmMedia || 0; 
             if (KmMediaMarker < minKmMedia) return false;
             
@@ -8532,7 +8533,7 @@ function inicializarMapaLeaflet() {
         // 1. FILTRAR MARCADORES LOCALES (Despegues)
         if (mostrarDespegues) {
             markersDespegues.forEach(marker => {
-                if (pasaFiltros(marker)) {
+                if (pasaFiltros(marker, false)) { // false = no es mundo (le afecta la meteo)
                     markersFiltradosDespegues.push(marker);
                 }
             });
@@ -8541,7 +8542,7 @@ function inicializarMapaLeaflet() {
         // 2. FILTRAR MARCADORES DEL MUNDO (DespeguesMundo)
         if (mostrarDespeguesMundo) {
             markersDespeguesMundo.forEach(marker => {
-                if (pasaFiltros(marker)) {
+                if (pasaFiltros(marker, true)) { // true = sí es mundo (ignora filtro meteo)
                     markersFiltradosDespeguesMundo.push(marker);
                 }
             });
