@@ -7543,62 +7543,49 @@ function comprobarAvisoCambiosPuntuacionXC() {
         // 1. Salir de edición de favoritos si estamos en ella
         if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
             if (!finalizarEdicionFavoritos(true)) return; 
-        } else {
-            // 2. Comprobar si hay filtros activos que requieran reconstrucción real
-            if (typeof ultimaDistanciaConfirmada !== 'undefined' && typeof CORTES_DISTANCIA_GLOBAL !== 'undefined') {
-                if (ultimaDistanciaConfirmada < (CORTES_DISTANCIA_GLOBAL.length - 1)) {
-                    necesitaReconstruir = true;
-                }
-            }
-        }
-
-        const searchInput = document.getElementById('buscador-despegues-provincias');
-        if (searchInput && searchInput.value.trim() !== '') {
-            necesitaReconstruir = true; // Si el buscador tenía texto, al limpiarlo cambiará la lista
-        }
-
-        // 3. Reset visual y de estado de los filtros
-        if (typeof resetFiltroDistancia === 'function') { resetFiltroDistancia(false); }
-
-        // 4. Limpiar buscador
-        if (searchInput && searchInput.value.trim() !== '') {
-            if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
-        }
-
-        // BOTÓN BUSCAR DESACTIVADO. if (typeof buscadorVisible !== 'undefined' && buscadorVisible) {
-        //     window.toggleBuscadorFlotante(); 
-        // }
+        } 
         
-        // 5. Cerrar panel de configuración silenciosamente
+        // 2. 🚀 LÓGICA DE FILTROS AL HACER CLIC EN INICIO
+        if (yaEnInicio) {
+            // SI YA ESTÁBAMOS EN INICIO (SEGUNDO CLIC):
+            // Solo ahora reseteamos los filtros y forzamos la reconstrucción limpia de la tabla
+            
+            // A. Reset del Filtro de Distancia
+            if (typeof resetFiltroDistancia === 'function') { resetFiltroDistancia(false); }
+
+            // B. Limpiar Buscador
+            if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
+            
+            necesitaReconstruir = true;
+        }
+
+        // 3. Cerrar panel de configuración silenciosamente
         cerrarAjustesSilencioso();
 
-        // 6. Volver a la vista de tabla
+        // 4. Volver a la vista de tabla
         cambiarVista('tabla');
 
-        // 7. EJECUCIÓN FINAL (Reconstruir o hacer Scroll)
+        // 5. EJECUCIÓN FINAL (Reconstruir o hacer Scroll)
         if (necesitaReconstruir) {
             construir_tabla(); 
-        } else if (yaEnInicio || window.necesitaScrollTopMeteo) {
+        } else if (window.necesitaScrollTopMeteo) {
             const wrapper = document.querySelector('.tabla-wrapper');
             const principal = document.querySelector('.contenedor-principal-tabla');
-            
-            // Si viene del mapa con la tabla reordenada, usamos 'instant' para que el cambio de vista sea limpio y sin mareos
-            const scrollOptions = { top: 0, behavior: window.necesitaScrollTopMeteo ? 'instant' : 'smooth' };
-            
+            const scrollOptions = { top: 0, behavior: 'instant' };
             if (wrapper) wrapper.scrollTo(scrollOptions);
             if (principal) principal.scrollTo(scrollOptions);
             window.scrollTo(scrollOptions);
             
-            window.necesitaScrollTopMeteo = false; // Apagamos el chivato tras usarlo
+            window.necesitaScrollTopMeteo = false; // Apagamos el chivato
         }
-        // 🚀 Si no necesitaba reconstruir, venía del mapa y NO cambió la meteo, no hace NADA,
-        // lo que preserva la tabla y su posición de scroll exactamente igual.
+        // 🚀 Si no es segundo clic y venías del mapa, los filtros se quedan intactos 
+        // y se preserva tu scroll anterior exactamente en el mismo píxel.
 
-        // 8. Iluminar botón inicio
+        // 6. Iluminar botón inicio
         window.activarMenuInferior(btnInicio);
     };
 
-// 2️⃣ BOTÓN BUSCAR
+    // 2️⃣ BOTÓN BUSCAR
     window.clicBotonBuscar = function() {
         cerrarAjustesSilencioso(); 
         const searchContainer = document.getElementById('floating-search-container');
