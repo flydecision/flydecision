@@ -392,7 +392,7 @@
   },
 
   "mapa": {
-    "btnGuardarVista": "💾 Enregistrer la vue actuelle",
+    "btnGuardarVista": "💾 Mémoriser la vue actuelle",
     "btnGuardarVistaTitle": "Enregistrer le centre et le zoom actuels comme vue par défaut",
     "seleccionarOrigen": "Sélectionner l'origine",
     "miUbicacion": "Ma position",
