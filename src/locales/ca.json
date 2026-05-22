@@ -172,16 +172,20 @@
     "podrasVerla": "Pots consultar-la en qualsevol moment utilitzant el botó <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> d'aquesta pantalla.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Pantalla principal",
-        "descripcion": "Aquesta és la pantalla d'ús normal de l'aplicació.<br><br>Mostra una taula amb tots els enlairaments que has seleccionat com a preferits, juntament amb la seva previsió i les puntuacions de les condicions (per a l'enlairament i per començar vols d'XC).<br><br>Els enlairaments sempre s'ordenen automàticament per la seva puntuació de condicions d'enlairament (de la més alta a la més baixa)."
+        "titulo": "🪂 Taula d'enlairaments amb predicció horària",
+        "descripcion": "Mostra una taula amb tots els enlairaments que has seleccionat com a preferits, el seu pronòstic meteorològic per hores i la seva puntuació calculada de condicions, de 0 a 10 (per enlairar-se i per iniciar rutes XC).<br><br>Els enlairaments estan sempre ordenats automàticament per la seva puntuació de condicions per enlairar-se (de major a menor)."
       },
       "selectorHorario": {
         "titulo": "🗓️ Selector de franja horària",
         "descripcion": "Ajusta aquest control lliscant pels dos extrems per seleccionar la franja horària que t'interessi.<br><br>La taula només mostrarà aquestes hores, i la puntuació de les condicions es recalcularà per a aquest interval de temps específic."
       },
+      "btnVerTodosLosDias": {
+        "titulo": "🗓️ Mostrar tots els dies",
+        "descripcion": "Aquest botó alterna entre veure la taula completa amb els 4 dies de pronòstic o només el dia seleccionat."
+      },
       "diasSemana": {
         "titulo": "🗓️ Dies de la setmana",
-        "descripcion": "Aquests botons dels dies de la setmana faciliten la selecció de la franja horària d'aquell dia. Aquest serà l'ús típic de l'aplicació: un cop d'ull ràpid als enlairaments 'possibles' per a aquest dia.<br><br>👉🏽 Seleccionaré aquest com a exemple perquè vegis com funciona."
+        "descripcion": "Aquests botons dels dies de la setmana faciliten la selecció de la franja horària d'aquell dia. Aquest serà l'ús típic de l'aplicació: un cop d'ull ràpid als enlairaments 'possibles' per a aquest dia."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Dia seleccionat",
@@ -217,11 +221,11 @@
       },
       "navHome": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Inici</span></div>",
-        "descripcion": "Mostra la taula amb tots els teus enlairaments preferits. Si hi ha cerques o filtres actius, els esborra.<br><br>💡 Si et perds, utilitza aquest botó per tornar a la vista \"normal\"."
+        "descripcion": "Mostra la taula amb tots els enlairaments preferits, el seu pronòstic i puntuació.<br><br>💡 Si el prems 2 vegades, desactiva les cerques o filtres actius."
       },
       "navSearch": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Cercar</span></div>",
-        "descripcion": "Utilitza això per cercar enlairaments per nom o zona administrativa (generalment la província). Pots escriure sense accents per anar més ràpid."
+        "descripcion": "Cerca aquí enlairaments pel seu nom o la seva província.<br><br>💡 Pots escriure sense accents per a més agilitat."
       },
       "navDistance": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distància</span></div>",

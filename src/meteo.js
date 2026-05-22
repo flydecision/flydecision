@@ -745,27 +745,31 @@ function iniciarGuiaPrincipal(forzar = false) {
                 } 
             },
             { 
-                element: '.div-paneles-controles-transparente', 
+                element: '#botones-dias-slider', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.diasSemana.titulo'), 
+                    description: t('guiaPrincipal.pasos.diasSemana.descripcion')
+                }
+            },
+            { 
+                element: '#horario-slider', 
                 popover: { 
                     title: t('guiaPrincipal.pasos.selectorHorario.titulo'), 
                     description: t('guiaPrincipal.pasos.selectorHorario.descripcion')
                 } 
             },
             { 
-                element: '.noUi-value.noUi-value-horizontal.noUi-value-large', 
+                element: '#btn-ver-todos-dias',
                 popover: { 
-                    title: t('guiaPrincipal.pasos.diasSemana.titulo'), 
-                    description: t('guiaPrincipal.pasos.diasSemana.descripcion')
-                },
-                onDeselected: () => {
-                    const elementos = document.querySelectorAll('.noUi-value.noUi-value-horizontal.noUi-value-large');
-                    if (elementos[0]) { elementos[0].click(); }
-                }
+                    title: t('guiaPrincipal.pasos.btnVerTodosLosDias.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnVerTodosLosDias.descripcion')
+                } 
             },
-            {   
+            { 
+                element: '#buscador-despegues-provincias',
                 popover: { 
-                    title: t('guiaPrincipal.pasos.diaSeleccionado.titulo'), 
-                    description: t('guiaPrincipal.pasos.diaSeleccionado.descripcion')
+                    title: t('guiaPrincipal.pasos.navSearch.titulo'), 
+                    description: t('guiaPrincipal.pasos.navSearch.descripcion')
                 } 
             },
             { 
@@ -808,13 +812,6 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { 
                     title: t('guiaPrincipal.pasos.navHome.titulo'), 
                     description: t('guiaPrincipal.pasos.navHome.descripcion')
-                } 
-            },
-            { 
-                element: '#nav-search',
-                popover: { 
-                    title: t('guiaPrincipal.pasos.navSearch.titulo'), 
-                    description: t('guiaPrincipal.pasos.navSearch.descripcion')
                 } 
             },
             { 

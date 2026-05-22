@@ -172,16 +172,20 @@
     "podrasVerla": "Edozein unetan kontsulta dezakezu pantaila honetako <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> botoia erabiliz.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Pantaila nagusia",
-        "descripcion": "Hau da aplikazioaren erabilera normalaren pantaila.<br><br>Gogoko gisa hautatu dituzun aireratze guztiak dituen taula bat erakusten du, haien iragarpenekin eta baldintzen puntuazioekin batera (aireratzeko eta XC hegaldiak hasteko).<br><br>Aireratzeak beti automatikoki ordenatzen dira aireratze-baldintzen puntuazioaren arabera (altuenetik baxuenera)."
+        "titulo": "🪂 Aireratzeen taula orduz orduko iragarpenarekin",
+        "descripcion": "Gogoko gisa hautatu dituzun aireratze guztien taula bat erakusten du, haien orduz orduko iragarpen meteorologikoa eta kalkulatutako baldintzen puntuazioa, 0tik 10era (aireratzeko eta XC ibilbideak hasteko).<br><br>Aireratzeak beti automatikoki ordenatuta daude aireratzeko baldintzen puntuazioaren arabera (handienetik txikienera)."
       },
       "selectorHorario": {
         "titulo": "🗓️ Ordu-tartearen hautatzailea",
         "descripcion": "Doitu graduatzaile hau bi muturretatik interesatzen zaizun ordu-tartea hautatzeko.<br><br>Taulak ordu horiek soilik erakutsiko ditu, eta baldintzen puntuazioa denbora-tarte zehatz horretarako berriro kalkulatuko da."
       },
+      "btnVerTodosLosDias": {
+        "titulo": "🗓️ Egun guztiak erakutsi",
+        "descripcion": "Botoi honek 4 eguneko iragarpena duen taula osoa edo hautatutako eguna soilik ikustearen artean txandakatzen du."
+      },
       "diasSemana": {
         "titulo": "🗓️ Asteko egunak",
-        "descripcion": "Asteko egunetako botoi hauek egun horretako ordu-tartea hautatzea errazten dute. Hau izango da aplikazioaren erabilera tipikoa: egun horretarako 'posible' diren aireratzeei begiratu azkar bat ematea.<br><br>👉🏽 Hau adibide gisa hautatuko dut, nola funtzionatzen duen ikus dezazun."
+        "descripcion": "Asteko egunetako botoi hauek egun horretako ordu-tartea hautatzea errazten dute. Hau izango da aplikazioaren erabilera tipikoa: egun horretarako 'posible' diren aireratzeei begiratu azkar bat ematea."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Hautatutako eguna",
@@ -217,11 +221,11 @@
       },
       "navHome": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Hasiera</span></div>",
-        "descripcion": "Zure aireratze gogoko guztiekin taula erakusten du. Bilaketa edo iragazki aktiborik badago, garbitu egingo ditu.<br><br>💡 Galtzen bazara, erabili botoi hau ikuspegi \"normalera\" itzultzeko."
+        "descripcion": "Gogoko aireratze guztien taula erakusten du, haien iragarpen eta puntuazioarekin.<br><br>💡 2 aldiz sakatuz gero, aktibo dauden bilaketak edo iragazkiak desgaitzen ditu."
       },
       "navSearch": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Bilatu</span></div>",
-        "descripcion": "Erabili hau aireratzeak izenaren edo eremu administratiboaren (normalean probintzia) arabera bilatzeko. Azkarrago idazteko azenturik gabe idatz dezakezu."
+        "descripcion": "Bilatu hemen aireratzeak izenaren edo probintziaren arabera.<br><br>💡 Tilderik gabe idatz dezakezu azkarrago ibiltzeko."
       },
       "navDistance": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distantzia</span></div>",

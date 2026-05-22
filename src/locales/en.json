@@ -172,16 +172,20 @@
     "podrasVerla": "You can see it anytime using the <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> button on this screen.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Main Screen",
-        "descripcion": "This is the screen for regular use of the application.<br><br>It shows a table with all the takeoffs you have selected as favorites, along with their forecast and condition scores (for takeoff and for starting XC routes).<br><br>Takeoffs are always automatically sorted by their takeoff condition score (from highest to lowest)."
+        "titulo": "🪂 Takeoff table with hourly forecast",
+        "descripcion": "Shows a table with all the takeoffs you have selected as favorites, their hourly weather forecast, and their calculated conditions score, from 0 to 10 (for taking off and starting XC routes).<br><br>The takeoffs are always automatically sorted by their takeoff conditions score (from highest to lowest)."
       },
       "selectorHorario": {
         "titulo": "🗓️ Time Range Selector",
         "descripcion": "Adjust this slider from both ends to select the time range you are interested in.<br><br>The table will only show those hours, and the condition score will be recalculated for that specific time interval."
       },
+      "btnVerTodosLosDias": {
+        "titulo": "🗓️ Show all days",
+        "descripcion": "This button toggles between viewing the full table with the 4-day forecast or only the selected day."
+      },
       "diasSemana": {
         "titulo": "🗓️ Days of the Week",
-        "descripcion": "These day-of-the-week buttons make it easy to select that day's time range. This will be the typical use of the app: a quick look at the 'possible' takeoffs for that day.<br><br>👉🏽 I will select this one as an example so you can see how it works."
+        "descripcion": "These day-of-the-week buttons make it easy to select that day's time range. This will be the typical use of the app: a quick look at the 'possible' takeoffs for that day."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Selected Day",
@@ -217,11 +221,11 @@
       },
       "navHome": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Home</span></div>",
-        "descripcion": "Shows the table with all your favorite takeoffs. If there are searches or filters active, it clears them.<br><br>💡 If you get lost, use this button to return to the \"normal\" view."
+        "descripcion": "Shows the table with all favorite takeoffs, their forecast and score.<br><br>💡 If you press it twice, it deactivates active searches or filters."
       },
       "navSearch": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Search</span></div>",
-        "descripcion": "Use this to search takeoffs by name or administrative area (usually the province). You can type without accents for speed."
+        "descripcion": "Search here for takeoffs by name or province.<br><br>💡 You can type without accents for faster searching."
       },
       "navDistance": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",

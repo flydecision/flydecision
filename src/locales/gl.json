@@ -172,16 +172,20 @@
     "podrasVerla": "Podes consultala en calquera momento utilizando o botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> nesta pantalla.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Pantalla principal",
-        "descripcion": "Esta é a pantalla de uso normal da aplicación.<br><br>Mostra unha táboa con todas as engalaxes que seleccionaches como favoritas, xunto coa súa previsión e as puntuacións das condicións (para a engalaxe e para comezar voos de XC).<br><br>As engalaxes sempre se ordenan automaticamente pola súa puntuación de condicións de engalaxe (da máis alta á máis baixa)."
+        "titulo": "🪂 Táboa de despegues con predición horaria",
+        "descripcion": "Mostra unha táboa con todos os despegues que seleccionaches como favoritos, o seu prognóstico meteorolóxico por horas e a súa puntuación calculada de condicións, de 0 a 10 (para despegar e para iniciar rutas XC).<br><br>Os despegues están sempre ordenados automaticamente pola súa puntuación de condicións para despegar (de maior a menor)."
       },
       "selectorHorario": {
         "titulo": "🗓️ Selector de franxa horaria",
         "descripcion": "Axusta este control desprazable por ambos extremos para seleccionar a franxa horaria que che interese.<br><br>A táboa só mostrará esas horas, e a puntuación das condicións recalcularase para ese intervalo de tempo específico."
       },
+      "btnVerTodosLosDias": {
+        "titulo": "🗓️ Mostrar todos os días",
+        "descripcion": "Este botón alterna entre ver a táboa completa cos 4 días de prognóstico ou só o día seleccionado."
+      },
       "diasSemana": {
         "titulo": "🗓️ Días da semana",
-        "descripcion": "Estes botóns dos días da semana facilitan a selección da franxa horaria dese día. Este será o uso típico da aplicación: unha ollada rápida ás engalaxes 'posibles' para ese día.<br><br>👉🏽 Vou seleccionar este como exemplo para que vexas como funciona."
+        "descripcion": "Estes botóns dos días da semana facilitan a selección da franxa horaria dese día. Este será o uso típico da aplicación: unha ollada rápida ás engalaxes 'posibles' para ese día."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Día seleccionado",
@@ -217,11 +221,11 @@
       },
       "navHome": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Inicio</span></div>",
-        "descripcion": "Mostra a táboa con todas as túas engalaxes favoritas. Se hai buscas ou filtros activos, limparanse.<br><br>💡 Se te perdes, utiliza este botón para volver á vista \"normal\"."
+        "descripcion": "Mostra a táboa con todos os despegues favoritos, o seu prognóstico e puntuación.<br><br>💡 Se o premes 2 veces, desactiva as buscas ou filtros activos."
       },
       "navSearch": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Buscar</span></div>",
-        "descripcion": "Utiliza isto para buscar engalaxes por nome ou zona administrativa (xeralmente a provincia). Podes escribir sen acentos para ir máis rápido."
+        "descripcion": "Busca aquí despegues polo seu nome ou a súa provincia.<br><br>💡 Podes escribir sen tiles para maior axilidade."
       },
       "navDistance": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",

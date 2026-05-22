@@ -172,16 +172,20 @@
     "podrasVerla": "Vous pouvez le consulter à tout moment en utilisant le bouton <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> sur cet écran.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Écran principal",
-        "descripcion": "Ceci est l'écran d'utilisation normale de l'application.<br><br>Il affiche un tableau avec tous les décollages que vous avez sélectionnés comme favoris, ainsi que leurs prévisions et leurs notes de condition (pour le décollage et pour le départ de vols XC).<br><br>Les décollages sont toujours automatiquement triés par leur note de condition de décollage (de la plus élevée à la plus basse)."
+        "titulo": "🪂 Tableau des décollages avec prévision horaire",
+        "descripcion": "Affiche un tableau avec tous les décollages que vous avez sélectionnés comme favoris, leurs prévisions météorologiques horaires et leur score de conditions calculé, de 0 à 10 (pour décoller et commencer des itinéraires XC).<br><br>Les décollages sont toujours automatiquement triés par leur score de conditions de décollage (du plus élevé au plus bas)."
       },
       "selectorHorario": {
         "titulo": "🗓️ Sélecteur de plage horaire",
         "descripcion": "Ajustez ce curseur par les deux extrémités pour sélectionner la plage horaire qui vous intéresse.<br><br>Le tableau n'affichera que ces heures, et la note de condition sera recalculée pour cet intervalle de temps spécifique."
       },
+      "btnVerTodosLosDias": {
+        "titulo": "🗓️ Afficher tous les jours",
+        "descripcion": "Ce bouton bascule entre l'affichage du tableau complet avec les 4 jours de prévisions ou uniquement le jour sélectionné."
+      },
       "diasSemana": {
         "titulo": "🗓️ Jours de la semaine",
-        "descripcion": "Ces boutons de jours de la semaine facilitent la sélection de la plage horaire de ce jour-là. Ce sera l'utilisation typique de l'application : un coup d'œil rapide aux décollages 'possibles' pour ce jour-là.<br><br>👉🏽 Je vais sélectionner celui-ci comme exemple pour que vous voyiez comment cela fonctionne."
+        "descripcion": "Ces boutons de jours de la semaine facilitent la sélection de la plage horaire de ce jour-là. Ce sera l'utilisation typique de l'application : un coup d'œil rapide aux décollages 'possibles' pour ce jour-là."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Jour sélectionné",
@@ -217,11 +221,11 @@
       },
       "navHome": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Accueil</span></div>",
-        "descripcion": "Affiche le tableau avec tous vos décollages favoris. S'il y a des recherches ou des filtres actifs, cela les efface.<br><br>💡 Si vous êtes perdu, utilisez ce bouton pour revenir à la vue \"normale\"."
+        "descripcion": "Affiche le tableau avec tous les décollages favoris, leurs prévisions et leur score.<br><br>💡 Si vous appuyez 2 fois dessus, cela désactive les recherches ou filtres actifs."
       },
       "navSearch": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Rechercher</span></div>",
-        "descripcion": "Utilisez ceci pour rechercher des décollages par nom ou zone administrative (généralement la province). Vous pouvez taper sans accents pour plus de rapidité."
+        "descripcion": "Recherchez ici des décollages par leur nom ou leur province.<br><br>💡 Vous pouvez écrire sans accents pour plus de rapidité."
       },
       "navDistance": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",

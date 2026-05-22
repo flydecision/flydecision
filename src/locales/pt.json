@@ -172,16 +172,20 @@
     "podrasVerla": "Pode consultá-lo a qualquer momento utilizando o botão <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> neste ecrã.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Ecrã principal",
-        "descripcion": "Este é o ecrã de utilização normal da aplicação.<br><br>Mostra uma tabela com todas as descolagens que selecionou como favoritas, juntamente com a sua previsão e as pontuações das condições (para a descolagem e para iniciar voos de XC).<br><br>As descolagens são sempre ordenadas automaticamente pela sua pontuação de condições de descolagem (da mais alta para a mais baixa)."
+        "titulo": "🪂 Tabela de descolagens com previsão horária",
+        "descripcion": "Mostra uma tabela com todas as descolagens que selecionaste como favoritas, a sua previsão meteorológica por horas e a sua pontuação calculada de condições, de 0 a 10 (para descolar e para iniciar rotas XC).<br><br>As descolagens estão sempre ordenadas automaticamente pela sua pontuação de condições para descolar (da maior para a menor)."
       },
       "selectorHorario": {
         "titulo": "🗓️ Seletor de janela de tempo",
         "descripcion": "Ajuste este controlo deslizante em ambas as extremidades para selecionar a janela de tempo que lhe interessa.<br><br>A tabela mostrará apenas essas horas, e a pontuação das condições será recalculada para esse intervalo de tempo específico."
       },
+      "btnVerTodosLosDias": {
+        "titulo": "🗓️ Mostrar todos os dias",
+        "descripcion": "Este botão alterna entre ver a tabela completa com os 4 dias de previsão ou apenas o dia selecionado."
+      },
       "diasSemana": {
         "titulo": "🗓️ Dias da semana",
-        "descripcion": "Estes botões dos dias da semana facilitam a seleção da janela de tempo desse dia. Esta será a utilização típica da aplicação: uma vista de olhos rápida às descolagens 'possíveis' para esse dia.<br><br>👉🏽 Vou selecionar este como exemplo para que veja como funciona."
+        "descripcion": "Estes botões dos dias da semana facilitam a seleção da janela de tempo desse dia. Esta será a utilização típica da aplicação: uma vista de olhos rápida às descolagens 'possíveis' para esse dia."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Dia selecionado",
@@ -217,11 +221,11 @@
       },
       "navHome": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'></path><polyline points='9 22 9 12 15 12 15 22'></polyline></svg><span>Início</span></div>",
-        "descripcion": "Mostra a tabela com todas as suas descolagens favoritas. Se existirem pesquisas ou filtros ativos, estes serão limpos.<br><br>💡 Se se perder, utilize este botão para regressar à vista \"normal\"."
+        "descripcion": "Mostra a tabela com todas as descolagens favoritas, a sua previsão e pontuação.<br><br>💡 Se pressionares 2 vezes, desativa as pesquisas ou filtros ativos."
       },
       "navSearch": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg><span>Procurar</span></div>",
-        "descripcion": "Utilize isto para procurar descolagens por nome ou zona administrativa (geralmente a província). Pode escrever sem acentos para ser mais rápido."
+        "descripcion": "Pesquisa aqui descolagens pelo seu nome ou província.<br><br>💡 Podes escrever sem acentos para maior agilidade."
       },
       "navDistance": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distância</span></div>",
