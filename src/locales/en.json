@@ -59,7 +59,7 @@
 
   "buscador": {
     "placeholder": "🔍 Takeoff or province...",
-    "placeholderEdicion": "🔍 Region, province or takeoff...",
+    "placeholderEdicion": "🔍 Takeoff or territory...",
     "sugerenciaTitulo": "💡 No favorites found for * <b>{{termino}}</b> *, but these are available in the database:",
     "anadirFavorito": "+ Add favorite"
   },

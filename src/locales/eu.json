@@ -59,7 +59,7 @@
 
   "buscador": {
     "placeholder": "🔍 Aireratzea edo probintzia...",
-    "placeholderEdicion": "🔍 Askualdea, probintzia edo aireratzea...",
+    "placeholderEdicion": "🔍 Aireratzea edo lurraldea...",
     "sugerenciaTitulo": "💡 Ez da gogokorik aurkitu * <b>{{termino}}</b> * bilaketarako, baina hauek datu-basean daude:",
     "anadirFavorito": "+ Gogokoetara gehitu"
   },

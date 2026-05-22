@@ -59,7 +59,7 @@
 
   "buscador": {
     "placeholder": "🔍 Enlairament o província...",
-    "placeholderEdicion": "🔍 Regió, província o enlairament...",
+    "placeholderEdicion": "🔍 Enlairament o territori...",
     "sugerenciaTitulo": "💡 No s'ha trobat cap preferit per a * <b>{{termino}}</b> *, però aquests estan disponibles a la base de dades:",
     "anadirFavorito": "+ Afegir a preferits"
   },
