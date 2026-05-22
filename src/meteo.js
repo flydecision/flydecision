@@ -8193,10 +8193,14 @@ function inicializarSliderPuntuacionMapa() {
 
         const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
         
-        if (typeof window.Capacitor !== 'undefined') { 
+        filtrarMarkersPorPuntuacion();
+    });
+
+    // 📳 Vibración ligera (SOLO se ejecuta cuando el usuario arrastra físicamente el slider)
+    sliderEl.noUiSlider.on('slide', function() {
+        if (typeof window.Capacitor !== 'undefined' && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) { 
             window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); 
         }
-        filtrarMarkersPorPuntuacion();
     });
 
     // Zonas táctiles laterales siguen funcionando igual
