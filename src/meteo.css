@@ -292,7 +292,6 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
     border-radius: 8px;
     width: 259px;
     height: 37px;
-    font-size: 0.9em;
 }
 #buscador-despegues-provincias.filtrado {
     border-color: #ff0000;

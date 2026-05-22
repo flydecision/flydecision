@@ -9352,7 +9352,7 @@ function inicializarMapaLeaflet() {
         marker.bindPopup(popupHtml, { 
             className: 'popup-despegues', 
             maxWidth: 300,
-            autoPanPaddingTopLeft: L.point(10, 280) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
+            autoPanPaddingTopLeft: L.point(10, 320) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
         });
         marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
         markersDespegues.push(marker); //inserta marker al grupo markersDespegues
