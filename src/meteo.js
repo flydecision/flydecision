@@ -7320,13 +7320,23 @@ function comprobarAvisoCambiosPuntuacionXC() {
                             // SÍ ESTÁ VISIBLE: Comportamiento normal
                             clustergroupDespegues.zoomToShowLayer(target, function() {
                                 target.openPopup();
-                                map.panTo(target.getLatLng());
+                                map.setView(target.getLatLng(), 14);
+                                
+                                // 🚀 CORRECCIÓN: Desplazamos el mapa hacia arriba 120px (el pin del despegue baja al tercio inferior)
+                                setTimeout(() => {
+                                    map.panBy([0, -160], { animate: true });
+                                }, 100);
                             });
                         } else {
                             // ESTÁ OCULTO POR UN FILTRO: Lo forzamos a aparecer
                             map.setView([lat, lon], 14);
                             target.addTo(map); 
                             target.openPopup();
+                            
+                            // 🚀 CORRECCIÓN: Desplazamos el mapa hacia arriba 120px (el pin del despegue baja al tercio inferior)
+                            setTimeout(() => {
+                                map.panBy([0, -160], { animate: true });
+                            }, 100);
                             
                             target.once('popupclose', function() {
                                 map.removeLayer(target);
@@ -7335,6 +7345,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     } else {
                         // Si no lo encuentra ni por coordenadas ni por nombre, vamos al lugar ciego
                         map.setView([lat, lon], 14);
+                        setTimeout(() => {
+                            map.panBy([0, -160], { animate: true });
+                        }, 100);
                     }
                 } else {
                     // Si el mapa es virgen, vamos al lugar ciego
@@ -8009,11 +8022,22 @@ function aplicarPuntuacionEnMapa() {
         const color = colorNotaMapa(nota);
 
         marker._notaMapa = (nota !== null) ? nota : -1;
-        const nombreMostrar = despObj ? despObj.Despegue : meta.despegue;
-        marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color));
-    });
+            const nombreMostrar = despObj ? despObj.Despegue : meta.despegue;
 
-    if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
+            // 🔍 DETECTAMOS SI EL POPUP DE ESTE MARCADOR ESTÁ ABIERTO
+            const estabaAbierto = marker.isPopupOpen();
+
+            marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color));
+
+            // 🚀 SI ESTABA ABIERTO, LO REABRIMOS TRAS EL CAMBIO DE ICONO
+            if (estabaAbierto) {
+                setTimeout(() => {
+                    marker.openPopup();
+                }, 60); // 60ms de respiro para que Leaflet asiente el nuevo HTML del icono
+            }
+        });
+
+        if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
         clustergroupDespegues.refreshClusters();
     }
     if (typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || filtrosMapaAbiertos)) {
@@ -8901,15 +8925,24 @@ function inicializarMapaLeaflet() {
         // Si existe el cluster group y tiene zoomToShowLayer, úsalo
         if (typeof clustergroup !== 'undefined' && clustergroup.zoomToShowLayer) {
             clustergroup.zoomToShowLayer(found, function() {
-                // callback: ya está visible individualmente
                 found.openPopup();
-                map.panTo(found.getLatLng()); // centrar exactamente		
+                map.setView(found.getLatLng(), 14); // Forzar zoom óptimo
+                
+                // 🚀 DESPLAZAMIENTO: Desplaza el mapa hacia arriba, bajando el despegue al tercio inferior
+                setTimeout(() => {
+                    map.panBy([0, -360], { animate: true });
+                }, 100);
             });
         }
         // fallback si no existe clustering
         else {
-            map.setView(found.getLatLng(), Math.max(map.getZoom(), 13));
+            map.setView(found.getLatLng(), 14);
             found.openPopup();
+            
+            // 🚀 DESPLAZAMIENTO: Desplaza el mapa hacia arriba, bajando el despegue al tercio inferior
+            setTimeout(() => {
+                map.panBy([0, -360], { animate: true });
+            }, 100);
         }
     }
 
@@ -9357,7 +9390,11 @@ function inicializarMapaLeaflet() {
                 
                 </div>`;		
 
-        marker.bindPopup(popupHtml, { className: 'popup-despegues', maxWidth: 300 });
+        marker.bindPopup(popupHtml, { 
+            className: 'popup-despegues', 
+            maxWidth: 300,
+            autoPanPaddingTopLeft: L.point(10, 280) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
+        });
         marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
         markersDespegues.push(marker); //inserta marker al grupo markersDespegues
         clustergroupDespegues.addLayer(marker);
@@ -10134,7 +10171,11 @@ function inicializarMapaLeaflet() {
             <div style="margin-bottom: 5px;">Notas: <b>${escapeHtml(notas)}</b></div>  
             </div>`;
 
-        marker.bindPopup(popupHtml, { className: 'popup-notaspersonales', maxWidth: 300 }); //por ahora no existe así que sale el popup estándar
+        marker.bindPopup(popupHtml, { 
+            className: 'popup-notaspersonales', 
+            maxWidth: 300,
+            autoPanPaddingTopLeft: L.point(10, 280) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
+        }); //por ahora no existe así que sale el popup estándar
         markersNotasPersonales.push(marker); //inserta marker al grupo markersNotasPersonales
         clustergroupNotasPersonales.addLayer(marker);
     });
@@ -10294,7 +10335,11 @@ function inicializarMapaLeaflet() {
                     
                     </div>`;		
 
-            marker.bindPopup(popupHtml, { className: 'popup-despeguesmundo', maxWidth: 300 });
+            marker.bindPopup(popupHtml, { 
+                className: 'popup-despeguesmundo', 
+                maxWidth: 300,
+                autoPanPaddingTopLeft: L.point(10, 280) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
+            });
             marker.metadata = { despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
             markersDespeguesMundo.push(marker); //inserta marker al grupo markersDespegues
             //clustergroupDespeguesMundo.addLayer(marker);
