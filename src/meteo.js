@@ -7622,8 +7622,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
         } else {
             // Queremos ir a Distancia (y abrirlo si estaba cerrado)
             cambiarVista('tabla');
-                construir_tabla();
-                if (!isDistanceOpen && panelDistancia) {
+            
+            // 🚀 GESTIÓN INTELIGENTE DEL SCROLL
+            if (window.necesitaScrollTopMeteo) {
+                const wrapper = document.querySelector('.tabla-wrapper');
+                const principal = document.querySelector('.contenedor-principal-tabla');
+                const scrollOptions = { top: 0, behavior: 'instant' };
+                if (wrapper) wrapper.scrollTo(scrollOptions);
+                if (principal) principal.scrollTo(scrollOptions);
+                window.scrollTo(scrollOptions);
+                window.necesitaScrollTopMeteo = false;
+            }
+
+            if (!isDistanceOpen && panelDistancia) {
                 panelDistancia.classList.add("activo");
                 setTimeout(() => {
                     if (sliderDistancia && sliderDistancia.noUiSlider) {
