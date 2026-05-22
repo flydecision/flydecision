@@ -7515,6 +7515,29 @@ function comprobarAvisoCambiosPuntuacionXC() {
         });
     });
 
+    // ==========================================================================
+    // 🔴 HAPTICS (VIBRACIÓN) PARA LOS 4 SLIDERS ESTÁNDAR DE RANGO
+    // ==========================================================================
+
+    const idsSlidersEstandar = [
+        'sliderVuelos',                               // Filtro vuelos (Mapa)
+        'sliderUltimoVuelo',                          // Filtro año último vuelo (Mapa)
+        'sliderValorInicialFiltroNumeroMinimoVuelos',  // Configuración vuelos (Ajustes mapa)
+        'sliderValorInicialFiltroUltimoVuelo'         // Configuración año último vuelo (Ajustes mapa)
+    ];
+
+    idsSlidersEstandar.forEach(id => {
+        const slider = document.getElementById(id);
+        if (slider) {
+            slider.addEventListener('input', function() {
+                // Verificación de seguridad para evitar errores en navegadores web de ordenador (PC)
+                if (typeof window.Capacitor !== 'undefined' && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
+                    window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
+                }
+            });
+        }
+    });
+
 
     // ==========================================================================
     // 🔴 LÓGICA DEL MENÚ INFERIOR
