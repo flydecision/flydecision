@@ -7568,6 +7568,21 @@ function comprobarAvisoCambiosPuntuacionXC() {
             if (!finalizarEdicionFavoritos(true)) return; 
         } 
         
+        // 🚀 NUEVO: Si el filtro de distancia está visible pero en "Infinito/Todo", lo ocultamos al ir a Inicio
+        const panelDistancia = document.getElementById('div-filtro-distancia');
+        if (panelDistancia && panelDistancia.classList.contains('activo')) {
+            const sliderDist = document.getElementById('distancia-slider');
+            if (sliderDist && sliderDist.noUiSlider) {
+                const currentValue = Math.round(parseFloat(sliderDist.noUiSlider.get()));
+                const maxIndex = CORTES_DISTANCIA_GLOBAL.length - 1;
+                
+                // Si el valor actual es el máximo (Todo/Infinito), lo cerramos visualmente
+                if (currentValue === maxIndex) {
+                    panelDistancia.classList.remove('activo');
+                }
+            }
+        }
+
         // 2. 🚀 LÓGICA DE FILTROS AL HACER CLIC EN INICIO
         if (yaEnInicio) {
             // SI YA ESTÁBAMOS EN INICIO (SEGUNDO CLIC):
