@@ -7291,7 +7291,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // LIMPIEZA: Cerramos cualquier popup que estuviera abierto de antes
             map.closePopup();
 
-            // Esperamos a que el mapa termine de cargar sus filtros (1000ms)
+            // Esperamos a que el mapa termine de cargar sus filtros (200ms)
             setTimeout(() => {
                 map.invalidateSize();
                 
@@ -7331,7 +7331,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 } else {
                     map.setView([lat, lon], 14);
                 }
-            }, 1000); // 🚀 TIEMPO AUMENTADO A 1000ms PARA EVITAR QUE SE BORRE EL POPUP
+            }, 350); // TIEMPO PARA EVITAR QUE SE BORRE EL POPUP
         }
     };
 
@@ -7772,7 +7772,7 @@ window.cambiarVista = function(vista) {
                     document.querySelectorAll('.pip-dia-btn').forEach((btn, i) => {
                         btn.classList.toggle('pip-activo', i === diaActivo);
                     });
-                }, 800);
+                }, 200);
             } else {
                 // Cerrado por defecto
                 divFH.style.display = 'none';
