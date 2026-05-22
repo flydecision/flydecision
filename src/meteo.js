@@ -7751,6 +7751,11 @@ function updateURL(mapInstance) {
     const lat = center.lat.toFixed(4);
     const lon = center.lng.toFixed(4);
 
+    // Guardar posición en la memoria del dispositivo
+    localStorage.setItem('METEO_MAPA_LAST_LAT', lat);
+    localStorage.setItem('METEO_MAPA_LAST_LON', lon);
+    localStorage.setItem('METEO_MAPA_LAST_ZOOM', zoom);
+
     const newParams = new URLSearchParams();
     newParams.set('lat', lat);
     newParams.set('lon', lon);
@@ -8442,23 +8447,26 @@ function inicializarMapaLeaflet() {
 
     const params = new URLSearchParams(window.location.search);
 
-    // 🔍 Obtener los valores de la URL
+    // 🔍 1º Prioridad: Obtener los valores forzados de la URL (si te pasan un enlace directo)
     const urlLat = parseFloat(params.get('lat'));
     const urlLon = parseFloat(params.get('lon'));
     const urlZoom = parseInt(params.get('zoom'));
 
-    // 💡 Definir valores por defecto (si no vienen en la URL)
-    const defaultLat = 40.198579;
-    const defaultLon = -2.285156;
-    //Calcular antes el defaultZoom, según sea móvil u ordenador
-    const isMobile = window.innerWidth < 768;
-    const defaultZoom = isMobile ? 5 : 7;
+    // 💾 2º Prioridad: Leer de la memoria la última posición en la que estuviste
+    const localLat = parseFloat(localStorage.getItem('METEO_MAPA_LAST_LAT'));
+    const localLon = parseFloat(localStorage.getItem('METEO_MAPA_LAST_LON'));
+    const localZoom = parseInt(localStorage.getItem('METEO_MAPA_LAST_ZOOM'));
 
-    // 🎯 Asignar los valores a usar
-    // Se asegura de que si el valor de la URL no es un número válido (NaN), se use el por defecto.
-    const useLat = !isNaN(urlLat) ? urlLat : defaultLat;
-    const useLon = !isNaN(urlLon) ? urlLon : defaultLon;
-    const useZoom = !isNaN(urlZoom) ? urlZoom : defaultZoom;
+    // 💡 3º Prioridad: Valores por defecto (Centro de España, primera vez que se abre la app)
+    const defaultLat = 42.7340;
+    const defaultLon = 1.9902;
+    const isMobile = window.innerWidth < 768;
+    const defaultZoom = isMobile ? 4.5 : 6;
+
+    // 🎯 Asignar los valores a usar de forma inteligente en cascada: URL -> Memoria -> Defecto
+    const useLat = !isNaN(urlLat) ? urlLat : (!isNaN(localLat) ? localLat : defaultLat);
+    const useLon = !isNaN(urlLon) ? urlLon : (!isNaN(localLon) ? localLon : defaultLon);
+    const useZoom = !isNaN(urlZoom) ? urlZoom : (!isNaN(localZoom) ? localZoom : defaultZoom);
 
     // 2. Inicializar el mapa de Leaflet
 
