@@ -9432,7 +9432,11 @@ function inicializarMapaLeaflet() {
     window.createIconDespegue = function(despegue, actividad, orientacionesMetadata, bgColor) {
         const orientacionHTML = createOrientationSVG(orientacionesMetadata);
         const color = actividadToColor(actividad);
-        const dot = `<span class="dot" style="background:${color}"></span>`;
+        
+        // 🚀 NUEVO: Ocultamos el "dot" de actividad si el filtro de horario en el mapa está abierto
+        const mostrarDot = (typeof filtrosMapaAbiertos !== 'undefined') ? !filtrosMapaAbiertos : true;
+        const dot = mostrarDot ? `<span class="dot" style="background:${color}"></span>` : '';
+        
         const bgStyle = bgColor ? ` style="background-color:${bgColor}"` : '';
         const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}${dot}${escapeHtml(despegue)}</span>`;
 
