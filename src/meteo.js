@@ -9271,7 +9271,7 @@ function inicializarMapaLeaflet() {
             this._configPanel.style.display = 'block'; 
             
             // 🚀 INTELIGENCIA UX: Escondemos temporalmente la Meteo de forma PURAMENTE VISUAL
-            if (window.innerWidth <= 1040) {
+            if (window.innerWidth > 693 && window.innerWidth <= 1040) {
                 if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
                     window.meteoEscondidoPorAjustes = true;
                     const divFH = document.getElementById('div-filtro-horario');
@@ -9304,7 +9304,7 @@ function inicializarMapaLeaflet() {
             this._configPanel.style.display = 'none';
             
             // 🚀 INTELIGENCIA UX: Restauramos la visibilidad de la Meteo o su botón
-            if (window.window.innerWidth <= 1040) {
+            if (window.innerWidth > 693 && window.innerWidth <= 1040) {
                 if (window.meteoEscondidoPorAjustes) {
                     window.meteoEscondidoPorAjustes = false;
                     const divFH = document.getElementById('div-filtro-horario');
@@ -10580,7 +10580,7 @@ function inicializarMapaLeaflet() {
                 expandirOpciones();
                 
                 // 🚀 INTELIGENCIA UX: Si fija el panel, le devolvemos la visibilidad de la Meteo
-                if (window.innerWidth <= 1040) {
+                if (window.innerWidth > 693 && window.innerWidth <= 1040) {
                     if (window.meteoEscondidoPorCapas) {
                         window.meteoEscondidoPorCapas = false;
                         const divFH = document.getElementById('div-filtro-horario');
@@ -10657,7 +10657,7 @@ function inicializarMapaLeaflet() {
         labelMostrarOpciones.style.display = 'block';
 
         // 🚀 INTELIGENCIA UX: Restauramos la visibilidad de la Meteo o su botón (Solo si afectó por pantalla pequeña)
-        if (window.innerWidth <= 1040) {
+        if (window.innerWidth > 693 && window.innerWidth <= 1040) {
             if (window.meteoEscondidoPorCapas) {
                 window.meteoEscondidoPorCapas = false;
                 const divFH = document.getElementById('div-filtro-horario');
@@ -10684,7 +10684,7 @@ function inicializarMapaLeaflet() {
         labelMostrarOpciones.style.display = 'none';
         
         // 🚀 INTELIGENCIA UX: Escondemos temporalmente la Meteo de forma PURAMENTE VISUAL
-        if (window.innerWidth <= 1040) {
+        if (window.innerWidth > 693 && window.innerWidth <= 1040) {
             if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
                 window.meteoEscondidoPorCapas = true;
                 const divFH = document.getElementById('div-filtro-horario');
