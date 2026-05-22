@@ -847,7 +847,7 @@ details.config-accordion .accordion-content {
 }
 #titulo-distancia-slider {
     position: absolute !important;
-    top: 60px; 
+    top: 55px; 
     left: 0 !important;    /* Pegado a la izquierda del contenedor */
     width: 100%;           /* Forzamos que la caja ocupe el 100% de ancho */
     display: flex !important;
@@ -2845,10 +2845,10 @@ details.config-accordion .accordion-content {
    suben por encima del bottom-nav (60px altura + 12px margen = 72px)
    y de la barra de navegación Android */
 .leaflet-bottom {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 72px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 63px);
 }
 
-@media (min-width: 781px) {
+@media (min-width: 587px) {
     .leaflet-bottom {
         bottom: env(safe-area-inset-bottom, 0px);
     }
