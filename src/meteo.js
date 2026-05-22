@@ -7291,22 +7291,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // LIMPIEZA: Cerramos cualquier popup que estuviera abierto de antes
             map.closePopup();
 
-            // Esperamos a que la pestaña esté visible (transición CSS)
+            // Esperamos a que el mapa termine de cargar sus filtros (1000ms)
             setTimeout(() => {
                 map.invalidateSize();
                 
-                // Si ya tenemos los marcadores cargados
                 if (typeof markersDespegues !== 'undefined' && markersDespegues.length > 0) {
                     
-                    // --- NUEVO: BÚSQUEDA ABSOLUTA POR COORDENADAS ---
                     let target = markersDespegues.find(m => {
                         const mLat = m.getLatLng().lat;
                         const mLon = m.getLatLng().lng;
-                        // Margen de 0.0001 (aprox 11 metros) para curarnos en salud con los decimales
                         return Math.abs(mLat - lat) < 0.0001 && Math.abs(mLon - lon) < 0.0001;
                     });
 
-                    // Fallback de seguridad extrema (por si en la BBDD las coordenadas estuvieran ligeramente movidas)
                     if (!target && nombreDespegue) {
                         const normalizar = (t) => t ? t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim() : '';
                         const term = normalizar(nombreDespegue);
@@ -7315,45 +7311,27 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     }
 
                     if (target) {
-                        // --- SOLUCIÓN: EL MARCADOR FANTASMA ---
                         if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues.hasLayer(target)) {
-                            // SÍ ESTÁ VISIBLE: Comportamiento normal
                             clustergroupDespegues.zoomToShowLayer(target, function() {
+                                // Leaflet hará el pan automático gracias al padding de 160px
                                 target.openPopup();
-                                map.setView(target.getLatLng(), 14);
-                                
-                                // 🚀 CORRECCIÓN: Desplazamos el mapa hacia arriba 120px (el pin del despegue baja al tercio inferior)
-                                setTimeout(() => {
-                                    map.panBy([0, -160], { animate: true });
-                                }, 100);
                             });
                         } else {
-                            // ESTÁ OCULTO POR UN FILTRO: Lo forzamos a aparecer
                             map.setView([lat, lon], 14);
                             target.addTo(map); 
                             target.openPopup();
-                            
-                            // 🚀 CORRECCIÓN: Desplazamos el mapa hacia arriba 120px (el pin del despegue baja al tercio inferior)
-                            setTimeout(() => {
-                                map.panBy([0, -160], { animate: true });
-                            }, 100);
                             
                             target.once('popupclose', function() {
                                 map.removeLayer(target);
                             });
                         }
                     } else {
-                        // Si no lo encuentra ni por coordenadas ni por nombre, vamos al lugar ciego
                         map.setView([lat, lon], 14);
-                        setTimeout(() => {
-                            map.panBy([0, -160], { animate: true });
-                        }, 100);
                     }
                 } else {
-                    // Si el mapa es virgen, vamos al lugar ciego
                     map.setView([lat, lon], 14);
                 }
-            }, 350);
+            }, 1000); // 🚀 TIEMPO AUMENTADO A 1000ms PARA EVITAR QUE SE BORRE EL POPUP
         }
     };
 
@@ -8024,17 +8002,7 @@ function aplicarPuntuacionEnMapa() {
         marker._notaMapa = (nota !== null) ? nota : -1;
             const nombreMostrar = despObj ? despObj.Despegue : meta.despegue;
 
-            // 🔍 DETECTAMOS SI EL POPUP DE ESTE MARCADOR ESTÁ ABIERTO
-            const estabaAbierto = marker.isPopupOpen();
-
             marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color));
-
-            // 🚀 SI ESTABA ABIERTO, LO REABRIMOS TRAS EL CAMBIO DE ICONO
-            if (estabaAbierto) {
-                setTimeout(() => {
-                    marker.openPopup();
-                }, 60); // 60ms de respiro para que Leaflet asiente el nuevo HTML del icono
-            }
         });
 
         if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
@@ -8925,24 +8893,14 @@ function inicializarMapaLeaflet() {
         // Si existe el cluster group y tiene zoomToShowLayer, úsalo
         if (typeof clustergroup !== 'undefined' && clustergroup.zoomToShowLayer) {
             clustergroup.zoomToShowLayer(found, function() {
+                // Dejamos que Leaflet haga el centrado automático con los 160px de margen que añadimos antes
                 found.openPopup();
-                map.setView(found.getLatLng(), 14); // Forzar zoom óptimo
-                
-                // 🚀 DESPLAZAMIENTO: Desplaza el mapa hacia arriba, bajando el despegue al tercio inferior
-                setTimeout(() => {
-                    map.panBy([0, -360], { animate: true });
-                }, 100);
             });
         }
         // fallback si no existe clustering
         else {
-            map.setView(found.getLatLng(), 14);
+            map.setView(found.getLatLng(), Math.max(map.getZoom(), 13));
             found.openPopup();
-            
-            // 🚀 DESPLAZAMIENTO: Desplaza el mapa hacia arriba, bajando el despegue al tercio inferior
-            setTimeout(() => {
-                map.panBy([0, -360], { animate: true });
-            }, 100);
         }
     }
 
