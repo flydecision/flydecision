@@ -9270,6 +9270,10 @@ function inicializarMapaLeaflet() {
             // 1. Mostrar Panel
             this._configPanel.style.display = 'block'; 
             
+            // Ocultamos el botón central de filtros temporalmente
+            const btnFiltros = document.getElementById('btn-filtros-mapa');
+            if (btnFiltros) btnFiltros.style.visibility = 'hidden';
+            
             // 2. Cambiar icono a X
             this._buttonDiv.innerHTML = this._iconX; 
             
@@ -9290,6 +9294,10 @@ function inicializarMapaLeaflet() {
         _collapse: function() {
             // 1. Ocultar Panel
             this._configPanel.style.display = 'none';
+            
+            // Restauramos el botón central de filtros
+            const btnFiltros = document.getElementById('btn-filtros-mapa');
+            if (btnFiltros) btnFiltros.style.visibility = '';
             
             // 2. Restaurar icono Engranaje
             this._buttonDiv.innerHTML = this._iconGear;
