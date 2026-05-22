@@ -9497,7 +9497,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                         </div>`;
-                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
+                    L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
                 });
                 layerGroupPeninsula.addLayer(marker);
 
@@ -9514,7 +9514,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(p.dist)} km</b></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(p.url)}' target='_blank'>Vuelo en XContest</a></div>
                         </div>`;
-                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
+                    L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
                 });
                 layerGroupPeninsula.addLayer(marker);
             }
@@ -9697,7 +9697,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                         </div>`;
-                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
+                    L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
                 });
                 layerGroupAlpes.addLayer(marker);
 
@@ -9715,7 +9715,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(p.dist)} km</b></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(p.url)}' target='_blank'>Vuelo en XContest</a></div>
                         </div>`;
-                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
+                    L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
                 });
                 layerGroupAlpes.addLayer(marker);
             }
@@ -9905,7 +9905,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                         </div>`;
-                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
+                    L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
                 });
                 layerGroupMarruecos.addLayer(marker);
 
@@ -9922,7 +9922,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">Distancia recorrida: <b>${escapeHtml(p.dist)} km</b></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='${escapeHtml(p.url)}' target='_blank'>Vuelo en XContest</a></div>
                         </div>`;
-                    marker.bindPopup(popupHtml, { className: 'popup-despegueindividual', maxWidth: 300 }).openPopup();
+                    L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
                 });
                 layerGroupMarruecos.addLayer(marker);
             }
@@ -10119,13 +10119,7 @@ function inicializarMapaLeaflet() {
             <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>✏️ ${escapeHtml(nombre)}</b></div>
             <div style="margin-bottom: 5px;">Tipo: <b>${escapeHtml(tipo)}</b></div> 
             <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  		
-            <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
-            <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
-            <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
-            <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
-            <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
             <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(nombre)} (${escapeHtml(tipo)})' target='_blank'>Nakarte</a></div>
-            <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
             <div style="margin-bottom: 5px;">Notas: <b>${escapeHtml(notas)}</b></div>  
             </div>`;
 
