@@ -142,8 +142,6 @@ function actualizarOrigenGlobal(lat, lon, metodo) {
 // 3. FUNCIÓN COMPARTIDA (CLIC EN EL MAPA O AL LOCALIZAR GPS)
 function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
     // 1. GUARDAR EN LOCALSTORAGE INMEDIATAMENTE. 
-    // Así evitamos que cualquier evento del slider que se dispare a continuación 
-    // crea erróneamente que no hay origen configurado.
     centroLat = lat;
     centroLon = lng;
     localStorage.setItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL', lat);
@@ -151,9 +149,21 @@ function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
 
     ponerMarcador(lat, lng);
     
-    aplicarFiltrosVisuales();
-    
     if(modalMapa) modalMapa.style.display = 'none';
+
+    // RESTAURAR LA INTENCIÓN DE LA USUARIA SI EXISTE
+    const sliderDistElem = document.getElementById('distancia-slider');
+    if (window.distanciaPendienteFiltro !== undefined && window.distanciaPendienteFiltro !== null) {
+        if (sliderDistElem && sliderDistElem.noUiSlider) {
+            // Esto moverá el slider a donde el usuario lo arrastró inicialmente.
+            // A su vez, disparará el evento 'set' que llamará a aplicarFiltrosVisuales() automáticamente.
+            sliderDistElem.noUiSlider.set(window.distanciaPendienteFiltro);
+        }
+        window.distanciaPendienteFiltro = null; // Limpiamos la memoria
+    } else {
+        // Si no había intención previa, solo aplicamos filtros normales
+        aplicarFiltrosVisuales();
+    }
 }
 
 // 4. LÓGICA DE APERTURA DEL MAPA DIRECTAMENTE
@@ -335,11 +345,13 @@ if (btnGpsMapa) {
 if (btnCerrarMapa) {
     btnCerrarMapa.addEventListener('click', () => {
         if(modalMapa) modalMapa.style.display = 'none';
+        window.distanciaPendienteFiltro = null; // Limpiamos si cancela con la X
     });
 }
 window.addEventListener('click', (e) => {
     if (e.target === modalMapa) {
         modalMapa.style.display = 'none';
+        window.distanciaPendienteFiltro = null; // Limpiamos si cancela clicando fuera
     }
 });
 
@@ -5942,21 +5954,27 @@ function comprobarAvisoCambiosPuntuacionXC() {
 				// A. Verificación de coordenadas (Seguridad)
 				if (!localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) {
 					
-                    // --- CORRECCIÓN BUG: Actualizamos la variable ANTES de mover el slider
+                    // Guardamos la intención del usuario antes de resetear
+                    window.distanciaPendienteFiltro = valorNuevo;
+
+                    // Actualizamos la variable ANTES de mover el slider
                     // para evitar que la librería entre en un bucle y lance el mensaje 2 veces.
 					ultimaDistanciaConfirmada = MAX_INDEX;
                     distanciaSlider.noUiSlider.set(MAX_INDEX);
 					
 					// Limpieza visual inmediata
 					const panel = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
-					if (panel) panel.classList.remove('borde-rojo-externo');
+					//if (panel) panel.classList.remove('borde-rojo-externo');
 					document.getElementById('btn-reset-filtro-distancia').style.display = 'none';
 
 					GestorMensajes.mostrar({
 						tipo: 'modal',
 						htmlContenido: t('origen.avisoInicialHtml'),
 						botones:[
-							{ texto: t('botones.cancelar'), estilo: 'secundario', onclick: function() { GestorMensajes.ocultar(); } },
+							{ texto: t('botones.cancelar'), estilo: 'secundario', onclick: function() { 
+                                GestorMensajes.ocultar(); 
+                                window.distanciaPendienteFiltro = null; // Limpiamos memoria si cancela
+                            } },
                             { texto: t('botones.configurarOrigen'), onclick: function() { 
                                 GestorMensajes.ocultar(); 
                                 const btnGeo = document.getElementById('btn-abrir-geo-menu');
@@ -5970,6 +5988,24 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
 				// B. Si todo es correcto, guardamos y actualizamos
 				ultimaDistanciaConfirmada = valorNuevo;
+
+                // Forzamos la actualización de la interfaz al mover por código
+                const btnToggle = document.getElementById('btn-div-filtro-distancia-toggle');
+                const navDistance = document.getElementById('nav-distance');
+                const btnReset = document.getElementById('btn-reset-filtro-distancia');
+                // const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
+                if (valorNuevo < MAX_INDEX) {
+                    if (btnToggle) btnToggle.classList.add('filtro-aplicado');
+                    if (navDistance) navDistance.classList.add('filtro-aplicado');
+                    // if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo'); // Comentado
+                    if (btnReset) btnReset.style.display = 'flex';
+                } else {
+                    if (btnToggle) btnToggle.classList.remove('filtro-aplicado');
+                    if (navDistance) navDistance.classList.remove('filtro-aplicado');
+                    // if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo'); // Comentado
+                    if (btnReset) btnReset.style.display = 'none';
+                }
+
 				aplicarFiltrosVisuales(); 
 			}
 		});
