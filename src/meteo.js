@@ -5900,7 +5900,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             tooltips:[{
                 to: function (index) {
                     const val = CORTES_DISTANCIA_GLOBAL[Math.round(index)];
-                    if (val >= 9999) return '<span class="simbolo-infinito" style="font-size: 1.5em; line-height: 1; vertical-align: -2px; display: inline-block;">∞</span>';
+                    if (val >= 9999) return '<span class="simbolo-infinito" style="font-size: 1.4em; line-height: 1; vertical-align: -2px; display: inline-block;">∞</span>';
                     return `${val}`; 
                 }
             }],
