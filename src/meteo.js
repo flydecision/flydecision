@@ -5053,15 +5053,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
 				localStorage.removeItem('METEO_CRASH_COUNTER');
 				
-				const scrollOptions = { top: 0, behavior: 'smooth' };
+                const vistaMapa = document.getElementById('vista-mapa');
+                if (vistaMapa && vistaMapa.style.display === 'flex') {
+                    // Si la tabla cambia mientras estamos en el mapa, agendamos el scroll para cuando vuelva a Inicio
+                    window.necesitaScrollTopMeteo = true;
+                } else {
+                    const scrollOptions = { top: 0, behavior: 'smooth' };
 
-				const wrapper = document.querySelector('.tabla-wrapper');
-				if (wrapper) wrapper.scrollTo(scrollOptions);
+                    const wrapper = document.querySelector('.tabla-wrapper');
+                    if (wrapper) wrapper.scrollTo(scrollOptions);
 
-				const principal = document.querySelector('.contenedor-principal-tabla');
-				if (principal) principal.scrollTo(scrollOptions);
+                    const principal = document.querySelector('.contenedor-principal-tabla');
+                    if (principal) principal.scrollTo(scrollOptions);
 
-				window.scrollTo(scrollOptions);
+                    window.scrollTo(scrollOptions);
+                    window.necesitaScrollTopMeteo = false; // Reseteamos por seguridad
+                }
 			}, 100);
 		} else {
 			// En modo silencioso no tocamos el scroll ni mostramos loader
@@ -7467,19 +7474,23 @@ function comprobarAvisoCambiosPuntuacionXC() {
             }
         }
 
+        const searchInput = document.getElementById('buscador-despegues-provincias');
+        if (searchInput && searchInput.value.trim() !== '') {
+            necesitaReconstruir = true; // Si el buscador tenía texto, al limpiarlo cambiará la lista
+        }
+
         // 3. Reset visual y de estado de los filtros
         if (typeof resetFiltroDistancia === 'function') { resetFiltroDistancia(false); }
 
         // 4. Limpiar buscador
-        const searchInput = document.getElementById('buscador-despegues-provincias');
         if (searchInput && searchInput.value.trim() !== '') {
             if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
         }
-        
+
         // BOTÓN BUSCAR DESACTIVADO. if (typeof buscadorVisible !== 'undefined' && buscadorVisible) {
         //     window.toggleBuscadorFlotante(); 
         // }
-
+        
         // 5. Cerrar panel de configuración silenciosamente
         cerrarAjustesSilencioso();
 
@@ -7489,17 +7500,21 @@ function comprobarAvisoCambiosPuntuacionXC() {
         // 7. EJECUCIÓN FINAL (Reconstruir o hacer Scroll)
         if (necesitaReconstruir) {
             construir_tabla(); 
-        } else if (yaEnInicio) {
+        } else if (yaEnInicio || window.necesitaScrollTopMeteo) {
             const wrapper = document.querySelector('.tabla-wrapper');
             const principal = document.querySelector('.contenedor-principal-tabla');
-            const scrollOptions = { top: 0, behavior: 'smooth' };
+            
+            // Si viene del mapa con la tabla reordenada, usamos 'instant' para que el cambio de vista sea limpio y sin mareos
+            const scrollOptions = { top: 0, behavior: window.necesitaScrollTopMeteo ? 'instant' : 'smooth' };
+            
             if (wrapper) wrapper.scrollTo(scrollOptions);
             if (principal) principal.scrollTo(scrollOptions);
             window.scrollTo(scrollOptions);
-        } else {
-            // Venía del mapa u otra vista: reconstruir tabla con el estado correcto
-            construir_tabla();
+            
+            window.necesitaScrollTopMeteo = false; // Apagamos el chivato tras usarlo
         }
+        // 🚀 Si no necesitaba reconstruir, venía del mapa y NO cambió la meteo, no hace NADA,
+        // lo que preserva la tabla y su posición de scroll exactamente igual.
 
         // 8. Iluminar botón inicio
         window.activarMenuInferior(btnInicio);
