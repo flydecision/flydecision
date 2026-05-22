@@ -1883,9 +1883,28 @@ function clickOnDia(sliderElement, diaIndex) {
         const rawFin    = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
 
         if (rawInicio !== null && rawFin !== null) {
-            const prefInicio = parseInt(rawInicio);
-            const prefFin    = parseInt(rawFin);
+            let prefInicio = parseInt(rawInicio);
+            let prefFin    = parseInt(rawFin);
             let encontradoInicio = false;
+
+            // 🚀 NUEVA LÓGICA: Atajo "Ir a la hora actual" (Doble clic en el día de Hoy)
+            // 1. Comprobamos si el día que estamos pintando es el día real de hoy
+            const fechaPrimerDato = new Date(window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]].endsWith('Z') ? window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] : window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] + 'Z');
+            const esHoy = new Date().getDate() === fechaPrimerDato.getDate();
+
+            if (mismodia && esHoy) {
+                const horaActual = new Date().getHours();
+                
+                // Solo activamos el atajo si ya han pasado al menos 2 horas desde el inicio preferido
+                if (horaActual >= prefInicio + 2) {
+                    prefInicio = Math.max(0, horaActual - 1); // Hora actual - 1 (mínimo 0)
+                    
+                    // Si la hora de fin preferida ya ha pasado, extendemos hasta el final del día
+                    if (prefFin <= prefInicio) {
+                        prefFin = 23; 
+                    }
+                }
+            }
 
             window.indicesDiaActualSlider.forEach((idxReal, i) => {
                 const h = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z')
@@ -1898,8 +1917,15 @@ function clickOnDia(sliderElement, diaIndex) {
                 if (h <= prefFin) finalEnd = i;
             });
 
+            // Seguridad extra por si los índices se cruzan
             if (finalStart > newMax) finalStart = newMax;
-            if (finalEnd < finalStart) finalEnd = finalStart;
+            if (finalEnd < finalStart) finalEnd = finalStart; 
+            
+            // Si el filtro "solo día" se comió la hora de inicio, seleccionamos lo que quede visible
+            if (!encontradoInicio) {
+                finalStart = 0; 
+                finalEnd = newMax;
+            }
         }
     }
 
