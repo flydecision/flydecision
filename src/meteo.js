@@ -8628,10 +8628,12 @@ function inicializarMapaLeaflet() {
             }
 
             // --- 1. VALIDACIÓN DE VUELOS ---
-            const KmMediaMarker = marker.metadata.KmMedia || 0; 
-            if (KmMediaMarker < minKmMedia) return false;
+            const vuelosRaw = marker.metadata.vuelos;
+            // Eliminamos puntos, comas o espacios y forzamos a entero puro
+            const vuelosMarker = vuelosRaw ? parseInt(String(vuelosRaw).replace(/[^\d]/g, ''), 10) : 0;
+            if (vuelosMarker < minVuelos) return false;
             
-            // --- 3. VALIDACIÓN DE FECHA ---
+            // --- 2. VALIDACIÓN DE FECHA ---
             if (hayFiltroAnio) {
                 const fechaUltimoVueloStr = marker.metadata.ultimovuelo; 
                 if (!fechaUltimoVueloStr) return false;
@@ -8639,7 +8641,7 @@ function inicializarMapaLeaflet() {
                 if (anioMarker < filtroAnioVuelo.minAnio) return false; 
             }       
 
-            // --- 4. VALIDACIÓN DE ORIENTACIÓN ---
+            // --- 3. VALIDACIÓN DE ORIENTACIÓN ---
             if (!hayFiltroOrientacion) {
                 return true; // Pasa el filtro si no hay filtro de orientación
             }
