@@ -9270,13 +9270,16 @@ function inicializarMapaLeaflet() {
             // 1. Mostrar Panel
             this._configPanel.style.display = 'block'; 
             
-            // INTELIGENCIA UX: Pausamos temporalmente el Filtro Horario
-            if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-                window.meteoPausadoPorAjustes = true;
-                if (typeof toggleFiltrosMapa === 'function') toggleFiltrosMapa();
-            } else {
-                const btnFiltros = document.getElementById('btn-filtros-mapa');
-                if (btnFiltros) btnFiltros.style.visibility = 'hidden';
+            // 🚀 INTELIGENCIA UX: Escondemos temporalmente la Meteo de forma PURAMENTE VISUAL
+            if (window.innerWidth <= 1040) {
+                if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
+                    window.meteoEscondidoPorAjustes = true;
+                    const divFH = document.getElementById('div-filtro-horario');
+                    if (divFH) divFH.style.display = 'none'; // Escondemos el panel sin apagar el filtro
+                } else {
+                    const btnFiltros = document.getElementById('btn-filtros-mapa');
+                    if (btnFiltros) btnFiltros.style.visibility = 'hidden';
+                }
             }
             
             // 2. Cambiar icono a X
@@ -9300,13 +9303,16 @@ function inicializarMapaLeaflet() {
             // 1. Ocultar Panel
             this._configPanel.style.display = 'none';
             
-            // INTELIGENCIA UX: Restauramos el Filtro Horario o su botón
-            if (window.meteoPausadoPorAjustes) {
-                window.meteoPausadoPorAjustes = false;
-                if (typeof toggleFiltrosMapa === 'function') toggleFiltrosMapa();
-            } else {
-                const btnFiltros = document.getElementById('btn-filtros-mapa');
-                if (btnFiltros) btnFiltros.style.visibility = '';
+            // 🚀 INTELIGENCIA UX: Restauramos la visibilidad de la Meteo o su botón
+            if (window.window.innerWidth <= 1040) {
+                if (window.meteoEscondidoPorAjustes) {
+                    window.meteoEscondidoPorAjustes = false;
+                    const divFH = document.getElementById('div-filtro-horario');
+                    if (divFH) divFH.style.display = ''; // Lo volvemos a mostrar
+                } else {
+                    const btnFiltros = document.getElementById('btn-filtros-mapa');
+                    if (btnFiltros) btnFiltros.style.visibility = '';
+                }
             }
             
             // 2. Restaurar icono Engranaje
@@ -10573,13 +10579,16 @@ function inicializarMapaLeaflet() {
                 iconoFijar.textContent = '📍';
                 expandirOpciones();
                 
-                // INTELIGENCIA UX: Si fija el panel, le devolvemos la Meteo
-                if (window.meteoPausadoPorCapas) {
-                    window.meteoPausadoPorCapas = false;
-                    if (typeof toggleFiltrosMapa === 'function') toggleFiltrosMapa();
-                } else {
-                    const btnFiltros = document.getElementById('btn-filtros-mapa');
-                    if (btnFiltros) btnFiltros.style.visibility = '';
+                // 🚀 INTELIGENCIA UX: Si fija el panel, le devolvemos la visibilidad de la Meteo
+                if (window.innerWidth <= 1040) {
+                    if (window.meteoEscondidoPorCapas) {
+                        window.meteoEscondidoPorCapas = false;
+                        const divFH = document.getElementById('div-filtro-horario');
+                        if (divFH) divFH.style.display = ''; // Lo volvemos a mostrar
+                    } else {
+                        const btnFiltros = document.getElementById('btn-filtros-mapa');
+                        if (btnFiltros) btnFiltros.style.visibility = '';
+                    }
                 }
             } else {
                 buttonFijar.classList.remove('activo-fijado');
@@ -10647,13 +10656,16 @@ function inicializarMapaLeaflet() {
         infoPanel.classList.add('retraido');
         labelMostrarOpciones.style.display = 'block';
 
-        // INTELIGENCIA UX: Restauramos el Filtro Horario o su botón
-        if (window.meteoPausadoPorCapas) {
-            window.meteoPausadoPorCapas = false;
-            if (typeof toggleFiltrosMapa === 'function') toggleFiltrosMapa();
-        } else {
-            const btnFiltros = document.getElementById('btn-filtros-mapa');
-            if (btnFiltros) btnFiltros.style.visibility = '';
+        // 🚀 INTELIGENCIA UX: Restauramos la visibilidad de la Meteo o su botón (Solo si afectó por pantalla pequeña)
+        if (window.innerWidth <= 1040) {
+            if (window.meteoEscondidoPorCapas) {
+                window.meteoEscondidoPorCapas = false;
+                const divFH = document.getElementById('div-filtro-horario');
+                if (divFH) divFH.style.display = ''; // Restauramos el panel visualmente
+            } else {
+                const btnFiltros = document.getElementById('btn-filtros-mapa');
+                if (btnFiltros) btnFiltros.style.visibility = '';
+            }
         }
 
         L.DomEvent.on(infoPanel, 'click', expandirAlClicar);
@@ -10671,13 +10683,16 @@ function inicializarMapaLeaflet() {
         infoPanel.classList.remove('retraido');
         labelMostrarOpciones.style.display = 'none';
         
-        // INTELIGENCIA UX: Pausamos temporalmente el Filtro Horario
-        if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-            window.meteoPausadoPorCapas = true;
-            if (typeof toggleFiltrosMapa === 'function') toggleFiltrosMapa();
-        } else {
-            const btnFiltros = document.getElementById('btn-filtros-mapa');
-            if (btnFiltros) btnFiltros.style.visibility = 'hidden';
+        // 🚀 INTELIGENCIA UX: Escondemos temporalmente la Meteo de forma PURAMENTE VISUAL
+        if (window.innerWidth <= 1040) {
+            if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
+                window.meteoEscondidoPorCapas = true;
+                const divFH = document.getElementById('div-filtro-horario');
+                if (divFH) divFH.style.display = 'none'; // Escondemos el panel sin apagar el filtro
+            } else {
+                const btnFiltros = document.getElementById('btn-filtros-mapa');
+                if (btnFiltros) btnFiltros.style.visibility = 'hidden';
+            }
         }
 
         L.DomEvent.off(infoPanel, 'click', expandirAlClicar);	
