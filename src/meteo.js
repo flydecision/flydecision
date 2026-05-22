@@ -5479,7 +5479,7 @@ function aplicarFiltrosVisuales() {
         if(thFavorito) thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
     }
 
-    // 6. SUGERENCIAS OTROS DESPEGUES (Solo para texto, ignora distancia)
+    // 6. SUGERENCIAS OTROS DESPEGUES (Aplica filtro de texto Y distancia)
 	let divSugerencias = document.getElementById('sugerencias-globales');
 	if (!divSugerencias) {
 		divSugerencias = document.createElement('div');
@@ -5493,7 +5493,22 @@ function aplicarFiltrosVisuales() {
         const coincidenciasGlobales = window.bdGlobalDespegues.filter(d => {
             const nombreSoloDespegue = normalizar(d.Despegue);
             const yaEsFavorito = favoritos.includes(Number(d.ID));
-            return !yaEsFavorito && nombreSoloDespegue.includes(filtroLimpio);
+            
+            // 1. Filtro básico (No es favorito y el nombre coincide)
+            if (yaEsFavorito || !nombreSoloDespegue.includes(filtroLimpio)) return false;
+
+            // 2. Filtro de distancia para las sugerencias
+            if (distanciaLimite < 9999 && centroLatFiltro !== null && centroLonFiltro !== null) {
+                const latSpot = parseFloat(d.Latitud);
+                const lonSpot = parseFloat(d.Longitud);
+                if (!isNaN(latSpot) && !isNaN(lonSpot)) {
+                    const distReal = obtenerDistanciaKm(centroLatFiltro, centroLonFiltro, latSpot, lonSpot);
+                    if (distReal > distanciaLimite) {
+                        return false; // Está fuera del radio, NO lo sugerimos
+                    }
+                }
+            }
+            return true;
         });
 
 		if (coincidenciasGlobales.length > 0) {
