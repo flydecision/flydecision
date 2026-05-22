@@ -177,9 +177,9 @@ if (btnAbrirGeo) {
         if (!mapaLeaflet) {
             setTimeout(() => {
                 // Si no hay origen, centramos en España (Lat 40.0, Lon -4.0) con un zoom general (6)
-                const latInicial = tieneOrigenGuardado ? centroLat : 40.0;
-                const lonInicial = tieneOrigenGuardado ? centroLon : -4.0;
-                const zoomInicial = tieneOrigenGuardado ? 9 : 6;
+                const latInicial = tieneOrigenGuardado ? centroLat : 47.46;
+                const lonInicial = tieneOrigenGuardado ? centroLon : 1.16;
+                const zoomInicial = tieneOrigenGuardado ? 9 : 4;
 
                 mapaLeaflet = L.map('mapa-selector').setView([latInicial, lonInicial], zoomInicial);
                 
@@ -198,9 +198,9 @@ if (btnAbrirGeo) {
             }, 50);
         } else {
             // Si el mapa ya estaba creado en la memoria
-            const latInicial = tieneOrigenGuardado ? centroLat : 40.0;
-            const lonInicial = tieneOrigenGuardado ? centroLon : -4.0;
-            const zoomInicial = tieneOrigenGuardado ? 8 : 6;
+            const latInicial = tieneOrigenGuardado ? centroLat : 47.46;
+            const lonInicial = tieneOrigenGuardado ? centroLon : 1.16;
+            const zoomInicial = tieneOrigenGuardado ? 8 : 4;
 
             mapaLeaflet.setView([latInicial, lonInicial], zoomInicial);
             
