@@ -8468,6 +8468,9 @@ function inicializarMapaLeaflet() {
     const useLon = !isNaN(urlLon) ? urlLon : (!isNaN(localLon) ? localLon : defaultLon);
     const useZoom = !isNaN(urlZoom) ? urlZoom : (!isNaN(localZoom) ? localZoom : defaultZoom);
 
+    // 🚩 Bandera para saber si estamos en la vista predeterminada pura (ni URL ni LocalStorage)
+    const esVistaPredeterminada = isNaN(urlLat) && isNaN(localLat);
+
     // 2. Inicializar el mapa de Leaflet
 
     // Inicializar el mapa con las coordenadas y el zoom a USAR
@@ -8478,10 +8481,32 @@ function inicializarMapaLeaflet() {
         center: [useLat, useLon],
         zoom: useZoom,
         zoomControl: false,
-        zoomAnimation: true,   // permite animación de zoom
-        zoomSnap: 0.5,          // opcional, suaviza pasos de zoom (lo estándar es 1)
+        zoomAnimation: true,   
+        zoomSnap: 0.5,          
         layers: [WorldTopoMap] 
     });
+
+    // 🌍 ENCUADRE DINÁMICO PREDETERMINADO (Forzado por anchura con ajuste manual)
+    if (esVistaPredeterminada) {
+        
+        const latCentro = 42.06; 
+        const lonOeste = -10.15;
+        const lonEste = 13.75;
+        
+        // Creamos el objeto matemático del área
+        const areaAnchura = L.latLngBounds([
+            [latCentro, lonOeste], 
+            [latCentro, lonEste]
+        ]);
+        
+        // Le preguntamos a Leaflet qué zoom usaría para que quepa este ancho
+        let zoomIdeal = map.getBoundsZoom(areaAnchura);
+        
+        let zoomAjustado = zoomIdeal + 0.5; 
+        
+        // Forzamos la vista con el centro matemático de la línea y tu zoom personalizado
+        map.setView(areaAnchura.getCenter(), zoomAjustado);
+    }
 
     // 🛑 FUNCIONES DE ACTUALIZACIÓN DE LOS FILTROS, TANTO EJECUTIVO COMO VISUAL
 
