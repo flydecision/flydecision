@@ -9539,8 +9539,8 @@ function inicializarMapaLeaflet() {
             setTimeout(() => {
                 // Usamos zoomToShowLayer por si el despegue está dentro de un grupo (cluster)
                 clustergroupDespegues.zoomToShowLayer(despegueEncontrado, function() {
+                    // Dejamos que Leaflet haga el centrado automático con los 160px de margen que añadimos al popup
                     despegueEncontrado.openPopup();
-                    map.panTo(despegueEncontrado.getLatLng()); // Centrado exacto
                 });
             }, 600); // Pequeña pausa para asegurar que los clusters están dibujados
         }
