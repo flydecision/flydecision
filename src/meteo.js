@@ -5579,42 +5579,43 @@ function agregarDespegueDesdeBuscador(idDespegue) {
     
     if (!misFavoritos.includes(idDespegue)) {
         misFavoritos.push(idDespegue);
-        
         localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(misFavoritos));
 		
-		limpiarBuscador();
-        
-        // Limpiamos el buscador visualmente ya
-        const input = document.getElementById('buscador-despegues-provincias');
-        if (input) input.value = "";
-        
-        const divSugerencias = document.getElementById('sugerencias-globales');
-        if (divSugerencias) divSugerencias.style.display = 'none';
-
-        // Intentar encontrar el nombre en la BD global para mostrarlo en el mensaje
+        // Intentar encontrar el nombre en la BD global para aislarlo en la búsqueda
         const despegueObj = window.bdGlobalDespegues.find(d => Number(d.ID) === idDespegue);
         const nombreDespegue = despegueObj ? despegueObj.Despegue : idDespegue;
+        
+        // 🚀 NUEVO: En lugar de limpiar, forzamos el nombre exacto en el buscador
+        const input = document.getElementById('buscador-despegues-provincias');
+        if (input) {
+            input.value = nombreDespegue;
+            input.classList.add('filtrado'); // Mantiene el borde rojo/azul visual de que hay filtro activo
+        }
+        
+        // Aseguramos que el botón de limpiar (la X) esté visible
+        const btnLimpiar = document.getElementById('limpiar-buscador');
+        if (btnLimpiar) btnLimpiar.style.display = 'block';
+        
+        // Ocultar caja de sugerencias
+        const divSugerencias = document.getElementById('sugerencias-globales');
+        if (divSugerencias) divSugerencias.style.display = 'none';
 
         if (typeof GestorMensajes !== 'undefined') {
             GestorMensajes.mostrar({
                 tipo: 'modal',
-                htmlContenido: `<p>✅ <b>${nombreDespegue}</b> añadido</p>`,
                 htmlContenido: `<p>${t('favoritos.anadidoOk', { nombre: nombreDespegue })}</p>`,
-                botones: [] // Sin botones, porque se cerrará solo
+                botones: [] 
             });
 
-            // Metemos la construcción de la tabla DENTRO del timeout
-            // Así nos aseguramos de que el mensaje se gestiona antes de la carga pesada
             setTimeout(function() {
-                // 1. Ocultamos mensaje
                 GestorMensajes.ocultar(); 
                 
-                // 2. Construimos la tabla justo después
+                // Al construir la tabla, internamente llamará a aplicarFiltrosVisuales() al final, 
+                // lo que leerá el nuevo nombre en el input y te dejará solo ese despegue en pantalla.
                 construir_tabla(); 
-            }, 1300); // Espera 1,3 seg para que vea el mensaje
+            }, 1300);
 
         } else {
-            // Fallback por si no existe el gestor
             alert(`✅ ${nombreDespegue} añadido a favoritos`);
             construir_tabla();
         }
