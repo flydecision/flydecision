@@ -5839,7 +5839,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             tooltips:[{
                 to: function (index) {
                     const val = CORTES_DISTANCIA_GLOBAL[Math.round(index)];
-                    if (val >= 9999) return '<span class="simbolo-infinito" style="font-size: 1.6em; line-height: 1; vertical-align: -2px; display: inline-block;">∞</span>';
+                    if (val >= 9999) return '<span class="simbolo-infinito" style="font-size: 1.5em; line-height: 1; vertical-align: -2px; display: inline-block;">∞</span>';
                     return `${val}`; 
                 }
             }],
@@ -9352,7 +9352,7 @@ function inicializarMapaLeaflet() {
         marker.bindPopup(popupHtml, { 
             className: 'popup-despegues', 
             maxWidth: 300,
-            autoPanPaddingTopLeft: L.point(10, 320) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
+            autoPanPaddingTopLeft: L.point(10, 350) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
         });
         marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
         markersDespegues.push(marker); //inserta marker al grupo markersDespegues
