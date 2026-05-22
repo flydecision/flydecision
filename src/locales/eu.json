@@ -392,6 +392,8 @@
   },
 
   "mapa": {
+    "btnGuardarVista": "💾 Uneko ikuspegia gorde",
+    "btnGuardarVistaTitle": "Gorde uneko zentroa eta zooma zure ikuspegi lehenetsi gisa",
     "seleccionarOrigen": "Hautatu jatorria",
     "miUbicacion": "Nire kokapena",
     "irMiUbicacion": "Joan nire kokapenera",

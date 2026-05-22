@@ -392,6 +392,8 @@
   },
 
   "mapa": {
+    "btnGuardarVista": "💾 Guardar vista actual",
+    "btnGuardarVistaTitle": "Guardar el centro y zoom actuales como tu vista predeterminada",
     "seleccionarOrigen": "Seleccionar origen",
     "miUbicacion": "Mi ubicación",
     "irMiUbicacion": "Ir a mi ubicación",

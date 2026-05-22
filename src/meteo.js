@@ -7788,11 +7788,6 @@ function updateURL(mapInstance) {
     const lat = center.lat.toFixed(4);
     const lon = center.lng.toFixed(4);
 
-    // Guardar posición en la memoria del dispositivo
-    localStorage.setItem('METEO_MAPA_LAST_LAT', lat);
-    localStorage.setItem('METEO_MAPA_LAST_LON', lon);
-    localStorage.setItem('METEO_MAPA_LAST_ZOOM', zoom);
-
     const newParams = new URLSearchParams();
     newParams.set('lat', lat);
     newParams.set('lon', lon);
@@ -7807,6 +7802,40 @@ function updateURL(mapInstance) {
     const newUrl = `${window.location.pathname}?${newParams.toString()}${window.location.hash}`;
     window.history.replaceState(null, '', newUrl);
 }
+
+// 🛑 GUARDAR POSICIÓN DEL MAPA
+// ___________________________________________________________________________________
+
+window.guardarPosicionMapaManualmente = function() {
+    if (typeof map !== 'undefined' && map) {
+        const center = map.getCenter();
+        const zoom = map.getZoom();
+        
+        const lat = center.lat.toFixed(4);
+        const lon = center.lng.toFixed(4);
+        
+        localStorage.setItem('METEO_MAPA_LAST_LAT', lat);
+        localStorage.setItem('METEO_MAPA_LAST_LON', lon);
+        localStorage.setItem('METEO_MAPA_LAST_ZOOM', zoom);
+        
+        const boton = document.getElementById('btn-guardar-vista-mapa');
+        if (boton) {
+            const textoOriginal = boton.innerHTML;
+            
+            boton.innerHTML = '✅';
+            //boton.disabled = true; 
+            
+            setTimeout(() => {
+                boton.innerHTML = textoOriginal;
+                boton.disabled = false;
+            }, 700);
+        }
+    }
+};
+
+
+// 🛑 CAMBIOS DE VISTA
+// ___________________________________________________________________________________
 
 let mapaInicializado = false;
 let filtrosMapaAbiertos = true;

@@ -392,6 +392,8 @@
   },
 
   "mapa": {
+    "btnGuardarVista": "💾 Desar la vista actual",
+    "btnGuardarVistaTitle": "Desar el centre i el zoom actuals com a vista predeterminada",
     "seleccionarOrigen": "Seleccionar origen",
     "miUbicacion": "La meva ubicació",
     "irMiUbicacion": "Anar a la meva ubicació",

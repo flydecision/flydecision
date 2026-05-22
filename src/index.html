@@ -642,7 +642,7 @@
 
 	<div id="configuracionPanel" class="info-panel" style="font-weight: bold; display: block; border-radius: 10px;">
 
-		<span class="panel-titulo" style="font-size: 1.4em; display:block; text-align:center;  padding-top: 21px;" data-i18n="ajustes.titulo">
+		<span class="panel-titulo" style="font-size: 1.4em; display:block; text-align:center;" data-i18n="ajustes.titulo">
 			Ajustes<br>
 		</span>
 					
@@ -662,6 +662,13 @@
 				</label>
 				<br>
 				<input type="range" id="sliderValorInicialFiltroUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 88%; margin-left: 22px;">
+			</div>
+
+			<!-- Botón manual para guardar la vista actual -->
+			<div style="margin-top: 15px; margin-bottom: 15px; text-align: center;">
+				<button id="btn-guardar-vista-mapa" class="btn-accion" onclick="guardarPosicionMapaManualmente()" style="width: 90%; height: 34px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" data-i18n="[title]mapa.btnGuardarVistaTitle;mapa.btnGuardarVista">
+					💾 Guardar vista actual
+				</button>
 			</div>
 					
 			<div>
