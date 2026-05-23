@@ -2972,6 +2972,12 @@ h3 {
     border-radius: 10px !important;
 }
 
+/* Poner controles Leaflet en paralelo horizontal */
+.leaflet-top.leaflet-left .leaflet-control-geocoder,
+.leaflet-top.leaflet-left .leaflet-control-layers {
+    clear: none !important; /* Evita el salto de línea en ambos */
+}
+
 /* ==========================================================================
    🗺️ BOTÓN CERRAR (X) POPUPS DEL MAPA (Mismo estilo que Tippy)
    ========================================================================== */

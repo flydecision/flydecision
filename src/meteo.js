@@ -9219,10 +9219,10 @@ function inicializarMapaLeaflet() {
     // 🟡 CONTROL "Configuración" (Despliega #configuracionPanel)
     L.Control.ConfigToggle = L.Control.extend({
 
-        options: { position: 'topright' },
+        options: { position: 'topleft' },
         onAdd: function(map) {
             // 1. Contenedor principal de Leaflet
-            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-config');
             // Quitamos el borde negro estándar de leaflet-bar para que no haga cosas raras
             container.style.border = 'none'; 
             
@@ -9360,7 +9360,7 @@ function inicializarMapaLeaflet() {
     };
 
     L.control.configToggle({ 
-        position: 'topright' 
+        position: 'topleft' 
     }).addTo(map);
 
 
@@ -9386,7 +9386,7 @@ function inicializarMapaLeaflet() {
     };
 
     // 1. Guardamos el control en una variable
-    const controlCapas = L.control.layers(baseMaps, {}, { position: 'topright' }).addTo(map);
+    const controlCapas = L.control.layers(baseMaps, {}, { position: 'topleft' }).addTo(map);
 
     // 2. Creamos NUESTRO propio botón físico "X"
     const btnCerrarCapas = L.DomUtil.create('div', 'cerrar-capas-btn');
