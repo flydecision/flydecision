@@ -7423,6 +7423,46 @@ function comprobarAvisoCambiosPuntuacionXC() {
         }
     };
 
+    // ---------------------------------------------------------------
+    // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
+    // ---------------------------------------------------------------
+    window.verMeteoEnTabla = function(nombreDespegue) {
+        // 1. Cerramos el popup del mapa por limpieza
+        if (typeof map !== 'undefined' && map) map.closePopup();
+
+        // 2. Cambiamos la vista a la tabla
+        cambiarVista('tabla');
+
+        // 3. Forzamos el nombre exacto en el buscador
+        const input = document.getElementById('buscador-despegues-provincias');
+        if (input) {
+            input.value = nombreDespegue;
+            input.classList.add('filtrado'); // Activa el borde azul/rojo visual
+        }
+
+        // 4. Mostramos la "X" de limpiar el buscador
+        const btnLimpiar = document.getElementById('limpiar-buscador');
+        if (btnLimpiar) btnLimpiar.style.display = 'block';
+
+        // 5. Ejecutamos el filtro visual de la tabla
+        if (typeof aplicarFiltrosVisuales === 'function') {
+            aplicarFiltrosVisuales();
+        }
+
+        // 6. Iluminamos el icono "Buscar" en el menú inferior
+        if (typeof window.activarMenuInferior === 'function') {
+            window.activarMenuInferior(document.getElementById('nav-search'));
+        }
+
+        // 7. Nos aseguramos de subir arriba del todo
+        const wrapper = document.querySelector('.tabla-wrapper');
+        const principal = document.querySelector('.contenedor-principal-tabla');
+        const scrollOptions = { top: 0, behavior: 'instant' };
+        if (wrapper) wrapper.scrollTo(scrollOptions);
+        if (principal) principal.scrollTo(scrollOptions);
+        window.scrollTo(scrollOptions);
+    };
+
     // ==========================================================================
     // 🔴 LÓGICA DEL MENÚ INFERIOR Y BUSCADOR FLOTANTE
     // ==========================================================================
@@ -9656,7 +9696,14 @@ function inicializarMapaLeaflet() {
         
                 <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
                 <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
-                <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
+                
+                <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
+                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(despegue).replace(/'/g, "\\'")}');" style="width: 100%; height: 32px; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
+                        📊 Ver meteo en la tabla
+                    </button>
+                </div>
+
+                <div style="margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                 <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
                 <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
                 
