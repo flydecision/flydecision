@@ -2977,7 +2977,6 @@ h3 {
 /* 1. ALINEAR LOS 4 BOTONES EN PARALELO */
 .leaflet-top.leaflet-left .leaflet-control-locate {
     clear: both !important; /* Fuerza a que se ponga en una línea nueva */
-    margin-bottom: 6px !important;
 }
 
 /* 2. LOS OTROS 3 BOTONES SE PONEN A SU LADO EN PARALELO */
@@ -2985,7 +2984,6 @@ h3 {
 .leaflet-top.leaflet-left .leaflet-control-layers,
 .leaflet-top.leaflet-left .leaflet-control-config {
     clear: none !important; /* Quita el salto de línea para que se pongan a la derecha del GPS */
-    margin-bottom: 6px !important; 
 }
 /* El último botón no necesita margen derecho */
 .leaflet-top.leaflet-left .leaflet-control-config {
