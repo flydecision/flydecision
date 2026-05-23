@@ -9359,11 +9359,6 @@ function inicializarMapaLeaflet() {
         return new L.Control.ConfigToggle(options);
     };
 
-    L.control.configToggle({ 
-        position: 'topleft' 
-    }).addTo(map);
-
-
     // 🟡 CONTROL "Capas"
     const baseMaps = {
         [t('mapa.capasBase.esriTopo')]: WorldTopoMap,
@@ -9385,8 +9380,13 @@ function inicializarMapaLeaflet() {
         [t('mapa.capasBase.capaMezcladaWorldTopoMapOpenAIP')]: capaMezcladaWorldTopoMapOpenAIP
     };
 
-    // 1. Guardamos el control en una variable
+    // 1. Añadimos primero Capas a la izquierda
     const controlCapas = L.control.layers(baseMaps, {}, { position: 'topleft' }).addTo(map);
+
+    // 1.2. Y justo después añadimos Configuración a la izquierda (así se pone a su derecha)
+    L.control.configToggle({ 
+        position: 'topleft' 
+    }).addTo(map);
 
     // 2. Creamos NUESTRO propio botón físico "X"
     const btnCerrarCapas = L.DomUtil.create('div', 'cerrar-capas-btn');
