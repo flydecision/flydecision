@@ -5229,13 +5229,19 @@ function alternardivDistancia(event) {
     }
 }
 
-function alternardivConfiguracion(event) {
+function alternardivConfiguracion(event, forzarCierreAcordeones = false) {
     const divconfiguracion = document.getElementById("div-configuracion");
     if (!divconfiguracion) return;
 
     const estabaActivo = divconfiguracion.classList.contains("activo");
 
     divconfiguracion.classList.toggle("activo", !estabaActivo);
+    
+    // 🚀 NUEVO: Si se está cerrando y el parámetro es true, replegamos los acordeones
+    if (estabaActivo && forzarCierreAcordeones) {
+        const acordeones = divconfiguracion.querySelectorAll('details.config-accordion');
+        acordeones.forEach(acc => acc.removeAttribute('open'));
+    }
     
     const btnConfigAntiguo = document.getElementById("btn-div-configuracion-toggle");
     if (btnConfigAntiguo) btnConfigAntiguo.classList.toggle("activo", !estabaActivo);
@@ -6926,7 +6932,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
             if (!clicEnZonaProtegida) {
                 if (typeof alternardivConfiguracion === 'function') {
-                    alternardivConfiguracion(event);
+                    alternardivConfiguracion(event, true); // Forzamos el cierre de acordeones
                 }
             }
         }
@@ -6994,7 +7000,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // IMPORTANTE: Va antes que el mapa porque flota por encima de todo
             const panelConfig = document.getElementById("div-configuracion");
             if (panelConfig && panelConfig.classList.contains("activo")) {
-                alternardivConfiguracion(); // Al cerrarse, ilumina el botón correcto (Mapa o Tabla)
+                alternardivConfiguracion(null, true); // Forzamos el cierre de acordeones
                 return;
             }
 
@@ -7546,6 +7552,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
         if (panelConfig && panelConfig.classList.contains("activo")) {
             panelConfig.classList.remove("activo");
             if (typeof setModoEnfoque === "function") setModoEnfoque(false);
+            
+            // Replegamos los acordeones
+            const acordeones = panelConfig.querySelectorAll('details.config-accordion');
+            acordeones.forEach(acc => acc.removeAttribute('open'));
         }
     }
 
