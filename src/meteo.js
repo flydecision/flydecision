@@ -4260,7 +4260,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 </button>
             `;
 			
-            const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block;">${d.Provincia.toUpperCase()}</span>`;
+            const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block;">(${d.Provincia})</span>`;
 
             // Montamos la celda con los dos botones
             tdDespegue.innerHTML = `
