@@ -496,7 +496,7 @@ input[type="search"]::-webkit-search-cancel-button {
     align-self: flex-end; /* Lo pega a la derecha (el contenedor es flex) */
     margin-top: -21px;    /* Compensa el padding superior del panel */
     margin-bottom: -11px; /* Evita empujar el título hacia abajo */
-    margin-right: -12px;    /* Margen derecho original */
+    margin-right: -25px;    /* Margen derecho original */
     z-index: 100;         /* Asegura que flote por encima del contenido */
 
     /* 2. Tamaño y Forma (El círculo) */
@@ -608,7 +608,7 @@ input[type="search"]::-webkit-search-cancel-button {
 .div-configuracion::-webkit-scrollbar-track { 
     background: #f1f1f1; 
     border-radius: 4px; 
-    margin-top: 15px; /* Para que la barra no pise el borde superior redondeado de la ventana */
+    margin-top: 35px; /* Para que la barra no pise el borde superior redondeado de la ventana */
     margin-bottom: 15px; /* Para que no pise el borde inferior */
 }
 .div-configuracion::-webkit-scrollbar-thumb { 
@@ -636,7 +636,7 @@ input[type="search"]::-webkit-search-cancel-button {
         padding-left: 5px !important;
     }
     .btn-cerrar-modal {
-        margin-right: -12px !important; /* Pegarlo más a la esquina */
+        margin-right: -25px !important; /* Pegarlo más a la esquina */
         top: -21px !important;
     }
 }
@@ -2383,7 +2383,12 @@ label.custom-checkbox {
 }
 
 .tippy-scroll-area::-webkit-scrollbar { width: 15px; }
-.tippy-scroll-area::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+.tippy-scroll-area::-webkit-scrollbar-track { 
+    background: #f1f1f1; 
+    border-radius: 4px; 
+    margin-top: 40px; /* Deja un hueco vacío arriba para que no pise el botón */
+    margin-bottom: 10px;
+}
 .tippy-scroll-area::-webkit-scrollbar-thumb { background: #666; border-radius: 4px; border: 2px solid #f1f1f1; }
 .tippy-scroll-area::-webkit-scrollbar-thumb:hover { background: #444; }
 
@@ -2399,7 +2404,7 @@ label.custom-checkbox {
 .tippy-close-btn {
     position: absolute;
     top: 5px;
-    right: 18px;
+    right: 5px;
     width: 32px;
     height: 32px;
     display: flex;
