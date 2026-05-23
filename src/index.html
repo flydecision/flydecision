@@ -426,12 +426,17 @@
 	<!-- PANEL INFO ACTUALIZACIONES METEO -->
 	<div class="div-configuracion-subpanel">
 		<div class="div-paneles-controles" style="min-height: initial; padding-top: 5px; padding-bottom: 5px;">
-			<span style="font-weight: bold; display: block; text-align: left; padding-bottom: 5px; padding-left: 15px;" data-i18n="ajustes.acordeon.sobreActualizacion">Actualizaciones modelos meteo</span>
+			
+			<div class="linea-con-bt-info" style="padding-left: 15px; padding-bottom: 5px;">
+				<span style="font-weight: bold;" data-i18n="ajustes.acordeon.sobreActualizacion">Actualizaciones modelos meteo</span>
+				<button class="btn-info btn-inline" 
+					data-tippy-content-i18n="btn_info.tooltipModelosMeteo">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+
 			<span id="data_generation_time"></span>
-			<button class="btn-info btn-arriba-derecha" 
-				data-tippy-content-i18n="btn_info.tooltipModelosMeteo">
-				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-			</button>
+			
 			<div id="proxima-actualizacion-contenedor" style="padding-left:15px;">	
 				<span id="proxima-actualizacion"></span><br>
 			</div>
