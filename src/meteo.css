@@ -415,6 +415,12 @@ input[type="search"]::-webkit-search-cancel-button {
     display: none !important;
 }
 
+/* Colapsar el contenedor para ganar espacio en pantalla */
+.ocultar-slider-por-calendario .div-paneles-controles-transparente {
+    height: 36px !important; /* Altura exacta de los botones de los días */
+    padding-bottom: 0px !important;
+}
+
 /* Solo mostrar en la tabla, ocultar por defecto */
 #btn-ver-todos-dias {
     display: flex;
@@ -754,6 +760,8 @@ input[type="search"]::-webkit-search-cancel-button {
 	border: 0px solid #000;
     margin-bottom: 5px;
     margin-top: 2px;
+    /* Transición fluida para que el buscador no salte de golpe */
+    transition: height 0.3s ease, padding-bottom 0.3s ease; 
 }
 
 #div-filtro-distancia .div-paneles-controles-transparente {
