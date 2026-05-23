@@ -3478,6 +3478,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		
 		let diaAnterior = null;
 		let diaSemanaAnterior = null; // Necesario inicializar para el cierre
+        let diaSemanaAnteriorCorto = null; // Para el nombre corto de 3 letras
 		let colspan = 0;
 		const trDias = document.createElement("tr");
 
@@ -3494,6 +3495,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
         // Traducción. Mapeamos el índice del día a las claves de tu JSON
         const clavesDiasLargos = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+        const clavesDiasCortos = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"];
         const diasSemana = clavesDiasLargos.map(clave => t(`dias.${clave}`));
 
 		// Solo iterar sobre las horas si existen
@@ -3516,6 +3518,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				const d = new Date(h.endsWith('Z') ? h : h + 'Z');
 				const dia = d.getDate();
 				const diaSemana = t(`dias.${clavesDiasLargos[d.getDay()]}`);
+                const diaSemanaCorto = t(`dias.${clavesDiasCortos[d.getDay()]}`);
 				
 				// Comprobación de visibilidad
 				const esNoche = esCeldaNoche(d);
@@ -3531,7 +3534,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 						let textoDia = `${diaSemanaAnterior} ${diaAnterior}`;
 						if (colspan <= 3) {
 							textoDia = ''; // Omitir el nombre del día si tiene 3 o menos columnas
-						}
+						} else if (colspan <= 5) {
+                            textoDia = `${diaSemanaAnteriorCorto} ${diaAnterior}`; // Nombre corto (3 letras)
+                        } else {
+                            textoDia = `${diaSemanaAnterior} ${diaAnterior}`; // Nombre largo
+                        }
 						thDia.textContent = textoDia;
 						// -----------------------------------------------------------
 						
@@ -3551,6 +3558,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 					if (dia !== diaAnterior) {
 						diaAnterior = dia;
 						diaSemanaAnterior = diaSemana;
+                        diaSemanaAnteriorCorto = diaSemanaCorto;
 					}
 					return; // NO contamos esta columna (no incrementa colspan)
 				}
@@ -3564,7 +3572,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 						let textoDia = `${diaSemanaAnterior} ${diaAnterior}`;
 						if (colspan <= 3) {
 							textoDia = ''; // Omitir el nombre del día si tiene 3 o menos columnas
-						}
+						} else if (colspan <= 5) {
+                            textoDia = `${diaSemanaAnteriorCorto} ${diaAnterior}`; // Nombre corto (3 letras)
+                        } else {
+                            textoDia = `${diaSemanaAnterior} ${diaAnterior}`; // Nombre largo
+                        }
 						thDia.textContent = textoDia;
 						// -------------------------------------------------------
 						
@@ -3581,6 +3593,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 					}
 					diaAnterior = dia;
 					diaSemanaAnterior = diaSemana;
+                    diaSemanaAnteriorCorto = diaSemanaCorto;
 					colspan = 1; // Primer día visible
 				} else {
 					colspan++; // Día visible en curso
@@ -3597,7 +3610,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 				let textoDia = `${diaSemanaAnterior} ${diaAnterior}`;
 				if (colspan <= 3) {
 					textoDia = ''; // Omitir el nombre del día si tiene 3 o menos columnas
-				}
+						} else if (colspan <= 5) {
+                            textoDia = `${diaSemanaAnteriorCorto} ${diaAnterior}`; // Nombre corto (3 letras)
+                        } else {
+                            textoDia = `${diaSemanaAnterior} ${diaAnterior}`; // Nombre largo
+                        }
 				// Usamos las variables que se quedaron con el último día visible contado
 				thDia.textContent = textoDia;
 				// -------------------------------------------------------
