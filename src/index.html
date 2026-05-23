@@ -629,16 +629,16 @@
 			</div>	
 					
 			<div class="control-vuelos-container" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
-				<label for="sliderVuelos" style="font-weight: bold;" data-i18n="mapa.minVuelosTexto">
+				<label for="sliderVuelos" style="font-weight: bold; line-height: 1.2;" data-i18n="mapa.minVuelosTexto">
 					Mínimo de vuelos registrados = </label><span id="valorVuelosTexto">0</span>
 				<br>
-				<input type="range" id="sliderVuelos" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
+				<input type="range" id="sliderVuelos" min="0" max="9" value="0" step="1" style="width: 98%; margin-top: 10px;">
 			</div>
 			
 			<div class="control-ultimovuelo-container" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
-				<label for="sliderUltimoVuelo" style="font-weight: bold;" data-i18n="mapa.anioUltimoVueloTexto">
+				<label for="sliderUltimoVuelo" style="font-weight: bold; line-height: 1.2;" data-i18n="mapa.anioUltimoVueloTexto">
 					Año del último vuelo >= </label><span id="valorUltimoVueloTexto" data-i18n="mapa.todos">Todos</span>
-				<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 88%; margin-left: 22px;">
+				<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 98%; margin-top: 10px;">
 			</div>
 				
 		</div>
@@ -654,24 +654,24 @@
 		<div id="divOpcionesconfiguracionPanel">
 
 			<div class="configuracion-control-vuelos-container">
-				<label for="sliderVuelos" style="font-weight: bold;">
+				<label for="sliderVuelos" style="font-weight: bold; line-height: 1.2;">
 					<span data-i18n="mapa.minVuelosTexto">Mínimo de vuelos registrados: </span><span id="valorConfigFiltroNumeroMinimoVuelosTexto">0</span>
 				</label>
 				<br>
-				<input type="range" id="sliderValorInicialFiltroNumeroMinimoVuelos" min="0" max="28" value="0" step="1" style="width: 88%; margin-left: 22px;">
+				<input type="range" id="sliderValorInicialFiltroNumeroMinimoVuelos" min="0" max="9" value="0" step="1" style="width: 98%; margin-top: 10px;">
 			</div>
 					
 			<div class="configuracion-control-ultimovuelo-container">
-				<label for="sliderUltimoVuelo" style="font-weight: bold;">
+				<label for="sliderUltimoVuelo" style="font-weight: bold; line-height: 1.2;">
 					<span data-i18n="mapa.anioUltimoVueloTexto">Año del último vuelo >= </span><span id="valorConfigFiltroUltimoVueloTexto" data-i18n="mapa.todos">Todos</span>
 				</label>
 				<br>
-				<input type="range" id="sliderValorInicialFiltroUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 88%; margin-left: 22px;">
+				<input type="range" id="sliderValorInicialFiltroUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 98%; margin-top: 10px;">
 			</div>
 
 			<!-- Botón manual para guardar la vista actual -->
 			<div style="margin-top: 15px; margin-bottom: 15px; text-align: center;">
-				<button id="btn-guardar-vista-mapa" class="btn-accion" onclick="guardarPosicionMapaManualmente()" style="width: 90%; height: 34px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" data-i18n="[title]mapa.btnGuardarVistaTitle;mapa.btnGuardarVista">
+				<button id="btn-guardar-vista-mapa" class="btn-accion" onclick="guardarPosicionMapaManualmente()" style="width: 90%; height: 43px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" data-i18n="[title]mapa.btnGuardarVistaTitle;mapa.btnGuardarVista">
 					💾 Guardar vista actual
 				</button>
 			</div>

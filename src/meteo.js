@@ -8362,16 +8362,7 @@ let clustergroupDespegues;
 let markersDespeguesMundo = []; 
 let clustergroupDespeguesMundo;
 
-const ESCALA_VUELOS = [
-    // Parte detallada (pasos de 10 hasta 100)
-    0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 
-
-    // Transición (pasos de 100 hasta 1000)
-    200, 300, 400, 500, 600, 700, 800, 900, 1000, 
-
-    // Parte rápida (pasos de 1000 hasta 10000)
-    2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000
-];
+const ESCALA_VUELOS = [0, 1, 5, 20, 50, 100, 300, 1000, 3000, 10000];
 
 const ESCALA_ULTIMO_VUELO = [
     'Todos', // Índice 0: No filtra

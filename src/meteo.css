@@ -2746,7 +2746,7 @@ details.config-accordion .accordion-content {
 	padding-left: 10px;
 	/* box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); */
 	z-index: 2000; 
-	width: 284px;
+	width: 200px;
 	max-width: 500px;
 	display: none; /* Ocultar por defecto. Si este index.html se está mostrando en el iframe de la página /mapa no quiero que se muestre este infopanel (el enlace a hikefly.es del mapa). Hay un javascript al final(document.addEventListener) que lo oculta si la URL no contiene https://hikefly.es/mapa/ */
 	transition: all 0.2s ease;
@@ -2756,11 +2756,6 @@ details.config-accordion .accordion-content {
 	padding-top: 8px;
     border-radius: 10px;
 }	
-@media (max-width: 768px) {
-	.info-panel {
-		width: 302px;
-	}
-}
 
 /* Panel del mapa con filtros activos (Tanto abierto como retraído) */
 .info-panel.borde-rojo-externo {
@@ -3495,17 +3490,17 @@ h3 {
 }
 
 .control-vuelos-container {
-    
-    /* Asegura que el padding no aumente el ancho total */
-    box-sizing: border-box; 
-	
+    box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
 	display: block; /* La convierte en un elemento de bloque que ocupa toda la línea */
     margin-bottom: 5px; /* Opcional: añade un pequeño espacio entre el texto y el slider */	
     padding: 5px;
+    width: 200px;
 }
 .control-ultimovuelo-container {  
     margin-bottom: 5px;
     padding: 5px;
+    width: 200px;
+    box-sizing: border-box;
 }	
 .configuracion-control-vuelos-container {  
     margin-bottom: 5px;
