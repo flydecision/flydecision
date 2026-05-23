@@ -483,6 +483,7 @@
   },
 
   "html": {
+    "verTodosDiasTitle": "Ver todos los días",
     "distanciaDesde": "Distancia desde:",
     "seleccionarOrigen": "Seleccionar origen",
     "incluirNoFavs": "Incluir despegues no favoritos en el filtro",

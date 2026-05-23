@@ -483,6 +483,7 @@
   },
 
   "html": {
+    "verTodosDiasTitle": "Ver todos os dias",
     "distanciaDesde": "Distância desde:",
     "seleccionarOrigen": "Selecionar origem",
     "incluirNoFavs": "Incluir não favoritos no filtro",

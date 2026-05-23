@@ -483,6 +483,7 @@
   },
 
   "html": {
+    "verTodosDiasTitle": "Voir tous les jours",
     "distanciaDesde": "Distance depuis :",
     "seleccionarOrigen": "Sélectionner l'origine",
     "incluirNoFavs": "Inclure les non-favoris dans le filtre",

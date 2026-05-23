@@ -483,6 +483,7 @@
   },
 
   "html": {
+    "verTodosDiasTitle": "Egun guztiak ikusi",
     "distanciaDesde": "Distantzia hemendik:",
     "seleccionarOrigen": "Hautatu jatorria",
     "incluirNoFavs": "Sartu gogoko ez direnak iragazkian",

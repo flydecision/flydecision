@@ -410,9 +410,18 @@ input[type="search"]::-webkit-search-cancel-button {
     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
 
+/* Animación del slider: se retrasa 0.15s al aparecer para dar tiempo a que el buscador baje */
+#horario-slider {
+    transition: opacity 0.2s ease 0.15s, visibility 0s linear 0.15s;
+}
+
 /* Ocultar el slider de horas cuando vemos todo el calendario */
 .ocultar-slider-por-calendario #horario-slider {
-    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    /* Al ocultarse, lo hace instantáneamente para que la caja pueda encoger limpia */
+    transition: opacity 0.1s ease 0s, visibility 0s linear 0s !important;
 }
 
 /* Colapsar el contenedor para ganar espacio en pantalla */

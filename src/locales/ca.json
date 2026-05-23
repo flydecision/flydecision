@@ -483,6 +483,7 @@
   },
 
   "html": {
+    "verTodosDiasTitle": "Veure tots els dies",
     "distanciaDesde": "Distància des de:",
     "seleccionarOrigen": "Seleccionar origen",
     "incluirNoFavs": "Incloure no preferits al filtre",
