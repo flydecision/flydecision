@@ -396,6 +396,7 @@
   },
 
   "mapa": {
+    "verEnTabla": "Meteo in der Tabelle ansehen",
     "btnGuardarVista": "💾 Aktuelle Ansicht merken",
     "btnGuardarVistaTitle": "Aktuelle Mitte und Zoom als Standardansicht speichern",
     "seleccionarOrigen": "Ursprung auswählen",

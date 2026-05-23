@@ -396,6 +396,7 @@
   },
 
   "mapa": {
+    "verEnTabla": "Ver meteo na tabela",
     "btnGuardarVista": "💾 Memorizar vista atual",
     "btnGuardarVistaTitle": "Guardar o centro e o zoom atuais como a sua vista predefinida",
     "seleccionarOrigen": "Selecionar origem",

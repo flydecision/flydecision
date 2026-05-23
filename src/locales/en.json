@@ -396,6 +396,7 @@
   },
 
   "mapa": {
+    "verEnTabla": "View meteo in the table",
     "btnGuardarVista": "💾 Remember current view",
     "btnGuardarVistaTitle": "Save the current center and zoom as your default view",
     "seleccionarOrigen": "Select origin",

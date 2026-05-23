@@ -4260,14 +4260,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 </button>
             `;
 			
-            const provinciaHTML = modoEdicionFavoritos ? "" : `<b style="display:block;">${d.Provincia.toUpperCase()}</b>`;
+            const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block;">${d.Provincia.toUpperCase()}</span>`;
 
             // Montamos la celda con los dos botones
             tdDespegue.innerHTML = `
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
+                <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
-                <div class="texto-multilinea-2" title="${d.Despegue}">${d.Despegue}</div>
 				${svgOrientaciones}
             `;
 
@@ -7423,6 +7423,47 @@ function comprobarAvisoCambiosPuntuacionXC() {
         }
     };
 
+    // ---------------------------------------------------------------
+    // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
+    // ---------------------------------------------------------------
+    window.verMeteoEnTabla = function(idDespegue) {
+        if (typeof map !== 'undefined' && map) map.closePopup();
+        
+        // 1. Buscamos el despegue en la BD global usando el ID para obtener su nombre EXACTO en la tabla
+        const despegueBD = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(idDespegue));
+        if (!despegueBD) return; // Si por algún motivo no existe, abortamos
+        
+        const nombreExactoTabla = despegueBD.Despegue;
+
+        cambiarVista('tabla');
+
+        // 2. Forzamos el nombre exacto en el buscador
+        const input = document.getElementById('buscador-despegues-provincias');
+        if (input) {
+            input.value = nombreExactoTabla;
+            input.classList.add('filtrado'); 
+        }
+
+        const btnLimpiar = document.getElementById('limpiar-buscador');
+        if (btnLimpiar) btnLimpiar.style.display = 'block';
+
+        if (typeof aplicarFiltrosVisuales === 'function') {
+            aplicarFiltrosVisuales();
+        }
+
+        // 3. 🚀 CORRECCIÓN: Iluminar "Inicio" en lugar de "Buscar"
+        if (typeof window.activarMenuInferior === 'function') {
+            window.activarMenuInferior(document.getElementById('nav-home'));
+        }
+
+        const wrapper = document.querySelector('.tabla-wrapper');
+        const principal = document.querySelector('.contenedor-principal-tabla');
+        const scrollOptions = { top: 0, behavior: 'instant' };
+        if (wrapper) wrapper.scrollTo(scrollOptions);
+        if (principal) principal.scrollTo(scrollOptions);
+        window.scrollTo(scrollOptions);
+    };
+
     // ==========================================================================
     // 🔴 LÓGICA DEL MENÚ INFERIOR Y BUSCADOR FLOTANTE
     // ==========================================================================
@@ -9652,11 +9693,21 @@ function inicializarMapaLeaflet() {
         // 2. Traducimos los códigos (NO -> NW) usando la función existente
         const codigosOriTraducidos = traducirCadenaOrientacion(row.Orientaciones);
                 
+        // Sacamos el ID de forma segura para usarlo en el botón
+        const idDespegue = row.ID || '';
+
         const popupHtml = `<div style="line-height: 1.2;">
         
                 <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
                 <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
-                <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
+                
+                <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
+                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.2; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
+                        📊 ${t('mapa.verEnTabla')}
+                    </button>
+                </div>
+
+                <div style="margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                 <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
                 <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
                 
