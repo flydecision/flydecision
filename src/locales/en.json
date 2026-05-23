@@ -440,7 +440,7 @@
     "orientacionLabel": "Orientation:",
     "grupoXContestTitle": "Group of {{count}} takeoffs registered in XContest",
     "nVuelosXContest": "No. of XContest flights:",
-    "minVuelosTexto": "Minimum registered flights = ",
+    "minVuelosTexto": "Logged flights >= ",
     "anioUltimoVueloTexto": "Last flight year >= ",
     "minKmMediaTexto": "Minimum average distance flown = ",
     "todos": "All",

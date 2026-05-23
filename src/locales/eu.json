@@ -417,7 +417,7 @@
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Hemen zaude&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "capasCheckbox": {
       "despegues": "🪂 Aireratzeak",
-      "mapaCalorPeninsula": "🔥 Iberiar Penintsulako Bero Mapa",
+      "mapaCalorPeninsula": "🔥 Iberia Bero Mapa",
       "mapaCalorAlpes": "🔥 Alpeetako Bero Mapa",
       "mapaCalorMarruecos": "🔥 Marokoko Bero Mapa",
       "notas": "✏️ Oharrak",
@@ -440,7 +440,7 @@
     "orientacionLabel": "Norabidea:",
     "grupoXContestTitle": "XContest-en erregistratutako {{count}} aireratzez osatutako taldea",
     "nVuelosXContest": "XContest hegaldi kopurua:",
-    "minVuelosTexto": "Gutxienezko erregistratutako hegaldiak = ",
+    "minVuelosTexto": "Erregistratutako hegaldiak >= ",
     "anioUltimoVueloTexto": "Azken hegaldiaren urtea >= ",
     "minKmMediaTexto": "Gutxienezko batez besteko distantzia egina = ",
     "todos": "Guztiak",

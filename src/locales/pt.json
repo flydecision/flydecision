@@ -418,8 +418,8 @@
     "capasCheckbox": {
       "despegues": "🪂 Descolagens",
       "mapaCalorPeninsula": "🔥 Mapa de Calor Ibérico",
-      "mapaCalorAlpes": "🔥 Mapa de Calor dos Alpes",
-      "mapaCalorMarruecos": "🔥 Mapa de Calor de Marrocos",
+      "mapaCalorAlpes": "🔥 Mapa de Calor Alpes",
+      "mapaCalorMarruecos": "🔥 Mapa de Calor Marrocos",
       "notas": "✏️ Notas",
       "despeguesMundo": "🪂 Descolagens Paraglidingearth"
     },
@@ -440,7 +440,7 @@
     "orientacionLabel": "Orientação:",
     "grupoXContestTitle": "Grupo de {{count}} descolagens registadas no XContest",
     "nVuelosXContest": "N.º de voos XContest:",
-    "minVuelosTexto": "Mínimo de voos registados = ",
+    "minVuelosTexto": "Voos registados >= ",
     "anioUltimoVueloTexto": "Ano do último voo >= ",
     "minKmMediaTexto": "Distância média percorrida mínima = ",
     "todos": "Todos",

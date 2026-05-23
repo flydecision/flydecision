@@ -440,7 +440,7 @@
     "orientacionLabel": "Orientation :",
     "grupoXContestTitle": "Groupe de {{count}} décollages enregistrés dans XContest",
     "nVuelosXContest": "Nbr. de vols XContest :",
-    "minVuelosTexto": "Vols enregistrés minimum = ",
+    "minVuelosTexto": "Vols enregistrés >= ",
     "anioUltimoVueloTexto": "Année du dernier vol >= ",
     "minKmMediaTexto": "Distance moyenne parcourue minimum = ",
     "todos": "Tous",

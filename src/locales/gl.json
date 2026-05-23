@@ -418,8 +418,8 @@
     "capasCheckbox": {
       "despegues": "🪂 Engalaxes",
       "mapaCalorPeninsula": "🔥 Mapa de Calor Ibérico",
-      "mapaCalorAlpes": "🔥 Mapa de Calor dos Alpes",
-      "mapaCalorMarruecos": "🔥 Mapa de Calor de Marrocos",
+      "mapaCalorAlpes": "🔥 Mapa de Calor Alpes",
+      "mapaCalorMarruecos": "🔥 Mapa de Calor Marrocos",
       "notas": "✏️ Notas",
       "despeguesMundo": "🪂 Engalaxes Paraglidingearth"
     },
@@ -440,7 +440,7 @@
     "orientacionLabel": "Orientación:",
     "grupoXContestTitle": "Grupo de {{count}} engalaxes rexistradas en XContest",
     "nVuelosXContest": "Núm. de voos XContest:",
-    "minVuelosTexto": "Mínimo de voos rexistrados = ",
+    "minVuelosTexto": "Voos rexistrados >= ",
     "anioUltimoVueloTexto": "Ano do último voo >= ",
     "minKmMediaTexto": "Distancia media percorrida mínima = ",
     "todos": "Todos",

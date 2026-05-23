@@ -2270,7 +2270,7 @@ label.custom-checkbox input[type="checkbox"] {
     transform-origin: center;
     transform: scale(1.2); 
 	margin-right: 8px;
-	margin-left: 0;
+	margin-left: 0px;
     cursor: pointer;
 }
 label.custom-checkbox {
@@ -3494,10 +3494,12 @@ h3 {
 	display: block; /* La convierte en un elemento de bloque que ocupa toda la línea */
     margin-bottom: 5px; /* Opcional: añade un pequeño espacio entre el texto y el slider */	
     padding: 5px;
+    width: 250px;
 }
 .control-ultimovuelo-container {  
     margin-bottom: 5px;
     padding: 5px;
+    width: 250px;
     box-sizing: border-box;
 }	
 .configuracion-control-vuelos-container {  

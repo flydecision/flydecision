@@ -418,8 +418,8 @@
     "capasCheckbox": {
       "despegues": "🪂 Enlairaments",
       "mapaCalorPeninsula": "🔥 Mapa de Calor Ibèric",
-      "mapaCalorAlpes": "🔥 Mapa de Calor dels Alps",
-      "mapaCalorMarruecos": "🔥 Mapa de Calor del Marroc",
+      "mapaCalorAlpes": "🔥 Mapa de Calor Alps",
+      "mapaCalorMarruecos": "🔥 Mapa de Calor Marroc",
       "notas": "✏️ Notes",
       "despeguesMundo": "🪂 Enlairaments Paraglidingearth"
     },
@@ -440,7 +440,7 @@
     "orientacionLabel": "Orientació:",
     "grupoXContestTitle": "Grup de {{count}} enlairaments registrats a XContest",
     "nVuelosXContest": "Núm. de vols XContest:",
-    "minVuelosTexto": "Mínim de vols registrats = ",
+    "minVuelosTexto": "Vols registrats >= ",
     "anioUltimoVueloTexto": "Any de l'últim vol >= ",
     "minKmMediaTexto": "Distància mitjana recorreguda mínima = ",
     "todos": "Tots",

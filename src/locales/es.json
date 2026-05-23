@@ -417,7 +417,7 @@
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Estás aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "capasCheckbox": {
       "despegues": "🪂 Despegues",
-      "mapaCalorPeninsula": "🔥 Mapa de calor Península Ibérica",
+      "mapaCalorPeninsula": "🔥 Mapa de calor Iberia",
       "mapaCalorAlpes": "🔥 Mapa de calor Alpes",
       "mapaCalorMarruecos": "🔥 Mapa de calor Marruecos",
       "notas": "✏️ Notas",
@@ -440,7 +440,7 @@
     "orientacionLabel": "Orientación:",
     "grupoXContestTitle": "Grupo de {{count}} despegues registrados en XContest",
     "nVuelosXContest": "Nº de vuelos en XContest:",
-    "minVuelosTexto": "Mínimo de vuelos registrados = ",
+    "minVuelosTexto": "Vuelos registrados >= ",
     "anioUltimoVueloTexto": "Año del último vuelo >= ",
     "minKmMediaTexto": "Mínimo de km medios recorridos = ",
     "todos": "Todos",

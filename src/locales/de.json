@@ -417,7 +417,7 @@
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Du bist hier&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "capasCheckbox": {
       "despegues": "🪂 Startplätze",
-      "mapaCalorPeninsula": "🔥 Iberische Halbinsel Heatmap",
+      "mapaCalorPeninsula": "🔥 Iberische Heatmap",
       "mapaCalorAlpes": "🔥 Alpen Heatmap",
       "mapaCalorMarruecos": "🔥 Marokko Heatmap",
       "notas": "✏️ Notizen",
@@ -440,7 +440,7 @@
     "orientacionLabel": "Ausrichtung:",
     "grupoXContestTitle": "Gruppe von {{count}} in XContest registrierten Startplätzen",
     "nVuelosXContest": "Anzahl der XContest-Flüge:",
-    "minVuelosTexto": "Minimum registrierte Flüge = ",
+    "minVuelosTexto": "Registrierte Flüge >= ",
     "anioUltimoVueloTexto": "Jahr des letzten Fluges >= ",
     "minKmMediaTexto": "Minimale durchschnittlich geflogene Strecke = ",
     "todos": "Alle",
