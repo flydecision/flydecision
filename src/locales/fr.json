@@ -176,7 +176,7 @@
         "descripcion": "Affiche un tableau avec tous les décollages que vous avez sélectionnés comme favoris, leurs prévisions météorologiques horaires et leur score de conditions calculé, de 0 à 10 (pour décoller et commencer des itinéraires XC).<br><br>Les décollages sont toujours automatiquement triés par leur score de conditions de décollage (du plus élevé au plus bas)."
       },
       "selectorHorario": {
-        "titulo": "🗓️ Sélecteur de plage horaire",
+        "titulo": "🕐–🕕 Sélecteur de plage horaire",
         "descripcion": "Ajustez ce curseur par les deux extrémités pour sélectionner la plage horaire qui vous intéresse.<br><br>Le tableau n'affichera que ces heures, et la note de condition sera recalculée pour cet intervalle de temps spécifique."
       },
       "btnVerTodosLosDias": {

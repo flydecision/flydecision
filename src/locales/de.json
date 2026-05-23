@@ -176,7 +176,7 @@
         "descripcion": "Zeigt eine Tabelle mit allen als Favoriten ausgewählten Startplätzen, deren stündlicher Wettervorhersage und der berechneten Bedingungspunktzahl von 0 bis 10 (für den Start und den Beginn von XC-Routen).<br><br>Die Startplätze werden immer automatisch nach ihrer Bedingungspunktzahl für den Start sortiert (von der höchsten zur niedrigsten)."
       },
       "selectorHorario": {
-        "titulo": "🗓️ Zeitraum-Auswahl",
+        "titulo": "🕐–🕕 Zeitraum-Auswahl",
         "descripcion": "Passe diesen Schieberegler an beiden Enden an, um den gewünschten Zeitraum auszuwählen.<br><br>Die Tabelle zeigt nur diese Stunden an, und die Bewertung der Bedingungen wird für dieses spezifische Zeitintervall neu berechnet."
       },
       "btnVerTodosLosDias": {

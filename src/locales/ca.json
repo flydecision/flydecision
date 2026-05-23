@@ -176,7 +176,7 @@
         "descripcion": "Mostra una taula amb tots els enlairaments que has seleccionat com a preferits, el seu pronòstic meteorològic per hores i la seva puntuació calculada de condicions, de 0 a 10 (per enlairar-se i per iniciar rutes XC).<br><br>Els enlairaments estan sempre ordenats automàticament per la seva puntuació de condicions per enlairar-se (de major a menor)."
       },
       "selectorHorario": {
-        "titulo": "🗓️ Selector de franja horària",
+        "titulo": "🕐–🕕 Selector de franja horària",
         "descripcion": "Ajusta aquest control lliscant pels dos extrems per seleccionar la franja horària que t'interessi.<br><br>La taula només mostrarà aquestes hores, i la puntuació de les condicions es recalcularà per a aquest interval de temps específic."
       },
       "btnVerTodosLosDias": {

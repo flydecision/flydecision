@@ -176,7 +176,7 @@
         "descripcion": "Gogoko gisa hautatu dituzun aireratze guztien taula bat erakusten du, haien orduz orduko iragarpen meteorologikoa eta kalkulatutako baldintzen puntuazioa, 0tik 10era (aireratzeko eta XC ibilbideak hasteko).<br><br>Aireratzeak beti automatikoki ordenatuta daude aireratzeko baldintzen puntuazioaren arabera (handienetik txikienera)."
       },
       "selectorHorario": {
-        "titulo": "🗓️ Ordu-tartearen hautatzailea",
+        "titulo": "🕐–🕕 Ordu-tartearen hautatzailea",
         "descripcion": "Doitu graduatzaile hau bi muturretatik interesatzen zaizun ordu-tartea hautatzeko.<br><br>Taulak ordu horiek soilik erakutsiko ditu, eta baldintzen puntuazioa denbora-tarte zehatz horretarako berriro kalkulatuko da."
       },
       "btnVerTodosLosDias": {

@@ -176,7 +176,7 @@
         "descripcion": "Shows a table with all the takeoffs you have selected as favorites, their hourly weather forecast, and their calculated conditions score, from 0 to 10 (for taking off and starting XC routes).<br><br>The takeoffs are always automatically sorted by their takeoff conditions score (from highest to lowest)."
       },
       "selectorHorario": {
-        "titulo": "🗓️ Time Range Selector",
+        "titulo": "🕐–🕕 Time Range Selector",
         "descripcion": "Adjust this slider from both ends to select the time range you are interested in.<br><br>The table will only show those hours, and the condition score will be recalculated for that specific time interval."
       },
       "btnVerTodosLosDias": {

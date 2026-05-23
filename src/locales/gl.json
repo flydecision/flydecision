@@ -176,7 +176,7 @@
         "descripcion": "Mostra unha táboa con todos os despegues que seleccionaches como favoritos, o seu prognóstico meteorolóxico por horas e a súa puntuación calculada de condicións, de 0 a 10 (para despegar e para iniciar rutas XC).<br><br>Os despegues están sempre ordenados automaticamente pola súa puntuación de condicións para despegar (de maior a menor)."
       },
       "selectorHorario": {
-        "titulo": "🗓️ Selector de franxa horaria",
+        "titulo": "🕐–🕕 Selector de franxa horaria",
         "descripcion": "Axusta este control desprazable por ambos extremos para seleccionar a franxa horaria que che interese.<br><br>A táboa só mostrará esas horas, e a puntuación das condicións recalcularase para ese intervalo de tempo específico."
       },
       "btnVerTodosLosDias": {

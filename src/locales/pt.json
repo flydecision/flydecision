@@ -176,7 +176,7 @@
         "descripcion": "Mostra uma tabela com todas as descolagens que selecionaste como favoritas, a sua previsão meteorológica por horas e a sua pontuação calculada de condições, de 0 a 10 (para descolar e para iniciar rotas XC).<br><br>As descolagens estão sempre ordenadas automaticamente pela sua pontuação de condições para descolar (da maior para a menor)."
       },
       "selectorHorario": {
-        "titulo": "🗓️ Seletor de janela de tempo",
+        "titulo": "🕐–🕕 Seletor de janela de tempo",
         "descripcion": "Ajuste este controlo deslizante em ambas as extremidades para selecionar a janela de tempo que lhe interessa.<br><br>A tabela mostrará apenas essas horas, e a pontuação das condições será recalculada para esse intervalo de tempo específico."
       },
       "btnVerTodosLosDias": {
