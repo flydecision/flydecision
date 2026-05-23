@@ -9667,9 +9667,9 @@ function inicializarMapaLeaflet() {
         const lat = parseFloat(row.Latitud);
         const lon = parseFloat(row.Longitud);
         const altitud = row.Altitud || '';	
-        const region = row.Región || ''; //asigna el contenido de la columna “Nombre_clásico” si existe; si no existe, deja la variable como cadena vacía. || → operador lógico “o”: devuelve el primer valor existente y no vacío.
+        const region = row.Región || ''; 
         const provincia = row.Provincia || '';
-        const despegue = row.Despegue || '';
+        let despegue = row.Despegue || ''; // Cambiado a 'let' para poder sobrescribirlo
         const SVGorientaciones = createOrientationSVG(row.Orientaciones);
         const orientacion = row.Orientación || '';
         const orientaciones = row.Orientaciones || '';
@@ -9684,30 +9684,46 @@ function inicializarMapaLeaflet() {
         const ultimovuelo = row.Último_vuelo || '';
         const info = row.Más_información || '';
 
+        let idDespegue = row.ID || '';
+        let botonVerEnTablaHTML = ''; // Inicialmente vacío (se rellena si existe en la tabla)
+
+        // 🚀 NUEVO: Cruzamos coordenadas con la base de datos de la Tabla
+        if (window.bdGlobalDespegues) {
+            const matchTabla = window.bdGlobalDespegues.find(d =>
+                parseFloat(d.Latitud).toFixed(4) === lat.toFixed(4) &&
+                parseFloat(d.Longitud).toFixed(4) === lon.toFixed(4)
+            );
+
+            if (matchTabla) {
+                despegue = matchTabla.Despegue; // Obligamos a usar el nombre AGRUPADO de la tabla
+                idDespegue = matchTabla.ID;     // Obligamos a usar el ID de la tabla
+
+                // Como sí está en la tabla, generamos el botón
+                botonVerEnTablaHTML = `
+                <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
+                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.2; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
+                        📊 ${t('mapa.verEnTabla')}
+                    </button>
+                </div>`;
+            }
+        }
+
+        // Creamos el icono usando el nombre "Despegue" (que ahora es el agrupado de la tabla si hubo match)
         const icon = createIconDespegue(despegue, actividad, orientaciones);
         const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
 
-        // 1. Traducimos el nombre largo (noroeste -> northwest). Usamos .toLowerCase() para que coincida con las claves del JSON
+        // 1. Traducimos el nombre largo (noroeste -> northwest)
         const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
-
-        // 2. Traducimos los códigos (NO -> NW) usando la función existente
         const codigosOriTraducidos = traducirCadenaOrientacion(row.Orientaciones);
                 
-        // Sacamos el ID de forma segura para usarlo en el botón
-        const idDespegue = row.ID || '';
-
         const popupHtml = `<div style="line-height: 1.2;">
         
                 <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
                 <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
                 
-                <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
-                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.2; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
-                        📊 ${t('mapa.verEnTabla')}
-                    </button>
-                </div>
+                ${botonVerEnTablaHTML}
 
-                <div style="margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
+                <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                 <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
                 <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
                 
