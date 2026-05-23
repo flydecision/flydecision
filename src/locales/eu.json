@@ -396,6 +396,7 @@
   },
 
   "mapa": {
+    "verEnTabla": "Meteoa taulan ikusi",
     "btnGuardarVista": "💾 Uneko ikuspegia memorizatu",
     "btnGuardarVistaTitle": "Gorde uneko zentroa eta zooma zure ikuspegi lehenetsi gisa",
     "seleccionarOrigen": "Hautatu jatorria",

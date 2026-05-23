@@ -4260,14 +4260,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 </button>
             `;
 			
-            const provinciaHTML = modoEdicionFavoritos ? "" : `<b style="display:block;">${d.Provincia.toUpperCase()}</b>`;
+            const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block;">${d.Provincia.toUpperCase()}</span>`;
 
             // Montamos la celda con los dos botones
             tdDespegue.innerHTML = `
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
+                <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
-                <div class="texto-multilinea-2" title="${d.Despegue}">${d.Despegue}</div>
 				${svgOrientaciones}
             `;
 
@@ -7426,35 +7426,36 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // ---------------------------------------------------------------
     // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
     // ---------------------------------------------------------------
-    window.verMeteoEnTabla = function(nombreDespegue) {
-        // 1. Cerramos el popup del mapa por limpieza
+    window.verMeteoEnTabla = function(idDespegue) {
         if (typeof map !== 'undefined' && map) map.closePopup();
+        
+        // 1. Buscamos el despegue en la BD global usando el ID para obtener su nombre EXACTO en la tabla
+        const despegueBD = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(idDespegue));
+        if (!despegueBD) return; // Si por algún motivo no existe, abortamos
+        
+        const nombreExactoTabla = despegueBD.Despegue;
 
-        // 2. Cambiamos la vista a la tabla
         cambiarVista('tabla');
 
-        // 3. Forzamos el nombre exacto en el buscador
+        // 2. Forzamos el nombre exacto en el buscador
         const input = document.getElementById('buscador-despegues-provincias');
         if (input) {
-            input.value = nombreDespegue;
-            input.classList.add('filtrado'); // Activa el borde azul/rojo visual
+            input.value = nombreExactoTabla;
+            input.classList.add('filtrado'); 
         }
 
-        // 4. Mostramos la "X" de limpiar el buscador
         const btnLimpiar = document.getElementById('limpiar-buscador');
         if (btnLimpiar) btnLimpiar.style.display = 'block';
 
-        // 5. Ejecutamos el filtro visual de la tabla
         if (typeof aplicarFiltrosVisuales === 'function') {
             aplicarFiltrosVisuales();
         }
 
-        // 6. Iluminamos el icono "Buscar" en el menú inferior
+        // 3. 🚀 CORRECCIÓN: Iluminar "Inicio" en lugar de "Buscar"
         if (typeof window.activarMenuInferior === 'function') {
-            window.activarMenuInferior(document.getElementById('nav-search'));
+            window.activarMenuInferior(document.getElementById('nav-home'));
         }
 
-        // 7. Nos aseguramos de subir arriba del todo
         const wrapper = document.querySelector('.tabla-wrapper');
         const principal = document.querySelector('.contenedor-principal-tabla');
         const scrollOptions = { top: 0, behavior: 'instant' };
@@ -9692,14 +9693,17 @@ function inicializarMapaLeaflet() {
         // 2. Traducimos los códigos (NO -> NW) usando la función existente
         const codigosOriTraducidos = traducirCadenaOrientacion(row.Orientaciones);
                 
+        // Sacamos el ID de forma segura para usarlo en el botón
+        const idDespegue = row.ID || '';
+
         const popupHtml = `<div style="line-height: 1.2;">
         
                 <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
                 <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
                 
                 <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
-                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(despegue).replace(/'/g, "\\'")}');" style="width: 100%; height: 32px; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
-                        📊 Ver meteo en la tabla
+                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.2; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
+                        📊 ${t('mapa.verEnTabla')}
                     </button>
                 </div>
 
