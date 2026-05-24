@@ -25,9 +25,10 @@
     "siSalir": "Ja, verlassen",
     "no": "Nein",
     "configurarOrigen": "Ursprung festlegen",
-    "marcarFavoritos": "Favoriten markieren",
-    "verGuiaGeneral": "Allgemeine Anleitung ansehen",
-    "importarConfiguracion": "Konfiguration importieren",
+    "marcarFavoritos": "♥️ Favoriten startplatzkarte markieren",
+    "explorarMapa": "🗺️ Startplatzkarte erkunden",
+    "verGuiaGeneral": "📖 Allgemeine Anleitung ansehen",
+    "importarConfiguracion": "📂 Konfiguration importieren",
     "marcarFavoritosFlecha": "Favoriten markieren →",
     "entendido": "Verstanden"
   },

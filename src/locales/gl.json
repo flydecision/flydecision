@@ -25,9 +25,10 @@
     "siSalir": "Si, saír",
     "no": "Non",
     "configurarOrigen": "Configurar orixe",
-    "marcarFavoritos": "Marcar favoritos",
-    "verGuiaGeneral": "Ver guía xeral",
-    "importarConfiguracion": "Importar configuración",
+    "marcarFavoritos": "♥️ Marcar despegues favoritos",
+    "explorarMapa": "🗺️ Explorar mapa de despegues",
+    "verGuiaGeneral": "📖 Ver guía xeral",
+    "importarConfiguracion": "📂 Importar configuración",
     "marcarFavoritosFlecha": "Marcar favoritos →",
     "entendido": "Entendido"
   },

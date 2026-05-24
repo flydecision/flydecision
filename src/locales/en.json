@@ -25,9 +25,10 @@
     "siSalir": "Yes, exit",
     "no": "No",
     "configurarOrigen": "Set origin",
-    "marcarFavoritos": "Mark favorites",
-    "verGuiaGeneral": "See general guide",
-    "importarConfiguracion": "Import configuration",
+    "marcarFavoritos": "♥️ Mark favorites takeoffs",
+    "explorarMapa": "🗺️ Explore takeoffs map",
+    "verGuiaGeneral": "📖 See general guide",
+    "importarConfiguracion": "📂 Import configuration",
     "marcarFavoritosFlecha": "Mark favorites →",
     "entendido": "Got it"
   },
