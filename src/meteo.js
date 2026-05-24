@@ -2970,133 +2970,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 });
             };
 
-            // Asistente de configuración inicial. Paso 6 Guía rápida
-            // ==========================================================
-            const mostrarPaso6 = function() {
-                GestorMensajes.mostrar({
-                    tipo: 'modal',
-                    htmlContenido: t('asistente.paso6.html'),
-                    botones: [
-                    {
-                        texto: '←',
-                        estilo: 'secundario',
-                        onclick: function() {
-                            GestorMensajes.ocultar();
-                            mostrarPaso5(); 
-                        }
-                    },
-                    {
-                        texto: t('botones.marcarFavoritosFlecha'),
-                        onclick: function() {
-                            GestorMensajes.ocultar();
-                            activarEdicionFavoritos();
-                            return;
-                        }
-                    }]
-                });
-            };
-
-            // Asistente de configuración inicial. Paso 5 Guía rápida
-            // ==========================================================
-            const mostrarPaso5 = function() {
-                GestorMensajes.mostrar({
-                    tipo: 'modal',
-                    htmlContenido: t('asistente.paso5.html'),
-                    botones: [
-                    {
-                        texto: '←',
-                        estilo: 'secundario',
-                        onclick: function() {
-                            GestorMensajes.ocultar();
-                            mostrarPaso4(); 
-                        }
-                    },
-                    {
-                        texto: t('botones.siguienteFlecha'),
-                        onclick: function() {
-                            GestorMensajes.ocultar();
-                            mostrarPaso6(); 
-                        }
-                    }]
-                });
-            };
-
-            // Asistente de configuración inicial. Paso 4 Guía rápida
-            // ==========================================================
-            const mostrarPaso4 = function() {
-                GestorMensajes.mostrar({
-                    tipo: 'modal',
-                    htmlContenido: t('asistente.paso4.html'),
-                    botones: [
-                    {
-                        texto: '←',
-                        estilo: 'secundario',
-                        onclick: function() {
-                            GestorMensajes.ocultar();
-                            mostrarPaso3(); 
-                        }
-                    },
-                    {
-                        texto: t('botones.siguiente'),
-                        onclick: function() {
-                            GestorMensajes.ocultar();
-                            mostrarPaso5(); 
-                        }
-                    }]
-                });
-            };
-
-            // Asistente de configuración inicial. Paso 3 Guía rápida
-            // ==========================================================
-            const mostrarPaso3 = function() {
-                GestorMensajes.mostrar({
-                    tipo: 'modal',
-                    htmlContenido: t('asistente.paso3.html'),
-                    botones: [
-                    {
-                        texto: '←',
-                        estilo: 'secundario',
-                        onclick: function() {
-                            GestorMensajes.ocultar();
-                            mostrarPaso2(); 
-                        }
-                    },
-                    {
-                        texto: t('botones.siguiente'),
-                        onclick: function() {
-                            GestorMensajes.ocultar();
-                            mostrarPaso4(); 
-                        }
-                    }]
-                });
-            };
-
-            // Asistente de configuración inicial. Paso 2 Guía rápida
-            // ==========================================================
-            const mostrarPaso2 = function() {
-                GestorMensajes.mostrar({
-                    tipo: 'modal',
-                    htmlContenido: t('asistente.paso2.html'),
-                    botones: [
-                    {
-                        texto: '←',
-                        estilo: 'secundario',
-                        onclick: function() {
-                            GestorMensajes.ocultar();
-                            mostrarPaso1(); 
-                        }
-                    },
-                    {
-                        texto: t('botones.siguiente'),
-                        onclick: function() {
-                            GestorMensajes.ocultar();
-                            mostrarPaso3(); 
-                        }
-                    }]
-                });
-            };
-
-            // Asistente de configuración inicial. Pantalla inicial (Paso 1)
+            // Pantalla de bienvenida
             // ==========================================================
             const mostrarPaso1 = function() {
                 // Detectamos si el usuario tiene algún favorito ya guardado (por ejemplo, mediante el atajo del mapa)
@@ -3133,7 +3007,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                             estilo: 'secundario',
                             onclick: function() {
                                 GestorMensajes.ocultar();
-                                mostrarPaso2();
+                                if (typeof abrirLinkExterno === 'function') {
+                                    abrirLinkExterno("https://flydecision.com/ayuda");
+                                }
+                                return;
                             }
                         },
                         {
