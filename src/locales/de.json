@@ -80,7 +80,7 @@
     "necesarioMarcarUno": "<p>Mindestens ein favorisierter Startplatz ist erforderlich ♥️</p><p>Wenn du möchtest, kannst du die Kurzanleitung für diesen Bildschirm über die Schaltfläche <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Anleitung'> aufrufen.</p>",
     "confirmacionMasiva": "Möchtest du <span style='font-weight:bold;'>{{cantidad}}</span> Startplätze als Favoriten markieren?",
     "confirmarDesmarcarTodos": "Möchtest du die Markierung aller deiner Favoriten aufheben?",
-    "anadidoOk": "✅ <b>{{nombre}}</b> hinzugefügt",
+    "anadidoOk": "<b>{{nombre}}</b> zu Favoriten hinzugefügt ♥️",
     "importadosOk": "✅ {{n}} favorisierte Startplätze wurden importiert",
     "archivoVacio": "⚠️ Die Datei war leer.",
     "errorArchivo": "⚠️ Fehler beim Verarbeiten der Datei.",
@@ -320,7 +320,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Wo fliegen?</p><p>🌦️ Stündliche Vorhersage für 4 Tage.</p><p>📊 Automatisierte Bewertung der Bedingungen für Start und XC.</p><p>🗺️ Startplatz-Karte.</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Wo fliegen?</p>",
       "btnPrimario": "Favoriten auswählen",
       "btnSecundario": "Allgemeine Anleitung ansehen",
       "btnImportar": "Einstellungen importieren"

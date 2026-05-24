@@ -80,7 +80,7 @@
     "necesarioMarcarUno": "<p>Es requereix almenys un enlairament preferit ♥️</p><p>Si ho desitges, pots consultar la guia ràpida d'aquesta pantalla mitjançant el botó <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guia'>.</p>",
     "confirmacionMasiva": "Vols marcar <span style='font-weight:bold;'>{{cantidad}}</span> enlairaments com a preferits?",
     "confirmarDesmarcarTodos": "Vols desmarcar tots els teus preferits?",
-    "anadidoOk": "✅ <b>{{nombre}}</b> afegit",
+    "anadidoOk": "<b>{{nombre}}</b> afegit a preferits ♥️",
     "importadosOk": "✅ S'han importat {{n}} enlairaments preferits",
     "archivoVacio": "⚠️ El fitxer estava buit.",
     "errorArchivo": "⚠️ Error en processar el fitxer.",
@@ -320,7 +320,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>On volar?</p><p>🌦️ Previsió horària a 4 dies.</p><p>📊 Avaluació automatitzada de les condicions per a Enlairament i XC.</p><p>🗺️ Mapa d'enlairaments.</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>On volar?</p>",
       "btnPrimario": "Seleccionar preferits",
       "btnSecundario": "Veure guia general",
       "btnImportar": "Importar ajustos"

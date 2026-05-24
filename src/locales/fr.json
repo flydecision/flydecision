@@ -80,7 +80,7 @@
     "necesarioMarcarUno": "<p>Au moins un décollage favori est requis ♥️</p><p>Si vous le souhaitez, vous pouvez consulter le guide rapide de cet écran à l'aide du bouton <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guide'>.</p>",
     "confirmacionMasiva": "Voulez-vous marquer <span style='font-weight:bold;'>{{cantidad}}</span> décollages comme favoris ?",
     "confirmarDesmarcarTodos": "Voulez-vous démarquer tous vos favoris ?",
-    "anadidoOk": "✅ <b>{{nombre}}</b> ajouté",
+    "anadidoOk": "<b>{{nombre}}</b> ajouté aux favoris ♥️",
     "importadosOk": "✅ {{n}} décollages favoris ont été importés",
     "archivoVacio": "⚠️ Le fichier était vide.",
     "errorArchivo": "⚠️ Erreur lors du traitement du fichier.",
@@ -320,7 +320,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Où voler ?</p><p>🌦️ Prévisions horaires sur 4 jours.</p><p>📊 Évaluation automatisée des conditions pour le décollage et le XC.</p><p>🗺️ Carte des décollages.</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Où voler ?</p>",
       "btnPrimario": "Sélectionner des favoris",
       "btnSecundario": "Voir le guide général",
       "btnImportar": "Importer les paramètres"

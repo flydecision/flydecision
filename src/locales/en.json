@@ -80,7 +80,7 @@
     "necesarioMarcarUno": "<p>At least one favorite takeoff is required ♥️</p><p>If you want, you can check the quick guide for this screen using the <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guide'> button.</p>",
     "confirmacionMasiva": "Do you want to mark <span style='font-weight:bold;'>{{cantidad}}</span> takeoffs as favorites?",
     "confirmarDesmarcarTodos": "Do you want to unmark all your favorites?",
-    "anadidoOk": "✅ <b>{{nombre}}</b> added",
+    "anadidoOk": "<b>{{nombre}}</b> added to favorites ♥️",
     "importadosOk": "✅ {{n}} favorite takeoffs have been imported",
     "archivoVacio": "⚠️ The file was empty.",
     "errorArchivo": "⚠️ Error processing the file.",
@@ -320,7 +320,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Where to fly?</p><p>🌦️ 4-day hourly forecast.</p><p>📊 Automated condition scoring for Takeoff and XC.</p><p>🗺️ Takeoff map.</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Where to fly?</p>",
       "btnPrimario": "Select favorites",
       "btnSecundario": "View general guide",
       "btnImportar": "Import settings"

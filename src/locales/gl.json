@@ -80,7 +80,7 @@
     "necesarioMarcarUno": "<p>Requírese polo menos unha engalaxe favorita ♥️</p><p>Se o desexas, podes consultar a guía rápida desta pantalla mediante o botón <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guía'>.</p>",
     "confirmacionMasiva": "Desexas marcar <span style='font-weight:bold;'>{{cantidad}}</span> engalaxes como favoritas?",
     "confirmarDesmarcarTodos": "Desexas desmarcar todos os teus favoritos?",
-    "anadidoOk": "✅ <b>{{nombre}}</b> engadido",
+    "anadidoOk": "<b>{{nombre}}</b> engadido a favoritos ♥️",
     "importadosOk": "✅ Importáronse {{n}} engalaxes favoritas",
     "archivoVacio": "⚠️ O ficheiro estaba baleiro.",
     "errorArchivo": "⚠️ Erro ao procesar o ficheiro.",
@@ -320,7 +320,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Onde voar?</p><p>🌦️ Previsión horaria a 4 días.</p><p>📊 Avaliación automatizada das condicións para Engalaxe e XC.</p><p>🗺️ Mapa de engalaxes.</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Onde voar?</p>",
       "btnPrimario": "Seleccionar favoritos",
       "btnSecundario": "Ver guía xeral",
       "btnImportar": "Importar axustes"

@@ -80,7 +80,7 @@
     "necesarioMarcarUno": "<p>Gutxienez gogoko aireratze bat behar da ♥️</p><p>Nahi baduzu, pantaila honen gida azkarra ikus dezakezu <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Gida'> botoia erabiliz.</p>",
     "confirmacionMasiva": "<span style='font-weight:bold;'>{{cantidad}}</span> aireratze gogoko gisa markatu nahi dituzu?",
     "confirmarDesmarcarTodos": "Zure gogoko guztien markaketa kendu nahi duzu?",
-    "anadidoOk": "✅ <b>{{nombre}}</b> gehitu da",
+    "anadidoOk": "<b>{{nombre}}</b> gogokoetara gehitu da ♥️",
     "importadosOk": "✅ {{n}} gogoko aireratze inportatu dira",
     "archivoVacio": "⚠️ Fitxategia hutsik zegoen.",
     "errorArchivo": "⚠️ Errorea fitxategia prozesatzean.",
@@ -320,7 +320,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Non hegan egin?</p><p>🌦️ 4 eguneko orduko iragarpena.</p><p>📊 Baldintzen ebaluazio automatizatua Aireratzerako eta XC-rako.</p><p>🗺️ Aireratzeen mapa.</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Non hegan egin?</p>",
       "btnPrimario": "Hautatu gogokoak",
       "btnSecundario": "Ikusi gida orokorra",
       "btnImportar": "Inportatu ezarpenak"

@@ -80,7 +80,7 @@
     "necesarioMarcarUno": "<p>Es necesario marcar al menos un despegue favorito ♥️</p><p>Si quieres, puedes consultar la guía rápida de esta pantalla con el botón <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guía'></p>",
     "confirmacionMasiva": "¿Quieres marcar <span style='font-weight:bold;'>{{cantidad}}</span> despegues como favoritos?",
     "confirmarDesmarcarTodos": "¿Quieres desmarcar todos tus favoritos?",
-    "anadidoOk": "✅ <b>{{nombre}}</b> añadido",
+    "anadidoOk": "<b>{{nombre}}</b> añadido a favoritos ♥️",
     "importadosOk": "✅ Se han importado {{n}} despegues favoritos",
     "archivoVacio": "⚠️ El archivo estaba vacío.",
     "errorArchivo": "⚠️ Error al procesar el archivo.",
@@ -320,7 +320,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>¿Dónde ir a volar?</p><p>🌦️ Pronóstico para 4 días por horas.</p><p>📊 Análisis automático de condiciones para despegar o para iniciar XC.</p><p>🗺️ Mapa de despegues.</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>¿Dónde ir a volar?</p>",
       "btnPrimario": "Marcar favoritos",
       "btnSecundario": "Ver la guía general",
       "btnImportar": "Importar configuración"

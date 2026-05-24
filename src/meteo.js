@@ -1123,6 +1123,10 @@ function iniciarGuiaFavoritos(forzar = false) {
 
 function activarEdicionFavoritos() {
 
+    // BANDERA: El usuario ya sabe cómo llegar aquí
+    localStorage.setItem("METEO_CONFIG_FAVS_HECHA", "true");
+    window.venirDeEdicionActiva = true; // Flag de que estamos editando activamente
+
     // 1. LIMPIAR BÚSQUEDA Y OTROS FILTROS PREVIOS
     if (typeof limpiarBuscador === 'function') {
         limpiarBuscador(); 
@@ -1692,6 +1696,7 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
 	
     localStorage.setItem("METEO_PRIMERA_VISITA_HECHA", "true");
     modoEdicionFavoritos = false; 
+    window.venirDeEdicionActiva = false; // Apagamos el chivato al finalizar de editar
     
     // Al limpiar el buscador aquí, ya se restaurará el placeholder normal
     limpiarBuscador(); 
@@ -2887,271 +2892,279 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
                 const panelHorario = document.querySelector('.div-filtro-horario');
                 if (panelHorario) panelHorario.style.display = 'none';
+            } 
+                
+            // Asistente de configuración inicial. Paso 0: Idioma
+            // ==========================================================
+            const mostrarPaso0 = function() {
+                
+                // Exponemos la función a nivel global para que el HTML inyectado pueda usarla en el onclick
+                window.guardarIdiomaInicial = function(idiomaCode) {
+                    // 1. Le decimos a i18next cuál es el idioma forzando su variable
+                    localStorage.setItem("i18nextLng", idiomaCode);
+                    
+                    // 2. Creamos nuestra propia bandera de control de flujo
+                    localStorage.setItem("METEO_IDIOMA_ELEGIDO", "true");
+                    
+                    GestorMensajes.ocultar();
+                    
+                    // 3. Recargamos la página para que i18next aplique el idioma y pase al Paso 1
+                    window.location.reload();
+                };
 
-                // Si NO es un enlace directo al mapa, mostramos el asistente
-                if (!enlaceDirectoMapa) {
-
-                    // Asistente de configuración inicial. Paso 0: Idioma
-                    // ==========================================================
-                    const mostrarPaso0 = function() {
+                // Creamos el diseño con botones apilados, bandera a la izquierda y texto
+                const htmlIdiomas = `
+                    <p style='font-size: 1.1em; font-weight: bold; text-align:center; margin-bottom: 20px; line-height: 1.4;'>
+                        Idioma / Hizkuntza / Llengua / Language / Langue / Sprache
+                    </p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 6px; align-items: center; margin-bottom: 20px;">
                         
-                        // Exponemos la función a nivel global para que el HTML inyectado pueda usarla en el onclick
-                        window.guardarIdiomaInicial = function(idiomaCode) {
-                            // 1. Le decimos a i18next cuál es el idioma forzando su variable
-                            localStorage.setItem("i18nextLng", idiomaCode);
-                            
-                            // 2. Creamos nuestra propia bandera de control de flujo
-                            localStorage.setItem("METEO_IDIOMA_ELEGIDO", "true");
-                            
+                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('es-ES')">
+                            <img src="icons/flag_es_ES.webp" alt="Español" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                            <span style="font-size: 1.1em; font-weight: bold;">Español</span>
+                        </button>
+                        
+                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('eu-ES')">
+                            <img src="icons/flag_eu_ES.webp" alt="Euskara" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                            <span style="font-size: 1.1em; font-weight: bold;">Euskara</span>
+                        </button>
+                        
+                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('ca-ES')">
+                            <img src="icons/flag_ca_ES.webp" alt="Català" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                            <span style="font-size: 1.1em; font-weight: bold;">Català</span>
+                        </button>
+
+                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('gl-ES')">
+                            <img src="icons/flag_gl_ES.webp" alt="Galego" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                            <span style="font-size: 1.1em; font-weight: bold;">Galego</span>
+                        </button>
+                        
+                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('en-GB')">
+                            <img src="icons/flag_en_GB.webp" alt="English" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                            <span style="font-size: 1.1em; font-weight: bold;">English</span>
+                        </button>
+                        
+                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('fr-FR')">
+                            <img src="icons/flag_fr_FR.webp" alt="Français" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                            <span style="font-size: 1.1em; font-weight: bold;">Français</span>
+                        </button>
+                        
+                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('de-DE')">
+                            <img src="icons/flag_de_DE.webp" alt="Deutsch" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                            <span style="font-size: 1.1em; font-weight: bold;">Deutsch</span>
+                        </button>
+
+                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('pt-PT')">
+                            <img src="icons/flag_pt_PT.webp" alt="Português" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                            <span style="font-size: 1.1em; font-weight: bold;">Português</span>
+                        </button>
+                        
+                    </div>
+                `;
+
+                GestorMensajes.mostrar({
+                    tipo: 'modal',
+                    htmlContenido: htmlIdiomas,
+                    botones: [] // Lo enviamos vacío para que el Gestor no pinte sus botones por defecto abajo
+                });
+            };
+
+            // Asistente de configuración inicial. Paso 6 Guía rápida
+            // ==========================================================
+            const mostrarPaso6 = function() {
+                GestorMensajes.mostrar({
+                    tipo: 'modal',
+                    htmlContenido: t('asistente.paso6.html'),
+                    botones: [
+                    {
+                        texto: '←',
+                        estilo: 'secundario',
+                        onclick: function() {
                             GestorMensajes.ocultar();
-                            
-                            // 3. Recargamos la página para que i18next aplique el idioma y pase al Paso 1
-                            window.location.reload();
-                        };
+                            mostrarPaso5(); 
+                        }
+                    },
+                    {
+                        texto: t('botones.marcarFavoritosFlecha'),
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                            activarEdicionFavoritos();
+                            return;
+                        }
+                    }]
+                });
+            };
 
-                        // Creamos el diseño con botones apilados, bandera a la izquierda y texto
-                        const htmlIdiomas = `
-                            <p style='font-size: 1.1em; font-weight: bold; text-align:center; margin-bottom: 20px; line-height: 1.4;'>
-                                Idioma / Hizkuntza / Llengua / Language / Langue / Sprache
-                            </p>
-                            
-                            <div style="display: flex; flex-direction: column; gap: 6px; align-items: center; margin-bottom: 20px;">
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('es-ES')">
-                                    <img src="icons/flag_es_ES.webp" alt="Español" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Español</span>
-                                </button>
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('eu-ES')">
-                                    <img src="icons/flag_eu_ES.webp" alt="Euskara" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Euskara</span>
-                                </button>
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('ca-ES')">
-                                    <img src="icons/flag_ca_ES.webp" alt="Català" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Català</span>
-                                </button>
+            // Asistente de configuración inicial. Paso 5 Guía rápida
+            // ==========================================================
+            const mostrarPaso5 = function() {
+                GestorMensajes.mostrar({
+                    tipo: 'modal',
+                    htmlContenido: t('asistente.paso5.html'),
+                    botones: [
+                    {
+                        texto: '←',
+                        estilo: 'secundario',
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                            mostrarPaso4(); 
+                        }
+                    },
+                    {
+                        texto: t('botones.siguienteFlecha'),
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                            mostrarPaso6(); 
+                        }
+                    }]
+                });
+            };
 
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('gl-ES')">
-                                    <img src="icons/flag_gl_ES.webp" alt="Galego" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Galego</span>
-                                </button>
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('en-GB')">
-                                    <img src="icons/flag_en_GB.webp" alt="English" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">English</span>
-                                </button>
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('fr-FR')">
-                                    <img src="icons/flag_fr_FR.webp" alt="Français" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Français</span>
-                                </button>
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('de-DE')">
-                                    <img src="icons/flag_de_DE.webp" alt="Deutsch" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Deutsch</span>
-                                </button>
+            // Asistente de configuración inicial. Paso 4 Guía rápida
+            // ==========================================================
+            const mostrarPaso4 = function() {
+                GestorMensajes.mostrar({
+                    tipo: 'modal',
+                    htmlContenido: t('asistente.paso4.html'),
+                    botones: [
+                    {
+                        texto: '←',
+                        estilo: 'secundario',
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                            mostrarPaso3(); 
+                        }
+                    },
+                    {
+                        texto: t('botones.siguiente'),
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                            mostrarPaso5(); 
+                        }
+                    }]
+                });
+            };
 
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('pt-PT')">
-                                    <img src="icons/flag_pt_PT.webp" alt="Português" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Português</span>
-                                </button>
-                                
-                            </div>
-                        `;
+            // Asistente de configuración inicial. Paso 3 Guía rápida
+            // ==========================================================
+            const mostrarPaso3 = function() {
+                GestorMensajes.mostrar({
+                    tipo: 'modal',
+                    htmlContenido: t('asistente.paso3.html'),
+                    botones: [
+                    {
+                        texto: '←',
+                        estilo: 'secundario',
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                            mostrarPaso2(); 
+                        }
+                    },
+                    {
+                        texto: t('botones.siguiente'),
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                            mostrarPaso4(); 
+                        }
+                    }]
+                });
+            };
 
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: htmlIdiomas,
-                            botones: [] // Lo enviamos vacío para que el Gestor no pinte sus botones por defecto abajo
-                        });
-                    };
+            // Asistente de configuración inicial. Paso 2 Guía rápida
+            // ==========================================================
+            const mostrarPaso2 = function() {
+                GestorMensajes.mostrar({
+                    tipo: 'modal',
+                    htmlContenido: t('asistente.paso2.html'),
+                    botones: [
+                    {
+                        texto: '←',
+                        estilo: 'secundario',
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                            mostrarPaso1(); 
+                        }
+                    },
+                    {
+                        texto: t('botones.siguiente'),
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                            mostrarPaso3(); 
+                        }
+                    }]
+                });
+            };
 
-                    // Asistente de configuración inicial. Paso 6 Guía rápida
-                    // ==========================================================
-                    const mostrarPaso6 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso6.html'),
-                            botones: [
-                            {
-                                texto: '←',
-                                estilo: 'secundario',
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso5(); 
-                                }
-                            },
-                            {
-                                texto: t('botones.marcarFavoritosFlecha'),
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    activarEdicionFavoritos();
-                                    return;
-                                }
-                            }]
-                        });
-                    };
+            // Asistente de configuración inicial. Pantalla inicial (Paso 1)
+            // ==========================================================
+            const mostrarPaso1 = function() {
+                // Detectamos si el usuario tiene algún favorito ya guardado (por ejemplo, mediante el atajo del mapa)
+                const tieneFavs = (localStorage.getItem("METEO_FAVORITOS_LISTA") ? JSON.parse(localStorage.getItem("METEO_FAVORITOS_LISTA")) : []).length > 0;
+                const haVistoMapa = window.seHaExploradoMapa === true;
+                const destacarFavoritos = tieneFavs || haVistoMapa;
 
-                    // Asistente de configuración inicial. Paso 5 Guía rápida
-                    // ==========================================================
-                    const mostrarPaso5 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso5.html'),
-                            botones: [
-                            {
-                                texto: '←',
-                                estilo: 'secundario',
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso4(); 
-                                }
-                            },
-                            {
-                                texto: t('botones.siguienteFlecha'),
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso6(); 
-                                }
-                            }]
-                        });
-                    };
+                GestorMensajes.mostrar({
+                    tipo: 'modal',
+                    htmlContenido: t('asistente.paso1.html'),
+                    botones: [
+                        {
+                            texto: t('botones.explorarMapa'),
+                            // Si ya tiene favoritos, el botón de explorar pasa a ser secundario (gris)
+                            estilo: destacarFavoritos ? 'secundario' : undefined,
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                clicBotonMapa();
+                                return;
+                            }
+                        },
+                        {
+                            texto: t('botones.marcarFavoritos'),
+                            // Si tiene favoritos, pasa a ser el principal (azul). Si no, se queda secundario.
+                            estilo: destacarFavoritos ? undefined : 'secundario',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                activarEdicionFavoritos();
+                                return;
+                            }
+                        },
+                        {
+                            texto: t('botones.verGuiaGeneral'),
+                            estilo: 'secundario',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                mostrarPaso2();
+                            }
+                        },
+                        {
+                            texto: t('botones.importarConfiguracion'),
+                            estilo: 'secundario',
+                            onclick: function() {
+                                GestorMensajes.ocultar();
+                                importarConfiguracion();
+                                return;
+                            }
+                        }
+                    ],
+                    anchoBotones: 300
+                });
+            };
 
-                    // Asistente de configuración inicial. Paso 4 Guía rápida
-                    // ==========================================================
-                    const mostrarPaso4 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso4.html'),
-                            botones: [
-                            {
-                                texto: '←',
-                                estilo: 'secundario',
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso3(); 
-                                }
-                            },
-                            {
-                                texto: t('botones.siguiente'),
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso5(); 
-                                }
-                            }]
-                        });
-                    };
+            // Exponemos la función a la ventana global para que el botón del mapa la pueda llamar
+            window.mostrarPaso1General = mostrarPaso1;
 
-                    // Asistente de configuración inicial. Paso 3 Guía rápida
-                    // ==========================================================
-                    const mostrarPaso3 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso3.html'),
-                            botones: [
-                            {
-                                texto: '←',
-                                estilo: 'secundario',
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso2(); 
-                                }
-                            },
-                            {
-                                texto: t('botones.siguiente'),
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso4(); 
-                                }
-                            }]
-                        });
-                    };
+            // 🚀 NUEVA LÓGICA DE EJECUCIÓN (Solo salta el pop-up si NO vienes de URL directa)
+            if (!enlaceDirectoMapa) {
 
-                    // Asistente de configuración inicial. Paso 2 Guía rápida
-                    // ==========================================================
-                    const mostrarPaso2 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso2.html'),
-                            botones: [
-                            {
-                                texto: '←',
-                                estilo: 'secundario',
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso1(); 
-                                }
-                            },
-                            {
-                                texto: t('botones.siguiente'),
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso3(); 
-                                }
-                            }]
-                        });
-                    };
-
-                    // Asistente de configuración inicial. Pantalla inicial (Paso 1)
-                    // ==========================================================
-                    const mostrarPaso1 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso1.html'),
-                            botones: [
-                                {
-                                    texto: t('botones.marcarFavoritos'),
-                                    onclick: function() {
-                                        GestorMensajes.ocultar();
-                                        activarEdicionFavoritos();
-                                        return;
-                                    }
-                                },
-                                {
-                                    texto: t('botones.explorarMapa'),
-                                    estilo: 'secundario',
-                                    onclick: function() {
-                                        GestorMensajes.ocultar();
-                                        clicBotonMapa();
-                                        return;
-                                    }
-                                },
-                                {
-                                    texto: t('botones.verGuiaGeneral'),
-                                    estilo: 'secundario',
-                                    onclick: function() {
-                                        GestorMensajes.ocultar();
-                                        mostrarPaso2();
-                                    }
-                                },
-                                {
-                                    texto: t('botones.importarConfiguracion'),
-                                    estilo: 'secundario',
-                                    onclick: function() {
-                                        GestorMensajes.ocultar();
-                                        importarConfiguracion();
-                                        return;
-                                    }
-                                }
-                            ],
-                            anchoBotones: 300
-                        });
-                    };
-
-                    // CONTROL DE FLUJO: ¿Ha elegido idioma manualmente?
-                    if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) {
-                        mostrarPaso0();
-                    } else {
-                        mostrarPaso1();
-                    }
-
+                // CONTROL DE FLUJO: ¿Ha elegido idioma manualmente?
+                if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) {
+                    mostrarPaso0();
                 } else {
-                    // Si ES un enlace directo al mapa, no mostramos NADA.
-                    // Como 'modoEdicionFavoritos' está en 'true', la tabla se creará en modo edición 
-                    // silenciosamente de fondo y pasaremos al mapa automáticamente.
-                    // Importante: No marcamos 'METEO_PRIMERA_VISITA_HECHA' para que, si el usuario luego pulsa "Inicio", le salte la advertencia de que necesita favoritos.
+                    mostrarPaso1();
                 }
+
+            } else {
+                // Si ES un enlace directo al mapa, la app se queda en silencio. La tabla se crea en modo edición de fondo y pasamos al mapa. El botón flotante inferior permitirá al usuario llamar a mostrarPaso1General().
             }
 
         // 🟡 CASO B: Estamos en Modo Edición (Activado por botón o flujo anterior)
@@ -5148,6 +5161,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             }
         }
 
+        // Forzamos la evaluación de seguridad al arrancar la app
+        if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
+
 	} // cierre de: try {	
 
 	catch (error) {
@@ -5641,25 +5657,23 @@ function agregarDespegueDesdeBuscador(idDespegue) {
         const divSugerencias = document.getElementById('sugerencias-globales');
         if (divSugerencias) divSugerencias.style.display = 'none';
 
-        if (typeof GestorMensajes !== 'undefined') {
-            GestorMensajes.mostrar({
-                tipo: 'modal',
-                htmlContenido: `<p>${t('favoritos.anadidoOk', { nombre: nombreDespegue })}</p>`,
-                botones: [] 
-            });
+        // if (typeof GestorMensajes !== 'undefined') {
+        //     GestorMensajes.mostrar({
+        //         tipo: 'modal',
+        //         htmlContenido: `<p>${t('favoritos.anadidoOk', { nombre: nombreDespegue })}</p>`,
+        //         botones: [] 
+        //     });
 
-            setTimeout(function() {
-                GestorMensajes.ocultar(); 
-                
-                // Al construir la tabla, internamente llamará a aplicarFiltrosVisuales() al final, 
-                // lo que leerá el nuevo nombre en el input y te dejará solo ese despegue en pantalla.
-                construir_tabla(); 
-            }, 1300);
+        //     setTimeout(function() {
+        //         GestorMensajes.ocultar(); 
+        //         construir_tabla(); 
+        //     }, 1300);
 
-        } else {
-            alert(`✅ ${nombreDespegue} añadido a favoritos`);
-            construir_tabla();
-        }
+        // } else {
+        //     alert(`✅ ${nombreDespegue} añadido a favoritos`);
+        //     construir_tabla();
+        // }
+        construir_tabla();
     }
 }
 
@@ -5756,25 +5770,23 @@ document.addEventListener('i18nReady', function() {
         if (tieneCoords) {
             // --- 🚀 ARRANQUE POR COORDENADAS ---
             
-            // 2. Cargamos la tabla en segundo plano (silencioso)
-            // Esto es vital para ocultar el Splash Screen y que los datos existan
-            construir_tabla(false, true); 
+            // 2. Cargamos la tabla en segundo plano (silencioso) y ESPERAMOS a que termine (.then)
+            construir_tabla(false, true).then(() => {
+                
+                // 3. Ahora que los datos globales existen, dibujamos el mapa y sus popups
+                cambiarVista('mapa');
 
-            // 3. Cambiamos a la vista de mapa
-            cambiarVista('mapa');
-
-            // 4. ILUMINAR EL BOTÓN (Con un pequeño retraso de seguridad)
-            // Le damos 100ms para asegurar que el navegador ha terminado de procesar el HTML base
-            setTimeout(() => {
-                const btnMap = document.getElementById('nav-map');
-                if (btnMap && typeof window.activarMenuInferior === 'function') {
-                    window.activarMenuInferior(btnMap);
-                } else if (btnMap) {
-                    // Fallback manual si la función aún no estuviera definida globalmente
-                    document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
-                    btnMap.classList.add('active');
-                }
-            }, 150);
+                // 4. ILUMINAR EL BOTÓN
+                setTimeout(() => {
+                    const btnMap = document.getElementById('nav-map');
+                    if (btnMap && typeof window.activarMenuInferior === 'function') {
+                        window.activarMenuInferior(btnMap);
+                    } else if (btnMap) {
+                        document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
+                        btnMap.classList.add('active');
+                    }
+                }, 150);
+            });
 
         } else {
             // --- ARRANQUE NORMAL ---
@@ -7452,43 +7464,78 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // ---------------------------------------------------------------
     // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
     // ---------------------------------------------------------------
-    window.verMeteoEnTabla = function(idDespegue) {
-        if (typeof map !== 'undefined' && map) map.closePopup();
-        
-        // 1. Buscamos el despegue en la BD global usando el ID para obtener su nombre EXACTO en la tabla
-        const despegueBD = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(idDespegue));
-        if (!despegueBD) return; // Si por algún motivo no existe, abortamos
-        
-        const nombreExactoTabla = despegueBD.Despegue;
+    // 🚀 NUEVO: Navegar desde el popup del mapa a la tabla aislando el despegue por ID
+window.verMeteoEnTabla = function(idDespegue) {
+    if (typeof map !== 'undefined' && map) map.closePopup();
+    
+    // 1. Buscamos el despegue en la BD global usando el ID para obtener su nombre EXACTO en la tabla
+    const despegueBD = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(idDespegue));
+    if (!despegueBD) return; // Si por algún motivo no existe, abortamos
 
-        cambiarVista('tabla');
+    // Apagamos preventivamente el Modo Edición (vital si el usuario era virgen y saltó directo al mapa)
+    modoEdicionFavoritos = false;
+    soloFavoritos = true;
+    document.body.classList.remove('modo-edicion-tabla');
+    const divMenu = document.getElementById('div-menu');
+    if (divMenu) divMenu.classList.remove('mode-editing');
+    const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+    if (divMenu2) divMenu2.classList.remove('mode-editing');
+    const panelHorario = document.querySelector('.div-filtro-horario');
+    if (panelHorario) panelHorario.style.display = '';
 
-        // 2. Forzamos el nombre exacto en el buscador
-        const input = document.getElementById('buscador-despegues-provincias');
-        if (input) {
-            input.value = nombreExactoTabla;
-            input.classList.add('filtrado'); 
-        }
+    // Si no estaba en favoritos, lo añadimos silenciosamente (pero NO marcamos visita hecha todavía!)
+    const misFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
+    let esNuevoFavorito = false; 
+    
+    if (!misFavoritos.includes(Number(idDespegue))) {
+        misFavoritos.push(Number(idDespegue));
+        localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(misFavoritos));
+        esNuevoFavorito = true;
+        // 🚀 ELIMINADO: Ya no guardamos aquí METEO_PRIMERA_VISITA_HECHA
+    }
+    
+    const nombreExactoTabla = despegueBD.Despegue;
 
-        const btnLimpiar = document.getElementById('limpiar-buscador');
-        if (btnLimpiar) btnLimpiar.style.display = 'block';
+    cambiarVista('tabla');
 
-        if (typeof aplicarFiltrosVisuales === 'function') {
-            aplicarFiltrosVisuales();
-        }
+    // Evaluamos el entorno para devolverle el menú inferior si lo tenía oculto (al tener ya 1 favorito)
+    if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
 
-        // 3. 🚀 CORRECCIÓN: Iluminar "Inicio" en lugar de "Buscar"
-        if (typeof window.activarMenuInferior === 'function') {
-            window.activarMenuInferior(document.getElementById('nav-home'));
-        }
+    // 2. Forzamos el nombre exacto en el buscador
+    const input = document.getElementById('buscador-despegues-provincias');
+    if (input) {
+        input.value = nombreExactoTabla;
+        input.classList.add('filtrado'); 
+    }
 
-        const wrapper = document.querySelector('.tabla-wrapper');
-        const principal = document.querySelector('.contenedor-principal-tabla');
-        const scrollOptions = { top: 0, behavior: 'instant' };
-        if (wrapper) wrapper.scrollTo(scrollOptions);
-        if (principal) principal.scrollTo(scrollOptions);
-        window.scrollTo(scrollOptions);
-    };
+    const btnLimpiar = document.getElementById('limpiar-buscador');
+    if (btnLimpiar) btnLimpiar.style.display = 'block';
+
+    // 3. 🚀 CORRECCIÓN: Iluminar "Inicio" en lugar de "Buscar"
+    if (typeof window.activarMenuInferior === 'function') {
+        window.activarMenuInferior(document.getElementById('nav-home'));
+    }
+
+    // 4. LÓGICA DE ACTUALIZACIÓN DE LA TABLA Y FEEDBACK VISUAL
+    // if (esNuevoFavorito) {
+    //     if (typeof GestorMensajes !== 'undefined') {
+    //         GestorMensajes.mostrar({
+    //             tipo: 'modal',
+    //             htmlContenido: `<p>${t('favoritos.anadidoOk', { nombre: nombreExactoTabla })}</p>`,
+    //             botones: [] 
+    //         });
+
+    //         setTimeout(function() {
+    //             GestorMensajes.ocultar(); 
+    //             construir_tabla(); 
+    //     } else {
+    //         construir_tabla();
+    //     }
+    // } else {
+    //     construir_tabla();
+    // }
+    construir_tabla();
+};
 
     // ==========================================================================
     // 🔴 LÓGICA DEL MENÚ INFERIOR Y BUSCADOR FLOTANTE
@@ -7948,6 +7995,7 @@ window.cambiarVista = function(vista) {
     const btnVolver = document.getElementById('btn-volver-edicion-mapa');
 
     if (vista === 'mapa') {
+        window.seHaExploradoMapa = true;
            
         // Resetear modo calendario al ir al mapa
         modoVerTodosLosDias = false;
@@ -7965,10 +8013,10 @@ window.cambiarVista = function(vista) {
             mapaInicializado = true;
         } 
         
-        // --- LA MAGIA: ¿De dónde venimos? ---
+        // ¿De dónde venimos? ---
         if (btnVolver) {
-            // Si estamos en modo edición, encendemos el botón de volver
-            if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+            // Solo mostramos el botón si venimos de una edición ACTIVA real iniciada por el usuario
+            if (window.venirDeEdicionActiva === true) {
                 btnVolver.style.display = 'flex';
             } else {
                 btnVolver.style.display = 'none';
@@ -8061,6 +8109,33 @@ window.cambiarVista = function(vista) {
         if (btnFiltros) btnFiltros.style.display = '';
 
         document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
+    }
+
+    // Llamamos al evaluador cada vez que cambiamos de pantalla
+    if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
+};
+
+// 🛑 Evaluación del entorno (usuaria nueva, recurrente, URL mapa directa,...)
+// ___________________________________________________________________________________
+
+window.evaluarEstadoNuevosUsuarios = function() {
+    // Especificamos la etiqueta "nav" para no confundirlo con el botón
+    const navMenu = document.querySelector('nav.bottom-nav'); 
+    const btnConfigMapa = document.getElementById('btn-configurar-app-mapa');
+    
+    // Evaluamos la bandera maestra de si completó el flujo oficial
+    const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") === "true";
+    // 🚀 CORRECCIÓN: Usamos venirDeEdicionActiva (edición real iniciada) en lugar de modoEdicionFavoritos
+    const enEdicion = window.venirDeEdicionActiva === true; 
+
+    if (!configHecha && !enEdicion) {
+        // Mientras no haya pulsado "Finalizar edición" al menos una vez, el botón azul se queda de forma global (tanto en mapa como en tabla)
+        if (navMenu) navMenu.style.display = 'none'; 
+        if (btnConfigMapa) btnConfigMapa.style.display = 'flex'; 
+    } else {
+        // Una vez completada la primera visita, o si estamos editando favoritos, todo vuelve a la normalidad
+        if (navMenu) navMenu.style.display = 'flex'; 
+        if (btnConfigMapa) btnConfigMapa.style.display = 'none'; 
     }
 };
 

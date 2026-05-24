@@ -80,7 +80,7 @@
     "necesarioMarcarUno": "<p>É necessária pelo menos uma descolagem favorita ♥️</p><p>Se desejar, pode consultar o guia rápido deste ecrã utilizando o botão <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guia'>.</p>",
     "confirmacionMasiva": "Deseja marcar <span style='font-weight:bold;'>{{cantidad}}</span> descolagens como favoritas?",
     "confirmarDesmarcarTodos": "Deseja desmarcar todos os seus favoritos?",
-    "anadidoOk": "✅ <b>{{nombre}}</b> adicionado",
+    "anadidoOk": "<b>{{nombre}}</b> adicionado aos favoritos ♥️",
     "importadosOk": "✅ Foram importadas {{n}} descolagens favoritas",
     "archivoVacio": "⚠️ O ficheiro estava vazio.",
     "errorArchivo": "⚠️ Erro ao processar o ficheiro.",
@@ -320,7 +320,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Onde voar?</p><p>🌦️ Previsão horária a 4 dias.</p><p>📊 Avaliação automatizada das condições para Descolagem e XC.</p><p>🗺️ Mapa de descolagens.</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Onde voar?</p>",
       "btnPrimario": "Selecionar favoritos",
       "btnSecundario": "Ver guia geral",
       "btnImportar": "Importar definições"
