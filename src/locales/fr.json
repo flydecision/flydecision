@@ -25,9 +25,10 @@
     "siSalir": "Oui, quitter",
     "no": "Non",
     "configurarOrigen": "Définir l'origine",
-    "marcarFavoritos": "Marquer comme favoris",
-    "verGuiaGeneral": "Voir le guide général",
-    "importarConfiguracion": "Importer la configuration",
+    "marcarFavoritos": "♥️ Marquer décollages favoris",
+    "explorarMapa": "🗺️ Explorer la carte des décollages",
+    "verGuiaGeneral": "📖 Voir le guide général",
+    "importarConfiguracion": "📂 Importer la configuration",
     "marcarFavoritosFlecha": "Marquer comme favoris →",
     "entendido": "Compris"
   },

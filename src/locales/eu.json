@@ -25,9 +25,10 @@
     "siSalir": "Bai, irten",
     "no": "Ez",
     "configurarOrigen": "Jatorria ezarri",
-    "marcarFavoritos": "Gogokoak markatu",
-    "verGuiaGeneral": "Gida orokorra ikusi",
-    "importarConfiguracion": "Konfigurazioa inportatu",
+    "marcarFavoritos": "♥️ Aireratzeen gogokoak markatu",
+    "explorarMapa": "🗺️ Aireratzeen mapa arakatu",
+    "verGuiaGeneral": "📖 Gida orokorra ikusi",
+    "importarConfiguracion": "📂 Konfigurazioa inportatu",
     "marcarFavoritosFlecha": "Gogokoak markatu →",
     "entendido": "Ulertuta"
   },

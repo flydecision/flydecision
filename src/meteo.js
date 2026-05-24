@@ -3109,6 +3109,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                                     }
                                 },
                                 {
+                                    texto: t('botones.explorarMapa'),
+                                    estilo: 'secundario',
+                                    onclick: function() {
+                                        GestorMensajes.ocultar();
+                                        clicBotonMapa();
+                                        return;
+                                    }
+                                },
+                                {
                                     texto: t('botones.verGuiaGeneral'),
                                     estilo: 'secundario',
                                     onclick: function() {
@@ -10536,8 +10545,13 @@ function inicializarMapaLeaflet() {
             <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>✏️ ${escapeHtml(nombre)}</b></div>
             <div style="margin-bottom: 5px;">Tipo: <b>${escapeHtml(tipo)}</b></div> 
             <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
-            <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>  		
+
+            <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
+
             <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(nombre)} (${escapeHtml(tipo)})' target='_blank'>Nakarte</a></div>
+            
+            <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
+
             <div style="margin-bottom: 5px;">Notas: <b>${escapeHtml(notas)}</b></div>  
             </div>`;
 

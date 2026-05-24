@@ -25,9 +25,10 @@
     "siSalir": "Sim, sair",
     "no": "Não",
     "configurarOrigen": "Configurar origem",
-    "marcarFavoritos": "Marcar favoritos",
-    "verGuiaGeneral": "Ver guia geral",
-    "importarConfiguracion": "Importar configuração",
+    "marcarFavoritos": "♥️ Marcar descolagens favoritos",
+    "explorarMapa": "🗺️ Explorar mapa de descolagens",
+    "verGuiaGeneral": "📖 Ver guia geral",
+    "importarConfiguracion": "📂 Importar configuração",
     "marcarFavoritosFlecha": "Marcar favoritos →",
     "entendido": "Entendido"
   },

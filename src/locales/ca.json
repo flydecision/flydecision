@@ -25,9 +25,10 @@
     "siSalir": "Sí, sortir",
     "no": "No",
     "configurarOrigen": "Configurar origen",
-    "marcarFavoritos": "Marcar preferits",
-    "verGuiaGeneral": "Veure guia general",
-    "importarConfiguracion": "Importar configuració",
+    "marcarFavoritos": "♥️ Marcar enlairaments preferits",
+    "explorarMapa": "🗺️ Explorar mapa d'enlairaments",
+    "verGuiaGeneral": "📖 Veure guia general",
+    "importarConfiguracion": "📂 Importar configuració",
     "marcarFavoritosFlecha": "Marcar preferits →",
     "entendido": "Entès"
   },
