@@ -7420,7 +7420,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
             misFavoritos.push(Number(idDespegue));
             localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(misFavoritos));
             esNuevoFavorito = true;
-            // 🚀 ELIMINADO: Ya no guardamos aquí METEO_PRIMERA_VISITA_HECHA
         }
         
         const nombreExactoTabla = despegueBD.Despegue;
@@ -9767,8 +9766,8 @@ function inicializarMapaLeaflet() {
                 // Como sí está en la tabla, generamos el botón
                 botonVerEnTablaHTML = `
                 <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
-                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.2; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
-                        📊 ${t('mapa.verEnTabla')}
+                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.3; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
+                    ❤️ ${t('mapa.verEnTabla')}<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>
                     </button>
                 </div>`;
             }
