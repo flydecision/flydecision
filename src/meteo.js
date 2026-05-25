@@ -2867,16 +2867,24 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
         // Asistente de configuración inicial. Paso 0: Idioma
         const mostrarPaso0 = function() {
+            
             // Exponemos la función a nivel global para que el HTML inyectado pueda usarla en el onclick
             window.guardarIdiomaInicial = function(idiomaCode) {
+                // 1. Le decimos a i18next cuál es el idioma forzando su variable
                 localStorage.setItem("i18nextLng", idiomaCode);
+                
+                // 2. Creamos nuestra propia bandera de control de flujo
                 localStorage.setItem("METEO_IDIOMA_ELEGIDO", "true");
+                
                 GestorMensajes.ocultar();
+                
+                // 3. Recargamos la página para que i18next aplique el idioma y pase al Paso 1
                 window.location.reload();
             };
 
             const htmlIdiomas = `
-                <p style='font-size: 1.1em; font-weight: bold; text-align:center; margin-bottom: 20px; line-height: 1.4;'>
+                <button class="btn-cerrar-modal" style="float: right; margin-top: -22px; margin-right: -5px;" onclick="localStorage.setItem('METEO_IDIOMA_ELEGIDO', 'true'); GestorMensajes.ocultar(); if(typeof window.mostrarPaso1General === 'function') window.mostrarPaso1General();">&times;</button>
+                <p style='font-size: 1.1em; font-weight: bold; text-align:center; margin-bottom: 20px; line-height: 1.4; padding-top: 10px;'>
                     Idioma / Hizkuntza / Llengua / Language / Langue / Sprache
                 </p>
                 
@@ -5042,26 +5050,28 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			ocultarLoading();
 
 			setTimeout(() => {
-				localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
-				localStorage.removeItem('METEO_CRASH_COUNTER');
-				
+                localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
+                localStorage.removeItem('METEO_CRASH_COUNTER');
+                
+                // para que no haga scroll si vamos a contruir tabla desde el botón "Volver a edición de favoritos"
+                if (window.saltarScrollTop > 0) {
+                    window.saltarScrollTop--;
+                    return;
+                }
+
                 const vistaMapa = document.getElementById('vista-mapa');
                 if (vistaMapa && vistaMapa.style.display === 'flex') {
-                    // Si la tabla cambia mientras estamos en el mapa, agendamos el scroll para cuando vuelva a Inicio
                     window.necesitaScrollTopMeteo = true;
                 } else {
                     const scrollOptions = { top: 0, behavior: 'smooth' };
-
                     const wrapper = document.querySelector('.tabla-wrapper');
                     if (wrapper) wrapper.scrollTo(scrollOptions);
-
                     const principal = document.querySelector('.contenedor-principal-tabla');
                     if (principal) principal.scrollTo(scrollOptions);
-
                     window.scrollTo(scrollOptions);
-                    window.necesitaScrollTopMeteo = false; // Reseteamos por seguridad
+                    window.necesitaScrollTopMeteo = false;
                 }
-			}, 100);
+            }, 100);
 		} else {
 			// En modo silencioso no tocamos el scroll ni mostramos loader
 			localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
@@ -5534,18 +5544,15 @@ function aplicarFiltrosVisuales() {
 	}
 
     // 7. AUTO-SCROLL AL INICIO
-    // Si estamos aplicando filtros (hay texto o distancia < Todo), subimos al inicio de la tabla
-    if (filtroLimpio.length > 0 || distanciaLimite < 9999) {
+    if (!(window.saltarScrollTop > 0) && (filtroLimpio.length > 0 || distanciaLimite < 9999)) {
         const wrapper = document.querySelector('.tabla-wrapper');
         const principal = document.querySelector('.contenedor-principal-tabla');
-        
-        const scrollOptions = { top: 0, behavior: 'smooth' }; // Usamos 'instant' para que sea súper ágil. La otra opción sería smooth
-
+        const scrollOptions = { top: 0, behavior: 'smooth' };
         if (wrapper) wrapper.scrollTo(scrollOptions);
         if (principal) principal.scrollTo(scrollOptions);
         window.scrollTo(scrollOptions);
     }
-}
+    }
 
 // Función auxiliar para el botón del buscador
 function agregarDespegueDesdeBuscador(idDespegue) {
@@ -6928,6 +6935,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // --- PRIORIDAD 1: Mensajes MODALES (Bloqueantes) ---
             const modalAbierto = document.querySelector('.mensaje-modal.visible');
             if (modalAbierto) {
+                
+                // Si el modal abierto es el de Idioma (Paso 0) y pulsan "Atrás"
+                if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) { // El selector de idioma es el único modal que se muestra cuando la variable METEO_IDIOMA_ELEGIDO no existe
+                    localStorage.setItem("METEO_IDIOMA_ELEGIDO", "true"); // Lo marcamos como elegido
+                    GestorMensajes.ocultar(); // Cerramos Paso 0
+                    
+                    if (typeof window.mostrarPaso1General === 'function') {
+                        window.mostrarPaso1General(); // Abrimos Paso 1 (Onboarding)
+                    }
+                    return; 
+                }
+
                 GestorMensajes.ocultar();
                 return; 
             }
@@ -6942,11 +6961,30 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // --- PRIORIDAD 2: Modo Edición Favoritos ---
             if (window.venirDeEdicionActiva === true) {
                 if (!modoEdicionFavoritos) {
-                    // Estaba en un desvío (viendo 1 tabla aislada o mapa), el botón atrás lo devuelve a la lista de edición
                     volverAEdicionDesdeDesvio();
                 } else {
-                    // Ya estaba en la lista, el botón atrás finaliza
-                    finalizarEdicionFavoritos();
+                    const esPrimeraVisita = !localStorage.getItem("METEO_PRIMERA_VISITA_HECHA");
+                    const sinFavoritos = obtenerFavoritos().length === 0;
+                    if (esPrimeraVisita && sinFavoritos) {
+                        // Deshacemos TODO el estado de edición igual que finalizarEdicionFavoritos
+                        modoEdicionFavoritos = false;
+                        soloFavoritos = true;
+                        window.venirDeEdicionActiva = false;
+                        document.body.classList.remove('modo-edicion-tabla');
+                        const divMenu = document.getElementById('div-menu');
+                        if (divMenu) divMenu.classList.remove('mode-editing');
+                        const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+                        if (divMenu2) divMenu2.classList.remove('mode-editing');
+                        const panelHorario = document.querySelector('.div-filtro-horario');
+                        if (panelHorario) panelHorario.style.display = '';
+                        const panelDistancia = document.getElementById('div-filtro-distancia');
+                        if (panelDistancia) panelDistancia.classList.remove('activo');
+                        if (typeof limpiarBuscador === 'function') limpiarBuscador();
+                        construir_tabla();
+                        mostrarPaso1();
+                    } else {
+                        finalizarEdicionFavoritos();
+                    }
                 }
                 return; 
             }
@@ -6969,7 +7007,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // --- PRIORIDAD 5: Salir de la App desde el Mapa ---
             const vistaMapa = document.getElementById('vista-mapa');
             if (vistaMapa && vistaMapa.style.display === 'flex') {
-                // Si estamos en el mapa (y Ajustes no está abierto), el botón Atrás ofrece salir de la App
+                
+                // Si hay un popup de despegue abierto en el mapa, lo cerramos y paramos aquí.
+                const popupAbierto = document.querySelector('.leaflet-popup');
+                if (popupAbierto && typeof map !== 'undefined') {
+                    map.closePopup();
+                    return; 
+                }
+
+                // Si estamos en el mapa (y Ajustes no está abierto, ni hay popups), el botón Atrás ofrece salir
                 if (typeof confirmarSalidaApp === 'function') {
                     confirmarSalidaApp();
                 }
@@ -7406,10 +7452,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const panelHorario = document.querySelector('.div-filtro-horario');
         if (panelHorario) panelHorario.style.display = '';
 
-        // Ocultamos el filtro de distancia durante este desvío
-        const panelDistancia = document.getElementById("div-filtro-distancia");
-        if (panelDistancia) {
-            panelDistancia.classList.remove("activo");
+        // Reseteamos y ocultamos el filtro de distancia durante este desvío, por si busca un despegue fuera del filtro
+        if (typeof resetFiltroDistancia === 'function') {
+            resetFiltroDistancia(false); // 'false' para no reconstruir la tabla todavía
         }
 
         // Si no estaba en favoritos, lo añadimos silenciosamente (pero NO marcamos visita hecha todavía!)
@@ -7475,7 +7520,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const panelHorario = document.querySelector('.div-filtro-horario');
         if (panelHorario) panelHorario.style.display = 'none';
 
-        // 🐛 BUG 2 RESTORE: Mostramos de nuevo el filtro de distancia como estaba
+        // Mostramos de nuevo el filtro de distancia como estaba
         const panelDistancia = document.getElementById("div-filtro-distancia");
         if (panelDistancia) panelDistancia.classList.add("activo");
 
@@ -7488,7 +7533,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
             window.activarMenuInferior(btnSettings);
         }
 
-        // 6. Reconstruimos la tabla con los filtros restaurados
+        // 6. Reconstruimos la tabla conservando la posición de scroll
+        window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
         construir_tabla();
     };
 
@@ -8882,8 +8928,8 @@ function inicializarMapaLeaflet() {
             const indiceNumerico = parseInt(indice, 10);
             return ESCALA_VUELOS[indiceNumerico] !== undefined ? ESCALA_VUELOS[indiceNumerico] : 0;
         }
-        const hayConfiguracionInicialFiltroVuelos = (obtenerValorReal(localStorage.getItem('miMapa_minimoVuelos_preferido') || '0') > 0);
-        const hayConfiguracionInicialFiltroUltimoVuelo = (obtenerValorReal(localStorage.getItem('miMapa_minimoUltimoVuelo_preferido') || '0') > 0);
+        const hayConfiguracionInicialFiltroVuelos = (obtenerValorReal(localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0') > 0);
+        const hayConfiguracionInicialFiltroUltimoVuelo = (obtenerValorReal(localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0') > 0);
     
         // 2. Último Vuelo: Comprueba si el valor no es 'Todos' (índice 0)
         const sliderUltimoVuelo = document.getElementById('sliderUltimoVuelo');
@@ -9806,7 +9852,7 @@ function inicializarMapaLeaflet() {
                     <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
-                    <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
+                    <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
                     <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                     <div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
                     
@@ -9969,7 +10015,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
-                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                         </div>`;
                     L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
@@ -10169,7 +10215,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
-                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                         </div>`;
                     L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
@@ -10377,7 +10423,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
-                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                         </div>`;
                     L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
@@ -10597,7 +10643,7 @@ function inicializarMapaLeaflet() {
 
             <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
 
-            <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(nombre)} (${escapeHtml(tipo)})' target='_blank'>Nakarte</a></div>
+            <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(nombre)} (${escapeHtml(tipo)})' target='_blank'>Nakarte</a></div>
             
             <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
 
@@ -10760,7 +10806,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
-                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                         <div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
                         
@@ -10993,8 +11039,8 @@ function inicializarMapaLeaflet() {
     const textoUltimoVueloConfig = document.getElementById('valorConfigFiltroUltimoVueloTexto'); 
     
     // --- CLAVES DE ALMACENAMIENTO ---
-    const STORAGE_KEY_VUELOS = 'miMapa_minimoVuelos_preferido';
-    const STORAGE_KEY_ULTIMO_VUELO = 'miMapa_minimoUltimoVuelo_preferido';
+    const STORAGE_KEY_VUELOS = 'METEO_MAPA_MINIMOVUELOS';
+    const STORAGE_KEY_ULTIMO_VUELO = 'METEO_MINIMO_ANO_ULTIMO_VUELO';
 
     // Función auxiliar para obtener el valor real según la escala
     function obtenerValorReal(indice, escala) {
