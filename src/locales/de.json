@@ -25,10 +25,10 @@
     "siSalir": "Ja, verlassen",
     "no": "Nein",
     "configurarOrigen": "Ursprung festlegen",
-    "marcarFavoritos": "♥️ Favoriten startplatzkarte markieren",
+    "marcarFavoritos": "⚙️ App konfigurieren",
     "explorarMapa": "🗺️ Startplatzkarte erkunden",
-    "verGuiaGeneral": "ℹ️ Allgemeine Informationen und Hilfe",
-    "importarConfiguracion": "📂 Konfiguration importieren",
+    "verGuiaGeneral": "Allgemeine Informationen und Hilfe",
+    "importarConfiguracion": "Konfiguration importieren",
     "marcarFavoritosFlecha": "Favoriten markieren →",
     "entendido": "Verstanden"
   },
@@ -323,7 +323,12 @@
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Wo fliegen?</p>",
       "btnPrimario": "Favoriten auswählen",
       "btnSecundario": "Allgemeine Anleitung ansehen",
-      "btnImportar": "Einstellungen importieren"
+      "btnImportar": "Einstellungen importieren",
+      "subtitulo": "Wo fliegen gehen?",
+      "btnFavoritos": "Meine Favoriten konfigurieren",
+      "btnSubtituloFavoritos": "Um das Meteo deiner Startplätze zu sehen",
+      "btnExplorarMapa": "Karte erkunden",
+      "btnSubtituloExplorarMapa": "Ohne etwas konfigurieren zu müssen"
     },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Automatisierte Analyse der Wettervorhersage für Gleitschirmflieger.</p><p>🙄 <b>Wofür ist das?:</b> um dir zu helfen, zu entscheiden, wo du fliegen möchtest. Es zeigt eine Tabelle mit deinen favorisierten Startplätzen, deren Vorhersagen und führt eine automatisierte Analyse dieser <b>Wetterbedingungen</b> durch.</p><p>🧮 <b>Welche Analyse wird durchgeführt?:</b> Es vergleicht die Vorhersage mit deinen konfigurierten Grenzwerten für mittleren Wind und maximale Böen sowie der Ausrichtung jedes Startplatzes; es analysiert auch den Wind in Höhen nahe dem Startplatz (80, 120 und 180 m), was Einblicke in den Windgradienten und die Zuverlässigkeit der Vorhersage gibt. Es zeigt wichtige XC-Daten (Flughöhe, CAPE und CIN).</p><p>Mit all diesen Infos bewertet es jeden Startplatz von 0 bis 10 und farbcodiert 🟩&nbsp;🟨&nbsp;🟥 die Daten für deinen gewählten Zeitraum. Du kannst alle Grenzwerte an deine Vorlieben anpassen.</p>"

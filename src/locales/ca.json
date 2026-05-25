@@ -25,10 +25,10 @@
     "siSalir": "Sí, sortir",
     "no": "No",
     "configurarOrigen": "Configurar origen",
-    "marcarFavoritos": "♥️ Marcar enlairaments preferits",
+    "marcarFavoritos": "⚙️ Configurar l'aplicació",
     "explorarMapa": "🗺️ Explorar mapa d'enlairaments",
-    "verGuiaGeneral": "ℹ️ Informació general i Ajuda",
-    "importarConfiguracion": "📂 Importar configuració",
+    "verGuiaGeneral": "Informació general i Ajuda",
+    "importarConfiguracion": "Importar configuració",
     "marcarFavoritosFlecha": "Marcar preferits →",
     "entendido": "Entès"
   },
@@ -323,7 +323,12 @@
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>On volar?</p>",
       "btnPrimario": "Seleccionar preferits",
       "btnSecundario": "Veure guia general",
-      "btnImportar": "Importar ajustos"
+      "btnImportar": "Importar ajustos",
+      "subtitulo": "On anar a volar?",
+      "btnFavoritos": "Configurar els meus preferits",
+      "btnSubtituloFavoritos": "Per veure la meteo dels teus enlairaments",
+      "btnExplorarMapa": "Explorar el mapa",
+      "btnSubtituloExplorarMapa": "Sense necessitat de configurar res"
     },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Anàlisi automatitzada de la previsió meteorològica per a parapent.</p><p>🙄 <b>Per a què serveix?:</b> per ajudar-te a decidir on volar. Mostra una taula amb els teus enlairaments preferits, les seves previsions, i realitza una anàlisi automatitzada d'aquestes <b>condicions meteorològiques</b>.</p><p>🧮 <b>Quina anàlisi fa?:</b> compara la previsió amb els teus límits configurats de vent mitjà i ratxes màximes, i l'orientació de cada enlairament; també analitza el vent a altituds properes a l'enlairament (80, 120 i 180 m), proporcionant informació sobre el gradient de vent i la fiabilitat de la previsió. Mostra dades clau d'XC (sostre, CAPE i CIN).</p><p>Amb tota aquesta informació, puntua cada enlairament de 0 a 10 i codifica amb colors 🟩&nbsp;🟨&nbsp;🟥 les dades per a la franja horària triada. Pots personalitzar tots els límits per adaptar-los a les teves preferències.</p>"

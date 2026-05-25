@@ -25,10 +25,10 @@
     "siSalir": "Si, saír",
     "no": "Non",
     "configurarOrigen": "Configurar orixe",
-    "marcarFavoritos": "♥️ Marcar despegues favoritos",
+    "marcarFavoritos": "⚙️ Configurar a aplicación",
     "explorarMapa": "🗺️ Explorar mapa de despegues",
-    "verGuiaGeneral": "ℹ️ Información xeral e Axuda",
-    "importarConfiguracion": "📂 Importar configuración",
+    "verGuiaGeneral": "Información xeral e Axuda",
+    "importarConfiguracion": "Importar configuración",
     "marcarFavoritosFlecha": "Marcar favoritos →",
     "entendido": "Entendido"
   },
@@ -323,7 +323,12 @@
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Onde voar?</p>",
       "btnPrimario": "Seleccionar favoritos",
       "btnSecundario": "Ver guía xeral",
-      "btnImportar": "Importar axustes"
+      "btnImportar": "Importar axustes",
+      "subtitulo": "Onde ir voar?",
+      "btnFavoritos": "Configurar os meus favoritos",
+      "btnSubtituloFavoritos": "Para ver a meteo dos teus despegues",
+      "btnExplorarMapa": "Explorar o mapa",
+      "btnSubtituloExplorarMapa": "Sen necesidade de configurar nada"
     },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Análise automatizada da previsión meteorolóxica para parapente.</p><p>🙄 <b>Para que serve?:</b> para axudarche a decidir onde voar. Mostra unha táboa coas túas engalaxes favoritas, as súas previsións, e realiza unha análise automatizada destas <b>condicións meteorolóxicas</b>.</p><p>🧮 <b>Que análise fai?:</b> compara a previsión cos teus límites configurados de vento medio e refachos máximos, e a orientación de cada engalaxe; tamén analiza o vento a altitudes próximas á engalaxe (80, 120 e 180 m), proporcionando información sobre o gradiente de vento e a fiabilidade da previsión. Mostra datos clave de XC (teito, CAPE e CIN).</p><p>Con toda esta información, puntúa cada engalaxe de 0 a 10 e codifica con cores 🟩&nbsp;🟨&nbsp;🟥 os datos para a franxa horaria escollida. Podes personalizar todos os límites para adaptalos ás túas preferencias.</p>"

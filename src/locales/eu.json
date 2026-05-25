@@ -25,10 +25,10 @@
     "siSalir": "Bai, irten",
     "no": "Ez",
     "configurarOrigen": "Jatorria ezarri",
-    "marcarFavoritos": "♥️ Aireratzeen gogokoak markatu",
+    "marcarFavoritos": "⚙️ Aplikazioa konfiguratu",
     "explorarMapa": "🗺️ Aireratzeen mapa arakatu",
-    "verGuiaGeneral": "ℹ️ Informazio orokorra eta Laguntza",
-    "importarConfiguracion": "📂 Konfigurazioa inportatu",
+    "verGuiaGeneral": "Informazio orokorra eta Laguntza",
+    "importarConfiguracion": "Konfigurazioa inportatu",
     "marcarFavoritosFlecha": "Gogokoak markatu →",
     "entendido": "Ulertuta"
   },
@@ -323,7 +323,12 @@
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Non hegan egin?</p>",
       "btnPrimario": "Hautatu gogokoak",
       "btnSecundario": "Ikusi gida orokorra",
-      "btnImportar": "Inportatu ezarpenak"
+      "btnImportar": "Inportatu ezarpenak",
+      "subtitulo": "Nora joan hegan egitera?",
+      "btnFavoritos": "Nire gogokoak konfiguratu",
+      "btnSubtituloFavoritos": "Zure aireratzeen meteoa ikusteko",
+      "btnExplorarMapa": "Mapa arakatu",
+      "btnSubtituloExplorarMapa": "Ezer konfiguratu beharrik gabe"
     },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Parapenterako eguraldi iragarpenaren analisi automatizatua.</p><p>🙄 <b>Zertarako balio du?:</b> non hegan egin erabakitzen laguntzeko. Zure aireratze gogokoen taula bat erakusten du, haien iragarpenekin, eta <b>eguraldi baldintza</b> horien analisi automatizatua egiten du.</p><p>🧮 <b>Zer analisi egiten du?:</b> iragarpena zuk konfiguratutako batez besteko haizearen eta gehienezko boladen mugekin eta aireratze bakoitzaren norabidearekin alderatzen du; aireratzetik gertu dauden altueretako haizea ere aztertzen du (80, 120 eta 180 m), haize-gradientearen eta iragarpenaren fidagarritasunaren ikuspegia emanez. XC datu gakoak erakusten ditu (sabaia, CAPE eta CIN).</p><p>Informazio honekin guztiarekin, aireratze bakoitza 0-tik 10-era puntuatzen du eta kolorez kodetzen ditu 🟩&nbsp;🟨&nbsp;🟥 datuak zuk aukeratutako ordu-tarterako. Muga guztiak pertsonaliza ditzakezu zure hobespenetara egokitzeko.</p>"

@@ -2972,65 +2972,182 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
             // Pantalla de bienvenida
             // ==========================================================
+            // const mostrarPaso1 = function() {
+            //     const tieneFavs = (localStorage.getItem("METEO_FAVORITOS_LISTA") ? JSON.parse(localStorage.getItem("METEO_FAVORITOS_LISTA")) : []).length > 0;
+            //     const haVistoMapa = window.seHaExploradoMapa === true;
+            //     const destacarFavoritos = tieneFavs || haVistoMapa;
+
+            //     GestorMensajes.mostrar({
+            //         tipo: 'modal',
+            //         htmlContenido: t('asistente.paso1.html'),
+            //         botones: [
+            //             {
+            //                 texto: t('botones.explorarMapa'),
+            //                 estilo: destacarFavoritos ? 'secundario' : undefined,
+            //                 onclick: function() {
+            //                     GestorMensajes.ocultar();
+            //                     clicBotonMapa();
+            //                     return;
+            //                 }
+            //             },
+            //             {
+            //                 texto: t('botones.marcarFavoritos'),
+            //                 estilo: destacarFavoritos ? undefined : 'secundario',
+            //                 onclick: function() {
+            //                     GestorMensajes.ocultar();
+            //                     activarEdicionFavoritos();
+            //                     return;
+            //                 }
+            //             },
+            //             {
+            //                 texto: t('botones.verGuiaGeneral'),
+            //                 estilo: 'secundario',
+            //                 onclick: function() {
+            //                     GestorMensajes.ocultar();
+            //                     if (typeof abrirLinkExterno === 'function') {
+            //                         abrirLinkExterno("https://flydecision.com/ayuda");
+            //                     }
+            //                     return;
+            //                 }
+            //             },
+            //             {
+            //                 texto: t('botones.importarConfiguracion'),
+            //                 estilo: 'secundario',
+            //                 onclick: function() {
+            //                     GestorMensajes.ocultar();
+            //                     importarConfiguracion();
+            //                     return;
+            //                 }
+            //             }
+            //         ],
+            //         anchoBotones: 300
+            //     });
+            // };
+
             const mostrarPaso1 = function() {
-                // Detectamos si el usuario tiene algún favorito ya guardado (por ejemplo, mediante el atajo del mapa)
                 const tieneFavs = (localStorage.getItem("METEO_FAVORITOS_LISTA") ? JSON.parse(localStorage.getItem("METEO_FAVORITOS_LISTA")) : []).length > 0;
                 const haVistoMapa = window.seHaExploradoMapa === true;
-                const destacarFavoritos = tieneFavs || haVistoMapa;
 
-                GestorMensajes.mostrar({
-                    tipo: 'modal',
-                    htmlContenido: t('asistente.paso1.html'),
-                    botones: [
-                        {
-                            texto: t('botones.explorarMapa'),
-                            // Si ya tiene favoritos, el botón de explorar pasa a ser secundario (gris)
-                            estilo: destacarFavoritos ? 'secundario' : undefined,
-                            onclick: function() {
-                                GestorMensajes.ocultar();
-                                clicBotonMapa();
-                                return;
-                            }
-                        },
-                        {
-                            texto: t('botones.marcarFavoritos'),
-                            // Si tiene favoritos, pasa a ser el principal (azul). Si no, se queda secundario.
-                            estilo: destacarFavoritos ? undefined : 'secundario',
-                            onclick: function() {
-                                GestorMensajes.ocultar();
-                                activarEdicionFavoritos();
-                                return;
-                            }
-                        },
-                        {
-                            texto: t('botones.verGuiaGeneral'),
-                            estilo: 'secundario',
-                            onclick: function() {
-                                GestorMensajes.ocultar();
-                                if (typeof abrirLinkExterno === 'function') {
-                                    abrirLinkExterno("https://flydecision.com/ayuda");
-                                }
-                                return;
-                            }
-                        },
-                        {
-                            texto: t('botones.importarConfiguracion'),
-                            estilo: 'secundario',
-                            onclick: function() {
-                                GestorMensajes.ocultar();
-                                importarConfiguracion();
-                                return;
-                            }
-                        }
-                    ],
-                    anchoBotones: 300
+                // Overlay de fondo
+                const overlay = document.createElement('div');
+                overlay.id = 'paso1-overlay';
+                overlay.style.cssText = `
+                    position: fixed; inset: 0; z-index: 9999;
+                    background: rgba(0,0,0,0.3);
+                    backdrop-filter: blur(6px);
+                    -webkit-backdrop-filter: blur(6px);
+                    display: flex; align-items: center; justify-content: center;
+                    padding: 1rem;
+                `;
+
+                overlay.innerHTML = `
+                    <div style="
+                        width: 100%; max-width: 340px;
+                        background: var(--color-background-primary, #fff);
+                        border-radius: 16px;
+                        border: 0.5px solid var(--color-border-tertiary, #e0e0e0);
+                        padding: 2rem 1.5rem;
+                        display: flex; flex-direction: column;
+                    ">
+                        <!-- Cabecera -->
+                        <div style="text-align:center; margin-bottom: 2.55rem;">
+                            <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🪂</div>
+                            <div style="font-size: 35px; font-weight: 500; color: var(--color-text-primary, #111); margin-bottom: 4px;">Fly Decision</div>
+                            <div style="font-size: 20px; color: var(--color-text-secondary, #666);">${t('asistente.paso1.subtitulo')}</div>
+                        </div>
+
+                        <!-- Botones principales -->
+                        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem;">
+
+                            <button id="paso1-btn-favoritos" style="
+                                display: flex; align-items: center; gap: 10px;
+                                padding: 14px 18px; border-radius: 12px; border: none;
+                                background: #378ADD;
+                                color: #fff;
+                                font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
+                                width: 100%;
+                            ">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                <div>
+                                    <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnFavoritos')}</div>
+                                    <div style="font-size:16px; font-weight:400; margin-top:2px; opacity:0.8;">${t('asistente.paso1.btnSubtituloFavoritos')}</div>
+                                </div>
+                            </button>
+
+                            <button id="paso1-btn-mapa" style="
+                                display: flex; align-items: center; gap: 10px;
+                                padding: 14px 18px; border-radius: 12px;
+                                border: 0.5px solid var(--color-border-secondary, #ccc);
+                                background: var(--color-background-secondary, #f5f5f5);
+                                color: var(--color-text-primary, #111);
+                                font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
+                                width: 100%; margin-bottom: 35px;
+                            ">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                                <div>
+                                    <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnExplorarMapa')}</div>
+                                    <div style="font-size:16px; font-weight:400; margin-top:2px; opacity: 0.75;">${t('asistente.paso1.btnSubtituloExplorarMapa')}</div>
+                                </div>
+                            </button>
+
+                        </div>
+
+                        <!-- Separador + botones secundarios -->
+                        <div style="border-top: 0.5px solid var(--color-border-tertiary, #e0e0e0); padding-top: 1rem; display: flex; flex-direction: column; gap: 4px;">
+                            <button id="paso1-btn-guia" style="
+                                display: flex; align-items: center; gap: 8px;
+                                padding: 10px 12px; border-radius: 8px;
+                                border: none; background: transparent;
+                                color: var(--color-text-secondary, #666);
+                                font-size: 16px; cursor: pointer; text-align: left; width: 100%;
+                            ">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="8"></line><polyline points="11 12 12 12 12 16"></polyline></svg>
+                                ${t('botones.verGuiaGeneral')}
+                            </button>
+                            <button id="paso1-btn-importar" style="
+                                display: flex; align-items: center; gap: 8px;
+                                padding: 10px 12px; border-radius: 8px;
+                                border: none; background: transparent;
+                                color: var(--color-text-secondary, #666);
+                                font-size: 16px; cursor: pointer; text-align: left; width: 100%;
+                            ">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                ${t('botones.importarConfiguracion')}
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(overlay);
+
+                const cerrar = () => overlay.remove();
+
+                document.getElementById('paso1-btn-favoritos').addEventListener('click', () => {
+                    cerrar();
+                    activarEdicionFavoritos();
                 });
-            };
+
+                document.getElementById('paso1-btn-mapa').addEventListener('click', () => {
+                    cerrar();
+                    clicBotonMapa();
+                });
+
+                document.getElementById('paso1-btn-guia').addEventListener('click', () => {
+                    //cerrar();
+                    if (typeof abrirLinkExterno === 'function') abrirLinkExterno("https://flydecision.com/ayuda");
+                });
+
+                document.getElementById('paso1-btn-importar').addEventListener('click', () => {
+                    cerrar();
+                    importarConfiguracion();
+                });
+            }; // Fin pantalla Bienvenida
+
 
             // Exponemos la función a la ventana global para que el botón del mapa la pueda llamar
             window.mostrarPaso1General = mostrarPaso1;
 
-            // 🚀 NUEVA LÓGICA DE EJECUCIÓN (Solo salta el pop-up si NO vienes de URL directa)
+            // NUEVA LÓGICA DE EJECUCIÓN (Solo salta el pop-up si NO vienes de URL directa)
             if (!enlaceDirectoMapa) {
 
                 // CONTROL DE FLUJO: ¿Ha elegido idioma manualmente?
