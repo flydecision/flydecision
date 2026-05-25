@@ -2861,6 +2861,189 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         const paramsArranque = new URLSearchParams(window.location.search);
         const enlaceDirectoMapa = paramsArranque.has('lat') && paramsArranque.has('lon');
         
+        // ---------------------------------------------------------------
+        // 🔴 DEFINICIÓN DE PANTALLAS DE ASISTENTE (Siempre disponibles en memoria)
+        // ---------------------------------------------------------------
+
+        // Asistente de configuración inicial. Paso 0: Idioma
+        const mostrarPaso0 = function() {
+            // Exponemos la función a nivel global para que el HTML inyectado pueda usarla en el onclick
+            window.guardarIdiomaInicial = function(idiomaCode) {
+                localStorage.setItem("i18nextLng", idiomaCode);
+                localStorage.setItem("METEO_IDIOMA_ELEGIDO", "true");
+                GestorMensajes.ocultar();
+                window.location.reload();
+            };
+
+            const htmlIdiomas = `
+                <p style='font-size: 1.1em; font-weight: bold; text-align:center; margin-bottom: 20px; line-height: 1.4;'>
+                    Idioma / Hizkuntza / Llengua / Language / Langue / Sprache
+                </p>
+                
+                <div style="display: flex; flex-direction: column; gap: 6px; align-items: center; margin-bottom: 20px;">
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('es-ES')">
+                        <img src="icons/flag_es_ES.webp" alt="Español" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Español</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('eu-ES')">
+                        <img src="icons/flag_eu_ES.webp" alt="Euskara" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Euskara</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('ca-ES')">
+                        <img src="icons/flag_ca_ES.webp" alt="Català" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Català</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('gl-ES')">
+                        <img src="icons/flag_gl_ES.webp" alt="Galego" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Galego</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('en-GB')">
+                        <img src="icons/flag_en_GB.webp" alt="English" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">English</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('fr-FR')">
+                        <img src="icons/flag_fr_FR.webp" alt="Français" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Français</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('de-DE')">
+                        <img src="icons/flag_de_DE.webp" alt="Deutsch" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Deutsch</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('pt-PT')">
+                        <img src="icons/flag_pt_PT.webp" alt="Português" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Português</span>
+                    </button>
+                </div>
+            `;
+
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: htmlIdiomas,
+                botones: [] 
+            });
+        };
+
+        // Pantalla de bienvenida
+        const mostrarPaso1 = function() {
+            const tieneFavs = (localStorage.getItem("METEO_FAVORITOS_LISTA") ? JSON.parse(localStorage.getItem("METEO_FAVORITOS_LISTA")) : []).length > 0;
+            const haVistoMapa = window.seHaExploradoMapa === true;
+
+            // Overlay de fondo
+            const overlay = document.createElement('div');
+            overlay.id = 'paso1-overlay';
+            overlay.style.cssText = `
+                position: fixed; inset: 0; z-index: 9999;
+                background: rgba(0,0,0,0.3);
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                display: flex; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+
+            overlay.innerHTML = `
+                <div style="
+                    width: 100%; max-width: 340px;
+                    background: var(--color-background-primary, #fff);
+                    border-radius: 16px;
+                    border: 0.5px solid var(--color-border-tertiary, #e0e0e0);
+                    padding: 2rem 1.5rem;
+                    display: flex; flex-direction: column;
+                ">
+                    <!-- Cabecera -->
+                    <div style="text-align:center; margin-bottom: 2.55rem;">
+                        <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🪂</div>
+                        <div style="font-size: 35px; font-weight: 500; color: var(--color-text-primary, #111); margin-bottom: 4px;">Fly Decision</div>
+                        <div style="font-size: 20px; color: var(--color-text-secondary, #666);">${t('asistente.paso1.subtitulo')}</div>
+                    </div>
+
+                    <!-- Botones principales -->
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem;">
+                        <button id="paso1-btn-favoritos" style="
+                            display: flex; align-items: center; gap: 10px;
+                            padding: 14px 18px; border-radius: 12px; border: none;
+                            background: #378ADD;
+                            color: #fff;
+                            font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
+                            width: 100%;
+                        ">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            <div>
+                                <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnFavoritos')}</div>
+                                <div style="font-size:16px; font-weight:400; margin-top:2px; opacity:0.8;">${t('asistente.paso1.btnSubtituloFavoritos')}</div>
+                            </div>
+                        </button>
+
+                        <button id="paso1-btn-mapa" style="
+                            display: flex; align-items: center; gap: 10px;
+                            padding: 14px 18px; border-radius: 12px;
+                            border: 0.5px solid var(--color-border-secondary, #ccc);
+                            background: var(--color-background-secondary, #f5f5f5);
+                            color: var(--color-text-primary, #111);
+                            font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
+                            width: 100%; margin-bottom: 35px;
+                        ">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                            <div>
+                                <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnExplorarMapa')}</div>
+                                <div style="font-size:16px; font-weight:400; margin-top:2px; opacity: 0.75;">${t('asistente.paso1.btnSubtituloExplorarMapa')}</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Separador + botones secundarios -->
+                    <div style="border-top: 0.5px solid var(--color-border-tertiary, #e0e0e0); padding-top: 1rem; display: flex; flex-direction: column; gap: 4px;">
+                        <button id="paso1-btn-guia" style="
+                            display: flex; align-items: center; gap: 8px;
+                            padding: 10px 12px; border-radius: 8px;
+                            border: none; background: transparent;
+                            color: var(--color-text-secondary, #666);
+                            font-size: 16px; cursor: pointer; text-align: left; width: 100%;
+                        ">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="8"></line><polyline points="11 12 12 12 12 16"></polyline></svg>
+                            ${t('botones.verGuiaGeneral')}
+                        </button>
+                        <button id="paso1-btn-importar" style="
+                            display: flex; align-items: center; gap: 8px;
+                            padding: 10px 12px; border-radius: 8px;
+                            border: none; background: transparent;
+                            color: var(--color-text-secondary, #666);
+                            font-size: 16px; cursor: pointer; text-align: left; width: 100%;
+                        ">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            ${t('botones.importarConfiguracion')}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            const cerrar = () => overlay.remove();
+
+            document.getElementById('paso1-btn-favoritos').addEventListener('click', () => {
+                cerrar();
+                activarEdicionFavoritos();
+            });
+
+            document.getElementById('paso1-btn-mapa').addEventListener('click', () => {
+                cerrar();
+                clicBotonMapa();
+            });
+
+            document.getElementById('paso1-btn-guia').addEventListener('click', () => {
+                if (typeof abrirLinkExterno === 'function') abrirLinkExterno("https://flydecision.com/ayuda");
+            });
+
+            document.getElementById('paso1-btn-importar').addEventListener('click', () => {
+                cerrar();
+                importarConfiguracion();
+            });
+        };
+
+        // EXPOSICIÓN GLOBAL: Así el botón azul "⚙️ Configurar la aplicación" siempre la encontrará
+        window.mostrarPaso1General = mostrarPaso1;
+
+
         // 🟡 CASO A: Primera visita (Usuaria nueva)
         if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") && 
             !localStorage.getItem("METEO_FAVORITOS_LISTA") && 
@@ -2878,10 +3061,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN", "20");
                 localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", "true");
                 chkMostrarVientoAlturas = true;
-                if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = true; //PARA FORZAR EL CHECKBOX VISUAL
+                if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = true; 
                 localStorage.setItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA", "true");
                 chkMostrarCizalladura = true;
-                if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = true; ////PARA FORZAR EL CHECKBOX VISUAL
+                if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = true; 
                 
                 soloFavoritos = false;
                 modoEdicionFavoritos = true; 
@@ -2894,271 +3077,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 if (panelHorario) panelHorario.style.display = 'none';
             } 
                 
-            // Asistente de configuración inicial. Paso 0: Idioma
-            // ==========================================================
-            const mostrarPaso0 = function() {
-                
-                // Exponemos la función a nivel global para que el HTML inyectado pueda usarla en el onclick
-                window.guardarIdiomaInicial = function(idiomaCode) {
-                    // 1. Le decimos a i18next cuál es el idioma forzando su variable
-                    localStorage.setItem("i18nextLng", idiomaCode);
-                    
-                    // 2. Creamos nuestra propia bandera de control de flujo
-                    localStorage.setItem("METEO_IDIOMA_ELEGIDO", "true");
-                    
-                    GestorMensajes.ocultar();
-                    
-                    // 3. Recargamos la página para que i18next aplique el idioma y pase al Paso 1
-                    window.location.reload();
-                };
-
-                // Creamos el diseño con botones apilados, bandera a la izquierda y texto
-                const htmlIdiomas = `
-                    <p style='font-size: 1.1em; font-weight: bold; text-align:center; margin-bottom: 20px; line-height: 1.4;'>
-                        Idioma / Hizkuntza / Llengua / Language / Langue / Sprache
-                    </p>
-                    
-                    <div style="display: flex; flex-direction: column; gap: 6px; align-items: center; margin-bottom: 20px;">
-                        
-                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('es-ES')">
-                            <img src="icons/flag_es_ES.webp" alt="Español" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                            <span style="font-size: 1.1em; font-weight: bold;">Español</span>
-                        </button>
-                        
-                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('eu-ES')">
-                            <img src="icons/flag_eu_ES.webp" alt="Euskara" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                            <span style="font-size: 1.1em; font-weight: bold;">Euskara</span>
-                        </button>
-                        
-                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('ca-ES')">
-                            <img src="icons/flag_ca_ES.webp" alt="Català" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                            <span style="font-size: 1.1em; font-weight: bold;">Català</span>
-                        </button>
-
-                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('gl-ES')">
-                            <img src="icons/flag_gl_ES.webp" alt="Galego" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                            <span style="font-size: 1.1em; font-weight: bold;">Galego</span>
-                        </button>
-                        
-                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('en-GB')">
-                            <img src="icons/flag_en_GB.webp" alt="English" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                            <span style="font-size: 1.1em; font-weight: bold;">English</span>
-                        </button>
-                        
-                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('fr-FR')">
-                            <img src="icons/flag_fr_FR.webp" alt="Français" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                            <span style="font-size: 1.1em; font-weight: bold;">Français</span>
-                        </button>
-                        
-                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('de-DE')">
-                            <img src="icons/flag_de_DE.webp" alt="Deutsch" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                            <span style="font-size: 1.1em; font-weight: bold;">Deutsch</span>
-                        </button>
-
-                        <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('pt-PT')">
-                            <img src="icons/flag_pt_PT.webp" alt="Português" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                            <span style="font-size: 1.1em; font-weight: bold;">Português</span>
-                        </button>
-                        
-                    </div>
-                `;
-
-                GestorMensajes.mostrar({
-                    tipo: 'modal',
-                    htmlContenido: htmlIdiomas,
-                    botones: [] // Lo enviamos vacío para que el Gestor no pinte sus botones por defecto abajo
-                });
-            };
-
-            // Pantalla de bienvenida
-            // ==========================================================
-            // const mostrarPaso1 = function() {
-            //     const tieneFavs = (localStorage.getItem("METEO_FAVORITOS_LISTA") ? JSON.parse(localStorage.getItem("METEO_FAVORITOS_LISTA")) : []).length > 0;
-            //     const haVistoMapa = window.seHaExploradoMapa === true;
-            //     const destacarFavoritos = tieneFavs || haVistoMapa;
-
-            //     GestorMensajes.mostrar({
-            //         tipo: 'modal',
-            //         htmlContenido: t('asistente.paso1.html'),
-            //         botones: [
-            //             {
-            //                 texto: t('botones.explorarMapa'),
-            //                 estilo: destacarFavoritos ? 'secundario' : undefined,
-            //                 onclick: function() {
-            //                     GestorMensajes.ocultar();
-            //                     clicBotonMapa();
-            //                     return;
-            //                 }
-            //             },
-            //             {
-            //                 texto: t('botones.marcarFavoritos'),
-            //                 estilo: destacarFavoritos ? undefined : 'secundario',
-            //                 onclick: function() {
-            //                     GestorMensajes.ocultar();
-            //                     activarEdicionFavoritos();
-            //                     return;
-            //                 }
-            //             },
-            //             {
-            //                 texto: t('botones.verGuiaGeneral'),
-            //                 estilo: 'secundario',
-            //                 onclick: function() {
-            //                     GestorMensajes.ocultar();
-            //                     if (typeof abrirLinkExterno === 'function') {
-            //                         abrirLinkExterno("https://flydecision.com/ayuda");
-            //                     }
-            //                     return;
-            //                 }
-            //             },
-            //             {
-            //                 texto: t('botones.importarConfiguracion'),
-            //                 estilo: 'secundario',
-            //                 onclick: function() {
-            //                     GestorMensajes.ocultar();
-            //                     importarConfiguracion();
-            //                     return;
-            //                 }
-            //             }
-            //         ],
-            //         anchoBotones: 300
-            //     });
-            // };
-
-            const mostrarPaso1 = function() {
-                const tieneFavs = (localStorage.getItem("METEO_FAVORITOS_LISTA") ? JSON.parse(localStorage.getItem("METEO_FAVORITOS_LISTA")) : []).length > 0;
-                const haVistoMapa = window.seHaExploradoMapa === true;
-
-                // Overlay de fondo
-                const overlay = document.createElement('div');
-                overlay.id = 'paso1-overlay';
-                overlay.style.cssText = `
-                    position: fixed; inset: 0; z-index: 9999;
-                    background: rgba(0,0,0,0.3);
-                    backdrop-filter: blur(6px);
-                    -webkit-backdrop-filter: blur(6px);
-                    display: flex; align-items: center; justify-content: center;
-                    padding: 1rem;
-                `;
-
-                overlay.innerHTML = `
-                    <div style="
-                        width: 100%; max-width: 340px;
-                        background: var(--color-background-primary, #fff);
-                        border-radius: 16px;
-                        border: 0.5px solid var(--color-border-tertiary, #e0e0e0);
-                        padding: 2rem 1.5rem;
-                        display: flex; flex-direction: column;
-                    ">
-                        <!-- Cabecera -->
-                        <div style="text-align:center; margin-bottom: 2.55rem;">
-                            <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🪂</div>
-                            <div style="font-size: 35px; font-weight: 500; color: var(--color-text-primary, #111); margin-bottom: 4px;">Fly Decision</div>
-                            <div style="font-size: 20px; color: var(--color-text-secondary, #666);">${t('asistente.paso1.subtitulo')}</div>
-                        </div>
-
-                        <!-- Botones principales -->
-                        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem;">
-
-                            <button id="paso1-btn-favoritos" style="
-                                display: flex; align-items: center; gap: 10px;
-                                padding: 14px 18px; border-radius: 12px; border: none;
-                                background: #378ADD;
-                                color: #fff;
-                                font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
-                                width: 100%;
-                            ">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                                <div>
-                                    <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnFavoritos')}</div>
-                                    <div style="font-size:16px; font-weight:400; margin-top:2px; opacity:0.8;">${t('asistente.paso1.btnSubtituloFavoritos')}</div>
-                                </div>
-                            </button>
-
-                            <button id="paso1-btn-mapa" style="
-                                display: flex; align-items: center; gap: 10px;
-                                padding: 14px 18px; border-radius: 12px;
-                                border: 0.5px solid var(--color-border-secondary, #ccc);
-                                background: var(--color-background-secondary, #f5f5f5);
-                                color: var(--color-text-primary, #111);
-                                font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
-                                width: 100%; margin-bottom: 35px;
-                            ">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
-                                <div>
-                                    <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnExplorarMapa')}</div>
-                                    <div style="font-size:16px; font-weight:400; margin-top:2px; opacity: 0.75;">${t('asistente.paso1.btnSubtituloExplorarMapa')}</div>
-                                </div>
-                            </button>
-
-                        </div>
-
-                        <!-- Separador + botones secundarios -->
-                        <div style="border-top: 0.5px solid var(--color-border-tertiary, #e0e0e0); padding-top: 1rem; display: flex; flex-direction: column; gap: 4px;">
-                            <button id="paso1-btn-guia" style="
-                                display: flex; align-items: center; gap: 8px;
-                                padding: 10px 12px; border-radius: 8px;
-                                border: none; background: transparent;
-                                color: var(--color-text-secondary, #666);
-                                font-size: 16px; cursor: pointer; text-align: left; width: 100%;
-                            ">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="8"></line><polyline points="11 12 12 12 12 16"></polyline></svg>
-                                ${t('botones.verGuiaGeneral')}
-                            </button>
-                            <button id="paso1-btn-importar" style="
-                                display: flex; align-items: center; gap: 8px;
-                                padding: 10px 12px; border-radius: 8px;
-                                border: none; background: transparent;
-                                color: var(--color-text-secondary, #666);
-                                font-size: 16px; cursor: pointer; text-align: left; width: 100%;
-                            ">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                ${t('botones.importarConfiguracion')}
-                            </button>
-                        </div>
-                    </div>
-                `;
-
-                document.body.appendChild(overlay);
-
-                const cerrar = () => overlay.remove();
-
-                document.getElementById('paso1-btn-favoritos').addEventListener('click', () => {
-                    cerrar();
-                    activarEdicionFavoritos();
-                });
-
-                document.getElementById('paso1-btn-mapa').addEventListener('click', () => {
-                    cerrar();
-                    clicBotonMapa();
-                });
-
-                document.getElementById('paso1-btn-guia').addEventListener('click', () => {
-                    //cerrar();
-                    if (typeof abrirLinkExterno === 'function') abrirLinkExterno("https://flydecision.com/ayuda");
-                });
-
-                document.getElementById('paso1-btn-importar').addEventListener('click', () => {
-                    cerrar();
-                    importarConfiguracion();
-                });
-            }; // Fin pantalla Bienvenida
-
-
-            // Exponemos la función a la ventana global para que el botón del mapa la pueda llamar
-            window.mostrarPaso1General = mostrarPaso1;
-
             // NUEVA LÓGICA DE EJECUCIÓN (Solo salta el pop-up si NO vienes de URL directa)
             if (!enlaceDirectoMapa) {
-
                 // CONTROL DE FLUJO: ¿Ha elegido idioma manualmente?
                 if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) {
                     mostrarPaso0();
                 } else {
                     mostrarPaso1();
                 }
-
-            } else {
-                // Si ES un enlace directo al mapa, la app se queda en silencio. La tabla se crea en modo edición de fondo y pasamos al mapa. El botón flotante inferior permitirá al usuario llamar a mostrarPaso1General().
             }
 
         // 🟡 CASO B: Estamos en Modo Edición (Activado por botón o flujo anterior)
@@ -3169,8 +3095,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // 🟡 CASO C: Usuaria recurrente pero borró todos los favoritos (Fuerza edición)
         } else if (favoritos.length === 0 && !modoEdicionFavoritos) {
 
-            //soloFavoritos = false;
-            //modoEdicionFavoritos = true; 
             activarEdicionFavoritos();
             return;
 
