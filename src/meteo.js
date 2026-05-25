@@ -49,7 +49,7 @@ let bdGlobalDespegues = [];
 
 const cacheSVG_Tabla = {};
 
-let chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") === "true"; 
+let chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false"; // Por defecto true para que lo vean
 
 let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false"; // Por defecto true para que lo vean
 
@@ -9760,14 +9760,15 @@ function inicializarMapaLeaflet() {
             );
 
             if (matchTabla) {
-                despegue = matchTabla.Despegue; // Obligamos a usar el nombre AGRUPADO de la tabla
-                idDespegue = matchTabla.ID;     // Obligamos a usar el ID de la tabla
+                despegue = matchTabla.Despegue;
+                idDespegue = matchTabla.ID;
 
-                // Como sí está en la tabla, generamos el botón
+                const yaEsFavorito = obtenerFavoritos().map(Number).includes(Number(idDespegue));
+
                 botonVerEnTablaHTML = `
                 <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
                     <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.3; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
-                    ❤️ ${t('mapa.verEnTabla')}<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>
+                    ${yaEsFavorito ? '' : '❤️ '}${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}
                     </button>
                 </div>`;
             }
@@ -9818,6 +9819,15 @@ function inicializarMapaLeaflet() {
             maxWidth: 300,
             autoPanPaddingTopLeft: L.point(10, 350) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
         });
+
+        // Regeneramos el popup por si venimos de consultarlo en la tabla y se ha añadido a favoritos.
+        marker.on('popupopen', function() {
+            const yaEsFavorito = obtenerFavoritos().map(Number).includes(Number(idDespegue));
+            const btn = this.getPopup().getElement().querySelector('.btn-accion');
+            if (!btn) return;
+            btn.innerHTML = `${yaEsFavorito ? '' : '❤️ '}${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}`;
+        });
+
         marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
         markersDespegues.push(marker); //inserta marker al grupo markersDespegues
         clustergroupDespegues.addLayer(marker);
