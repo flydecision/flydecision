@@ -1127,6 +1127,9 @@ function activarEdicionFavoritos() {
     localStorage.setItem("METEO_CONFIG_FAVS_HECHA", "true");
     window.venirDeEdicionActiva = true; // Flag de que estamos editando activamente
 
+    modoEdicionFavoritos = true;
+    soloFavoritos = false;
+
     // 1. LIMPIAR BÚSQUEDA Y OTROS FILTROS PREVIOS
     if (typeof limpiarBuscador === 'function') {
         limpiarBuscador(); 
@@ -1151,9 +1154,6 @@ function activarEdicionFavoritos() {
             heartSvg.setAttribute('stroke', 'currentColor');
         }
     }
-
-    modoEdicionFavoritos = true;
-    soloFavoritos = false;
 
     // 📍 1. ABRIR FILTRO DISTANCIA
     const panelDistancia = document.getElementById("div-filter-distancia") || document.getElementById("div-filtro-distancia");
@@ -6940,8 +6940,14 @@ function comprobarAvisoCambiosPuntuacionXC() {
             }
 
             // --- PRIORIDAD 2: Modo Edición Favoritos ---
-            if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos === true) {
-                finalizarEdicionFavoritos();
+            if (window.venirDeEdicionActiva === true) {
+                if (!modoEdicionFavoritos) {
+                    // Estaba en un desvío (viendo 1 tabla aislada o mapa), el botón atrás lo devuelve a la lista de edición
+                    volverAEdicionDesdeDesvio();
+                } else {
+                    // Ya estaba en la lista, el botón atrás finaliza
+                    finalizarEdicionFavoritos();
+                }
                 return; 
             }
 
@@ -7382,78 +7388,110 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // ---------------------------------------------------------------
     // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
     // ---------------------------------------------------------------
-    // 🚀 NUEVO: Navegar desde el popup del mapa a la tabla aislando el despegue por ID
-window.verMeteoEnTabla = function(idDespegue) {
-    if (typeof map !== 'undefined' && map) map.closePopup();
-    
-    // 1. Buscamos el despegue en la BD global usando el ID para obtener su nombre EXACTO en la tabla
-    const despegueBD = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(idDespegue));
-    if (!despegueBD) return; // Si por algún motivo no existe, abortamos
+    window.verMeteoEnTabla = function(idDespegue) {
+        if (typeof map !== 'undefined' && map) map.closePopup();
+        
+        // 1. Buscamos el despegue en la BD global usando el ID para obtener su nombre EXACTO en la tabla
+        const despegueBD = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(idDespegue));
+        if (!despegueBD) return; // Si por algún motivo no existe, abortamos
 
-    // Apagamos preventivamente el Modo Edición (vital si el usuario era virgen y saltó directo al mapa)
-    modoEdicionFavoritos = false;
-    soloFavoritos = true;
-    document.body.classList.remove('modo-edicion-tabla');
-    const divMenu = document.getElementById('div-menu');
-    if (divMenu) divMenu.classList.remove('mode-editing');
-    const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
-    if (divMenu2) divMenu2.classList.remove('mode-editing');
-    const panelHorario = document.querySelector('.div-filtro-horario');
-    if (panelHorario) panelHorario.style.display = '';
+        // Apagamos preventivamente el Modo Edición (vital si el usuario era virgen y saltó directo al mapa)
+        modoEdicionFavoritos = false;
+        soloFavoritos = true;
+        document.body.classList.remove('modo-edicion-tabla');
+        const divMenu = document.getElementById('div-menu');
+        if (divMenu) divMenu.classList.remove('mode-editing');
+        const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+        if (divMenu2) divMenu2.classList.remove('mode-editing');
+        const panelHorario = document.querySelector('.div-filtro-horario');
+        if (panelHorario) panelHorario.style.display = '';
 
-    // Si no estaba en favoritos, lo añadimos silenciosamente (pero NO marcamos visita hecha todavía!)
-    const misFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
-    let esNuevoFavorito = false; 
-    
-    if (!misFavoritos.includes(Number(idDespegue))) {
-        misFavoritos.push(Number(idDespegue));
-        localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(misFavoritos));
-        esNuevoFavorito = true;
-        // 🚀 ELIMINADO: Ya no guardamos aquí METEO_PRIMERA_VISITA_HECHA
-    }
-    
-    const nombreExactoTabla = despegueBD.Despegue;
+        // Ocultamos el filtro de distancia durante este desvío
+        const panelDistancia = document.getElementById("div-filtro-distancia");
+        if (panelDistancia) {
+            panelDistancia.classList.remove("activo");
+        }
 
-    cambiarVista('tabla');
+        // Si no estaba en favoritos, lo añadimos silenciosamente (pero NO marcamos visita hecha todavía!)
+        const misFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
+        let esNuevoFavorito = false; 
+        
+        if (!misFavoritos.includes(Number(idDespegue))) {
+            misFavoritos.push(Number(idDespegue));
+            localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(misFavoritos));
+            esNuevoFavorito = true;
+            // 🚀 ELIMINADO: Ya no guardamos aquí METEO_PRIMERA_VISITA_HECHA
+        }
+        
+        const nombreExactoTabla = despegueBD.Despegue;
 
-    // Evaluamos el entorno para devolverle el menú inferior si lo tenía oculto (al tener ya 1 favorito)
-    if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
+        cambiarVista('tabla');
 
-    // 2. Forzamos el nombre exacto en el buscador
-    const input = document.getElementById('buscador-despegues-provincias');
-    if (input) {
-        input.value = nombreExactoTabla;
-        input.classList.add('filtrado'); 
-    }
+        // Evaluamos el entorno para devolverle el menú inferior si lo tenía oculto (al tener ya 1 favorito)
+        if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
 
-    const btnLimpiar = document.getElementById('limpiar-buscador');
-    if (btnLimpiar) btnLimpiar.style.display = 'block';
+        // 2. Forzamos el nombre exacto en el buscador
+        const input = document.getElementById('buscador-despegues-provincias');
+        if (input) {
+            input.value = nombreExactoTabla;
+            input.classList.add('filtrado'); 
+        }
 
-    // 3. 🚀 CORRECCIÓN: Iluminar "Inicio" en lugar de "Buscar"
-    if (typeof window.activarMenuInferior === 'function') {
-        window.activarMenuInferior(document.getElementById('nav-home'));
-    }
+        const btnLimpiar = document.getElementById('limpiar-buscador');
+        if (btnLimpiar) btnLimpiar.style.display = 'block';
 
-    // 4. LÓGICA DE ACTUALIZACIÓN DE LA TABLA Y FEEDBACK VISUAL
-    // if (esNuevoFavorito) {
-    //     if (typeof GestorMensajes !== 'undefined') {
-    //         GestorMensajes.mostrar({
-    //             tipo: 'modal',
-    //             htmlContenido: `<p>${t('favoritos.anadidoOk', { nombre: nombreExactoTabla })}</p>`,
-    //             botones: [] 
-    //         });
+        // 3. 🚀 CORRECCIÓN: Iluminar "Inicio" en lugar de "Buscar"
+        if (typeof window.activarMenuInferior === 'function') {
+            window.activarMenuInferior(document.getElementById('nav-home'));
+        }
 
-    //         setTimeout(function() {
-    //             GestorMensajes.ocultar(); 
-    //             construir_tabla(); 
-    //     } else {
-    //         construir_tabla();
-    //     }
-    // } else {
-    //     construir_tabla();
-    // }
-    construir_tabla();
-};
+        construir_tabla();
+    };
+
+    // ---------------------------------------------------------------
+    // 🔴 FUNCIÓN PARA VOLVER A LA EDICIÓN TRAS UN DESVÍO AL MAPA/TABLA AISLADA
+    // ---------------------------------------------------------------
+    window.volverAEdicionDesdeDesvio = function() {
+        if (typeof map !== 'undefined' && map) map.closePopup();
+
+        // 1. Limpiamos SOLO el buscador (que es lo que aisló al despegue visualmente)
+        if (typeof limpiarBuscador === 'function') limpiarBuscador();
+
+        // 2. Restauramos banderas de modo edición
+        modoEdicionFavoritos = true;
+        soloFavoritos = false; 
+        
+        // Respetar si el usuario tenía activado el "Ver solo favoritos" antes de salir
+        const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
+        if (btnFavsTog && btnFavsTog.classList.contains('activo')) {
+            soloFavoritos = true;
+        }
+
+        // 3. Restauramos las clases visuales de los menús
+        document.body.classList.add('modo-edicion-tabla');
+        const divMenu = document.getElementById('div-menu');
+        if (divMenu) divMenu.classList.add('mode-editing');
+        const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+        if (divMenu2) divMenu2.classList.add('mode-editing');
+        const panelHorario = document.querySelector('.div-filtro-horario');
+        if (panelHorario) panelHorario.style.display = 'none';
+
+        // 🐛 BUG 2 RESTORE: Mostramos de nuevo el filtro de distancia como estaba
+        const panelDistancia = document.getElementById("div-filtro-distancia");
+        if (panelDistancia) panelDistancia.classList.add("activo");
+
+        // 4. Volvemos a la vista tabla (esto ocultará el botón automáticamente)
+        cambiarVista('tabla');
+        
+        // 5. Devolvemos la luz al botón de Ajustes
+        const btnSettings = document.getElementById('nav-settings');
+        if (btnSettings && typeof window.activarMenuInferior === 'function') {
+            window.activarMenuInferior(btnSettings);
+        }
+
+        // 6. Reconstruimos la tabla con los filtros restaurados
+        construir_tabla();
+    };
 
     // ==========================================================================
     // 🔴 LÓGICA DEL MENÚ INFERIOR Y BUSCADOR FLOTANTE
@@ -7602,10 +7640,10 @@ window.verMeteoEnTabla = function(idDespegue) {
         const btnInicio = document.getElementById('nav-home');
         const yaEnInicio = btnInicio && btnInicio.classList.contains('active');
 
-        // 1. Salir de edición de favoritos si estamos en ella
-        if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+        // 1. Salir de edición de favoritos si estamos en ella O en un desvío de ella
+        if ((typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) || window.venirDeEdicionActiva) {
             if (!finalizarEdicionFavoritos(true)) return; 
-        } 
+        }
         
         // 🚀 NUEVO: Si el filtro de distancia está visible pero en "Infinito/Todo", lo ocultamos al ir a Inicio
         const panelDistancia = document.getElementById('div-filtro-distancia');
@@ -7799,7 +7837,7 @@ window.verMeteoEnTabla = function(idDespegue) {
 
     // 5️⃣ BOTÓN AJUSTES: Cierra edición pero mantiene filtros de usuario
     window.clicBotonAjustes = function() {
-        if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+        if ((typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) || window.venirDeEdicionActiva) {
             if (!finalizarEdicionFavoritos(true)) {
                 window.activarMenuInferior(document.getElementById('nav-home'));
                 return; 
@@ -7936,6 +7974,7 @@ window.cambiarVista = function(vista) {
             // Solo mostramos el botón si venimos de una edición ACTIVA real iniciada por el usuario
             if (window.venirDeEdicionActiva === true) {
                 btnVolver.style.display = 'flex';
+                btnVolver.classList.remove('en-tabla');
             } else {
                 btnVolver.style.display = 'none';
             }
@@ -7992,8 +8031,16 @@ window.cambiarVista = function(vista) {
         if (vistaTabla) vistaTabla.style.display = 'flex'; 
         if (vistaControles) vistaControles.style.display = 'block';
 
-        // Al salir del mapa, apagamos la pastilla siempre
-        if (btnVolver) btnVolver.style.display = 'none';
+        // Mostrar el botón de volver si estamos en un desvío (aislando un despegue) ---
+        if (btnVolver) {
+            // Si la edición está activa en background PERO la hemos apagado visualmente para ver el desglose meteo (modoEdicionFavoritos == false), mostramos el botón en la tabla.
+            if (window.venirDeEdicionActiva === true && !modoEdicionFavoritos) {
+                btnVolver.style.display = 'flex';
+                btnVolver.classList.add('en-tabla'); // <-- AÑADE LA CLASE (baja a 490px)
+            } else {
+                btnVolver.style.display = 'none';
+            }
+        }
 
         // --- LÓGICA INTELIGENTE DE LUCES ---
         if (typeof window.activarMenuInferior === 'function') {

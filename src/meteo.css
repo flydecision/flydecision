@@ -2066,6 +2066,8 @@ span.grados {
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transform: translateY(var(--vv-offset-top, 0px));
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(6px);
 }
 .mensaje-modal.visible {
     visibility: visible;
@@ -3546,7 +3548,7 @@ h3 {
 
 /* 🛑 BOTÓN FLOTANTE "VOLVER" (Módulo Mapa) */
 .btn-volver-flotante {
-    position: absolute;
+    position: fixed;
     top: max(170px, env(safe-area-inset-top)); 
     left: 50%;
     transform: translateX(-50%);
@@ -3564,6 +3566,11 @@ h3 {
     gap: 6px;
     cursor: pointer;
     transition: background-color 0.2s, transform 0.1s;
+}
+
+/* Modificador: baja el botón cuando está flotando sobre la tabla */
+.btn-volver-flotante.en-tabla {
+    top: max(490px, env(safe-area-inset-top));
 }
 
 .btn-volver-flotante:active {
