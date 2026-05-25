@@ -49,7 +49,7 @@ let bdGlobalDespegues = [];
 
 const cacheSVG_Tabla = {};
 
-let chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") === "true"; 
+let chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false"; // Por defecto true para que lo vean
 
 let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false"; // Por defecto true para que lo vean
 
@@ -1123,6 +1123,13 @@ function iniciarGuiaFavoritos(forzar = false) {
 
 function activarEdicionFavoritos() {
 
+    // BANDERA: El usuario ya sabe cómo llegar aquí
+    localStorage.setItem("METEO_CONFIG_FAVS_HECHA", "true");
+    window.venirDeEdicionActiva = true; // Flag de que estamos editando activamente
+
+    modoEdicionFavoritos = true;
+    soloFavoritos = false;
+
     // 1. LIMPIAR BÚSQUEDA Y OTROS FILTROS PREVIOS
     if (typeof limpiarBuscador === 'function') {
         limpiarBuscador(); 
@@ -1147,9 +1154,6 @@ function activarEdicionFavoritos() {
             heartSvg.setAttribute('stroke', 'currentColor');
         }
     }
-
-    modoEdicionFavoritos = true;
-    soloFavoritos = false;
 
     // 📍 1. ABRIR FILTRO DISTANCIA
     const panelDistancia = document.getElementById("div-filter-distancia") || document.getElementById("div-filtro-distancia");
@@ -1692,6 +1696,7 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
 	
     localStorage.setItem("METEO_PRIMERA_VISITA_HECHA", "true");
     modoEdicionFavoritos = false; 
+    window.venirDeEdicionActiva = false; // Apagamos el chivato al finalizar de editar
     
     // Al limpiar el buscador aquí, ya se restaurará el placeholder normal
     limpiarBuscador(); 
@@ -2856,6 +2861,197 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         const paramsArranque = new URLSearchParams(window.location.search);
         const enlaceDirectoMapa = paramsArranque.has('lat') && paramsArranque.has('lon');
         
+        // ---------------------------------------------------------------
+        // 🔴 DEFINICIÓN DE PANTALLAS DE ASISTENTE (Siempre disponibles en memoria)
+        // ---------------------------------------------------------------
+
+        // Asistente de configuración inicial. Paso 0: Idioma
+        const mostrarPaso0 = function() {
+            
+            // Exponemos la función a nivel global para que el HTML inyectado pueda usarla en el onclick
+            window.guardarIdiomaInicial = function(idiomaCode) {
+                // 1. Le decimos a i18next cuál es el idioma forzando su variable
+                localStorage.setItem("i18nextLng", idiomaCode);
+                
+                // 2. Creamos nuestra propia bandera de control de flujo
+                localStorage.setItem("METEO_IDIOMA_ELEGIDO", "true");
+                
+                GestorMensajes.ocultar();
+                
+                // 3. Recargamos la página para que i18next aplique el idioma y pase al Paso 1
+                window.location.reload();
+            };
+
+            const htmlIdiomas = `
+                <button class="btn-cerrar-modal" style="float: right; margin-top: -22px; margin-right: -5px;" onclick="localStorage.setItem('METEO_IDIOMA_ELEGIDO', 'true'); GestorMensajes.ocultar(); if(typeof window.mostrarPaso1General === 'function') window.mostrarPaso1General();">&times;</button>
+                <p style='font-size: 1.1em; font-weight: bold; text-align:center; margin-bottom: 20px; line-height: 1.4; padding-top: 10px;'>
+                    Idioma / Hizkuntza / Llengua / Language / Langue / Sprache
+                </p>
+                
+                <div style="display: flex; flex-direction: column; gap: 6px; align-items: center; margin-bottom: 20px;">
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('es-ES')">
+                        <img src="icons/flag_es_ES.webp" alt="Español" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Español</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('eu-ES')">
+                        <img src="icons/flag_eu_ES.webp" alt="Euskara" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Euskara</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('ca-ES')">
+                        <img src="icons/flag_ca_ES.webp" alt="Català" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Català</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('gl-ES')">
+                        <img src="icons/flag_gl_ES.webp" alt="Galego" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Galego</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('en-GB')">
+                        <img src="icons/flag_en_GB.webp" alt="English" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">English</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('fr-FR')">
+                        <img src="icons/flag_fr_FR.webp" alt="Français" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Français</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('de-DE')">
+                        <img src="icons/flag_de_DE.webp" alt="Deutsch" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Deutsch</span>
+                    </button>
+                    <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('pt-PT')">
+                        <img src="icons/flag_pt_PT.webp" alt="Português" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <span style="font-size: 1.1em; font-weight: bold;">Português</span>
+                    </button>
+                </div>
+            `;
+
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: htmlIdiomas,
+                botones: [] 
+            });
+        };
+
+        // Pantalla de bienvenida
+        const mostrarPaso1 = function() {
+            const tieneFavs = (localStorage.getItem("METEO_FAVORITOS_LISTA") ? JSON.parse(localStorage.getItem("METEO_FAVORITOS_LISTA")) : []).length > 0;
+            const haVistoMapa = window.seHaExploradoMapa === true;
+
+            // Overlay de fondo
+            const overlay = document.createElement('div');
+            overlay.id = 'paso1-overlay';
+            overlay.style.cssText = `
+                position: fixed; inset: 0; z-index: 9999;
+                background: rgba(0,0,0,0.3);
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                display: flex; align-items: center; justify-content: center;
+                padding: 1rem;
+            `;
+
+            overlay.innerHTML = `
+                <div style="
+                    width: 100%; max-width: 340px;
+                    background: var(--color-background-primary, #fff);
+                    border-radius: 16px;
+                    border: 0.5px solid var(--color-border-tertiary, #e0e0e0);
+                    padding: 2rem 1.5rem;
+                    display: flex; flex-direction: column;
+                ">
+                    <!-- Cabecera -->
+                    <div style="text-align:center; margin-bottom: 2.55rem;">
+                        <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🪂</div>
+                        <div style="font-size: 35px; font-weight: 500; color: var(--color-text-primary, #111); margin-bottom: 4px;">Fly Decision</div>
+                        <div style="font-size: 20px; color: var(--color-text-secondary, #666);">${t('asistente.paso1.subtitulo')}</div>
+                    </div>
+
+                    <!-- Botones principales -->
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem;">
+                        <button id="paso1-btn-favoritos" style="
+                            display: flex; align-items: center; gap: 10px;
+                            padding: 14px 18px; border-radius: 12px; border: none;
+                            background: #378ADD;
+                            color: #fff;
+                            font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
+                            width: 100%;
+                        ">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            <div>
+                                <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnFavoritos')}</div>
+                                <div style="font-size:16px; font-weight:400; margin-top:2px; opacity:0.8;">${t('asistente.paso1.btnSubtituloFavoritos')}</div>
+                            </div>
+                        </button>
+
+                        <button id="paso1-btn-mapa" style="
+                            display: flex; align-items: center; gap: 10px;
+                            padding: 14px 18px; border-radius: 12px;
+                            border: 0.5px solid var(--color-border-secondary, #ccc);
+                            background: var(--color-background-secondary, #f5f5f5);
+                            color: var(--color-text-primary, #111);
+                            font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
+                            width: 100%; margin-bottom: 35px;
+                        ">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                            <div>
+                                <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnExplorarMapa')}</div>
+                                <div style="font-size:16px; font-weight:400; margin-top:2px; opacity: 0.75;">${t('asistente.paso1.btnSubtituloExplorarMapa')}</div>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Separador + botones secundarios -->
+                    <div style="border-top: 0.5px solid var(--color-border-tertiary, #e0e0e0); padding-top: 1rem; display: flex; flex-direction: column; gap: 4px;">
+                        <button id="paso1-btn-guia" style="
+                            display: flex; align-items: center; gap: 8px;
+                            padding: 10px 12px; border-radius: 8px;
+                            border: none; background: transparent;
+                            color: var(--color-text-secondary, #666);
+                            font-size: 16px; cursor: pointer; text-align: left; width: 100%;
+                        ">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="8"></line><polyline points="11 12 12 12 12 16"></polyline></svg>
+                            ${t('botones.verGuiaGeneral')}
+                        </button>
+                        <button id="paso1-btn-importar" style="
+                            display: flex; align-items: center; gap: 8px;
+                            padding: 10px 12px; border-radius: 8px;
+                            border: none; background: transparent;
+                            color: var(--color-text-secondary, #666);
+                            font-size: 16px; cursor: pointer; text-align: left; width: 100%;
+                        ">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            ${t('botones.importarConfiguracion')}
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            const cerrar = () => overlay.remove();
+
+            document.getElementById('paso1-btn-favoritos').addEventListener('click', () => {
+                cerrar();
+                activarEdicionFavoritos();
+            });
+
+            document.getElementById('paso1-btn-mapa').addEventListener('click', () => {
+                cerrar();
+                clicBotonMapa();
+            });
+
+            document.getElementById('paso1-btn-guia').addEventListener('click', () => {
+                if (typeof abrirLinkExterno === 'function') abrirLinkExterno("https://flydecision.com/ayuda");
+            });
+
+            document.getElementById('paso1-btn-importar').addEventListener('click', () => {
+                cerrar();
+                importarConfiguracion();
+            });
+        };
+
+        // EXPOSICIÓN GLOBAL: Así el botón azul "⚙️ Configurar la aplicación" siempre la encontrará
+        window.mostrarPaso1General = mostrarPaso1;
+
+
         // 🟡 CASO A: Primera visita (Usuaria nueva)
         if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") && 
             !localStorage.getItem("METEO_FAVORITOS_LISTA") && 
@@ -2873,10 +3069,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN", "20");
                 localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", "true");
                 chkMostrarVientoAlturas = true;
-                if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = true; //PARA FORZAR EL CHECKBOX VISUAL
+                if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = true; 
                 localStorage.setItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA", "true");
                 chkMostrarCizalladura = true;
-                if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = true; ////PARA FORZAR EL CHECKBOX VISUAL
+                if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = true; 
                 
                 soloFavoritos = false;
                 modoEdicionFavoritos = true; 
@@ -2887,270 +3083,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
                 const panelHorario = document.querySelector('.div-filtro-horario');
                 if (panelHorario) panelHorario.style.display = 'none';
-
-                // Si NO es un enlace directo al mapa, mostramos el asistente
-                if (!enlaceDirectoMapa) {
-
-                    // Asistente de configuración inicial. Paso 0: Idioma
-                    // ==========================================================
-                    const mostrarPaso0 = function() {
-                        
-                        // Exponemos la función a nivel global para que el HTML inyectado pueda usarla en el onclick
-                        window.guardarIdiomaInicial = function(idiomaCode) {
-                            // 1. Le decimos a i18next cuál es el idioma forzando su variable
-                            localStorage.setItem("i18nextLng", idiomaCode);
-                            
-                            // 2. Creamos nuestra propia bandera de control de flujo
-                            localStorage.setItem("METEO_IDIOMA_ELEGIDO", "true");
-                            
-                            GestorMensajes.ocultar();
-                            
-                            // 3. Recargamos la página para que i18next aplique el idioma y pase al Paso 1
-                            window.location.reload();
-                        };
-
-                        // Creamos el diseño con botones apilados, bandera a la izquierda y texto
-                        const htmlIdiomas = `
-                            <p style='font-size: 1.1em; font-weight: bold; text-align:center; margin-bottom: 20px; line-height: 1.4;'>
-                                Idioma / Hizkuntza / Llengua / Language / Langue / Sprache
-                            </p>
-                            
-                            <div style="display: flex; flex-direction: column; gap: 6px; align-items: center; margin-bottom: 20px;">
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('es-ES')">
-                                    <img src="icons/flag_es_ES.webp" alt="Español" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Español</span>
-                                </button>
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('eu-ES')">
-                                    <img src="icons/flag_eu_ES.webp" alt="Euskara" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Euskara</span>
-                                </button>
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('ca-ES')">
-                                    <img src="icons/flag_ca_ES.webp" alt="Català" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Català</span>
-                                </button>
-
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('gl-ES')">
-                                    <img src="icons/flag_gl_ES.webp" alt="Galego" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Galego</span>
-                                </button>
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('en-GB')">
-                                    <img src="icons/flag_en_GB.webp" alt="English" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">English</span>
-                                </button>
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('fr-FR')">
-                                    <img src="icons/flag_fr_FR.webp" alt="Français" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Français</span>
-                                </button>
-                                
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('de-DE')">
-                                    <img src="icons/flag_de_DE.webp" alt="Deutsch" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Deutsch</span>
-                                </button>
-
-                                <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('pt-PT')">
-                                    <img src="icons/flag_pt_PT.webp" alt="Português" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
-                                    <span style="font-size: 1.1em; font-weight: bold;">Português</span>
-                                </button>
-                                
-                            </div>
-                        `;
-
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: htmlIdiomas,
-                            botones: [] // Lo enviamos vacío para que el Gestor no pinte sus botones por defecto abajo
-                        });
-                    };
-
-                    // Asistente de configuración inicial. Paso 6 Guía rápida
-                    // ==========================================================
-                    const mostrarPaso6 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso6.html'),
-                            botones: [
-                            {
-                                texto: '←',
-                                estilo: 'secundario',
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso5(); 
-                                }
-                            },
-                            {
-                                texto: t('botones.marcarFavoritosFlecha'),
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    activarEdicionFavoritos();
-                                    return;
-                                }
-                            }]
-                        });
-                    };
-
-                    // Asistente de configuración inicial. Paso 5 Guía rápida
-                    // ==========================================================
-                    const mostrarPaso5 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso5.html'),
-                            botones: [
-                            {
-                                texto: '←',
-                                estilo: 'secundario',
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso4(); 
-                                }
-                            },
-                            {
-                                texto: t('botones.siguienteFlecha'),
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso6(); 
-                                }
-                            }]
-                        });
-                    };
-
-                    // Asistente de configuración inicial. Paso 4 Guía rápida
-                    // ==========================================================
-                    const mostrarPaso4 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso4.html'),
-                            botones: [
-                            {
-                                texto: '←',
-                                estilo: 'secundario',
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso3(); 
-                                }
-                            },
-                            {
-                                texto: t('botones.siguiente'),
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso5(); 
-                                }
-                            }]
-                        });
-                    };
-
-                    // Asistente de configuración inicial. Paso 3 Guía rápida
-                    // ==========================================================
-                    const mostrarPaso3 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso3.html'),
-                            botones: [
-                            {
-                                texto: '←',
-                                estilo: 'secundario',
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso2(); 
-                                }
-                            },
-                            {
-                                texto: t('botones.siguiente'),
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso4(); 
-                                }
-                            }]
-                        });
-                    };
-
-                    // Asistente de configuración inicial. Paso 2 Guía rápida
-                    // ==========================================================
-                    const mostrarPaso2 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso2.html'),
-                            botones: [
-                            {
-                                texto: '←',
-                                estilo: 'secundario',
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso1(); 
-                                }
-                            },
-                            {
-                                texto: t('botones.siguiente'),
-                                onclick: function() {
-                                    GestorMensajes.ocultar();
-                                    mostrarPaso3(); 
-                                }
-                            }]
-                        });
-                    };
-
-                    // Asistente de configuración inicial. Pantalla inicial (Paso 1)
-                    // ==========================================================
-                    const mostrarPaso1 = function() {
-                        GestorMensajes.mostrar({
-                            tipo: 'modal',
-                            htmlContenido: t('asistente.paso1.html'),
-                            botones: [
-                                {
-                                    texto: t('botones.marcarFavoritos'),
-                                    onclick: function() {
-                                        GestorMensajes.ocultar();
-                                        activarEdicionFavoritos();
-                                        return;
-                                    }
-                                },
-                                {
-                                    texto: t('botones.explorarMapa'),
-                                    estilo: 'secundario',
-                                    onclick: function() {
-                                        GestorMensajes.ocultar();
-                                        clicBotonMapa();
-                                        return;
-                                    }
-                                },
-                                {
-                                    texto: t('botones.verGuiaGeneral'),
-                                    estilo: 'secundario',
-                                    onclick: function() {
-                                        GestorMensajes.ocultar();
-                                        mostrarPaso2();
-                                    }
-                                },
-                                {
-                                    texto: t('botones.importarConfiguracion'),
-                                    estilo: 'secundario',
-                                    onclick: function() {
-                                        GestorMensajes.ocultar();
-                                        importarConfiguracion();
-                                        return;
-                                    }
-                                }
-                            ],
-                            anchoBotones: 300
-                        });
-                    };
-
-                    // CONTROL DE FLUJO: ¿Ha elegido idioma manualmente?
-                    if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) {
-                        mostrarPaso0();
-                    } else {
-                        mostrarPaso1();
-                    }
-
+            } 
+                
+            // NUEVA LÓGICA DE EJECUCIÓN (Solo salta el pop-up si NO vienes de URL directa)
+            if (!enlaceDirectoMapa) {
+                // CONTROL DE FLUJO: ¿Ha elegido idioma manualmente?
+                if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) {
+                    mostrarPaso0();
                 } else {
-                    // Si ES un enlace directo al mapa, no mostramos NADA.
-                    // Como 'modoEdicionFavoritos' está en 'true', la tabla se creará en modo edición 
-                    // silenciosamente de fondo y pasaremos al mapa automáticamente.
-                    // Importante: No marcamos 'METEO_PRIMERA_VISITA_HECHA' para que, si el usuario luego pulsa "Inicio", le salte la advertencia de que necesita favoritos.
+                    mostrarPaso1();
                 }
             }
 
@@ -3162,8 +3103,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // 🟡 CASO C: Usuaria recurrente pero borró todos los favoritos (Fuerza edición)
         } else if (favoritos.length === 0 && !modoEdicionFavoritos) {
 
-            //soloFavoritos = false;
-            //modoEdicionFavoritos = true; 
             activarEdicionFavoritos();
             return;
 
@@ -5111,26 +5050,28 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			ocultarLoading();
 
 			setTimeout(() => {
-				localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
-				localStorage.removeItem('METEO_CRASH_COUNTER');
-				
+                localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
+                localStorage.removeItem('METEO_CRASH_COUNTER');
+                
+                // para que no haga scroll si vamos a contruir tabla desde el botón "Volver a edición de favoritos"
+                if (window.saltarScrollTop > 0) {
+                    window.saltarScrollTop--;
+                    return;
+                }
+
                 const vistaMapa = document.getElementById('vista-mapa');
                 if (vistaMapa && vistaMapa.style.display === 'flex') {
-                    // Si la tabla cambia mientras estamos en el mapa, agendamos el scroll para cuando vuelva a Inicio
                     window.necesitaScrollTopMeteo = true;
                 } else {
                     const scrollOptions = { top: 0, behavior: 'smooth' };
-
                     const wrapper = document.querySelector('.tabla-wrapper');
                     if (wrapper) wrapper.scrollTo(scrollOptions);
-
                     const principal = document.querySelector('.contenedor-principal-tabla');
                     if (principal) principal.scrollTo(scrollOptions);
-
                     window.scrollTo(scrollOptions);
-                    window.necesitaScrollTopMeteo = false; // Reseteamos por seguridad
+                    window.necesitaScrollTopMeteo = false;
                 }
-			}, 100);
+            }, 100);
 		} else {
 			// En modo silencioso no tocamos el scroll ni mostramos loader
 			localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
@@ -5147,6 +5088,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 actualizarFiltrosMapa();
             }
         }
+
+        // Forzamos la evaluación de seguridad al arrancar la app
+        if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
 
 	} // cierre de: try {	
 
@@ -5600,18 +5544,15 @@ function aplicarFiltrosVisuales() {
 	}
 
     // 7. AUTO-SCROLL AL INICIO
-    // Si estamos aplicando filtros (hay texto o distancia < Todo), subimos al inicio de la tabla
-    if (filtroLimpio.length > 0 || distanciaLimite < 9999) {
+    if (!(window.saltarScrollTop > 0) && (filtroLimpio.length > 0 || distanciaLimite < 9999)) {
         const wrapper = document.querySelector('.tabla-wrapper');
         const principal = document.querySelector('.contenedor-principal-tabla');
-        
-        const scrollOptions = { top: 0, behavior: 'smooth' }; // Usamos 'instant' para que sea súper ágil. La otra opción sería smooth
-
+        const scrollOptions = { top: 0, behavior: 'smooth' };
         if (wrapper) wrapper.scrollTo(scrollOptions);
         if (principal) principal.scrollTo(scrollOptions);
         window.scrollTo(scrollOptions);
     }
-}
+    }
 
 // Función auxiliar para el botón del buscador
 function agregarDespegueDesdeBuscador(idDespegue) {
@@ -5641,25 +5582,23 @@ function agregarDespegueDesdeBuscador(idDespegue) {
         const divSugerencias = document.getElementById('sugerencias-globales');
         if (divSugerencias) divSugerencias.style.display = 'none';
 
-        if (typeof GestorMensajes !== 'undefined') {
-            GestorMensajes.mostrar({
-                tipo: 'modal',
-                htmlContenido: `<p>${t('favoritos.anadidoOk', { nombre: nombreDespegue })}</p>`,
-                botones: [] 
-            });
+        // if (typeof GestorMensajes !== 'undefined') {
+        //     GestorMensajes.mostrar({
+        //         tipo: 'modal',
+        //         htmlContenido: `<p>${t('favoritos.anadidoOk', { nombre: nombreDespegue })}</p>`,
+        //         botones: [] 
+        //     });
 
-            setTimeout(function() {
-                GestorMensajes.ocultar(); 
-                
-                // Al construir la tabla, internamente llamará a aplicarFiltrosVisuales() al final, 
-                // lo que leerá el nuevo nombre en el input y te dejará solo ese despegue en pantalla.
-                construir_tabla(); 
-            }, 1300);
+        //     setTimeout(function() {
+        //         GestorMensajes.ocultar(); 
+        //         construir_tabla(); 
+        //     }, 1300);
 
-        } else {
-            alert(`✅ ${nombreDespegue} añadido a favoritos`);
-            construir_tabla();
-        }
+        // } else {
+        //     alert(`✅ ${nombreDespegue} añadido a favoritos`);
+        //     construir_tabla();
+        // }
+        construir_tabla();
     }
 }
 
@@ -5756,25 +5695,23 @@ document.addEventListener('i18nReady', function() {
         if (tieneCoords) {
             // --- 🚀 ARRANQUE POR COORDENADAS ---
             
-            // 2. Cargamos la tabla en segundo plano (silencioso)
-            // Esto es vital para ocultar el Splash Screen y que los datos existan
-            construir_tabla(false, true); 
+            // 2. Cargamos la tabla en segundo plano (silencioso) y ESPERAMOS a que termine (.then)
+            construir_tabla(false, true).then(() => {
+                
+                // 3. Ahora que los datos globales existen, dibujamos el mapa y sus popups
+                cambiarVista('mapa');
 
-            // 3. Cambiamos a la vista de mapa
-            cambiarVista('mapa');
-
-            // 4. ILUMINAR EL BOTÓN (Con un pequeño retraso de seguridad)
-            // Le damos 100ms para asegurar que el navegador ha terminado de procesar el HTML base
-            setTimeout(() => {
-                const btnMap = document.getElementById('nav-map');
-                if (btnMap && typeof window.activarMenuInferior === 'function') {
-                    window.activarMenuInferior(btnMap);
-                } else if (btnMap) {
-                    // Fallback manual si la función aún no estuviera definida globalmente
-                    document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
-                    btnMap.classList.add('active');
-                }
-            }, 150);
+                // 4. ILUMINAR EL BOTÓN
+                setTimeout(() => {
+                    const btnMap = document.getElementById('nav-map');
+                    if (btnMap && typeof window.activarMenuInferior === 'function') {
+                        window.activarMenuInferior(btnMap);
+                    } else if (btnMap) {
+                        document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
+                        btnMap.classList.add('active');
+                    }
+                }, 150);
+            });
 
         } else {
             // --- ARRANQUE NORMAL ---
@@ -6998,6 +6935,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // --- PRIORIDAD 1: Mensajes MODALES (Bloqueantes) ---
             const modalAbierto = document.querySelector('.mensaje-modal.visible');
             if (modalAbierto) {
+                
+                // Si el modal abierto es el de Idioma (Paso 0) y pulsan "Atrás"
+                if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) { // El selector de idioma es el único modal que se muestra cuando la variable METEO_IDIOMA_ELEGIDO no existe
+                    localStorage.setItem("METEO_IDIOMA_ELEGIDO", "true"); // Lo marcamos como elegido
+                    GestorMensajes.ocultar(); // Cerramos Paso 0
+                    
+                    if (typeof window.mostrarPaso1General === 'function') {
+                        window.mostrarPaso1General(); // Abrimos Paso 1 (Onboarding)
+                    }
+                    return; 
+                }
+
                 GestorMensajes.ocultar();
                 return; 
             }
@@ -7010,8 +6959,33 @@ function comprobarAvisoCambiosPuntuacionXC() {
             }
 
             // --- PRIORIDAD 2: Modo Edición Favoritos ---
-            if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos === true) {
-                finalizarEdicionFavoritos();
+            if (window.venirDeEdicionActiva === true) {
+                if (!modoEdicionFavoritos) {
+                    volverAEdicionDesdeDesvio();
+                } else {
+                    const esPrimeraVisita = !localStorage.getItem("METEO_PRIMERA_VISITA_HECHA");
+                    const sinFavoritos = obtenerFavoritos().length === 0;
+                    if (esPrimeraVisita && sinFavoritos) {
+                        // Deshacemos TODO el estado de edición igual que finalizarEdicionFavoritos
+                        modoEdicionFavoritos = false;
+                        soloFavoritos = true;
+                        window.venirDeEdicionActiva = false;
+                        document.body.classList.remove('modo-edicion-tabla');
+                        const divMenu = document.getElementById('div-menu');
+                        if (divMenu) divMenu.classList.remove('mode-editing');
+                        const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+                        if (divMenu2) divMenu2.classList.remove('mode-editing');
+                        const panelHorario = document.querySelector('.div-filtro-horario');
+                        if (panelHorario) panelHorario.style.display = '';
+                        const panelDistancia = document.getElementById('div-filtro-distancia');
+                        if (panelDistancia) panelDistancia.classList.remove('activo');
+                        if (typeof limpiarBuscador === 'function') limpiarBuscador();
+                        construir_tabla();
+                        mostrarPaso1();
+                    } else {
+                        finalizarEdicionFavoritos();
+                    }
+                }
                 return; 
             }
 
@@ -7033,7 +7007,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // --- PRIORIDAD 5: Salir de la App desde el Mapa ---
             const vistaMapa = document.getElementById('vista-mapa');
             if (vistaMapa && vistaMapa.style.display === 'flex') {
-                // Si estamos en el mapa (y Ajustes no está abierto), el botón Atrás ofrece salir de la App
+                
+                // Si hay un popup de despegue abierto en el mapa, lo cerramos y paramos aquí.
+                const popupAbierto = document.querySelector('.leaflet-popup');
+                if (popupAbierto && typeof map !== 'undefined') {
+                    map.closePopup();
+                    return; 
+                }
+
+                // Si estamos en el mapa (y Ajustes no está abierto, ni hay popups), el botón Atrás ofrece salir
                 if (typeof confirmarSalidaApp === 'function') {
                     confirmarSalidaApp();
                 }
@@ -7458,10 +7440,39 @@ function comprobarAvisoCambiosPuntuacionXC() {
         // 1. Buscamos el despegue en la BD global usando el ID para obtener su nombre EXACTO en la tabla
         const despegueBD = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(idDespegue));
         if (!despegueBD) return; // Si por algún motivo no existe, abortamos
+
+        // Apagamos preventivamente el Modo Edición (vital si el usuario era virgen y saltó directo al mapa)
+        modoEdicionFavoritos = false;
+        soloFavoritos = true;
+        document.body.classList.remove('modo-edicion-tabla');
+        const divMenu = document.getElementById('div-menu');
+        if (divMenu) divMenu.classList.remove('mode-editing');
+        const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+        if (divMenu2) divMenu2.classList.remove('mode-editing');
+        const panelHorario = document.querySelector('.div-filtro-horario');
+        if (panelHorario) panelHorario.style.display = '';
+
+        // Reseteamos y ocultamos el filtro de distancia durante este desvío, por si busca un despegue fuera del filtro
+        if (typeof resetFiltroDistancia === 'function') {
+            resetFiltroDistancia(false); // 'false' para no reconstruir la tabla todavía
+        }
+
+        // Si no estaba en favoritos, lo añadimos silenciosamente (pero NO marcamos visita hecha todavía!)
+        const misFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
+        let esNuevoFavorito = false; 
+        
+        if (!misFavoritos.includes(Number(idDespegue))) {
+            misFavoritos.push(Number(idDespegue));
+            localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(misFavoritos));
+            esNuevoFavorito = true;
+        }
         
         const nombreExactoTabla = despegueBD.Despegue;
 
         cambiarVista('tabla');
+
+        // Evaluamos el entorno para devolverle el menú inferior si lo tenía oculto (al tener ya 1 favorito)
+        if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
 
         // 2. Forzamos el nombre exacto en el buscador
         const input = document.getElementById('buscador-despegues-provincias');
@@ -7473,21 +7484,58 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const btnLimpiar = document.getElementById('limpiar-buscador');
         if (btnLimpiar) btnLimpiar.style.display = 'block';
 
-        if (typeof aplicarFiltrosVisuales === 'function') {
-            aplicarFiltrosVisuales();
-        }
-
         // 3. 🚀 CORRECCIÓN: Iluminar "Inicio" en lugar de "Buscar"
         if (typeof window.activarMenuInferior === 'function') {
             window.activarMenuInferior(document.getElementById('nav-home'));
         }
 
-        const wrapper = document.querySelector('.tabla-wrapper');
-        const principal = document.querySelector('.contenedor-principal-tabla');
-        const scrollOptions = { top: 0, behavior: 'instant' };
-        if (wrapper) wrapper.scrollTo(scrollOptions);
-        if (principal) principal.scrollTo(scrollOptions);
-        window.scrollTo(scrollOptions);
+        construir_tabla();
+    };
+
+    // ---------------------------------------------------------------
+    // 🔴 FUNCIÓN PARA VOLVER A LA EDICIÓN TRAS UN DESVÍO AL MAPA/TABLA AISLADA
+    // ---------------------------------------------------------------
+    window.volverAEdicionDesdeDesvio = function() {
+        if (typeof map !== 'undefined' && map) map.closePopup();
+
+        // 1. Limpiamos SOLO el buscador (que es lo que aisló al despegue visualmente)
+        if (typeof limpiarBuscador === 'function') limpiarBuscador();
+
+        // 2. Restauramos banderas de modo edición
+        modoEdicionFavoritos = true;
+        soloFavoritos = false; 
+        
+        // Respetar si el usuario tenía activado el "Ver solo favoritos" antes de salir
+        const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
+        if (btnFavsTog && btnFavsTog.classList.contains('activo')) {
+            soloFavoritos = true;
+        }
+
+        // 3. Restauramos las clases visuales de los menús
+        document.body.classList.add('modo-edicion-tabla');
+        const divMenu = document.getElementById('div-menu');
+        if (divMenu) divMenu.classList.add('mode-editing');
+        const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+        if (divMenu2) divMenu2.classList.add('mode-editing');
+        const panelHorario = document.querySelector('.div-filtro-horario');
+        if (panelHorario) panelHorario.style.display = 'none';
+
+        // Mostramos de nuevo el filtro de distancia como estaba
+        const panelDistancia = document.getElementById("div-filtro-distancia");
+        if (panelDistancia) panelDistancia.classList.add("activo");
+
+        // 4. Volvemos a la vista tabla (esto ocultará el botón automáticamente)
+        cambiarVista('tabla');
+        
+        // 5. Devolvemos la luz al botón de Ajustes
+        const btnSettings = document.getElementById('nav-settings');
+        if (btnSettings && typeof window.activarMenuInferior === 'function') {
+            window.activarMenuInferior(btnSettings);
+        }
+
+        // 6. Reconstruimos la tabla conservando la posición de scroll
+        window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
+        construir_tabla();
     };
 
     // ==========================================================================
@@ -7637,10 +7685,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const btnInicio = document.getElementById('nav-home');
         const yaEnInicio = btnInicio && btnInicio.classList.contains('active');
 
-        // 1. Salir de edición de favoritos si estamos en ella
-        if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+        // 1. Salir de edición de favoritos si estamos en ella O en un desvío de ella
+        if ((typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) || window.venirDeEdicionActiva) {
             if (!finalizarEdicionFavoritos(true)) return; 
-        } 
+        }
         
         // 🚀 NUEVO: Si el filtro de distancia está visible pero en "Infinito/Todo", lo ocultamos al ir a Inicio
         const panelDistancia = document.getElementById('div-filtro-distancia');
@@ -7834,7 +7882,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     // 5️⃣ BOTÓN AJUSTES: Cierra edición pero mantiene filtros de usuario
     window.clicBotonAjustes = function() {
-        if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+        if ((typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) || window.venirDeEdicionActiva) {
             if (!finalizarEdicionFavoritos(true)) {
                 window.activarMenuInferior(document.getElementById('nav-home'));
                 return; 
@@ -7948,6 +7996,7 @@ window.cambiarVista = function(vista) {
     const btnVolver = document.getElementById('btn-volver-edicion-mapa');
 
     if (vista === 'mapa') {
+        window.seHaExploradoMapa = true;
            
         // Resetear modo calendario al ir al mapa
         modoVerTodosLosDias = false;
@@ -7965,11 +8014,12 @@ window.cambiarVista = function(vista) {
             mapaInicializado = true;
         } 
         
-        // --- LA MAGIA: ¿De dónde venimos? ---
+        // ¿De dónde venimos? ---
         if (btnVolver) {
-            // Si estamos en modo edición, encendemos el botón de volver
-            if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+            // Solo mostramos el botón si venimos de una edición ACTIVA real iniciada por el usuario
+            if (window.venirDeEdicionActiva === true) {
                 btnVolver.style.display = 'flex';
+                btnVolver.classList.remove('en-tabla');
             } else {
                 btnVolver.style.display = 'none';
             }
@@ -8026,8 +8076,16 @@ window.cambiarVista = function(vista) {
         if (vistaTabla) vistaTabla.style.display = 'flex'; 
         if (vistaControles) vistaControles.style.display = 'block';
 
-        // Al salir del mapa, apagamos la pastilla siempre
-        if (btnVolver) btnVolver.style.display = 'none';
+        // Mostrar el botón de volver si estamos en un desvío (aislando un despegue) ---
+        if (btnVolver) {
+            // Si la edición está activa en background PERO la hemos apagado visualmente para ver el desglose meteo (modoEdicionFavoritos == false), mostramos el botón en la tabla.
+            if (window.venirDeEdicionActiva === true && !modoEdicionFavoritos) {
+                btnVolver.style.display = 'flex';
+                btnVolver.classList.add('en-tabla'); // <-- AÑADE LA CLASE (baja a 490px)
+            } else {
+                btnVolver.style.display = 'none';
+            }
+        }
 
         // --- LÓGICA INTELIGENTE DE LUCES ---
         if (typeof window.activarMenuInferior === 'function') {
@@ -8061,6 +8119,33 @@ window.cambiarVista = function(vista) {
         if (btnFiltros) btnFiltros.style.display = '';
 
         document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
+    }
+
+    // Llamamos al evaluador cada vez que cambiamos de pantalla
+    if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
+};
+
+// 🛑 Evaluación del entorno (usuaria nueva, recurrente, URL mapa directa,...)
+// ___________________________________________________________________________________
+
+window.evaluarEstadoNuevosUsuarios = function() {
+    // Especificamos la etiqueta "nav" para no confundirlo con el botón
+    const navMenu = document.querySelector('nav.bottom-nav'); 
+    const btnConfigMapa = document.getElementById('btn-configurar-app-mapa');
+    
+    // Evaluamos la bandera maestra de si completó el flujo oficial
+    const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") === "true";
+    // 🚀 CORRECCIÓN: Usamos venirDeEdicionActiva (edición real iniciada) en lugar de modoEdicionFavoritos
+    const enEdicion = window.venirDeEdicionActiva === true; 
+
+    if (!configHecha && !enEdicion) {
+        // Mientras no haya pulsado "Finalizar edición" al menos una vez, el botón azul se queda de forma global (tanto en mapa como en tabla)
+        if (navMenu) navMenu.style.display = 'none'; 
+        if (btnConfigMapa) btnConfigMapa.style.display = 'flex'; 
+    } else {
+        // Una vez completada la primera visita, o si estamos editando favoritos, todo vuelve a la normalidad
+        if (navMenu) navMenu.style.display = 'flex'; 
+        if (btnConfigMapa) btnConfigMapa.style.display = 'none'; 
     }
 };
 
@@ -8843,8 +8928,8 @@ function inicializarMapaLeaflet() {
             const indiceNumerico = parseInt(indice, 10);
             return ESCALA_VUELOS[indiceNumerico] !== undefined ? ESCALA_VUELOS[indiceNumerico] : 0;
         }
-        const hayConfiguracionInicialFiltroVuelos = (obtenerValorReal(localStorage.getItem('miMapa_minimoVuelos_preferido') || '0') > 0);
-        const hayConfiguracionInicialFiltroUltimoVuelo = (obtenerValorReal(localStorage.getItem('miMapa_minimoUltimoVuelo_preferido') || '0') > 0);
+        const hayConfiguracionInicialFiltroVuelos = (obtenerValorReal(localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0') > 0);
+        const hayConfiguracionInicialFiltroUltimoVuelo = (obtenerValorReal(localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0') > 0);
     
         // 2. Último Vuelo: Comprueba si el valor no es 'Todos' (índice 0)
         const sliderUltimoVuelo = document.getElementById('sliderUltimoVuelo');
@@ -9721,14 +9806,15 @@ function inicializarMapaLeaflet() {
             );
 
             if (matchTabla) {
-                despegue = matchTabla.Despegue; // Obligamos a usar el nombre AGRUPADO de la tabla
-                idDespegue = matchTabla.ID;     // Obligamos a usar el ID de la tabla
+                despegue = matchTabla.Despegue;
+                idDespegue = matchTabla.ID;
 
-                // Como sí está en la tabla, generamos el botón
+                const yaEsFavorito = obtenerFavoritos().map(Number).includes(Number(idDespegue));
+
                 botonVerEnTablaHTML = `
                 <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
-                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.2; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
-                        📊 ${t('mapa.verEnTabla')}
+                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.3; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
+                    ${yaEsFavorito ? '' : '❤️ '}${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}
                     </button>
                 </div>`;
             }
@@ -9766,7 +9852,7 @@ function inicializarMapaLeaflet() {
                     <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
-                    <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
+                    <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
                     <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                     <div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
                     
@@ -9779,6 +9865,15 @@ function inicializarMapaLeaflet() {
             maxWidth: 300,
             autoPanPaddingTopLeft: L.point(10, 350) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
         });
+
+        // Regeneramos el popup por si venimos de consultarlo en la tabla y se ha añadido a favoritos.
+        marker.on('popupopen', function() {
+            const yaEsFavorito = obtenerFavoritos().map(Number).includes(Number(idDespegue));
+            const btn = this.getPopup().getElement().querySelector('.btn-accion');
+            if (!btn) return;
+            btn.innerHTML = `${yaEsFavorito ? '' : '❤️ '}${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}`;
+        });
+
         marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
         markersDespegues.push(marker); //inserta marker al grupo markersDespegues
         clustergroupDespegues.addLayer(marker);
@@ -9920,7 +10015,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
-                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                         </div>`;
                     L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
@@ -10120,7 +10215,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
-                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                         </div>`;
                     L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
@@ -10328,7 +10423,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
-                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Czt/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon.toFixed(4)}%20${lat.toFixed(4)}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                         </div>`;
                     L.popup({ className: 'popup-despegueindividual', maxWidth: 300, autoPanPaddingTopLeft: L.point(10, 280) }).setLatLng([lat, lon]).setContent(popupHtml).openOn(map);
@@ -10548,7 +10643,7 @@ function inicializarMapaLeaflet() {
 
             <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
 
-            <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(nombre)} (${escapeHtml(tipo)})' target='_blank'>Nakarte</a></div>
+            <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(nombre)} (${escapeHtml(tipo)})' target='_blank'>Nakarte</a></div>
             
             <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
 
@@ -10711,7 +10806,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
-                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Czt/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
+                        <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
                         <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
                         <div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
                         
@@ -10944,8 +11039,8 @@ function inicializarMapaLeaflet() {
     const textoUltimoVueloConfig = document.getElementById('valorConfigFiltroUltimoVueloTexto'); 
     
     // --- CLAVES DE ALMACENAMIENTO ---
-    const STORAGE_KEY_VUELOS = 'miMapa_minimoVuelos_preferido';
-    const STORAGE_KEY_ULTIMO_VUELO = 'miMapa_minimoUltimoVuelo_preferido';
+    const STORAGE_KEY_VUELOS = 'METEO_MAPA_MINIMOVUELOS';
+    const STORAGE_KEY_ULTIMO_VUELO = 'METEO_MINIMO_ANO_ULTIMO_VUELO';
 
     // Función auxiliar para obtener el valor real según la escala
     function obtenerValorReal(indice, escala) {
