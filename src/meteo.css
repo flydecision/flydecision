@@ -342,7 +342,7 @@ input[type="search"]::-webkit-search-cancel-button {
 /* Estilo de la X (el botón de limpiar) */
 #limpiar-buscador {
     position: absolute;
-    right: 59px;
+    right: 53px;
     top: 50%;
     transform: translateY(-50%);
     display: none;
@@ -1613,7 +1613,8 @@ span.grados {
     margin-left: 30px;
 }
 
-.pip-dia-btn {
+.pip-dia-btn,
+.btn-distancia-buscador {
     border: 1.5px solid #ccc;
     border-radius: 8px;
     background: #fff;
@@ -1624,16 +1625,25 @@ span.grados {
     height: 30px;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
     max-width: 68px;
-    /* Recomendado para evitar que el texto salte de línea si el botón se encoge mucho */
     white-space: nowrap; 
     overflow: hidden;
 }
 
-.pip-dia-btn.pip-activo {
+.pip-dia-btn.pip-activo,
+.btn-distancia-buscador.pip-activo {
     background: #007aff;
     color: #fff;
     border-color: #007aff;
     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.btn-distancia-buscador {
+    width: 37px;
+    height: 37px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* 🟡 SLIDERS. Personalizados. Configuración Horario -------------------------------- */
