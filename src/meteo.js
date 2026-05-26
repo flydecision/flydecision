@@ -14,7 +14,7 @@ let totalDespeguesDisponibles = 0;
 let VelocidadMin = Number(localStorage.getItem("METEO_VELOCIDAD_MINIMA")) || 0; 
 let VelocidadIdeal = Number(localStorage.getItem("METEO_VELOCIDAD_IDEAL")) || 12;
 let VelocidadMax = Number(localStorage.getItem("METEO_VELOCIDAD_MAXIMA")) || 20;  
-let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 25;
+let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 28;
 
 // Valores límite para puntuación XC y colores en tabla
 // Techo AGL: 800m ya permite volar, 1500m AGL es un día excelente (se suma a la montaña).
@@ -5544,7 +5544,7 @@ function aplicarFiltrosVisuales() {
 	}
 
     // 7. AUTO-SCROLL AL INICIO
-    if (!(window.saltarScrollTop > 0) && (filtroLimpio.length > 0 || distanciaLimite < 9999)) {
+    if (filtroLimpio.length > 0 || distanciaLimite < 9999) {
         const wrapper = document.querySelector('.tabla-wrapper');
         const principal = document.querySelector('.contenedor-principal-tabla');
         const scrollOptions = { top: 0, behavior: 'smooth' };
