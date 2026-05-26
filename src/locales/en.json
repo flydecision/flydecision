@@ -5,7 +5,7 @@
   },
 
   "menu": {
-    "inicio": "Home",
+    "tabla": "Table",
     "buscar": "Search",
     "distancia": "Distance",
     "mapa": "Map",

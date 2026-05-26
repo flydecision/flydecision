@@ -7484,7 +7484,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const btnLimpiar = document.getElementById('limpiar-buscador');
         if (btnLimpiar) btnLimpiar.style.display = 'block';
 
-        // 3. 🚀 CORRECCIÓN: Iluminar "Inicio" en lugar de "Buscar"
+        // 3. Iluminar "Tabla" en lugar de "Buscar"
         if (typeof window.activarMenuInferior === 'function') {
             window.activarMenuInferior(document.getElementById('nav-home'));
         }
@@ -7674,14 +7674,14 @@ function comprobarAvisoCambiosPuntuacionXC() {
         }
     }
 
-    // 1️⃣ BOTÓN INICIO: Único botón que resetea y limpia todo
+    // 1️⃣ BOTÓN TABLA: Único botón que resetea y limpia todo
     window.clicBotonInicio = function() {
         const overlay = document.getElementById('msgActualizando...');
         if (overlay && overlay.classList.contains('loader-activo')) return;
 
         let necesitaReconstruir = false;
 
-        // Comprobamos si ya estábamos en la pestaña Inicio ANTES de hacer nada
+        // Comprobamos si ya estábamos en la pestaña Tabla ANTES de hacer nada
         const btnInicio = document.getElementById('nav-home');
         const yaEnInicio = btnInicio && btnInicio.classList.contains('active');
 
@@ -7690,7 +7690,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             if (!finalizarEdicionFavoritos(true)) return; 
         }
         
-        // 🚀 NUEVO: Si el filtro de distancia está visible pero en "Infinito/Todo", lo ocultamos al ir a Inicio
+        // 🚀 NUEVO: Si el filtro de distancia está visible pero en "Infinito/Todo", lo ocultamos al ir a Tabla
         const panelDistancia = document.getElementById('div-filtro-distancia');
         if (panelDistancia && panelDistancia.classList.contains('activo')) {
             const sliderDist = document.getElementById('distancia-slider');
@@ -8093,7 +8093,7 @@ window.cambiarVista = function(vista) {
             if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
                 window.activarMenuInferior(document.getElementById('nav-settings'));
             } else {
-                // Si no, por defecto a Inicio
+                // Si no, por defecto a Tabla
                 window.activarMenuInferior(document.getElementById('nav-home'));
             }
         }
