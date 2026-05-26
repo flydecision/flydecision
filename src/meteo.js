@@ -1173,7 +1173,8 @@ function activarEdicionFavoritos() {
         buscadorVisible = true; // Actualizamos la variable global del buscador
     }
     if (inputBuscador) {
-        inputBuscador.placeholder = t('buscador.placeholderEdicion');
+        //inputBuscador.placeholder = t('buscador.placeholderEdicion');
+        inputBuscador.placeholder = '🔍';
     }
 
     document.body.classList.add('modo-edicion-tabla');
@@ -5620,7 +5621,8 @@ function limpiarBuscador() {
     botonLimpiar.style.display = 'none';
 	
     inputBuscador.classList.remove('filtrado');
-    inputBuscador.placeholder = placeholderOriginal;
+    //inputBuscador.placeholder = placeholderOriginal;
+    inputBuscador.placeholder = '🔍';
     
     aplicarFiltrosVisuales();
 }

@@ -290,7 +290,7 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
     border: 1.5px solid #ccc;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    width: 259px;
+    width: 140px;
     height: 37px;
 }
 #buscador-despegues-provincias.filtrado {
@@ -2528,8 +2528,8 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     left: 50%;
     transform: translateX(-50%); /* Centrado perfecto */
     width: calc(100% - 8px); /* Margen a los lados en móviles */
-    max-width: 340px; /* Tamaño máximo en ordenadores/tablets para que no sea kilométrico */
-    min-width: 340px; /* Como el filtro de rango horario */
+    max-width: 240px; /* Tamaño máximo en ordenadores/tablets para que no sea kilométrico */
+    min-width: 240px; /* Como el filtro de rango horario */
     
     /* El efecto Cristal (Transparencia + Desenfocado) */
     background-color: #ffffff73; 
@@ -2566,7 +2566,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 25%; /* BOTÓN BUSCAR DESACTIVADO. 4 botones visibles = 25% cada uno */
+    width: 33%; /* BOTÓN BUSCAR DESACTIVADO. 4 botones visibles = 25% cada uno */
     height: 100%;
     background: transparent;
     border: none;
