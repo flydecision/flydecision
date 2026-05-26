@@ -773,48 +773,6 @@ function iniciarGuiaPrincipal(forzar = false) {
                 } 
             },
             { 
-                element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
-                popover: { 
-                    title: t('guiaPrincipal.pasos.columnaMeteo.titulo'), 
-                    description: t('guiaPrincipal.pasos.columnaMeteo.descripcion')
-                }
-            },
-            { 
-                element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
-                popover: { 
-                    title: t('guiaPrincipal.pasos.filaCizalladura.titulo'), 
-                    description: t('guiaPrincipal.pasos.filaCizalladura.descripcion')
-                } 
-            },
-            { 
-                element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
-                popover: { 
-                    title: t('guiaPrincipal.pasos.columnaPuntuacion.titulo'), 
-                    description: t('guiaPrincipal.pasos.columnaPuntuacion.descripcion') 
-                } 
-            },
-            { 
-                element: '.columna-despegue .btn-info', 
-                popover: { 
-                    title: t('guiaPrincipal.pasos.btnInfo.titulo'), 
-                    description: t('guiaPrincipal.pasos.btnInfo.descripcion') 
-                } 
-            },
-            { 
-                element: '.btn-guia-mapa-directo', 
-                popover: { 
-                    title: t('guiaPrincipal.pasos.btnMapa.titulo'), 
-                    description: t('guiaPrincipal.pasos.btnMapa.descripcion') 
-                } 
-            },
-            { 
-                element: '#nav-home',
-                popover: { 
-                    title: t('guiaPrincipal.pasos.navHome.titulo'), 
-                    description: t('guiaPrincipal.pasos.navHome.descripcion')
-                } 
-            },
-            { 
                 element: '#nav-distance',
                 popover: { 
                     title: t('guiaPrincipal.pasos.navDistance.titulo'), 
@@ -859,10 +817,54 @@ function iniciarGuiaPrincipal(forzar = false) {
                 onDeselected: () => {
                     const panel = document.getElementById('div-filtro-distancia');
                     if (panel && panel.classList.contains('activo')) {
-                        const btn = document.getElementById('nav-distance');
-                        if (btn) btn.click(); 
+                        panel.classList.remove('activo');
                     }
                 }
+            },
+            { 
+                element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.columnaMeteo.titulo'), 
+                    description: t('guiaPrincipal.pasos.columnaMeteo.descripcion')
+                },
+                onHighlightStarted: () => {
+                    setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 100);
+                }
+            },
+            { 
+                element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.filaCizalladura.titulo'), 
+                    description: t('guiaPrincipal.pasos.filaCizalladura.descripcion')
+                } 
+            },
+            { 
+                element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.columnaPuntuacion.titulo'), 
+                    description: t('guiaPrincipal.pasos.columnaPuntuacion.descripcion') 
+                } 
+            },
+            { 
+                element: '.columna-despegue .btn-info', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnInfo.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnInfo.descripcion') 
+                } 
+            },
+            { 
+                element: '.btn-guia-mapa-directo', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnMapa.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnMapa.descripcion') 
+                } 
+            },
+            { 
+                element: '#nav-home',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.navHome.titulo'), 
+                    description: t('guiaPrincipal.pasos.navHome.descripcion')
+                } 
             },
             { 
                 element: '#nav-map',
@@ -1019,7 +1021,7 @@ function iniciarGuiaFavoritos(forzar = false) {
             },
 
             { 
-                element: '#buscador-wrapper',
+                element: '#buscador-despegues-provincias',
                 popover: { 
                     title: t('guiaFavoritos.pasos.buscador.titulo'), 
                     description: t('guiaFavoritos.pasos.buscador.descripcion')
