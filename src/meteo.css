@@ -341,20 +341,18 @@ input[type="search"]::-webkit-search-cancel-button {
 
 /* Estilo de la X (el botón de limpiar) */
 #limpiar-buscador {
-    /* position: absolute; */
-    right: -1px;
+    position: absolute;
+    right: 59px;
     top: 50%;
     transform: translateY(-50%);
     display: none;
-    /* background: transparent; */
-    /* border: none; */
+    background: transparent;
+    border: none;
     cursor: pointer;
-    /* font-size: 35px; */
     outline: none;
-    /* color: #999; */
-    /* z-index: 10; */
     width: 28px;
     height: 28px;
+    z-index: 10;
 }
 
 #limpiar-buscador:hover {
@@ -1768,7 +1766,7 @@ span.grados {
 
 /* 1. Botón configuración origen */
 .btn-icon-trigger {
-    border-radius: 20%;
+    border-radius: 50%;
     width: 24px;
     height: 24px;
     font-size: 16px;
