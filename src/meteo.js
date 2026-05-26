@@ -1173,7 +1173,8 @@ function activarEdicionFavoritos() {
         buscadorVisible = true; // Actualizamos la variable global del buscador
     }
     if (inputBuscador) {
-        inputBuscador.placeholder = t('buscador.placeholderEdicion');
+        //inputBuscador.placeholder = t('buscador.placeholderEdicion');
+        inputBuscador.placeholder = '🔍';
     }
 
     document.body.classList.add('modo-edicion-tabla');
@@ -5603,7 +5604,7 @@ function agregarDespegueDesdeBuscador(idDespegue) {
 }
 
 // Función global para limpiar el buscador, restaurar el placeholder. Antes estaba en el ...Listener ('DOMContentLoaded', function() {
-let placeholderOriginal = '🔍 Buscar despegue o provincia...';
+let placeholderOriginal = '🔍';
 let inputBuscador = null; // Se inicializará al cargar el DOM
 let botonLimpiar = null;  // Se inicializará al cargar el DOM
 //let badge = null;  // Se inicializará al cargar el DOM
@@ -5620,7 +5621,8 @@ function limpiarBuscador() {
     botonLimpiar.style.display = 'none';
 	
     inputBuscador.classList.remove('filtrado');
-    inputBuscador.placeholder = placeholderOriginal;
+    //inputBuscador.placeholder = placeholderOriginal;
+    inputBuscador.placeholder = '🔍';
     
     aplicarFiltrosVisuales();
 }
@@ -5634,7 +5636,8 @@ function limpiarBuscador() {
 document.addEventListener('i18nReady', function() {
 
     // --- ASIGNACIÓN DE TRADUCCIONES DIFERIDAS ---
-    placeholderOriginal = t('buscador.placeholder');
+    //placeholderOriginal = t('buscador.placeholder');
+    placeholderOriginal = '🔍';
 	
     // 1. Intentamos poner la versión (si falla, que no rompa lo demás)
     try {
@@ -6860,9 +6863,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
         // }
 
         // Recalcular botón azul al resetear y cerrar el panel
-        if (typeof window.activarMenuInferior === 'function') {
-            window.activarMenuInferior(document.getElementById('nav-home'));
-        }
+        // if (typeof window.activarMenuInferior === 'function') {
+        //     window.activarMenuInferior(document.getElementById('nav-home'));
+        // }
 
         if (reconstruir) { construir_tabla(); }
     }
@@ -7840,15 +7843,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
         //     }
 
         // Lógica propia de Distancia
-        if (!estaEnMapa && isDistanceOpen && !distModificada) {
-            // Estaba abierto y sin usar, el usuario lo quiere cerrar
-            panelDistancia.classList.remove("activo");
-            window.activarMenuInferior(document.getElementById('nav-home'));
+        if (!estaEnMapa && isDistanceOpen) {
+            // Panel abierto → cerrar y resetear filtro
+            resetFiltroDistancia();
         } else {
-            // Queremos ir a Distancia (y abrirlo si estaba cerrado)
             cambiarVista('tabla');
             
-            // 🚀 GESTIÓN INTELIGENTE DEL SCROLL
+            // GESTIÓN INTELIGENTE DEL SCROLL
             if (window.necesitaScrollTopMeteo) {
                 const wrapper = document.querySelector('.tabla-wrapper');
                 const principal = document.querySelector('.contenedor-principal-tabla');
@@ -7867,7 +7868,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     }
                 }, 50);
             }
-            window.activarMenuInferior(document.getElementById('nav-distance'));
+            //window.activarMenuInferior(document.getElementById('nav-distance'));
         }
     };
 
