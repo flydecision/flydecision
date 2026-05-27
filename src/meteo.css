@@ -2339,6 +2339,12 @@ label.custom-checkbox {
   justify-content: center;
   transition: background-color 0.2s;
 }
+.columna-despegue .btn-info {
+    width: 27px !important;
+    height: 27px !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
 
 .btn-info:active {
     background-color: #0078d4;
