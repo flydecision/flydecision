@@ -1518,7 +1518,7 @@ window.toggleFavoritoDesdeTabla = function(id) {
     const titulo = esFavoritoActual
         ? t('favoritos.quitarDeFavoritos')
         : t('favoritos.anadirAFavoritos');
-    const mensaje = `<span style="font-size: 1.2em;"><b>${nombre}</b><br>(${despegue ? despegue.Provincia : ''})</span>`;
+    const mensaje = `<span style="font-size: 1.1em;"><b>${nombre}</b><br>(${despegue ? despegue.Provincia : ''})</span>`;
 
     // Registramos la acción de confirmación como función global temporal
     window._confirmarToggleFavorito = function() {
@@ -4226,17 +4226,21 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     style="position: absolute; bottom: 2px; left: 2px;"
                     data-tippy-content="${contenidoEscapado}"
                     title="${t('tabla.tooltips.masInfo')}">
-                       <img src="icons/info.svg" alt="${t('tabla.tooltips.masInfo')}" style="width: 18px; height: 18px; vertical-align: middle;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="8"></line>
+                        <polyline points="11 12 12 12 12 16"></polyline>
+                    </svg>
                 </button>
             `;
 
             // Botón directo al Mapa (posicionado a la derecha del anterior)
             const botonMapaDirectoHTML = `
                 <button class="btn-info btn-guia-mapa-directo" 
-                    style="position: absolute; bottom: 2px; left: 23px; width: 27px;" 
+                    style="position: absolute; bottom: 2px; left: 31px;"  
                     onclick="abrirMapaIntegrado(${latitud}, ${longitud}, '${safeDespegue}'); return false;"
                     title="${t('tabla.tooltips.verEnMapa')}">
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" style="vertical-align: middle;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" style="vertical-align: middle;">
                         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
                         <line x1="8" y1="2" x2="8" y2="18"></line>
                         <line x1="16" y1="6" x2="16" y2="22"></line>
@@ -4249,10 +4253,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             const esFavoritoBtn  = obtenerFavoritos().map(Number).includes(Number(d.ID));
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-favorito-tabla"
-                    style="position: absolute; bottom: 2px; left: 46px; width: 27px;"
+                    style="position: absolute; bottom: 2px; left: 60px;"
                     onclick="toggleFavoritoDesdeTabla(${d.ID}); return false;"
                     title="${esFavoritoBtn  ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="${esFavoritoBtn  ? '#e00' : 'none'}" stroke="${esFavoritoBtn  ? '#e00' : '#333'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="${esFavoritoBtn  ? '#e00' : 'none'}" stroke="${esFavoritoBtn  ? '#e00' : '#333'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                     </svg>
                 </button>
@@ -4265,7 +4269,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 ${botonFavoritoHTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
-                ${svgOrientaciones}
+                ${modoEdicionFavoritos ? '' : svgOrientaciones}
             `;
 
 			// ROWSPAN DINÁMICO
@@ -4273,6 +4277,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda");
             if (modoEdicionFavoritos) {
                 tdDespegue.classList.add("borde-grueso-derecha");
+                tdDespegue.style.paddingBottom = '26px';
             }
 			
 			filaPrincipal.appendChild(tdDespegue);
@@ -9836,8 +9841,7 @@ function inicializarMapaLeaflet() {
 
                 botonVerEnTablaHTML = `
                 <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
-                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.3; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
-                    ${yaEsFavorito ? '' : '❤️ '}${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}
+                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.3; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}
                     </button>
                 </div>`;
             }
@@ -9894,7 +9898,7 @@ function inicializarMapaLeaflet() {
             const yaEsFavorito = obtenerFavoritos().map(Number).includes(Number(idDespegue));
             const btn = this.getPopup().getElement().querySelector('.btn-accion');
             if (!btn) return;
-            btn.innerHTML = `${yaEsFavorito ? '' : '❤️ '}${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}`;
+            btn.innerHTML = `${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}`;
         });
 
         marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 

@@ -1266,6 +1266,10 @@ table.tabla-tooltip-desglose {
 .columna-provincia-region {	
     background-color: #ffffff; /* Necesario para tapar el contenido al hacer scroll lateral */
 }
+.columna-favoritos .icono-emoji {
+    width: 1.2em;
+    height: 1.2em;
+}
 
 
 /* Columna Despegue */
@@ -2338,6 +2342,12 @@ label.custom-checkbox {
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s;
+}
+.columna-despegue .btn-info {
+    width: 27px !important;
+    height: 27px !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
 }
 
 .btn-info:active {
