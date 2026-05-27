@@ -69,7 +69,7 @@
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorito",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoritos",
     "anadirAFavoritos": "Engadir a favoritos",
-    "quitarDeFavoritos": "Quitar de favoritos",
+    "quitarDeFavoritos": "Quitar de favoritos?",
     "despegueFavorito": "Engalaxe favorita",
     "marcarTodos": "Marcar todas as engalaxes visibles como favoritas",
     "desmarcarTodos": "Desmarcar todas as engalaxes visibles como favoritas",
@@ -219,6 +219,10 @@
       "btnMapa": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#333' stroke-width='2.5' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa de engalaxes</span></div>",
         "descripcion": "Mostra a engalaxe no mapa.<br><br>💡 O mapa inclúe información adicional, diversos filtros, mapas de calor e outras ferramentas útiles para explorar."
+      },
+      "btnFavorito": {
+          "titulo": "❤️/🤍 Despegue favorito ou non favorito",
+          "descripcion": "Mostra se o despegue está marcado como favorito (❤️) ou non (🤍). Ademais tamén é un botón que permite marcar ou desmarcar o despegue como favorito sen ter que ir ao menú de <i>⚙️ Axustes</i> → <i>Editar favoritos</i>."
       },
       "navHome": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'></rect><line x1='3' y1='9' x2='21' y2='9'></line><line x1='3' y1='15' x2='21' y2='15'></line><line x1='9' y1='3' x2='9' y2='21'></line><line x1='15' y1='3' x2='15' y2='21'></line></svg><span>Táboa</span></div>",
