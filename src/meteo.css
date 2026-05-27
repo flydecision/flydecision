@@ -365,9 +365,12 @@ input[type="search"]::-webkit-search-cancel-button {
     display: flex;
 	justify-content: space-around;
 	flex-shrink: 0;
-    width: 100%;
-	box-sizing: border-box;
 	flex-wrap: wrap;
+
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box;
 }
 
 .div-slider-filtro-horario {
@@ -760,15 +763,23 @@ input[type="search"]::-webkit-search-cancel-button {
     padding-bottom: 10px;
 	border-radius: 10px;
     border-width: 1px;
-	max-width: 365px;
-	min-width: 365px;
-	height: 78px;
+	/* max-width: 365px;
+	min-width: 365px; */
+	/* height: 78px; */
 	position: relative;
 	border: 0px solid #000;
     margin-bottom: 5px;
     margin-top: 2px;
     /* Transición fluida para que el buscador no salte de golpe */
     transition: height 0.3s ease, padding-bottom 0.3s ease; 
+
+    width: 100% !important;
+    max-width: 365px !important;
+    min-width: 0 !important;
+    /* Forzamos al navegador a calcular márgenes laterales idénticos en tabla y mapa */
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
 }
 
 #div-filtro-distancia .div-paneles-controles-transparente {
@@ -2586,11 +2597,11 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 }
 
 /* 💻 Ajuste para ordenadores y tablets grandes: mantiene la barra a 18px del borde inferior */
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
     .bottom-nav.compact-nav {
         bottom: 18px;
     }
-}
+} */
 
 /* 3. Estilo de los botones internos */
 .compact-nav .nav-item {
@@ -2887,16 +2898,13 @@ details.config-accordion .accordion-content {
     margin-right: 3px;
     margin-bottom: 0px;
 }
-.leaflet-control-attribution.leaflet-control {
-    margin-right: 5px;
-    margin-bottom: 6px;
-}
 
 /* Controles de Leaflet (escala + atribución):
    suben por encima del bottom-nav (60px altura + 12px margen = 72px)
    y de la barra de navegación Android */
 .leaflet-bottom {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 63px);
+    /* bottom: calc(env(safe-area-inset-bottom, 0px) + 63px); */
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 0px);
 }
 
 @media (min-width: 587px) {
@@ -2924,10 +2932,11 @@ details.config-accordion .accordion-content {
 }
 
 .leaflet-control-scale-line {
-    font-size: 12px;
+    font-size: 10px;
     line-height: 0.9;
-    margin-left: 3px;
-    margin-bottom: 1px;
+    margin-left: -1px;
+    margin-bottom: -2px;
+    max-width: 50px;
 }
 
 h3 {
@@ -2962,13 +2971,13 @@ h3 {
 }
 .leaflet-control-attribution {
 	display: block !important;
-	font-size: 11px;
+	font-size: 8px;
 	white-space: normal;
 }
 
 .leaflet-control-attribution.leaflet-control {
-    margin-right: 6px;
-    margin-bottom: 6px;
+    margin-right: 3px;
+    margin-bottom: 3px;
 }
 
 /* Unificar el estilo del cuadro de búsqueda de despegues con el de capas y filtros */
@@ -3738,11 +3747,17 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     max-width: 365px;
     min-width: 365px;
     padding: 10px 0 10px 0;
-    box-sizing: border-box;
     gap: 8px;
     padding-bottom: 15px;
     border-radius: 10px;
     margin-top: 15px;
+
+    width: 100% !important;
+    max-width: 365px !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
 }
 
 #puntuacion-mapa-slider {
