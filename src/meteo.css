@@ -1772,6 +1772,12 @@ span.grados {
     content: "" !important;
 }
 
+/* MODO EDICIÓN FAVORITOS: Bloquear cierre del panel de distancia */
+body.modo-edicion-tabla #nav-distance,
+body.modo-edicion-tabla #btn-reset-filtro-distancia {
+    display: none !important;
+}
+
 /* 🟡 SLIDERS. Personalizados. Distancia. Botones localización origen -------------------------------- */
 
 /* 1. Botón configuración origen */
