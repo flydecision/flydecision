@@ -176,6 +176,24 @@ body, header, .offline-badge {
     margin-top: 3px;
     max-width: 410px;
     border: 1px solid #6e6e6e;
+
+    box-sizing: border-box;
+    width: calc(100% - 8px);
+    margin: 0 auto;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255);
+    box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    margin-top: 3px;
+    max-width: 410px;
+    border: 1px solid #6e6e6e;
+    
+    /* 👇 NUEVO: Añadimos idéntico espacio interno que en el mapa 👇 */
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    padding-bottom: 5px !important;
 }
 
 /* Para que el Slider respire un poco cuando el menú de arriba está oculto en modo normal */
@@ -444,6 +462,8 @@ input[type="search"]::-webkit-search-cancel-button {
 /* 🔴 FILTRO DISTANCIA -------------------------------- */
 
 .div-filtro-distancia {
+    height: 99px;
+    z-index: 9998;
     display: flex; 
     flex-wrap: wrap;
     justify-content: space-around;
@@ -777,6 +797,13 @@ input[type="search"]::-webkit-search-cancel-button {
     max-width: 365px !important;
     min-width: 0 !important;
     /* Forzamos al navegador a calcular márgenes laterales idénticos en tabla y mapa */
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
+
+    width: 100% !important;
+    max-width: 345px !important; /* Reducido de 365px a 345px para unificar */
+    min-width: 0 !important;
     margin-left: auto !important;
     margin-right: auto !important;
     box-sizing: border-box;
@@ -1626,6 +1653,13 @@ span.grados {
     margin-bottom: 6px;
     margin-right: 30px;
     margin-left: 30px;
+
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 6px;
+    margin-right: 15px !important; /* Reducido de 30px a 15px para evitar que se aprieten */
+    margin-left: 15px !important;
 }
 
 .pip-dia-btn,
@@ -1734,7 +1768,7 @@ span.grados {
 
 
 #div-filtro-distancia-interno #distancia-slider.noUi-horizontal {
-    margin-top: 24px !important;
+    margin-top: 30px !important;
     width: 259px !important; /* Deja unos 25px por lado respecto a los 365px del contenedor */
     margin-left: auto !important;
     margin-right: auto !important;
@@ -2660,7 +2694,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     max-height: 60px; 
     opacity: 1;
     padding-top: 4px;
-    margin-bottom: 10px;
+    margin-bottom: 2px;
     transition: max-height 0.3s ease-in-out, opacity 0.2s ease, padding 0.3s ease;
 }
 
@@ -2677,10 +2711,6 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 
 #nav-search {
     display: none !important; /* Oculta el botón Buscar de la barra inferior */
-}
-
-.div-filtro-distancia {
-    z-index: 9998;
 }
 
 /* ==========================================================================
@@ -3754,6 +3784,13 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
 
     width: 100% !important;
     max-width: 365px !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
+
+    width: 100% !important;
+    max-width: 345px !important; /* Reducido de 365px a 345px para unificar */
     min-width: 0 !important;
     margin-left: auto !important;
     margin-right: auto !important;
