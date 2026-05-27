@@ -1638,12 +1638,14 @@ span.grados {
 }
 
 .btn-distancia-buscador {
-    width: 37px;
+    max-width: none;
     height: 37px;
     flex: none;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 6px;
+    gap: 3px;
 }
 
 /* 🟡 SLIDERS. Personalizados. Configuración Horario -------------------------------- */
@@ -1773,9 +1775,24 @@ span.grados {
 }
 
 /* MODO EDICIÓN FAVORITOS: Bloquear cierre del panel de distancia */
-body.modo-edicion-tabla #nav-distance,
-body.modo-edicion-tabla #btn-reset-filtro-distancia {
+body.modo-edicion-tabla #nav-distance {
     display: none !important;
+}
+
+#nav-distance.filtrado {
+    box-shadow: inset 0 0 0 3px red, inset 1px 1px 3px rgba(0, 0, 0, .4) !important;
+    border: none !important;
+}
+
+#nav-distance .distancia-x {
+    display: none;
+    margin-left: 1px;
+    color: red;
+    font-size: 16px;
+}
+
+#nav-distance.filtrado .distancia-x {
+    display: inline;
 }
 
 /* 🟡 SLIDERS. Personalizados. Distancia. Botones localización origen -------------------------------- */

@@ -284,8 +284,6 @@ if (btnIncNoFavsDistancia) {
                 // Forzar estilos del filtro principal
                 const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
                 //if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
-                const btnReset = document.getElementById('btn-reset-filtro-distancia');
-                if (btnReset) btnReset.style.display = 'flex';
 
                 construir_tabla(false, false);
             } 
@@ -5892,16 +5890,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
 			const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
 			const btnToggle = document.getElementById('btn-div-filtro-distancia-toggle');
 			const navDistance = document.getElementById('nav-distance'); // El nuevo botón de abajo
-			const btnReset = document.getElementById('btn-reset-filtro-distancia');
 
 			if (valorNuevo < MAX_INDEX) {
 				if (btnToggle) btnToggle.classList.add('filtro-aplicado'); // Solo si existe
-				if (navDistance) navDistance.classList.add('filtro-aplicado'); // Ponemos rojo el de abajo
+				if (navDistance) navDistance.classList.add('filtrado'); // Ponemos rojo el de abajo
 				//if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
 				if (btnReset) btnReset.style.display = 'flex';
 			} else {
 				if (btnToggle) btnToggle.classList.remove('filtro-aplicado');
-				if (navDistance) navDistance.classList.remove('filtro-aplicado');
+				if (navDistance) navDistance.classList.remove('filtrado');
 				//if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo');
 				if (btnReset) btnReset.style.display = 'none';
 			}
@@ -5936,7 +5933,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
 					// Limpieza visual inmediata
 					const panel = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
 					//if (panel) panel.classList.remove('borde-rojo-externo');
-					document.getElementById('btn-reset-filtro-distancia').style.display = 'none';
 
 					GestorMensajes.mostrar({
 						tipo: 'modal',
@@ -5963,18 +5959,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 // Forzamos la actualización de la interfaz al mover por código
                 const btnToggle = document.getElementById('btn-div-filtro-distancia-toggle');
                 const navDistance = document.getElementById('nav-distance');
-                const btnReset = document.getElementById('btn-reset-filtro-distancia');
                 // const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
                 if (valorNuevo < MAX_INDEX) {
                     if (btnToggle) btnToggle.classList.add('filtro-aplicado');
-                    if (navDistance) navDistance.classList.add('filtro-aplicado');
+                    if (navDistance) navDistance.classList.add('filtrado');
                     // if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo'); // Comentado
-                    if (btnReset) btnReset.style.display = 'flex';
                 } else {
                     if (btnToggle) btnToggle.classList.remove('filtro-aplicado');
-                    if (navDistance) navDistance.classList.remove('filtro-aplicado');
+                    if (navDistance) navDistance.classList.remove('filtrado');
                     // if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo'); // Comentado
-                    if (btnReset) btnReset.style.display = 'none';
                 }
 
 				aplicarFiltrosVisuales(); 
@@ -6843,14 +6836,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
         // C. Limpieza Visual (Quitar clases de activo y rojo)
         const divPanel = document.getElementById('div-filtro-distancia');
         const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
-		const btnReset = document.getElementById('btn-reset-filtro-distancia');
 
         const navDistance = document.getElementById('nav-distance');
-        if (navDistance) navDistance.classList.remove('filtro-aplicado');
+        if (navDistance) navDistance.classList.remove('filtrado');
 
         if (divPanel) divPanel.classList.remove("activo");          // Cerrar panel
         //if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo'); // Quitar borde panel
-		if (btnReset) btnReset.style.display = 'none'; // Ocultar botón de reset
 
         // BOTÓN BUSCAR DESACTIVADO. Recalcular botón azul al resetear y cerrar el panel
         // if (typeof window.activarMenuInferior === 'function') {
