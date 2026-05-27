@@ -858,6 +858,13 @@ function iniciarGuiaPrincipal(forzar = false) {
                 } 
             },
             { 
+                element: '.btn-favorito-tabla', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnFavorito.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnFavorito.descripcion') 
+                } 
+            },
+            { 
                 element: '#nav-home',
                 popover: { 
                     title: t('guiaPrincipal.pasos.navHome.titulo'), 
@@ -3090,17 +3097,18 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
 
         // 🟡 CASO A: Primera visita (Usuaria nueva)
+        // (Añadido bypass: Si hay despegue temporal, nos saltamos la bienvenida)
         if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") && 
             !localStorage.getItem("METEO_FAVORITOS_LISTA") && 
-            !modoEdicionFavoritos) { 
+            !modoEdicionFavoritos &&
+            !window.despegueTemporalParaTabla) { 
 
             // Si viene por enlace directo, no mostrar asistente ni forzar edición
             if (sessionStorage.getItem('METEO_ENTRO_POR_MAPA_YA_VISITADO')) {
                 soloFavoritos = false;
                 modoEdicionFavoritos = false;
             } else {
-            
-                // Aunque sea enlace directo, le damos la configuración técnica base para que no falle nada internamente
+                // Aunque sea enlace directo, le damos la configuración técnica base...
                 localStorage.setItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ", "true");
                 localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO", "10");
                 localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN", "20");
@@ -3134,16 +3142,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
         // 🟡 CASO B: Estamos en Modo Edición (Activado por botón o flujo anterior)
         } else if (modoEdicionFavoritos) {
-
-            //Sale del if y pinta la tabla ya con soloFavoritos = false que venía de la función activarEdicionFavoritos; 
+            // Sale del if y pinta la tabla ya con soloFavoritos = false que venía de la función activarEdicionFavoritos; 
 
         // 🟡 CASO C: Usuaria recurrente pero borró todos los favoritos (Fuerza edición)
-        } else if (favoritos.length === 0 && !modoEdicionFavoritos) {
+        // (Añadido bypass: Si hay despegue temporal, le dejamos ver la tabla aunque tenga 0 favoritos)
+        } else if (favoritos.length === 0 && !modoEdicionFavoritos && !window.despegueTemporalParaTabla) {
 
             activarEdicionFavoritos();
             return;
 
-        // 🟡 CASO D: Visita normal recurrente
+        // 🟡 CASO D: Visita normal recurrente o VISTA PREVIA
         } else { 
             soloFavoritos = true;
             modoEdicionFavoritos = false;
