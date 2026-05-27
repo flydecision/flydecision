@@ -1511,6 +1511,24 @@ function toggleFavorito(id) {
     return esNuevoFavorito;
 }
 
+window.toggleFavoritoDesdeTabla = function(id) {
+    const esFavoritoActual = obtenerFavoritos().map(Number).includes(Number(id));
+    const despegue = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(id));
+    const nombre = despegue ? despegue.Despegue : '';
+    const titulo = esFavoritoActual
+        ? t('favoritos.quitarDeFavoritos')
+        : t('favoritos.anadirAFavoritos');
+    const mensaje = `<span style="font-size: 1.2em;"><b>${nombre}</b><br>(${despegue ? despegue.Provincia : ''})</span>`;
+
+    // Registramos la acción de confirmación como función global temporal
+    window._confirmarToggleFavorito = function() {
+        toggleFavorito(id);
+        construir_tabla();
+    };
+
+    mensajeModalAceptarCancelar(titulo, mensaje, '_confirmarToggleFavorito');
+};
+
 // Marcar/Desmarcar favoritos masivamente mediante la columna Favoritos
 let idsPendientesDeConfirmacion = [];
 let estadoPendienteDeAplicar = false; // true = marcar, false = desmarcar
@@ -4228,13 +4246,26 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			
             const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block;">(${d.Provincia})</span>`;
 
-            // Montamos la celda con los dos botones
+            const esFavoritoBtn  = obtenerFavoritos().map(Number).includes(Number(d.ID));
+            const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
+                <button class="btn-info btn-favorito-tabla"
+                    style="position: absolute; bottom: 2px; left: 46px; width: 27px;"
+                    onclick="toggleFavoritoDesdeTabla(${d.ID}); return false;"
+                    title="${esFavoritoBtn  ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="${esFavoritoBtn  ? '#e00' : 'none'}" stroke="${esFavoritoBtn  ? '#e00' : '#333'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </button>
+            `;
+
+            // Montamos la celda con los tres botones
             tdDespegue.innerHTML = `
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
+                ${botonFavoritoHTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
-				${svgOrientaciones}
+                ${svgOrientaciones}
             `;
 
 			// ROWSPAN DINÁMICO
@@ -5895,12 +5926,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
 				if (btnToggle) btnToggle.classList.add('filtro-aplicado'); // Solo si existe
 				if (navDistance) navDistance.classList.add('filtrado'); // Ponemos rojo el de abajo
 				//if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
-				if (btnReset) btnReset.style.display = 'flex';
 			} else {
 				if (btnToggle) btnToggle.classList.remove('filtro-aplicado');
 				if (navDistance) navDistance.classList.remove('filtrado');
 				//if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo');
-				if (btnReset) btnReset.style.display = 'none';
 			}
 		});
 
