@@ -1266,6 +1266,10 @@ table.tabla-tooltip-desglose {
 .columna-provincia-region {	
     background-color: #ffffff; /* Necesario para tapar el contenido al hacer scroll lateral */
 }
+.columna-favoritos .icono-emoji {
+    width: 1.2em;
+    height: 1.2em;
+}
 
 
 /* Columna Despegue */

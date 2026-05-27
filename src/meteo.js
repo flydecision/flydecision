@@ -4269,7 +4269,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 ${botonFavoritoHTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
-                ${svgOrientaciones}
+                ${modoEdicionFavoritos ? '' : svgOrientaciones}
             `;
 
 			// ROWSPAN DINÁMICO
@@ -4277,6 +4277,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda");
             if (modoEdicionFavoritos) {
                 tdDespegue.classList.add("borde-grueso-derecha");
+                tdDespegue.style.paddingBottom = '26px';
             }
 			
 			filaPrincipal.appendChild(tdDespegue);
@@ -9840,8 +9841,7 @@ function inicializarMapaLeaflet() {
 
                 botonVerEnTablaHTML = `
                 <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
-                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.3; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
-                    ${yaEsFavorito ? '' : '❤️ '}${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}
+                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.3; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}
                     </button>
                 </div>`;
             }
@@ -9898,7 +9898,7 @@ function inicializarMapaLeaflet() {
             const yaEsFavorito = obtenerFavoritos().map(Number).includes(Number(idDespegue));
             const btn = this.getPopup().getElement().querySelector('.btn-accion');
             if (!btn) return;
-            btn.innerHTML = `${yaEsFavorito ? '' : '❤️ '}${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}`;
+            btn.innerHTML = `${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}`;
         });
 
         marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 

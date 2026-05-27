@@ -403,7 +403,7 @@
 
   "mapa": {
     "verEnTabla": "Voir la météo dans le tableau",
-    "verEnTablaSubtitulo": "S'ajoute aux favoris",
+    "verEnTablaSubtitulo": "+❤️ S'ajoute aux favoris",
     "btnGuardarVista": "💾 Mémoriser la vue actuelle",
     "btnGuardarVistaTitle": "Enregistrer le centre et le zoom actuels comme vue par défaut",
     "seleccionarOrigen": "Sélectionner l'origine",
