@@ -164,8 +164,8 @@ body, header, .offline-badge {
 /* 🔴🔴 CONTENEDOR PRINCIPAL CONTROLES (Menú + Filtro horario + Configuración filtros + Configuración) */
 
 .contenedor-principal-controles {
-    box-sizing: border-box; /* Forzamos a que el borde de 2px se calcule por dentro */
-    width: calc(100% - 8px);
+    box-sizing: border-box;
+    width: calc(100vw - 8px) !important; /* 🟢 Unificado al píxel con el mapa */
     margin: 0 auto;
     position: sticky;
     top: 0;
@@ -176,8 +176,17 @@ body, header, .offline-badge {
     margin-top: 3px;
     max-width: 410px;
     border: 1px solid #6e6e6e;
+    
+    /* 👇 CONTROL DE ALTURAS Y FLEXBOX 👇 */
+    min-height: 97px;                    /* Cambiado a 97px para que pueda encogerse con el calendario */
+    height: auto !important;             /* 🟢 AÑADIDO: Permite que crezca de forma dinámica */
+    flex-shrink: 0 !important;           /* 🟢 MANTENIDO: Evita que la tabla lo aplaste al expandirse */
+    
+    /* Añadimos idéntico espacio interno que en el mapa */
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    padding-bottom: 5px !important;
 }
-
 /* Para que el Slider respire un poco cuando el menú de arriba está oculto en modo normal */
 body:not(.modo-edicion-tabla) .contenedor-principal-controles {
     padding-top: 5px;
@@ -199,6 +208,7 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
     display: flex;
     transition: background-color 0.3s ease;
     margin-bottom: 4px;
+    margin-top: 10px;
 }
 
 /* 🟡 BOTONES -------------------------------- */
@@ -365,9 +375,12 @@ input[type="search"]::-webkit-search-cancel-button {
     display: flex;
 	justify-content: space-around;
 	flex-shrink: 0;
-    width: 100%;
-	box-sizing: border-box;
 	flex-wrap: wrap;
+
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box;
 }
 
 .div-slider-filtro-horario {
@@ -441,6 +454,8 @@ input[type="search"]::-webkit-search-cancel-button {
 /* 🔴 FILTRO DISTANCIA -------------------------------- */
 
 .div-filtro-distancia {
+    height: 99px;
+    z-index: 9998;
     display: flex; 
     flex-wrap: wrap;
     justify-content: space-around;
@@ -455,7 +470,7 @@ input[type="search"]::-webkit-search-cancel-button {
     max-height: 0;
     opacity: 0;
     margin-top: 0;
-    margin-bottom: 0;
+    margin-bottom: -10px;
     padding: 0 4px; /* Padding lateral se mantiene, pero no el vertical */
     /* Le dice al navegador que prepare la GPU para cambios */
     will-change: max-height, opacity;
@@ -474,7 +489,7 @@ input[type="search"]::-webkit-search-cancel-button {
 .div-filtro-distancia.activo {
     max-height: 120px; /* Un valor superior al contenido real */
     opacity: 1;
-    margin-top: -3px;
+    margin-top: -11px;
     padding: 4px;
 }
 
@@ -760,15 +775,30 @@ input[type="search"]::-webkit-search-cancel-button {
     padding-bottom: 10px;
 	border-radius: 10px;
     border-width: 1px;
-	max-width: 365px;
-	min-width: 365px;
-	height: 78px;
+	/* max-width: 365px;
+	min-width: 365px; */
+	/* height: 78px; */
 	position: relative;
 	border: 0px solid #000;
     margin-bottom: 5px;
     margin-top: 2px;
     /* Transición fluida para que el buscador no salte de golpe */
     transition: height 0.3s ease, padding-bottom 0.3s ease; 
+
+    width: 100% !important;
+    max-width: 365px !important;
+    min-width: 0 !important;
+    /* Forzamos al navegador a calcular márgenes laterales idénticos en tabla y mapa */
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
+
+    width: 100% !important;
+    max-width: 345px !important; /* Reducido de 365px a 345px para unificar */
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
 }
 
 #div-filtro-distancia .div-paneles-controles-transparente {
@@ -1615,6 +1645,13 @@ span.grados {
     margin-bottom: 6px;
     margin-right: 30px;
     margin-left: 30px;
+
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 6px;
+    margin-right: 15px !important; /* Reducido de 30px a 15px para evitar que se aprieten */
+    margin-left: 15px !important;
 }
 
 .pip-dia-btn,
@@ -1723,7 +1760,7 @@ span.grados {
 
 
 #div-filtro-distancia-interno #distancia-slider.noUi-horizontal {
-    margin-top: 24px !important;
+    margin-top: 30px !important;
     width: 259px !important; /* Deja unos 25px por lado respecto a los 365px del contenedor */
     margin-left: auto !important;
     margin-right: auto !important;
@@ -2586,11 +2623,11 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 }
 
 /* 💻 Ajuste para ordenadores y tablets grandes: mantiene la barra a 18px del borde inferior */
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
     .bottom-nav.compact-nav {
         bottom: 18px;
     }
-}
+} */
 
 /* 3. Estilo de los botones internos */
 .compact-nav .nav-item {
@@ -2649,7 +2686,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     max-height: 60px; 
     opacity: 1;
     padding-top: 4px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     transition: max-height 0.3s ease-in-out, opacity 0.2s ease, padding 0.3s ease;
 }
 
@@ -2666,10 +2703,6 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 
 #nav-search {
     display: none !important; /* Oculta el botón Buscar de la barra inferior */
-}
-
-.div-filtro-distancia {
-    z-index: 9998;
 }
 
 /* ==========================================================================
@@ -2887,16 +2920,13 @@ details.config-accordion .accordion-content {
     margin-right: 3px;
     margin-bottom: 0px;
 }
-.leaflet-control-attribution.leaflet-control {
-    margin-right: 5px;
-    margin-bottom: 6px;
-}
 
 /* Controles de Leaflet (escala + atribución):
    suben por encima del bottom-nav (60px altura + 12px margen = 72px)
    y de la barra de navegación Android */
 .leaflet-bottom {
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 63px);
+    /* bottom: calc(env(safe-area-inset-bottom, 0px) + 63px); */
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 0px);
 }
 
 @media (min-width: 587px) {
@@ -2924,10 +2954,11 @@ details.config-accordion .accordion-content {
 }
 
 .leaflet-control-scale-line {
-    font-size: 12px;
+    font-size: 10px;
     line-height: 0.9;
-    margin-left: 3px;
-    margin-bottom: 1px;
+    margin-left: -1px;
+    margin-bottom: -2px;
+    max-width: 50px;
 }
 
 h3 {
@@ -2962,13 +2993,13 @@ h3 {
 }
 .leaflet-control-attribution {
 	display: block !important;
-	font-size: 11px;
+	font-size: 8px;
 	white-space: normal;
 }
 
 .leaflet-control-attribution.leaflet-control {
-    margin-right: 6px;
-    margin-bottom: 6px;
+    margin-right: 3px;
+    margin-bottom: 3px;
 }
 
 /* Unificar el estilo del cuadro de búsqueda de despegues con el de capas y filtros */
@@ -3678,11 +3709,11 @@ h3 {
 /* Cuando está flotando sobre el mapa */
 #div-filtro-horario.flotando-en-mapa {
     position: fixed;
-    top: calc(var(--safe-area-inset-top, 0px) + 3px); /* Como es fixed no hereda el padding-top del body, así que hay que replicar la misma fórmula. Este div se mueve físicamente con appendChild al DOM de #vista-mapa, pero su posición necesita ser relativa a la ventana del navegador (viewport), no al contenedor padre. Con fixed siempre se ancla al viewport, pero entonces el padding-top del body ya no le afecta, así que hay que sumar el safe area manualmente con var(--safe-area-inset-top) */
+    top: calc(var(--safe-area-inset-top, 0px) + 3px);
     left: 50%;
     transform: translateX(-50%);
     z-index: 1100;
-    width: calc(100% - 8px);
+    width: calc(100vw - 8px) !important; /* Cambiado para unificar con la tabla */
     background-color: rgba(255, 255, 255);
     border-radius: 10px;
     padding: 5px 10px 0px 10px;
@@ -3738,11 +3769,24 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     max-width: 365px;
     min-width: 365px;
     padding: 10px 0 10px 0;
-    box-sizing: border-box;
     gap: 8px;
     padding-bottom: 15px;
     border-radius: 10px;
     margin-top: 15px;
+
+    width: 100% !important;
+    max-width: 365px !important;
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
+
+    width: 100% !important;
+    max-width: 345px !important; /* Reducido de 365px a 345px para unificar */
+    min-width: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
 }
 
 #puntuacion-mapa-slider {
