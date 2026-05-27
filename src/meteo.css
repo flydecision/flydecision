@@ -2542,7 +2542,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 20px); /* Un poco más ancha */
-    max-width: 265px; 
+    max-width: 270px; 
     
     background-color: #ffffff; /* 100% opaco */
     border: 1px solid #e0e0e0;
