@@ -69,7 +69,7 @@
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorito",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoritos",
     "anadirAFavoritos": "Añadir a favoritos",
-    "quitarDeFavoritos": "Quitar de favoritos",
+    "quitarDeFavoritos": "¿Quitar de favoritos?",
     "despegueFavorito": "Despegue favorito",
     "marcarTodos": "Marcar todos los despegues visibles como favoritos",
     "desmarcarTodos": "Desmarcar todos los despegues visibles como favoritos",

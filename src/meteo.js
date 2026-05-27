@@ -1512,21 +1512,39 @@ function toggleFavorito(id) {
 }
 
 window.toggleFavoritoDesdeTabla = function(id) {
-    const esFavoritoActual = obtenerFavoritos().map(Number).includes(Number(id));
-    const despegue = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(id));
-    const nombre = despegue ? despegue.Despegue : '';
-    const titulo = esFavoritoActual
-        ? t('favoritos.quitarDeFavoritos')
-        : t('favoritos.anadirAFavoritos');
-    const mensaje = `<span style="font-size: 1.1em;"><b>${nombre}</b><br>(${despegue ? despegue.Provincia : ''})</span>`;
+        // Miramos si actualmente es favorito o no
+        const esFavoritoActual = obtenerFavoritos().map(Number).includes(Number(id));
 
-    // Registramos la acción de confirmación como función global temporal
-    window._confirmarToggleFavorito = function() {
-        toggleFavorito(id);
-        construir_tabla();
-    };
+        if (!esFavoritoActual) {
+            // 🟢 ACCIÓN: AÑADIR (Instantáneo y sin fricción)
+            toggleFavorito(id);
+            
+            // Feedback físico en la app
+            if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Haptics) {
+                Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
+            }
+            
+            // Reconstruimos la tabla en modo silencioso (sin loader) para que el corazón cambie rápido
+            construir_tabla(false, true); 
 
-    mensajeModalAceptarCancelar(titulo, mensaje, '_confirmarToggleFavorito');
+        } else {
+            // ACCIÓN: QUITAR (Pedimos confirmación)
+            const despegue = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(id));
+            const nombre = despegue ? despegue.Despegue : '';
+            const provincia = despegue ? despegue.Provincia : '';
+            
+            const titulo = '🤍 ' + t('favoritos.quitarDeFavoritos'); 
+            const mensaje = `<span style="font-size: 1.2em;"><b>${nombre}</b><br>(${provincia})</span>`;
+
+            // Registramos la acción de confirmación
+            window._confirmarToggleFavorito = function() {
+                toggleFavorito(id);
+                construir_tabla(false, true); // Silencioso
+            };
+
+            // Mostramos el modal
+            mensajeModalAceptarCancelar(titulo, mensaje, '_confirmarToggleFavorito');
+        }
 };
 
 // Marcar/Desmarcar favoritos masivamente mediante la columna Favoritos

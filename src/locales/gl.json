@@ -69,7 +69,7 @@
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorito",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoritos",
     "anadirAFavoritos": "Engadir a favoritos",
-    "quitarDeFavoritos": "Quitar de favoritos",
+    "quitarDeFavoritos": "Quitar de favoritos?",
     "despegueFavorito": "Engalaxe favorita",
     "marcarTodos": "Marcar todas as engalaxes visibles como favoritas",
     "desmarcarTodos": "Desmarcar todas as engalaxes visibles como favoritas",

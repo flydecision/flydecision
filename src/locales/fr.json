@@ -69,7 +69,7 @@
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favori",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoris",
     "anadirAFavoritos": "Ajouter aux favoris",
-    "quitarDeFavoritos": "Retirer des favoris",
+    "quitarDeFavoritos": "Retirer des favoris ?",
     "despegueFavorito": "Décollage favori",
     "marcarTodos": "Marquer tous les décollages visibles comme favoris",
     "desmarcarTodos": "Démarquer tous les décollages visibles comme favoris",

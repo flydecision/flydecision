@@ -69,7 +69,7 @@
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorit",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoriten",
     "anadirAFavoritos": "Zu Favoriten hinzufügen",
-    "quitarDeFavoritos": "Aus Favoriten entfernen",
+    "quitarDeFavoritos": "Aus Favoriten entfernen?",
     "despegueFavorito": "Favorisierter Startplatz",
     "marcarTodos": "Alle sichtbaren Startplätze als Favoriten markieren",
     "desmarcarTodos": "Markierung aller sichtbaren Startplätze als Favoriten aufheben",

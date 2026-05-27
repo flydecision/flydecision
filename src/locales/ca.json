@@ -69,7 +69,7 @@
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Preferit",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Preferits",
     "anadirAFavoritos": "Afegir a preferits",
-    "quitarDeFavoritos": "Treure de preferits",
+    "quitarDeFavoritos": "Treure de preferits?",
     "despegueFavorito": "Enlairament preferit",
     "marcarTodos": "Marcar tots els enlairaments visibles com a preferits",
     "desmarcarTodos": "Desmarcar tots els enlairaments visibles com a preferits",

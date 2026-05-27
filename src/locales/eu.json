@@ -69,7 +69,7 @@
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Gogokoa",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Gogokoak",
     "anadirAFavoritos": "Gogokoetara gehitu",
-    "quitarDeFavoritos": "Gogokoetatik kendu",
+    "quitarDeFavoritos": "Gogokoetatik kendu?",
     "despegueFavorito": "Aireratze gogokoa",
     "marcarTodos": "Ikusgai dauden aireratze guztiak gogoko gisa markatu",
     "desmarcarTodos": "Ikusgai dauden aireratze guztien gogoko markaketa kendu",
