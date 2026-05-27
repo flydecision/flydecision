@@ -164,21 +164,8 @@ body, header, .offline-badge {
 /* 🔴🔴 CONTENEDOR PRINCIPAL CONTROLES (Menú + Filtro horario + Configuración filtros + Configuración) */
 
 .contenedor-principal-controles {
-    box-sizing: border-box; /* Forzamos a que el borde de 2px se calcule por dentro */
-    width: calc(100% - 8px);
-    margin: 0 auto;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background-color: rgba(255, 255, 255);
-    box-shadow: 0 4px 18px 10px rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
-    margin-top: 3px;
-    max-width: 410px;
-    border: 1px solid #6e6e6e;
-
     box-sizing: border-box;
-    width: calc(100% - 8px);
+    width: calc(100vw - 8px) !important; /* 🟢 Unificado al píxel con el mapa */
     margin: 0 auto;
     position: sticky;
     top: 0;
@@ -190,12 +177,16 @@ body, header, .offline-badge {
     max-width: 410px;
     border: 1px solid #6e6e6e;
     
-    /* 👇 NUEVO: Añadimos idéntico espacio interno que en el mapa 👇 */
+    /* 👇 CONTROL DE ALTURAS Y FLEXBOX 👇 */
+    min-height: 97px;                    /* Cambiado a 97px para que pueda encogerse con el calendario */
+    height: auto !important;             /* 🟢 AÑADIDO: Permite que crezca de forma dinámica */
+    flex-shrink: 0 !important;           /* 🟢 MANTENIDO: Evita que la tabla lo aplaste al expandirse */
+    
+    /* Añadimos idéntico espacio interno que en el mapa */
     padding-left: 10px !important;
     padding-right: 10px !important;
     padding-bottom: 5px !important;
 }
-
 /* Para que el Slider respire un poco cuando el menú de arriba está oculto en modo normal */
 body:not(.modo-edicion-tabla) .contenedor-principal-controles {
     padding-top: 5px;
@@ -217,6 +208,7 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
     display: flex;
     transition: background-color 0.3s ease;
     margin-bottom: 4px;
+    margin-top: 10px;
 }
 
 /* 🟡 BOTONES -------------------------------- */
@@ -478,7 +470,7 @@ input[type="search"]::-webkit-search-cancel-button {
     max-height: 0;
     opacity: 0;
     margin-top: 0;
-    margin-bottom: 0;
+    margin-bottom: -10px;
     padding: 0 4px; /* Padding lateral se mantiene, pero no el vertical */
     /* Le dice al navegador que prepare la GPU para cambios */
     will-change: max-height, opacity;
@@ -497,7 +489,7 @@ input[type="search"]::-webkit-search-cancel-button {
 .div-filtro-distancia.activo {
     max-height: 120px; /* Un valor superior al contenido real */
     opacity: 1;
-    margin-top: -3px;
+    margin-top: -11px;
     padding: 4px;
 }
 
@@ -2694,7 +2686,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     max-height: 60px; 
     opacity: 1;
     padding-top: 4px;
-    margin-bottom: 2px;
+    margin-bottom: 12px;
     transition: max-height 0.3s ease-in-out, opacity 0.2s ease, padding 0.3s ease;
 }
 
@@ -3717,11 +3709,11 @@ h3 {
 /* Cuando está flotando sobre el mapa */
 #div-filtro-horario.flotando-en-mapa {
     position: fixed;
-    top: calc(var(--safe-area-inset-top, 0px) + 3px); /* Como es fixed no hereda el padding-top del body, así que hay que replicar la misma fórmula. Este div se mueve físicamente con appendChild al DOM de #vista-mapa, pero su posición necesita ser relativa a la ventana del navegador (viewport), no al contenedor padre. Con fixed siempre se ancla al viewport, pero entonces el padding-top del body ya no le afecta, así que hay que sumar el safe area manualmente con var(--safe-area-inset-top) */
+    top: calc(var(--safe-area-inset-top, 0px) + 3px);
     left: 50%;
     transform: translateX(-50%);
     z-index: 1100;
-    width: calc(100% - 8px);
+    width: calc(100vw - 8px) !important; /* Cambiado para unificar con la tabla */
     background-color: rgba(255, 255, 255);
     border-radius: 10px;
     padding: 5px 10px 0px 10px;
