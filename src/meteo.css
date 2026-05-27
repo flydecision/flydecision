@@ -342,7 +342,7 @@ input[type="search"]::-webkit-search-cancel-button {
 /* Estilo de la X (el botón de limpiar) */
 #limpiar-buscador {
     position: absolute;
-    right: 53px;
+    right: 4px;
     top: 50%;
     transform: translateY(-50%);
     display: none;
