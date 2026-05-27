@@ -3271,7 +3271,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // 🔴 LÓGICA DE FILTRADO O NO DE FAVORITOS
         // ---------------------------------------------------------------
 
-		// Primero calculamos si el filtro de distancia está activo para ver si el check de favoritos debe aplicar
+        // Primero calculamos si el filtro de distancia está activo para ver si el check de favoritos debe aplicar
         const sliderDistElemParaFavs = document.getElementById('distancia-slider');
         let distanciaLimiteParaFavs = 9999;
         if (sliderDistElemParaFavs && sliderDistElemParaFavs.noUiSlider) {
@@ -3285,8 +3285,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         // Si estamos en modo edición de favoritos, el checkbox está oculto y NO debe interferir
         const ignorarFiltroFavoritos = (!modoEdicionFavoritos && distanciaLimiteParaFavs < 9999 && incluirNoFavs);
 
-        // Está activo filtro favoritos Y hay favoritos --> hacemos que los array despegues y respuestas contengan solo los datos de los despegues que haya en favoritos 
-		if (soloFavoritos && favoritos.length > 0 && !ignorarFiltroFavoritos) {
+        // Preparamos los IDs a incluir (Favoritos reales + el temporal si venimos del mapa)
+        let idsAIncluir = [...favoritos];
+        if (window.despegueTemporalParaTabla) {
+            if (!idsAIncluir.includes(Number(window.despegueTemporalParaTabla))) {
+                idsAIncluir.push(Number(window.despegueTemporalParaTabla));
+            }
+        }
+
+        // Está activo filtro favoritos Y hay favoritos (o uno temporal) --> filtramos
+		if (soloFavoritos && idsAIncluir.length > 0 && !ignorarFiltroFavoritos) {
 			
 			// 1. Crear un mapa temporal para relacionar el ID con sus respuestas
 			const respuestasMap = new Map();
@@ -3297,17 +3305,18 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			});
 			
 			// 2. Filtrar el array de despegues
-			despegues = despegues.filter(d => favoritos.includes(Number(d.ID)));
+			despegues = despegues.filter(d => idsAIncluir.includes(Number(d.ID)));
 			
 			// 3. Crear el nuevo array de respuestas solo con los datos filtrados
 			respuestas = despegues.map(d => respuestasMap.get(Number(d.ID))).filter(r => r !== undefined);
             respuestasEcmwf = despegues.map(d => respuestasEcmwfMap.get(Number(d.ID))).filter(r => r !== undefined);
 			
 		}
-		 // Está activo filtro favoritos pero no hay favoritos
-		 else if (soloFavoritos && favoritos.length === 0 && !ignorarFiltroFavoritos) {
+		 // Está activo filtro favoritos pero no hay ni favoritos ni despegue temporal
+		 else if (soloFavoritos && idsAIncluir.length === 0 && !ignorarFiltroFavoritos) {
+            despegues = [];
 			respuestas = [];
-            respuestasEcmwf =[];
+            respuestasEcmwf = [];
 		}
 
 		// ---------------------------------------------------------------
@@ -5657,10 +5666,15 @@ function limpiarBuscador() {
     botonLimpiar.style.display = 'none';
 	
     inputBuscador.classList.remove('filtrado');
-    //inputBuscador.placeholder = placeholderOriginal;
     inputBuscador.placeholder = '🔍';
     
-    aplicarFiltrosVisuales();
+    // Si había un despegue temporal cargado, lo olvidamos y reconstruimos ---
+    if (window.despegueTemporalParaTabla) {
+        window.despegueTemporalParaTabla = null;
+        construir_tabla(); // Lo forzamos a desaparecer del DOM
+    } else {
+        aplicarFiltrosVisuales();
+    }
 }
 
 // ---------------------------------------------------------------
@@ -7464,6 +7478,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // ---------------------------------------------------------------
     // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
     // ---------------------------------------------------------------
+    // ---------------------------------------------------------------
+    // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
+    // ---------------------------------------------------------------
     window.verMeteoEnTabla = function(idDespegue) {
         if (typeof map !== 'undefined' && map) map.closePopup();
         
@@ -7487,21 +7504,14 @@ function comprobarAvisoCambiosPuntuacionXC() {
             resetFiltroDistancia(false); // 'false' para no reconstruir la tabla todavía
         }
 
-        // Si no estaba en favoritos, lo añadimos silenciosamente (pero NO marcamos visita hecha todavía!)
-        const misFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
-        let esNuevoFavorito = false; 
-        
-        if (!misFavoritos.includes(Number(idDespegue))) {
-            misFavoritos.push(Number(idDespegue));
-            localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(misFavoritos));
-            esNuevoFavorito = true;
-        }
+        // Lo guardamos en una variable temporal para forzar su aparición en la tabla pero no lo añadimos obligatoriamente a favoritos
+        window.despegueTemporalParaTabla = Number(idDespegue);
         
         const nombreExactoTabla = despegueBD.Despegue;
 
         cambiarVista('tabla');
 
-        // Evaluamos el entorno para devolverle el menú inferior si lo tenía oculto (al tener ya 1 favorito)
+        // Evaluamos el entorno para devolverle el menú inferior si lo tenía oculto
         if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
 
         // 2. Forzamos el nombre exacto en el buscador
@@ -9826,7 +9836,7 @@ function inicializarMapaLeaflet() {
         let idDespegue = row.ID || '';
         let botonVerEnTablaHTML = ''; // Inicialmente vacío (se rellena si existe en la tabla)
 
-        // 🚀 NUEVO: Cruzamos coordenadas con la base de datos de la Tabla
+        // Cruzamos coordenadas con la base de datos de la Tabla
         if (window.bdGlobalDespegues) {
             const matchTabla = window.bdGlobalDespegues.find(d =>
                 parseFloat(d.Latitud).toFixed(4) === lat.toFixed(4) &&
@@ -9837,11 +9847,9 @@ function inicializarMapaLeaflet() {
                 despegue = matchTabla.Despegue;
                 idDespegue = matchTabla.ID;
 
-                const yaEsFavorito = obtenerFavoritos().map(Number).includes(Number(idDespegue));
-
                 botonVerEnTablaHTML = `
                 <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
-                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.3; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}
+                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.3; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">${t('mapa.verEnTabla')}
                     </button>
                 </div>`;
             }
@@ -9893,12 +9901,11 @@ function inicializarMapaLeaflet() {
             autoPanPaddingTopLeft: L.point(10, 350) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
         });
 
-        // Regeneramos el popup por si venimos de consultarlo en la tabla y se ha añadido a favoritos.
+        // Regeneramos el popup por si venimos de consultarlo en la tabla.
         marker.on('popupopen', function() {
-            const yaEsFavorito = obtenerFavoritos().map(Number).includes(Number(idDespegue));
             const btn = this.getPopup().getElement().querySelector('.btn-accion');
             if (!btn) return;
-            btn.innerHTML = `${t('mapa.verEnTabla')}${yaEsFavorito ? '' : `<br><span style="font-weight: normal; color: #888;">${t('mapa.verEnTablaSubtitulo')}</span>`}`;
+            btn.innerHTML = `${t('mapa.verEnTabla')}`;
         });
 
         marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
