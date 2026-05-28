@@ -8849,9 +8849,16 @@ function inicializarMapaLeaflet() {
         center: [useLat, useLon],
         zoom: useZoom,
         zoomControl: false,
+
+        scrollWheelZoom: false, // disable original zoom function
+        smoothWheelZoom: true,  // enable smooth zoom 
+        smoothSensitivity: 1.5,   // zoom speed. default is 1
+        zoomSnap: 0,            // disable zoom snapping (for touchscreen zooming, and fitBounds(), etc.)
+
         zoomAnimation: true,   
-        zoomSnap: 0.5,
-        zoomDelta: 0.5,          
+        //zoomSnap: 0.25,
+        //zoomDelta: 0.25,    
+        //wheelPxPerZoomLevel: 150,      
         layers: [WorldTopoMap] 
     });
 
