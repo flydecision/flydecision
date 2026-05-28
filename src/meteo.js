@@ -4247,6 +4247,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 ${t('popupDespegue.region')} <b>${d.Región}</b><br>
                 ${t('popupDespegue.provincia')} <b>${d.Provincia}</b><br>
                 ${t('popupDespegue.orientacion')} <b>${svgParaTooltip} <span style='vertical-align:middle;'>${traducirCadenaOrientacion(d["Orientación"])}</span></b><br>
+                ${t('popupDespegue.nivelActividad')} <b>${d.Actividad || '?'}/5</b><br>
                 ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
                 ⛅ <a href='https://meteo-parapente.com/#/${latitud},${longitud},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
                 ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a>
@@ -4285,6 +4286,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			
             const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block;">(${d.Provincia})</span>`;
 
+            // Generamos el micro-gráfico de actividad
+            const iconoActividad = d.Actividad ? crearIconoActividad(d.Actividad) : '';
+
             const esFavoritoBtn  = obtenerFavoritos().map(Number).includes(Number(d.ID));
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-favorito-tabla"
@@ -4304,7 +4308,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 ${botonFavoritoHTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
-                ${modoEdicionFavoritos ? '' : svgOrientaciones}
+                <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px;">
+                ${svgOrientaciones}
+                ${iconoActividad}
+                </span>
             `;
 
 			// ROWSPAN DINÁMICO
@@ -5376,6 +5383,29 @@ const ocultarLoading = () => {
         void overlay.offsetWidth; 
     }
 };
+
+// Genera un icono de 5 barras tipo "cobertura" según la actividad (1 a 5)
+function crearIconoActividad(nivelStr) {
+    const nivel = parseInt(nivelStr) || 0;
+    if (nivel === 0) return ''; // Si no hay dato, no pintamos nada
+
+    let barras = '';
+    // Alturas en enteros exactos hasta llegar a 16px (suben de 3 en 3)
+    const alturas = [4, 7, 10, 13, 16]; 
+    
+    for (let i = 0; i < 5; i++) {
+        const color = (i < nivel) ? '#0078d4' : '#e9e9e9'; 
+        // Anchura 3px (entero = grosor perfecto) y border-radius de 1.5px (mitad exacta para curva suave arriba)
+        barras += `<span style="display: inline-block; width: 3px; height: ${alturas[i]}px; background-color: ${color}; border-radius: 1.5px 1.5px 0 0;"></span>`;
+    }
+
+    return `
+        <span title="${t('tabla.tooltips.actividad') || 'Nivel de actividad'}: ${nivel}/5" 
+              style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 24px; height: 16px; margin-left: 8px; cursor: help; vertical-align: middle;">
+            ${barras}
+        </span>
+    `;
+}
 
 // ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)

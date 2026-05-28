@@ -120,6 +120,7 @@
       "techo": "Altitude (km) above sea level (MSL) of the usable flight ceiling (= boundary layer thickness BLH x 0.85 + ECMWF 9km cell mean ground altitude)",
       "cape": "CAPE (J/kg): Convective Available Potential Energy",
       "cin": "CIN (J/kg): Convective Inhibition",
+      "actividad": "Takeoff activity level (from 1 to 5), based on the no. of logged flights on XContest.com and the date of the last flight.",
       "masInfo": "More information",
       "verEnMapa": "View on map",
       "notaCondiciones": "Takeoff Conditions score: {{nota}} points",

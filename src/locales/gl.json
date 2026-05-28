@@ -120,6 +120,7 @@
       "techo": "Altura (km) sobre o nivel do mar (MSL) do teito de voo utilizable (= grosor da capa límite BLH x 0,85 + elevación media do terreo da cela ECMWF 9km)",
       "cape": "CAPE (J/kg): Enerxía Potencial Convectiva Dispoñible",
       "cin": "CIN (J/kg): Inhibición Convectiva",
+      "actividad": "Nivel de actividade do despegue (de 1 a 5), segundo o nº de voos rexistrados en XContest.com e a data do último voo.",
       "masInfo": "Máis información",
       "verEnMapa": "Ver no mapa",
       "notaCondiciones": "Puntuación das condicións de engalaxe: {{nota}} puntos",

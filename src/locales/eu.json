@@ -120,6 +120,7 @@
       "techo": "Altuera (km) itsas mailaren gainetik (MSL) hegaldi-sabai erabilgarrirako (= muga-geruzaren lodiera BLH x 0,85 + ECMWF 9km zelularen batez besteko lur-altuera)",
       "cape": "CAPE (J/kg): Eskuragarri dagoen energia potentzial konbektiboa",
       "cin": "CIN (J/kg): Inhibizio konbektiboa",
+      "actividad": "Aireratzearen jarduera-maila (1etik 5era), XContest.com-en erregistratutako hegaldi kopuruaren eta azken hegaldiaren dataren arabera.",
       "masInfo": "Informazio gehiago",
       "verEnMapa": "Mapan ikusi",
       "notaCondiciones": "Aireratze-baldintzen puntuazioa: {{nota}} puntu",

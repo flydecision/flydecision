@@ -120,6 +120,7 @@
       "techo": "Altitude (km) au-dessus du niveau de la mer (MSL) du plafond de vol utilisable (= épaisseur de la couche limite BLH x 0,85 + altitude moyenne du sol de la cellule ECMWF 9km)",
       "cape": "CAPE (J/kg) : Énergie Potentielle Convective Disponible",
       "cin": "CIN (J/kg) : Inhibition Convective",
+      "actividad": "Niveau d'activité du décollage (de 1 à 5), selon le nº de vols enregistrés sur XContest.com et la date du dernier vol.",
       "masInfo": "Plus d'informations",
       "verEnMapa": "Voir sur la carte",
       "notaCondiciones": "Note des conditions de décollage : {{nota}} points",

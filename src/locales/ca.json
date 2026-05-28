@@ -120,6 +120,7 @@
       "techo": "Alçada (km) sobre el nivell del mar (MSL) del sostre de vol utilitzable (= gruix de la capa límit BLH x 0,85 + elevació mitjana del terreny de la cel·la ECMWF 9km)",
       "cape": "CAPE (J/kg): Energia Potencial Convectiva Disponible",
       "cin": "CIN (J/kg): Inhibició Convectiva",
+      "actividad": "Nivell d'activitat de l'enlairament (d'1 a 5), segons el nº de vols registrats a XContest.com i la data de l'últim vol.",
       "masInfo": "Més informació",
       "verEnMapa": "Veure al mapa",
       "notaCondiciones": "Puntuació de les condicions d'enlairament: {{nota}} punts",
