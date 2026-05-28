@@ -1192,6 +1192,15 @@ td div.texto-multilinea-2 {
     width: 100%;
     max-width: 94px; 
     margin: 0 auto;
+    margin-top : -30px;
+}
+body.modo-edicion-tabla td div.texto-multilinea-2 {
+  margin-top: 0px !important; /* Forzamos a 0px en edición */
+}
+
+/* Muestra la línea divisora del despegue sólo en modo edición de favoritos */
+body.modo-edicion-tabla .linea-divisora-edit {
+    display: block !important;
 }
 
 td div.nombre-despegue-limitado {

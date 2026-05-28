@@ -4334,6 +4334,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
                 ${htmlIconosCentrales}
+
+                <span class="linea-divisora-edit" style="position: absolute; bottom: 28px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
 
 			// ROWSPAN DINÁMICO
