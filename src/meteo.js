@@ -844,6 +844,20 @@ function iniciarGuiaPrincipal(forzar = false) {
                 } 
             },
             { 
+                element: '.guia-rosa-vientos', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.rosaVientos.titulo'), 
+                    description: t('guiaPrincipal.pasos.rosaVientos.descripcion') 
+                } 
+            },
+            { 
+                element: '.guia-nivel-actividad', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.nivelActividad.titulo'), 
+                    description: t('guiaPrincipal.pasos.nivelActividad.descripcion') 
+                } 
+            },
+            { 
                 element: '.columna-despegue .btn-info', 
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnInfo.titulo'), 
@@ -4308,9 +4322,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 ${botonFavoritoHTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
-                <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px;">
-                ${svgOrientaciones}
-                ${iconoActividad}
+                <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; margin-bottom: 5px;">
+                    <span class="guia-rosa-vientos" style="padding-top: 3px;">${svgOrientaciones}</span>
+                    <span class="guia-nivel-actividad">${iconoActividad}</span>
                 </span>
             `;
 

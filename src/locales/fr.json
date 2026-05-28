@@ -205,6 +205,14 @@
         "titulo": "⭐ Colonne de note",
         "descripcion": "Le système calcule deux notes (de 0 à 10) pour chaque décollage et pour la plage horaire sélectionnée : Conditions de décollage et Conditions pour maintenir les thermiques ou commencer un Cross Country (XC).<br><br>Les décollages sont automatiquement réorganisés par la note de condition de décollage.<br><br>Dans les ⚙️ Paramètres, vous pouvez personnaliser vos limites pour le calcul."
       },
+      "rosaVientos": {
+        "titulo": "🧭 Orientation du décollage",
+        "descripcion": "Le cercle indique en vert la ou les orientations du décollage. Le système de notation prend en compte la direction du vent prévu et la compare avec ces orientations possibles.<br><br> Garde à l'esprit que si le vent prévu est très faible, sur certains décollages, il peut être possible de décoller dans d'autres orientations, selon l'habileté, l'espace pour courir, la force du thermique,..."
+      },
+      "nivelActividad": {
+        "titulo": "📶 Niveau d'activité du décollage",
+        "descripcion": "Indique avec des barres (de 1 à 5) la fréquence des vols à cet endroit en fonction des vols enregistrés (le niveau de popularité).<br><br>Il est basé sur le volume historique des vols enregistrés sur XContest sur 20 ans, avec des ajustements pour l'activité récente (+1 s'il y a eu des vols ces derniers mois) ou l'inactivité prolongée (-1 s'il n'y a pas eu de vols depuis plus de 2 ans)."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Informations sur le décollage</span></div>",
         "descripcion": "Affiche des informations plus complètes sur le décollage et des liens vers ses prévisions sur Windy, Meteo-parapente et Meteoblue."

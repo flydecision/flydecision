@@ -205,6 +205,14 @@
         "titulo": "⭐ Coluna de pontuação",
         "descripcion": "O sistema calcula duas pontuações (de 0 a 10) para cada descolagem e para a janela de tempo selecionada: Condições de descolagem e Condições para manter-se em térmica ou iniciar um Cross Country (XC).<br><br>As descolagens são reordenadas automaticamente pela pontuação de condições de descolagem.<br><br>Nas ⚙️ Definições, pode personalizar os seus limites para o cálculo."
       },
+      "rosaVientos": {
+        "titulo": "🧭 Orientação da descolagem",
+        "descripcion": "No círculo é indicada a verde a orientação ou orientações da descolagem. O sistema de pontuação tem em conta a direção do vento previsto e compara-a com estas orientações possíveis.<br><br> Tem em conta que, se o vento previsto for muito fraco, nalgumas descolagens talvez seja possível descolar noutras orientações, dependendo da habilidade, espaço para correr, força da térmica,..."
+      },
+      "nivelActividad": {
+        "titulo": "📶 Nível de atividade da descolagem",
+        "descripcion": "Indica com barras (de 1 a 5) o quanto se voa neste local de acordo com os voos registados (o nível de popularidade).<br><br>Baseia-se no volume histórico de voos registados no XContest durante 20 anos, com ajustes para atividade recente (+1 se houve voos nos últimos meses) ou inatividade prolongada (-1 se não houver voos há mais de 2 anos)."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Informação da descolagem</span></div>",
         "descripcion": "Mostra informações mais completas sobre a descolagem e links para a sua previsão no Windy, Meteo-parapente e Meteoblue."

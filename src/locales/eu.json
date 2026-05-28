@@ -205,6 +205,14 @@
         "titulo": "⭐ Puntuazioaren zutabea",
         "descripcion": "Sistemak bi puntuazio (0-tik 10-era) kalkulatzen ditu aireratze bakoitzeko eta hautatutako ordu-tarterako: Aireratze-baldintzak eta Termikan mantentzeko edo Cross Country (XC) bat hasteko baldintzak.<br><br>Aireratzeak automatikoki berrantolatzen dira aireratze-baldintzen puntuazioaren arabera.<br><br>⚙️ Ezarpenak atalean, zure mugak pertsonaliza ditzakezu kalkulurako."
       },
+      "rosaVientos": {
+        "titulo": "🧭 Aireratzearen orientazioa",
+        "descripcion": "Zirkuluan berdez adierazten da aireratzearen orientazioa edo orientazioak. Puntuazio-sistemak iragarritako haizearen norabidea kontuan hartzen du eta orientazio posible horiekin alderatzen du.<br><br> Kontuan izan, iragarritako haizea oso ahula bada, aireratze batzuetan beste orientazio batzuetan aireratzea posible izan daitekeela, trebetasunaren, korrika egiteko espazioaren, termikaren indarraren... arabera."
+      },
+      "nivelActividad": {
+        "titulo": "📶 Aireratzearen jarduera-maila",
+        "descripcion": "Barren bidez (1etik 5era) leku honetan zenbat hegan egiten den adierazten du, erregistratutako hegaldien arabera (ospe-maila).<br><br>20 urtetan XContest-en erregistratutako hegaldien bolumen historikoan oinarritzen da, azkenaldiko jardueragatik (+1 azken hilabeteetan hegaldiak izan badira) edo luzaroko inaktibitateagatik (-1 duela 2 urte baino gehiagotik hegaldik ez badago) doikuntzak eginez."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Aireratzeari buruzko informazioa</span></div>",
         "descripcion": "Aireratzeari buruzko informazio osatuagoa eta Windy, Meteo-parapente eta Meteoblue webguneetako iragarpenetarako estekak erakusten ditu."

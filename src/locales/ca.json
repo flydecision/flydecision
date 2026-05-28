@@ -205,6 +205,14 @@
         "titulo": "⭐ Columna de puntuació",
         "descripcion": "El sistema calcula dues puntuacions (de 0 a 10) per a cada enlairament i per a la franja horària seleccionada: Condicions d'enlairament i Condicions per mantenir-se en tèrmica o començar un Cross Country (XC).<br><br>Els enlairaments es reordenen automàticament per la puntuació de condicions d'enlairament.<br><br>Als ⚙️ Ajustos, pots personalitzar els teus límits per al càlcul."
       },
+      "rosaVientos": {
+        "titulo": "🧭 Orientació de l'enlairament",
+        "descripcion": "Al cercle s'indica en verd l'orientació o orientacions de l'enlairament. El sistema de puntuació té en compte la direcció del vent pronosticat i la compara amb aquestes orientacions possibles.<br><br> Tingues en compte que si el vent pronosticat és molt fluix, en alguns enlairaments potser serà possible enlairar-se en altres orientacions, segons l'habilitat, l'espai per córrer, la força de la termoladera,..."
+      },
+      "nivelActividad": {
+        "titulo": "📶 Nivell d'activitat de l'enlairament",
+        "descripcion": "Indica amb barres (d'1 a 5) quant es vola en aquest lloc segons els vols registrats (el nivell de popularitat).<br><br>Es basa en el volum històric de vols registrats a XContest durant 20 anys, amb ajustos per activitat recent (+1 si hi ha hagut vols en els últims mesos) o inactivitat prolongada (-1 si no hi ha vols des de fa més de 2 anys)."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Informació de l'enlairament</span></div>",
         "descripcion": "Mostra informació més completa sobre l'enlairament i enllaços a la seva previsió a Windy, Meteo-parapente i Meteoblue."

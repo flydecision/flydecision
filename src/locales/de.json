@@ -205,6 +205,14 @@
         "titulo": "⭐ Bewertungs-Spalte",
         "descripcion": "Das System berechnet zwei Bewertungen (0 bis 10) für jeden Startplatz und für den ausgewählten Zeitraum: Startbedingungen und Bedingungen zum Halten in der Thermik oder für den Beginn eines Cross Country (XC).<br><br>Die Startplätze werden automatisch nach der Bewertung der Startbedingungen neu sortiert.<br><br>In den ⚙️ Einstellungen kannst du deine Grenzwerte für die Berechnung anpassen."
       },
+      "rosaVientos": {
+        "titulo": "🧭 Startplatz-Ausrichtung",
+        "descripcion": "Im Kreis wird die Ausrichtung oder werden die Ausrichtungen des Startplatzes in Grün angezeigt. Das Punktesystem berücksichtigt die vorhergesagte Windrichtung und gleicht sie mit diesen möglichen Ausrichtungen ab.<br><br> Beachte, dass es bei sehr schwachem vorhergesagtem Wind an einigen Startplätzen möglich sein kann, in anderen Richtungen zu starten, abhängig von Können, Anlaufstrecke, Thermikstärke,..."
+      },
+      "nivelActividad": {
+        "titulo": "📶 Aktivitätsniveau des Startplatzes",
+        "descripcion": "Zeigt mit Balken (von 1 bis 5) an, wie viel an diesem Ort geflogen wird, basierend auf den registrierten Flügen (der Beliebtheitsgrad).<br><br>Es basiert auf dem historischen Volumen der auf XContest registrierten Flüge über 20 Jahre, mit Anpassungen für jüngste Aktivität (+1, wenn es in den letzten Monaten Flüge gab) oder längere Inaktivität (-1, wenn es seit über 2 Jahren keine Flüge mehr gab)."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Startplatz-Informationen</span></div>",
         "descripcion": "Zeigt vollständigere Startplatz-Informationen und Links zur Vorhersage auf Windy, Meteo-parapente und Meteoblue an."

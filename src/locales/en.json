@@ -205,6 +205,14 @@
         "titulo": "⭐ Score Column",
         "descripcion": "The system calculates two scores (0 to 10) for each takeoff and for the selected time range: Takeoff Conditions and Conditions for maintaining thermals or starting Cross Country (XC).<br><br>Takeoffs are automatically reordered by Takeoff Condition score.<br><br>In ⚙️ Settings, you can customize your limits for the calculation."
       },
+      "rosaVientos": {
+        "titulo": "🧭 Takeoff orientation",
+        "descripcion": "The circle indicates in green the takeoff orientation or orientations. The scoring system takes into account the forecasted wind direction and matches it against these possible orientations.<br><br> Keep in mind that if the forecasted wind is very light, at some takeoffs it might be possible to take off in other orientations, depending on skill, running space, thermal strength,..."
+      },
+      "nivelActividad": {
+        "titulo": "📶 Takeoff activity level",
+        "descripcion": "Indicates with bars (from 1 to 5) how much flying occurs at this location based on logged flights (popularity level).<br><br>It is based on the historical volume of logged flights on XContest over 20 years, with adjustments for recent activity (+1 if there have been flights in recent months) or prolonged inactivity (-1 if there are no flights for more than 2 years)."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Takeoff Information</span></div>",
         "descripcion": "Shows more complete takeoff information and links to its forecast on Windy, Meteo-parapente, and Meteoblue."
