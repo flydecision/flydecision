@@ -4263,8 +4263,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     title="${t('tabla.tooltips.masInfo')}">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                         <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="8"></line>
-                        <polyline points="11 12 12 12 12 16"></polyline>
+                        <line x1="12" y1="7" x2="12" y2="7" stroke-width="2.5"></line>
+                        <polyline points="10.5 11 12 11 12 17"></polyline>
                     </svg>
                 </button>
             `;
