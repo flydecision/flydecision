@@ -8850,7 +8850,8 @@ function inicializarMapaLeaflet() {
         zoom: useZoom,
         zoomControl: false,
         zoomAnimation: true,   
-        zoomSnap: 0.5,          
+        zoomSnap: 0.5,
+        zoomDelta: 0.5,          
         layers: [WorldTopoMap] 
     });
 
