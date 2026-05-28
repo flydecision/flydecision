@@ -4300,9 +4300,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			
             const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block;">(${d.Provincia})</span>`;
 
-            // Generamos el micro-gráfico de actividad
-            const iconoActividad = d.Actividad ? crearIconoActividad(d.Actividad) : '';
-
             const esFavoritoBtn  = obtenerFavoritos().map(Number).includes(Number(d.ID));
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-favorito-tabla"
@@ -4315,17 +4312,30 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 </button>
             `;
 
-            // Montamos la celda con los tres botones
+            // Generamos el micro-gráfico de actividad
+            const iconoActividad = d.Actividad ? crearIconoActividad(d.Actividad) : '';
+
+            // Siempre se muestra en edición, o si hay más de 7 filas en vista normal
+            const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 7);
+
+            // Preparamos el HTML de los iconos centrales según el espacio/modo
+            const htmlIconosCentrales = mostrarRosayActividad ? `
+                <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; margin-bottom: 5px;">
+                    <span class="guia-rosa-vientos" style="padding-top: 3px;">${svgOrientaciones}</span>
+                    <span class="guia-nivel-actividad">${iconoActividad}</span>
+                </span>
+            ` : '';
+
+            // Montamos la celda con los tres botones y el contenido calculado
             tdDespegue.innerHTML = `
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
                 ${botonFavoritoHTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
-                <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; margin-bottom: 5px;">
-                    <span class="guia-rosa-vientos" style="padding-top: 3px;">${svgOrientaciones}</span>
-                    <span class="guia-nivel-actividad">${iconoActividad}</span>
-                </span>
+                ${htmlIconosCentrales}
+
+                <span class="linea-divisora-edit" style="position: absolute; bottom: 28px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
 
 			// ROWSPAN DINÁMICO
