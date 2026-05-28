@@ -2622,12 +2622,12 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     margin: 0;
 }
 
-/* 💻 Ajuste para ordenadores y tablets grandes: mantiene la barra a 18px del borde inferior */
-/* @media (min-width: 768px) {
+/* 💻 Ajuste para ordenadores: mantiene la barra a 18px del borde inferior */
+@media (hover: hover) and (pointer: fine), (min-width: 768px) {
     .bottom-nav.compact-nav {
         bottom: 18px;
     }
-} */
+}
 
 /* 3. Estilo de los botones internos */
 .compact-nav .nav-item {
