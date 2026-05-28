@@ -4321,7 +4321,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // Preparamos el HTML de los iconos centrales según el espacio/modo
             const htmlIconosCentrales = mostrarRosayActividad ? `
                 <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; margin-bottom: 5px;">
-                    <span class="guia-rosa-vientos" style="padding-top: 3px;">${svgOrientaciones}</span>
+                    <span class="guia-rosa-vientos" style="padding-top: 3px; margin-right: 12px;">${svgOrientaciones}</span>
                     <span class="guia-nivel-actividad">${iconoActividad}</span>
                 </span>
             ` : '';
@@ -5425,7 +5425,7 @@ function crearIconoActividad(nivelStr) {
 
     return `
         <span title="${t('tabla.tooltips.actividad') || 'Nivel de actividad'}: ${nivel}/5" 
-              style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 24px; height: 16px; margin-left: 8px; cursor: help; vertical-align: middle;">
+              style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; cursor: help; vertical-align: middle;">
             ${barras}
         </span>
     `;
@@ -8440,9 +8440,11 @@ function aplicarPuntuacionEnMapa() {
         const color = colorNotaMapa(nota);
 
         marker._notaMapa = (nota !== null) ? nota : -1;
-            const nombreMostrar = despObj ? despObj.Despegue : meta.despegue;
+        const nombreMostrar = despObj ? despObj.Despegue : meta.despegue;
 
-            marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color));
+        // Extraemos la nota de actividad de despObj y la pasamos al icono
+        const actividadScore = despObj ? despObj.Actividad : null;
+        marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color, actividadScore));
         });
 
         if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
@@ -8512,15 +8514,18 @@ function filtrarMarkersPorPuntuacion() {
 }
 
 function limpiarColoresMapa() {
-    markersDespegues.forEach(marker => {
-        const meta = marker.metadata;
-        if (!meta) return;
-        marker._notaMapa = undefined;
-        marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones));
-    });
-    if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
-    if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
-}
+        markersDespegues.forEach(marker => {
+            const meta = marker.metadata;
+            if (!meta) return;
+            marker._notaMapa = undefined;
+            
+            // Obtenemos la nota del objeto de datos cruzado y la pasamos
+            const actividadScore = marker._despObj ? marker._despObj.Actividad : null;
+            marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones, null, actividadScore));
+        });
+        if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+        if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
+    }
 
 // ---------------------------------------------------------------
 // 🗺️ PUNTUACIÓN DE CONDICIONES PARA EL MAPA
@@ -9859,16 +9864,22 @@ function inicializarMapaLeaflet() {
     }
 
     // crea icono compuesto (dot + etiqueta) usando L.divIcon
-    window.createIconDespegue = function(despegue, actividad, orientacionesMetadata, bgColor) {
+    window.createIconDespegue = function(despegue, actividad, orientacionesMetadata, bgColor, actividadScore) {
         const orientacionHTML = createOrientationSVG(orientacionesMetadata);
         const color = actividadToColor(actividad);
         
-        // 🚀 NUEVO: Ocultamos el "dot" de actividad si el filtro de horario en el mapa está abierto
         const mostrarDot = (typeof filtrosMapaAbiertos !== 'undefined') ? !filtrosMapaAbiertos : true;
-        const dot = mostrarDot ? `<span class="dot" style="background:${color}"></span>` : '';
+        
+        let elementoActividad = '';
+        if (mostrarDot) {
+            // Si hay nota de actividad de la tabla, pintamos las barritas. Si no, el dot de color tradicional
+            elementoActividad = actividadScore 
+                ? crearIconoActividad(actividadScore) 
+                : `<span class="dot" style="background:${color}"></span>`;
+        }
         
         const bgStyle = bgColor ? ` style="background-color:${bgColor}"` : '';
-        const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}${dot}${escapeHtml(despegue)}</span>`;
+        const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}${elementoActividad}${escapeHtml(despegue)}</span>`;
 
         return L.divIcon({
             html: labelHTML,
@@ -9885,20 +9896,19 @@ function inicializarMapaLeaflet() {
 
     Papa.parse('map/despegues.csv', {
     download: true,
-    header: true, // Usa la primera fila como nombres de columnas
-    //dynamicTyping: true,       // Convierte automáticamente números y booleanos (de momento, comentado; era sugerencia IA)
+    header: true,
     skipEmptyLines: true,
     delimiter: ';',
     encoding: 'utf8',
     complete: function(results) {
-    results.data.forEach(row => { //El forEach ejecuta la función una vez por cada fila (row) del conjunto de datos results.data.
+    results.data.forEach(row => {
         
         const lat = parseFloat(row.Latitud);
         const lon = parseFloat(row.Longitud);
         const altitud = row.Altitud || '';	
         const region = row.Región || ''; 
         const provincia = row.Provincia || '';
-        let despegue = row.Despegue || ''; // Cambiado a 'let' para poder sobrescribirlo
+        let despegue = row.Despegue || ''; 
         const SVGorientaciones = createOrientationSVG(row.Orientaciones);
         const orientacion = row.Orientación || '';
         const orientaciones = row.Orientaciones || '';
@@ -9906,7 +9916,6 @@ function inicializarMapaLeaflet() {
         const actividad = row.Actividad || '';
         const color = actividadToColor(row.Actividad);
         const dot = `<span class="dot" style="background:${color}"></span>`;
-        const CIRCULOactividad = row.Actividad || '';
 
         const kmmax = row.Km_máx || '';
         const vuelos = row.Vuelos || '';
@@ -9914,7 +9923,10 @@ function inicializarMapaLeaflet() {
         const info = row.Más_información || '';
 
         let idDespegue = row.ID || '';
-        let botonVerEnTablaHTML = ''; // Inicialmente vacío (se rellena si existe en la tabla)
+        let botonVerEnTablaHTML = ''; 
+
+        // Guardaremos aquí el valor 1-5 de actividad si existe cruce
+        let actividadScore = null; 
 
         // Cruzamos coordenadas con la base de datos de la Tabla
         if (window.bdGlobalDespegues) {
@@ -9926,6 +9938,7 @@ function inicializarMapaLeaflet() {
             if (matchTabla) {
                 despegue = matchTabla.Despegue;
                 idDespegue = matchTabla.ID;
+                actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla
 
                 botonVerEnTablaHTML = `
                 <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
@@ -9935,8 +9948,13 @@ function inicializarMapaLeaflet() {
             }
         }
 
+        // Si tenemos nota numérica, creamos las barritas; si no, usamos el punto de color
+        const htmlActividadPopup = actividadScore 
+            ? crearIconoActividad(actividadScore) 
+            : dot;
+
         // Creamos el icono usando el nombre "Despegue" (que ahora es el agrupado de la tabla si hubo match)
-        const icon = createIconDespegue(despegue, actividad, orientaciones);
+        const icon = createIconDespegue(despegue, actividad, orientaciones, null, actividadScore);
         const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
 
         // 1. Traducimos el nombre largo (noroeste -> northwest)
@@ -9963,7 +9981,11 @@ function inicializarMapaLeaflet() {
 
                     <div style="margin-bottom: 5px;">${t('mapa.labelCoordenadas')} <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
                     <div style="margin-bottom: 5px;">${t('mapa.labelAltitud')} <b>${escapeHtml(altitud)} m</b></div>
-                    <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="${t('popupDespegue.nivelActividadTitle')}">${t('mapa.labelActividad')} ${dot}</div>
+                    
+                    <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="${t('popupDespegue.nivelActividadTitle')}">
+                        ${t('mapa.labelActividad')} ${htmlActividadPopup}
+                    </div>
+                    
                     <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
                     <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
