@@ -4315,10 +4315,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // Generamos el micro-gráfico de actividad
             const iconoActividad = d.Actividad ? crearIconoActividad(d.Actividad) : '';
 
-            // Evaluamos si hay altura suficiente (más de 7 filas)
-            const mostrarRosayActividad = totalFilasRowSpan > 7;
+            // Siempre se muestra en edición, o si hay más de 7 filas en vista normal
+            const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 7);
 
-            // Preparamos el HTML de los iconos centrales según el espacio
+            // Preparamos el HTML de los iconos centrales según el espacio/modo
             const htmlIconosCentrales = mostrarRosayActividad ? `
                 <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; margin-bottom: 5px;">
                     <span class="guia-rosa-vientos" style="padding-top: 3px;">${svgOrientaciones}</span>
