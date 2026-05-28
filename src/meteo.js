@@ -9868,7 +9868,8 @@ function inicializarMapaLeaflet() {
         const orientacionHTML = createOrientationSVG(orientacionesMetadata);
         const color = actividadToColor(actividad);
         
-        const mostrarDot = (typeof filtrosMapaAbiertos !== 'undefined') ? !filtrosMapaAbiertos : true;
+        //const mostrarDot = (typeof filtrosMapaAbiertos !== 'undefined') ? !filtrosMapaAbiertos : true; // oculta el icono de nivel de actividad si está activo el filtro Meteo en mapa
+        const mostrarDot = true;
         
         let elementoActividad = '';
         if (mostrarDot) {
@@ -9983,7 +9984,7 @@ function inicializarMapaLeaflet() {
                     <div style="margin-bottom: 5px;">${t('mapa.labelAltitud')} <b>${escapeHtml(altitud)} m</b></div>
                     
                     <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="${t('popupDespegue.nivelActividadTitle')}">
-                        ${t('mapa.labelActividad')} ${htmlActividadPopup}
+                        ${t('mapa.labelActividad')} &nbsp;${htmlActividadPopup}
                     </div>
                     
                     <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
