@@ -120,6 +120,7 @@
       "techo": "Altura (km) sobre o nivel do mar (MSL) do teito de voo utilizable (= grosor da capa límite BLH x 0,85 + elevación media do terreo da cela ECMWF 9km)",
       "cape": "CAPE (J/kg): Enerxía Potencial Convectiva Dispoñible",
       "cin": "CIN (J/kg): Inhibición Convectiva",
+      "actividad": "Nivel de actividade do despegue (de 1 a 5), segundo o nº de voos rexistrados en XContest.com e a data do último voo.",
       "masInfo": "Máis información",
       "verEnMapa": "Ver no mapa",
       "notaCondiciones": "Puntuación das condicións de engalaxe: {{nota}} puntos",
@@ -203,6 +204,14 @@
       "columnaPuntuacion": {
         "titulo": "⭐ Columna de puntuación",
         "descripcion": "O sistema calcula dúas puntuacións (de 0 a 10) para cada engalaxe e para a franxa horaria seleccionada: Condicións de engalaxe e Condicións para manterse en térmica ou comezar un Cross Country (XC).<br><br>As engalaxes reordénanse automaticamente pola puntuación de condicións de engalaxe.<br><br>Nos ⚙️ Axustes, podes personalizar os teus límites para o cálculo."
+      },
+      "rosaVientos": {
+        "titulo": "🧭 Orientación do despegue",
+        "descripcion": "No círculo indícase en verde a orientación ou orientacións do despegue. O sistema de puntuación ten en conta a dirección do vento prognosticado e cotéxaa con estas orientacións posibles.<br><br> Ten en conta que se o vento prognosticado é moi frouxo, nalgúns despegues quizais sexa posible despegar noutras orientacións, segundo a habilidade, espazo para correr, forza da termoladeira,..."
+      },
+      "nivelActividad": {
+        "titulo": "📶 Nivel de actividade do despegue",
+        "descripcion": "Indica con barras (de 1 a 5) canto se voa neste lugar segundo os voos rexistrados (o nivel de popularidade).<br><br>Baséase no volume histórico de voos rexistrados en XContest durante 20 anos, con axustes por actividade recente (+1 se houbo voos nos últimos meses) ou inactividade prolongada (-1 se non hai voos desde hai máis de 2 anos)."
       },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Información da engalaxe</span></div>",
