@@ -7155,6 +7155,25 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     return; 
                 }
 
+                // Panel Configuración del mapa
+                if (document.getElementById('configuracionPanel')?.style.display !== 'none') {
+                    if (typeof window.cerrarConfiguracionMapa === 'function') window.cerrarConfiguracionMapa();
+                    return;
+                }
+
+                // infoPanel (Capas y Filtros) — click en buttonCerrar para que gestione también isFijado
+                const infoPanel = document.getElementById('infoPanel');
+                if (infoPanel && !infoPanel.classList.contains('retraido')) {
+                    document.getElementById('buttonCerrar')?.click();
+                    return;
+                }
+
+                // Selector nativo de capas Leaflet
+                if (document.querySelector('.leaflet-control-layers-expanded') && window.capasLeaflet) {
+                    window.capasLeaflet.collapse();
+                    return;
+                }
+
                 // Si estamos en el mapa (y Ajustes no está abierto, ni hay popups), el botón Atrás ofrece salir
                 if (typeof confirmarSalidaApp === 'function') {
                     confirmarSalidaApp();
@@ -9711,11 +9730,11 @@ function inicializarMapaLeaflet() {
 
     // 1. Añadimos primero Capas a la izquierda
     const controlCapas = L.control.layers(baseMaps, {}, { position: 'topleft' }).addTo(map);
+    window.capasLeaflet = controlCapas; // exposición global para poder cerrarlo con Atrás Android
 
     // 1.2. Y justo después añadimos Configuración a la izquierda (así se pone a su derecha)
-    L.control.configToggle({ 
-        position: 'topleft' 
-    }).addTo(map);
+    const configToggleControl = L.control.configToggle({ position: 'topleft' }).addTo(map);
+    window.cerrarConfiguracionMapa = () => configToggleControl._collapse();
 
     // 2. Creamos NUESTRO propio botón físico "X"
     const btnCerrarCapas = L.DomUtil.create('div', 'cerrar-capas-btn');
