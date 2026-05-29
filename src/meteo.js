@@ -5896,10 +5896,11 @@ document.addEventListener('i18nReady', function() {
     // 1. Click en el botón 'X': Limpia todo y mantiene el cursor dentro
     botonLimpiar.addEventListener('click', function() {
         limpiarBuscador();
-        // Forzamos el foco de nuevo al input
-        setTimeout(() => {
-            inputBuscador.focus();
-        }, 10); 
+        if (window.matchMedia('(pointer: coarse)').matches) {
+            inputBuscador.blur(); // táctil: cierra el teclado
+        } else {
+            setTimeout(() => inputBuscador.focus(), 10); // escritorio: mantiene el foco
+        }
     });
 	
     // 2. Keyup: Vuelve a comprobar si mostrar/ocultar la 'X' (el filtrado lo hace el onkeyup del HTML)
