@@ -719,6 +719,14 @@ function iniciarGuiaPrincipal(forzar = false) {
         clicBotonInicio();
     }
 
+    // Garantizar siempre que los filtros estén limpios antes de que arranque la guía.
+    // clicBotonInicio() solo los resetea en el 2.º clic (yaEnInicio), así que lo
+    // forzamos explícitamente para que ningún elemento quede oculto y driver.js
+    // pueda posicionar sus popups correctamente.
+    if (typeof limpiarBuscador === 'function') limpiarBuscador();
+    if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
+    if (typeof aplicarFiltrosVisuales === 'function') aplicarFiltrosVisuales();
+
     guiaActiva = true; //para que no muestre actualización si hay
 
     const driverObj = window.driver.js.driver({
@@ -829,13 +837,13 @@ function iniciarGuiaPrincipal(forzar = false) {
                     setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 100);
                 }
             },
-            { 
+            ...(chkMostrarCizalladura ? [{ 
                 element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
                 popover: { 
                     title: t('guiaPrincipal.pasos.filaCizalladura.titulo'), 
                     description: t('guiaPrincipal.pasos.filaCizalladura.descripcion')
                 } 
-            },
+            }] : []),
             { 
                 element: '.columna-condiciones.borde-grueso-izquierda.borde-grueso-arriba.borde-grueso-abajo', 
                 popover: { 
@@ -984,6 +992,13 @@ function iniciarGuiaFavoritos(forzar = false) {
     if (!forzar && localStorage.getItem('METEO_GUIA_FAVORITOS_VISTA') === 'true') {
         return; 
     }
+
+    // Garantizar que los filtros de búsqueda y distancia están desactivados
+    // antes de que arranque la guía, para que todos los elementos sean visibles
+    // y driver.js pueda posicionar sus popups correctamente.
+    if (typeof limpiarBuscador === 'function') limpiarBuscador();
+    if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
+    if (typeof aplicarFiltrosVisuales === 'function') aplicarFiltrosVisuales();
 
     const driverObj = window.driver.js.driver({
         
