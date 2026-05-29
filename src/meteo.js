@@ -1366,6 +1366,7 @@ function abrirFavoritos() {
                     if (nuevosFavoritos.length > 0) {
                         localStorage.setItem("METEO_FAVORITOS_LISTA", JSON.stringify(nuevosFavoritos));
                         localStorage.setItem('METEO_GUIA_PRINCIPAL_VISTA', 'true');
+                        localStorage.setItem("METEO_PRIMERA_VISITA_HECHA", "true");
                         
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga('', `
