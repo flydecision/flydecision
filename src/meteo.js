@@ -8762,23 +8762,28 @@ function inicializarMapaLeaflet() {
         maxZoom: 20,
         attribution: '<a href="https://www.icgc.cat/" target="_blank">© ICGC</a>'
     });
-    const KK7SkyWays = L.tileLayer('https://thermal.kk7.ch/tiles/skyways_all/{z}/{x}/{y}.png?src=' + window.location.hostname, {
-        pane: 'overlayPane',
-        maxNativeZoom: 13,
-        maxZoom: 20, // 👈 Aumentado a 20 para que no desaparezca de repente
-        zIndex: 10,  // 👈 Fuerza a que se dibuje por encima del mapa base
-        tms: true,
-        attribution: 'thermal.kk7.ch <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY-NC-SA></a>'
-    });
-    const KK7Thermals = L.tileLayer('https://thermal.kk7.ch/tiles/thermals_all/{z}/{x}/{y}.png?src=' + window.location.hostname, {
-        pane: 'overlayPane',
-        maxNativeZoom: 12,
-        maxZoom: 20, // 👈 Añadido para igualar al resto
-        zIndex: 10,  // 👈 Fuerza a que se dibuje por encima del mapa base
-        tms: true,
-        attribution: 'thermal.kk7.ch <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY-NC-SA></a>'
-    });
-
+    const KK7SkyWays = L.tileLayer(
+        'https://flydecision.com/proxy-kk7.php?z={z}&x={x}&y={y}&layer=skyways_all',
+        {
+            pane: 'overlayPane',
+            maxNativeZoom: 13,
+            maxZoom: 20,
+            zIndex: 10,
+            tms: true,
+            attribution: 'thermal.kk7.ch <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY-NC-SA></a>'
+        }
+    );
+    const KK7Thermals = L.tileLayer(
+        'https://flydecision.com/proxy-kk7.php?z={z}&x={x}&y={y}&layer=thermals_all',
+        {
+            pane: 'overlayPane',
+            maxNativeZoom: 12,
+            maxZoom: 20,
+            zIndex: 10,
+            tms: true,
+            attribution: 'thermal.kk7.ch <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY-NC-SA></a>'
+        }
+    );
     const OpenAIP = L.tileLayer(`https://api.tiles.openaip.net/api/data/openaip/{z}/{x}/{y}.png?apiKey=${MAP_API_KEYS.OpenAIP}`, {
         maxZoom: 20,
         attribution: '© <a href="https://www.openaip.net" target="_blank">OpenAIP</a>'
