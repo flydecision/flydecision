@@ -7223,12 +7223,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     return; 
                 }
 
-                // Panel Configuración del mapa
-                if (document.getElementById('configuracionPanel')?.style.display !== 'none') {
-                    if (typeof window.cerrarConfiguracionMapa === 'function') window.cerrarConfiguracionMapa();
-                    return;
-                }
-
                 // infoPanel (Capas y Filtros) — click en buttonCerrar para que gestione también isFijado
                 const infoPanel = document.getElementById('infoPanel');
                 if (infoPanel && !infoPanel.classList.contains('retraido')) {
@@ -9158,40 +9152,30 @@ function inicializarMapaLeaflet() {
     // FUNCIÓN PARA GESTIONAR EL ESTADO VISUAL DE LOS CONTROLES
     function actualizarEstadoVisualFiltros() {
 
-        // 1. COMPROBAR ESTADO DE LOS 4 FILTROS
+        // 1. COMPROBAR ESTADO DE LOS FILTROS EN EL MAPA
         // Orientación: Comprueba si hay al menos uno marcado
         const hayFiltroOrientacion = obtenerOrientacionesSeleccionadas().length > 0;
         
-        // 1. Vuelos: Comprueba si el valor es mayor que 0
+        // Vuelos: Comprueba si el valor es mayor que 0
         const sliderVuelos = document.getElementById('sliderVuelos');
-        const indiceVuelos = parseInt(sliderVuelos.value, 10);
-        // Asume que ESCALA_VUELOS está disponible globalmente
+        const indiceVuelos = sliderVuelos ? parseInt(sliderVuelos.value, 10) : 0;
         const hayFiltroVuelos = (ESCALA_VUELOS[indiceVuelos] || 0) > 0; 
         
-        function obtenerValorReal(indice) {
-            // La misma lógica de tu función actualizarFiltrosMapa
-            const indiceNumerico = parseInt(indice, 10);
-            return ESCALA_VUELOS[indiceNumerico] !== undefined ? ESCALA_VUELOS[indiceNumerico] : 0;
-        }
-        const hayConfiguracionInicialFiltroVuelos = (obtenerValorReal(localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0') > 0);
-        const hayConfiguracionInicialFiltroUltimoVuelo = (obtenerValorReal(localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0') > 0);
-    
-        // 2. Último Vuelo: Comprueba si el valor no es 'Todos' (índice 0)
+        // Último Vuelo: Comprueba si el valor no es 'Todos' (índice 0)
         const sliderUltimoVuelo = document.getElementById('sliderUltimoVuelo');
-        const indiceUltimoVuelo = parseInt(sliderUltimoVuelo.value, 10);
+        const indiceUltimoVuelo = sliderUltimoVuelo ? parseInt(sliderUltimoVuelo.value, 10) : 0;
         const hayFiltroAnio = indiceUltimoVuelo !== 0;
 
-        function obtenerValorReal(indice) {
-            // La misma lógica de tu función actualizarFiltrosMapa
-            const indiceNumerico = parseInt(indice, 10);
-            return ESCALA_KMMEDIA[indiceNumerico] !== undefined ? ESCALA_KMMEDIA[indiceNumerico] : 0;
-        }
+        // 2. COMPROBAR CONFIGURACIÓN INICIAL (Ajustes Generales)
+        // Evaluamos si el índice guardado es mayor que 0 (0 es inactivo)
+        const hayConfiguracionInicialFiltroVuelos = parseInt(localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0', 10) > 0;
+        const hayConfiguracionInicialFiltroUltimoVuelo = parseInt(localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0', 10) > 0;
 
-        // 2. DEFINIR COLORES Y ESTILOS
+        // 3. DEFINIR COLORES Y ESTILOS PARA LOS ELEMENTOS DEL MAPA
         const ACTIVO_COLOR = '#0404ff30';
         const INACTIVO_COLOR = '#ffffff';
 
-        // 3. ACTUALIZAR CONTENEDORES INDIVIDUALES
+        // 4. ACTUALIZAR CONTENEDORES INDIVIDUALES DEL MAPA
         
         // Contenedor Orientación
         const contOrientacion = document.querySelector('.control-orientacion-container');
@@ -9211,23 +9195,31 @@ function inicializarMapaLeaflet() {
             contUltimoVuelo.style.backgroundColor = hayFiltroAnio ? ACTIVO_COLOR : INACTIVO_COLOR;
         }
 
-        // Contenedor Configuración Vuelos
-        document.querySelector('.configuracion-control-vuelos-container').style.backgroundColor = hayConfiguracionInicialFiltroVuelos ? ACTIVO_COLOR : INACTIVO_COLOR;
+        // 5. ACTUALIZAR LOS DESLIZADORES DEL ACORDEÓN (Transparentes + .borde-rojo-externo)
+        const contConfigVuelos = document.querySelector('.configuracion-control-vuelos-container');
+        if (contConfigVuelos) {
+            contConfigVuelos.style.backgroundColor = 'transparent'; // Fondo transparente forzado
+            if (hayConfiguracionInicialFiltroVuelos) {
+                contConfigVuelos.classList.add('borde-rojo-externo');
+            } else {
+                contConfigVuelos.classList.remove('borde-rojo-externo');
+            }
+        }
 
-        // Contenedor Configuración Vuelos
-        document.querySelector('.configuracion-control-ultimovuelo-container').style.backgroundColor = hayConfiguracionInicialFiltroUltimoVuelo ? ACTIVO_COLOR : INACTIVO_COLOR;
+        const contConfigUltimoVuelo = document.querySelector('.configuracion-control-ultimovuelo-container');
+        if (contConfigUltimoVuelo) {
+            contConfigUltimoVuelo.style.backgroundColor = 'transparent'; // Fondo transparente forzado
+            if (hayConfiguracionInicialFiltroUltimoVuelo) {
+                contConfigUltimoVuelo.classList.add('borde-rojo-externo');
+            } else {
+                contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
+            }
+        }
 
-
-        // 4. ACTUALIZAR PANEL GLOBAL
+        // 6. ACTUALIZAR PANEL GLOBAL (Borde rojo externo al estar retraído)
         const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio;
-        const etiquetaInfoPanel = document.querySelector('.labelMostrarOpciones');
         const infoPanelPrincipal = document.getElementById('infoPanel');
         
-        // if (etiquetaInfoPanel) {
-        //     etiquetaInfoPanel.style.backgroundColor = hayCualquierFiltro ? ACTIVO_COLOR : ''; 
-        // }
-
-        // --- NUEVO: BORDE ROJO AL ESTAR RETRAÍDO ---
         if (infoPanelPrincipal) {
             if (hayCualquierFiltro) {
                 infoPanelPrincipal.classList.add('borde-rojo-externo');
@@ -9642,149 +9634,6 @@ function inicializarMapaLeaflet() {
         observerGeocoder.observe(contenedorGeocoder, { attributes: true });
     }
     // ------------------------------------------------------------
-        
-    // 🟡 CONTROL "Configuración" (Despliega #configuracionPanel)
-    L.Control.ConfigToggle = L.Control.extend({
-
-        options: { position: 'topleft' },
-        onAdd: function(map) {
-            // 1. Contenedor principal de Leaflet
-            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-config');
-            // Quitamos el borde negro estándar de leaflet-bar para que no haga cosas raras
-            container.style.border = 'none'; 
-            
-            // 2. Traemos el Panel Blanco de Ajustes desde el HTML
-            this._configPanel = document.getElementById('configuracionPanel');
-            
-            if (this._configPanel) {
-                // Preparamos el panel para recibir elementos "flotantes" dentro
-                this._configPanel.style.position = 'relative';
-                // Añadimos margen superior para que el texto "Ajustes:" no se pise con la X
-                this._configPanel.style.paddingTop = '30px'; 
-                
-                container.appendChild(this._configPanel);
-                this._configPanel.style.display = 'none'; 
-            } else {
-                console.error("⚠️ Error: No encuentro el <div id='configuracionPanel'> en el HTML");
-            }
-            
-            // 3. El Botón
-            const buttonDiv = L.DomUtil.create('div', 'leaflet-control-button', container);
-            buttonDiv.style.cursor = 'pointer';
-            buttonDiv.title = t('mapa.ajustes'); 
-            
-            // Iconos (Engranaje y X)
-            this._iconGear = `<svg width="30" height="30" viewBox="-3 -3 30 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                                </svg>`;
-            this._iconX = `<span class="div-mapa-close-btn" style="line-height: 1;">❌</span>`;
-            
-            // Estilos del Botón (Engranaje por defecto)
-            buttonDiv.innerHTML = this._iconGear;
-            buttonDiv.style.padding = '0';
-            buttonDiv.style.display = 'flex';
-            buttonDiv.style.justifyContent = 'center';
-            buttonDiv.style.alignItems = 'center';  
-            buttonDiv.style.backgroundColor = 'white';      
-            buttonDiv.style.width = '30px';  
-            buttonDiv.style.height = '30px'; 
-            
-            // Recuperamos el borde y la sombra original de Leaflet (ya que se lo quitamos al contenedor padre)
-            buttonDiv.style.backgroundClip = 'padding-box';
-            // buttonDiv.style.border = '1px solid #6e6e6e';
-            buttonDiv.style.borderRadius = '10px';
-            
-            this._buttonDiv = buttonDiv; 
-            
-            L.DomEvent.disableClickPropagation(container);
-            L.DomEvent.disableScrollPropagation(container);
-            L.DomEvent.on(buttonDiv, 'click', this._togglePanel, this);
-            L.DomEvent.on(map, 'click', this._collapse, this);
-            L.DomEvent.on(map, 'moveend', this._collapse, this);
-            
-            return container;
-        },
-        
-        _togglePanel: function(e) {
-            L.DomEvent.stopPropagation(e);
-            if (this._configPanel.style.display === 'none') {
-                this._expand();
-            } else {
-                this._collapse();
-            }
-        },
-        
-        _expand: function() {
-            // 1. Mostrar Panel
-            this._configPanel.style.display = 'block'; 
-            
-            // 🚀 INTELIGENCIA UX: Escondemos temporalmente la Meteo de forma PURAMENTE VISUAL
-            if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-                if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-                    window.meteoEscondidoPorAjustes = true;
-                    const divFH = document.getElementById('div-filtro-horario');
-                    if (divFH) divFH.style.display = 'none'; // Escondemos el panel sin apagar el filtro
-                } else {
-                    const btnFiltros = document.getElementById('btn-filtros-mapa');
-                    if (btnFiltros) btnFiltros.style.visibility = 'hidden';
-                }
-            }
-            
-            // 2. Cambiar icono a X
-            this._buttonDiv.innerHTML = this._iconX; 
-            
-            // 3. Quitar bordes para que se funda con el panel blanco
-            this._buttonDiv.style.border = 'none';
-            this._buttonDiv.style.background = 'transparent';
-            
-            // 4. Mover el botón adentro del panel blanco y pegarlo a la esquina superior derecha
-            this._buttonDiv.style.position = 'absolute';
-            this._buttonDiv.style.top = '0px';
-            this._buttonDiv.style.right = '0px';
-            this._buttonDiv.style.zIndex = '1000';
-            
-            // Meter el botón FÍSICAMENTE dentro del panel blanco
-            this._configPanel.appendChild(this._buttonDiv);
-        },
-        
-        _collapse: function() {
-            // 1. Ocultar Panel
-            this._configPanel.style.display = 'none';
-            
-            // 🚀 INTELIGENCIA UX: Restauramos la visibilidad de la Meteo o su botón
-            if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-                if (window.meteoEscondidoPorAjustes) {
-                    window.meteoEscondidoPorAjustes = false;
-                    const divFH = document.getElementById('div-filtro-horario');
-                    if (divFH) divFH.style.display = ''; // Lo volvemos a mostrar
-                } else {
-                    const btnFiltros = document.getElementById('btn-filtros-mapa');
-                    if (btnFiltros) btnFiltros.style.visibility = '';
-                }
-            }
-            
-            // 2. Restaurar icono Engranaje
-            this._buttonDiv.innerHTML = this._iconGear;
-            
-            // 3. Restaurar bordes y fondo
-            this._buttonDiv.style.backgroundColor = 'white';
-            
-            // 4. Devolver el botón al flujo normal de Leaflet (fuera del panel blanco)
-            this._buttonDiv.style.position = 'relative';
-            this._buttonDiv.style.top = 'auto';
-            this._buttonDiv.style.right = 'auto';
-            
-            // Volver a colocar el botón FÍSICAMENTE fuera del panel blanco, en el contenedor general
-            const container = this._configPanel.parentNode;
-            // Lo insertamos como primer elemento para que el menú de ajustes siga quedando debajo si se abriera de otra forma
-            container.insertBefore(this._buttonDiv, container.firstChild);
-        }
-    });
-
-    L.control.configToggle = function(options) {
-        return new L.Control.ConfigToggle(options);
-    };
 
     // 🟡 CONTROL "Capas"
     const baseMaps = {
@@ -9810,10 +9659,6 @@ function inicializarMapaLeaflet() {
     // 1. Añadimos primero Capas a la izquierda
     const controlCapas = L.control.layers(baseMaps, {}, { position: 'topleft' }).addTo(map);
     window.capasLeaflet = controlCapas; // exposición global para poder cerrarlo con Atrás Android
-
-    // 1.2. Y justo después añadimos Configuración a la izquierda (así se pone a su derecha)
-    const configToggleControl = L.control.configToggle({ position: 'topleft' }).addTo(map);
-    window.cerrarConfiguracionMapa = () => configToggleControl._collapse();
 
     // 2. Creamos NUESTRO propio botón físico "X"
     const btnCerrarCapas = L.DomUtil.create('div', 'cerrar-capas-btn');
@@ -11380,29 +11225,40 @@ function inicializarMapaLeaflet() {
         });
     }
     
-    // Listener Configuración Último Vuelo (Guarda, sincroniza y filtra)
+    // Listener Configuración Último Vuelo (Guarda, sincroniza y filtra) Correcto y Traducido
     if (sliderUltimoVueloConfig) {
         sliderUltimoVueloConfig.addEventListener('input', function() {
             const indiceActual = this.value;
             const valorReal = obtenerValorReal(indiceActual, ESCALA_ULTIMO_VUELO);
             
+            // --- CORRECCIÓN: Traducir "Todos" dinámicamente si el índice es 0 ---
+            let valorMostrar = valorReal;
+            if (valorReal === 'Todos') {
+                valorMostrar = t('mapa.todos');
+            }
+            
             // 1. Actualiza el texto en este panel de configuración
-            if (textoUltimoVueloConfig) textoUltimoVueloConfig.innerText = valorReal;
+            if (textoUltimoVueloConfig) {
+                textoUltimoVueloConfig.innerText = valorMostrar;
+            }
             
             // 2. Guarda el dato para la próxima vez
             localStorage.setItem(STORAGE_KEY_ULTIMO_VUELO, indiceActual);
             
-            // --- NUEVO: APLICAR INMEDIATAMENTE ---
+            // --- SINCRO INMEDIATA ---
             // 3. Sincroniza el deslizador del panel principal "Capas y filtros"
             if (sliderUltimoVueloFiltro) {
                 sliderUltimoVueloFiltro.value = indiceActual;
-                if (textoUltimoVueloFiltro) textoUltimoVueloFiltro.innerText = valorReal;
+                if (textoUltimoVueloFiltro) {
+                    textoUltimoVueloFiltro.innerText = valorMostrar;
+                }
             }
             // 4. Manda la orden al mapa para que oculte/muestre marcadores ya mismo
-            if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
-            // ------------------------------------
+            if (typeof actualizarFiltrosMapa === 'function') {
+                actualizarFiltrosMapa();
+            }
 
-            // 5. Actualiza los fondos azules
+            // 5. Actualiza los fondos y bordes rojos
             actualizarEstadoVisualFiltros();
         });
     }

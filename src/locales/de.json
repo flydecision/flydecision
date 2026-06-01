@@ -404,7 +404,8 @@
       "vientoRacha": "Wind- & Böengrenzwerte",
       "datosOpcionales": "Optionale Wetterdaten",
       "otrasOpciones": "Weitere Optionen",
-      "sobreActualizacion": "Updates der Wettermodelle"
+      "sobreActualizacion": "Updates der Wettermodelle",
+      "mapa": "Karte"
     },
     "guia": "Anleitung",
     "ayuda": "Hilfe",

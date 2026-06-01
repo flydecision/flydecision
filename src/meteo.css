@@ -3079,13 +3079,8 @@ h3 {
 
 /* 2. LOS OTROS 3 BOTONES SE PONEN A SU LADO EN PARALELO */
 .leaflet-top.leaflet-left .leaflet-control-geocoder,
-.leaflet-top.leaflet-left .leaflet-control-layers,
-.leaflet-top.leaflet-left .leaflet-control-config {
+.leaflet-top.leaflet-left .leaflet-control-layers {
     clear: none !important; /* Quita el salto de línea para que se pongan a la derecha del GPS */
-}
-/* El último botón no necesita margen derecho */
-.leaflet-top.leaflet-left .leaflet-control-config {
-    margin-right: 0 !important;
 }
 /* 2. COMPORTAMIENTO INTELIGENTE (Smart Wrapping) */
 
@@ -3093,10 +3088,6 @@ h3 {
 /* (El botón de Configuración bajará automáticamente acompañando al de Capas) */
 .leaflet-control-geocoder-expanded ~ .leaflet-control-layers {
     clear: left !important; 
-}
-/* Si el panel de CAPAS se expande, empuja el botón de CONFIGURACIÓN a la línea de abajo */
-.leaflet-control-layers-expanded ~ .leaflet-control-config {
-    clear: left !important;
 }
 
 /* ==========================================================================
@@ -3605,13 +3596,14 @@ h3 {
     width: 260px;
     box-sizing: border-box;
 }	
-.configuracion-control-vuelos-container {  
-    margin-bottom: 5px;
-    padding: 5px;
-}	
+.configuracion-control-vuelos-container,
 .configuracion-control-ultimovuelo-container {  
     margin-bottom: 5px;
-    padding: 5px;
+    padding: 0px 6px;
+    background-color: transparent !important; /* Transparente por defecto */
+    box-sizing: border-box;
+    transition: box-shadow 0.2s ease-in-out;
+    border-radius: 8px; /* Redondeado idéntico a las tarjetas del mapa */
 }	
 
 /* Ajuste fino posición del la clase original para que coincida con el punto exacto.Original: -20px */
