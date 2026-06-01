@@ -9997,7 +9997,9 @@ function inicializarMapaLeaflet() {
         }
         
         const bgStyle = bgColor ? ` style="background-color:${bgColor}"` : '';
-        const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}${elementoActividad}${escapeHtml(despegue)}</span>`;
+        
+        // Envolvemos el escapeHtml(despegue) en un span con clase "nombre-despegue-label"
+        const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}${elementoActividad}<span class="nombre-despegue-label">${escapeHtml(despegue)}</span></span>`;
 
         return L.divIcon({
             html: labelHTML,
