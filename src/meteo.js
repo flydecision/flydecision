@@ -4281,17 +4281,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 ${t('popupDespegue.region')} <b>${d.Región}</b><br>
                 ${t('popupDespegue.provincia')} <b>${d.Provincia}</b><br>
                 
-                <!-- 🟢 CORREGIDO: Orientación (Alineación vertical forzada) -->
+                <!-- 🟢 CORREGIDO: Subimos la rosa de los vientos con vertical-align positivo -->
                 <div style="margin-bottom: 2px;">
                     ${t('popupDespegue.orientacion')} 
-                    <span style="display: inline-block; vertical-align: -4px; margin-left: 4px;">${svgParaTooltip}</span> 
-                    <b>${traducirCadenaOrientacion(d["Orientación"])}</b>
+                    <span style="display: inline-block; vertical-align: -2px; margin-left: 4px;">${svgParaTooltip}</span> 
+                    <b style="vertical-align: 1px;">${traducirCadenaOrientacion(d["Orientación"])}</b>
                 </div>
                 
-                <!-- 🟢 CORREGIDO: Actividad (Alineación vertical forzada) -->
+                <!-- 🟢 CORREGIDO: Actividad -->
                 <div style="margin-bottom: 4px;">
                     ${t('popupDespegue.nivelActividad')} 
-                    <span style='display: inline-block; vertical-align: -2px; margin-left: 6px;'>${iconoActividadParaTooltip}</span> 
+                    <span style='margin-left: 6px;'>${iconoActividadParaTooltip}</span> 
                     <b>${d.Actividad || '?'}/5</b>
                 </div>
                 
@@ -5455,7 +5455,7 @@ function crearIconoActividad(nivelStr) {
 
     return `
         <span title="${t('tabla.tooltips.actividad') || 'Nivel de actividad'}: ${nivel}/5" 
-              style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; cursor: help; vertical-align: middle;">
+              style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; cursor: help; vertical-align: -2px;">
             ${barras}
         </span>
     `;
