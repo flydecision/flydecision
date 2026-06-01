@@ -1185,10 +1185,10 @@ function activarEdicionFavoritos() {
     if (btnFavsTog) {
         btnFavsTog.classList.remove('filtro-aplicado', 'activo');
         const heartSvg = btnFavsTog.querySelector('.heart-icon-svg');
-        if (heartSvg) {
-            heartSvg.setAttribute('fill', 'none');
-            heartSvg.setAttribute('stroke', 'currentColor');
-        }
+        // if (heartSvg) {
+        //     heartSvg.setAttribute('fill', 'none');
+        //     heartSvg.setAttribute('stroke', 'currentColor');
+        // }
     }
 
     // 📍 1. ABRIR FILTRO DISTANCIA
@@ -1252,14 +1252,14 @@ function filtroVerSoloFavoritos() {
         soloFavoritos = true; 
         btn.classList.add('filtro-aplicado');
         // Pintamos el corazón de rojo relleno
-        heartSvg.setAttribute('fill', '#ff0000');
-        heartSvg.setAttribute('stroke', '#ff0000');
+        //heartSvg.setAttribute('fill', '#ff0000');
+        //heartSvg.setAttribute('stroke', '#ff0000');
     } else {
         soloFavoritos = false;
         btn.classList.remove('filtro-aplicado');
         // Corazón vacío original
-        heartSvg.setAttribute('fill', 'none');
-        heartSvg.setAttribute('stroke', 'currentColor');
+        //heartSvg.setAttribute('fill', 'none');
+        //heartSvg.setAttribute('stroke', 'currentColor');
     }
 
     construir_tabla();
