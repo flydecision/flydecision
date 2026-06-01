@@ -5225,6 +5225,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
                 localStorage.removeItem('METEO_CRASH_COUNTER');
                 
+                // Restauramos el scroll guardado SOLO si no estamos en vista previa (un solo despegue)
+                if (!window.despegueTemporalParaTabla && window.guardarScrollY !== undefined && window.guardarScrollY !== null) {
+                    const wrapper = document.querySelector('.tabla-wrapper');
+                    if (wrapper) wrapper.scrollTop = window.guardarScrollY;
+                    window.guardarScrollY = null; // Reseteamos
+                    return; // Salimos sin hacer más scroll
+                }
+
                 // para que no haga scroll si vamos a contruir tabla desde el botón "Volver a edición de favoritos"
                 if (window.saltarScrollTop > 0) {
                     window.saltarScrollTop--;
@@ -5232,6 +5240,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 }
 
                 const vistaMapa = document.getElementById('vista-mapa');
+
                 if (vistaMapa && vistaMapa.style.display === 'flex') {
                     window.necesitaScrollTopMeteo = true;
                 } else {
@@ -5738,7 +5747,8 @@ function aplicarFiltrosVisuales(evitarScroll = false) {
 	}
 
     // 7. AUTO-SCROLL AL INICIO
-    if (!evitarScroll && (filtroLimpio.length > 0 || distanciaLimite < 9999)) {
+    // Si evitarScroll es true, o si tenemos un scroll guardado en memoria, bloqueamos el auto-scroll
+    if (window.guardarScrollY === null && !evitarScroll && (filtroLimpio.length > 0 || distanciaLimite < 9999)) {
         const wrapper = document.querySelector('.tabla-wrapper');
         const principal = document.querySelector('.contenedor-principal-tabla');
         const scrollOptions = { top: 0, behavior: 'smooth' };
@@ -7706,10 +7716,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
     window.volverAEdicionDesdeDesvio = function() {
         if (typeof map !== 'undefined' && map) map.closePopup();
 
-        // 1. Limpiamos SOLO el buscador (que es lo que aisló al despegue visualmente)
+        window.despegueTemporalParaTabla = null; 
+
+        // 2. Limpiamos el buscador (ahora llamará a aplicarFiltrosVisuales de forma segura)
         if (typeof limpiarBuscador === 'function') limpiarBuscador();
 
-        // 2. Restauramos banderas de modo edición
+        // 3. Restauramos banderas de modo edición
         modoEdicionFavoritos = true;
         soloFavoritos = false; 
         
@@ -7719,7 +7731,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             soloFavoritos = true;
         }
 
-        // 3. Restauramos las clases visuales de los menús
+        // 4. Restauramos las clases visuales de los menús
         document.body.classList.add('modo-edicion-tabla');
         const divMenu = document.getElementById('div-menu');
         if (divMenu) divMenu.classList.add('mode-editing');
@@ -7732,16 +7744,16 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const panelDistancia = document.getElementById("div-filtro-distancia");
         if (panelDistancia) panelDistancia.classList.add("activo");
 
-        // 4. Volvemos a la vista tabla (esto ocultará el botón automáticamente)
+        // 5. Volvemos a la vista tabla (esto ocultará el botón automáticamente)
         cambiarVista('tabla');
         
-        // 5. Devolvemos la luz al botón de Ajustes
+        // 6. Devolvemos la luz al botón de Ajustes
         const btnSettings = document.getElementById('nav-settings');
         if (btnSettings && typeof window.activarMenuInferior === 'function') {
             window.activarMenuInferior(btnSettings);
         }
 
-        // 6. Reconstruimos la tabla conservando la posición de scroll
+        // 7. Reconstruimos la tabla conservando la posición de scroll
         window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
         construir_tabla();
     };
@@ -8204,6 +8216,10 @@ window.cambiarVista = function(vista) {
     if (vista === 'mapa') {
         window.seHaExploradoMapa = true;
            
+        // Guardamos el scroll real de la tabla ANTES de ocultarla con display: none
+        const wrapper = document.querySelector('.tabla-wrapper');
+        window.guardarScrollY = wrapper ? wrapper.scrollTop : 0;
+
         // Resetear modo calendario al ir al mapa
         modoVerTodosLosDias = false;
         const btnCal = document.getElementById('btn-ver-todos-dias');
