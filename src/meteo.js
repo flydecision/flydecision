@@ -96,6 +96,42 @@ let autoSeleccionInicialHecha = false; // bandera de control para la selección 
 // Tiempo máximo (en milisegundos) que la app intentará descargar los datos si la conexión es lenta. Pasado este tiempo, forzará el uso de la caché offline.
 const TIMEOUT_DESCARGA_DATOS_MS = 5000;
 
+// Este mapa define el RANGO de 16 orientaciones que cubre cada una de las 8 selecciones del usuario.
+// Usamos el formato '_ORIENTACION' para coincidir con la metadata.
+const MAPA_RANGO_ORIENTACION = {
+    'N': ['_N', '_NNE', '_NNO'],
+    'NE': ['_NE', '_NNE', '_ENE'],
+    'E': ['_E', '_ENE', '_ESE'],
+    'SE': ['_SE', '_ESE', '_SSE'],
+    'S': ['_S', '_SSE', '_SSO'],
+    'SO': ['_SO', '_SSO', '_OSO'],
+    'O': ['_O', '_OSO', '_ONO'],
+    'NO': ['_NO', '_ONO', '_NNO']
+};
+
+/**
+ * Mapa de conversión: 
+ * Asigna las 16 orientaciones de la metadata a los 8 segmentos del icono
+ */
+const METADATA_TO_ICON_MAP = {
+    'N':   ['N'],
+    'NNE': ['N', 'NE'],
+    'NE':  ['NE'],
+    'ENE': ['NE', 'E'],
+    'E':   ['E'],
+    'ESE': ['E', 'SE'],
+    'SE':  ['SE'],
+    'SSE': ['SE', 'S'],
+    'S':   ['S'],
+    'SSO': ['S', 'SO'],
+    'SO':  ['SO'],
+    'OSO': ['SO', 'O'],
+    'O':   ['O'],
+    'ONO': ['O', 'NO'],
+    'NO':  ['NO'],
+    'NNO': ['N', 'NO']
+};
+
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
 // Asegúrate de que Capacitor está disponible
 // if (window.Capacitor && window.Capacitor.Plugins.StatusBar) {
@@ -9176,10 +9212,15 @@ function inicializarMapaLeaflet() {
 
         // 4. ACTUALIZAR CONTENEDORES INDIVIDUALES DEL MAPA
         
-        // Contenedor Orientación (Mantiene el color de segmento azul)
+        // Contenedor Orientación (Ahora transparente + borde rojo cuando esté activo)
         const contOrientacion = document.querySelector('.control-orientacion-container');
         if (contOrientacion) {
-            contOrientacion.style.backgroundColor = hayFiltroOrientacion ? ACTIVO_COLOR : INACTIVO_COLOR;
+            contOrientacion.style.backgroundColor = 'transparent';
+            if (hayFiltroOrientacion) {
+                contOrientacion.classList.add('borde-rojo-externo');
+            } else {
+                contOrientacion.classList.remove('borde-rojo-externo');
+            }
         }
 
         // Contenedor Vuelos (Mapa - Ahora transparente + borde rojo)
@@ -11464,45 +11505,6 @@ function inicializarMapaLeaflet() {
 
         return orientacionesActivas; // Retorna un array, e.g., ['N', 'NE']
     }
-
-    // Este mapa define el RANGO de 16 orientaciones que cubre cada una de las 8 selecciones del usuario.
-    // Usamos el formato '_ORIENTACION' para coincidir con la metadata.
-    const MAPA_RANGO_ORIENTACION = {
-        'N': ['_N', '_NNE', '_NNO'],
-        'NE': ['_NE', '_NNE', '_ENE'],
-        'E': ['_E', '_ENE', '_ESE'],
-        'SE': ['_SE', '_ESE', '_SSE'],
-        'S': ['_S', '_SSE', '_SSO'],
-        'SO': ['_SO', '_SSO', '_OSO'],
-        'O': ['_O', '_OSO', '_ONO'],
-        'NO': ['_NO', '_ONO', '_NNO']
-    };
-
-
-    /**
-     * Mapa de conversión: 
-     * Asigna las 16 orientaciones de la metadata (ej. 'NNE') 
-     * a los 8 segmentos del icono (ej. 'N' y 'NE').
-     */
-    const METADATA_TO_ICON_MAP = {
-        'N':   ['N'],
-        'NNE': ['N', 'NE'], // NNE está entre N y NE
-        'NE':  ['NE'],
-        'ENE': ['NE', 'E'],
-        'E':   ['E'],
-        'ESE': ['E', 'SE'],
-        'SE':  ['SE'],
-        'SSE': ['SE', 'S'],
-        'S':   ['S'],
-        'SSO': ['S', 'SO'],
-        'SO':  ['SO'],
-        'OSO': ['SO', 'O'],
-        'O':   ['O'],
-        'ONO': ['O', 'NO'],
-        'NO':  ['NO'],
-        'NNO': ['N', 'NO']  // NNO está entre N y NO
-    };
-
 
     /**
      * Crea un icono SVG de rosa de los vientos con 16 segmentos visuales.

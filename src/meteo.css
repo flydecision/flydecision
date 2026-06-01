@@ -3365,11 +3365,12 @@ h3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
     grid-template-rows: repeat(3, 1fr);
-    width: 96px;   /* Subimos de 80 a 96 */
-    height: 96px;  /* Subimos de 80 a 96 */
+    width: 96px;   
+    height: 96px;  
     border-radius: 5px;
-    margin-left: 15px; /* Ajusta según prefieras el centrado */
-    gap: 1px;      /* Un pequeño espacio entre botones ayuda a la legibilidad */
+    margin-left: auto !important;  /* Centrado automático del grid */
+    margin-right: auto !important; /* Centrado automático del grid */
+    gap: 1px;      
 }
 
 /* 2. Estilo del contenedor de cada dirección (LABEL) */
@@ -3573,19 +3574,27 @@ h3 {
     overflow: hidden;
 }
 .control-orientacion-container {  
-    margin-bottom: 5px;
-    margin-top: 5px;
-	padding: 5px;
+    display: block !important;
+    width: fit-content !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-bottom: 9px !important;
+    margin-top: 8px !important;
+    padding: 5px 5px !important;
+    background-color: transparent !important;
+    border-radius: 8px;
+    transition: box-shadow 0.2s ease-in-out;
+    box-sizing: border-box;
 }	
-@media (max-width: 768px) {
-	.control-orientacion-container {
-		padding-bottom: 8px;
-	}
+
+/* Centrar el texto "Orientación:" dentro del contenedor */
+.control-orientacion-container > div:first-child {
+    text-align: center !important;
 }
 
 .control-vuelos-container,
 .control-ultimovuelo-container {  
-    width: 95% !important;      /* Ocupar el 95% de la anchura de su contenedor padre */
+    width: 96% !important;      /* Ocupar el 95% de la anchura de su contenedor padre */
     margin-left: auto !important;  /* Centrado perfecto horizontal */
     margin-right: auto !important; /* Centrado perfecto horizontal */
     margin-top: 0 !important;
