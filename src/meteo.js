@@ -5453,9 +5453,16 @@ function crearIconoActividad(nivelStr) {
         barras += `<span style="display: inline-block; width: 3px; height: ${alturas[i]}px; background-color: ${color}; border-radius: 1.5px 1.5px 0 0;"></span>`;
     }
 
+   // 1. Extraemos la traducción completa
+    const textoCrudo = t('tabla.tooltips.tooltipNivelDeActividad');
+
+    // 2. Reemplazamos TODAS las comillas dobles por simples para que no rompan el atributo HTML
+    const textoTooltip = textoCrudo.replaceAll('"', "'");
+
     return `
-        <span title="${t('tabla.tooltips.actividad') || 'Nivel de actividad'}: ${nivel}/5" 
-              style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; cursor: help; vertical-align: -2px;">
+        <span data-tippy-content="${textoTooltip}"
+            title="${t('tabla.tooltips.actividad') || 'Nivel de actividad'}: ${nivel}/5" 
+            style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; cursor: help; vertical-align: -2px; outline: none;" tabindex="0">
             ${barras}
         </span>
     `;
