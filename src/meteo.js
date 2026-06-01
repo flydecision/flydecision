@@ -7163,13 +7163,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
             // --- PRIORIDAD 2: Modo Edición Favoritos ---
             if (window.venirDeEdicionActiva === true) {
-                if (!modoEdicionFavoritos) {
+                // Detectamos si la usuaria está físicamente viendo el mapa
+                const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+                
+                // Si no está en modo edición (vista de desvío tabla) O si está en el mapa, 
+                // queremos VOLVER a la pantalla de edición de favoritos de la tabla
+                if (!modoEdicionFavoritos || enMapa) {
                     volverAEdicionDesdeDesvio();
                 } else {
+                    // Caso normal: Estamos en la TABLA en modo edición y queremos SALIR del modo edición al pulsar atrás
                     const esPrimeraVisita = !localStorage.getItem("METEO_PRIMERA_VISITA_HECHA");
                     const sinFavoritos = obtenerFavoritos().length === 0;
                     if (esPrimeraVisita && sinFavoritos) {
-                        // Deshacemos TODO el estado de edición igual que finalizarEdicionFavoritos
                         modoEdicionFavoritos = false;
                         soloFavoritos = true;
                         window.venirDeEdicionActiva = false;
