@@ -4271,13 +4271,30 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // 1. Preparamos el nombre para que sea seguro dentro de la función JS (escapa comillas simples)
             const safeDespegue = d.Despegue.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
+            // Generamos el micro-gráfico de actividad antes de montar el tooltip
+            const iconoActividad = d.Actividad ? crearIconoActividad(d.Actividad) : '';
+            const iconoActividadParaTooltip = iconoActividad.replaceAll('"', "'");
+
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
                 <b><span style='font-size: 18px; padding-right: 20px;'>🪂 ${d.Despegue}</b></span><br>
                 ${t('popupDespegue.region')} <b>${d.Región}</b><br>
                 ${t('popupDespegue.provincia')} <b>${d.Provincia}</b><br>
-                ${t('popupDespegue.orientacion')} <b>${svgParaTooltip} <span style='vertical-align:middle;'>${traducirCadenaOrientacion(d["Orientación"])}</span></b><br>
-                ${t('popupDespegue.nivelActividad')} <b>${d.Actividad || '?'}/5</b><br>
+                
+                <!-- 🟢 CORREGIDO: Subimos la rosa de los vientos con vertical-align positivo -->
+                <div style="margin-bottom: 2px;">
+                    ${t('popupDespegue.orientacion')} 
+                    <span style="display: inline-block; vertical-align: -2px; margin-left: 4px;">${svgParaTooltip}</span> 
+                    <b style="vertical-align: 1px;">${traducirCadenaOrientacion(d["Orientación"])}</b>
+                </div>
+                
+                <!-- 🟢 CORREGIDO: Actividad -->
+                <div style="margin-bottom: 4px;">
+                    ${t('popupDespegue.nivelActividad')} 
+                    <span style='margin-left: 6px;'>${iconoActividadParaTooltip}</span> 
+                    <b>${d.Actividad || '?'}/5</b>
+                </div>
+                
                 ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
                 ⛅ <a href='https://meteo-parapente.com/#/${latitud},${longitud},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
                 ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a>
@@ -4327,9 +4344,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     </svg>
                 </button>
             `;
-
-            // Generamos el micro-gráfico de actividad
-            const iconoActividad = d.Actividad ? crearIconoActividad(d.Actividad) : '';
 
             // Siempre se muestra en edición, o si hay más de 7 filas en vista normal
             const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 7);
@@ -5441,7 +5455,7 @@ function crearIconoActividad(nivelStr) {
 
     return `
         <span title="${t('tabla.tooltips.actividad') || 'Nivel de actividad'}: ${nivel}/5" 
-              style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; cursor: help; vertical-align: middle;">
+              style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; cursor: help; vertical-align: -2px;">
             ${barras}
         </span>
     `;
