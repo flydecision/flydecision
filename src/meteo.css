@@ -2766,6 +2766,35 @@ details.config-accordion .accordion-content {
 	background-color: #ffffff;
 	box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
 	border: 1.8px solid #007AFF;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    max-width: 150px !important;
+    box-sizing: border-box;
+    overflow: visible !important; /* Crucial: Mantiene visible el triángulo del pin */
+}
+
+/* Reglas de recorte estricto para el nombre del despegue dentro del letrero */
+.nombre-despegue-label {
+    display: inline-block !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important; /* Añade los puntos suspensivos (...) si no cabe */
+    white-space: nowrap !important;
+    flex: 1 !important;
+    min-width: 0 !important; /* Evita que flexbox ignore el encogimiento */
+    vertical-align: middle !important;
+    text-align: left !important;
+    margin-left: 2px;
+}
+
+.label-large-despegues svg {
+    margin-right: 6px !important; 
+    position: relative !important;
+    top: 1px !important;
+}
+.label-large-despegues > span:not(.nombre-despegue-label) {
+    margin-left: 2px !important;  /* Reseteamos y afinamos el margen izquierdo */
+    margin-right: 6px !important; /* Añadimos espacio de seguridad antes del texto */
 }
 
 .label-large-despegues::after {
