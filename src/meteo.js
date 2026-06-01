@@ -1548,40 +1548,67 @@ function toggleFavorito(id) {
     return esNuevoFavorito;
 }
 
-window.toggleFavoritoDesdeTabla = function(id) {
-        // Miramos si actualmente es favorito o no
-        const esFavoritoActual = obtenerFavoritos().map(Number).includes(Number(id));
+window.toggleFavoritoDesdeTabla = function(id, btnElement) {
+    // Miramos si actualmente es favorito o no
+    const esFavoritoActual = obtenerFavoritos().map(Number).includes(Number(id));
 
-        if (!esFavoritoActual) {
-            // 🟢 ACCIÓN: AÑADIR (Instantáneo y sin fricción)
-            toggleFavorito(id);
-            
-            // Feedback físico en la app
-            if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Haptics) {
-                Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
+    // Función interna que hace el cambio visual en el DOM al instante (0.001s)
+    const ejecutarCambioDOM = () => {
+        // 1. Guardar en memoria y actualizar contador general
+        const esNuevoFavorito = toggleFavorito(id); 
+        
+        // Feedback físico en la app
+        if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Haptics) {
+            Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
+        }
+
+        // 2. Modificar el botón exacto que hemos tocado (Sin recargar toda la tabla)
+        if (btnElement) {
+            btnElement.title = esNuevoFavorito ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
+            const svg = btnElement.querySelector('svg');
+            if (svg) {
+                svg.setAttribute('fill', esNuevoFavorito ? '#e00' : 'none');
+                svg.setAttribute('stroke', esNuevoFavorito ? '#e00' : '#333');
             }
             
-            // Reconstruimos la tabla en modo silencioso (sin loader) para que el corazón cambie rápido
-            construir_tabla(false, true); 
-
-        } else {
-            // ACCIÓN: QUITAR (Pedimos confirmación)
-            const despegue = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(id));
-            const nombre = despegue ? despegue.Despegue : '';
-            const provincia = despegue ? despegue.Provincia : '';
-            
-            const titulo = '🤍 ' + t('favoritos.quitarDeFavoritos'); 
-            const mensaje = `<span style="font-size: 1.2em;"><b>${nombre}</b><br>(${provincia})</span>`;
-
-            // Registramos la acción de confirmación
-            window._confirmarToggleFavorito = function() {
-                toggleFavorito(id);
-                construir_tabla(false, true); // Silencioso
-            };
-
-            // Mostramos el modal
-            mensajeModalAceptarCancelar(titulo, mensaje, '_confirmarToggleFavorito');
+            // 3. Poner la línea superior de la fila (clase "favorito")
+            let fila = btnElement.closest('tr');
+            if (fila) {
+                fila.classList.toggle('favorito', esNuevoFavorito);
+                // Buscamos las siguientes filas del mismo despegue
+                let siguiente = fila.nextElementSibling;
+                while (siguiente && !siguiente.classList.contains('fila-inicio-despegue')) {
+                    siguiente.classList.toggle('favorito', esNuevoFavorito);
+                    siguiente = siguiente.nextElementSibling;
+                }
+            }
         }
+
+        // 4. Refrescar contadores superiores SIN forzar scroll arriba
+        aplicarFiltrosVisuales(true); 
+    };
+
+    if (!esFavoritoActual) {
+        // AÑADIR (Instantáneo y sin fricción)
+        ejecutarCambioDOM();
+
+    } else {
+        // QUITAR (Pedimos confirmación)
+        const despegue = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(id));
+        const nombre = despegue ? despegue.Despegue : '';
+        const provincia = despegue ? despegue.Provincia : '';
+        
+        const titulo = '🤍 ' + t('favoritos.quitarDeFavoritos'); 
+        const mensaje = `<span style="font-size: 1.2em;"><b>${nombre}</b><br>(${provincia})</span>`;
+
+        // Registramos la acción de confirmación
+        window._confirmarToggleFavorito = function() {
+            ejecutarCambioDOM();
+        };
+
+        // Mostramos el modal
+        mensajeModalAceptarCancelar(titulo, mensaje, '_confirmarToggleFavorito');
+    }
 };
 
 // Marcar/Desmarcar favoritos masivamente mediante la columna Favoritos
@@ -4335,7 +4362,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-favorito-tabla"
                     style="position: absolute; bottom: 2px; left: 60px;"
-                    onclick="toggleFavoritoDesdeTabla(${d.ID}); return false;"
+                    onclick="toggleFavoritoDesdeTabla(${d.ID}, this); return false;"
                     title="${esFavoritoBtn  ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="${esFavoritoBtn  ? '#e00' : 'none'}" stroke="${esFavoritoBtn  ? '#e00' : '#333'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
@@ -5476,7 +5503,7 @@ function crearIconoActividad(nivelStr) {
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------
 
-function aplicarFiltrosVisuales() {
+function aplicarFiltrosVisuales(evitarScroll = false) {
     // 1. Obtener valores de Búsqueda de Texto
     const input = document.getElementById('buscador-despegues-provincias');
     const filtro = input ? input.value.toLowerCase() : "";
@@ -5711,7 +5738,7 @@ function aplicarFiltrosVisuales() {
 	}
 
     // 7. AUTO-SCROLL AL INICIO
-    if (filtroLimpio.length > 0 || distanciaLimite < 9999) {
+    if (!evitarScroll && (filtroLimpio.length > 0 || distanciaLimite < 9999)) {
         const wrapper = document.querySelector('.tabla-wrapper');
         const principal = document.querySelector('.contenedor-principal-tabla');
         const scrollOptions = { top: 0, behavior: 'smooth' };
@@ -5719,7 +5746,7 @@ function aplicarFiltrosVisuales() {
         if (principal) principal.scrollTo(scrollOptions);
         window.scrollTo(scrollOptions);
     }
-    }
+}
 
 // Función auxiliar para el botón del buscador
 function agregarDespegueDesdeBuscador(idDespegue) {
