@@ -4281,14 +4281,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 ${t('popupDespegue.region')} <b>${d.Región}</b><br>
                 ${t('popupDespegue.provincia')} <b>${d.Provincia}</b><br>
                 
-                <!-- 🟢 CORREGIDO: Subimos la rosa de los vientos con vertical-align positivo -->
                 <div style="margin-bottom: 2px;">
                     ${t('popupDespegue.orientacion')} 
-                    <span style="display: inline-block; vertical-align: -2px; margin-left: 4px;">${svgParaTooltip}</span> 
+                    <span style="display: inline-block; vertical-align: 2px; margin-left: 4px;">${svgParaTooltip}</span> 
                     <b style="vertical-align: 1px;">${traducirCadenaOrientacion(d["Orientación"])}</b>
                 </div>
                 
-                <!-- 🟢 CORREGIDO: Actividad -->
                 <div style="margin-bottom: 4px;">
                     ${t('popupDespegue.nivelActividad')} 
                     <span style='margin-left: 6px;'>${iconoActividadParaTooltip}</span> 
@@ -4345,14 +4343,28 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 </button>
             `;
 
+            // Generamos el micro-gráfico de actividad limpio (la función base ya no lleva el data-tippy-content)
+            const iconoActividadLimpio = d.Actividad ? crearIconoActividad(d.Actividad) : '';
+
             // Siempre se muestra en edición, o si hay más de 7 filas en vista normal
             const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 7);
+
+            // Preparamos el texto del tooltip limpiando las comillas dobles
+            const textoCrudoActividad = t('tabla.tooltips.tooltipNivelDeActividad');
+            const tooltipActividadSeguro = textoCrudoActividad ? textoCrudoActividad.replaceAll('"', "'") : '';
 
             // Preparamos el HTML de los iconos centrales según el espacio/modo
             const htmlIconosCentrales = mostrarRosayActividad ? `
                 <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; margin-bottom: 5px;">
                     <span class="guia-rosa-vientos" style="padding-top: 3px; margin-right: 12px;">${svgOrientaciones}</span>
-                    <span class="guia-nivel-actividad">${iconoActividad}</span>
+                    
+                    <!-- CONTENEDOR TIPPY EXCLUSIVO PARA LA TABLA -->
+                    <span class="guia-nivel-actividad" 
+                          data-tippy-content="${tooltipActividadSeguro}"
+                          title="${t('tabla.tooltips.actividad') || 'Nivel de actividad'}: ${d.Actividad || '?'}/5"
+                          style="outline: none; margin-left: -3px;" tabindex="0">
+                        ${iconoActividadLimpio}
+                    </span>
                 </span>
             ` : '';
 
@@ -5454,8 +5466,7 @@ function crearIconoActividad(nivelStr) {
     }
 
     return `
-        <span title="${t('tabla.tooltips.actividad') || 'Nivel de actividad'}: ${nivel}/5" 
-              style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; cursor: help; vertical-align: -2px;">
+        <span style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; cursor: help; vertical-align: -2px; outline: none;" tabindex="0">
             ${barras}
         </span>
     `;
