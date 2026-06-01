@@ -3583,19 +3583,20 @@ h3 {
 	}
 }
 
-.control-vuelos-container {
-    box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
-	display: block; /* La convierte en un elemento de bloque que ocupa toda la línea */
-    margin-bottom: 5px; /* Opcional: añade un pequeño espacio entre el texto y el slider */	
-    padding: 5px;
-    width: 260px;
-}
+.control-vuelos-container,
 .control-ultimovuelo-container {  
+    width: 95% !important;      /* Ocupar el 95% de la anchura de su contenedor padre */
+    margin-left: auto !important;  /* Centrado perfecto horizontal */
+    margin-right: auto !important; /* Centrado perfecto horizontal */
+    margin-top: 0 !important;
     margin-bottom: 5px;
-    padding: 5px;
-    width: 260px;
+    padding: 0px 6px !important;
+    background-color: transparent !important; /* Forzar transparencia por defecto */
     box-sizing: border-box;
-}	
+    border-radius: 8px; /* Esquinas redondeadas para acompañar la sombra roja */
+    transition: box-shadow 0.2s ease-in-out;
+}
+
 .configuracion-control-vuelos-container,
 .configuracion-control-ultimovuelo-container {  
     margin-bottom: 5px;

@@ -9167,38 +9167,47 @@ function inicializarMapaLeaflet() {
         const hayFiltroAnio = indiceUltimoVuelo !== 0;
 
         // 2. COMPROBAR CONFIGURACIÓN INICIAL (Ajustes Generales)
-        // Evaluamos si el índice guardado es mayor que 0 (0 es inactivo)
         const hayConfiguracionInicialFiltroVuelos = parseInt(localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0', 10) > 0;
         const hayConfiguracionInicialFiltroUltimoVuelo = parseInt(localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0', 10) > 0;
 
-        // 3. DEFINIR COLORES Y ESTILOS PARA LOS ELEMENTOS DEL MAPA
+        // 3. COLORES PARA LA ROSA DE LOS VIENTOS (Mantiene el clásico azul/blanco)
         const ACTIVO_COLOR = '#0404ff30';
         const INACTIVO_COLOR = '#ffffff';
 
         // 4. ACTUALIZAR CONTENEDORES INDIVIDUALES DEL MAPA
         
-        // Contenedor Orientación
+        // Contenedor Orientación (Mantiene el color de segmento azul)
         const contOrientacion = document.querySelector('.control-orientacion-container');
         if (contOrientacion) {
             contOrientacion.style.backgroundColor = hayFiltroOrientacion ? ACTIVO_COLOR : INACTIVO_COLOR;
         }
 
-        // Contenedor Vuelos
+        // Contenedor Vuelos (Mapa - Ahora transparente + borde rojo)
         const contVuelos = document.querySelector('.control-vuelos-container');
         if (contVuelos) {
-            contVuelos.style.backgroundColor = hayFiltroVuelos ? ACTIVO_COLOR : INACTIVO_COLOR;
+            contVuelos.style.backgroundColor = 'transparent';
+            if (hayFiltroVuelos) {
+                contVuelos.classList.add('borde-rojo-externo');
+            } else {
+                contVuelos.classList.remove('borde-rojo-externo');
+            }
         }
 
-        // Contenedor Último Vuelo
+        // Contenedor Último Vuelo (Mapa - Ahora transparente + borde rojo)
         const contUltimoVuelo = document.querySelector('.control-ultimovuelo-container');
         if (contUltimoVuelo) {
-            contUltimoVuelo.style.backgroundColor = hayFiltroAnio ? ACTIVO_COLOR : INACTIVO_COLOR;
+            contUltimoVuelo.style.backgroundColor = 'transparent';
+            if (hayFiltroAnio) {
+                contUltimoVuelo.classList.add('borde-rojo-externo');
+            } else {
+                contUltimoVuelo.classList.remove('borde-rojo-externo');
+            }
         }
 
-        // 5. ACTUALIZAR LOS DESLIZADORES DEL ACORDEÓN (Transparentes + .borde-rojo-externo)
+        // 5. ACTUALIZAR LOS DESLIZADORES DEL ACORDEÓN (Transparentes + borde rojo)
         const contConfigVuelos = document.querySelector('.configuracion-control-vuelos-container');
         if (contConfigVuelos) {
-            contConfigVuelos.style.backgroundColor = 'transparent'; // Fondo transparente forzado
+            contConfigVuelos.style.backgroundColor = 'transparent';
             if (hayConfiguracionInicialFiltroVuelos) {
                 contConfigVuelos.classList.add('borde-rojo-externo');
             } else {
@@ -9208,7 +9217,7 @@ function inicializarMapaLeaflet() {
 
         const contConfigUltimoVuelo = document.querySelector('.configuracion-control-ultimovuelo-container');
         if (contConfigUltimoVuelo) {
-            contConfigUltimoVuelo.style.backgroundColor = 'transparent'; // Fondo transparente forzado
+            contConfigUltimoVuelo.style.backgroundColor = 'transparent';
             if (hayConfiguracionInicialFiltroUltimoVuelo) {
                 contConfigUltimoVuelo.classList.add('borde-rojo-externo');
             } else {
@@ -9228,7 +9237,6 @@ function inicializarMapaLeaflet() {
             }
         }
     }
-
 
     // 🛑 Listener que asegura que se pueda cambiar el estilo del popup original que ofrece Leaflet. Esa función no reemplaza clases, añade una clase adicional a los elementos internos del popup que Leaflet genera dinámicamente (.leaflet-popup-content-wrapper y .leaflet-popup-tip). Leaflet crea esos nodos cada vez que se abre un popup, por eso no puedes modificarlos con CSS global antes: no existen hasta que el popup se muestra. El map.on('popupopen', …) intercepta ese momento y añade tu clase personalizada (por ejemplo, popup-despegues). Se puede añadir más clases. Objetivo: aplicar un estilo distinto solo a ciertos popups sin afectar al resto.
     map.on('popupopen', function (e) {
