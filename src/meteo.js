@@ -1185,10 +1185,10 @@ function activarEdicionFavoritos() {
     if (btnFavsTog) {
         btnFavsTog.classList.remove('filtro-aplicado', 'activo');
         const heartSvg = btnFavsTog.querySelector('.heart-icon-svg');
-        if (heartSvg) {
-            heartSvg.setAttribute('fill', 'none');
-            heartSvg.setAttribute('stroke', 'currentColor');
-        }
+        // if (heartSvg) {
+        //     heartSvg.setAttribute('fill', 'none');
+        //     heartSvg.setAttribute('stroke', 'currentColor');
+        // }
     }
 
     // 📍 1. ABRIR FILTRO DISTANCIA
@@ -1252,14 +1252,14 @@ function filtroVerSoloFavoritos() {
         soloFavoritos = true; 
         btn.classList.add('filtro-aplicado');
         // Pintamos el corazón de rojo relleno
-        heartSvg.setAttribute('fill', '#ff0000');
-        heartSvg.setAttribute('stroke', '#ff0000');
+        //heartSvg.setAttribute('fill', '#ff0000');
+        //heartSvg.setAttribute('stroke', '#ff0000');
     } else {
         soloFavoritos = false;
         btn.classList.remove('filtro-aplicado');
         // Corazón vacío original
-        heartSvg.setAttribute('fill', 'none');
-        heartSvg.setAttribute('stroke', 'currentColor');
+        //heartSvg.setAttribute('fill', 'none');
+        //heartSvg.setAttribute('stroke', 'currentColor');
     }
 
     construir_tabla();
@@ -7163,13 +7163,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
             // --- PRIORIDAD 2: Modo Edición Favoritos ---
             if (window.venirDeEdicionActiva === true) {
-                if (!modoEdicionFavoritos) {
+                // Detectamos si la usuaria está físicamente viendo el mapa
+                const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+                
+                // Si no está en modo edición (vista de desvío tabla) O si está en el mapa, 
+                // queremos VOLVER a la pantalla de edición de favoritos de la tabla
+                if (!modoEdicionFavoritos || enMapa) {
                     volverAEdicionDesdeDesvio();
                 } else {
+                    // Caso normal: Estamos en la TABLA en modo edición y queremos SALIR del modo edición al pulsar atrás
                     const esPrimeraVisita = !localStorage.getItem("METEO_PRIMERA_VISITA_HECHA");
                     const sinFavoritos = obtenerFavoritos().length === 0;
                     if (esPrimeraVisita && sinFavoritos) {
-                        // Deshacemos TODO el estado de edición igual que finalizarEdicionFavoritos
                         modoEdicionFavoritos = false;
                         soloFavoritos = true;
                         window.venirDeEdicionActiva = false;
