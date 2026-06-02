@@ -86,21 +86,21 @@
     "errorArchivo": "⚠️ Erro ao procesar o ficheiro.",
     "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENCIÓN:</b> Importar favoritos substituirá os actuais.</b><br><br>Se desexas conservalos, cancela esta mensaxe e utiliza o botón 💾 <i>Exportar favoritos</i>.</p>",
     "exportar": {
-      "tituloDialog": "💾 Exportar favoritos",
-      "mensajeDialog": "\nCambia o nome do ficheiro ou acepta este:",
-      "guardar": "Gardar",
+      "tituloDialog": "💾 Gardar despegues favoritos",
+      "mensajeDialog": "Preme 'Gardar en...' para elixir un cartafol no teu móbil ou enviar o ficheiro.",
+      "guardar": "Gardar en...",
       "cancelar": "Cancelar",
       "okTitulo": "✅ Favoritos gardados",
-      "okTextoShare": "Aquí tes os meus despegues favoritos de Fly Decision:",
+      "okTextoShare": "Os meus despegues favoritos de Fly Decision",
       "okMensaje": "Gardouse no cartafol 'Documentos'. Queres compartilo?",
       "siCompartir": "Si, compartir",
       "noCompartir": "Non",
-      "tituloShare": "As miñas engalaxes favoritas de Fly Decision",
-      "textoShare": "Aquí tes as miñas engalaxes favoritas",
-      "dialogTitle": "Compartir con...",
-      "errorShare": "Non se puido abrir o menú de compartir. Por favor, proba con outro método.",
+      "tituloShare": "Exportar despegues favoritos",
+      "textoShare": "Os meus despegues favoritos de Fly Decision",
+      "dialogTitle": "Gardar en...",
+      "errorShare": "Non se puido abrir o menú de compartir. Tenta usar outro método.",
       "sinShare": "O teu dispositivo non permite compartir ficheiros directamente. Asegúrate de ter Telegram instalado.",
-      "errorGuardar": "Vaia, algo saíu mal: "
+      "errorGuardar": "Vaites, algo fallou: "
     }
   },
 

@@ -86,21 +86,21 @@
     "errorArchivo": "⚠️ Errorea fitxategia prozesatzean.",
     "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ KONTUZ:</b> Gogokoak inportatzean egungoak ordezkatuko dira.</b><br><br>Gorde nahi badituzu, ezeztatu mezu hau eta erabili 💾 <i>Gogokoak esportatu</i> botoia.</p>",
     "exportar": {
-      "tituloDialog": "💾 Gogokoak esportatu",
-      "mensajeDialog": "\nAldatu fitxategiaren izena edo onartu hau:",
-      "guardar": "Gorde",
+      "tituloDialog": "💾 Gogoko aireratzeak gorde",
+      "mensajeDialog": "Sakatu 'Hemen gorde...' zure mugikorrean karpeta bat aukeratzeko edo fitxategia bidaltzeko.",
+      "guardar": "Hemen gorde...",
       "cancelar": "Utzi",
       "okTitulo": "✅ Gogokoak gordeta",
-      "okTextoShare": "Hemen dituzu nire Fly Decision-eko gogoko aireratzeak:",
+      "okTextoShare": "Nire Fly Decision-eko gogoko aireratzeak",
       "okMensaje": "'Dokumentuak' karpetan gorde da. Partekatu nahi duzu?",
       "siCompartir": "Bai, partekatu",
       "noCompartir": "Ez",
-      "tituloShare": "Nire Fly Decision aireratze gogokoak",
-      "textoShare": "Hona hemen nire aireratze gogokoak",
-      "dialogTitle": "Partekatu honekin...",
-      "errorShare": "Ezin izan da partekatzeko menua ireki. Mesedez, saiatu beste metodo batekin.",
-      "sinShare": "Zure gailuak ez du onartzen fitxategiak zuzenean partekatzea. Ziurtatu Telegram instalatuta duzula.",
-      "errorGuardar": "Ene, zerbait gaizki joan da: "
+      "tituloShare": "Gogoko aireratzeak esportatu",
+      "textoShare": "Nire Fly Decision-eko gogoko aireratzeak",
+      "dialogTitle": "Hemen gorde...",
+      "errorShare": "Ezin izan da partekatzeko menua ireki. Saiatu beste metodo bat erabiltzen.",
+      "sinShare": "Zure gailuak ez du fitxategiak zuzenean partekatzeko aukerarik ematen. Ziurtatu Telegram instalatuta duzula.",
+      "errorGuardar": "Ene, zerbaitek huts egin du: "
     }
   },
 

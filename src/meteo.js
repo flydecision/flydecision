@@ -1459,33 +1459,18 @@ async function guardarFavoritos() {
         try {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
 
-            const { value, cancelled } = await Dialog.prompt({
+            // 1. Cuadro de diálogo previo para confirmación de exportación
+            const confirmResult = await Dialog.confirm({
                 title: t('favoritos.exportar.tituloDialog'),
                 message: t('favoritos.exportar.mensajeDialog'),
-                inputText: nombreArchivo,
                 okButtonTitle: t('favoritos.exportar.guardar'),
                 cancelButtonTitle: t('favoritos.exportar.cancelar')
             });
 
-            if (cancelled) return;
+            // Si la usuaria cancela, detenemos el proceso aquí
+            if (!confirmResult.value) return;
 
-            if (value && value.trim() !== '') {
-                nombreArchivo = value.trim();
-                if (!nombreArchivo.toLowerCase().endsWith('.txt')) {
-                    nombreArchivo += '.txt';
-                }
-            }
-
-            // 1. Guardamos en la carpeta pública "Documentos" para la persona usuaria
-            await Filesystem.writeFile({
-                path: nombreArchivo, 
-                data: contenido,
-                directory: 'DATA', 
-                encoding: 'utf8',
-                recursive: true
-            });
-
-            // 2. Guardamos una copia temporal en la Caché obligatoria para el menú "Compartir" de Android
+            // 2. Guardamos la copia temporal en la Caché en segundo plano
             const resultCache = await Filesystem.writeFile({
                 path: nombreArchivo, 
                 data: contenido,
@@ -1494,31 +1479,21 @@ async function guardarFavoritos() {
                 recursive: true
             });
 
-            const confirmResult = await Dialog.confirm({
-                title: t('favoritos.exportar.okTitulo'),
-                text: t('favoritos.exportar.okTextoShare'),
-                message: `\n${nombreArchivo}\n\n${t('favoritos.exportar.okMensaje')}`,
-                okButtonTitle: t('favoritos.exportar.siCompartir'),
-                cancelButtonTitle: t('favoritos.exportar.noCompartir')
-            });
-
-            if (confirmResult.value) {
-                const canShare = await Share.canShare();
-                if (canShare.value) {
-                    try {
-                        await Share.share({
-                            title: t('favoritos.exportar.tituloShare'),
-                            text: t('favoritos.exportar.textoShare'),
-                            files: [resultCache.uri], 
-                            dialogTitle: t('favoritos.exportar.dialogTitle'),
-                        });
-                    } catch (shareError) {
-                        console.error("Error nativo al compartir:", shareError);
-                        alert("Could not open the share menu. Try using another method. / No se pudo abrir el menú de compartir. Intenta usar otro método.");
-                    }
-                } else {
-                    alert("Your device does not support sharing files directly. / Tu dispositivo no permite compartir archivos directamente.");
+            // 3. Abrimos DIRECTAMENTE el menú de compartir/guardar de Android 
+            const canShare = await Share.canShare();
+            if (canShare.value) {
+                try {
+                    await Share.share({
+                        title: t('favoritos.exportar.tituloShare'),
+                        text: t('favoritos.exportar.textoShare'),
+                        files: [resultCache.uri], 
+                        dialogTitle: t('favoritos.exportar.dialogTitle'),
+                    });
+                } catch (shareError) {
+                    alert("Cancelled / Cancelado.");
                 }
+            } else {
+                alert("Your device does not support sharing files directly. / Tu dispositivo no permite compartir archivos directamente.");
             }
 
         } catch (error) {
