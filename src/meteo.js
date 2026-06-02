@@ -1476,6 +1476,7 @@ async function guardarFavoritos() {
                 }
             }
 
+            // 1. Guardamos en la carpeta pública "Documentos" para la persona usuaria
             await Filesystem.writeFile({
                 path: nombreArchivo, 
                 data: contenido,
@@ -1484,6 +1485,7 @@ async function guardarFavoritos() {
                 recursive: true
             });
 
+            // 2. Guardamos una copia temporal en la Caché obligatoria para el menú "Compartir" de Android
             const resultCache = await Filesystem.writeFile({
                 path: nombreArchivo, 
                 data: contenido,
@@ -1505,17 +1507,17 @@ async function guardarFavoritos() {
                 if (canShare.value) {
                     try {
                         await Share.share({
-                            title: 'Mis despegues favoritos de Fly Decision',
-                            text: 'Aquí tienes mis despegues favoritos:',
+                            title: t('favoritos.exportar.tituloShare'),
+                            text: t('favoritos.exportar.textoShare'),
                             files: [resultCache.uri], 
-                            dialogTitle: 'Compartir con...',
+                            dialogTitle: t('favoritos.exportar.dialogTitle'),
                         });
                     } catch (shareError) {
                         console.error("Error nativo al compartir:", shareError);
-                        alert("No se pudo abrir el menú de compartir. Intenta usar otro método.");
+                        alert("Could not open the share menu. Try using another method. / No se pudo abrir el menú de compartir. Intenta usar otro método.");
                     }
                 } else {
-                    alert("Tu dispositivo no permite compartir archivos directamente. Asegúrate de tener Telegram instalado.");
+                    alert("Your device does not support sharing files directly. / Tu dispositivo no permite compartir archivos directamente.");
                 }
             }
 
@@ -2739,11 +2741,11 @@ async function exportarConfiguracion() {
         try {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
             const { value, cancelled } = await Dialog.prompt({
-                title: '💾 Exportar configuración',
-                message: '\nSe exportarán tus favoritos y toda tu configuración (límites de viento, opciones visuales, etc.).',
+                title: t('ajustes.exportar.tituloDialog'),
+                message: t('ajustes.exportar.mensajeDialog'),
                 inputText: nombreArchivo,
-                okButtonTitle: 'Guardar',
-                cancelButtonTitle: 'Cancelar'
+                okButtonTitle: t('ajustes.exportar.guardar'),
+                cancelButtonTitle: t('ajustes.exportar.cancelar')
             });
 
             if (cancelled) return;
@@ -2766,24 +2768,26 @@ async function exportarConfiguracion() {
             });
 
             const confirmResult = await Dialog.confirm({
-                title: '✅ Se ha guardado la configuración',
-                message: `\n${nombreArchivo}\n\n¿Quieres compartirla ahora?`,
-                okButtonTitle: 'Sí, compartir',
-                cancelButtonTitle: 'No'
+                title: t('ajustes.exportar.okTitulo'),
+                text: t('ajustes.exportar.okTextoShare'),
+                message: `\n${nombreArchivo}\n\n${t('ajustes.exportar.okMensaje')}`,
+                okButtonTitle: t('ajustes.exportar.siCompartir'),
+                cancelButtonTitle: t('ajustes.exportar.noCompartir')
             });
 
             if (confirmResult.value) {
                 const canShare = await Share.canShare();
                 if (canShare.value) {
                     await Share.share({
-                        title: 'Configuración Fly Decision',
+                        title: t('ajustes.exportar.tituloShare'),
+                        text: t('ajustes.exportar.textoShare'),
                         files: [resultCache.uri], 
-                        dialogTitle: 'Guardar en...',
+                        dialogTitle: t('ajustes.exportar.dialogTitle'),
                     });
                 }
             }
         } catch (error) {
-            alert("Error al guardar en Android: " + error.message);
+            alert("Error saving on Android / Error al guardar en Android: " + error.message);
         }
     } else {
         // Modo Web PC

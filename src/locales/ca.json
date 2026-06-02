@@ -90,13 +90,13 @@
       "mensajeDialog": "\nCanvia el nom del fitxer o accepta aquest:",
       "guardar": "Desar",
       "cancelar": "Cancel·lar",
-      "okTitulo": "✅ Preferits desats correctament",
+      "okTitulo": "✅ Preferits guardats",
       "okTextoShare": "Aquí tens els meus enlairaments preferits de Fly Decision:",
-      "okMensaje": "Vols compartir-los ara?",
+      "okMensaje": "S'ha guardat a la carpeta 'Documents'. Vols compartir-ho?",
       "siCompartir": "Sí, compartir",
       "noCompartir": "No",
       "tituloShare": "Els meus enlairaments preferits de Fly Decision",
-      "textoShare": "Aquí tens els meus enlairaments preferits:",
+      "textoShare": "Aquí tens els meus enlairaments preferits",
       "dialogTitle": "Compartir amb...",
       "errorShare": "No s'ha pogut obrir el menú de compartir. Si us plau, prova un altre mètode.",
       "sinShare": "El teu dispositiu no permet compartir fitxers directament. Assegura't de tenir Telegram instal·lat.",
@@ -413,7 +413,24 @@
     "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENCIÓ:</b> Importar un fitxer de configuració substituirà tots els teus ajustos actuals i enlairaments preferits.</b></p>",
     "importadoConfigOk": "✅ La configuració s'ha importat",
     "errorArchivoConfig": "⚠️ Sembla que el fitxer no és una còpia de seguretat vàlida de Fly Decision.",
-    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATENCIÓ:</b> Aquesta acció restablirà la configuració als ajustos originals i desmarcarà tots els enlairaments preferits.</p></div>"
+    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATENCIÓ:</b> Aquesta acció restablirà la configuració als ajustos originals i desmarcarà tots els enlairaments preferits.</p></div>",
+    "exportar": {
+      "tituloDialog": "💾 Exportar configuració",
+      "mensajeDialog": "\nCanvia el nom del fitxer o accepta aquest:",
+      "guardar": "Guardar",
+      "cancelar": "Cancel·lar",
+      "okTitulo": "✅ Configuració guardada",
+      "okTextoShare": "Aquí tens la meva configuració de Fly Decision:",
+      "okMensaje": "S'ha guardat a la carpeta 'Documents'. Vols compartir-ho?",
+      "siCompartir": "Sí, compartir",
+      "noCompartir": "No",
+      "tituloShare": "La meva configuració de Fly Decision",
+      "textoShare": "Aquí tens la configuració de Fly Decision",
+      "dialogTitle": "Compartir amb...",
+      "errorShare": "No s'ha pogut obrir el menú de compartir. Intenta utilitzar un altre mètode.",
+      "sinShare": "El teu dispositiu no permet compartir fitxers directament. Assegura't de tenir Telegram instal·lat.",
+      "errorGuardar": "Vaja, alguna cosa ha fallat: "
+    }
   },
 
   "mapa": {

@@ -90,13 +90,13 @@
       "mensajeDialog": "\nModifiez le nom du fichier ou acceptez celui-ci :",
       "guardar": "Enregistrer",
       "cancelar": "Annuler",
-      "okTitulo": "✅ Favoris enregistrés avec succès",
-      "okTextoShare": "Voici mes décollages favoris Fly Decision :",
-      "okMensaje": "Voulez-vous les partager maintenant ?",
+      "okTitulo": "✅ Favoris enregistrés",
+      "okTextoShare": "Voici mes décollages favoris de Fly Decision :",
+      "okMensaje": "Il a été enregistré dans le dossier 'Documents'. Veux-tu le partager ?",
       "siCompartir": "Oui, partager",
       "noCompartir": "Non",
       "tituloShare": "Mes décollages favoris Fly Decision",
-      "textoShare": "Voici mes décollages favoris :",
+      "textoShare": "Voici mes décollages favoris",
       "dialogTitle": "Partager avec...",
       "errorShare": "Impossible d'ouvrir le menu de partage. Veuillez essayer une autre méthode.",
       "sinShare": "Votre appareil ne permet pas le partage direct de fichiers. Assurez-vous d'avoir installé Telegram.",
@@ -413,7 +413,24 @@
     "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATTENTION :</b> L'importation d'un fichier de configuration remplacera tous vos paramètres actuels et vos décollages favoris.</b></p>",
     "importadoConfigOk": "✅ La configuration a été importée",
     "errorArchivoConfig": "⚠️ Le fichier ne semble pas être une sauvegarde Fly Decision valide.",
-    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATTENTION :</b> Cette action réinitialisera la configuration aux paramètres d'origine et démarquera tous les décollages favoris.</p></div>"
+    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATTENTION :</b> Cette action réinitialisera la configuration aux paramètres d'origine et démarquera tous les décollages favoris.</p></div>",
+    "exportar": {
+      "tituloDialog": "💾 Exporter la configuration",
+      "mensajeDialog": "\nChange le nom du fichier ou accepte celui-ci :",
+      "guardar": "Enregistrer",
+      "cancelar": "Annuler",
+      "okTitulo": "✅ Configuration enregistrée",
+      "okTextoShare": "Voici ma configuration de Fly Decision :",
+      "okMensaje": "Elle a été enregistrée dans le dossier 'Documents'. Veux-tu la partager ?",
+      "siCompartir": "Oui, partager",
+      "noCompartir": "Non",
+      "tituloShare": "Ma configuration de Fly Decision",
+      "textoShare": "Voici la configuration de Fly Decision",
+      "dialogTitle": "Partager avec...",
+      "errorShare": "Impossible d'ouvrir le menu de partage. Essaie d'utiliser une autre méthode.",
+      "sinShare": "Ton appareil ne permet pas de partager des fichiers directement. Assure-toi d'avoir installé Telegram.",
+      "errorGuardar": "Oups, quelque chose a mal tourné : "
+    }
   },
 
   "mapa": {
