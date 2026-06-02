@@ -9063,12 +9063,12 @@ function inicializarMapaLeaflet() {
     // 🔍 1º Prioridad: Obtener los valores forzados de la URL (si te pasan un enlace directo)
     const urlLat = parseFloat(params.get('lat'));
     const urlLon = parseFloat(params.get('lon'));
-    const urlZoom = parseInt(params.get('zoom'));
+    const urlZoom = parseFloat(params.get('zoom'));
 
     // 💾 2º Prioridad: Leer de la memoria la última posición en la que estuviste
     const localLat = parseFloat(localStorage.getItem('METEO_MAPA_LAST_LAT'));
     const localLon = parseFloat(localStorage.getItem('METEO_MAPA_LAST_LON'));
-    const localZoom = parseInt(localStorage.getItem('METEO_MAPA_LAST_ZOOM'));
+    const localZoom = parseFloat(localStorage.getItem('METEO_MAPA_LAST_ZOOM'));
 
     // 💡 3º Prioridad: Valores por defecto (Centro de España, primera vez que se abre la app)
     const defaultLat = 42.7340;
