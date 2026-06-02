@@ -2715,25 +2715,19 @@ async function exportarConfiguracion() {
     if (isApp) {
         try {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
-            const { value, cancelled } = await Dialog.prompt({
+
+            // 1. Cuadro de diálogo previo para confirmación de exportación
+            const confirmResult = await Dialog.confirm({
                 title: t('ajustes.exportar.tituloDialog'),
                 message: t('ajustes.exportar.mensajeDialog'),
-                inputText: nombreArchivo,
                 okButtonTitle: t('ajustes.exportar.guardar'),
                 cancelButtonTitle: t('ajustes.exportar.cancelar')
             });
 
-            if (cancelled) return;
-            if (value && value.trim() !== '') nombreArchivo = value.trim();
+            // Si la usuaria cancela, detenemos el proceso aquí
+            if (!confirmResult.value) return;
 
-            await Filesystem.writeFile({
-                path: nombreArchivo, 
-                data: contenido,
-                directory: 'DATA', 
-                encoding: 'utf8',
-                recursive: true
-            });
-
+            // 2. Guardamos la copia temporal en la Caché en segundo plano
             const resultCache = await Filesystem.writeFile({
                 path: nombreArchivo, 
                 data: contenido,
@@ -2742,25 +2736,23 @@ async function exportarConfiguracion() {
                 recursive: true
             });
 
-            const confirmResult = await Dialog.confirm({
-                title: t('ajustes.exportar.okTitulo'),
-                text: t('ajustes.exportar.okTextoShare'),
-                message: `\n${nombreArchivo}\n\n${t('ajustes.exportar.okMensaje')}`,
-                okButtonTitle: t('ajustes.exportar.siCompartir'),
-                cancelButtonTitle: t('ajustes.exportar.noCompartir')
-            });
-
-            if (confirmResult.value) {
-                const canShare = await Share.canShare();
-                if (canShare.value) {
+            // 3. Abrimos DIRECTAMENTE el menú de compartir/guardar de Android 
+            const canShare = await Share.canShare();
+            if (canShare.value) {
+                try {
                     await Share.share({
                         title: t('ajustes.exportar.tituloShare'),
                         text: t('ajustes.exportar.textoShare'),
                         files: [resultCache.uri], 
                         dialogTitle: t('ajustes.exportar.dialogTitle'),
                     });
+                } catch (shareError) {
+                    alert("Cancelled / Cancelado.");
                 }
+            } else {
+                alert("Your device does not support sharing files directly. / Tu dispositivo no permite compartir archivos directamente.");
             }
+
         } catch (error) {
             alert("Error saving on Android / Error al guardar en Android: " + error.message);
         }
