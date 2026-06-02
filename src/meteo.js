@@ -10103,7 +10103,7 @@ function inicializarMapaLeaflet() {
                     <div style="margin-bottom: 5px;">${t('mapa.labelAltitud')} <b>${escapeHtml(altitud)} m</b></div>
                     
                     <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="${t('popupDespegue.nivelActividadTitle')}">
-                        ${t('mapa.labelActividad')} &nbsp;${htmlActividadPopup}
+                        ${t('mapa.labelActividad')} &nbsp;${htmlActividadPopup} <span style="margin-left: 2px;"><b>${actividadScore || '?'}/5</b></span>
                     </div>
                     
                     <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
@@ -11184,6 +11184,11 @@ function inicializarMapaLeaflet() {
         }); 
                 
         // --- 2.3 LISTENERS DEL MAPA ---
+
+        // Al hacer clic/tocar fuera del panel (en el mapa): Retraer el panel
+        map.on('click', function() {
+            retraerOpciones();
+        });
         
         // Tras mover el mapa: Retraer el panel
         map.on('moveend', function() {
