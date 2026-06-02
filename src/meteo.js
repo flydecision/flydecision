@@ -4396,7 +4396,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     <span class="guia-nivel-actividad" 
                           data-tippy-content="${tooltipActividadSeguro}"
                           title="${t('tabla.tooltips.actividad') || 'Nivel de actividad'}: ${d.Actividad || '?'}/5"
-                          style="outline: none; margin-left: -3px;" tabindex="0">
+                          style="outline: none; margin-left: -3px; cursor: help;" tabindex="0">
                         ${iconoActividadLimpio}
                     </span>
                 </span>
@@ -5509,7 +5509,7 @@ function crearIconoActividad(nivelStr) {
     }
 
     return `
-        <span style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; cursor: help; vertical-align: -2px; outline: none;" tabindex="0">
+        <span style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; vertical-align: -2px; outline: none;" tabindex="0">
             ${barras}
         </span>
     `;
