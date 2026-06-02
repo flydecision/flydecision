@@ -97,7 +97,7 @@
       "noCompartir": "Não",
       "tituloShare": "Exportar descolagens favoritas",
       "textoShare": "As minhas descolagens favoritas do Fly Decision",
-      "dialogTitle": "Guardar em...",
+      "dialogTitle": "Guardar descolagens favoritas em...",
       "errorShare": "Não foi possível abrir o menu de partilha. Tenta usar outro método.",
       "sinShare": "O teu dispositivo não permite partilhar ficheiros diretamente. Certifica-te de que tens o Telegram instalado.",
       "errorGuardar": "Ups, algo correu mal: "
@@ -426,7 +426,7 @@
       "noCompartir": "Não",
       "tituloShare": "A minha configuração do Fly Decision",
       "textoShare": "A minha configuração do Fly Decision",
-      "dialogTitle": "Guardar em...",
+      "dialogTitle": "Guardar configuração em...",
       "errorShare": "Não foi possível abrir o menu de partilha. Tenta usar outro método.",
       "sinShare": "O teu dispositivo não permite partilhar ficheiros diretamente. Certifica-te de que tens o Telegram instalado.",
       "errorGuardar": "Ups, algo correu mal: "

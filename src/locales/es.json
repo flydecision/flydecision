@@ -97,7 +97,7 @@
       "noCompartir": "No",
       "tituloShare": "Exportar despegues favoritos",
       "textoShare": "Mis despegues favoritos de Fly Decision",
-      "dialogTitle": "Guardar en...",
+      "dialogTitle": "Guardar despegues favoritos en...",
       "errorShare": "No se pudo abrir el menú de compartir. Intenta usar otro método.",
       "sinShare": "Tu dispositivo no permite compartir archivos directamente. Asegúrate de tener Telegram instalado.",
       "errorGuardar": "Vaya, algo ha fallado: "
@@ -426,7 +426,7 @@
       "noCompartir": "No",
       "tituloShare": "Mi configuración de Fly Decision",
       "textoShare": "Mi configuración de Fly Decision",
-      "dialogTitle": "Guardar en...",
+      "dialogTitle": "Guardar configuración en...",
       "errorShare": "No se pudo abrir el menú de compartir. Intenta usar otro método.",
       "sinShare": "Tu dispositivo no permite compartir archivos directamente. Asegúrate de tener Telegram instalado.",
       "errorGuardar": "Vaya, algo ha fallado: "

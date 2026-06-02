@@ -97,7 +97,7 @@
       "noCompartir": "No",
       "tituloShare": "Export favorite takeoffs",
       "textoShare": "My favorite Fly Decision takeoffs",
-      "dialogTitle": "Save to...",
+      "dialogTitle": "Save favorite takeoffs to...",
       "errorShare": "Could not open the share menu. Try using another method.",
       "sinShare": "Your device does not allow sharing files directly. Make sure you have Telegram installed.",
       "errorGuardar": "Oops, something went wrong: "
@@ -426,7 +426,7 @@
       "noCompartir": "No",
       "tituloShare": "My Fly Decision configuration",
       "textoShare": "My Fly Decision configuration",
-      "dialogTitle": "Save to...",
+      "dialogTitle": "Save configuration to...",
       "errorShare": "Could not open the share menu. Try using another method.",
       "sinShare": "Your device does not allow sharing files directly. Make sure you have Telegram installed.",
       "errorGuardar": "Oops, something went wrong: "

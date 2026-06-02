@@ -97,7 +97,7 @@
       "noCompartir": "No",
       "tituloShare": "Exportar enlairaments preferits",
       "textoShare": "Els meus enlairaments preferits de Fly Decision",
-      "dialogTitle": "Guardar a...",
+      "dialogTitle": "Guardar enlairaments preferits a...",
       "errorShare": "No s'ha pogut obrir el menú de compartir. Intenta utilitzar un altre mètode.",
       "sinShare": "El teu dispositiu no permet compartir fitxers directament. Assegura't de tenir Telegram instal·lat.",
       "errorGuardar": "Vaja, alguna cosa ha fallat: "
@@ -426,7 +426,7 @@
       "noCompartir": "No",
       "tituloShare": "La meva configuració de Fly Decision",
       "textoShare": "La meva configuració de Fly Decision",
-      "dialogTitle": "Guardar a...",
+      "dialogTitle": "Guardar configuració a...",
       "errorShare": "No s'ha pogut obrir el menú de compartir. Intenta utilitzar un altre mètode.",
       "sinShare": "El teu dispositiu no permet compartir fitxers directament. Assegura't de tenir Telegram instal·lat.",
       "errorGuardar": "Vaja, alguna cosa ha fallat: "

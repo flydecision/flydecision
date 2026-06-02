@@ -97,7 +97,7 @@
       "noCompartir": "Nein",
       "tituloShare": "Lieblings-Startplätze exportieren",
       "textoShare": "Meine Lieblings-Startplätze von Fly Decision",
-      "dialogTitle": "Speichern in...",
+      "dialogTitle": "Lieblings-Startplätze speichern in...",
       "errorShare": "Das Teilen-Menü konnte nicht geöffnet werden. Versuche eine andere Methode.",
       "sinShare": "Dein Gerät erlaubt es nicht, Dateien direkt zu teilen. Stelle sicher, dass du Telegram installiert hast.",
       "errorGuardar": "Hoppla, etwas ist schiefgelaufen: "
@@ -426,7 +426,7 @@
       "noCompartir": "Nein",
       "tituloShare": "Meine Fly Decision Konfiguration",
       "textoShare": "Meine Fly Decision Konfiguration",
-      "dialogTitle": "Speichern in...",
+      "dialogTitle": "Konfiguration speichern in...",
       "errorShare": "Das Teilen-Menü konnte nicht geöffnet werden. Versuche eine andere Methode.",
       "sinShare": "Dein Gerät erlaubt es nicht, Dateien direkt zu teilen. Stelle sicher, dass du Telegram installiert hast.",
       "errorGuardar": "Hoppla, etwas ist schiefgelaufen: "

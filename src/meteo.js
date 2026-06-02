@@ -1460,15 +1460,15 @@ async function guardarFavoritos() {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
 
             // 1. Cuadro de diálogo previo para confirmación de exportación
-            const confirmResult = await Dialog.confirm({
-                title: t('favoritos.exportar.tituloDialog'),
-                message: t('favoritos.exportar.mensajeDialog'),
-                okButtonTitle: t('favoritos.exportar.guardar'),
-                cancelButtonTitle: t('favoritos.exportar.cancelar')
-            });
+            // const confirmResult = await Dialog.confirm({
+            //     title: t('favoritos.exportar.tituloDialog'),
+            //     message: t('favoritos.exportar.mensajeDialog'),
+            //     okButtonTitle: t('favoritos.exportar.guardar'),
+            //     cancelButtonTitle: t('favoritos.exportar.cancelar')
+            // });
 
             // Si la usuaria cancela, detenemos el proceso aquí
-            if (!confirmResult.value) return;
+            // if (!confirmResult.value) return;
 
             // 2. Guardamos la copia temporal en la Caché en segundo plano
             const resultCache = await Filesystem.writeFile({
@@ -1490,7 +1490,7 @@ async function guardarFavoritos() {
                         dialogTitle: t('favoritos.exportar.dialogTitle'),
                     });
                 } catch (shareError) {
-                    alert("Cancelled / Cancelado.");
+                    //alert("Cancelled / Cancelado.");
                 }
             } else {
                 alert("Your device does not support sharing files directly. / Tu dispositivo no permite compartir archivos directamente.");
@@ -2717,15 +2717,15 @@ async function exportarConfiguracion() {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
 
             // 1. Cuadro de diálogo previo para confirmación de exportación
-            const confirmResult = await Dialog.confirm({
-                title: t('ajustes.exportar.tituloDialog'),
-                message: t('ajustes.exportar.mensajeDialog'),
-                okButtonTitle: t('ajustes.exportar.guardar'),
-                cancelButtonTitle: t('ajustes.exportar.cancelar')
-            });
+            // const confirmResult = await Dialog.confirm({
+            //     title: t('ajustes.exportar.tituloDialog'),
+            //     message: t('ajustes.exportar.mensajeDialog'),
+            //     okButtonTitle: t('ajustes.exportar.guardar'),
+            //     cancelButtonTitle: t('ajustes.exportar.cancelar')
+            // });
 
             // Si la usuaria cancela, detenemos el proceso aquí
-            if (!confirmResult.value) return;
+            // if (!confirmResult.value) return;
 
             // 2. Guardamos la copia temporal en la Caché en segundo plano
             const resultCache = await Filesystem.writeFile({
@@ -2747,7 +2747,7 @@ async function exportarConfiguracion() {
                         dialogTitle: t('ajustes.exportar.dialogTitle'),
                     });
                 } catch (shareError) {
-                    alert("Cancelled / Cancelado.");
+                    //alert("Cancelled / Cancelado.");
                 }
             } else {
                 alert("Your device does not support sharing files directly. / Tu dispositivo no permite compartir archivos directamente.");
