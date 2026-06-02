@@ -5967,6 +5967,107 @@ document.addEventListener('i18nReady', function() {
     }
 
 	// ---------------------------------------------------------------
+	// 🔴 INICIALIZACIÓN GLOBAL DE SLIDERS DE AJUSTES DEL MAPA
+	// ---------------------------------------------------------------
+
+    function inicializarSlidersAjustesMapa() {
+        const STORAGE_KEY_VUELOS = 'METEO_MAPA_MINIMOVUELOS';
+        const STORAGE_KEY_ULTIMO_VUELO = 'METEO_MINIMO_ANO_ULTIMO_VUELO';
+
+        const sliderVuelosConfig = document.getElementById('sliderValorInicialFiltroNumeroMinimoVuelos');
+        const textoVuelosConfig = document.getElementById('valorConfigFiltroNumeroMinimoVuelosTexto'); 
+        const contConfigVuelos = document.querySelector('.configuracion-control-vuelos-container');
+
+        const sliderUltimoVueloConfig = document.getElementById('sliderValorInicialFiltroUltimoVuelo');
+        const textoUltimoVueloConfig = document.getElementById('valorConfigFiltroUltimoVueloTexto'); 
+        const contConfigUltimoVuelo = document.querySelector('.configuracion-control-ultimovuelo-container');
+
+        // 1. Cargar valores iniciales desde localStorage al arrancar la App
+        const indiceVuelosGuardado = localStorage.getItem(STORAGE_KEY_VUELOS) || '0';
+        const indiceUltimoVueloGuardado = localStorage.getItem(STORAGE_KEY_ULTIMO_VUELO) || '0';
+
+        if (sliderVuelosConfig && textoVuelosConfig) {
+            sliderVuelosConfig.value = indiceVuelosGuardado;
+            textoVuelosConfig.innerText = ESCALA_VUELOS[parseInt(indiceVuelosGuardado, 10)] || 0;
+            
+            if (contConfigVuelos) {
+                contConfigVuelos.style.backgroundColor = 'transparent';
+                if (parseInt(indiceVuelosGuardado, 10) > 0) contConfigVuelos.classList.add('borde-rojo-externo');
+                else contConfigVuelos.classList.remove('borde-rojo-externo');
+            }
+        }
+
+        if (sliderUltimoVueloConfig && textoUltimoVueloConfig) {
+            sliderUltimoVueloConfig.value = indiceUltimoVueloGuardado;
+            let val = ESCALA_ULTIMO_VUELO[parseInt(indiceUltimoVueloGuardado, 10)] || ESCALA_ULTIMO_VUELO[0];
+            textoUltimoVueloConfig.innerText = val === 'Todos' ? t('mapa.todos') : val;
+
+            if (contConfigUltimoVuelo) {
+                contConfigUltimoVuelo.style.backgroundColor = 'transparent';
+                if (parseInt(indiceUltimoVueloGuardado, 10) > 0) contConfigUltimoVuelo.classList.add('borde-rojo-externo');
+                else contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
+            }
+        }
+
+        // 2. Listeners de interacción (Cuando el usuario mueve el dedo en los Ajustes)
+        if (sliderVuelosConfig) {
+            sliderVuelosConfig.addEventListener('input', function() {
+                const indiceActual = this.value;
+                const valorReal = ESCALA_VUELOS[parseInt(indiceActual, 10)] || 0;
+                
+                if (textoVuelosConfig) textoVuelosConfig.innerText = valorReal;
+                localStorage.setItem(STORAGE_KEY_VUELOS, indiceActual);
+                
+                if (contConfigVuelos) {
+                    if (parseInt(indiceActual, 10) > 0) contConfigVuelos.classList.add('borde-rojo-externo');
+                    else contConfigVuelos.classList.remove('borde-rojo-externo');
+                }
+
+                // Sincronizar con el mapa SOLO si ya se ha abierto y existe
+                if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
+                    const sliderVuelosFiltro = document.getElementById('sliderVuelos');
+                    const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
+                    if (sliderVuelosFiltro) sliderVuelosFiltro.value = indiceActual;
+                    if (textoVuelosFiltro) textoVuelosFiltro.innerText = valorReal;
+
+                    if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
+                    if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
+                }
+            });
+        }
+
+        if (sliderUltimoVueloConfig) {
+            sliderUltimoVueloConfig.addEventListener('input', function() {
+                const indiceActual = this.value;
+                let valorReal = ESCALA_ULTIMO_VUELO[parseInt(indiceActual, 10)] || ESCALA_ULTIMO_VUELO[0];
+                let valorMostrar = valorReal === 'Todos' ? t('mapa.todos') : valorReal;
+                
+                if (textoUltimoVueloConfig) textoUltimoVueloConfig.innerText = valorMostrar;
+                localStorage.setItem(STORAGE_KEY_ULTIMO_VUELO, indiceActual);
+
+                if (contConfigUltimoVuelo) {
+                    if (parseInt(indiceActual, 10) > 0) contConfigUltimoVuelo.classList.add('borde-rojo-externo');
+                    else contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
+                }
+
+                // Sincronizar con el mapa SOLO si ya se ha abierto y existe
+                if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
+                    const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
+                    const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
+                    if (sliderUltimoVueloFiltro) sliderUltimoVueloFiltro.value = indiceActual;
+                    if (textoUltimoVueloFiltro) textoUltimoVueloFiltro.innerText = valorMostrar;
+
+                    if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
+                    if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
+                }
+            });
+        }
+    }
+
+    // Llamamos a la función recién creada
+    inicializarSlidersAjustesMapa();
+
+	// ---------------------------------------------------------------
 	// 🔴 BUSCADOR. Listeners, Funciones, Lógica para limpiar búsquedas
 	// ---------------------------------------------------------------
 	
@@ -11169,151 +11270,31 @@ function inicializarMapaLeaflet() {
         L.DomEvent.off(infoPanel, 'click', expandirAlClicar);	
     }
 
-    // gestionar la configuración inicial
-        
-    // 1. Filtro Real (Vuelos)
+    // --- SINCRONIZACIÓN INICIAL DEL PANEL INTERNO DEL MAPA ---
     const sliderVuelosFiltro = document.getElementById('sliderVuelos');
     const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
-    
-    // 2. Filtro Real (Último Vuelo)
     const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
     const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
 
-    // 1. Filtro Real (KmMedia)
-    const sliderKmMediaFiltro = document.getElementById('sliderKmMedia');
-    const textoKmMediaFiltro = document.getElementById('valorKmMediaTexto');
-    
-    // 3. Configuración (Vuelos)
-    const sliderVuelosConfig = document.getElementById('sliderValorInicialFiltroNumeroMinimoVuelos');
-    // 🚩 IMPORTANTE: ID en el HTML para el texto del config de Vuelos
-    const textoVuelosConfig = document.getElementById('valorConfigFiltroNumeroMinimoVuelosTexto'); 
-    
-    // 4. Configuración (Último Vuelo)
-    const sliderUltimoVueloConfig = document.getElementById('sliderValorInicialFiltroUltimoVuelo');
-    // 🚩 IMPORTANTE: ID en el HTML para el texto del config de Último Vuelo
-    const textoUltimoVueloConfig = document.getElementById('valorConfigFiltroUltimoVueloTexto'); 
-    
-    // --- CLAVES DE ALMACENAMIENTO ---
-    const STORAGE_KEY_VUELOS = 'METEO_MAPA_MINIMOVUELOS';
-    const STORAGE_KEY_ULTIMO_VUELO = 'METEO_MINIMO_ANO_ULTIMO_VUELO';
-
-    // Función auxiliar para obtener el valor real según la escala
-    function obtenerValorReal(indice, escala) {
-        const indiceNumerico = parseInt(indice, 10);
-        // Si el índice no existe o la escala no está definida, devuelve el valor más bajo (0 o 'Todos')
-        return escala && escala[indiceNumerico] !== undefined ? escala[indiceNumerico] : escala[0];
+    // Leemos valores del localStorage (que dictan los Ajustes Generales)
+    const indiceVuelos = localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0';
+    if (sliderVuelosFiltro && textoVuelosFiltro) {
+        sliderVuelosFiltro.value = indiceVuelos;
+        textoVuelosFiltro.innerText = ESCALA_VUELOS[parseInt(indiceVuelos, 10)] || 0;
     }
 
-    // --- FUNCIÓN DE INICIALIZACIÓN (Carga) ---
-    function iniciarConfiguracion() {
-        
-        // 1. VUELOS: Lectura y Conversión
-        const indiceVuelosGuardado = localStorage.getItem(STORAGE_KEY_VUELOS) || '0';
-        const valorRealVuelos = obtenerValorReal(indiceVuelosGuardado, ESCALA_VUELOS);
-        
-        // 2. ÚLTIMO VUELO: Lectura y Conversión
-        const indiceUltimoVueloGuardado = localStorage.getItem(STORAGE_KEY_ULTIMO_VUELO) || '0';
-        let valorRealUltimoVuelo = obtenerValorReal(indiceUltimoVueloGuardado, ESCALA_ULTIMO_VUELO); 
-
-        // Si el valor es 'Todos', buscamos la traducción antes de pintarlo
-        if (valorRealUltimoVuelo === 'Todos') {
-            valorRealUltimoVuelo = t('mapa.todos');
-        }
-
-        // B. Aplicar a Sliders de CONFIGURACIÓN (Visual)
-        if(sliderVuelosConfig && textoVuelosConfig) {
-            sliderVuelosConfig.value = indiceVuelosGuardado;
-            textoVuelosConfig.innerText = valorRealVuelos;
-        }
-        if(sliderUltimoVueloConfig && textoUltimoVueloConfig) {
-            sliderUltimoVueloConfig.value = indiceUltimoVueloGuardado;
-            textoUltimoVueloConfig.innerText = valorRealUltimoVuelo;
-        }
-
-        // C. Aplicar a Sliders de FILTRO REAL (Funcional)
-        if(sliderVuelosFiltro && textoVuelosFiltro) {
-            sliderVuelosFiltro.value = indiceVuelosGuardado;
-            textoVuelosFiltro.innerText = valorRealVuelos;
-        }
-        if(sliderUltimoVueloFiltro && textoUltimoVueloFiltro) {
-            sliderUltimoVueloFiltro.value = indiceUltimoVueloGuardado;
-            textoUltimoVueloFiltro.innerText = valorRealUltimoVuelo;
-        }
-
-        // D. Disparar el filtro del mapa.
-        // Se asume que actualizarFiltrosMapa() está disponible globalmente.
-        actualizarFiltrosMapa(); 
+    const indiceUltimoVuelo = localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0';
+    if (sliderUltimoVueloFiltro && textoUltimoVueloFiltro) {
+        sliderUltimoVueloFiltro.value = indiceUltimoVuelo;
+        let val = ESCALA_ULTIMO_VUELO[parseInt(indiceUltimoVuelo, 10)] || ESCALA_ULTIMO_VUELO[0];
+        textoUltimoVueloFiltro.innerText = val === 'Todos' ? t('mapa.todos') : val;
     }
 
-    // --- LISTENERS PARA GUARDAR LA CONFIGURACIÓN ---
+    // Ejecutamos el motor de filtros y la interfaz para aplicar los datos recién leídos
+    if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
     
-    // Listener Configuración Vuelos (Guarda, sincroniza y filtra)
-    if (sliderVuelosConfig) {
-        sliderVuelosConfig.addEventListener('input', function() {
-            const indiceActual = this.value;
-            const valorReal = obtenerValorReal(indiceActual, ESCALA_VUELOS);
-            
-            // 1. Actualiza el texto en este panel de configuración
-            if (textoVuelosConfig) textoVuelosConfig.innerText = valorReal;
-            
-            // 2. Guarda el dato para la próxima vez
-            localStorage.setItem(STORAGE_KEY_VUELOS, indiceActual);
-            
-            // --- NUEVO: APLICAR INMEDIATAMENTE ---
-            // 3. Sincroniza el deslizador del panel principal "Capas y filtros"
-            if (sliderVuelosFiltro) {
-                sliderVuelosFiltro.value = indiceActual;
-                if (textoVuelosFiltro) textoVuelosFiltro.innerText = valorReal;
-            }
-            // 4. Manda la orden al mapa para que oculte/muestre marcadores ya mismo
-            if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
-            // ------------------------------------
-
-            // 5. Actualiza los fondos azules
-            actualizarEstadoVisualFiltros();
-        });
-    }
-    
-    // Listener Configuración Último Vuelo (Guarda, sincroniza y filtra) Correcto y Traducido
-    if (sliderUltimoVueloConfig) {
-        sliderUltimoVueloConfig.addEventListener('input', function() {
-            const indiceActual = this.value;
-            const valorReal = obtenerValorReal(indiceActual, ESCALA_ULTIMO_VUELO);
-            
-            // --- CORRECCIÓN: Traducir "Todos" dinámicamente si el índice es 0 ---
-            let valorMostrar = valorReal;
-            if (valorReal === 'Todos') {
-                valorMostrar = t('mapa.todos');
-            }
-            
-            // 1. Actualiza el texto en este panel de configuración
-            if (textoUltimoVueloConfig) {
-                textoUltimoVueloConfig.innerText = valorMostrar;
-            }
-            
-            // 2. Guarda el dato para la próxima vez
-            localStorage.setItem(STORAGE_KEY_ULTIMO_VUELO, indiceActual);
-            
-            // --- SINCRO INMEDIATA ---
-            // 3. Sincroniza el deslizador del panel principal "Capas y filtros"
-            if (sliderUltimoVueloFiltro) {
-                sliderUltimoVueloFiltro.value = indiceActual;
-                if (textoUltimoVueloFiltro) {
-                    textoUltimoVueloFiltro.innerText = valorMostrar;
-                }
-            }
-            // 4. Manda la orden al mapa para que oculte/muestre marcadores ya mismo
-            if (typeof actualizarFiltrosMapa === 'function') {
-                actualizarFiltrosMapa();
-            }
-
-            // 5. Actualiza los fondos y bordes rojos
-            actualizarEstadoVisualFiltros();
-        });
-    }
-
-    // Ejecutar la carga inicial
-    iniciarConfiguracion();
+    // Exponemos la función de estado visual y la ejecutamos
+    window.actualizarEstadoVisualFiltros = actualizarEstadoVisualFiltros;
     actualizarEstadoVisualFiltros();
     
     // 🔴 CAPAS:
