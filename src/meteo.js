@@ -1459,31 +1459,18 @@ async function guardarFavoritos() {
         try {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
 
-            const { value, cancelled } = await Dialog.prompt({
-                title: t('favoritos.exportar.tituloDialog'),
-                message: t('favoritos.exportar.mensajeDialog'),
-                inputText: nombreArchivo,
-                okButtonTitle: t('favoritos.exportar.guardar'),
-                cancelButtonTitle: t('favoritos.exportar.cancelar')
-            });
+            // 1. Cuadro de diálogo previo para confirmación de exportación
+            // const confirmResult = await Dialog.confirm({
+            //     title: t('favoritos.exportar.tituloDialog'),
+            //     message: t('favoritos.exportar.mensajeDialog'),
+            //     okButtonTitle: t('favoritos.exportar.guardar'),
+            //     cancelButtonTitle: t('favoritos.exportar.cancelar')
+            // });
 
-            if (cancelled) return;
+            // Si la usuaria cancela, detenemos el proceso aquí
+            // if (!confirmResult.value) return;
 
-            if (value && value.trim() !== '') {
-                nombreArchivo = value.trim();
-                if (!nombreArchivo.toLowerCase().endsWith('.txt')) {
-                    nombreArchivo += '.txt';
-                }
-            }
-
-            await Filesystem.writeFile({
-                path: nombreArchivo, 
-                data: contenido,
-                directory: 'DATA', 
-                encoding: 'utf8',
-                recursive: true
-            });
-
+            // 2. Guardamos la copia temporal en la Caché en segundo plano
             const resultCache = await Filesystem.writeFile({
                 path: nombreArchivo, 
                 data: contenido,
@@ -1492,31 +1479,21 @@ async function guardarFavoritos() {
                 recursive: true
             });
 
-            const confirmResult = await Dialog.confirm({
-                title: t('favoritos.exportar.okTitulo'),
-                text: t('favoritos.exportar.okTextoShare'),
-                message: `\n${nombreArchivo}\n\n${t('favoritos.exportar.okMensaje')}`,
-                okButtonTitle: t('favoritos.exportar.siCompartir'),
-                cancelButtonTitle: t('favoritos.exportar.noCompartir')
-            });
-
-            if (confirmResult.value) {
-                const canShare = await Share.canShare();
-                if (canShare.value) {
-                    try {
-                        await Share.share({
-                            title: 'Mis despegues favoritos de Fly Decision',
-                            text: 'Aquí tienes mis despegues favoritos:',
-                            files: [resultCache.uri], 
-                            dialogTitle: 'Compartir con...',
-                        });
-                    } catch (shareError) {
-                        console.error("Error nativo al compartir:", shareError);
-                        alert("No se pudo abrir el menú de compartir. Intenta usar otro método.");
-                    }
-                } else {
-                    alert("Tu dispositivo no permite compartir archivos directamente. Asegúrate de tener Telegram instalado.");
+            // 3. Abrimos DIRECTAMENTE el menú de compartir/guardar de Android 
+            const canShare = await Share.canShare();
+            if (canShare.value) {
+                try {
+                    await Share.share({
+                        title: t('favoritos.exportar.tituloShare'),
+                        text: t('favoritos.exportar.textoShare'),
+                        files: [resultCache.uri], 
+                        dialogTitle: t('favoritos.exportar.dialogTitle'),
+                    });
+                } catch (shareError) {
+                    //alert("Cancelled / Cancelado.");
                 }
+            } else {
+                alert("Your device does not support sharing files directly. / Tu dispositivo no permite compartir archivos directamente.");
             }
 
         } catch (error) {
@@ -2738,25 +2715,19 @@ async function exportarConfiguracion() {
     if (isApp) {
         try {
             const { Filesystem, Dialog, Share } = Capacitor.Plugins; 
-            const { value, cancelled } = await Dialog.prompt({
-                title: '💾 Exportar configuración',
-                message: '\nSe exportarán tus favoritos y toda tu configuración (límites de viento, opciones visuales, etc.).',
-                inputText: nombreArchivo,
-                okButtonTitle: 'Guardar',
-                cancelButtonTitle: 'Cancelar'
-            });
 
-            if (cancelled) return;
-            if (value && value.trim() !== '') nombreArchivo = value.trim();
+            // 1. Cuadro de diálogo previo para confirmación de exportación
+            // const confirmResult = await Dialog.confirm({
+            //     title: t('ajustes.exportar.tituloDialog'),
+            //     message: t('ajustes.exportar.mensajeDialog'),
+            //     okButtonTitle: t('ajustes.exportar.guardar'),
+            //     cancelButtonTitle: t('ajustes.exportar.cancelar')
+            // });
 
-            await Filesystem.writeFile({
-                path: nombreArchivo, 
-                data: contenido,
-                directory: 'DATA', 
-                encoding: 'utf8',
-                recursive: true
-            });
+            // Si la usuaria cancela, detenemos el proceso aquí
+            // if (!confirmResult.value) return;
 
+            // 2. Guardamos la copia temporal en la Caché en segundo plano
             const resultCache = await Filesystem.writeFile({
                 path: nombreArchivo, 
                 data: contenido,
@@ -2765,25 +2736,25 @@ async function exportarConfiguracion() {
                 recursive: true
             });
 
-            const confirmResult = await Dialog.confirm({
-                title: '✅ Se ha guardado la configuración',
-                message: `\n${nombreArchivo}\n\n¿Quieres compartirla ahora?`,
-                okButtonTitle: 'Sí, compartir',
-                cancelButtonTitle: 'No'
-            });
-
-            if (confirmResult.value) {
-                const canShare = await Share.canShare();
-                if (canShare.value) {
+            // 3. Abrimos DIRECTAMENTE el menú de compartir/guardar de Android 
+            const canShare = await Share.canShare();
+            if (canShare.value) {
+                try {
                     await Share.share({
-                        title: 'Configuración Fly Decision',
+                        title: t('ajustes.exportar.tituloShare'),
+                        text: t('ajustes.exportar.textoShare'),
                         files: [resultCache.uri], 
-                        dialogTitle: 'Guardar en...',
+                        dialogTitle: t('ajustes.exportar.dialogTitle'),
                     });
+                } catch (shareError) {
+                    //alert("Cancelled / Cancelado.");
                 }
+            } else {
+                alert("Your device does not support sharing files directly. / Tu dispositivo no permite compartir archivos directamente.");
             }
+
         } catch (error) {
-            alert("Error al guardar en Android: " + error.message);
+            alert("Error saving on Android / Error al guardar en Android: " + error.message);
         }
     } else {
         // Modo Web PC
@@ -10103,7 +10074,7 @@ function inicializarMapaLeaflet() {
                     <div style="margin-bottom: 5px;">${t('mapa.labelAltitud')} <b>${escapeHtml(altitud)} m</b></div>
                     
                     <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="${t('popupDespegue.nivelActividadTitle')}">
-                        ${t('mapa.labelActividad')} &nbsp;${htmlActividadPopup}
+                        ${t('mapa.labelActividad')} &nbsp;${htmlActividadPopup} <span style="margin-left: 2px;"><b>${actividadScore || '?'}/5</b></span>
                     </div>
                     
                     <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
@@ -11184,6 +11155,11 @@ function inicializarMapaLeaflet() {
         }); 
                 
         // --- 2.3 LISTENERS DEL MAPA ---
+
+        // Al hacer clic/tocar fuera del panel (en el mapa): Retraer el panel
+        map.on('click', function() {
+            retraerOpciones();
+        });
         
         // Tras mover el mapa: Retraer el panel
         map.on('moveend', function() {

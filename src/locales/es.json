@@ -86,18 +86,18 @@
     "errorArchivo": "⚠️ Error al procesar el archivo.",
     "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENCIÓN:</b> Importar favoritos sustituirá los actuales.</b><br><br>Si los quieres conservar, cancela este mensaje y usa el botón 💾 <i>Exportar favoritos</i>.</p>",
     "exportar": {
-      "tituloDialog": "💾 Exportar favoritos",
-      "mensajeDialog": "\nCambia el nombre del archivo o acepta éste:",
-      "guardar": "Guardar",
+      "tituloDialog": "💾 Guardar despegues favoritos",
+      "mensajeDialog": "Pulsa 'Guardar en...' para elegir una carpeta en tu móvil o enviar el archivo.",
+      "guardar": "Guardar en...",
       "cancelar": "Cancelar",
-      "okTitulo": "✅ Favoritos guardados con éxito",
-      "okTextoShare": "Aquí tienes mis despegues favoritos de Fly Decision:",
-      "okMensaje": "¿Quieres compartirlo ahora?",
+      "okTitulo": "✅ Favoritos guardados",
+      "okTextoShare": "Mis despegues favoritos de Fly Decision",
+      "okMensaje": "Se ha guardado en la carpeta 'Documentos'. ¿Quieres compartirlo?",
       "siCompartir": "Sí, compartir",
       "noCompartir": "No",
-      "tituloShare": "Mis despegues favoritos de Fly Decision",
-      "textoShare": "Aquí tienes mis despegues favoritos:",
-      "dialogTitle": "Compartir con...",
+      "tituloShare": "Exportar despegues favoritos",
+      "textoShare": "Mis despegues favoritos de Fly Decision",
+      "dialogTitle": "Guardar despegues favoritos en...",
       "errorShare": "No se pudo abrir el menú de compartir. Intenta usar otro método.",
       "sinShare": "Tu dispositivo no permite compartir archivos directamente. Asegúrate de tener Telegram instalado.",
       "errorGuardar": "Vaya, algo ha fallado: "
@@ -413,7 +413,24 @@
     "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENCIÓN:</b> Importar un archivo de configuración sustituirá toda tu configuración actual y despegues favoritos.</b></p>",
     "importadoConfigOk": "✅ Se ha importado la configuración",
     "errorArchivoConfig": "⚠️ El archivo no parece ser una copia de seguridad válida de Fly Decision.",
-    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATENCIÓN:</b> Esta acción reseteará la configuración a la original y desmarcará todos los despegues favoritos.</p></div>"
+    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATENCIÓN:</b> Esta acción reseteará la configuración a la original y desmarcará todos los despegues favoritos.</p></div>",
+    "exportar": {
+      "tituloDialog": "💾 Guardar configuración",
+      "mensajeDialog": "Pulsa 'Guardar en...' para elegir una carpeta en tu móvil o enviar el archivo.",
+      "guardar": "Guardar en...",
+      "cancelar": "Cancelar",
+      "okTitulo": "✅ Configuración guardada",
+      "okTextoShare": "Mi configuración de Fly Decision:",
+      "okMensaje": "Se ha guardado en la carpeta 'Documentos'. ¿Quieres compartirlo?",
+      "siCompartir": "Sí, compartir",
+      "noCompartir": "No",
+      "tituloShare": "Mi configuración de Fly Decision",
+      "textoShare": "Mi configuración de Fly Decision",
+      "dialogTitle": "Guardar configuración en...",
+      "errorShare": "No se pudo abrir el menú de compartir. Intenta usar otro método.",
+      "sinShare": "Tu dispositivo no permite compartir archivos directamente. Asegúrate de tener Telegram instalado.",
+      "errorGuardar": "Vaya, algo ha fallado: "
+    }
   },
 
   "mapa": {

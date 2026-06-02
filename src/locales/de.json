@@ -86,20 +86,20 @@
     "errorArchivo": "⚠️ Fehler beim Verarbeiten der Datei.",
     "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ACHTUNG:</b> Das Importieren von Favoriten ersetzt die aktuellen.</b><br><br>Wenn du sie behalten möchtest, brich diese Meldung ab und verwende die Schaltfläche 💾 <i>Favoriten exportieren</i>.</p>",
     "exportar": {
-      "tituloDialog": "💾 Favoriten exportieren",
-      "mensajeDialog": "\nDateinamen ändern oder diesen akzeptieren:",
-      "guardar": "Speichern",
+      "tituloDialog": "💾 Lieblings-Startplätze speichern",
+      "mensajeDialog": "Tippe auf 'Speichern in...', um einen Ordner auf deinem Handy auszuwählen oder die Datei zu senden.",
+      "guardar": "Speichern in...",
       "cancelar": "Abbrechen",
-      "okTitulo": "✅ Favoriten erfolgreich gespeichert",
-      "okTextoShare": "Hier sind meine bevorzugten Fly Decision Startplätze:",
-      "okMensaje": "Möchtest du sie jetzt teilen?",
+      "okTitulo": "✅ Favoriten gespeichert",
+      "okTextoShare": "Meine Lieblings-Startplätze von Fly Decision",
+      "okMensaje": "Es wurde im Ordner 'Dokumente' gespeichert. Möchtest du es teilen?",
       "siCompartir": "Ja, teilen",
       "noCompartir": "Nein",
-      "tituloShare": "Meine bevorzugten Fly Decision Startplätze",
-      "textoShare": "Hier sind meine bevorzugten Startplätze:",
-      "dialogTitle": "Teilen mit...",
-      "errorShare": "Das Teilen-Menü konnte nicht geöffnet werden. Bitte versuche eine andere Methode.",
-      "sinShare": "Dein Gerät erlaubt kein direktes Teilen von Dateien. Stelle sicher, dass Telegram installiert ist.",
+      "tituloShare": "Lieblings-Startplätze exportieren",
+      "textoShare": "Meine Lieblings-Startplätze von Fly Decision",
+      "dialogTitle": "Lieblings-Startplätze speichern in...",
+      "errorShare": "Das Teilen-Menü konnte nicht geöffnet werden. Versuche eine andere Methode.",
+      "sinShare": "Dein Gerät erlaubt es nicht, Dateien direkt zu teilen. Stelle sicher, dass du Telegram installiert hast.",
       "errorGuardar": "Hoppla, etwas ist schiefgelaufen: "
     }
   },
@@ -413,7 +413,24 @@
     "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ACHTUNG:</b> Das Importieren einer Konfigurationsdatei ersetzt alle deine aktuellen Einstellungen und favorisierten Startplätze.</b></p>",
     "importadoConfigOk": "✅ Konfiguration wurde importiert",
     "errorArchivoConfig": "⚠️ Die Datei scheint kein gültiges Fly Decision Backup zu sein.",
-    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ACHTUNG:</b> Diese Aktion setzt die Konfiguration auf die ursprünglichen Einstellungen zurück und entfernt die Markierung aller favorisierten Startplätze.</p></div>"
+    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ACHTUNG:</b> Diese Aktion setzt die Konfiguration auf die ursprünglichen Einstellungen zurück und entfernt die Markierung aller favorisierten Startplätze.</p></div>",
+    "exportar": {
+      "tituloDialog": "💾 Konfiguration speichern",
+      "mensajeDialog": "Tippe auf 'Speichern in...', um einen Ordner auf deinem Handy auszuwählen oder die Datei zu senden.",
+      "guardar": "Speichern in...",
+      "cancelar": "Abbrechen",
+      "okTitulo": "✅ Konfiguration gespeichert",
+      "okTextoShare": "Meine Fly Decision Konfiguration:",
+      "okMensaje": "Sie wurde im Ordner 'Dokumente' gespeichert. Möchtest du sie teilen?",
+      "siCompartir": "Ja, teilen",
+      "noCompartir": "Nein",
+      "tituloShare": "Meine Fly Decision Konfiguration",
+      "textoShare": "Meine Fly Decision Konfiguration",
+      "dialogTitle": "Konfiguration speichern in...",
+      "errorShare": "Das Teilen-Menü konnte nicht geöffnet werden. Versuche eine andere Methode.",
+      "sinShare": "Dein Gerät erlaubt es nicht, Dateien direkt zu teilen. Stelle sicher, dass du Telegram installiert hast.",
+      "errorGuardar": "Hoppla, etwas ist schiefgelaufen: "
+    }
   },
 
   "mapa": {

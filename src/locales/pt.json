@@ -86,20 +86,20 @@
     "errorArchivo": "⚠️ Erro ao processar o ficheiro.",
     "importarAviso": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENÇÃO:</b> Importar favoritos irá substituir os atuais.</b><br><br>Se deseja mantê-los, cancele esta mensagem e utilize o botão 💾 <i>Exportar favoritos</i>.</p>",
     "exportar": {
-      "tituloDialog": "💾 Exportar favoritos",
-      "mensajeDialog": "\nAltere o nome do ficheiro ou aceite este:",
-      "guardar": "Guardar",
+      "tituloDialog": "💾 Guardar descolagens favoritas",
+      "mensajeDialog": "Toca em 'Guardar em...' para escolheres uma pasta no teu telemóvel ou enviar o ficheiro.",
+      "guardar": "Guardar em...",
       "cancelar": "Cancelar",
-      "okTitulo": "✅ Favoritos guardados com sucesso",
-      "okTextoShare": "Aqui estão as minhas descolagens favoritas do Fly Decision:",
-      "okMensaje": "Deseja partilhá-los agora?",
+      "okTitulo": "✅ Favoritos guardados",
+      "okTextoShare": "As minhas descolagens favoritas do Fly Decision",
+      "okMensaje": "Foi guardado na pasta 'Documentos'. Queres partilhar?",
       "siCompartir": "Sim, partilhar",
       "noCompartir": "Não",
-      "tituloShare": "As minhas descolagens favoritas do Fly Decision",
-      "textoShare": "Aqui estão as minhas descolagens favoritas:",
-      "dialogTitle": "Partilhar com...",
-      "errorShare": "Não foi possível abrir o menu de partilha. Por favor, tente outro método.",
-      "sinShare": "O seu dispositivo não permite a partilha direta de ficheiros. Certifique-se de que tem o Telegram instalado.",
+      "tituloShare": "Exportar descolagens favoritas",
+      "textoShare": "As minhas descolagens favoritas do Fly Decision",
+      "dialogTitle": "Guardar descolagens favoritas em...",
+      "errorShare": "Não foi possível abrir o menu de partilha. Tenta usar outro método.",
+      "sinShare": "O teu dispositivo não permite partilhar ficheiros diretamente. Certifica-te de que tens o Telegram instalado.",
       "errorGuardar": "Ups, algo correu mal: "
     }
   },
@@ -413,7 +413,24 @@
     "avisoImportarConfig": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>📂</p><p><b>⚠️ ATENÇÃO:</b> Importar um ficheiro de configuração irá substituir todas as suas definições e descolagens favoritas atuais.</b></p>",
     "importadoConfigOk": "✅ A configuração foi importada",
     "errorArchivoConfig": "⚠️ O ficheiro não parece ser uma cópia de segurança válida do Fly Decision.",
-    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATENÇÃO:</b> Esta ação irá repor a configuração para as definições originais e desmarcará todas as descolagens favoritas.</p></div>"
+    "avisoResetConfigHtml": "<div style='text-align: center;'><p style='font-size: 2em; margin: 0;'>🔄</p><p><b>⚠️ ATENÇÃO:</b> Esta ação irá repor a configuração para as definições originais e desmarcará todas as descolagens favoritas.</p></div>",
+    "exportar": {
+      "tituloDialog": "💾 Guardar configuração",
+      "mensajeDialog": "Toca em 'Guardar em...' para escolheres uma pasta no teu telemóvel ou enviar o ficheiro.",
+      "guardar": "Guardar em...",
+      "cancelar": "Cancelar",
+      "okTitulo": "✅ Configuração guardada",
+      "okTextoShare": "A minha configuração do Fly Decision:",
+      "okMensaje": "Foi guardada na pasta 'Documentos'. Queres partilhar?",
+      "siCompartir": "Sim, partilhar",
+      "noCompartir": "Não",
+      "tituloShare": "A minha configuração do Fly Decision",
+      "textoShare": "A minha configuração do Fly Decision",
+      "dialogTitle": "Guardar configuração em...",
+      "errorShare": "Não foi possível abrir o menu de partilha. Tenta usar outro método.",
+      "sinShare": "O teu dispositivo não permite partilhar ficheiros diretamente. Certifica-te de que tens o Telegram instalado.",
+      "errorGuardar": "Ups, algo correu mal: "
+    }
   },
 
   "mapa": {
