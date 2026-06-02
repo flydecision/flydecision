@@ -404,7 +404,8 @@
       "vientoRacha": "Límites de Viento y Racha",
       "datosOpcionales": "Datos meteorológicos opcionales",
       "otrasOpciones": "Otras opciones",
-      "sobreActualizacion": "Actualizaciones modelos meteo"
+      "sobreActualizacion": "Actualizaciones modelos meteo",
+      "mapa": "Mapa"
     },
     "guia": "Guía",
     "ayuda": "Ayuda",

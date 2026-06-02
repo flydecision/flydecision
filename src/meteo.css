@@ -3079,13 +3079,8 @@ h3 {
 
 /* 2. LOS OTROS 3 BOTONES SE PONEN A SU LADO EN PARALELO */
 .leaflet-top.leaflet-left .leaflet-control-geocoder,
-.leaflet-top.leaflet-left .leaflet-control-layers,
-.leaflet-top.leaflet-left .leaflet-control-config {
+.leaflet-top.leaflet-left .leaflet-control-layers {
     clear: none !important; /* Quita el salto de línea para que se pongan a la derecha del GPS */
-}
-/* El último botón no necesita margen derecho */
-.leaflet-top.leaflet-left .leaflet-control-config {
-    margin-right: 0 !important;
 }
 /* 2. COMPORTAMIENTO INTELIGENTE (Smart Wrapping) */
 
@@ -3093,10 +3088,6 @@ h3 {
 /* (El botón de Configuración bajará automáticamente acompañando al de Capas) */
 .leaflet-control-geocoder-expanded ~ .leaflet-control-layers {
     clear: left !important; 
-}
-/* Si el panel de CAPAS se expande, empuja el botón de CONFIGURACIÓN a la línea de abajo */
-.leaflet-control-layers-expanded ~ .leaflet-control-config {
-    clear: left !important;
 }
 
 /* ==========================================================================
@@ -3374,11 +3365,12 @@ h3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
     grid-template-rows: repeat(3, 1fr);
-    width: 96px;   /* Subimos de 80 a 96 */
-    height: 96px;  /* Subimos de 80 a 96 */
+    width: 96px;   
+    height: 96px;  
     border-radius: 5px;
-    margin-left: 15px; /* Ajusta según prefieras el centrado */
-    gap: 1px;      /* Un pequeño espacio entre botones ayuda a la legibilidad */
+    margin-left: auto !important;  /* Centrado automático del grid */
+    margin-right: auto !important; /* Centrado automático del grid */
+    gap: 1px;      
 }
 
 /* 2. Estilo del contenedor de cada dirección (LABEL) */
@@ -3582,36 +3574,46 @@ h3 {
     overflow: hidden;
 }
 .control-orientacion-container {  
-    margin-bottom: 5px;
-    margin-top: 5px;
-	padding: 5px;
-}	
-@media (max-width: 768px) {
-	.control-orientacion-container {
-		padding-bottom: 8px;
-	}
-}
-
-.control-vuelos-container {
-    box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
-	display: block; /* La convierte en un elemento de bloque que ocupa toda la línea */
-    margin-bottom: 5px; /* Opcional: añade un pequeño espacio entre el texto y el slider */	
-    padding: 5px;
-    width: 260px;
-}
-.control-ultimovuelo-container {  
-    margin-bottom: 5px;
-    padding: 5px;
-    width: 260px;
+    display: block !important;
+    width: fit-content !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-bottom: 9px !important;
+    margin-top: 8px !important;
+    padding: 5px 5px !important;
+    background-color: transparent !important;
+    border-radius: 8px;
+    transition: box-shadow 0.2s ease-in-out;
     box-sizing: border-box;
 }	
-.configuracion-control-vuelos-container {  
+
+/* Centrar el texto "Orientación:" dentro del contenedor */
+.control-orientacion-container > div:first-child {
+    text-align: center !important;
+}
+
+.control-vuelos-container,
+.control-ultimovuelo-container {  
+    width: 96% !important;      /* Ocupar el 95% de la anchura de su contenedor padre */
+    margin-left: auto !important;  /* Centrado perfecto horizontal */
+    margin-right: auto !important; /* Centrado perfecto horizontal */
+    margin-top: 0 !important;
     margin-bottom: 5px;
-    padding: 5px;
-}	
+    padding: 0px 6px !important;
+    background-color: transparent !important; /* Forzar transparencia por defecto */
+    box-sizing: border-box;
+    border-radius: 8px; /* Esquinas redondeadas para acompañar la sombra roja */
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.configuracion-control-vuelos-container,
 .configuracion-control-ultimovuelo-container {  
     margin-bottom: 5px;
-    padding: 5px;
+    padding: 0px 6px;
+    background-color: transparent !important; /* Transparente por defecto */
+    box-sizing: border-box;
+    transition: box-shadow 0.2s ease-in-out;
+    border-radius: 8px; /* Redondeado idéntico a las tarjetas del mapa */
 }	
 
 /* Ajuste fino posición del la clase original para que coincida con el punto exacto.Original: -20px */

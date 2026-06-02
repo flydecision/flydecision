@@ -96,6 +96,42 @@ let autoSeleccionInicialHecha = false; // bandera de control para la selección 
 // Tiempo máximo (en milisegundos) que la app intentará descargar los datos si la conexión es lenta. Pasado este tiempo, forzará el uso de la caché offline.
 const TIMEOUT_DESCARGA_DATOS_MS = 5000;
 
+// Este mapa define el RANGO de 16 orientaciones que cubre cada una de las 8 selecciones del usuario.
+// Usamos el formato '_ORIENTACION' para coincidir con la metadata.
+const MAPA_RANGO_ORIENTACION = {
+    'N': ['_N', '_NNE', '_NNO'],
+    'NE': ['_NE', '_NNE', '_ENE'],
+    'E': ['_E', '_ENE', '_ESE'],
+    'SE': ['_SE', '_ESE', '_SSE'],
+    'S': ['_S', '_SSE', '_SSO'],
+    'SO': ['_SO', '_SSO', '_OSO'],
+    'O': ['_O', '_OSO', '_ONO'],
+    'NO': ['_NO', '_ONO', '_NNO']
+};
+
+/**
+ * Mapa de conversión: 
+ * Asigna las 16 orientaciones de la metadata a los 8 segmentos del icono
+ */
+const METADATA_TO_ICON_MAP = {
+    'N':   ['N'],
+    'NNE': ['N', 'NE'],
+    'NE':  ['NE'],
+    'ENE': ['NE', 'E'],
+    'E':   ['E'],
+    'ESE': ['E', 'SE'],
+    'SE':  ['SE'],
+    'SSE': ['SE', 'S'],
+    'S':   ['S'],
+    'SSO': ['S', 'SO'],
+    'SO':  ['SO'],
+    'OSO': ['SO', 'O'],
+    'O':   ['O'],
+    'ONO': ['O', 'NO'],
+    'NO':  ['NO'],
+    'NNO': ['N', 'NO']
+};
+
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
 // Asegúrate de que Capacitor está disponible
 // if (window.Capacitor && window.Capacitor.Plugins.StatusBar) {
@@ -5931,6 +5967,107 @@ document.addEventListener('i18nReady', function() {
     }
 
 	// ---------------------------------------------------------------
+	// 🔴 INICIALIZACIÓN GLOBAL DE SLIDERS DE AJUSTES DEL MAPA
+	// ---------------------------------------------------------------
+
+    function inicializarSlidersAjustesMapa() {
+        const STORAGE_KEY_VUELOS = 'METEO_MAPA_MINIMOVUELOS';
+        const STORAGE_KEY_ULTIMO_VUELO = 'METEO_MINIMO_ANO_ULTIMO_VUELO';
+
+        const sliderVuelosConfig = document.getElementById('sliderValorInicialFiltroNumeroMinimoVuelos');
+        const textoVuelosConfig = document.getElementById('valorConfigFiltroNumeroMinimoVuelosTexto'); 
+        const contConfigVuelos = document.querySelector('.configuracion-control-vuelos-container');
+
+        const sliderUltimoVueloConfig = document.getElementById('sliderValorInicialFiltroUltimoVuelo');
+        const textoUltimoVueloConfig = document.getElementById('valorConfigFiltroUltimoVueloTexto'); 
+        const contConfigUltimoVuelo = document.querySelector('.configuracion-control-ultimovuelo-container');
+
+        // 1. Cargar valores iniciales desde localStorage al arrancar la App
+        const indiceVuelosGuardado = localStorage.getItem(STORAGE_KEY_VUELOS) || '0';
+        const indiceUltimoVueloGuardado = localStorage.getItem(STORAGE_KEY_ULTIMO_VUELO) || '0';
+
+        if (sliderVuelosConfig && textoVuelosConfig) {
+            sliderVuelosConfig.value = indiceVuelosGuardado;
+            textoVuelosConfig.innerText = ESCALA_VUELOS[parseInt(indiceVuelosGuardado, 10)] || 0;
+            
+            if (contConfigVuelos) {
+                contConfigVuelos.style.backgroundColor = 'transparent';
+                if (parseInt(indiceVuelosGuardado, 10) > 0) contConfigVuelos.classList.add('borde-rojo-externo');
+                else contConfigVuelos.classList.remove('borde-rojo-externo');
+            }
+        }
+
+        if (sliderUltimoVueloConfig && textoUltimoVueloConfig) {
+            sliderUltimoVueloConfig.value = indiceUltimoVueloGuardado;
+            let val = ESCALA_ULTIMO_VUELO[parseInt(indiceUltimoVueloGuardado, 10)] || ESCALA_ULTIMO_VUELO[0];
+            textoUltimoVueloConfig.innerText = val === 'Todos' ? t('mapa.todos') : val;
+
+            if (contConfigUltimoVuelo) {
+                contConfigUltimoVuelo.style.backgroundColor = 'transparent';
+                if (parseInt(indiceUltimoVueloGuardado, 10) > 0) contConfigUltimoVuelo.classList.add('borde-rojo-externo');
+                else contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
+            }
+        }
+
+        // 2. Listeners de interacción (Cuando el usuario mueve el dedo en los Ajustes)
+        if (sliderVuelosConfig) {
+            sliderVuelosConfig.addEventListener('input', function() {
+                const indiceActual = this.value;
+                const valorReal = ESCALA_VUELOS[parseInt(indiceActual, 10)] || 0;
+                
+                if (textoVuelosConfig) textoVuelosConfig.innerText = valorReal;
+                localStorage.setItem(STORAGE_KEY_VUELOS, indiceActual);
+                
+                if (contConfigVuelos) {
+                    if (parseInt(indiceActual, 10) > 0) contConfigVuelos.classList.add('borde-rojo-externo');
+                    else contConfigVuelos.classList.remove('borde-rojo-externo');
+                }
+
+                // Sincronizar con el mapa SOLO si ya se ha abierto y existe
+                if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
+                    const sliderVuelosFiltro = document.getElementById('sliderVuelos');
+                    const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
+                    if (sliderVuelosFiltro) sliderVuelosFiltro.value = indiceActual;
+                    if (textoVuelosFiltro) textoVuelosFiltro.innerText = valorReal;
+
+                    if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
+                    if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
+                }
+            });
+        }
+
+        if (sliderUltimoVueloConfig) {
+            sliderUltimoVueloConfig.addEventListener('input', function() {
+                const indiceActual = this.value;
+                let valorReal = ESCALA_ULTIMO_VUELO[parseInt(indiceActual, 10)] || ESCALA_ULTIMO_VUELO[0];
+                let valorMostrar = valorReal === 'Todos' ? t('mapa.todos') : valorReal;
+                
+                if (textoUltimoVueloConfig) textoUltimoVueloConfig.innerText = valorMostrar;
+                localStorage.setItem(STORAGE_KEY_ULTIMO_VUELO, indiceActual);
+
+                if (contConfigUltimoVuelo) {
+                    if (parseInt(indiceActual, 10) > 0) contConfigUltimoVuelo.classList.add('borde-rojo-externo');
+                    else contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
+                }
+
+                // Sincronizar con el mapa SOLO si ya se ha abierto y existe
+                if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
+                    const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
+                    const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
+                    if (sliderUltimoVueloFiltro) sliderUltimoVueloFiltro.value = indiceActual;
+                    if (textoUltimoVueloFiltro) textoUltimoVueloFiltro.innerText = valorMostrar;
+
+                    if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
+                    if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
+                }
+            });
+        }
+    }
+
+    // Llamamos a la función recién creada
+    inicializarSlidersAjustesMapa();
+
+	// ---------------------------------------------------------------
 	// 🔴 BUSCADOR. Listeners, Funciones, Lógica para limpiar búsquedas
 	// ---------------------------------------------------------------
 	
@@ -7221,12 +7358,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 if (popupAbierto && typeof map !== 'undefined') {
                     map.closePopup();
                     return; 
-                }
-
-                // Panel Configuración del mapa
-                if (document.getElementById('configuracionPanel')?.style.display !== 'none') {
-                    if (typeof window.cerrarConfiguracionMapa === 'function') window.cerrarConfiguracionMapa();
-                    return;
                 }
 
                 // infoPanel (Capas y Filtros) — click en buttonCerrar para que gestione también isFijado
@@ -8932,12 +9063,12 @@ function inicializarMapaLeaflet() {
     // 🔍 1º Prioridad: Obtener los valores forzados de la URL (si te pasan un enlace directo)
     const urlLat = parseFloat(params.get('lat'));
     const urlLon = parseFloat(params.get('lon'));
-    const urlZoom = parseInt(params.get('zoom'));
+    const urlZoom = parseFloat(params.get('zoom'));
 
     // 💾 2º Prioridad: Leer de la memoria la última posición en la que estuviste
     const localLat = parseFloat(localStorage.getItem('METEO_MAPA_LAST_LAT'));
     const localLon = parseFloat(localStorage.getItem('METEO_MAPA_LAST_LON'));
-    const localZoom = parseInt(localStorage.getItem('METEO_MAPA_LAST_ZOOM'));
+    const localZoom = parseFloat(localStorage.getItem('METEO_MAPA_LAST_ZOOM'));
 
     // 💡 3º Prioridad: Valores por defecto (Centro de España, primera vez que se abre la app)
     const defaultLat = 42.7340;
@@ -9158,76 +9289,88 @@ function inicializarMapaLeaflet() {
     // FUNCIÓN PARA GESTIONAR EL ESTADO VISUAL DE LOS CONTROLES
     function actualizarEstadoVisualFiltros() {
 
-        // 1. COMPROBAR ESTADO DE LOS 4 FILTROS
+        // 1. COMPROBAR ESTADO DE LOS FILTROS EN EL MAPA
         // Orientación: Comprueba si hay al menos uno marcado
         const hayFiltroOrientacion = obtenerOrientacionesSeleccionadas().length > 0;
         
-        // 1. Vuelos: Comprueba si el valor es mayor que 0
+        // Vuelos: Comprueba si el valor es mayor que 0
         const sliderVuelos = document.getElementById('sliderVuelos');
-        const indiceVuelos = parseInt(sliderVuelos.value, 10);
-        // Asume que ESCALA_VUELOS está disponible globalmente
+        const indiceVuelos = sliderVuelos ? parseInt(sliderVuelos.value, 10) : 0;
         const hayFiltroVuelos = (ESCALA_VUELOS[indiceVuelos] || 0) > 0; 
         
-        function obtenerValorReal(indice) {
-            // La misma lógica de tu función actualizarFiltrosMapa
-            const indiceNumerico = parseInt(indice, 10);
-            return ESCALA_VUELOS[indiceNumerico] !== undefined ? ESCALA_VUELOS[indiceNumerico] : 0;
-        }
-        const hayConfiguracionInicialFiltroVuelos = (obtenerValorReal(localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0') > 0);
-        const hayConfiguracionInicialFiltroUltimoVuelo = (obtenerValorReal(localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0') > 0);
-    
-        // 2. Último Vuelo: Comprueba si el valor no es 'Todos' (índice 0)
+        // Último Vuelo: Comprueba si el valor no es 'Todos' (índice 0)
         const sliderUltimoVuelo = document.getElementById('sliderUltimoVuelo');
-        const indiceUltimoVuelo = parseInt(sliderUltimoVuelo.value, 10);
+        const indiceUltimoVuelo = sliderUltimoVuelo ? parseInt(sliderUltimoVuelo.value, 10) : 0;
         const hayFiltroAnio = indiceUltimoVuelo !== 0;
 
-        function obtenerValorReal(indice) {
-            // La misma lógica de tu función actualizarFiltrosMapa
-            const indiceNumerico = parseInt(indice, 10);
-            return ESCALA_KMMEDIA[indiceNumerico] !== undefined ? ESCALA_KMMEDIA[indiceNumerico] : 0;
-        }
+        // 2. COMPROBAR CONFIGURACIÓN INICIAL (Ajustes Generales)
+        const hayConfiguracionInicialFiltroVuelos = parseInt(localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0', 10) > 0;
+        const hayConfiguracionInicialFiltroUltimoVuelo = parseInt(localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0', 10) > 0;
 
-        // 2. DEFINIR COLORES Y ESTILOS
+        // 3. COLORES PARA LA ROSA DE LOS VIENTOS (Mantiene el clásico azul/blanco)
         const ACTIVO_COLOR = '#0404ff30';
         const INACTIVO_COLOR = '#ffffff';
 
-        // 3. ACTUALIZAR CONTENEDORES INDIVIDUALES
+        // 4. ACTUALIZAR CONTENEDORES INDIVIDUALES DEL MAPA
         
-        // Contenedor Orientación
+        // Contenedor Orientación (Ahora transparente + borde rojo cuando esté activo)
         const contOrientacion = document.querySelector('.control-orientacion-container');
         if (contOrientacion) {
-            contOrientacion.style.backgroundColor = hayFiltroOrientacion ? ACTIVO_COLOR : INACTIVO_COLOR;
+            contOrientacion.style.backgroundColor = 'transparent';
+            if (hayFiltroOrientacion) {
+                contOrientacion.classList.add('borde-rojo-externo');
+            } else {
+                contOrientacion.classList.remove('borde-rojo-externo');
+            }
         }
 
-        // Contenedor Vuelos
+        // Contenedor Vuelos (Mapa - Ahora transparente + borde rojo)
         const contVuelos = document.querySelector('.control-vuelos-container');
         if (contVuelos) {
-            contVuelos.style.backgroundColor = hayFiltroVuelos ? ACTIVO_COLOR : INACTIVO_COLOR;
+            contVuelos.style.backgroundColor = 'transparent';
+            if (hayFiltroVuelos) {
+                contVuelos.classList.add('borde-rojo-externo');
+            } else {
+                contVuelos.classList.remove('borde-rojo-externo');
+            }
         }
 
-        // Contenedor Último Vuelo
+        // Contenedor Último Vuelo (Mapa - Ahora transparente + borde rojo)
         const contUltimoVuelo = document.querySelector('.control-ultimovuelo-container');
         if (contUltimoVuelo) {
-            contUltimoVuelo.style.backgroundColor = hayFiltroAnio ? ACTIVO_COLOR : INACTIVO_COLOR;
+            contUltimoVuelo.style.backgroundColor = 'transparent';
+            if (hayFiltroAnio) {
+                contUltimoVuelo.classList.add('borde-rojo-externo');
+            } else {
+                contUltimoVuelo.classList.remove('borde-rojo-externo');
+            }
         }
 
-        // Contenedor Configuración Vuelos
-        document.querySelector('.configuracion-control-vuelos-container').style.backgroundColor = hayConfiguracionInicialFiltroVuelos ? ACTIVO_COLOR : INACTIVO_COLOR;
+        // 5. ACTUALIZAR LOS DESLIZADORES DEL ACORDEÓN (Transparentes + borde rojo)
+        const contConfigVuelos = document.querySelector('.configuracion-control-vuelos-container');
+        if (contConfigVuelos) {
+            contConfigVuelos.style.backgroundColor = 'transparent';
+            if (hayConfiguracionInicialFiltroVuelos) {
+                contConfigVuelos.classList.add('borde-rojo-externo');
+            } else {
+                contConfigVuelos.classList.remove('borde-rojo-externo');
+            }
+        }
 
-        // Contenedor Configuración Vuelos
-        document.querySelector('.configuracion-control-ultimovuelo-container').style.backgroundColor = hayConfiguracionInicialFiltroUltimoVuelo ? ACTIVO_COLOR : INACTIVO_COLOR;
+        const contConfigUltimoVuelo = document.querySelector('.configuracion-control-ultimovuelo-container');
+        if (contConfigUltimoVuelo) {
+            contConfigUltimoVuelo.style.backgroundColor = 'transparent';
+            if (hayConfiguracionInicialFiltroUltimoVuelo) {
+                contConfigUltimoVuelo.classList.add('borde-rojo-externo');
+            } else {
+                contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
+            }
+        }
 
-
-        // 4. ACTUALIZAR PANEL GLOBAL
+        // 6. ACTUALIZAR PANEL GLOBAL (Borde rojo externo al estar retraído)
         const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio;
-        const etiquetaInfoPanel = document.querySelector('.labelMostrarOpciones');
         const infoPanelPrincipal = document.getElementById('infoPanel');
         
-        // if (etiquetaInfoPanel) {
-        //     etiquetaInfoPanel.style.backgroundColor = hayCualquierFiltro ? ACTIVO_COLOR : ''; 
-        // }
-
-        // --- NUEVO: BORDE ROJO AL ESTAR RETRAÍDO ---
         if (infoPanelPrincipal) {
             if (hayCualquierFiltro) {
                 infoPanelPrincipal.classList.add('borde-rojo-externo');
@@ -9236,7 +9379,6 @@ function inicializarMapaLeaflet() {
             }
         }
     }
-
 
     // 🛑 Listener que asegura que se pueda cambiar el estilo del popup original que ofrece Leaflet. Esa función no reemplaza clases, añade una clase adicional a los elementos internos del popup que Leaflet genera dinámicamente (.leaflet-popup-content-wrapper y .leaflet-popup-tip). Leaflet crea esos nodos cada vez que se abre un popup, por eso no puedes modificarlos con CSS global antes: no existen hasta que el popup se muestra. El map.on('popupopen', …) intercepta ese momento y añade tu clase personalizada (por ejemplo, popup-despegues). Se puede añadir más clases. Objetivo: aplicar un estilo distinto solo a ciertos popups sin afectar al resto.
     map.on('popupopen', function (e) {
@@ -9642,149 +9784,6 @@ function inicializarMapaLeaflet() {
         observerGeocoder.observe(contenedorGeocoder, { attributes: true });
     }
     // ------------------------------------------------------------
-        
-    // 🟡 CONTROL "Configuración" (Despliega #configuracionPanel)
-    L.Control.ConfigToggle = L.Control.extend({
-
-        options: { position: 'topleft' },
-        onAdd: function(map) {
-            // 1. Contenedor principal de Leaflet
-            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-config');
-            // Quitamos el borde negro estándar de leaflet-bar para que no haga cosas raras
-            container.style.border = 'none'; 
-            
-            // 2. Traemos el Panel Blanco de Ajustes desde el HTML
-            this._configPanel = document.getElementById('configuracionPanel');
-            
-            if (this._configPanel) {
-                // Preparamos el panel para recibir elementos "flotantes" dentro
-                this._configPanel.style.position = 'relative';
-                // Añadimos margen superior para que el texto "Ajustes:" no se pise con la X
-                this._configPanel.style.paddingTop = '30px'; 
-                
-                container.appendChild(this._configPanel);
-                this._configPanel.style.display = 'none'; 
-            } else {
-                console.error("⚠️ Error: No encuentro el <div id='configuracionPanel'> en el HTML");
-            }
-            
-            // 3. El Botón
-            const buttonDiv = L.DomUtil.create('div', 'leaflet-control-button', container);
-            buttonDiv.style.cursor = 'pointer';
-            buttonDiv.title = t('mapa.ajustes'); 
-            
-            // Iconos (Engranaje y X)
-            this._iconGear = `<svg width="30" height="30" viewBox="-3 -3 30 30" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                                </svg>`;
-            this._iconX = `<span class="div-mapa-close-btn" style="line-height: 1;">❌</span>`;
-            
-            // Estilos del Botón (Engranaje por defecto)
-            buttonDiv.innerHTML = this._iconGear;
-            buttonDiv.style.padding = '0';
-            buttonDiv.style.display = 'flex';
-            buttonDiv.style.justifyContent = 'center';
-            buttonDiv.style.alignItems = 'center';  
-            buttonDiv.style.backgroundColor = 'white';      
-            buttonDiv.style.width = '30px';  
-            buttonDiv.style.height = '30px'; 
-            
-            // Recuperamos el borde y la sombra original de Leaflet (ya que se lo quitamos al contenedor padre)
-            buttonDiv.style.backgroundClip = 'padding-box';
-            // buttonDiv.style.border = '1px solid #6e6e6e';
-            buttonDiv.style.borderRadius = '10px';
-            
-            this._buttonDiv = buttonDiv; 
-            
-            L.DomEvent.disableClickPropagation(container);
-            L.DomEvent.disableScrollPropagation(container);
-            L.DomEvent.on(buttonDiv, 'click', this._togglePanel, this);
-            L.DomEvent.on(map, 'click', this._collapse, this);
-            L.DomEvent.on(map, 'moveend', this._collapse, this);
-            
-            return container;
-        },
-        
-        _togglePanel: function(e) {
-            L.DomEvent.stopPropagation(e);
-            if (this._configPanel.style.display === 'none') {
-                this._expand();
-            } else {
-                this._collapse();
-            }
-        },
-        
-        _expand: function() {
-            // 1. Mostrar Panel
-            this._configPanel.style.display = 'block'; 
-            
-            // 🚀 INTELIGENCIA UX: Escondemos temporalmente la Meteo de forma PURAMENTE VISUAL
-            if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-                if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-                    window.meteoEscondidoPorAjustes = true;
-                    const divFH = document.getElementById('div-filtro-horario');
-                    if (divFH) divFH.style.display = 'none'; // Escondemos el panel sin apagar el filtro
-                } else {
-                    const btnFiltros = document.getElementById('btn-filtros-mapa');
-                    if (btnFiltros) btnFiltros.style.visibility = 'hidden';
-                }
-            }
-            
-            // 2. Cambiar icono a X
-            this._buttonDiv.innerHTML = this._iconX; 
-            
-            // 3. Quitar bordes para que se funda con el panel blanco
-            this._buttonDiv.style.border = 'none';
-            this._buttonDiv.style.background = 'transparent';
-            
-            // 4. Mover el botón adentro del panel blanco y pegarlo a la esquina superior derecha
-            this._buttonDiv.style.position = 'absolute';
-            this._buttonDiv.style.top = '0px';
-            this._buttonDiv.style.right = '0px';
-            this._buttonDiv.style.zIndex = '1000';
-            
-            // Meter el botón FÍSICAMENTE dentro del panel blanco
-            this._configPanel.appendChild(this._buttonDiv);
-        },
-        
-        _collapse: function() {
-            // 1. Ocultar Panel
-            this._configPanel.style.display = 'none';
-            
-            // 🚀 INTELIGENCIA UX: Restauramos la visibilidad de la Meteo o su botón
-            if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-                if (window.meteoEscondidoPorAjustes) {
-                    window.meteoEscondidoPorAjustes = false;
-                    const divFH = document.getElementById('div-filtro-horario');
-                    if (divFH) divFH.style.display = ''; // Lo volvemos a mostrar
-                } else {
-                    const btnFiltros = document.getElementById('btn-filtros-mapa');
-                    if (btnFiltros) btnFiltros.style.visibility = '';
-                }
-            }
-            
-            // 2. Restaurar icono Engranaje
-            this._buttonDiv.innerHTML = this._iconGear;
-            
-            // 3. Restaurar bordes y fondo
-            this._buttonDiv.style.backgroundColor = 'white';
-            
-            // 4. Devolver el botón al flujo normal de Leaflet (fuera del panel blanco)
-            this._buttonDiv.style.position = 'relative';
-            this._buttonDiv.style.top = 'auto';
-            this._buttonDiv.style.right = 'auto';
-            
-            // Volver a colocar el botón FÍSICAMENTE fuera del panel blanco, en el contenedor general
-            const container = this._configPanel.parentNode;
-            // Lo insertamos como primer elemento para que el menú de ajustes siga quedando debajo si se abriera de otra forma
-            container.insertBefore(this._buttonDiv, container.firstChild);
-        }
-    });
-
-    L.control.configToggle = function(options) {
-        return new L.Control.ConfigToggle(options);
-    };
 
     // 🟡 CONTROL "Capas"
     const baseMaps = {
@@ -9810,10 +9809,6 @@ function inicializarMapaLeaflet() {
     // 1. Añadimos primero Capas a la izquierda
     const controlCapas = L.control.layers(baseMaps, {}, { position: 'topleft' }).addTo(map);
     window.capasLeaflet = controlCapas; // exposición global para poder cerrarlo con Atrás Android
-
-    // 1.2. Y justo después añadimos Configuración a la izquierda (así se pone a su derecha)
-    const configToggleControl = L.control.configToggle({ position: 'topleft' }).addTo(map);
-    window.cerrarConfiguracionMapa = () => configToggleControl._collapse();
 
     // 2. Creamos NUESTRO propio botón físico "X"
     const btnCerrarCapas = L.DomUtil.create('div', 'cerrar-capas-btn');
@@ -11275,140 +11270,31 @@ function inicializarMapaLeaflet() {
         L.DomEvent.off(infoPanel, 'click', expandirAlClicar);	
     }
 
-    // gestionar la configuración inicial
-        
-    // 1. Filtro Real (Vuelos)
+    // --- SINCRONIZACIÓN INICIAL DEL PANEL INTERNO DEL MAPA ---
     const sliderVuelosFiltro = document.getElementById('sliderVuelos');
     const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
-    
-    // 2. Filtro Real (Último Vuelo)
     const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
     const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
 
-    // 1. Filtro Real (KmMedia)
-    const sliderKmMediaFiltro = document.getElementById('sliderKmMedia');
-    const textoKmMediaFiltro = document.getElementById('valorKmMediaTexto');
-    
-    // 3. Configuración (Vuelos)
-    const sliderVuelosConfig = document.getElementById('sliderValorInicialFiltroNumeroMinimoVuelos');
-    // 🚩 IMPORTANTE: ID en el HTML para el texto del config de Vuelos
-    const textoVuelosConfig = document.getElementById('valorConfigFiltroNumeroMinimoVuelosTexto'); 
-    
-    // 4. Configuración (Último Vuelo)
-    const sliderUltimoVueloConfig = document.getElementById('sliderValorInicialFiltroUltimoVuelo');
-    // 🚩 IMPORTANTE: ID en el HTML para el texto del config de Último Vuelo
-    const textoUltimoVueloConfig = document.getElementById('valorConfigFiltroUltimoVueloTexto'); 
-    
-    // --- CLAVES DE ALMACENAMIENTO ---
-    const STORAGE_KEY_VUELOS = 'METEO_MAPA_MINIMOVUELOS';
-    const STORAGE_KEY_ULTIMO_VUELO = 'METEO_MINIMO_ANO_ULTIMO_VUELO';
-
-    // Función auxiliar para obtener el valor real según la escala
-    function obtenerValorReal(indice, escala) {
-        const indiceNumerico = parseInt(indice, 10);
-        // Si el índice no existe o la escala no está definida, devuelve el valor más bajo (0 o 'Todos')
-        return escala && escala[indiceNumerico] !== undefined ? escala[indiceNumerico] : escala[0];
+    // Leemos valores del localStorage (que dictan los Ajustes Generales)
+    const indiceVuelos = localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0';
+    if (sliderVuelosFiltro && textoVuelosFiltro) {
+        sliderVuelosFiltro.value = indiceVuelos;
+        textoVuelosFiltro.innerText = ESCALA_VUELOS[parseInt(indiceVuelos, 10)] || 0;
     }
 
-    // --- FUNCIÓN DE INICIALIZACIÓN (Carga) ---
-    function iniciarConfiguracion() {
-        
-        // 1. VUELOS: Lectura y Conversión
-        const indiceVuelosGuardado = localStorage.getItem(STORAGE_KEY_VUELOS) || '0';
-        const valorRealVuelos = obtenerValorReal(indiceVuelosGuardado, ESCALA_VUELOS);
-        
-        // 2. ÚLTIMO VUELO: Lectura y Conversión
-        const indiceUltimoVueloGuardado = localStorage.getItem(STORAGE_KEY_ULTIMO_VUELO) || '0';
-        let valorRealUltimoVuelo = obtenerValorReal(indiceUltimoVueloGuardado, ESCALA_ULTIMO_VUELO); 
-
-        // Si el valor es 'Todos', buscamos la traducción antes de pintarlo
-        if (valorRealUltimoVuelo === 'Todos') {
-            valorRealUltimoVuelo = t('mapa.todos');
-        }
-
-        // B. Aplicar a Sliders de CONFIGURACIÓN (Visual)
-        if(sliderVuelosConfig && textoVuelosConfig) {
-            sliderVuelosConfig.value = indiceVuelosGuardado;
-            textoVuelosConfig.innerText = valorRealVuelos;
-        }
-        if(sliderUltimoVueloConfig && textoUltimoVueloConfig) {
-            sliderUltimoVueloConfig.value = indiceUltimoVueloGuardado;
-            textoUltimoVueloConfig.innerText = valorRealUltimoVuelo;
-        }
-
-        // C. Aplicar a Sliders de FILTRO REAL (Funcional)
-        if(sliderVuelosFiltro && textoVuelosFiltro) {
-            sliderVuelosFiltro.value = indiceVuelosGuardado;
-            textoVuelosFiltro.innerText = valorRealVuelos;
-        }
-        if(sliderUltimoVueloFiltro && textoUltimoVueloFiltro) {
-            sliderUltimoVueloFiltro.value = indiceUltimoVueloGuardado;
-            textoUltimoVueloFiltro.innerText = valorRealUltimoVuelo;
-        }
-
-        // D. Disparar el filtro del mapa.
-        // Se asume que actualizarFiltrosMapa() está disponible globalmente.
-        actualizarFiltrosMapa(); 
+    const indiceUltimoVuelo = localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0';
+    if (sliderUltimoVueloFiltro && textoUltimoVueloFiltro) {
+        sliderUltimoVueloFiltro.value = indiceUltimoVuelo;
+        let val = ESCALA_ULTIMO_VUELO[parseInt(indiceUltimoVuelo, 10)] || ESCALA_ULTIMO_VUELO[0];
+        textoUltimoVueloFiltro.innerText = val === 'Todos' ? t('mapa.todos') : val;
     }
 
-    // --- LISTENERS PARA GUARDAR LA CONFIGURACIÓN ---
+    // Ejecutamos el motor de filtros y la interfaz para aplicar los datos recién leídos
+    if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
     
-    // Listener Configuración Vuelos (Guarda, sincroniza y filtra)
-    if (sliderVuelosConfig) {
-        sliderVuelosConfig.addEventListener('input', function() {
-            const indiceActual = this.value;
-            const valorReal = obtenerValorReal(indiceActual, ESCALA_VUELOS);
-            
-            // 1. Actualiza el texto en este panel de configuración
-            if (textoVuelosConfig) textoVuelosConfig.innerText = valorReal;
-            
-            // 2. Guarda el dato para la próxima vez
-            localStorage.setItem(STORAGE_KEY_VUELOS, indiceActual);
-            
-            // --- NUEVO: APLICAR INMEDIATAMENTE ---
-            // 3. Sincroniza el deslizador del panel principal "Capas y filtros"
-            if (sliderVuelosFiltro) {
-                sliderVuelosFiltro.value = indiceActual;
-                if (textoVuelosFiltro) textoVuelosFiltro.innerText = valorReal;
-            }
-            // 4. Manda la orden al mapa para que oculte/muestre marcadores ya mismo
-            if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
-            // ------------------------------------
-
-            // 5. Actualiza los fondos azules
-            actualizarEstadoVisualFiltros();
-        });
-    }
-    
-    // Listener Configuración Último Vuelo (Guarda, sincroniza y filtra)
-    if (sliderUltimoVueloConfig) {
-        sliderUltimoVueloConfig.addEventListener('input', function() {
-            const indiceActual = this.value;
-            const valorReal = obtenerValorReal(indiceActual, ESCALA_ULTIMO_VUELO);
-            
-            // 1. Actualiza el texto en este panel de configuración
-            if (textoUltimoVueloConfig) textoUltimoVueloConfig.innerText = valorReal;
-            
-            // 2. Guarda el dato para la próxima vez
-            localStorage.setItem(STORAGE_KEY_ULTIMO_VUELO, indiceActual);
-            
-            // --- NUEVO: APLICAR INMEDIATAMENTE ---
-            // 3. Sincroniza el deslizador del panel principal "Capas y filtros"
-            if (sliderUltimoVueloFiltro) {
-                sliderUltimoVueloFiltro.value = indiceActual;
-                if (textoUltimoVueloFiltro) textoUltimoVueloFiltro.innerText = valorReal;
-            }
-            // 4. Manda la orden al mapa para que oculte/muestre marcadores ya mismo
-            if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
-            // ------------------------------------
-
-            // 5. Actualiza los fondos azules
-            actualizarEstadoVisualFiltros();
-        });
-    }
-
-    // Ejecutar la carga inicial
-    iniciarConfiguracion();
+    // Exponemos la función de estado visual y la ejecutamos
+    window.actualizarEstadoVisualFiltros = actualizarEstadoVisualFiltros;
     actualizarEstadoVisualFiltros();
     
     // 🔴 CAPAS:
@@ -11600,45 +11486,6 @@ function inicializarMapaLeaflet() {
 
         return orientacionesActivas; // Retorna un array, e.g., ['N', 'NE']
     }
-
-    // Este mapa define el RANGO de 16 orientaciones que cubre cada una de las 8 selecciones del usuario.
-    // Usamos el formato '_ORIENTACION' para coincidir con la metadata.
-    const MAPA_RANGO_ORIENTACION = {
-        'N': ['_N', '_NNE', '_NNO'],
-        'NE': ['_NE', '_NNE', '_ENE'],
-        'E': ['_E', '_ENE', '_ESE'],
-        'SE': ['_SE', '_ESE', '_SSE'],
-        'S': ['_S', '_SSE', '_SSO'],
-        'SO': ['_SO', '_SSO', '_OSO'],
-        'O': ['_O', '_OSO', '_ONO'],
-        'NO': ['_NO', '_ONO', '_NNO']
-    };
-
-
-    /**
-     * Mapa de conversión: 
-     * Asigna las 16 orientaciones de la metadata (ej. 'NNE') 
-     * a los 8 segmentos del icono (ej. 'N' y 'NE').
-     */
-    const METADATA_TO_ICON_MAP = {
-        'N':   ['N'],
-        'NNE': ['N', 'NE'], // NNE está entre N y NE
-        'NE':  ['NE'],
-        'ENE': ['NE', 'E'],
-        'E':   ['E'],
-        'ESE': ['E', 'SE'],
-        'SE':  ['SE'],
-        'SSE': ['SE', 'S'],
-        'S':   ['S'],
-        'SSO': ['S', 'SO'],
-        'SO':  ['SO'],
-        'OSO': ['SO', 'O'],
-        'O':   ['O'],
-        'ONO': ['O', 'NO'],
-        'NO':  ['NO'],
-        'NNO': ['N', 'NO']  // NNO está entre N y NO
-    };
-
 
     /**
      * Crea un icono SVG de rosa de los vientos con 16 segmentos visuales.

@@ -404,7 +404,8 @@
       "vientoRacha": "Wind & Gust Limits",
       "datosOpcionales": "Optional Weather Data",
       "otrasOpciones": "Other Options",
-      "sobreActualizacion": "Weather model updates"
+      "sobreActualizacion": "Weather model updates",
+      "mapa": "Map"
     },
     "guia": "Guide",
     "ayuda": "Help",
