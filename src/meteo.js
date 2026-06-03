@@ -4338,10 +4338,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // Botón de Información ("i")
             const botonInfoHTML = `
                 <button class="btn-info" 
-                    style="position: absolute; bottom: 2px; left: 2px;"
+                    style="position: absolute; bottom: 34px; left: 13px;"
                     data-tippy-content="${contenidoEscapado}"
                     title="${t('tabla.tooltips.masInfo')}">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="12" y1="7" x2="12" y2="7" stroke-width="2.5"></line>
                         <polyline points="10.5 11 12 11 12 17"></polyline>
@@ -4352,10 +4352,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // Botón directo al Mapa (posicionado a la derecha del anterior)
             const botonMapaDirectoHTML = `
                 <button class="btn-info btn-guia-mapa-directo" 
-                    style="position: absolute; bottom: 2px; left: 31px;"  
+                    style="position: absolute; bottom: 34px; left: 56px;"  
                     onclick="abrirMapaIntegrado(${latitud}, ${longitud}, '${safeDespegue}'); return false;"
                     title="${t('tabla.tooltips.verEnMapa')}">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" style="vertical-align: middle;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" style="vertical-align: middle;">
                         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
                         <line x1="8" y1="2" x2="8" y2="18"></line>
                         <line x1="16" y1="6" x2="16" y2="22"></line>
@@ -4368,11 +4368,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             const esFavoritoBtn  = obtenerFavoritos().map(Number).includes(Number(d.ID));
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-favorito-tabla"
-                    style="position: absolute; bottom: 2px; left: 60px;"
+                    style="position: absolute; bottom: 2px; left: 13px;"
                     onclick="toggleFavoritoDesdeTabla(${d.ID}, this); return false;"
                     title="${esFavoritoBtn  ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="${esFavoritoBtn  ? '#e00' : 'none'}" stroke="${esFavoritoBtn  ? '#e00' : '#333'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="${esFavoritoBtn  ? '#e00' : 'none'}" stroke="${esFavoritoBtn  ? '#e00' : '#333'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </button>
+            `;
+
+            const botonOjoHTML = modoEdicionFavoritos ? "" : `
+                <button class="btn-info btn-ojo-tabla"
+                    style="position: absolute; bottom: 2px; left: 56px;"
+                    title="Ver detalle">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
                     </svg>
                 </button>
             `;
@@ -4407,11 +4418,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
                 ${botonFavoritoHTML}
+                ${botonOjoHTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
                 ${htmlIconosCentrales}
 
-                <span class="linea-divisora-edit" style="position: absolute; bottom: 28px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
+                <span class="linea-divisora-edit" style="position: absolute; bottom: 66px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
 
 			// ROWSPAN DINÁMICO
@@ -4419,7 +4431,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda");
             if (modoEdicionFavoritos) {
                 tdDespegue.classList.add("borde-grueso-derecha");
-                tdDespegue.style.paddingBottom = '26px';
+                tdDespegue.style.paddingBottom = '66px';
             }
 			
 			filaPrincipal.appendChild(tdDespegue);

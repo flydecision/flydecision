@@ -2390,8 +2390,8 @@ label.custom-checkbox {
   transition: background-color 0.2s;
 }
 .columna-despegue .btn-info {
-    width: 27px !important;
-    height: 27px !important;
+    width: 30px !important;
+    height: 30px !important;
     padding: 0 !important;
     box-sizing: border-box !important;
 }
