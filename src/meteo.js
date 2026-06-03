@@ -6,6 +6,7 @@
 let DATOS_METEO_CACHE = null;
 let DATOS_METEO_ECMWF_CACHE = null;
 let soloFavoritos;
+let soloSeguimiento = false;
 //let favoritos = [];
 let modoEdicionFavoritos = false;
 let totalFavoritos = 0;
@@ -1830,6 +1831,93 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
 }
 
 // ---------------------------------------------------------------
+// 🔴 GESTIÓN DE SEGUIMIENTO
+// ---------------------------------------------------------------
+
+function obtenerSeguimientos() {
+    const data = localStorage.getItem("METEO_SEGUIMIENTO");
+    if (!data) return [];
+    try {
+        const parsed = JSON.parse(data);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch(e) {
+        return [];
+    }
+}
+
+function limpiarSeguimientosExpirados() {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const vigentes = obtenerSeguimientos().filter(s => {
+        const fechaMarcado = new Date(s.fecha);
+        fechaMarcado.setHours(0, 0, 0, 0);
+        const diasPasados = Math.floor((hoy - fechaMarcado) / 86400000);
+        return diasPasados < 2; // activo hoy y mañana; expira al tercer día
+    });
+    localStorage.setItem("METEO_SEGUIMIENTO", JSON.stringify(vigentes));
+    return vigentes;
+}
+
+function toggleSeguimiento(id) {
+    id = Number(id);
+    const seguimientos = obtenerSeguimientos().map(s => ({ ...s, id: Number(s.id) }));
+    const indice = seguimientos.findIndex(s => s.id === id);
+    let esNuevo = false;
+
+    if (indice === -1) {
+        seguimientos.push({ id, fecha: new Date().toISOString().split('T')[0] });
+        esNuevo = true;
+    } else {
+        seguimientos.splice(indice, 1);
+    }
+
+    localStorage.setItem("METEO_SEGUIMIENTO", JSON.stringify(seguimientos));
+    return esNuevo;
+}
+
+window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
+    const esNuevo = toggleSeguimiento(id);
+
+    if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Haptics) {
+        Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
+    }
+
+    if (btnElement) {
+        const outerPath = btnElement.querySelector('svg path');
+        const circle    = btnElement.querySelector('svg circle');
+        if (outerPath) {
+            outerPath.setAttribute('fill',   esNuevo ? '#16a34a' : 'none');
+            outerPath.setAttribute('stroke', esNuevo ? '#16a34a' : '#333');
+        }
+        if (circle) {
+            circle.setAttribute('fill',   esNuevo ? 'white' : 'none');
+            circle.setAttribute('stroke', esNuevo ? '#16a34a' : '#333');
+        }
+    }
+
+    // Actualizar el pip del botón de filtro si está activo
+    const btnFiltro = document.getElementById('btn-filtro-seguimiento-toggle');
+    if (btnFiltro && btnFiltro.classList.contains('activo')) {
+        construir_tabla(); // si el filtro está activo, refrescamos la tabla
+    }
+};
+
+function filtroVerSoloSeguimiento() {
+    const btn = document.getElementById('btn-filtro-seguimiento-toggle');
+    const seguimientosActuales = obtenerSeguimientos();
+
+    if (!btn.classList.contains('activo') && seguimientosActuales.length === 0) {
+        mensajeModalAceptar('', 'No tienes despegues en seguimiento');
+        return;
+    }
+
+    btn.classList.toggle('activo');
+    soloSeguimiento = btn.classList.contains('activo');
+    btn.classList.toggle('filtro-aplicado', soloSeguimiento);
+    construir_tabla();
+}
+
+// ---------------------------------------------------------------
 // 🔴 LÓGICA HORAS DÍA/NOCHE
 // ---------------------------------------------------------------
 
@@ -3402,12 +3490,33 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             respuestasEcmwf = despegues.map(d => respuestasEcmwfMap.get(Number(d.ID))).filter(r => r !== undefined);
 			
 		}
-		 // Está activo filtro favoritos pero no hay ni favoritos ni despegue temporal
-		 else if (soloFavoritos && idsAIncluir.length === 0 && !ignorarFiltroFavoritos) {
+        // Está activo filtro favoritos pero no hay ni favoritos ni despegue temporal
+        else if (soloFavoritos && idsAIncluir.length === 0 && !ignorarFiltroFavoritos) {
             despegues = [];
 			respuestas = [];
             respuestasEcmwf = [];
 		}
+
+        // ---------------------------------------------------------------
+        // 🔴 LÓGICA DE FILTRADO O NO DE DESPEGUES CON SEGUIMIENTO
+        // ---------------------------------------------------------------
+
+        if (soloSeguimiento) {
+            const idsSeg = obtenerSeguimientos().map(s => Number(s.id));
+            const rMap = new Map();
+            const rEcmwfMap = new Map();
+            despegues.forEach((d, i) => {
+                rMap.set(Number(d.ID), respuestas[i]);
+                rEcmwfMap.set(Number(d.ID), respuestasEcmwf[i]);
+            });
+            if (idsSeg.length > 0) {
+                despegues     = despegues.filter(d => idsSeg.includes(Number(d.ID)));
+                respuestas    = despegues.map(d => rMap.get(Number(d.ID))).filter(r => r !== undefined);
+                respuestasEcmwf = despegues.map(d => rEcmwfMap.get(Number(d.ID))).filter(r => r !== undefined);
+            } else {
+                despegues = []; respuestas = []; respuestasEcmwf = [];
+            }
+        }
 
 		// ---------------------------------------------------------------
 		// 🔴 LECTURA DEL SLIDER RANGO HORARIO (necesario para la construcción de la tabla)
@@ -4377,13 +4486,19 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 </button>
             `;
 
+            const esSeguimiento = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(d.ID));
             const botonOjoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-ojo-tabla"
                     style="position: absolute; bottom: 2px; left: 56px;"
-                    title="Ver detalle">
+                    onclick="toggleSeguimientoDesdeTabla(${d.ID}, this); return false;"
+                    title="${esSeguimiento ? 'Quitar seguimiento' : 'Activar seguimiento'}">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                            fill="${esSeguimiento ? '#16a34a' : 'none'}"
+                            stroke="${esSeguimiento ? '#16a34a' : '#333'}"></path>
+                        <circle cx="12" cy="12" r="3"
+                            fill="${esSeguimiento ? 'white' : 'none'}"
+                            stroke="${esSeguimiento ? '#16a34a' : '#333'}"></circle>
                     </svg>
                 </button>
             `;
@@ -7040,6 +7155,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
             cicloActualizacion(); 
         }
     }, 1000);
+
+    limpiarSeguimientosExpirados();
 
 	// ---------------------------------------------------------------
 	// 🔴 CONFIGURACIÓN GLOBAL DE TOOLTIPS (TIPPY.JS)

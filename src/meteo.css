@@ -255,6 +255,18 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
         inset 1px 1px 3px rgba(0,0,0,0.4) !important; 
 }
 
+#btn-filtro-seguimiento-toggle.filtro-aplicado {
+    border-color: #16a34a !important;
+    border-width: 1px !important;
+    box-shadow: 
+        inset 0 0 0 2px #16a34a,          
+        inset 1px 1px 3px rgba(0,0,0,0.4) !important;
+    background-color: #16a34a1a !important;
+}
+#btn-filtro-seguimiento-toggle.filtro-aplicado svg {
+    stroke: #16a34a;
+}
+
 #div-menu .nav-icon-container {
     width: 34px;
     height: 24px;
