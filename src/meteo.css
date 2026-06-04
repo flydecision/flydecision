@@ -287,7 +287,7 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     border: 1.5px solid #ccc;
     border-radius: 8px;
     overflow: hidden;
-    margin-left: auto;
+    margin-left: 6px;
 }
 
 .stepper-btn {
