@@ -4542,6 +4542,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
             // Siempre se muestra en edición, o si hay más de 7 filas en vista normal
             const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 7);
+            const modoCompacto = !modoEdicionFavoritos && totalFilasRowSpan <= 8;
 
             // Preparamos el texto del tooltip limpiando las comillas dobles
             const textoCrudoActividad = t('tabla.tooltips.tooltipNivelDeActividad');
@@ -4581,6 +4582,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             if (modoEdicionFavoritos) {
                 tdDespegue.classList.add("borde-grueso-derecha");
                 tdDespegue.style.paddingBottom = '34px';
+            }
+            if (modoCompacto) {
+                tdDespegue.classList.add('modo-compacto');
+                tdDespegue.style.paddingBottom = '26px';
             }
 			
 			filaPrincipal.appendChild(tdDespegue);

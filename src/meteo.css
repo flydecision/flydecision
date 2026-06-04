@@ -1390,6 +1390,35 @@ table.tabla-tooltip-desglose {
     background-color: #ffffff;
 }
 
+/* 4 botones en fila única cuando hay poco espacio vertical */
+.columna-despegue.modo-compacto .btn-info {
+    width: 22px !important;
+    height: 22px !important;
+}
+.columna-despegue.modo-compacto .btn-info svg {
+    width: 16px !important;
+    height: 16px !important;
+}
+.columna-despegue.modo-compacto button.btn-info:nth-of-type(1) {
+    bottom: 2px !important;
+    left: 2px !important;
+}
+.columna-despegue.modo-compacto button.btn-info:nth-of-type(2) {
+    bottom: 2px !important;
+    left: 27px !important;
+}
+.columna-despegue.modo-compacto button.btn-info:nth-of-type(3) {
+    bottom: 2px !important;
+    left: 52px !important;
+}
+.columna-despegue.modo-compacto button.btn-info:nth-of-type(4) {
+    bottom: 2px !important;
+    left: 77px !important;
+}
+.columna-despegue.modo-compacto div.texto-multilinea-2 {
+    margin-top: -14px;
+}
+
 /* Columna Meteo (Iconos y Cabecera) */
 .columna-meteo, .columna-simbolo-fija {	
 	position: sticky;
