@@ -61,6 +61,7 @@ let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_P
 //let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") !== "false";
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
 let chkOrdenarPorXC = localStorage.getItem("METEO_CHECKBOX_ORDENAR_POR_XC") === "true"; // false por defecto
+let diasSeguimiento = parseInt(localStorage.getItem('METEO_DIAS_SEGUIMIENTO') || '2');
 
 // Si entra por url mapa con coordenadas y no hay configuración se marca este flag
 const paramsArranque = new URLSearchParams(window.location.search);
@@ -1858,7 +1859,7 @@ function limpiarSeguimientosExpirados() {
         const fechaMarcado = new Date(s.fecha);
         fechaMarcado.setHours(0, 0, 0, 0);
         const diasPasados = Math.floor((hoy - fechaMarcado) / 86400000);
-        return diasPasados < 2; // activo hoy y mañana; expira al tercer día
+        return diasPasados < diasSeguimiento;
     });
     localStorage.setItem("METEO_SEGUIMIENTO", JSON.stringify(vigentes));
     return vigentes;
@@ -2018,6 +2019,18 @@ function alternarOrdenarPorXC() {
     chkOrdenarPorXC = document.getElementById("chkOrdenarPorXC").checked;
     localStorage.setItem("METEO_CHECKBOX_ORDENAR_POR_XC", chkOrdenarPorXC);
     construir_tabla();
+}
+
+function cambiarDiasSeguimiento(delta) {
+    diasSeguimiento = Math.min(7, Math.max(1, diasSeguimiento + delta));
+    localStorage.setItem('METEO_DIAS_SEGUIMIENTO', String(diasSeguimiento));
+    const el = document.getElementById('valor-dias-seguimiento');
+    if (el) el.textContent = diasSeguimiento;
+    // Actualizar botones −/+ para reflejar límites
+    const btnMenos = document.getElementById('stepper-seguimiento-menos');
+    const btnMas   = document.getElementById('stepper-seguimiento-mas');
+    if (btnMenos) btnMenos.disabled = diasSeguimiento <= 1;
+    if (btnMas)   btnMas.disabled   = diasSeguimiento >= 4;
 }
 
 // ---------------------------------------------------------------
@@ -7253,7 +7266,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
     }
 
 	// ---------------------------------------------------------------
-	// 🔴 LISTENER PARA CERRAR PANELES ABIERTOS AL TOCAR ÁREA VACÍA DEL MENÚ
+	// 🔴 INICIALIZACIÓN DE CHECKBOXES Y BOTÓN RESET
 	// ---------------------------------------------------------------
 	
     document.getElementById("chkMostrarVientoAlturas").checked = chkMostrarVientoAlturas;
@@ -7267,6 +7280,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkOrdenarPorXC")) document.getElementById("chkOrdenarPorXC").checked = chkOrdenarPorXC;
+
+    const elDias = document.getElementById('valor-dias-seguimiento');
+    if (elDias) {
+        elDias.textContent = diasSeguimiento;
+        const btnMenos = document.getElementById('stepper-seguimiento-menos');
+        const btnMas   = document.getElementById('stepper-seguimiento-mas');
+        if (btnMenos) btnMenos.disabled = diasSeguimiento <= 1;
+        if (btnMas)   btnMas.disabled   = diasSeguimiento >= 4;
+    }
 
 	window.resetFiltroDistancia = function(reconstruir = true) { //flag para que, si le hemos llamado desde activarEdicionFavoritos(), que ya tiene construir_tabla, no se llame otra vez aquí, ya que ya se hace desde esa función (bloquearía navegador)
 
