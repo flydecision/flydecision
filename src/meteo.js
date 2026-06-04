@@ -10191,12 +10191,9 @@ function inicializarMapaLeaflet() {
         const info = row.Más_información || '';
 
         let idDespegue = row.ID || '';
-        let botonVerEnTablaHTML = ''; 
-
-        // Guardaremos aquí el valor 1-5 de actividad si existe cruce
+        let botonesAccionPopupHTML = ''; 
         let actividadScore = null; 
 
-        // Cruzamos coordenadas con la base de datos de la Tabla
         if (window.bdGlobalDespegues) {
             const matchTabla = window.bdGlobalDespegues.find(d =>
                 parseFloat(d.Latitud).toFixed(4) === lat.toFixed(4) &&
@@ -10208,10 +10205,50 @@ function inicializarMapaLeaflet() {
                 idDespegue = matchTabla.ID;
                 actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla
 
-                botonVerEnTablaHTML = `
-                <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
-                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.3; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">${t('mapa.verEnTabla')}
+                const esFavoritoPopup  = obtenerFavoritos().map(Number).includes(Number(idDespegue));
+                const esSeguimientoPopup = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
+                const _ocPopup = esSeguimientoPopup ? '#16a34a' : '#959595';
+
+                // Agrupamos TODOS los botones en un solo contenedor Flexbox
+                botonesAccionPopupHTML = `
+                <div style="display: flex; align-items: stretch; gap: 8px; margin-top: 8px; margin-bottom: 8px;">
+                    
+                    <!-- Contenedor para alinear los iconos (Corazón y Ojo) a la izquierda -->
+                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                        <!-- Botón Favorito -->
+                        <button class="btn-info btn-favorito-tabla"
+                            style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
+                            onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleFavoritoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
+                            title="${esFavoritoPopup ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
+                            <svg viewBox="0 0 24 24" width="20" height="20"
+                                fill="${esFavoritoPopup ? '#e00' : 'none'}"
+                                stroke="${esFavoritoPopup ? '#e00' : '#555'}"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="vertical-align: middle;">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Botón Seguimiento (Ojo) -->
+                        <button class="btn-info btn-ojo-tabla"
+                            style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
+                            onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleSeguimientoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
+                            title="${esSeguimientoPopup ? t('seguimiento.quitar') : t('seguimiento.activar')}">
+                            <svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet">
+                                <path class="ojo-color" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_ocPopup}" stroke="none"/>
+                                <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
+                                <circle class="ojo-color" cx="12" cy="12" r="2.5" fill="${_ocPopup}" stroke="none"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Botón "Ver en Tabla" -->
+                    <button class="btn-accion" 
+                        onclick="if(event){event.stopPropagation(); event.preventDefault();} verMeteoEnTabla('${escapeHtml(idDespegue)}'); return false;" 
+                        style="flex: 1; height: auto; min-height: 34px; padding: 6px 8px; white-space: normal; word-break: break-word; line-height: 1.2; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
+                        ${t('mapa.verEnTabla')}
                     </button>
+
                 </div>`;
             }
         }
@@ -10234,7 +10271,7 @@ function inicializarMapaLeaflet() {
                 <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
                 <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
                 
-                ${botonVerEnTablaHTML}
+                ${botonesAccionPopupHTML}
 
                 <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                 <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
@@ -10268,7 +10305,7 @@ function inicializarMapaLeaflet() {
         marker.bindPopup(popupHtml, { 
             className: 'popup-despegues', 
             maxWidth: 300,
-            autoPanPaddingTopLeft: L.point(10, 350) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
+            autoPanPaddingTopLeft: L.point(10, 350) 
         });
 
         // Regeneramos el popup por si venimos de consultarlo en la tabla.
