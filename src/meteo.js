@@ -1883,16 +1883,8 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
     }
 
     if (btnElement) {
-        const outerPath = btnElement.querySelector('svg path');
-        const circle    = btnElement.querySelector('svg circle');
-        if (outerPath) {
-            outerPath.setAttribute('fill',   esNuevo ? '#16a34a' : 'none');
-            outerPath.setAttribute('stroke', esNuevo ? '#16a34a' : '#333');
-        }
-        if (circle) {
-            circle.setAttribute('fill',   esNuevo ? 'white' : 'none');
-            circle.setAttribute('stroke', esNuevo ? '#16a34a' : '#333');
-        }
+        const color = esNuevo ? '#007aff' : '#9e9e9e';
+        btnElement.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
     }
 
     // Actualizar el pip del botón de filtro si está activo
@@ -4464,7 +4456,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                     style="position: absolute; bottom: 34px; left: 56px;"  
                     onclick="abrirMapaIntegrado(${latitud}, ${longitud}, '${safeDespegue}'); return false;"
                     title="${t('tabla.tooltips.verEnMapa')}">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" style="vertical-align: middle;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" style="vertical-align: middle;">
                         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
                         <line x1="8" y1="2" x2="8" y2="18"></line>
                         <line x1="16" y1="6" x2="16" y2="22"></line>
@@ -4487,18 +4479,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             `;
 
             const esSeguimiento = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(d.ID));
+            const _oc = esSeguimiento ? '#007aff' : '#9e9e9e';
             const botonOjoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-ojo-tabla"
-                    style="position: absolute; bottom: 2px; left: 56px;"
+                    style="position: absolute; bottom: 2px; left: 51px;"
                     onclick="toggleSeguimientoDesdeTabla(${d.ID}, this); return false;"
                     title="${esSeguimiento ? 'Quitar seguimiento' : 'Activar seguimiento'}">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
-                            fill="${esSeguimiento ? '#16a34a' : 'none'}"
-                            stroke="${esSeguimiento ? '#16a34a' : '#333'}"></path>
-                        <circle cx="12" cy="12" r="3"
-                            fill="${esSeguimiento ? 'white' : 'none'}"
-                            stroke="${esSeguimiento ? '#16a34a' : '#333'}"></circle>
+                    <svg viewBox="1 4 22 16" width="22" height="22" preserveAspectRatio="xMidYMid meet">
+                        <path class="ojo-color" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_oc}" stroke="none"/>
+                        <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
+                        <circle class="ojo-color" cx="12" cy="12" r="2.5" fill="${_oc}" stroke="none"/>
                     </svg>
                 </button>
             `;
