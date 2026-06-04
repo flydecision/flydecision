@@ -872,6 +872,13 @@ function iniciarGuiaPrincipal(forzar = false) {
                 }
             },
             { 
+                element: '#btn-filtro-seguimiento-toggle',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnFiltroSeguimiento.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnFiltroSeguimiento.descripcion')
+                }
+            },
+            { 
                 element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
                 popover: { 
                     title: t('guiaPrincipal.pasos.columnaMeteo.titulo'), 
@@ -928,6 +935,13 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnFavorito.titulo'), 
                     description: t('guiaPrincipal.pasos.btnFavorito.descripcion') 
+                } 
+            },
+            { 
+                element: '.btn-ojo-tabla', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnSeguimiento.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnSeguimiento.descripcion') 
                 } 
             },
             { 
