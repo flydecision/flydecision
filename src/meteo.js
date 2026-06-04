@@ -1883,7 +1883,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
     }
 
     if (btnElement) {
-        const color = esNuevo ? '#007aff' : '#9e9e9e';
+        const color = esNuevo ? '#16a34a' : '#9e9e9e';
         btnElement.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
     }
 
@@ -4436,10 +4436,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // 3. Escapamos todas las comillas dobles para que no rompan el atributo data-tippy-content
             const contenidoEscapado = contenidoTooltip.replace(/"/g, '&quot;');
 
+            const btnRowBottom = modoEdicionFavoritos ? '2px' : '34px';
+
             // Botón de Información ("i")
             const botonInfoHTML = `
                 <button class="btn-info" 
-                    style="position: absolute; bottom: 34px; left: 13px;"
+                    style="position: absolute; bottom: ${btnRowBottom}; left: 13px;"
                     data-tippy-content="${contenidoEscapado}"
                     title="${t('tabla.tooltips.masInfo')}">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
@@ -4453,7 +4455,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // Botón directo al Mapa (posicionado a la derecha del anterior)
             const botonMapaDirectoHTML = `
                 <button class="btn-info btn-guia-mapa-directo" 
-                    style="position: absolute; bottom: 34px; left: 56px;"  
+                    style="position: absolute; bottom: ${btnRowBottom}; left: 56px;"  
                     onclick="abrirMapaIntegrado(${latitud}, ${longitud}, '${safeDespegue}'); return false;"
                     title="${t('tabla.tooltips.verEnMapa')}">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" style="vertical-align: middle;">
@@ -4479,10 +4481,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             `;
 
             const esSeguimiento = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(d.ID));
-            const _oc = esSeguimiento ? '#007aff' : '#9e9e9e';
+            const _oc = esSeguimiento ? '#16a34a' : '#9e9e9e';
             const botonOjoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-ojo-tabla"
-                    style="position: absolute; bottom: 2px; left: 51px;"
+                    style="position: absolute; bottom: 2px; left: 56px;"
                     onclick="toggleSeguimientoDesdeTabla(${d.ID}, this); return false;"
                     title="${esSeguimiento ? 'Quitar seguimiento' : 'Activar seguimiento'}">
                     <svg viewBox="1 4 22 16" width="22" height="22" preserveAspectRatio="xMidYMid meet">
@@ -4528,7 +4530,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 ${provinciaHTML}
                 ${htmlIconosCentrales}
 
-                <span class="linea-divisora-edit" style="position: absolute; bottom: 66px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
+                <span class="linea-divisora-edit" style="position: absolute; bottom: 34px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
 
 			// ROWSPAN DINÁMICO
@@ -4536,7 +4538,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda");
             if (modoEdicionFavoritos) {
                 tdDespegue.classList.add("borde-grueso-derecha");
-                tdDespegue.style.paddingBottom = '66px';
+                tdDespegue.style.paddingBottom = '34px';
             }
 			
 			filaPrincipal.appendChild(tdDespegue);
