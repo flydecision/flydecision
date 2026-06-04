@@ -65,6 +65,13 @@
     "anadirFavorito": "+ Ajouter aux favoris"
   },
 
+  "seguimiento": {
+    "noTienesSeguimiento": "Tu n'as aucun décollage suivi {{ojo}}",
+    "filtroDesactivadoAuto": "Il n'y a aucun décollage suivi {{ojo}}<br><br>Le filtre a été désactivé",
+    "filtroTitle": "Voir uniquement les décollages suivis",
+    "activar_desactivar": "Activer / Désactiver le suivi"
+  },
+
   "favoritos": {
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favori",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoris",

@@ -133,6 +133,12 @@ const METADATA_TO_ICON_MAP = {
     'NNO': ['N', 'NO']
 };
 
+const _ojoVerde = `<svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet" style="vertical-align: middle; margin-left: 4px;">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/>
+    <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
+    <circle cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
+</svg>`;
+
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
 // Asegúrate de que Capacitor está disponible
 // if (window.Capacitor && window.Capacitor.Plugins.StatusBar) {
@@ -1890,7 +1896,16 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
     // Actualizar el pip del botón de filtro si está activo
     const btnFiltro = document.getElementById('btn-filtro-seguimiento-toggle');
     if (btnFiltro && btnFiltro.classList.contains('activo')) {
-        construir_tabla(); // si el filtro está activo, refrescamos la tabla
+        const quedan = obtenerSeguimientos();
+        if (quedan.length === 0) {
+            // Desactivar filtro primero, luego avisar
+            soloSeguimiento = false;
+            btnFiltro.classList.remove('activo', 'filtro-aplicado');
+            construir_tabla();
+            mensajeModalAceptar('', t('seguimiento.filtroDesactivadoAuto', { ojo: _ojoVerde }));
+        } else {
+            construir_tabla();
+        }
     }
 };
 
@@ -1899,7 +1914,7 @@ function filtroVerSoloSeguimiento() {
     const seguimientosActuales = obtenerSeguimientos();
 
     if (!btn.classList.contains('activo') && seguimientosActuales.length === 0) {
-        mensajeModalAceptar('', 'No tienes despegues en seguimiento');
+        mensajeModalAceptar('', t('seguimiento.noTienesSeguimiento', { ojo: _ojoVerde }));
         return;
     }
 
@@ -4486,8 +4501,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 <button class="btn-info btn-ojo-tabla"
                     style="position: absolute; bottom: 2px; left: 56px;"
                     onclick="toggleSeguimientoDesdeTabla(${d.ID}, this); return false;"
-                    title="${esSeguimiento ? 'Quitar seguimiento' : 'Activar seguimiento'}">
-                    <svg viewBox="1 4 22 16" width="22" height="22" preserveAspectRatio="xMidYMid meet">
+                    title="${t('seguimiento.activar_desactivar')}">
+                    <svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet">
                         <path class="ojo-color" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_oc}" stroke="none"/>
                         <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
                         <circle class="ojo-color" cx="12" cy="12" r="2.5" fill="${_oc}" stroke="none"/>

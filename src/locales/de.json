@@ -65,6 +65,13 @@
     "anadirFavorito": "+ Favorit hinzufügen"
   },
 
+  "seguimiento": {
+    "noTienesSeguimiento": "Du hast keine beobachteten Startplätze {{ojo}}",
+    "filtroDesactivadoAuto": "Es gibt keine beobachteten Startplätze {{ojo}}<br><br>Der Filter wurde deaktiviert",
+    "filtroTitle": "Nur beobachtete Startplätze anzeigen",
+    "activar_desactivar": "Beobachtung aktivieren / deaktivieren"
+  },
+
   "favoritos": {
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorit",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoriten",

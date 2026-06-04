@@ -62,7 +62,14 @@
     "placeholder": "🔍 Despegue o provincia...",
     "placeholderEdicion": "🔍 Despegue o territorio...",
     "sugerenciaTitulo": "💡 No tienes favoritos con * <b>{{termino}}</b> *, pero tienes disponibles en la base de datos de despegues:",
-    "anadirFavorito": "+ Añadir favorito"
+    "anadirFavorito": "+ Añadir favorito",
+    "activar_desactivar": "Activar / Descactivar seguimiento"
+  },
+
+  "seguimiento": {
+    "noTienesSeguimiento": "No tienes despegues en seguimiento {{ojo}}",
+    "filtroDesactivadoAuto": "No hay despegues en seguimiento {{ojo}}<br><br>Se ha desactivado el filtro",
+    "filtroTitle": "Ver solo despegues en seguimiento"
   },
 
   "favoritos": {

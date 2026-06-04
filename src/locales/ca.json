@@ -65,6 +65,13 @@
     "anadirFavorito": "+ Afegir a preferits"
   },
 
+  "seguimiento": {
+    "noTienesSeguimiento": "No tens enlairaments en seguiment {{ojo}}",
+    "filtroDesactivadoAuto": "No hi ha enlairaments en seguiment {{ojo}}<br><br>S'ha desactivat el filtre",
+    "filtroTitle": "Veure només enlairaments en seguiment",
+    "activar_desactivar": "Activar / Desactivar seguiment"
+  },
+
   "favoritos": {
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Preferit",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Preferits",

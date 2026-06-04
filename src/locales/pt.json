@@ -65,6 +65,13 @@
     "anadirFavorito": "+ Adicionar aos favoritos"
   },
 
+  "seguimiento": {
+    "noTienesSeguimiento": "Não tens descolagens em seguimento {{ojo}}",
+    "filtroDesactivadoAuto": "Não há descolagens em seguimento {{ojo}}<br><br>O filtro foi desativado",
+    "filtroTitle": "Ver apenas descolagens em seguimento",
+    "activar_desactivar": "Ativar / Desativar seguimento"
+  },
+
   "favoritos": {
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorito",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoritos",

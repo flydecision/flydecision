@@ -65,6 +65,13 @@
     "anadirFavorito": "+ Gogokoetara gehitu"
   },
 
+  "seguimiento": {
+    "noTienesSeguimiento": "Ez duzu aireratzerik jarraipenean {{ojo}}",
+    "filtroDesactivadoAuto": "Ez dago aireratzerik jarraipenean {{ojo}}<br><br>Iragazkia desaktibatu da",
+    "filtroTitle": "Ikusi soilik jarraipenean dauden aireratzeak",
+    "activar_desactivar": "Jarraipena aktibatu / desaktibatu"
+  },
+
   "favoritos": {
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Gogokoa",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Gogokoak",

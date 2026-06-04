@@ -65,6 +65,13 @@
     "anadirFavorito": "+ Engadir a favoritos"
   },
 
+  "seguimiento": {
+    "noTienesSeguimiento": "Non tes despegues en seguimento {{ojo}}",
+    "filtroDesactivadoAuto": "Non hai despegues en seguimento {{ojo}}<br><br>Desactivouse o filtro",
+    "filtroTitle": "Ver só despegues en seguimento",
+    "activar_desactivar": "Activar / Desactivar seguimento"
+  },
+
   "favoritos": {
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorito",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favoritos",

@@ -65,6 +65,13 @@
     "anadirFavorito": "+ Add favorite"
   },
 
+  "seguimiento": {
+    "noTienesSeguimiento": "You have no tracked takeoffs {{ojo}}",
+    "filtroDesactivadoAuto": "There are no tracked takeoffs {{ojo}}<br><br>The filter has been disabled",
+    "filtroTitle": "Show only tracked takeoffs",
+    "activar_desactivar": "Enable / Disable tracking"
+  },
+
   "favoritos": {
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorite",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorites",
