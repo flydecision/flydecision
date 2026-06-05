@@ -1051,12 +1051,26 @@ function iniciarGuiaFavoritos(forzar = false) {
         return; 
     }
 
-    // Garantizar que los filtros de búsqueda y distancia están desactivados
-    // antes de que arranque la guía, para que todos los elementos sean visibles
-    // y driver.js pueda posicionar sus popups correctamente.
+    // 1. Limpiamos solo el buscador y la lógica visual de los filtros
     if (typeof limpiarBuscador === 'function') limpiarBuscador();
-    if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
     if (typeof aplicarFiltrosVisuales === 'function') aplicarFiltrosVisuales();
+
+    // 2. Nos aseguramos de que el panel de Distancia esté abierto y visible
+    const panelDistancia = document.getElementById("div-filtro-distancia");
+    if (panelDistancia) {
+        panelDistancia.classList.add("activo");
+        
+        // 3. RESETEAMOS EL SLIDER DE DISTANCIA A INFINITO (sin cerrar el panel)
+        setTimeout(() => {
+            const sliderDist = document.getElementById('distancia-slider');
+            if (sliderDist && sliderDist.noUiSlider) {
+                // Obtenemos el índice máximo de la escala (Infinito) y movemos el slider ahí
+                const MAX_INDEX = CORTES_DISTANCIA_GLOBAL.length - 1;
+                sliderDist.noUiSlider.set(MAX_INDEX);
+                sliderDist.noUiSlider.updateOptions({}, true);
+            }
+        }, 50);
+    }
 
     const driverObj = window.driver.js.driver({
         
@@ -7587,6 +7601,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 return;
             }
 
+            // C. Filtro Seguimiento activo
+            if (soloSeguimiento) {
+                soloSeguimiento = false;
+                const btnFiltroSeg = document.getElementById('btn-filtro-seguimiento-toggle');
+                if (btnFiltroSeg) btnFiltroSeg.classList.remove('activo', 'filtro-aplicado');
+                construir_tabla();
+                return;
+            }
+
             // --- PRIORIDAD FINAL: Salir de la App (Desde la Tabla Principal) ---
             if (typeof confirmarSalidaApp === 'function') {
                 confirmarSalidaApp();
@@ -10228,7 +10251,7 @@ function inicializarMapaLeaflet() {
                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                             </svg>
                         </button>
-                        
+
                         <!-- Botón Seguimiento (Ojo) -->
                         <button class="btn-info btn-ojo-tabla"
                             style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
