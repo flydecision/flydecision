@@ -165,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} gogoko erabilgarri dauden <b>{{total}}</b>-etatik",
     "totalDisponibles": "Guztira dauden aireratzeak: <b>{{n}}</b>",
     "miniTodosBD": "Datu-base osoan ikusgai dauden aireratze kopurua",
-    "miniFavoritos": "Gogoko / iragazitako aireratze kopurua"
+    "miniFavoritos": "Gogoko aireratze kopurua",
+    "miniSeguimiento": "Jarraipenean dauden aireratze kopurua"
   },
 
   "marcadorMasivo": {

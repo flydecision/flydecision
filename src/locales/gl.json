@@ -165,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} favoritos de <b>{{total}}</b> dispoñibles",
     "totalDisponibles": "Total de engalaxes dispoñibles: <b>{{n}}</b>",
     "miniTodosBD": "Número de engalaxes visibles en toda a base de datos",
-    "miniFavoritos": "Número de engalaxes favoritas / filtradas"
+    "miniFavoritos": "Número de despegues favoritos",
+    "miniSeguimiento": "Número de despegues en seguimento"
   },
 
   "marcadorMasivo": {

@@ -165,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} preferits de <b>{{total}}</b> disponibles",
     "totalDisponibles": "Total d'enlairaments disponibles: <b>{{n}}</b>",
     "miniTodosBD": "Nombre d'enlairaments visibles a tota la base de dades",
-    "miniFavoritos": "Nombre d'enlairaments preferits / filtrats"
+    "miniFavoritos": "Nombre d'enlairaments preferits",
+    "miniSeguimiento": "Nombre d'enlairaments en seguiment"
   },
 
   "marcadorMasivo": {

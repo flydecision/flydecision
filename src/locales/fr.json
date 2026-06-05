@@ -165,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} favoris sur <b>{{total}}</b> disponibles",
     "totalDisponibles": "Total des décollages disponibles : <b>{{n}}</b>",
     "miniTodosBD": "Nombre de décollages visibles dans toute la base de données",
-    "miniFavoritos": "Nombre de décollages favoris / filtrés"
+    "miniFavoritos": "Nombre de décollages favoris",
+    "miniSeguimiento": "Nombre de décollages en suivi"
   },
 
   "marcadorMasivo": {

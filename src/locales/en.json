@@ -165,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} favorites out of <b>{{total}}</b> available",
     "totalDisponibles": "Total takeoffs available: <b>{{n}}</b>",
     "miniTodosBD": "Number of visible takeoffs from the full database",
-    "miniFavoritos": "Number of favorite / filtered takeoffs"
+    "miniFavoritos": "Number of favorite takeoffs",
+    "miniSeguimiento": "Number of tracked takeoffs"
   },
 
   "marcadorMasivo": {

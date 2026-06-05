@@ -165,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} Favoriten von <b>{{total}}</b> verfügbaren",
     "totalDisponibles": "Insgesamt verfügbare Startplätze: <b>{{n}}</b>",
     "miniTodosBD": "Anzahl der sichtbaren Startplätze aus der gesamten Datenbank",
-    "miniFavoritos": "Anzahl der favorisierten / gefilterten Startplätze"
+    "miniFavoritos": "Anzahl der Lieblings-Startplätze",
+    "miniSeguimiento": "Anzahl der beobachteten Startplätze"
   },
 
   "marcadorMasivo": {

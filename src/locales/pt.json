@@ -165,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} favoritos de <b>{{total}}</b> disponíveis",
     "totalDisponibles": "Total de descolagens disponíveis: <b>{{n}}</b>",
     "miniTodosBD": "Número de descolagens visíveis em toda a base de dados",
-    "miniFavoritos": "Número de descolagens favoritas / filtradas"
+    "miniFavoritos": "Número de descolagens favoritas",
+    "miniSeguimiento": "Número de descolagens em seguimento"
   },
 
   "marcadorMasivo": {

@@ -165,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} favoritos de <b>{{total}}</b> disponibles",
     "totalDisponibles": "Total de despegues disponibles: <b>{{n}}</b>",
     "miniTodosBD": "Número de despegues visibles de la base de datos completa",
-    "miniFavoritos": "Número de despegues favoritos / filtrados"
+    "miniFavoritos": "Número de despegues favoritos",
+    "miniSeguimiento": "Número de despegues en seguimiento"
   },
 
   "marcadorMasivo": {
