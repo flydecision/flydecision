@@ -6,6 +6,7 @@
 let DATOS_METEO_CACHE = null;
 let DATOS_METEO_ECMWF_CACHE = null;
 let soloFavoritos;
+let soloSeguimiento = false;
 //let favoritos = [];
 let modoEdicionFavoritos = false;
 let totalFavoritos = 0;
@@ -60,6 +61,7 @@ let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_P
 //let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") !== "false";
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
 let chkOrdenarPorXC = localStorage.getItem("METEO_CHECKBOX_ORDENAR_POR_XC") === "true"; // false por defecto
+let diasSeguimiento = parseInt(localStorage.getItem('METEO_DIAS_SEGUIMIENTO') || '2');
 
 // Si entra por url mapa con coordenadas y no hay configuración se marca este flag
 const paramsArranque = new URLSearchParams(window.location.search);
@@ -131,6 +133,12 @@ const METADATA_TO_ICON_MAP = {
     'NO':  ['NO'],
     'NNO': ['N', 'NO']
 };
+
+const _ojoVerde = `<svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet" style="vertical-align: middle; margin-left: 4px;">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/>
+    <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
+    <circle cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
+</svg>`;
 
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
 // Asegúrate de que Capacitor está disponible
@@ -864,6 +872,13 @@ function iniciarGuiaPrincipal(forzar = false) {
                 }
             },
             { 
+                element: '#btn-filtro-seguimiento-toggle',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnFiltroSeguimiento.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnFiltroSeguimiento.descripcion')
+                }
+            },
+            { 
                 element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
                 popover: { 
                     title: t('guiaPrincipal.pasos.columnaMeteo.titulo'), 
@@ -920,6 +935,13 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnFavorito.titulo'), 
                     description: t('guiaPrincipal.pasos.btnFavorito.descripcion') 
+                } 
+            },
+            { 
+                element: '.btn-ojo-tabla', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnSeguimiento.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnSeguimiento.descripcion') 
                 } 
             },
             { 
@@ -1029,12 +1051,26 @@ function iniciarGuiaFavoritos(forzar = false) {
         return; 
     }
 
-    // Garantizar que los filtros de búsqueda y distancia están desactivados
-    // antes de que arranque la guía, para que todos los elementos sean visibles
-    // y driver.js pueda posicionar sus popups correctamente.
+    // 1. Limpiamos solo el buscador y la lógica visual de los filtros
     if (typeof limpiarBuscador === 'function') limpiarBuscador();
-    if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
     if (typeof aplicarFiltrosVisuales === 'function') aplicarFiltrosVisuales();
+
+    // 2. Nos aseguramos de que el panel de Distancia esté abierto y visible
+    const panelDistancia = document.getElementById("div-filtro-distancia");
+    if (panelDistancia) {
+        panelDistancia.classList.add("activo");
+        
+        // 3. RESETEAMOS EL SLIDER DE DISTANCIA A INFINITO (sin cerrar el panel)
+        setTimeout(() => {
+            const sliderDist = document.getElementById('distancia-slider');
+            if (sliderDist && sliderDist.noUiSlider) {
+                // Obtenemos el índice máximo de la escala (Infinito) y movemos el slider ahí
+                const MAX_INDEX = CORTES_DISTANCIA_GLOBAL.length - 1;
+                sliderDist.noUiSlider.set(MAX_INDEX);
+                sliderDist.noUiSlider.updateOptions({}, true);
+            }
+        }, 50);
+    }
 
     const driverObj = window.driver.js.driver({
         
@@ -1200,7 +1236,14 @@ function activarEdicionFavoritos() {
     window.venirDeEdicionActiva = true; // Flag de que estamos editando activamente
 
     modoEdicionFavoritos = true;
+
+    // --- GUARDAR MEMORIA DEL FILTRO Y APAGARLO TEMPORALMENTE ---
+    if (typeof window.seguimientoPrevioEdicion === 'undefined' || window.seguimientoPrevioEdicion === null) {
+        window.seguimientoPrevioEdicion = soloSeguimiento;
+    }
+    soloSeguimiento = false;
     soloFavoritos = false;
+    // -------------------------------------------------------------------
 
     // 1. LIMPIAR BÚSQUEDA Y OTROS FILTROS PREVIOS
     if (typeof limpiarBuscador === 'function') {
@@ -1208,7 +1251,7 @@ function activarEdicionFavoritos() {
     }
     resetFiltroDistancia(false);
 
-    cambiarVista('tabla'); 
+    cambiarVista('tabla');  
 
     // 2. ILUMINAR BOTÓN DE AJUSTES EN EL MENÚ INFERIOR
     const btnSettings = document.getElementById('nav-settings');
@@ -1561,52 +1604,134 @@ function toggleFavorito(id) {
     return esNuevoFavorito;
 }
 
+// =========================================================================
+// 🛑 FUNCION AUXILIAR DE SINCRONIZACIÓN ESTÁTICA
+// =========================================================================
+function actualizarContenidoPopupGuardado(id, esFavorito, esSeguimiento) {
+    if (typeof markersDespegues === 'undefined' || markersDespegues.length === 0) return;
+
+    // Buscamos el marcador del despegue correspondiente
+    const marker = markersDespegues.find(m => m.metadata && Number(m.metadata.id) === Number(id));
+    if (!marker) return;
+
+    const popup = marker.getPopup();
+    if (!popup) return;
+
+    const content = popup.getContent();
+    if (!content) return;
+
+    // Creamos un div temporal para manipular el HTML estático de Leaflet
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = typeof content === 'string' ? content : content.innerHTML;
+
+    // 1. Sincronizar Favorito en la plantilla estática
+    if (esFavorito !== undefined) {
+        const btnFav = tempDiv.querySelector('.btn-favorito-tabla');
+        if (btnFav) {
+            btnFav.title = esFavorito ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
+            const svgFav = btnFav.querySelector('svg');
+            if (svgFav) {
+                svgFav.setAttribute('fill', esFavorito ? '#e00' : 'none');
+                svgFav.setAttribute('stroke', esFavorito ? '#e00' : '#555');
+            }
+        }
+    }
+
+    // 2. Sincronizar Seguimiento en la plantilla estática
+    if (esSeguimiento !== undefined) {
+        const btnSeg = tempDiv.querySelector('.btn-ojo-tabla');
+        if (btnSeg) {
+            btnSeg.title = esSeguimiento ? t('seguimiento.quitar') : t('seguimiento.activar');
+            const colorSeg = esSeguimiento ? '#16a34a' : '#959595';
+            btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
+        }
+    }
+
+    // Volvemos a guardar la plantilla limpia dentro de Leaflet
+    popup.setContent(tempDiv.innerHTML);
+}
+
 window.toggleFavoritoDesdeTabla = function(id, btnElement) {
-    // Miramos si actualmente es favorito o no
     const esFavoritoActual = obtenerFavoritos().map(Number).includes(Number(id));
 
-    // Función interna que hace el cambio visual en el DOM al instante (0.001s)
     const ejecutarCambioDOM = () => {
-        // 1. Guardar en memoria y actualizar contador general
         const esNuevoFavorito = toggleFavorito(id); 
         
-        // Feedback físico en la app
         if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Haptics) {
             Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
         }
 
-        // 2. Modificar el botón exacto que hemos tocado (Sin recargar toda la tabla)
-        if (btnElement) {
-            btnElement.title = esNuevoFavorito ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
-            const svg = btnElement.querySelector('svg');
+        // 🛑 NUEVO: Sincronizar la plantilla estática interna de Leaflet inmediatamente
+        actualizarContenidoPopupGuardado(id, esNuevoFavorito, undefined);
+
+        // Helper interno para actualizar estados de botones y filas
+        const aplicarCambiosVisualesABotonYFila = (btn) => {
+            btn.title = esNuevoFavorito ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
+            const svg = btn.querySelector('svg');
             if (svg) {
                 svg.setAttribute('fill', esNuevoFavorito ? '#e00' : 'none');
-                svg.setAttribute('stroke', esNuevoFavorito ? '#e00' : '#333');
+                svg.setAttribute('stroke', esNuevoFavorito ? '#e00' : '#555');
             }
             
-            // 3. Poner la línea superior de la fila (clase "favorito")
-            let fila = btnElement.closest('tr');
+            let fila = btn.closest('tr');
             if (fila) {
                 fila.classList.toggle('favorito', esNuevoFavorito);
-                // Buscamos las siguientes filas del mismo despegue
                 let siguiente = fila.nextElementSibling;
                 while (siguiente && !siguiente.classList.contains('fila-inicio-despegue')) {
                     siguiente.classList.toggle('favorito', esNuevoFavorito);
                     siguiente = siguiente.nextElementSibling;
                 }
             }
+        };
+
+        // 1. Actualizar el botón presionado directamente
+        if (btnElement && btnElement.tagName !== 'TD') {
+            aplicarCambiosVisualesABotonYFila(btnElement);
         }
 
-        // 4. Refrescar contadores superiores SIN forzar scroll arriba
-        aplicarFiltrosVisuales(true); 
+        // 2. Sincronizar el botón gemelo (en la tabla si clicamos en el mapa, o en el mapa si clicamos en la tabla)
+        const botonesFav = document.querySelectorAll('.btn-favorito-tabla');
+        botonesFav.forEach(btn => {
+            const onclickText = btn.getAttribute('onclick') || '';
+            if (onclickText.includes(`toggleFavoritoDesdeTabla(${id},`) || 
+                onclickText.includes(`toggleFavoritoDesdeTabla('${id}',`)) {
+                if (btn !== btnElement) aplicarCambiosVisualesABotonYFila(btn);
+            }
+        });
+
+        // 3. Sincronizar el corazón en el modo edición (si aplica)
+        const tdsEdicion = document.querySelectorAll(`.columna-favoritos[data-id="${id}"]`);
+        tdsEdicion.forEach(td => {
+            if (td !== btnElement) {
+                td.innerHTML = esNuevoFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+                td.title = esNuevoFavorito ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos');
+                
+                let filaTabla = td.closest('tr');
+                if (filaTabla) {
+                    filaTabla.classList.toggle('favorito', esNuevoFavorito);
+                    let siguiente = filaTabla.nextElementSibling;
+                    while (siguiente && !siguiente.classList.contains('fila-inicio-despegue')) {
+                        siguiente.classList.toggle('favorito', esNuevoFavorito);
+                        siguiente = siguiente.nextElementSibling;
+                    }
+                }
+            }
+        });
+
+        // 4. Gestión de reconstrucción de tabla si el filtro de favoritos está encendido
+        const btnFiltroFav = document.getElementById('btn-filtro-favoritos-toggle');
+        if (btnFiltroFav && btnFiltroFav.classList.contains('activo') && !esNuevoFavorito) {
+            const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+            window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
+            construir_tabla(false, enMapa, enMapa);
+        } else {
+            aplicarFiltrosVisuales(true); 
+        }
     };
 
     if (!esFavoritoActual) {
-        // AÑADIR (Instantáneo y sin fricción)
         ejecutarCambioDOM();
-
     } else {
-        // QUITAR (Pedimos confirmación)
         const despegue = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(id));
         const nombre = despegue ? despegue.Despegue : '';
         const provincia = despegue ? despegue.Provincia : '';
@@ -1614,12 +1739,10 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
         const titulo = '🤍 ' + t('favoritos.quitarDeFavoritos'); 
         const mensaje = `<span style="font-size: 1.2em;"><b>${nombre}</b><br>(${provincia})</span>`;
 
-        // Registramos la acción de confirmación
         window._confirmarToggleFavorito = function() {
             ejecutarCambioDOM();
         };
 
-        // Mostramos el modal
         mensajeModalAceptarCancelar(titulo, mensaje, '_confirmarToggleFavorito');
     }
 };
@@ -1814,7 +1937,22 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
     
     // Al limpiar el buscador aquí, ya se restaurará el placeholder normal
     limpiarBuscador(); 
-    
+
+    // --- RESTAURAR EL FILTRO DE SEGUIMIENTO ---
+    if (window.seguimientoPrevioEdicion === true) {
+        // Comprobación de seguridad: ¿siguen existiendo seguimientos tras la edición?
+        if (obtenerSeguimientos().length > 0) {
+            soloSeguimiento = true;
+        } else {
+            // Si el usuario los borró todos desde el mapa durante un desvío, lo apagamos definitivamente
+            soloSeguimiento = false;
+            const btnSegTog = document.getElementById('btn-filtro-seguimiento-toggle');
+            if (btnSegTog) btnSegTog.classList.remove('activo', 'filtro-aplicado');
+        }
+    }
+    window.seguimientoPrevioEdicion = null; // Limpiamos la memoria
+    // -------------------------------------------------
+
     construir_tabla(); 
 
     setTimeout(() => { sugerirGuiaPrincipal(); }, 500);
@@ -1827,6 +1965,118 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
     }
 
     return true; 
+}
+
+// ---------------------------------------------------------------
+// 🔴 GESTIÓN DE SEGUIMIENTO
+// ---------------------------------------------------------------
+
+function obtenerSeguimientos() {
+    const data = localStorage.getItem("METEO_SEGUIMIENTO");
+    if (!data) return [];
+    try {
+        const parsed = JSON.parse(data);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch(e) {
+        return [];
+    }
+}
+
+function limpiarSeguimientosExpirados() {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const vigentes = obtenerSeguimientos().filter(s => {
+        const fechaMarcado = new Date(s.fecha);
+        fechaMarcado.setHours(0, 0, 0, 0);
+        const diasPasados = Math.floor((hoy - fechaMarcado) / 86400000);
+        return diasPasados < diasSeguimiento;
+    });
+    localStorage.setItem("METEO_SEGUIMIENTO", JSON.stringify(vigentes));
+    return vigentes;
+}
+
+function toggleSeguimiento(id) {
+    id = Number(id);
+    const seguimientos = obtenerSeguimientos().map(s => ({ ...s, id: Number(s.id) }));
+    const indice = seguimientos.findIndex(s => s.id === id);
+    let esNuevo = false;
+
+    if (indice === -1) {
+        seguimientos.push({ id, fecha: new Date().toISOString().split('T')[0] });
+        esNuevo = true;
+    } else {
+        seguimientos.splice(indice, 1);
+    }
+
+    localStorage.setItem("METEO_SEGUIMIENTO", JSON.stringify(seguimientos));
+    return esNuevo;
+}
+
+window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
+    const esNuevo = toggleSeguimiento(id);
+
+    if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Haptics) {
+        Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
+    }
+
+    const color = esNuevo ? '#16a34a' : '#959595';
+
+    // 🛑 NUEVO: Sincronizar la plantilla estática interna de Leaflet inmediatamente
+    actualizarContenidoPopupGuardado(id, undefined, esNuevo);
+
+    // 1. Actualizar el botón presionado directamente
+    if (btnElement) {
+        btnElement.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
+        btnElement.title = esNuevo ? t('seguimiento.quitar') : t('seguimiento.activar');
+    }
+
+    // 2. Sincronizar el botón gemelo (tabla/mapa)
+    const botonesOjo = document.querySelectorAll('.btn-ojo-tabla');
+    botonesOjo.forEach(btn => {
+        const onclickAttr = btn.getAttribute('onclick') || '';
+        if (onclickAttr.includes(`toggleSeguimientoDesdeTabla(${id},`) || 
+            onclickAttr.includes(`toggleSeguimientoDesdeTabla('${id}',`)) {
+            if (btn !== btnElement) {
+                btn.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
+                btn.title = esNuevo ? t('seguimiento.quitar') : t('seguimiento.activar');
+            }
+        }
+    });
+
+    // 3. Lógica del filtro de seguimiento activo
+    const btnFiltro = document.getElementById('btn-filtro-seguimiento-toggle');
+    if (btnFiltro && btnFiltro.classList.contains('activo')) {
+        const quedan = obtenerSeguimientos();
+        const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+        
+        window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
+
+        if (quedan.length === 0) {
+            soloSeguimiento = false;
+            btnFiltro.classList.remove('activo', 'filtro-aplicado');
+            construir_tabla(false, enMapa, enMapa);
+            mensajeModalAceptar('', t('seguimiento.filtroDesactivadoAuto', { ojo: _ojoVerde }));
+        } else {
+            construir_tabla(false, enMapa, enMapa);
+        }
+    } else {
+        aplicarFiltrosVisuales(true);
+    }
+};
+
+function filtroVerSoloSeguimiento() {
+    const btn = document.getElementById('btn-filtro-seguimiento-toggle');
+    const seguimientosActuales = obtenerSeguimientos();
+
+    if (!btn.classList.contains('activo') && seguimientosActuales.length === 0) {
+        mensajeModalAceptar('', t('seguimiento.noTienesSeguimiento', { ojo: _ojoVerde }));
+        return;
+    }
+
+    btn.classList.toggle('activo');
+    soloSeguimiento = btn.classList.contains('activo');
+    btn.classList.toggle('filtro-aplicado', soloSeguimiento);
+    construir_tabla();
 }
 
 // ---------------------------------------------------------------
@@ -1923,6 +2173,18 @@ function alternarOrdenarPorXC() {
     chkOrdenarPorXC = document.getElementById("chkOrdenarPorXC").checked;
     localStorage.setItem("METEO_CHECKBOX_ORDENAR_POR_XC", chkOrdenarPorXC);
     construir_tabla();
+}
+
+function cambiarDiasSeguimiento(delta) {
+    diasSeguimiento = Math.min(7, Math.max(1, diasSeguimiento + delta));
+    localStorage.setItem('METEO_DIAS_SEGUIMIENTO', String(diasSeguimiento));
+    const el = document.getElementById('valor-dias-seguimiento');
+    if (el) el.textContent = diasSeguimiento;
+    // Actualizar botones −/+ para reflejar límites
+    const btnMenos = document.getElementById('stepper-seguimiento-menos');
+    const btnMas   = document.getElementById('stepper-seguimiento-mas');
+    if (btnMenos) btnMenos.disabled = diasSeguimiento <= 1;
+    if (btnMas)   btnMas.disabled   = diasSeguimiento >= 4;
 }
 
 // ---------------------------------------------------------------
@@ -2571,7 +2833,7 @@ function createOrientationSVG(orientacionesStr) {
     const strokeWidth = 1; 
     const colorBorde = "#666"; 
     const colorFondoInactivo = "white"; 
-    const colorSegmentoActivo = "#19ed86"; 
+    const colorSegmentoActivo = "#0078d4"; 
 
     const activeOrientations = new Set(
         (orientacionesStr || '').split(',').map(s => s.trim())
@@ -2620,33 +2882,6 @@ function obtenerDistanciaKm(lat1, lon1, lat2, lon2) {
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c; // Distancia en km
-}
-
-function gestionarMascarasScroll() { //Obsoleta en reserva
-    const contenedor = document.getElementById("contenedor-paneles-scroll");
-    
-    if (!contenedor) return;
-
-    // 1. Datos métricos
-    const scrollTop = contenedor.scrollTop; // Cuánto hemos bajado
-    const scrollHeight = contenedor.scrollHeight; // Altura total del contenido
-    const clientHeight = contenedor.clientHeight; // Altura de la ventana visible
-    
-    // Umbral de tolerancia (pixeles) para considerar que ha tocado el borde
-    const umbral = 2; 
-
-    // 2. Lógica ARRIBA: ¿Hemos bajado más del umbral?
-    // Si scrollTop > 0, hay contenido escondido arriba -> Ponemos 40px de fade
-    const mascaraArriba = scrollTop > umbral ? "40px" : "0px";
-
-    // 3. Lógica ABAJO: ¿Queda contenido abajo?
-    // Si (scroll total - lo bajado) es mayor que la altura visible -> Ponemos 40px de fade
-    const hayContenidoAbajo = (scrollHeight - scrollTop) > (clientHeight + umbral);
-    const mascaraAbajo = hayContenidoAbajo ? "40px" : "0px";
-
-    // 4. Aplicamos los cambios a las variables CSS del contenedor
-    contenedor.style.setProperty("--mask-top", mascaraArriba);
-    contenedor.style.setProperty("--mask-bottom", mascaraAbajo);
 }
 
 function setModoEnfoque(activarBlur) {
@@ -2941,7 +3176,7 @@ const leerDeCacheIDB = async (key) => {
 //*********************************************************************
 
 
-async function construir_tabla(forzarRecarga = false, silencioso = false) {
+async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
 	
 	if (!silencioso) {
         mostrarLoading();
@@ -3384,7 +3619,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
         }
 
         // Está activo filtro favoritos Y hay favoritos (o uno temporal) --> filtramos
-		if (soloFavoritos && idsAIncluir.length > 0 && !ignorarFiltroFavoritos) {
+        // (soloSeguimiento tiene prioridad: si está activo, opera sobre el array completo)
+		if (soloFavoritos && !soloSeguimiento && idsAIncluir.length > 0 && !ignorarFiltroFavoritos) {
 			
 			// 1. Crear un mapa temporal para relacionar el ID con sus respuestas
 			const respuestasMap = new Map();
@@ -3402,12 +3638,33 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             respuestasEcmwf = despegues.map(d => respuestasEcmwfMap.get(Number(d.ID))).filter(r => r !== undefined);
 			
 		}
-		 // Está activo filtro favoritos pero no hay ni favoritos ni despegue temporal
-		 else if (soloFavoritos && idsAIncluir.length === 0 && !ignorarFiltroFavoritos) {
+        // Está activo filtro favoritos pero no hay ni favoritos ni despegue temporal
+        else if (soloFavoritos && !soloSeguimiento && idsAIncluir.length === 0 && !ignorarFiltroFavoritos) {
             despegues = [];
 			respuestas = [];
             respuestasEcmwf = [];
 		}
+
+        // ---------------------------------------------------------------
+        // 🔴 LÓGICA DE FILTRADO O NO DE DESPEGUES CON SEGUIMIENTO
+        // ---------------------------------------------------------------
+
+        if (soloSeguimiento) {
+            const idsSeg = obtenerSeguimientos().map(s => Number(s.id));
+            const rMap = new Map();
+            const rEcmwfMap = new Map();
+            despegues.forEach((d, i) => {
+                rMap.set(Number(d.ID), respuestas[i]);
+                rEcmwfMap.set(Number(d.ID), respuestasEcmwf[i]);
+            });
+            if (idsSeg.length > 0) {
+                despegues     = despegues.filter(d => idsSeg.includes(Number(d.ID)));
+                respuestas    = despegues.map(d => rMap.get(Number(d.ID))).filter(r => r !== undefined);
+                respuestasEcmwf = despegues.map(d => rEcmwfMap.get(Number(d.ID))).filter(r => r !== undefined);
+            } else {
+                despegues = []; respuestas = []; respuestasEcmwf = [];
+            }
+        }
 
 		// ---------------------------------------------------------------
 		// 🔴 LECTURA DEL SLIDER RANGO HORARIO (necesario para la construcción de la tabla)
@@ -4335,13 +4592,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // 3. Escapamos todas las comillas dobles para que no rompan el atributo data-tippy-content
             const contenidoEscapado = contenidoTooltip.replace(/"/g, '&quot;');
 
+            const btnRowBottom = modoEdicionFavoritos ? '2px' : '34px';
+
             // Botón de Información ("i")
             const botonInfoHTML = `
                 <button class="btn-info" 
-                    style="position: absolute; bottom: 2px; left: 2px;"
+                    style="position: absolute; bottom: ${btnRowBottom}; left: 13px;"
                     data-tippy-content="${contenidoEscapado}"
                     title="${t('tabla.tooltips.masInfo')}">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                         <circle cx="12" cy="12" r="10"></circle>
                         <line x1="12" y1="7" x2="12" y2="7" stroke-width="2.5"></line>
                         <polyline points="10.5 11 12 11 12 17"></polyline>
@@ -4352,10 +4611,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             // Botón directo al Mapa (posicionado a la derecha del anterior)
             const botonMapaDirectoHTML = `
                 <button class="btn-info btn-guia-mapa-directo" 
-                    style="position: absolute; bottom: 2px; left: 31px;"  
+                    style="position: absolute; bottom: ${btnRowBottom}; left: 56px;"  
                     onclick="abrirMapaIntegrado(${latitud}, ${longitud}, '${safeDespegue}'); return false;"
                     title="${t('tabla.tooltips.verEnMapa')}">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round" style="vertical-align: middle;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" style="vertical-align: middle;">
                         <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
                         <line x1="8" y1="2" x2="8" y2="18"></line>
                         <line x1="16" y1="6" x2="16" y2="22"></line>
@@ -4368,11 +4627,26 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
             const esFavoritoBtn  = obtenerFavoritos().map(Number).includes(Number(d.ID));
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-favorito-tabla"
-                    style="position: absolute; bottom: 2px; left: 60px;"
+                    style="position: absolute; bottom: 2px; left: 13px;"
                     onclick="toggleFavoritoDesdeTabla(${d.ID}, this); return false;"
                     title="${esFavoritoBtn  ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="${esFavoritoBtn  ? '#e00' : 'none'}" stroke="${esFavoritoBtn  ? '#e00' : '#333'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="${esFavoritoBtn  ? '#e00' : 'none'}" stroke="${esFavoritoBtn  ? '#e00' : '#555'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </button>
+            `;
+
+            const esSeguimiento = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(d.ID));
+            const _oc = esSeguimiento ? '#16a34a' : '#959595';
+            const botonOjoHTML = modoEdicionFavoritos ? "" : `
+                <button class="btn-info btn-ojo-tabla"
+                    style="position: absolute; bottom: 2px; left: 56px;"
+                    onclick="toggleSeguimientoDesdeTabla(${d.ID}, this); return false;"
+                    title="${t('seguimiento.activar_desactivar')}">
+                    <svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet">
+                        <path class="ojo-color" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_oc}" stroke="none"/>
+                        <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
+                        <circle class="ojo-color" cx="12" cy="12" r="2.5" fill="${_oc}" stroke="none"/>
                     </svg>
                 </button>
             `;
@@ -4382,6 +4656,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 
             // Siempre se muestra en edición, o si hay más de 7 filas en vista normal
             const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 7);
+            const modoCompacto = !modoEdicionFavoritos && totalFilasRowSpan <= 8;
 
             // Preparamos el texto del tooltip limpiando las comillas dobles
             const textoCrudoActividad = t('tabla.tooltips.tooltipNivelDeActividad');
@@ -4407,11 +4682,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
                 ${botonFavoritoHTML}
+                ${botonOjoHTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
                 ${htmlIconosCentrales}
 
-                <span class="linea-divisora-edit" style="position: absolute; bottom: 28px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
+                <span class="linea-divisora-edit" style="position: absolute; bottom: 34px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
 
 			// ROWSPAN DINÁMICO
@@ -4419,6 +4695,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 			tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda");
             if (modoEdicionFavoritos) {
                 tdDespegue.classList.add("borde-grueso-derecha");
+                tdDespegue.style.paddingBottom = '34px';
+            }
+            if (modoCompacto) {
+                tdDespegue.classList.add('modo-compacto');
                 tdDespegue.style.paddingBottom = '26px';
             }
 			
@@ -5267,13 +5547,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		}		
 
         // --- ACTUALIZAR MAPA SI ESTABA VISIBLE (Para reconexiones y recargas) ---
-        const vistaMapa = document.getElementById('vista-mapa');
-        if (vistaMapa && vistaMapa.style.display === 'flex' && typeof marcarOperativosEnMarkers === 'function') {
-            if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-                marcarOperativosEnMarkers();
-                aplicarPuntuacionEnMapa();
-            } else {
-                actualizarFiltrosMapa();
+        if (!skipMapaUpdate) {
+            const vistaMapa = document.getElementById('vista-mapa');
+            if (vistaMapa && vistaMapa.style.display === 'flex' && typeof marcarOperativosEnMarkers === 'function') {
+                if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
+                    marcarOperativosEnMarkers();
+                    aplicarPuntuacionEnMapa();
+                } else {
+                    actualizarFiltrosMapa();
+                }
             }
         }
 
@@ -5678,7 +5960,15 @@ function aplicarFiltrosVisuales(evitarScroll = false) {
         const hayFiltroDistancia = distanciaLimite < 9999;
         const hayFiltros = hayFiltroTexto || hayFiltroDistancia;
 
-        if (incluirNoFavsActivo) {
+        if (soloSeguimiento) {
+            // --- MODO "SEGUIMIENTO" (Corazón verde) ---
+            const totalSeg = obtenerSeguimientos().length;
+            const heartVerde = `<svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:middle;margin-left:1px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="#16a34a" stroke="none"/></svg>`;
+            miniCounter.innerHTML = hayFiltros
+                ? `${visibles} de ${totalSeg} ${heartVerde}`
+                : `${visibles} ${heartVerde}`;
+            miniCounter.title = t('contador.miniSeguimiento');
+        } else if (incluirNoFavsActivo) {
             // --- MODO "BASE DE DATOS TOTAL" (Corazón oculto) ---
             // Mostramos cuántos se ven respecto al total global de despegues
             miniCounter.innerHTML = `${visibles} de ${totalDespeguesDisponibles}`;
@@ -7029,6 +7319,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
         }
     }, 1000);
 
+    limpiarSeguimientosExpirados();
+
 	// ---------------------------------------------------------------
 	// 🔴 CONFIGURACIÓN GLOBAL DE TOOLTIPS (TIPPY.JS)
 	// ---------------------------------------------------------------
@@ -7117,7 +7409,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
     }
 
 	// ---------------------------------------------------------------
-	// 🔴 LISTENER PARA CERRAR PANELES ABIERTOS AL TOCAR ÁREA VACÍA DEL MENÚ
+	// 🔴 INICIALIZACIÓN DE CHECKBOXES Y BOTÓN RESET
 	// ---------------------------------------------------------------
 	
     document.getElementById("chkMostrarVientoAlturas").checked = chkMostrarVientoAlturas;
@@ -7131,6 +7423,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkOrdenarPorXC")) document.getElementById("chkOrdenarPorXC").checked = chkOrdenarPorXC;
+
+    const elDias = document.getElementById('valor-dias-seguimiento');
+    if (elDias) {
+        elDias.textContent = diasSeguimiento;
+        const btnMenos = document.getElementById('stepper-seguimiento-menos');
+        const btnMas   = document.getElementById('stepper-seguimiento-mas');
+        if (btnMenos) btnMenos.disabled = diasSeguimiento <= 1;
+        if (btnMas)   btnMas.disabled   = diasSeguimiento >= 4;
+    }
 
 	window.resetFiltroDistancia = function(reconstruir = true) { //flag para que, si le hemos llamado desde activarEdicionFavoritos(), que ya tiene construir_tabla, no se llame otra vez aquí, ya que ya se hace desde esa función (bloquearía navegador)
 
@@ -7407,6 +7708,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
             if (searchInput && searchInput.value.trim() !== '') {
                 if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
                 searchInput.blur();
+                return;
+            }
+
+            // C. Filtro Seguimiento activo
+            if (soloSeguimiento) {
+                soloSeguimiento = false;
+                const btnFiltroSeg = document.getElementById('btn-filtro-seguimiento-toggle');
+                if (btnFiltroSeg) btnFiltroSeg.classList.remove('activo', 'filtro-aplicado');
+                construir_tabla();
                 return;
             }
 
@@ -7767,8 +8077,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
     // ---------------------------------------------------------------
     window.verMeteoEnTabla = function(idDespegue) {
-        if (typeof map !== 'undefined' && map) map.closePopup();
-        
         // 1. Buscamos el despegue en la BD global usando el ID para obtener su nombre EXACTO en la tabla
         const despegueBD = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(idDespegue));
         if (!despegueBD) return; // Si por algún motivo no existe, abortamos
@@ -7821,8 +8129,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // 🔴 FUNCIÓN PARA VOLVER A LA EDICIÓN TRAS UN DESVÍO AL MAPA/TABLA AISLADA
     // ---------------------------------------------------------------
     window.volverAEdicionDesdeDesvio = function() {
-        if (typeof map !== 'undefined' && map) map.closePopup();
-
         window.despegueTemporalParaTabla = null; 
 
         // 2. Limpiamos el buscador (ahora llamará a aplicarFiltrosVisuales de forma segura)
@@ -7831,6 +8137,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         // 3. Restauramos banderas de modo edición
         modoEdicionFavoritos = true;
         soloFavoritos = false; 
+        soloSeguimiento = false; 
         
         // Respetar si el usuario tenía activado el "Ver solo favoritos" antes de salir
         const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
@@ -8620,6 +8927,14 @@ function aplicarPuntuacionEnMapa() {
     const despegues = window.bdGlobalDespegues;
     if (!horas || !respuestas || !despegues || markersDespegues.length === 0) return;
 
+    // --- ESCUDO INICIO ---
+    const _todos = [...markersDespegues, ...markersDespeguesMundo];
+    const marcadorAbierto = _todos.find(m => m.isPopupOpen && m.isPopupOpen()) || null;
+    if (marcadorAbierto) {
+        const mapCont = document.getElementById('map');
+        if (mapCont) mapCont.classList.add('bloquear-transicion-popup');
+    }
+
     // Leer índices DESDE EL SLIDER PRINCIPAL
     let indiceInicio = 0, indiceFin = 99999;
     const sliderHoras = document.getElementById('horario-slider');
@@ -8637,7 +8952,6 @@ function aplicarPuntuacionEnMapa() {
 
         if (!meta) return;
 
-        // Usar el despObj ya cruzado por coordenadas
         const despObj = marker._despObj || null;
         if (!despObj) return;
 
@@ -8653,16 +8967,24 @@ function aplicarPuntuacionEnMapa() {
         marker._notaMapa = (nota !== null) ? nota : -1;
         const nombreMostrar = despObj ? despObj.Despegue : meta.despegue;
 
-        // Extraemos la nota de actividad de despObj y la pasamos al icono
         const actividadScore = despObj ? despObj.Actividad : null;
         marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color, actividadScore));
-        });
+    });
 
-        if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
+    if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
         clustergroupDespegues.refreshClusters();
     }
     if (typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || filtrosMapaAbiertos)) {
         actualizarFiltrosMapa();
+    }
+
+    // --- ESCUDO FIN ---
+    if (marcadorAbierto) {
+        marcadorAbierto.openPopup();
+        setTimeout(() => {
+            const mapCont = document.getElementById('map');
+            if (mapCont) mapCont.classList.remove('bloquear-transicion-popup');
+        }, 50);
     }
 }
 
@@ -8725,18 +9047,35 @@ function filtrarMarkersPorPuntuacion() {
 }
 
 function limpiarColoresMapa() {
-        markersDespegues.forEach(marker => {
-            const meta = marker.metadata;
-            if (!meta) return;
-            marker._notaMapa = undefined;
-            
-            // Obtenemos la nota del objeto de datos cruzado y la pasamos
-            const actividadScore = marker._despObj ? marker._despObj.Actividad : null;
-            marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones, null, actividadScore));
-        });
-        if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
-        if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
+    // --- ESCUDO INICIO ---
+    const _todos = [...markersDespegues, ...markersDespeguesMundo];
+    const marcadorAbierto = _todos.find(m => m.isPopupOpen && m.isPopupOpen()) || null;
+    if (marcadorAbierto) {
+        const mapCont = document.getElementById('map');
+        if (mapCont) mapCont.classList.add('bloquear-transicion-popup');
     }
+
+    markersDespegues.forEach(marker => {
+        const meta = marker.metadata;
+        if (!meta) return;
+        marker._notaMapa = undefined;
+        
+        const actividadScore = marker._despObj ? marker._despObj.Actividad : null;
+        marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones, null, actividadScore));
+    });
+    
+    if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+    if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
+
+    // --- ESCUDO FIN ---
+    if (marcadorAbierto) {
+        marcadorAbierto.openPopup();
+        setTimeout(() => {
+            const mapCont = document.getElementById('map');
+            if (mapCont) mapCont.classList.remove('bloquear-transicion-popup');
+        }, 50);
+    }
+}
 
 // ---------------------------------------------------------------
 // 🗺️ PUNTUACIÓN DE CONDICIONES PARA EL MAPA
@@ -9245,7 +9584,15 @@ function inicializarMapaLeaflet() {
 
         // E. ACTUALIZAR CAPAS DE FORMA INDEPENDIENTE
         // -------------------------------------------------------
-        
+        const _todosMarkers = [...markersDespegues, ...markersDespeguesMundo];
+        const marcadorAbierto = _todosMarkers.find(m => m.isPopupOpen && m.isPopupOpen()) || null;
+
+        // --- ESCUDO ANTI-PARPADEO ---
+        if (marcadorAbierto) {
+            const mapCont = document.getElementById('map');
+            if (mapCont) mapCont.classList.add('bloquear-transicion-popup');
+        }
+
         // 1. Actualizar capa LOCAL (Despegues)
         clustergroupDespegues.clearLayers();
         clustergroupDespegues.addLayers(markersFiltradosDespegues);
@@ -9254,7 +9601,18 @@ function inicializarMapaLeaflet() {
         clustergroupDespeguesMundo.clearLayers();
         clustergroupDespeguesMundo.addLayers(markersFiltradosDespeguesMundo);
 
-        // Nota: El 'if (typeof clustergroupDespeguesMundo !== 'undefined')' ya no es necesario aquí.
+        // Restaurar popup de forma instantánea sin animaciones
+        if (marcadorAbierto) {
+            // Solo lo reabrimos si ha sobrevivido a los filtros y sigue en el mapa
+            if (markersFiltradosDespegues.includes(marcadorAbierto) || markersFiltradosDespeguesMundo.includes(marcadorAbierto)) {
+                marcadorAbierto.openPopup();
+            }
+            // Devolvemos la fluidez a Leaflet tras pintar el frame
+            setTimeout(() => {
+                const mapCont = document.getElementById('map');
+                if (mapCont) mapCont.classList.remove('bloquear-transicion-popup');
+            }, 50);
+        }
     }
 
     // FUNCIÓN PARA GESTIONAR EL ESTADO VISUAL DE LOS CONTROLES
@@ -10014,12 +10372,9 @@ function inicializarMapaLeaflet() {
         const info = row.Más_información || '';
 
         let idDespegue = row.ID || '';
-        let botonVerEnTablaHTML = ''; 
-
-        // Guardaremos aquí el valor 1-5 de actividad si existe cruce
+        let botonesAccionPopupHTML = ''; 
         let actividadScore = null; 
 
-        // Cruzamos coordenadas con la base de datos de la Tabla
         if (window.bdGlobalDespegues) {
             const matchTabla = window.bdGlobalDespegues.find(d =>
                 parseFloat(d.Latitud).toFixed(4) === lat.toFixed(4) &&
@@ -10031,10 +10386,50 @@ function inicializarMapaLeaflet() {
                 idDespegue = matchTabla.ID;
                 actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla
 
-                botonVerEnTablaHTML = `
-                <div style="margin-top: 8px; margin-bottom: 8px; text-align: center;">
-                    <button class="btn-accion" onclick="verMeteoEnTabla('${escapeHtml(idDespegue)}');" style="width: 100%; min-height: 32px; height: auto; padding: 6px 4px; white-space: normal; line-height: 1.3; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">${t('mapa.verEnTabla')}
+                const esFavoritoPopup  = obtenerFavoritos().map(Number).includes(Number(idDespegue));
+                const esSeguimientoPopup = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
+                const _ocPopup = esSeguimientoPopup ? '#16a34a' : '#959595';
+
+                // Agrupamos TODOS los botones en un solo contenedor Flexbox
+                botonesAccionPopupHTML = `
+                <div style="display: flex; align-items: stretch; gap: 8px; margin-top: 8px; margin-bottom: 8px;">
+                    
+                    <!-- Contenedor para alinear los iconos (Corazón y Ojo) a la izquierda -->
+                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                        <!-- Botón Favorito -->
+                        <button class="btn-info btn-favorito-tabla"
+                            style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
+                            onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleFavoritoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
+                            title="${esFavoritoPopup ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
+                            <svg viewBox="0 0 24 24" width="20" height="20"
+                                fill="${esFavoritoPopup ? '#e00' : 'none'}"
+                                stroke="${esFavoritoPopup ? '#e00' : '#555'}"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                style="vertical-align: middle;">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+
+                        <!-- Botón Seguimiento (Ojo) -->
+                        <button class="btn-info btn-ojo-tabla"
+                            style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
+                            onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleSeguimientoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
+                            title="${esSeguimientoPopup ? t('seguimiento.quitar') : t('seguimiento.activar')}">
+                            <svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet">
+                                <path class="ojo-color" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_ocPopup}" stroke="none"/>
+                                <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
+                                <circle class="ojo-color" cx="12" cy="12" r="2.5" fill="${_ocPopup}" stroke="none"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Botón "Ver en Tabla" -->
+                    <button class="btn-accion" 
+                        onclick="if(event){event.stopPropagation(); event.preventDefault();} verMeteoEnTabla('${escapeHtml(idDespegue)}'); return false;" 
+                        style="flex: 1; height: auto; min-height: 34px; padding: 6px 8px; white-space: normal; word-break: break-word; line-height: 1.2; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
+                        ${t('mapa.verEnTabla')}
                     </button>
+
                 </div>`;
             }
         }
@@ -10057,7 +10452,7 @@ function inicializarMapaLeaflet() {
                 <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
                 <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
                 
-                ${botonVerEnTablaHTML}
+                ${botonesAccionPopupHTML}
 
                 <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                 <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
@@ -10091,14 +10486,37 @@ function inicializarMapaLeaflet() {
         marker.bindPopup(popupHtml, { 
             className: 'popup-despegues', 
             maxWidth: 300,
-            autoPanPaddingTopLeft: L.point(10, 350) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
+            autoPanPaddingTopLeft: L.point(10, 350) 
         });
 
-        // Regeneramos el popup por si venimos de consultarlo en la tabla.
+        // Regeneramos el popup por si venimos de consultarlo en la tabla o hemos cambiado estados.
         marker.on('popupopen', function() {
-            const btn = this.getPopup().getElement().querySelector('.btn-accion');
-            if (!btn) return;
-            btn.innerHTML = `${t('mapa.verEnTabla')}`;
+            const popupEl = this.getPopup().getElement();
+            if (!popupEl) return;
+            
+            const btn = popupEl.querySelector('.btn-accion');
+            if (btn) btn.innerHTML = `${t('mapa.verEnTabla')}`;
+
+            // Actualizar estado del botón Favorito dinámicamente
+            const btnFav = popupEl.querySelector('.btn-favorito-tabla');
+            if (btnFav) {
+                const esFav = obtenerFavoritos().map(Number).includes(Number(idDespegue));
+                btnFav.title = esFav ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
+                const svgFav = btnFav.querySelector('svg');
+                if (svgFav) {
+                    svgFav.setAttribute('fill', esFav ? '#e00' : 'none');
+                    svgFav.setAttribute('stroke', esFav ? '#e00' : '#555');
+                }
+            }
+
+            // Actualizar estado del botón Seguimiento dinámicamente
+            const btnSeg = popupEl.querySelector('.btn-ojo-tabla');
+            if (btnSeg) {
+                const esSeg = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
+                btnSeg.title = esSeg ? t('seguimiento.quitar') : t('seguimiento.activar');
+                const colorSeg = esSeg ? '#16a34a' : '#959595';
+                btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
+            }
         });
 
         marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 

@@ -65,6 +65,13 @@
     "anadirFavorito": "+ Add favorite"
   },
 
+  "seguimiento": {
+    "noTienesSeguimiento": "You have no tracked takeoffs {{ojo}}",
+    "filtroDesactivadoAuto": "There are no tracked takeoffs {{ojo}}<br><br>The filter has been disabled",
+    "filtroTitle": "Show only tracked takeoffs",
+    "activar_desactivar": "Enable / Disable tracking"
+  },
+
   "favoritos": {
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorite",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Favorites",
@@ -158,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} favorites out of <b>{{total}}</b> available",
     "totalDisponibles": "Total takeoffs available: <b>{{n}}</b>",
     "miniTodosBD": "Number of visible takeoffs from the full database",
-    "miniFavoritos": "Number of favorite / filtered takeoffs"
+    "miniFavoritos": "Number of favorite takeoffs",
+    "miniSeguimiento": "Number of tracked takeoffs"
   },
 
   "marcadorMasivo": {
@@ -261,6 +269,14 @@
       "navSettings": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Settings</span></div>",
         "descripcion": "Here you can <b>Edit favorites</b> (to add or remove your usual takeoffs), customize parameters, enable options, and view information about weather data updates.<br><br>💡 Each option has an information button <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'> for details."
+      },
+      "btnFiltroSeguimiento": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='1 4 22 16' width='20' height='20' preserveAspectRatio='xMidYMid meet'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#555' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#555' stroke='none'/></svg><span>Tracking filter</span></div>",
+        "descripcion": "Shows only the takeoffs you have marked as <i>tracked</i>.<br><br>💡 Tracking is used to temporarily mark the takeoffs you are interested in following. Mark or unmark them using the eye you will see on each takeoff <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>. With this filter you can easily see them at a glance."
+      },
+      "btnSeguimiento": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='1 4 22 16' width='20' height='20' preserveAspectRatio='xMidYMid meet'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#555' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#555' stroke='none'/></svg><span>Tracking</span></div>",
+        "descripcion": "Mark or unmark the takeoff for <i>tracking</i> <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>. Tracking is automatically disabled after 2 days or the number of days you have configured in <i>Settings > Other options > Tracking days</i>.<br><br>💡 Use it to prepare your next flights and easily follow their conditions."
       }
     }
   },
@@ -393,6 +409,7 @@
     "horarioVueloPref": "Preferred flying schedule",
     "solo_horas_diurnas": "Daylight hours only",
     "ordenar_xc": "Sort by XC Conditions",
+    "diasSeguimiento": "Tracking days:",
     "titulo": "Settings",
     "editarFavoritos": "Edit favorites",
     "importarConfig": "Import settings & favorites",
@@ -434,7 +451,7 @@
   },
 
   "mapa": {
-    "verEnTabla": "View meteo in the table",
+    "verEnTabla": "View in table",
     "verEnTablaSubtitulo": "+❤️ Added to favorites",
     "btnGuardarVista": "💾 Remember current view",
     "btnGuardarVistaTitle": "Save the current center and zoom as your default view",
@@ -605,6 +622,7 @@
     "tooltipHorarioVuelo": "<b>Preferred flying schedule:</b><br><br>The values configured here will cause these start and end times to be automatically selected when choosing a day of the week (Monday, Tuesday, etc.) in the time range selector located above the table.<br><br>You can always adjust the time range selector manually; this setting is just an automation to facilitate the automatic selection of a typical time range.<br><br>Whether done manually or automatically, only the final selected time range is taken into account for the <i>Conditions</i> score calculation; thus, each takeoff's score will be more realistic for that specific range.<br><br>If the <i>Daylight hours only</i> option is enabled, the range automatically selected with this setting will be adjusted to stay within daylight limits.",
     "tooltipHorasDiurnas": "<b>Daylight hours only</b><br><br>Shows only daylight hours. If disabled, 24 hours of the day are shown.<br><br>A ±1h margin is included at sunrise and sunset.<br><br>Changes automatically every month. Additionally, in months with time changes, these hours will automatically adjust to the official time change (DST).",
     "tooltipOrdenarXC": "<b>Sort by XC Conditions:</b><br><br>By default, takeoffs are sorted from best to worst based on the <i>Takeoff Conditions</i> score (feasibility of taking off according to the wind).<br><br>If you enable this option, the table will be sorted from best to worst <b>XC Conditions</b> score (thermal potential of the air mass), regardless of whether the wind at that takeoff is ideal or not.",
+    "tooltipDiasSeguimiento": "<b>Tracking days:</b><br><br>When you mark a takeoff with the eye <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>, it remains <i>tracked</i> for the number of days you configure here.<br><br>For example, with 2 days: if you mark a takeoff on Monday, it will appear active on Monday and Tuesday. On Wednesday it will be automatically removed when starting the application.<br><br>Marking tracked takeoffs allows you to easily filter them with the <i>Show only tracked takeoffs</i> button.<br><br>You can configure between <b>1 and 4 days</b>. The default value is <b>2 days</b>.",
     "tooltipModelosMeteo": "<b>Weather models:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: for wind data in the first 0-48h. Covers almost all of Europe, including the Iberian Peninsula, except for southern Andalusia (Arpege Europe 7km 0-96h is used in that area).</li><li><b>Météo-France Arpege Europe 7km</b>: for wind data in the next 48-96h. Covers Europe and North Africa.</li><li><b>ECMWF IFS HRES 9km</b>: for the rest of the weather data from 0-96h. Covers the entire world.</li></ul><b>Automatic update frequency:</b> Météo-France approximately every 3 hours (8 times a day) and ECMWF approximately every 6 hours (4 times a day).<br><br><b>Weather data gateway:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>The <i>Ref.HHZ</i> value indicates the UTC±0 (Z) time corresponding to the last execution cycle of the model on the source weather server. From that moment, there are several hours of computational calculation before final distribution and public availability."
   }
 

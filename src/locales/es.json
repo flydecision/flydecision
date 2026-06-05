@@ -62,7 +62,14 @@
     "placeholder": "🔍 Despegue o provincia...",
     "placeholderEdicion": "🔍 Despegue o territorio...",
     "sugerenciaTitulo": "💡 No tienes favoritos con * <b>{{termino}}</b> *, pero tienes disponibles en la base de datos de despegues:",
-    "anadirFavorito": "+ Añadir favorito"
+    "anadirFavorito": "+ Añadir favorito",
+    "activar_desactivar": "Activar / Descactivar seguimiento"
+  },
+
+  "seguimiento": {
+    "noTienesSeguimiento": "No tienes despegues en seguimiento {{ojo}}",
+    "filtroDesactivadoAuto": "No hay despegues en seguimiento {{ojo}}<br><br>Se ha desactivado el filtro",
+    "filtroTitle": "Ver solo despegues en seguimiento"
   },
 
   "favoritos": {
@@ -158,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} favoritos de <b>{{total}}</b> disponibles",
     "totalDisponibles": "Total de despegues disponibles: <b>{{n}}</b>",
     "miniTodosBD": "Número de despegues visibles de la base de datos completa",
-    "miniFavoritos": "Número de despegues favoritos / filtrados"
+    "miniFavoritos": "Número de despegues favoritos",
+    "miniSeguimiento": "Número de despegues en seguimiento"
   },
 
   "marcadorMasivo": {
@@ -261,6 +269,14 @@
       "navSettings": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Ajustes</span></div>",
         "descripcion": "Aquí se puede <b>Editar favoritos</b> (para añadir o quitar tus despegues habituales), personalizar parámetros, activar opciones y ver información sobre la actualización de los datos meteorológicos.<br><br>💡 Para cada opción o dato, tienes un botón de información <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'>."
+      },
+      "btnFiltroSeguimiento": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='1 4 22 16' width='20' height='20' preserveAspectRatio='xMidYMid meet'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#555' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#555' stroke='none'/></svg><span>Filtro de seguimiento</span></div>",
+        "descripcion": "Muestra únicamente los despegues que tienes marcados en <i>seguimiento</i>.<br><br>💡 El seguimiento sirve para marcar temporalmente los despegues que te interese seguir. Márcalos o desmárcalos usando el ojo que verás en cada despegue <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>. Con este filtro los ves de un vistazo fácilmente."
+      },
+      "btnSeguimiento": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='1 4 22 16' width='20' height='20' preserveAspectRatio='xMidYMid meet'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#555' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#555' stroke='none'/></svg><span>Seguimiento</span></div>",
+        "descripcion": "Marca o desmarca el despegue para <i>seguimiento</i> <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>. El seguimiento se desactiva automáticamente pasados 2 días o el número de días que hayas configurado en <i>Ajustes > Otras opciones > Días de seguimiento</i>.<br><br>💡 Úsalo para preparar tus próximos vuelos e ir siguiendo sus condiciones fácilmente."
       }
     }
   },
@@ -393,6 +409,7 @@
     "horarioVueloPref": "Horario de vuelo preferido",
     "solo_horas_diurnas": "Solo horas diurnas",
     "ordenar_xc": "Ordenar por Condiciones XC",
+    "diasSeguimiento": "Días de seguimiento:",
     "titulo": "Ajustes",
     "editarFavoritos": "Editar favoritos",
     "importarConfig": "Importar configuración y favoritos",
@@ -434,7 +451,7 @@
   },
 
   "mapa": {
-    "verEnTabla": "Ver meteo en la tabla",
+    "verEnTabla": "Ver en tabla",
     "verEnTablaSubtitulo": "+❤️ Se añade a favoritos",
     "btnGuardarVista": "💾 Memorizar vista actual",
     "btnGuardarVistaTitle": "Guardar el centro y zoom actuales como tu vista predeterminada",
@@ -605,6 +622,7 @@
     "tooltipHorarioVuelo": "<b>Horario de vuelo preferido:</b><br><br>Los valores que se configuren aquí, harán que se seleccionen automáticamente estas horas de inicio y fin al elegir un día de la semana (lunes, martes,..) en el selector de rango horario que está siempre encima de la tabla.<br><br>Siempre puedes mover ese selector de rango horario a tu gusto; esta configuración es solo una automatización para facilitar la selección automática de un rango horario habitual.<br><br>Lo hagas manual o automáticamente, el rango de tiempo finalmente seleccionado es el único que se tiene en cuenta en el cálculo de la puntuación de <i>Condiciones</i>; así, la puntuación de cada despegue sera más realista para ese rango.<br><br>Si está activada la opción <i>Solo horas diurnas</i>, el rango horario seleccionado automáticamente con esta opción se ajustará a los límites de horas diurnas.",
     "tooltipHorasDiurnas": "<b>Solo horas diurnas</b><br><br>Muestra solo las horas diurnas. Si se desactiva, se muestran las 24 horas del día.<br><br>Se incluye un margen de ±1h al amanecer y atardecer.<br><br>Cambia automáticamente cada mes. En los meses de cambios horarios, además, estas horas se ajustarán automáticamente al cambio de hora oficial (DST).",
     "tooltipOrdenarXC": "<b>Ordenar por Condiciones XC:</b><br><br>Por defecto, los despegues se ordenan de mejor a peor según la puntuación de <i>Condiciones del despegue</i> (viabilidad para despegar según el viento).<br><br>Si activas esta opción, la tabla pasará a ordenarse de mejor a peor puntuación de <b>Condiciones XC</b> (potencial térmico de la masa de aire), sin importar si el viento en ese despegue es ideal o no.",
+    "tooltipDiasSeguimiento": "<b>Días de seguimiento:</b><br><br>Cuando marcas un despegue con el ojo <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>, queda en <i>seguimiento</i> durante el número de días que configures aquí.<br><br>Por ejemplo, con 2 días: si marcas un despegue el lunes, aparecerá activo el lunes y el martes. El miércoles se eliminará automáticamente al arrancar la aplicación.<br><br>Marcar despegues con seguimiento te permite filtrarlos fácilmente con el botón <i>Ver solo despegues en seguimiento</i>.<br><br>Puedes configurar entre <b>1 y 4 días</b>. El valor por defecto es <b>2 días</b>.",
     "tooltipModelosMeteo": "<b>Modelos meteorológicos:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: para datos de viento en las primeras 0-48h. Cubre casi toda Europa, incluyendo península ibérica, salvo el sur de Andalucía (en esa zona se usa Arpege Europe 7km de 0-96h).</li><li><b>Météo-France Arpege Europe 7km</b>: para datos de viento en las siguientes 48-96h. Cubre Europa y norte de África.</li><li><b>ECMWF IFS HRES 9km</b>: para resto de datos meteorológicos de 0-96h. Cubre todo el mundo.</li></ul><b>Frecuencia de actualización automática:</b> Météo-France cada 3 horas aproximadamente (8 veces al día) y ECMWF cada 6 horas aproximadamente (4 veces al día).<br><br><b>Pasarela de datos meteorológicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>El valor <i>Ref.HHZ</i> indica la hora UTC±0 (Z) correspondiente al último ciclo de ejecución del modelo en el servidor meteorológico de origen. A partir de ese momento, hay varias horas de cálculo computacional antes de la distribución final y su disponibilidad pública."
   }
 

@@ -65,6 +65,13 @@
     "anadirFavorito": "+ Afegir a preferits"
   },
 
+  "seguimiento": {
+    "noTienesSeguimiento": "No tens enlairaments en seguiment {{ojo}}",
+    "filtroDesactivadoAuto": "No hi ha enlairaments en seguiment {{ojo}}<br><br>S'ha desactivat el filtre",
+    "filtroTitle": "Veure només enlairaments en seguiment",
+    "activar_desactivar": "Activar / Desactivar seguiment"
+  },
+
   "favoritos": {
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Preferit",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Preferits",
@@ -158,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} preferits de <b>{{total}}</b> disponibles",
     "totalDisponibles": "Total d'enlairaments disponibles: <b>{{n}}</b>",
     "miniTodosBD": "Nombre d'enlairaments visibles a tota la base de dades",
-    "miniFavoritos": "Nombre d'enlairaments preferits / filtrats"
+    "miniFavoritos": "Nombre d'enlairaments preferits",
+    "miniSeguimiento": "Nombre d'enlairaments en seguiment"
   },
 
   "marcadorMasivo": {
@@ -261,6 +269,14 @@
       "navSettings": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Ajustos</span></div>",
         "descripcion": "Aquí pots <b>Editar preferits</b> (per afegir o eliminar els teus enlairaments habituals), personalitzar paràmetres, activar opcions i veure informació sobre les actualitzacions de les dades meteorològiques.<br><br>💡 Cada opció té un botó d'informació <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'> per veure'n els detalls."
+      },
+      "btnFiltroSeguimiento": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='1 4 22 16' width='20' height='20' preserveAspectRatio='xMidYMid meet'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#555' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#555' stroke='none'/></svg><span>Filtre de seguiment</span></div>",
+        "descripcion": "Mostra únicament els enlairaments que tens marcats en <i>seguiment</i>.<br><br>💡 El seguiment serveix per marcar temporalment els enlairaments que t'interessi seguir. Marca'ls o desmarca'ls utilitzant l'ull que veuràs a cada enlairament <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>. Amb aquest filtre els veus d'un cop d'ull fàcilment."
+      },
+      "btnSeguimiento": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='1 4 22 16' width='20' height='20' preserveAspectRatio='xMidYMid meet'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#555' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#555' stroke='none'/></svg><span>Seguiment</span></div>",
+        "descripcion": "Marca o desmarca l'enlairament per <i>seguiment</i> <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>. El seguiment es desactiva automàticament passats 2 dies o el nombre de dies que hagis configurat a <i>Ajustaments > Altres opcions > Dies de seguiment</i>.<br><br>💡 Utilitza-ho per preparar els teus propers vols i anar seguint les seves condicions fàcilment."
       }
     }
   },
@@ -393,6 +409,7 @@
     "horarioVueloPref": "Horari de vol preferit",
     "solo_horas_diurnas": "Només hores diürnes",
     "ordenar_xc": "Ordenar per condicions d'XC",
+    "diasSeguimiento": "Dies de seguiment:",
     "titulo": "Ajustos",
     "editarFavoritos": "Editar preferits",
     "importarConfig": "Importar ajustos i preferits",
@@ -434,7 +451,7 @@
   },
 
   "mapa": {
-    "verEnTabla": "Veure meteo a la taula",
+    "verEnTabla": "Veure a la taula",
     "verEnTablaSubtitulo": "+❤️ S'afegeix a preferits",
     "btnGuardarVista": "💾 Memoritzar la vista actual",
     "btnGuardarVistaTitle": "Desar el centre i el zoom actuals com a vista predeterminada",
@@ -605,6 +622,7 @@
     "tooltipHorarioVuelo": "<b>Horari de vol preferit:</b><br><br>Els valors configurats aquí faran que aquestes hores d'inici i finalització se seleccionin automàticament quan es triï un dia de la setmana (dilluns, dimarts, etc.) al selector de franja horària situat a sobre de la taula.<br><br>Sempre pots ajustar el selector de franja horària manualment; aquest ajust només és una automatització per facilitar la selecció automàtica d'una franja horària típica.<br><br>Tant si es fa manualment com automàticament, només es té en compte la franja horària final seleccionada per al càlcul de la puntuació de <i>Condicions</i>; per tant, la puntuació de cada enlairament serà més realista per a aquesta franja específica.<br><br>Si l'opció <i>Només hores diürnes</i> està activada, la franja seleccionada automàticament amb aquest ajust s'adaptarà per mantenir-se dins dels límits de llum diürna.",
     "tooltipHorasDiurnas": "<b>Només hores diürnes</b><br><br>Mostra només les hores de llum. Si està desactivat, es mostren les 24 hores del dia.<br><br>S'inclou un marge d'±1h a la sortida i la posta del sol.<br><br>Canvia automàticament cada mes. A més, els mesos amb canvi d'hora, aquestes hores s'ajustaran automàticament a l'horari oficial d'estiu/hivern (DST).",
     "tooltipOrdenarXC": "<b>Ordenar per Condicions d'XC:</b><br><br>Per defecte, els enlairaments s'ordenen de millor a pitjor segons la puntuació de <i>Condicions d'Enlairament</i> (viabilitat d'enlairar-se segons el vent).<br><br>Si actives aquesta opció, la taula s'ordenarà de millor a pitjor puntuació de <b>Condicions d'XC</b> (potencial tèrmic de la massa d'aire), independentment de si el vent en aquell enlairament és ideal o no.",
+    "tooltipDiasSeguimiento": "<b>Dies de seguiment:</b><br><br>Quan marques un enlairament amb l'ull <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>, queda en <i>seguiment</i> durant el nombre de dies que configuris aquí.<br><br>Per exemple, amb 2 dies: si marques un enlairament el dilluns, apareixerà actiu el dilluns i el dimarts. El dimecres s'eliminarà automàticament en arrencar l'aplicació.<br><br>Marcar enlairaments amb seguiment et permet filtrar-los fàcilment amb el botó <i>Veure només enlairaments en seguiment</i>.<br><br>Pots configurar entre <b>1 i 4 dies</b>. El valor per defecte és <b>2 dies</b>.",
     "tooltipModelosMeteo": "<b>Models meteorològics:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: per a dades de vent en les primeres 0-48h. Cobreix gairebé tota Europa, inclosa la Península Ibèrica, excepte el sud d'Andalusia (en aquesta zona s'utilitza Arpege Europe 7km 0-96h).</li><li><b>Météo-France Arpege Europe 7km</b>: per a dades de vent en les següents 48-96h. Cobreix Europa i el nord d'Àfrica.</li><li><b>ECMWF IFS HRES 9km</b>: per a la resta de dades meteorològiques de 0-96h. Cobreix tot el món.</li></ul><b>Freqüència d'actualització automàtica:</b> Météo-France aproximadament cada 3 hores (8 vegades al dia) i ECMWF aproximadament cada 6 hores (4 vegades al dia).<br><br><b>Passarel·la de dades meteorològiques:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>El valor <i>Ref.HHZ</i> indica l'hora UTC±0 (Z) corresponent a l'últim cicle d'execució del model al servidor meteorològic d'origen. Des d'aquell moment, hi ha diverses hores de càlcul computacional abans de la distribució final i la disponibilitat pública."
   }
 

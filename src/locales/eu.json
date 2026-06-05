@@ -65,6 +65,13 @@
     "anadirFavorito": "+ Gogokoetara gehitu"
   },
 
+  "seguimiento": {
+    "noTienesSeguimiento": "Ez duzu aireratzerik jarraipenean {{ojo}}",
+    "filtroDesactivadoAuto": "Ez dago aireratzerik jarraipenean {{ojo}}<br><br>Iragazkia desaktibatu da",
+    "filtroTitle": "Ikusi soilik jarraipenean dauden aireratzeak",
+    "activar_desactivar": "Jarraipena aktibatu / desaktibatu"
+  },
+
   "favoritos": {
     "tituloSingular": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Gogokoa",
     "tituloPlural": "<b>{{n}}</b> <img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'> Gogokoak",
@@ -158,7 +165,8 @@
     "despeguesFavoritosEdicion": "{{n}} gogoko erabilgarri dauden <b>{{total}}</b>-etatik",
     "totalDisponibles": "Guztira dauden aireratzeak: <b>{{n}}</b>",
     "miniTodosBD": "Datu-base osoan ikusgai dauden aireratze kopurua",
-    "miniFavoritos": "Gogoko / iragazitako aireratze kopurua"
+    "miniFavoritos": "Gogoko aireratze kopurua",
+    "miniSeguimiento": "Jarraipenean dauden aireratze kopurua"
   },
 
   "marcadorMasivo": {
@@ -261,6 +269,14 @@
       "navSettings": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'></circle><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'></path></svg><span>Ezarpenak</span></div>",
         "descripcion": "Hemen <b>Gogokoak edita ditzakezu</b> (zure ohiko aireratzeak gehitu edo kentzeko), parametroak pertsonalizatu, aukerak aktibatu eta eguraldi datuen eguneratzeei buruzko informazioa ikusi.<br><br>💡 Aukera bakoitzak informazio-botoi bat du <img src='icons/info.svg' width='20' height='20' style='vertical-align: middle; margin-bottom: 2px;'> xehetasun gehiagorako."
+      },
+      "btnFiltroSeguimiento": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='1 4 22 16' width='20' height='20' preserveAspectRatio='xMidYMid meet'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#555' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#555' stroke='none'/></svg><span>Jarraipen-iragazkia</span></div>",
+        "descripcion": "<i>Jarraipenean</i> markatuta dituzun aireratzeak soilik erakusten ditu.<br><br>💡 Jarraipenak jarraitu nahi dituzun aireratzeak aldi baterako markatzeko balio du. Markatu edo desmarkatu aireratze bakoitzean ikusiko duzun begia erabiliz <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>. Iragazki honekin begiratu batean erraz ikusiko dituzu."
+      },
+      "btnSeguimiento": {
+        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='1 4 22 16' width='20' height='20' preserveAspectRatio='xMidYMid meet'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#555' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#555' stroke='none'/></svg><span>Jarraipena</span></div>",
+        "descripcion": "Markatu edo desmarkatu aireratzea <i>jarraipenerako</i> <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>. Jarraipena automatikoki desaktibatzen da 2 egun igaro ondoren edo <i>Ezarpenak > Beste aukera batzuk > Jarraipen-egunak</i> atalean konfiguratu duzun egun kopurua igaro ondoren.<br><br>💡 Erabil ezazu zure hurrengo hegaldiak prestatzeko eta horien baldintzak erraz jarraitzeko."
       }
     }
   },
@@ -393,6 +409,7 @@
     "horarioVueloPref": "Hegaldi-ordutegi hobetsia",
     "solo_horas_diurnas": "Eguneko orduak soilik",
     "ordenar_xc": "Ordenatu XC baldintzen arabera",
+    "diasSeguimiento": "Jarraipen-egunak:",
     "titulo": "Ezarpenak",
     "editarFavoritos": "Editatu gogokoak",
     "importarConfig": "Inportatu ezarpenak eta gogokoak",
@@ -434,7 +451,7 @@
   },
 
   "mapa": {
-    "verEnTabla": "Meteoa taulan ikusi",
+    "verEnTabla": "Taulan ikusi",
     "verEnTablaSubtitulo": "+❤️ Gogokoetara gehitzen da",
     "btnGuardarVista": "💾 Uneko ikuspegia memorizatu",
     "btnGuardarVistaTitle": "Gorde uneko zentroa eta zooma zure ikuspegi lehenetsi gisa",
@@ -605,6 +622,7 @@
     "tooltipHorarioVuelo": "<b>Hegaldi-ordutegi hobetsia:</b><br><br>Hemen konfiguratutako balioek taularen gainean dagoen ordu-tartearen hautatzailean asteko egun bat (astelehena, asteartea, etab.) aukeratzean hasiera- eta amaiera-ordu horiek automatikoki hautatzea eragingo dute.<br><br>Ordu-tartearen hautatzailea eskuz doitu dezakezu beti; ezarpen hau ordu-tarte tipiko baten hautaketa automatikoa errazteko automatizazio bat besterik ez da.<br><br>Eskuz edo automatikoki egin, azken hautatutako ordu-tartea bakarrik hartzen da kontuan <i>Baldintzak</i> puntuazioaren kalkulurako; horrela, aireratze bakoitzaren puntuazioa errealistagoa izango da tarte zehatz horretarako.<br><br><i>Eguneko orduak soilik</i> aukera aktibatuta badago, ezarpen honekin automatikoki hautatutako tartea eguneko argiaren mugen barruan mantentzeko doituko da.",
     "tooltipHorasDiurnas": "<b>Eguneko orduak soilik</b><br><br>Eguneko orduak soilik erakusten ditu. Desaktibatuta badago, eguneko 24 orduak erakutsiko dira.<br><br>Egunsentian eta ilunabarrean ±1 orduko marjina sartzen da.<br><br>Hilabetero automatikoki aldatzen da. Horrez gain, ordu-aldaketak dauden hiletan, ordu horiek ordu-aldaketa ofizialera (DST) egokituko dira automatikoki.",
     "tooltipOrdenarXC": "<b>Ordenatu XC baldintzen arabera:</b><br><br>Lehenespenez, aireratzeak onenetik okerrenera ordenatzen dira <i>Aireratze-baldintzen</i> puntuazioaren arabera (aireratzeko bideragarritasuna haizearen arabera).<br><br>Aukera hau aktibatzen baduzu, taula <b>XC Baldintzen</b> puntuaziorik onenetik okerrenera ordenatuko da (aire-masaren potentzial termikoa), aireratze horretan haizea ideala den ala ez kontuan hartu gabe.",
+    "tooltipDiasSeguimiento": "<b>Jarraipen-egunak:</b><br><br>Aireratze bat begiarekin <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg> markatzen duzunean, hemen konfiguratzen duzun egun kopuruan <i>jarraipenean</i> geratzen da.<br><br>Adibidez, 2 egunekin: astelehenean aireratze bat markatzen baduzu, astelehenean eta asteartean aktibo agertuko da. Asteazkenean automatikoki ezabatuko da aplikazioa abiaraztean.<br><br>Aireratzeak jarraipenarekin markatzeak horiek erraz iragazteko aukera ematen dizu <i>Ikusi soilik jarraipenean dauden aireratzeak</i> botoiarekin.<br><br><b>1 eta 4 egun</b> artean konfigura ditzakezu. Lehenetsitako balioa <b>2 egun</b>ekoa da.",
     "tooltipModelosMeteo": "<b>Eguraldi ereduak:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: lehenengo 0-48 orduetako haize-datuetarako. Europa ia osoa hartzen du, Iberiar Penintsula barne, Andaluzia hegoaldea izan ezik (Arpege Europe 7km 0-96h erabiltzen da eremu horretan).</li><li><b>Météo-France Arpege Europe 7km</b>: hurrengo 48-96 orduetako haize-datuetarako. Europa eta Ipar Afrika hartzen ditu.</li><li><b>ECMWF IFS HRES 9km</b>: gainerako eguraldi datuetarako 0-96 orduetan. Mundu osoa hartzen du.</li></ul><b>Eguneratze automatikoaren maiztasuna:</b> Météo-France 3 orduz behin gutxi gorabehera (egunean 8 aldiz) eta ECMWF 6 orduz behin gutxi gorabehera (egunean 4 aldiz).<br><br><b>Eguraldi datuen pasabidea:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br><i>Ref.HHZ</i> balioak ereduak jatorrizko eguraldi-zerbitzarian izandako azken exekuzio-zikloari dagokion UTC±0 (Z) ordua adierazten du. Une horretatik aurrera, hainbat orduko kalkulu konputazionala dago behin betiko banaketaren eta erabilgarritasun publikoaren aurretik."
   }
 
