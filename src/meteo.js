@@ -1942,6 +1942,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
     if (btnElement) {
         const color = esNuevo ? '#16a34a' : '#959595';
         btnElement.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
+        btnElement.title = esNuevo ? t('seguimiento.quitar') : t('seguimiento.activar');
     }
 
     // Actualizar el pip del botón de filtro si está activo
@@ -1949,6 +1950,10 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
     if (btnFiltro && btnFiltro.classList.contains('activo')) {
         const quedan = obtenerSeguimientos();
         const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+        
+        // Activar la bandera para frenar el auto-scroll de construir_tabla
+        window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
+
         if (quedan.length === 0) {
             // Desactivar filtro primero, luego avisar
             soloSeguimiento = false;
@@ -1958,6 +1963,9 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
         } else {
             construir_tabla(false, enMapa, enMapa);
         }
+    } else {
+        // Si el filtro no está encendido, solo actualizamos contadores visuales sin recargar
+        aplicarFiltrosVisuales(true);
     }
 };
 
@@ -2779,33 +2787,6 @@ function obtenerDistanciaKm(lat1, lon1, lat2, lon2) {
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c; // Distancia en km
-}
-
-function gestionarMascarasScroll() { //Obsoleta en reserva
-    const contenedor = document.getElementById("contenedor-paneles-scroll");
-    
-    if (!contenedor) return;
-
-    // 1. Datos métricos
-    const scrollTop = contenedor.scrollTop; // Cuánto hemos bajado
-    const scrollHeight = contenedor.scrollHeight; // Altura total del contenido
-    const clientHeight = contenedor.clientHeight; // Altura de la ventana visible
-    
-    // Umbral de tolerancia (pixeles) para considerar que ha tocado el borde
-    const umbral = 2; 
-
-    // 2. Lógica ARRIBA: ¿Hemos bajado más del umbral?
-    // Si scrollTop > 0, hay contenido escondido arriba -> Ponemos 40px de fade
-    const mascaraArriba = scrollTop > umbral ? "40px" : "0px";
-
-    // 3. Lógica ABAJO: ¿Queda contenido abajo?
-    // Si (scroll total - lo bajado) es mayor que la altura visible -> Ponemos 40px de fade
-    const hayContenidoAbajo = (scrollHeight - scrollTop) > (clientHeight + umbral);
-    const mascaraAbajo = hayContenidoAbajo ? "40px" : "0px";
-
-    // 4. Aplicamos los cambios a las variables CSS del contenedor
-    contenedor.style.setProperty("--mask-top", mascaraArriba);
-    contenedor.style.setProperty("--mask-bottom", mascaraAbajo);
 }
 
 function setModoEnfoque(activarBlur) {
