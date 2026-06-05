@@ -1236,7 +1236,14 @@ function activarEdicionFavoritos() {
     window.venirDeEdicionActiva = true; // Flag de que estamos editando activamente
 
     modoEdicionFavoritos = true;
+
+    // --- GUARDAR MEMORIA DEL FILTRO Y APAGARLO TEMPORALMENTE ---
+    if (typeof window.seguimientoPrevioEdicion === 'undefined' || window.seguimientoPrevioEdicion === null) {
+        window.seguimientoPrevioEdicion = soloSeguimiento;
+    }
+    soloSeguimiento = false;
     soloFavoritos = false;
+    // -------------------------------------------------------------------
 
     // 1. LIMPIAR BÚSQUEDA Y OTROS FILTROS PREVIOS
     if (typeof limpiarBuscador === 'function') {
@@ -1244,7 +1251,7 @@ function activarEdicionFavoritos() {
     }
     resetFiltroDistancia(false);
 
-    cambiarVista('tabla'); 
+    cambiarVista('tabla');  
 
     // 2. ILUMINAR BOTÓN DE AJUSTES EN EL MENÚ INFERIOR
     const btnSettings = document.getElementById('nav-settings');
@@ -1850,7 +1857,22 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
     
     // Al limpiar el buscador aquí, ya se restaurará el placeholder normal
     limpiarBuscador(); 
-    
+
+    // --- RESTAURAR EL FILTRO DE SEGUIMIENTO ---
+    if (window.seguimientoPrevioEdicion === true) {
+        // Comprobación de seguridad: ¿siguen existiendo seguimientos tras la edición?
+        if (obtenerSeguimientos().length > 0) {
+            soloSeguimiento = true;
+        } else {
+            // Si el usuario los borró todos desde el mapa durante un desvío, lo apagamos definitivamente
+            soloSeguimiento = false;
+            const btnSegTog = document.getElementById('btn-filtro-seguimiento-toggle');
+            if (btnSegTog) btnSegTog.classList.remove('activo', 'filtro-aplicado');
+        }
+    }
+    window.seguimientoPrevioEdicion = null; // Limpiamos la memoria
+    // -------------------------------------------------
+
     construir_tabla(); 
 
     setTimeout(() => { sugerirGuiaPrincipal(); }, 500);
@@ -3521,7 +3543,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         }
 
         // Está activo filtro favoritos Y hay favoritos (o uno temporal) --> filtramos
-		if (soloFavoritos && idsAIncluir.length > 0 && !ignorarFiltroFavoritos) {
+        // (soloSeguimiento tiene prioridad: si está activo, opera sobre el array completo)
+		if (soloFavoritos && !soloSeguimiento && idsAIncluir.length > 0 && !ignorarFiltroFavoritos) {
 			
 			// 1. Crear un mapa temporal para relacionar el ID con sus respuestas
 			const respuestasMap = new Map();
@@ -3540,7 +3563,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			
 		}
         // Está activo filtro favoritos pero no hay ni favoritos ni despegue temporal
-        else if (soloFavoritos && idsAIncluir.length === 0 && !ignorarFiltroFavoritos) {
+        else if (soloFavoritos && !soloSeguimiento && idsAIncluir.length === 0 && !ignorarFiltroFavoritos) {
             despegues = [];
 			respuestas = [];
             respuestasEcmwf = [];
@@ -5861,7 +5884,15 @@ function aplicarFiltrosVisuales(evitarScroll = false) {
         const hayFiltroDistancia = distanciaLimite < 9999;
         const hayFiltros = hayFiltroTexto || hayFiltroDistancia;
 
-        if (incluirNoFavsActivo) {
+        if (soloSeguimiento) {
+            // --- MODO "SEGUIMIENTO" (Corazón verde) ---
+            const totalSeg = obtenerSeguimientos().length;
+            const heartVerde = `<svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:middle;margin-left:1px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="#16a34a" stroke="none"/></svg>`;
+            miniCounter.innerHTML = hayFiltros
+                ? `${visibles} de ${totalSeg} ${heartVerde}`
+                : `${visibles} ${heartVerde}`;
+            miniCounter.title = t('contador.miniSeguimiento');
+        } else if (incluirNoFavsActivo) {
             // --- MODO "BASE DE DATOS TOTAL" (Corazón oculto) ---
             // Mostramos cuántos se ven respecto al total global de despegues
             miniCounter.innerHTML = `${visibles} de ${totalDespeguesDisponibles}`;
@@ -8034,6 +8065,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         // 3. Restauramos banderas de modo edición
         modoEdicionFavoritos = true;
         soloFavoritos = false; 
+        soloSeguimiento = false; 
         
         // Respetar si el usuario tenía activado el "Ver solo favoritos" antes de salir
         const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
@@ -10334,11 +10366,34 @@ function inicializarMapaLeaflet() {
             autoPanPaddingTopLeft: L.point(10, 350) 
         });
 
-        // Regeneramos el popup por si venimos de consultarlo en la tabla.
+        // Regeneramos el popup por si venimos de consultarlo en la tabla o hemos cambiado estados.
         marker.on('popupopen', function() {
-            const btn = this.getPopup().getElement().querySelector('.btn-accion');
-            if (!btn) return;
-            btn.innerHTML = `${t('mapa.verEnTabla')}`;
+            const popupEl = this.getPopup().getElement();
+            if (!popupEl) return;
+            
+            const btn = popupEl.querySelector('.btn-accion');
+            if (btn) btn.innerHTML = `${t('mapa.verEnTabla')}`;
+
+            // Actualizar estado del botón Favorito dinámicamente
+            const btnFav = popupEl.querySelector('.btn-favorito-tabla');
+            if (btnFav) {
+                const esFav = obtenerFavoritos().map(Number).includes(Number(idDespegue));
+                btnFav.title = esFav ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
+                const svgFav = btnFav.querySelector('svg');
+                if (svgFav) {
+                    svgFav.setAttribute('fill', esFav ? '#e00' : 'none');
+                    svgFav.setAttribute('stroke', esFav ? '#e00' : '#555');
+                }
+            }
+
+            // Actualizar estado del botón Seguimiento dinámicamente
+            const btnSeg = popupEl.querySelector('.btn-ojo-tabla');
+            if (btnSeg) {
+                const esSeg = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
+                btnSeg.title = esSeg ? t('seguimiento.quitar') : t('seguimiento.activar');
+                const colorSeg = esSeg ? '#16a34a' : '#959595';
+                btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
+            }
         });
 
         marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
