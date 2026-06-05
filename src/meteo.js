@@ -1926,14 +1926,15 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
     const btnFiltro = document.getElementById('btn-filtro-seguimiento-toggle');
     if (btnFiltro && btnFiltro.classList.contains('activo')) {
         const quedan = obtenerSeguimientos();
+        const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
         if (quedan.length === 0) {
             // Desactivar filtro primero, luego avisar
             soloSeguimiento = false;
             btnFiltro.classList.remove('activo', 'filtro-aplicado');
-            construir_tabla();
+            construir_tabla(false, enMapa, enMapa);
             mensajeModalAceptar('', t('seguimiento.filtroDesactivadoAuto', { ojo: _ojoVerde }));
         } else {
-            construir_tabla();
+            construir_tabla(false, enMapa, enMapa);
         }
     }
 };
@@ -3077,7 +3078,7 @@ const leerDeCacheIDB = async (key) => {
 //*********************************************************************
 
 
-async function construir_tabla(forzarRecarga = false, silencioso = false) {
+async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
 	
 	if (!silencioso) {
         mostrarLoading();
@@ -5447,13 +5448,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false) {
 		}		
 
         // --- ACTUALIZAR MAPA SI ESTABA VISIBLE (Para reconexiones y recargas) ---
-        const vistaMapa = document.getElementById('vista-mapa');
-        if (vistaMapa && vistaMapa.style.display === 'flex' && typeof marcarOperativosEnMarkers === 'function') {
-            if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-                marcarOperativosEnMarkers();
-                aplicarPuntuacionEnMapa();
-            } else {
-                actualizarFiltrosMapa();
+        if (!skipMapaUpdate) {
+            const vistaMapa = document.getElementById('vista-mapa');
+            if (vistaMapa && vistaMapa.style.display === 'flex' && typeof marcarOperativosEnMarkers === 'function') {
+                if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
+                    marcarOperativosEnMarkers();
+                    aplicarPuntuacionEnMapa();
+                } else {
+                    actualizarFiltrosMapa();
+                }
             }
         }
 
