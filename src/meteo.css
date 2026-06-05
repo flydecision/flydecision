@@ -3249,6 +3249,10 @@ h3 {
     font-size: 8px !important;
     background: rgba(255, 255, 255, 0.7) !important; /* Un poco de transparencia */
 }
+/* Oculta el popup de forma invisible sólo durante sus cálculos de tamaño para evitar deformaciones visuales */
+.ocultar-layout-popup {
+    visibility: hidden !important;
+}
 
 /* ==========================================================================
    🗺️ FIX: BOTÓN CERRAR "X" PARA EL MENÚ DE CAPAS DE LEAFLET

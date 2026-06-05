@@ -3650,13 +3650,24 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // ---------------------------------------------------------------
 
         if (soloSeguimiento) {
-            const idsSeg = obtenerSeguimientos().map(s => Number(s.id));
+            let idsSeg = obtenerSeguimientos().map(s => Number(s.id));
+            
+            // Si venimos de pulsar "Ver en tabla", forzamos que este despegue 
+            // aparezca en la lista de seguimiento, aunque la usuaria no lo tenga marcado con el ojo.
+            if (window.despegueTemporalParaTabla) {
+                if (!idsSeg.includes(Number(window.despegueTemporalParaTabla))) {
+                    idsSeg.push(Number(window.despegueTemporalParaTabla));
+                }
+            }
+
             const rMap = new Map();
             const rEcmwfMap = new Map();
             despegues.forEach((d, i) => {
                 rMap.set(Number(d.ID), respuestas[i]);
                 rEcmwfMap.set(Number(d.ID), respuestasEcmwf[i]);
             });
+            
+            // Filtramos comparando con la nueva lista (que ya incluye el despegue forzado si existe)
             if (idsSeg.length > 0) {
                 despegues     = despegues.filter(d => idsSeg.includes(Number(d.ID)));
                 respuestas    = despegues.map(d => rMap.get(Number(d.ID))).filter(r => r !== undefined);
@@ -5963,7 +5974,8 @@ function aplicarFiltrosVisuales(evitarScroll = false) {
         if (soloSeguimiento) {
             // --- MODO "SEGUIMIENTO" (Corazón verde) ---
             const totalSeg = obtenerSeguimientos().length;
-            const heartVerde = `<svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:middle;margin-left:1px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="#16a34a" stroke="none"/></svg>`;
+            const heartVerde = `<svg viewBox="1 4 22 16" width="18" height="18" style="vertical-align:-0.25em; margin-left:3px; display:inline-block;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/><circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/><circle cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/></svg>`;
+
             miniCounter.innerHTML = hayFiltros
                 ? `${visibles} de ${totalSeg} ${heartVerde}`
                 : `${visibles} ${heartVerde}`;
@@ -8927,13 +8939,9 @@ function aplicarPuntuacionEnMapa() {
     const despegues = window.bdGlobalDespegues;
     if (!horas || !respuestas || !despegues || markersDespegues.length === 0) return;
 
-    // --- ESCUDO INICIO ---
+    // --- ESCUDO INICIO (Síncrono) ---
     const _todos = [...markersDespegues, ...markersDespeguesMundo];
     const marcadorAbierto = _todos.find(m => m.isPopupOpen && m.isPopupOpen()) || null;
-    if (marcadorAbierto) {
-        const mapCont = document.getElementById('map');
-        if (mapCont) mapCont.classList.add('bloquear-transicion-popup');
-    }
 
     // Leer índices DESDE EL SLIDER PRINCIPAL
     let indiceInicio = 0, indiceFin = 99999;
@@ -8978,13 +8986,11 @@ function aplicarPuntuacionEnMapa() {
         actualizarFiltrosMapa();
     }
 
-    // --- ESCUDO FIN ---
+    // --- ESCUDO FIN (Síncrono e inmediato) ---
     if (marcadorAbierto) {
-        marcadorAbierto.openPopup();
-        setTimeout(() => {
-            const mapCont = document.getElementById('map');
-            if (mapCont) mapCont.classList.remove('bloquear-transicion-popup');
-        }, 50);
+        if (map.hasLayer(marcadorAbierto) || clustergroupDespegues.hasLayer(marcadorAbierto)) {
+            marcadorAbierto.openPopup();
+        }
     }
 }
 
@@ -9047,13 +9053,9 @@ function filtrarMarkersPorPuntuacion() {
 }
 
 function limpiarColoresMapa() {
-    // --- ESCUDO INICIO ---
+    // --- ESCUDO INICIO (Síncrono) ---
     const _todos = [...markersDespegues, ...markersDespeguesMundo];
     const marcadorAbierto = _todos.find(m => m.isPopupOpen && m.isPopupOpen()) || null;
-    if (marcadorAbierto) {
-        const mapCont = document.getElementById('map');
-        if (mapCont) mapCont.classList.add('bloquear-transicion-popup');
-    }
 
     markersDespegues.forEach(marker => {
         const meta = marker.metadata;
@@ -9063,17 +9065,15 @@ function limpiarColoresMapa() {
         const actividadScore = marker._despObj ? marker._despObj.Actividad : null;
         marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones, null, actividadScore));
     });
-    
+
     if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
     if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
 
-    // --- ESCUDO FIN ---
+    // --- ESCUDO FIN (Síncrono e inmediato) ---
     if (marcadorAbierto) {
-        marcadorAbierto.openPopup();
-        setTimeout(() => {
-            const mapCont = document.getElementById('map');
-            if (mapCont) mapCont.classList.remove('bloquear-transicion-popup');
-        }, 50);
+        if (map.hasLayer(marcadorAbierto) || clustergroupDespegues.hasLayer(marcadorAbierto)) {
+            marcadorAbierto.openPopup();
+        }
     }
 }
 
@@ -9601,17 +9601,11 @@ function inicializarMapaLeaflet() {
         clustergroupDespeguesMundo.clearLayers();
         clustergroupDespeguesMundo.addLayers(markersFiltradosDespeguesMundo);
 
-        // Restaurar popup de forma instantánea sin animaciones
+        // Restaurar popup de forma instantánea y totalmente invisible durante su cálculo
         if (marcadorAbierto) {
-            // Solo lo reabrimos si ha sobrevivido a los filtros y sigue en el mapa
             if (markersFiltradosDespegues.includes(marcadorAbierto) || markersFiltradosDespeguesMundo.includes(marcadorAbierto)) {
                 marcadorAbierto.openPopup();
             }
-            // Devolvemos la fluidez a Leaflet tras pintar el frame
-            setTimeout(() => {
-                const mapCont = document.getElementById('map');
-                if (mapCont) mapCont.classList.remove('bloquear-transicion-popup');
-            }, 50);
         }
     }
 
@@ -10486,6 +10480,7 @@ function inicializarMapaLeaflet() {
         marker.bindPopup(popupHtml, { 
             className: 'popup-despegues', 
             maxWidth: 300,
+            maxHeight: 450,
             autoPanPaddingTopLeft: L.point(10, 350) 
         });
 
@@ -11298,6 +11293,7 @@ function inicializarMapaLeaflet() {
         marker.bindPopup(popupHtml, { 
             className: 'popup-notaspersonales', 
             maxWidth: 300,
+            maxHeight: 450,
             autoPanPaddingTopLeft: L.point(10, 280) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
         }); //por ahora no existe así que sale el popup estándar
         markersNotasPersonales.push(marker); //inserta marker al grupo markersNotasPersonales
@@ -11462,6 +11458,7 @@ function inicializarMapaLeaflet() {
             marker.bindPopup(popupHtml, { 
                 className: 'popup-despeguesmundo', 
                 maxWidth: 300,
+                maxHeight: 450,
                 autoPanPaddingTopLeft: L.point(10, 280) // 🚀 Reserva 280px arriba para no chocar con el menú flotante
             });
             marker.metadata = { despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
