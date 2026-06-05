@@ -3202,32 +3202,31 @@ h3 {
     top: 5px !important;
     right: 5px !important;
     
+    /* Prioridad absoluta. Se dibuja por encima del scroll y del texto */
+    z-index: 99999 !important; 
+
     /* 2. Tamaño y Forma (Círculo perfecto) */
     width: 32px !important;
     height: 32px !important;
     border-radius: 50% !important;
 
-    /* 3. Centrado del texto (Flexbox no va bien en este elemento de Leaflet, usamos line-height) */
+    /* 3. Centrado del texto */
     display: block !important;
     text-align: center !important;
-    line-height: 32px !important; /* Misma altura que el botón para centrar la X */
+    line-height: 32px !important; /* Centrado vertical perfecto */
     padding: 0 !important;
     margin: 0 !important;
 
-    /* 4. Estilo Visual (Fondo, sombra, blur) */
-    background: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(2px) !important;
-    -webkit-backdrop-filter: blur(2px) !important;
+    /* 4. Estilo Visual (Blanco Opaco + Sombra) */
+    background: #ffffff !important; /* Blanco 100% opaco sólido (tapa el scroll) */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3) !important;
     border: none !important;
 
     /* 5. Texto (La X) */
     color: #444 !important;
     font-size: 28px !important;
-    font-weight: normal !important; /* Leaflet lo pone en bold, lo quitamos */
+    font-weight: normal !important;
     font-family: Arial, sans-serif !important; 
-    
-    /* Leaflet obliga a este color, lo sobreescribimos */
     text-decoration: none !important;
 }
 
@@ -3359,6 +3358,48 @@ h3 {
 	width: 230px;
 	line-height: 1;
 	margin: 5px 10px 5px 10px;
+}
+
+/* =========================================================================
+   🗺️ CONTROL DE ALTURA Y SCROLL GLOBAL PARA TODOS LOS POPUPS
+   ========================================================================= */
+/* 1. Evita que los márgenes internos se escapen, eliminando el rebote táctil en globos cortos */
+.leaflet-popup-content > div {
+    overflow: hidden !important; /* Sella los márgenes y fuerza un cálculo de altura perfecto */
+    margin: 0 !important;
+    padding: 0 !important;
+}
+/* 2. Limita la altura máxima de todos los globos */
+.leaflet-popup-content {
+    max-height: 450px !important; /* Altura máxima ideal para que quepa bien en todos los móviles */
+    overflow-y: auto !important;   /* Activa el scroll solo si el contenido supera los 300px */
+    padding-right: 8px !important;  /* Margen de seguridad para el texto */
+    box-sizing: border-box;
+}
+/* Evita que al hacer scroll dentro de un globo largo se mueva el mapa de fondo */
+.leaflet-popup-content-wrapper {
+    pointer-events: auto;
+}
+/* 3. Saneamiento total del scrollbar: elimina la línea gris (bordes, pistas y sombras) */
+.leaflet-popup-content::-webkit-scrollbar {
+    width: 5px !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.leaflet-popup-content::-webkit-scrollbar-track {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.leaflet-popup-content::-webkit-scrollbar-thumb {
+    background: #bbb !important; /* La píldora de arrastre (solo visible si el texto se desborda) */
+    border-radius: 3px !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.leaflet-popup-content::-webkit-scrollbar-thumb:hover {
+    background: #888 !important;
 }
 
 /* Evita el parpadeo del globo del mapa al actualizar iconos/filtros en segundo plano */
