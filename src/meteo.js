@@ -1610,46 +1610,80 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
 
     // Función interna que hace el cambio visual en el DOM al instante (0.001s)
     const ejecutarCambioDOM = () => {
-        // 1. Guardar en memoria y actualizar contador general
         const esNuevoFavorito = toggleFavorito(id); 
         
-        // Feedback físico en la app
         if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Haptics) {
             Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
         }
 
-        // 2. Modificar el botón exacto que hemos tocado (Sin recargar toda la tabla)
-        if (btnElement) {
-            btnElement.title = esNuevoFavorito ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
-            const svg = btnElement.querySelector('svg');
+        // --- FUNCIÓN REUTILIZABLE PARA MARCAR CUALQUIER BOTÓN Y FILA ---
+        const actualizarBotonYFila = (btn) => {
+            btn.title = esNuevoFavorito ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
+            const svg = btn.querySelector('svg');
             if (svg) {
                 svg.setAttribute('fill', esNuevoFavorito ? '#e00' : 'none');
-                svg.setAttribute('stroke', esNuevoFavorito ? '#e00' : '#333');
+                svg.setAttribute('stroke', esNuevoFavorito ? '#e00' : '#555');
             }
             
-            // 3. Poner la línea superior de la fila (clase "favorito")
-            let fila = btnElement.closest('tr');
+            // Poner la línea superior de la fila (clase "favorito")
+            let fila = btn.closest('tr');
             if (fila) {
                 fila.classList.toggle('favorito', esNuevoFavorito);
-                // Buscamos las siguientes filas del mismo despegue
                 let siguiente = fila.nextElementSibling;
                 while (siguiente && !siguiente.classList.contains('fila-inicio-despegue')) {
                     siguiente.classList.toggle('favorito', esNuevoFavorito);
                     siguiente = siguiente.nextElementSibling;
                 }
             }
+        };
+
+        // 1. Actualizar el botón presionado directamente
+        if (btnElement && btnElement.tagName !== 'TD') { // Descartamos si es el TD del modo edición para tratarlo aparte
+            actualizarBotonYFila(btnElement);
         }
 
-        // 4. Refrescar contadores superiores SIN forzar scroll arriba
-        aplicarFiltrosVisuales(true); 
+        // 2. SINCRONIZAR GEMELOS: Botones "Corazón" SVG (Vista Normal o Mapa)
+        const botonesFav = document.querySelectorAll('.btn-favorito-tabla');
+        botonesFav.forEach(btn => {
+            const onclickAttr = btn.getAttribute('onclick') || '';
+            if (onclickAttr.includes(`toggleFavoritoDesdeTabla(${id},`) || 
+                onclickAttr.includes(`toggleFavoritoDesdeTabla('${id}',`)) {
+                if (btn !== btnElement) actualizarBotonYFila(btn);
+            }
+        });
+
+        // 3. SINCRONIZAR GEMELOS: Celdas de Corazón Emoji (Modo Edición Favoritos)
+        const celdasEdicion = document.querySelectorAll(`.columna-favoritos[data-id="${id}"]`);
+        celdasEdicion.forEach(td => {
+            td.innerHTML = esNuevoFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+            td.title = esNuevoFavorito ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos');
+            
+            let fila = td.closest('tr');
+            if (fila) {
+                fila.classList.toggle('favorito', esNuevoFavorito);
+                let siguiente = fila.nextElementSibling;
+                while (siguiente && !siguiente.classList.contains('fila-inicio-despegue')) {
+                    siguiente.classList.toggle('favorito', esNuevoFavorito);
+                    siguiente = siguiente.nextElementSibling;
+                }
+            }
+        });
+
+        // 4. Lógica de filtro (reconstruye tabla si el filtro está activo y quitas un favorito)
+        const btnFiltroFav = document.getElementById('btn-filtro-favoritos-toggle');
+        if (btnFiltroFav && btnFiltroFav.classList.contains('activo') && !esNuevoFavorito) {
+            const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+            window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
+            construir_tabla(false, enMapa, enMapa);
+        } else {
+            aplicarFiltrosVisuales(true); 
+        }
     };
 
+    // Confirmación al borrar, igual que antes
     if (!esFavoritoActual) {
-        // AÑADIR (Instantáneo y sin fricción)
         ejecutarCambioDOM();
-
     } else {
-        // QUITAR (Pedimos confirmación)
         const despegue = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(id));
         const nombre = despegue ? despegue.Despegue : '';
         const provincia = despegue ? despegue.Provincia : '';
@@ -1657,12 +1691,10 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
         const titulo = '🤍 ' + t('favoritos.quitarDeFavoritos'); 
         const mensaje = `<span style="font-size: 1.2em;"><b>${nombre}</b><br>(${provincia})</span>`;
 
-        // Registramos la acción de confirmación
         window._confirmarToggleFavorito = function() {
             ejecutarCambioDOM();
         };
 
-        // Mostramos el modal
         mensajeModalAceptarCancelar(titulo, mensaje, '_confirmarToggleFavorito');
     }
 };
@@ -1939,23 +1971,38 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
         Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
     }
 
+    const color = esNuevo ? '#16a34a' : '#959595';
+
+    // 1. Actualizar el botón presionado (el del popup o el de la tabla)
     if (btnElement) {
-        const color = esNuevo ? '#16a34a' : '#959595';
         btnElement.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
         btnElement.title = esNuevo ? t('seguimiento.quitar') : t('seguimiento.activar');
     }
 
-    // Actualizar el pip del botón de filtro si está activo
+    // 2. SINCRONIZAR GEMELOS OCULTOS: Busca todos los botones "Ojo" y actualiza los que tengan este ID
+    const botonesOjo = document.querySelectorAll('.btn-ojo-tabla');
+    botonesOjo.forEach(btn => {
+        const onclickAttr = btn.getAttribute('onclick') || '';
+        // Cubrimos posibles comillas o falta de ellas en el ID del onclick
+        if (onclickAttr.includes(`toggleSeguimientoDesdeTabla(${id},`) || 
+            onclickAttr.includes(`toggleSeguimientoDesdeTabla('${id}',`)) {
+            
+            if (btn !== btnElement) { // No machacar el que ya acabamos de actualizar
+                btn.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
+                btn.title = esNuevo ? t('seguimiento.quitar') : t('seguimiento.activar');
+            }
+        }
+    });
+
+    // 3. Lógica del filtro (solo reconstruye si el filtro está activado y lo requiere)
     const btnFiltro = document.getElementById('btn-filtro-seguimiento-toggle');
     if (btnFiltro && btnFiltro.classList.contains('activo')) {
         const quedan = obtenerSeguimientos();
         const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
         
-        // Activar la bandera para frenar el auto-scroll de construir_tabla
         window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
 
         if (quedan.length === 0) {
-            // Desactivar filtro primero, luego avisar
             soloSeguimiento = false;
             btnFiltro.classList.remove('activo', 'filtro-aplicado');
             construir_tabla(false, enMapa, enMapa);
@@ -1964,7 +2011,6 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
             construir_tabla(false, enMapa, enMapa);
         }
     } else {
-        // Si el filtro no está encendido, solo actualizamos contadores visuales sin recargar
         aplicarFiltrosVisuales(true);
     }
 };
