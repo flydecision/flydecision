@@ -3360,6 +3360,13 @@ h3 {
 	line-height: 1;
 	margin: 5px 10px 5px 10px;
 }
+
+/* Evita el parpadeo del globo del mapa al actualizar iconos/filtros en segundo plano */
+.bloquear-transicion-popup .leaflet-popup {
+    transition: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+}
 /* 	.leaflet-popup{
 	bottom: 28px !important;
 	left: -114px !important;

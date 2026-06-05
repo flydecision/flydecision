@@ -1604,11 +1604,56 @@ function toggleFavorito(id) {
     return esNuevoFavorito;
 }
 
+// =========================================================================
+// 🛑 FUNCION AUXILIAR DE SINCRONIZACIÓN ESTÁTICA
+// =========================================================================
+function actualizarContenidoPopupGuardado(id, esFavorito, esSeguimiento) {
+    if (typeof markersDespegues === 'undefined' || markersDespegues.length === 0) return;
+
+    // Buscamos el marcador del despegue correspondiente
+    const marker = markersDespegues.find(m => m.metadata && Number(m.metadata.id) === Number(id));
+    if (!marker) return;
+
+    const popup = marker.getPopup();
+    if (!popup) return;
+
+    const content = popup.getContent();
+    if (!content) return;
+
+    // Creamos un div temporal para manipular el HTML estático de Leaflet
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = typeof content === 'string' ? content : content.innerHTML;
+
+    // 1. Sincronizar Favorito en la plantilla estática
+    if (esFavorito !== undefined) {
+        const btnFav = tempDiv.querySelector('.btn-favorito-tabla');
+        if (btnFav) {
+            btnFav.title = esFavorito ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
+            const svgFav = btnFav.querySelector('svg');
+            if (svgFav) {
+                svgFav.setAttribute('fill', esFavorito ? '#e00' : 'none');
+                svgFav.setAttribute('stroke', esFavorito ? '#e00' : '#555');
+            }
+        }
+    }
+
+    // 2. Sincronizar Seguimiento en la plantilla estática
+    if (esSeguimiento !== undefined) {
+        const btnSeg = tempDiv.querySelector('.btn-ojo-tabla');
+        if (btnSeg) {
+            btnSeg.title = esSeguimiento ? t('seguimiento.quitar') : t('seguimiento.activar');
+            const colorSeg = esSeguimiento ? '#16a34a' : '#959595';
+            btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
+        }
+    }
+
+    // Volvemos a guardar la plantilla limpia dentro de Leaflet
+    popup.setContent(tempDiv.innerHTML);
+}
+
 window.toggleFavoritoDesdeTabla = function(id, btnElement) {
-    // Miramos si actualmente es favorito o no
     const esFavoritoActual = obtenerFavoritos().map(Number).includes(Number(id));
 
-    // Función interna que hace el cambio visual en el DOM al instante (0.001s)
     const ejecutarCambioDOM = () => {
         const esNuevoFavorito = toggleFavorito(id); 
         
@@ -1616,8 +1661,11 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
             Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
         }
 
-        // --- FUNCIÓN REUTILIZABLE PARA MARCAR CUALQUIER BOTÓN Y FILA ---
-        const actualizarBotonYFila = (btn) => {
+        // 🛑 NUEVO: Sincronizar la plantilla estática interna de Leaflet inmediatamente
+        actualizarContenidoPopupGuardado(id, esNuevoFavorito, undefined);
+
+        // Helper interno para actualizar estados de botones y filas
+        const aplicarCambiosVisualesABotonYFila = (btn) => {
             btn.title = esNuevoFavorito ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
             const svg = btn.querySelector('svg');
             if (svg) {
@@ -1625,7 +1673,6 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
                 svg.setAttribute('stroke', esNuevoFavorito ? '#e00' : '#555');
             }
             
-            // Poner la línea superior de la fila (clase "favorito")
             let fila = btn.closest('tr');
             if (fila) {
                 fila.classList.toggle('favorito', esNuevoFavorito);
@@ -1638,38 +1685,40 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
         };
 
         // 1. Actualizar el botón presionado directamente
-        if (btnElement && btnElement.tagName !== 'TD') { // Descartamos si es el TD del modo edición para tratarlo aparte
-            actualizarBotonYFila(btnElement);
+        if (btnElement && btnElement.tagName !== 'TD') {
+            aplicarCambiosVisualesABotonYFila(btnElement);
         }
 
-        // 2. SINCRONIZAR GEMELOS: Botones "Corazón" SVG (Vista Normal o Mapa)
+        // 2. Sincronizar el botón gemelo (en la tabla si clicamos en el mapa, o en el mapa si clicamos en la tabla)
         const botonesFav = document.querySelectorAll('.btn-favorito-tabla');
         botonesFav.forEach(btn => {
-            const onclickAttr = btn.getAttribute('onclick') || '';
-            if (onclickAttr.includes(`toggleFavoritoDesdeTabla(${id},`) || 
-                onclickAttr.includes(`toggleFavoritoDesdeTabla('${id}',`)) {
-                if (btn !== btnElement) actualizarBotonYFila(btn);
+            const onclickText = btn.getAttribute('onclick') || '';
+            if (onclickText.includes(`toggleFavoritoDesdeTabla(${id},`) || 
+                onclickText.includes(`toggleFavoritoDesdeTabla('${id}',`)) {
+                if (btn !== btnElement) aplicarCambiosVisualesABotonYFila(btn);
             }
         });
 
-        // 3. SINCRONIZAR GEMELOS: Celdas de Corazón Emoji (Modo Edición Favoritos)
-        const celdasEdicion = document.querySelectorAll(`.columna-favoritos[data-id="${id}"]`);
-        celdasEdicion.forEach(td => {
-            td.innerHTML = esNuevoFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
-            td.title = esNuevoFavorito ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos');
-            
-            let fila = td.closest('tr');
-            if (fila) {
-                fila.classList.toggle('favorito', esNuevoFavorito);
-                let siguiente = fila.nextElementSibling;
-                while (siguiente && !siguiente.classList.contains('fila-inicio-despegue')) {
-                    siguiente.classList.toggle('favorito', esNuevoFavorito);
-                    siguiente = siguiente.nextElementSibling;
+        // 3. Sincronizar el corazón en el modo edición (si aplica)
+        const tdsEdicion = document.querySelectorAll(`.columna-favoritos[data-id="${id}"]`);
+        tdsEdicion.forEach(td => {
+            if (td !== btnElement) {
+                td.innerHTML = esNuevoFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+                td.title = esNuevoFavorito ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos');
+                
+                let filaTabla = td.closest('tr');
+                if (filaTabla) {
+                    filaTabla.classList.toggle('favorito', esNuevoFavorito);
+                    let siguiente = filaTabla.nextElementSibling;
+                    while (siguiente && !siguiente.classList.contains('fila-inicio-despegue')) {
+                        siguiente.classList.toggle('favorito', esNuevoFavorito);
+                        siguiente = siguiente.nextElementSibling;
+                    }
                 }
             }
         });
 
-        // 4. Lógica de filtro (reconstruye tabla si el filtro está activo y quitas un favorito)
+        // 4. Gestión de reconstrucción de tabla si el filtro de favoritos está encendido
         const btnFiltroFav = document.getElementById('btn-filtro-favoritos-toggle');
         if (btnFiltroFav && btnFiltroFav.classList.contains('activo') && !esNuevoFavorito) {
             const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
@@ -1680,7 +1729,6 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
         }
     };
 
-    // Confirmación al borrar, igual que antes
     if (!esFavoritoActual) {
         ejecutarCambioDOM();
     } else {
@@ -1973,28 +2021,29 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
 
     const color = esNuevo ? '#16a34a' : '#959595';
 
-    // 1. Actualizar el botón presionado (el del popup o el de la tabla)
+    // 🛑 NUEVO: Sincronizar la plantilla estática interna de Leaflet inmediatamente
+    actualizarContenidoPopupGuardado(id, undefined, esNuevo);
+
+    // 1. Actualizar el botón presionado directamente
     if (btnElement) {
         btnElement.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
         btnElement.title = esNuevo ? t('seguimiento.quitar') : t('seguimiento.activar');
     }
 
-    // 2. SINCRONIZAR GEMELOS OCULTOS: Busca todos los botones "Ojo" y actualiza los que tengan este ID
+    // 2. Sincronizar el botón gemelo (tabla/mapa)
     const botonesOjo = document.querySelectorAll('.btn-ojo-tabla');
     botonesOjo.forEach(btn => {
         const onclickAttr = btn.getAttribute('onclick') || '';
-        // Cubrimos posibles comillas o falta de ellas en el ID del onclick
         if (onclickAttr.includes(`toggleSeguimientoDesdeTabla(${id},`) || 
             onclickAttr.includes(`toggleSeguimientoDesdeTabla('${id}',`)) {
-            
-            if (btn !== btnElement) { // No machacar el que ya acabamos de actualizar
+            if (btn !== btnElement) {
                 btn.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
                 btn.title = esNuevo ? t('seguimiento.quitar') : t('seguimiento.activar');
             }
         }
     });
 
-    // 3. Lógica del filtro (solo reconstruye si el filtro está activado y lo requiere)
+    // 3. Lógica del filtro de seguimiento activo
     const btnFiltro = document.getElementById('btn-filtro-seguimiento-toggle');
     if (btnFiltro && btnFiltro.classList.contains('activo')) {
         const quedan = obtenerSeguimientos();
@@ -8028,8 +8077,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
     // ---------------------------------------------------------------
     window.verMeteoEnTabla = function(idDespegue) {
-        if (typeof map !== 'undefined' && map) map.closePopup();
-        
         // 1. Buscamos el despegue en la BD global usando el ID para obtener su nombre EXACTO en la tabla
         const despegueBD = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(idDespegue));
         if (!despegueBD) return; // Si por algún motivo no existe, abortamos
@@ -8082,8 +8129,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // 🔴 FUNCIÓN PARA VOLVER A LA EDICIÓN TRAS UN DESVÍO AL MAPA/TABLA AISLADA
     // ---------------------------------------------------------------
     window.volverAEdicionDesdeDesvio = function() {
-        if (typeof map !== 'undefined' && map) map.closePopup();
-
         window.despegueTemporalParaTabla = null; 
 
         // 2. Limpiamos el buscador (ahora llamará a aplicarFiltrosVisuales de forma segura)
@@ -8882,6 +8927,14 @@ function aplicarPuntuacionEnMapa() {
     const despegues = window.bdGlobalDespegues;
     if (!horas || !respuestas || !despegues || markersDespegues.length === 0) return;
 
+    // --- ESCUDO INICIO ---
+    const _todos = [...markersDespegues, ...markersDespeguesMundo];
+    const marcadorAbierto = _todos.find(m => m.isPopupOpen && m.isPopupOpen()) || null;
+    if (marcadorAbierto) {
+        const mapCont = document.getElementById('map');
+        if (mapCont) mapCont.classList.add('bloquear-transicion-popup');
+    }
+
     // Leer índices DESDE EL SLIDER PRINCIPAL
     let indiceInicio = 0, indiceFin = 99999;
     const sliderHoras = document.getElementById('horario-slider');
@@ -8899,7 +8952,6 @@ function aplicarPuntuacionEnMapa() {
 
         if (!meta) return;
 
-        // Usar el despObj ya cruzado por coordenadas
         const despObj = marker._despObj || null;
         if (!despObj) return;
 
@@ -8915,16 +8967,24 @@ function aplicarPuntuacionEnMapa() {
         marker._notaMapa = (nota !== null) ? nota : -1;
         const nombreMostrar = despObj ? despObj.Despegue : meta.despegue;
 
-        // Extraemos la nota de actividad de despObj y la pasamos al icono
         const actividadScore = despObj ? despObj.Actividad : null;
         marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color, actividadScore));
-        });
+    });
 
-        if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
+    if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
         clustergroupDespegues.refreshClusters();
     }
     if (typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || filtrosMapaAbiertos)) {
         actualizarFiltrosMapa();
+    }
+
+    // --- ESCUDO FIN ---
+    if (marcadorAbierto) {
+        marcadorAbierto.openPopup();
+        setTimeout(() => {
+            const mapCont = document.getElementById('map');
+            if (mapCont) mapCont.classList.remove('bloquear-transicion-popup');
+        }, 50);
     }
 }
 
@@ -8987,18 +9047,35 @@ function filtrarMarkersPorPuntuacion() {
 }
 
 function limpiarColoresMapa() {
-        markersDespegues.forEach(marker => {
-            const meta = marker.metadata;
-            if (!meta) return;
-            marker._notaMapa = undefined;
-            
-            // Obtenemos la nota del objeto de datos cruzado y la pasamos
-            const actividadScore = marker._despObj ? marker._despObj.Actividad : null;
-            marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones, null, actividadScore));
-        });
-        if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
-        if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
+    // --- ESCUDO INICIO ---
+    const _todos = [...markersDespegues, ...markersDespeguesMundo];
+    const marcadorAbierto = _todos.find(m => m.isPopupOpen && m.isPopupOpen()) || null;
+    if (marcadorAbierto) {
+        const mapCont = document.getElementById('map');
+        if (mapCont) mapCont.classList.add('bloquear-transicion-popup');
     }
+
+    markersDespegues.forEach(marker => {
+        const meta = marker.metadata;
+        if (!meta) return;
+        marker._notaMapa = undefined;
+        
+        const actividadScore = marker._despObj ? marker._despObj.Actividad : null;
+        marker.setIcon(window.createIconDespegue(meta.despegue, meta.actividad, meta.orientaciones, null, actividadScore));
+    });
+    
+    if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+    if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
+
+    // --- ESCUDO FIN ---
+    if (marcadorAbierto) {
+        marcadorAbierto.openPopup();
+        setTimeout(() => {
+            const mapCont = document.getElementById('map');
+            if (mapCont) mapCont.classList.remove('bloquear-transicion-popup');
+        }, 50);
+    }
+}
 
 // ---------------------------------------------------------------
 // 🗺️ PUNTUACIÓN DE CONDICIONES PARA EL MAPA
@@ -9507,7 +9584,15 @@ function inicializarMapaLeaflet() {
 
         // E. ACTUALIZAR CAPAS DE FORMA INDEPENDIENTE
         // -------------------------------------------------------
-        
+        const _todosMarkers = [...markersDespegues, ...markersDespeguesMundo];
+        const marcadorAbierto = _todosMarkers.find(m => m.isPopupOpen && m.isPopupOpen()) || null;
+
+        // --- ESCUDO ANTI-PARPADEO ---
+        if (marcadorAbierto) {
+            const mapCont = document.getElementById('map');
+            if (mapCont) mapCont.classList.add('bloquear-transicion-popup');
+        }
+
         // 1. Actualizar capa LOCAL (Despegues)
         clustergroupDespegues.clearLayers();
         clustergroupDespegues.addLayers(markersFiltradosDespegues);
@@ -9516,7 +9601,18 @@ function inicializarMapaLeaflet() {
         clustergroupDespeguesMundo.clearLayers();
         clustergroupDespeguesMundo.addLayers(markersFiltradosDespeguesMundo);
 
-        // Nota: El 'if (typeof clustergroupDespeguesMundo !== 'undefined')' ya no es necesario aquí.
+        // Restaurar popup de forma instantánea sin animaciones
+        if (marcadorAbierto) {
+            // Solo lo reabrimos si ha sobrevivido a los filtros y sigue en el mapa
+            if (markersFiltradosDespegues.includes(marcadorAbierto) || markersFiltradosDespeguesMundo.includes(marcadorAbierto)) {
+                marcadorAbierto.openPopup();
+            }
+            // Devolvemos la fluidez a Leaflet tras pintar el frame
+            setTimeout(() => {
+                const mapCont = document.getElementById('map');
+                if (mapCont) mapCont.classList.remove('bloquear-transicion-popup');
+            }, 50);
+        }
     }
 
     // FUNCIÓN PARA GESTIONAR EL ESTADO VISUAL DE LOS CONTROLES
