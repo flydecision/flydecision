@@ -2833,7 +2833,7 @@ function createOrientationSVG(orientacionesStr) {
     const strokeWidth = 1; 
     const colorBorde = "#666"; 
     const colorFondoInactivo = "white"; 
-    const colorSegmentoActivo = "#0078d4"; 
+    const colorSegmentoActivo = "#5b5b5b"; 
 
     const activeOrientations = new Set(
         (orientacionesStr || '').split(',').map(s => s.trim())
@@ -5797,7 +5797,7 @@ function crearIconoActividad(nivelStr) {
     const alturas = [4, 7, 10, 13, 16]; 
     
     for (let i = 0; i < 5; i++) {
-        const color = (i < nivel) ? '#0078d4' : '#e9e9e9'; 
+        const color = (i < nivel) ? '#5b5b5b' : '#e9e9e9'; 
         // Anchura 3px (entero = grosor perfecto) y border-radius de 1.5px (mitad exacta para curva suave arriba)
         barras += `<span style="display: inline-block; width: 3px; height: ${alturas[i]}px; background-color: ${color}; border-radius: 1.5px 1.5px 0 0;"></span>`;
     }
@@ -5975,7 +5975,7 @@ function aplicarFiltrosVisuales(evitarScroll = false) {
         if (soloSeguimiento) {
             // --- MODO "SEGUIMIENTO" (Corazón verde) ---
             const totalSeg = obtenerSeguimientos().length;
-            const heartVerde = `<svg viewBox="1 4 22 16" width="18" height="18" style="vertical-align:-0.25em; margin-left:3px; display:inline-block;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/><circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/><circle cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/></svg>`;
+            const heartVerde = `<svg viewBox="1 4 22 16" width="16" height="16" style="vertical-align:-0.19em; margin-left:3px; display:inline-block;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/><circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/><circle cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/></svg>`;
 
             miniCounter.innerHTML = hayFiltros
                 ? `${visibles} de ${totalSeg} ${heartVerde}`
@@ -9326,6 +9326,32 @@ function inicializarMapaLeaflet() {
         return capa;
     }
 
+    const baseMaps = {
+        [t('mapa.capasBase.ESRITopo')]: ESRITopo,
+        [t('mapa.capasBase.ESRIOrto')]: ESRIOrto,	
+        [t('mapa.capasBase.OpenTopoMap')]: OpenTopoMap,
+        [t('mapa.capasBase.Tracestrack')]: Tracestrack,
+        [t('mapa.capasBase.IGNTopo')]: IGNTopo,
+        [t('mapa.capasBase.IGNClaro')]: IGNClaro,
+        [t('mapa.capasBase.IGNOrto')]: IGNOrto,
+        [t('mapa.capasBase.ICGC')]: ICGC,
+        [t('mapa.capasBase.Thunderforest')]: Thunderforest,
+        [t('mapa.capasBase.OpenStreetMap')]: OpenStreetMap,  
+        [t('mapa.capasBase.Hipsometrico')]: Hipsometrico,
+        [t('mapa.capasBase.HillShade')]: HillShade
+    };
+
+    const overlayMaps = {
+        [t('mapa.capasBase.KK7_Skyways')]: KK7_Skyways,
+        [t('mapa.capasBase.KK7_Skyways_traslucent')]: KK7_Skyways_traslucent,
+        [t('mapa.capasBase.KK7_Thermals')]: KK7_Thermals,
+        [t('mapa.capasBase.ENAIRE')]: ENAIRE,
+        [t('mapa.capasBase.OpenAIP')]: OpenAIP
+    };
+
+    const ultimaCapaBase = localStorage.getItem('METEO_MAPA_CAPABASE_ULTIMA') || t('mapa.capasBase.ESRITopo');
+    const capaInicial = baseMaps[ultimaCapaBase] || ESRITopo;
+
     function popupZona(feature, layer) {
         const p = feature.properties;
 
@@ -9384,9 +9410,7 @@ function inicializarMapaLeaflet() {
     // 🚩 Bandera para saber si estamos en la vista predeterminada pura (ni URL ni LocalStorage)
     const esVistaPredeterminada = isNaN(urlLat) && isNaN(localLat);
 
-    // 2. Inicializar el mapa de Leaflet
-
-    // Inicializar el mapa con las coordenadas y el zoom a USAR
+    // 3. Inicialización del mapa
     map = L.map('map', {
         preferCanvas: true,
         renderer: L.canvas(),
@@ -9404,7 +9428,7 @@ function inicializarMapaLeaflet() {
         //zoomSnap: 0.25,
         //zoomDelta: 0.25,    
         //wheelPxPerZoomLevel: 150,      
-        layers: [ESRITopo] 
+        layers: [capaInicial] 
     });
 
     // 🌍 ENCUADRE DINÁMICO PREDETERMINADO (Forzado por anchura con ajuste manual)
@@ -10099,33 +10123,12 @@ function inicializarMapaLeaflet() {
     // ------------------------------------------------------------
 
     // 🟡 CONTROL "Capas"
-    const baseMaps = {
-        [t('mapa.capasBase.ESRITopo')]: ESRITopo,
-        [t('mapa.capasBase.ESRIOrto')]: ESRIOrto,	
-        [t('mapa.capasBase.OpenTopoMap')]: OpenTopoMap,
-        [t('mapa.capasBase.Tracestrack')]: Tracestrack,
-        [t('mapa.capasBase.IGNTopo')]: IGNTopo,
-        [t('mapa.capasBase.IGNClaro')]: IGNClaro,
-        [t('mapa.capasBase.IGNOrto')]: IGNOrto,
-        [t('mapa.capasBase.ICGC')]: ICGC,
-        [t('mapa.capasBase.Thunderforest')]: Thunderforest,
-        [t('mapa.capasBase.OpenStreetMap')]: OpenStreetMap,  
-        [t('mapa.capasBase.Hipsometrico')]: Hipsometrico,
-        [t('mapa.capasBase.HillShade')]: HillShade
-    };
-
-    // 1. Añadimos las nuevas capas al objeto de mapas superpuestos (Overlays)
-    const overlayMaps = {
-        [t('mapa.capasBase.KK7_Skyways')]: KK7_Skyways,
-        [t('mapa.capasBase.KK7_Skyways_traslucent')]: KK7_Skyways_traslucent,
-        [t('mapa.capasBase.KK7_Thermals')]: KK7_Thermals,
-        [t('mapa.capasBase.ENAIRE')]: ENAIRE,
-        [t('mapa.capasBase.OpenAIP')]: OpenAIP
-    };
-
-    // 2. Pasamos el objeto 'overlayMaps' actualizado al creador del selector
     const controlCapas = L.control.layers(baseMaps, overlayMaps, { position: 'topleft' }).addTo(map);
     window.capasLeaflet = controlCapas; // exposición global para poder cerrarlo con Atrás Android
+
+    map.on('baselayerchange', function(e) {
+        localStorage.setItem('METEO_MAPA_CAPABASE_ULTIMA', e.name);
+    });
 
     // 2. Creamos NUESTRO propio botón físico "X"
     const btnCerrarCapas = L.DomUtil.create('div', 'cerrar-capas-btn');

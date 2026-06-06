@@ -3375,7 +3375,7 @@ h3 {
 }
 /* 2. Limita la altura máxima de todos los globos */
 .leaflet-popup-content {
-    max-height: 450px !important; /* Altura máxima ideal para que quepa bien en todos los móviles */
+    max-height: 400px !important; /* Altura máxima ideal para que quepa bien en todos los móviles */
     overflow-y: auto !important;   /* Activa el scroll solo si el contenido supera los 300px */
     padding-right: 8px !important;  /* Margen de seguridad para el texto */
     box-sizing: border-box;
