@@ -9230,62 +9230,69 @@ function inicializarMapaLeaflet() {
 
     // 🛑 Capas
     const ESRITopo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 20,
+        maxNativeZoom: 19,
         attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>'
     });
     const ESRIOrto = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 20,
+        maxNativeZoom: 19,
         attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>'
     });
-    const OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        maxZoom: 20,
+    const OpenTopoMap = crearCapaConLimiteZoom('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        maxNativeZoom: 17,
         attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://opentopomap.org/" target="_blank">Style OpenTopoMap</a>'
     });
-    const Tracestrack = L.tileLayer(`https://tile.tracestrack.com/topo_es/{z}/{x}/{y}.webp?key=${MAP_API_KEYS.tracestrack}`, {
-        maxZoom: 20,
+    const Tracestrack = crearCapaConLimiteZoom(`https://tile.tracestrack.com/topo_es/{z}/{x}/{y}.webp?key=${MAP_API_KEYS.tracestrack}`, {
+        maxNativeZoom: 19,
         attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://tracestrack.com/" target="_blank">Tracestrack</a>'
     });
     const IGNTopo = L.tileLayer('https://tms-mapa-raster.ign.es/1.0.0/mapa-raster/{z}/{x}/{-y}.jpeg', {
-        maxZoom: 20,
+        maxNativeZoom: 17,
         attribution: '© <a href="https://www.ign.es" target="_blank">IGN</a>'
     });
     const IGNClaro = L.tileLayer('https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg', {
-        maxZoom: 20,
+        maxNativeZoom: 17,
         attribution: '© <a href="https://www.ign.es" target="_blank">IGN</a>'
     });
     const IGNOrto = L.tileLayer('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg', {
-        maxZoom: 20,
+        maxNativeZoom: 19,
         attribution: '© <a href="https://www.ign.es" target="_blank">IGN</a>'
     });
     const ICGC = L.tileLayer('https://geoserveis.icgc.cat/servei/catalunya/mapa-base/wmts/topografic/{z}/{x}/{y}.png', {
-        maxZoom: 20,
+        maxNativeZoom: 19,
         attribution: '<a href="https://www.icgc.cat/" target="_blank">© ICGC</a>'
     });
     const CyclOSM = L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
-        maxZoom: 20,
+        maxZoom: 19,
         attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" target="_blank">CyclOSM</a>'
     });
     const Thunderforest = L.tileLayer(`https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=${MAP_API_KEYS.thunderforest}`, {
-        maxZoom: 20,
+        maxNativeZoom: 19,
         attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://www.thunderforest.com/maps/" target="_blank">Style by Thunderforest</a>'
     });
-    const OpenStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 20,
+    const OpenStreetMap = crearCapaConLimiteZoom('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxNativeZoom: 19,
         attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a>'
     });
-    const Hipsometrico = L.tileLayer('https://maps-for-free.com/layer/relief/z{z}/row{y}/{z}_{x}-{y}.jpg', {
-        maxZoom: 20,
+    const Hipsometrico = crearCapaConLimiteZoom('https://maps-for-free.com/layer/relief/z{z}/row{y}/{z}_{x}-{y}.jpg', {
+        maxNativeZoom: 11,
         attribution: '<a href="https://maps-for-free.com" target="_blank">Maps-for-Free</a>'
     });
     const HillShade = L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 20,
+        maxNativeZoom: 16,
         attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>',
     });
     // 🟡 Overlays
     const KK7_Skyways = L.tileLayer('https://flydecision.com/proxy-kk7.php?z={z}&x={x}&y={y}&layer=skyways_all', {
         pane: 'overlayPane',
         maxNativeZoom: 13,
-        maxZoom: 20,
+        zIndex: 10,
+        tms: true,
+        attribution: 'thermal.kk7.ch <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY-NC-SA></a>'
+    });
+    const KK7_Skyways_traslucent = L.tileLayer('https://flydecision.com/proxy-kk7.php?z={z}&x={x}&y={y}&layer=skyways_all', {
+        pane: 'overlayPane',
+        maxNativeZoom: 13,
+        opacity: 0.3,
         zIndex: 10,
         tms: true,
         attribution: 'thermal.kk7.ch <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY-NC-SA></a>'
@@ -9293,7 +9300,6 @@ function inicializarMapaLeaflet() {
     const KK7_Thermals = L.tileLayer('https://flydecision.com/proxy-kk7.php?z={z}&x={x}&y={y}&layer=thermals_all', {
         pane: 'overlayPane',
         maxNativeZoom: 12,
-        maxZoom: 20,
         zIndex: 10,
         tms: true,
         attribution: 'thermal.kk7.ch <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC-BY-NC-SA></a>'
@@ -9306,25 +9312,17 @@ function inicializarMapaLeaflet() {
         attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>'
     });
     const OpenAIP = L.tileLayer(`https://api.tiles.openaip.net/api/data/openaip/{z}/{x}/{y}.png?apiKey=${MAP_API_KEYS.OpenAIP}`, {
-        maxZoom: 20,
+        maxNativeZoom: 14,
         attribution: '© <a href="https://www.openaip.net" target="_blank">OpenAIP</a>'
     });
 
     function crearCapaConLimiteZoom(url, opciones) {
-        const maxNativo = opciones.maxZoom ?? 18;
-
+        const maxNativo = opciones.maxNativeZoom ?? opciones.maxZoom ?? 19;
         const capa = L.tileLayer(url, {
             ...opciones,
             maxNativeZoom: maxNativo,  // upscale en vez de vacío si se supera
-            maxZoom: 20                // nunca aparece desactivada en el control
+            maxZoom: Math.max(maxNativo, 19)                // nunca aparece desactivada en el control
         });
-
-        capa.on('add', function () {
-            if (map.getZoom() > maxNativo) {
-                map.setZoom(maxNativo, { animate: true });
-            }
-        });
-
         return capa;
     }
 
@@ -9550,7 +9548,7 @@ function inicializarMapaLeaflet() {
 
         // D. FILTRADO BUCLE PRINCIPAL (¡DOS BUCLES SEPARADOS!)
         // ----------------------------------------------------------------------
-        // 🚩 FLAG 5: SE ELIMINA LA FUSIÓN DE ARRAYS
+        // SE ELIMINA LA FUSIÓN DE ARRAYS
         // Se utilizan arrays de salida separados
         const markersFiltradosDespegues = []; // Resultado para la capa Despegues (Local)
         const markersFiltradosDespeguesMundo = []; // Resultado para la capa DespeguesMundo (Mundo)
@@ -10119,6 +10117,7 @@ function inicializarMapaLeaflet() {
     // 1. Añadimos las nuevas capas al objeto de mapas superpuestos (Overlays)
     const overlayMaps = {
         [t('mapa.capasBase.KK7_Skyways')]: KK7_Skyways,
+        [t('mapa.capasBase.KK7_Skyways_traslucent')]: KK7_Skyways_traslucent,
         [t('mapa.capasBase.KK7_Thermals')]: KK7_Thermals,
         [t('mapa.capasBase.ENAIRE')]: ENAIRE,
         [t('mapa.capasBase.OpenAIP')]: OpenAIP
