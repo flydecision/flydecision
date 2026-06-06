@@ -4677,7 +4677,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // Preparamos el HTML de los iconos centrales según el espacio/modo
             const htmlIconosCentrales = mostrarRosayActividad ? `
                 <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; margin-bottom: 5px;">
-                    <span class="guia-rosa-vientos" style="padding-top: 3px; margin-right: 12px;">${svgOrientaciones}</span>
+                    <span class="guia-rosa-vientos" style="padding-top: 1px; margin-right: 12px;">${svgOrientaciones}</span>
                     
                     <!-- CONTENEDOR TIPPY EXCLUSIVO PARA LA TABLA -->
                     <span class="guia-nivel-actividad" 
