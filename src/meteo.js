@@ -4667,7 +4667,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const iconoActividadLimpio = d.Actividad ? crearIconoActividad(d.Actividad) : '';
 
             // Siempre se muestra en edición, o si hay más de 7 filas en vista normal
-            const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 7);
+            const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 9);
             const modoCompacto = !modoEdicionFavoritos && totalFilasRowSpan <= 8;
 
             // Preparamos el texto del tooltip limpiando las comillas dobles
@@ -4676,7 +4676,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             // Preparamos el HTML de los iconos centrales según el espacio/modo
             const htmlIconosCentrales = mostrarRosayActividad ? `
-                <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 4px; margin-bottom: 5px; background: #f0f4f8; padding: 4px 10px; padding-top: 2px;border-radius: 12px; border: 1px solid #e2e8f0;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; margin-bottom: 5px;">
                     <span class="guia-rosa-vientos" style="padding-top: 3px; margin-right: 12px;">${svgOrientaciones}</span>
                     
                     <!-- CONTENEDOR TIPPY EXCLUSIVO PARA LA TABLA -->

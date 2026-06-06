@@ -1473,7 +1473,7 @@ body:not(.modo-edicion-tabla) td.columna-despegue::before {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 64px; /* Altura exacta para alojar los 4 botones (2x2) */
+    height: 69px; /* Altura exacta para alojar los 4 botones (2x2) */
     background-color: #f8f9fa; /* Gris super claro */
     border-top: 1px solid #e5e5e5; /* Línea separadora sutil */
     z-index: 0;
