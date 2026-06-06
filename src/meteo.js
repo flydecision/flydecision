@@ -9316,6 +9316,15 @@ function inicializarMapaLeaflet() {
         onEachFeature: popupZona,
         attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>'
     });
+    const capaHillshade = L.tileLayer(
+        'https://server.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}',
+        {
+            opacity: 1,
+            attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>',
+            maxZoom: 20,
+            zIndex: 2 // Fuerza a que se pinte por encima del mapa base pero bajo los iconos
+        }
+    );
 
     // Añadir bajo "onEachFeature: popupZona" esto si se quiere ver en Consola y popup de cada zona los datos de salida del servidor:
     // onEachFeature: (feature, layer) => {
@@ -10130,8 +10139,15 @@ function inicializarMapaLeaflet() {
         [t('mapa.capasBase.capaMezcladaWorldTopoMapOpenAIP')]: capaMezcladaWorldTopoMapOpenAIP
     };
 
-    // 1. Añadimos primero Capas a la izquierda
-    const controlCapas = L.control.layers(baseMaps, {}, { position: 'topleft' }).addTo(map);
+    // 1. Añadimos las nuevas capas al objeto de mapas superpuestos (Overlays)
+    const overlayMaps = {
+        "Sombreado de relieve (3D)": capaHillshade,
+        "Líneas de vuelo (KK7 Skyways)": KK7SkyWays,
+        "Puntos térmicos (KK7 Thermals)": KK7Thermals
+    };
+
+    // 2. Pasamos el objeto 'overlayMaps' actualizado al creador del selector
+    const controlCapas = L.control.layers(baseMaps, overlayMaps, { position: 'topleft' }).addTo(map);
     window.capasLeaflet = controlCapas; // exposición global para poder cerrarlo con Atrás Android
 
     // 2. Creamos NUESTRO propio botón físico "X"
