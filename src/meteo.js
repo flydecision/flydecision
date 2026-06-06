@@ -134,7 +134,7 @@ const METADATA_TO_ICON_MAP = {
     'NNO': ['N', 'NO']
 };
 
-const _ojoVerde = `<svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet" style="vertical-align: middle; margin-left: 4px;">
+const _ojoVerde = `<svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet" style="vertical-align: middle; margin-left: 4px;">
     <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/>
     <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="#16a34a" stroke="none"/>
     <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
@@ -4654,8 +4654,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 <button class="btn-info btn-ojo-tabla"
                     style="position: absolute; bottom: 2px; left: 56px;"
                     onclick="toggleSeguimientoDesdeTabla(${d.ID}, this); return false;"
-                    title="${t('seguimiento.activar_desactivar_desactivar')}">
-                    <svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet">
+                    title="${t('seguimiento.activar_desactivar')}">
+                    <svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
                         <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_oc}" stroke="none"/>
                         <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="${_oc}" stroke="none"/>
                         <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="${_oc}" stroke="none"/>
@@ -10406,7 +10406,7 @@ function inicializarMapaLeaflet() {
                             style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
                             onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleSeguimientoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
                             title="${esSeguimientoPopup ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar')}">
-                            <svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet">
+                            <svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
                                 <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_ocPopup}" stroke="none"/>
                                 <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="${_ocPopup}" stroke="none"/>
                                 <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="${_ocPopup}" stroke="none"/>
