@@ -4634,7 +4634,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 </button>
             `;
 			
-            const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block;">(${d.Provincia})</span>`;
+            const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block; color: #777; margin-top: -1px; margin-bottom: 2px;">(${d.Provincia})</span>`;
 
             const esFavoritoBtn  = obtenerFavoritos().map(Number).includes(Number(d.ID));
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
@@ -4676,7 +4676,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             // Preparamos el HTML de los iconos centrales según el espacio/modo
             const htmlIconosCentrales = mostrarRosayActividad ? `
-                <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; margin-bottom: 5px;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 4px; margin-bottom: 5px; background: #f0f4f8; padding: 4px 10px; padding-top: 2px;border-radius: 12px; border: 1px solid #e2e8f0;">
                     <span class="guia-rosa-vientos" style="padding-top: 3px; margin-right: 12px;">${svgOrientaciones}</span>
                     
                     <!-- CONTENEDOR TIPPY EXCLUSIVO PARA LA TABLA -->

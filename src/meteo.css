@@ -1464,6 +1464,32 @@ thead .columna-meteo {
     background-color: #ffffff;
 }
 
+/* 🟡 TABLA. DOCK DE ACCIONES Y JERARQUÍA EN COLUMNA DESPEGUE -------------------------------- */
+
+/* Crea un fondo gris con línea separadora en la base de la celda */
+body:not(.modo-edicion-tabla) td.columna-despegue::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 64px; /* Altura exacta para alojar los 4 botones (2x2) */
+    background-color: #f8f9fa; /* Gris super claro */
+    border-top: 1px solid #e5e5e5; /* Línea separadora sutil */
+    z-index: 0;
+}
+
+/* Si la tabla está en modo compacto (1 fila de botones), el dock se hace más bajito */
+body:not(.modo-edicion-tabla) td.columna-despegue.modo-compacto::before {
+    height: 35px;
+}
+
+/* Asegura que los textos y los botones siempre queden por encima del fondo gris */
+td.columna-despegue > * {
+    position: relative;
+    z-index: 1;
+}
+
 /* 🟡 TABLA. Estilos especiales -------------------------------- */
 
 /* FUERZA el color gris para las horas nocturnas fijas */
