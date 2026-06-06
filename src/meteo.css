@@ -271,9 +271,43 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
         inset 1px 1px 3px rgba(0,0,0,0.4) !important;
     background-color: #ff000042 !important;
 }
-/* El color de los elementos del ojo se gestiona por CSS cuando el filtro está activo */
-#btn-filtro-seguimiento-toggle.filtro-aplicado .ojo-color {
+
+/* =========================================
+   OJO SEGUIMIENTO (Inactivo / Activo)
+   ========================================= */
+
+/* ESTADO INACTIVO (JS manda Gris) -> Lo convertimos en contorno */
+.ojo-exterior[fill="#959595"], .ojo-exterior {
+    fill: none !important;
+    stroke: #555555 !important;
+    stroke-width: 2px !important;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.ojo-iris[fill="#959595"], .ojo-iris {
+    fill: none !important;
+    stroke: #555555 !important;
+    stroke-width: 2px !important;
+}
+.ojo-pupila[fill="#959595"], .ojo-pupila {
+    fill: #555555 !important;
+    stroke: none !important;
+}
+/* ESTADO ACTIVO (Verde - por atributo de JS o por clase en menú superior) */
+.ojo-exterior[fill="#16a34a"],
+.filtro-aplicado .ojo-exterior {
     fill: #16a34a !important;
+    stroke: none !important;
+}
+.ojo-iris[fill="#16a34a"],
+.filtro-aplicado .ojo-iris {
+    fill: white !important;
+    stroke: none !important;
+}
+.ojo-pupila[fill="#16a34a"],
+.filtro-aplicado .ojo-pupila {
+    fill: #16a34a !important;
+    stroke: none !important;
 }
 
 body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {

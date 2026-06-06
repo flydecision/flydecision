@@ -135,9 +135,9 @@ const METADATA_TO_ICON_MAP = {
 };
 
 const _ojoVerde = `<svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet" style="vertical-align: middle; margin-left: 4px;">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/>
-    <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
-    <circle cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
+    <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/>
+    <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="#16a34a" stroke="none"/>
+    <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
 </svg>`;
 
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
@@ -1641,7 +1641,7 @@ function actualizarContenidoPopupGuardado(id, esFavorito, esSeguimiento) {
     if (esSeguimiento !== undefined) {
         const btnSeg = tempDiv.querySelector('.btn-ojo-tabla');
         if (btnSeg) {
-            btnSeg.title = esSeguimiento ? t('seguimiento.quitar') : t('seguimiento.activar');
+            btnSeg.title = esSeguimiento ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
             const colorSeg = esSeguimiento ? '#16a34a' : '#959595';
             btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
         }
@@ -2027,7 +2027,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
     // 1. Actualizar el botón presionado directamente
     if (btnElement) {
         btnElement.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
-        btnElement.title = esNuevo ? t('seguimiento.quitar') : t('seguimiento.activar');
+        btnElement.title = esNuevo ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
     }
 
     // 2. Sincronizar el botón gemelo (tabla/mapa)
@@ -2038,7 +2038,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
             onclickAttr.includes(`toggleSeguimientoDesdeTabla('${id}',`)) {
             if (btn !== btnElement) {
                 btn.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
-                btn.title = esNuevo ? t('seguimiento.quitar') : t('seguimiento.activar');
+                btn.title = esNuevo ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
             }
         }
     });
@@ -4654,11 +4654,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 <button class="btn-info btn-ojo-tabla"
                     style="position: absolute; bottom: 2px; left: 56px;"
                     onclick="toggleSeguimientoDesdeTabla(${d.ID}, this); return false;"
-                    title="${t('seguimiento.activar_desactivar')}">
+                    title="${t('seguimiento.activar_desactivar_desactivar')}">
                     <svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet">
-                        <path class="ojo-color" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_oc}" stroke="none"/>
-                        <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
-                        <circle class="ojo-color" cx="12" cy="12" r="2.5" fill="${_oc}" stroke="none"/>
+                        <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_oc}" stroke="none"/>
+                        <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="${_oc}" stroke="none"/>
+                        <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="${_oc}" stroke="none"/>
                     </svg>
                 </button>
             `;
@@ -10405,11 +10405,11 @@ function inicializarMapaLeaflet() {
                         <button class="btn-info btn-ojo-tabla"
                             style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
                             onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleSeguimientoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
-                            title="${esSeguimientoPopup ? t('seguimiento.quitar') : t('seguimiento.activar')}">
+                            title="${esSeguimientoPopup ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar')}">
                             <svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet">
-                                <path class="ojo-color" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_ocPopup}" stroke="none"/>
-                                <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
-                                <circle class="ojo-color" cx="12" cy="12" r="2.5" fill="${_ocPopup}" stroke="none"/>
+                                <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_ocPopup}" stroke="none"/>
+                                <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="${_ocPopup}" stroke="none"/>
+                                <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="${_ocPopup}" stroke="none"/>
                             </svg>
                         </button>
                     </div>
@@ -10506,7 +10506,7 @@ function inicializarMapaLeaflet() {
             const btnSeg = popupEl.querySelector('.btn-ojo-tabla');
             if (btnSeg) {
                 const esSeg = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
-                btnSeg.title = esSeg ? t('seguimiento.quitar') : t('seguimiento.activar');
+                btnSeg.title = esSeg ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
                 const colorSeg = esSeg ? '#16a34a' : '#959595';
                 btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
             }
