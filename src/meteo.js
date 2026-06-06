@@ -10386,7 +10386,7 @@ function inicializarMapaLeaflet() {
                 <div style="display: flex; align-items: stretch; gap: 8px; margin-top: 8px; margin-bottom: 8px;">
                     
                     <!-- Contenedor para alinear los iconos (Corazón y Ojo) a la izquierda -->
-                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                    <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
                         <!-- Botón Favorito -->
                         <button class="btn-info btn-favorito-tabla"
                             style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
