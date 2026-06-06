@@ -134,10 +134,10 @@ const METADATA_TO_ICON_MAP = {
     'NNO': ['N', 'NO']
 };
 
-const _ojoVerde = `<svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet" style="vertical-align: middle; margin-left: 4px;">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/>
-    <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
-    <circle cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
+const _ojoVerde = `<svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet" style="vertical-align: middle; margin-left: 4px;">
+    <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/>
+    <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="#16a34a" stroke="none"/>
+    <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
 </svg>`;
 
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
@@ -1641,7 +1641,7 @@ function actualizarContenidoPopupGuardado(id, esFavorito, esSeguimiento) {
     if (esSeguimiento !== undefined) {
         const btnSeg = tempDiv.querySelector('.btn-ojo-tabla');
         if (btnSeg) {
-            btnSeg.title = esSeguimiento ? t('seguimiento.quitar') : t('seguimiento.activar');
+            btnSeg.title = esSeguimiento ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
             const colorSeg = esSeguimiento ? '#16a34a' : '#959595';
             btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
         }
@@ -2027,7 +2027,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
     // 1. Actualizar el botón presionado directamente
     if (btnElement) {
         btnElement.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
-        btnElement.title = esNuevo ? t('seguimiento.quitar') : t('seguimiento.activar');
+        btnElement.title = esNuevo ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
     }
 
     // 2. Sincronizar el botón gemelo (tabla/mapa)
@@ -2038,7 +2038,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
             onclickAttr.includes(`toggleSeguimientoDesdeTabla('${id}',`)) {
             if (btn !== btnElement) {
                 btn.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
-                btn.title = esNuevo ? t('seguimiento.quitar') : t('seguimiento.activar');
+                btn.title = esNuevo ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
             }
         }
     });
@@ -4655,10 +4655,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     style="position: absolute; bottom: 2px; left: 56px;"
                     onclick="toggleSeguimientoDesdeTabla(${d.ID}, this); return false;"
                     title="${t('seguimiento.activar_desactivar')}">
-                    <svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet">
-                        <path class="ojo-color" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_oc}" stroke="none"/>
-                        <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
-                        <circle class="ojo-color" cx="12" cy="12" r="2.5" fill="${_oc}" stroke="none"/>
+                    <svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
+                        <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_oc}" stroke="none"/>
+                        <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="${_oc}" stroke="none"/>
+                        <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="${_oc}" stroke="none"/>
                     </svg>
                 </button>
             `;
@@ -4667,7 +4667,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const iconoActividadLimpio = d.Actividad ? crearIconoActividad(d.Actividad) : '';
 
             // Siempre se muestra en edición, o si hay más de 7 filas en vista normal
-            const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 7);
+            const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 9);
             const modoCompacto = !modoEdicionFavoritos && totalFilasRowSpan <= 8;
 
             // Preparamos el texto del tooltip limpiando las comillas dobles
@@ -4676,7 +4676,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             // Preparamos el HTML de los iconos centrales según el espacio/modo
             const htmlIconosCentrales = mostrarRosayActividad ? `
-                <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 4px; margin-bottom: 5px; background: #f0f4f8; padding: 4px 10px; padding-top: 2px;border-radius: 12px; border: 1px solid #e2e8f0;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; margin-top: 2px; margin-bottom: 5px;">
                     <span class="guia-rosa-vientos" style="padding-top: 3px; margin-right: 12px;">${svgOrientaciones}</span>
                     
                     <!-- CONTENEDOR TIPPY EXCLUSIVO PARA LA TABLA -->
@@ -10405,11 +10405,11 @@ function inicializarMapaLeaflet() {
                         <button class="btn-info btn-ojo-tabla"
                             style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
                             onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleSeguimientoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
-                            title="${esSeguimientoPopup ? t('seguimiento.quitar') : t('seguimiento.activar')}">
-                            <svg viewBox="1 4 22 16" width="24" height="24" preserveAspectRatio="xMidYMid meet">
-                                <path class="ojo-color" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_ocPopup}" stroke="none"/>
-                                <circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/>
-                                <circle class="ojo-color" cx="12" cy="12" r="2.5" fill="${_ocPopup}" stroke="none"/>
+                            title="${esSeguimientoPopup ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar')}">
+                            <svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
+                                <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_ocPopup}" stroke="none"/>
+                                <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="${_ocPopup}" stroke="none"/>
+                                <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="${_ocPopup}" stroke="none"/>
                             </svg>
                         </button>
                     </div>
@@ -10506,7 +10506,7 @@ function inicializarMapaLeaflet() {
             const btnSeg = popupEl.querySelector('.btn-ojo-tabla');
             if (btnSeg) {
                 const esSeg = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
-                btnSeg.title = esSeg ? t('seguimiento.quitar') : t('seguimiento.activar');
+                btnSeg.title = esSeg ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
                 const colorSeg = esSeg ? '#16a34a' : '#959595';
                 btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
             }
