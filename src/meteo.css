@@ -2559,9 +2559,13 @@ label.custom-checkbox {
     box-sizing: border-box !important;
 }
 
+.btn-info {
+    -webkit-tap-highlight-color: transparent; /* Evita el recuadro azul nativo de los móviles al hacer tap */
+}
+
 .btn-info:active {
-    background-color: #0078d4;
-    color: #000;
+    background-color: #e0e0e0; /* Un gris neutro y suave al pulsar */
+    transform: scale(0.92);    /* Opcional: un ligero efecto de hundimiento muy agradable */
 }
 .btn-arriba-izquierda {
     position: absolute;
