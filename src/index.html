@@ -650,85 +650,85 @@
 				</label>
 			</div>
 			
-			<div class="control-orientacion-container" style="display: flex; gap: 12px; align-items: center; justify-content: center; width: 100%; padding: 5px; box-sizing: border-box;">
-				
-                <!-- ❤️ 👁️ 📊 COLUMNA IZQUIERDA: Filtros Rápidos en Vertical -->
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 7px; width: 105px; flex-shrink: 0; padding-top: 15px;">
+		<!-- 🧭 CONTENEDOR Filtros favoritos, seguimiento y actividad (Izda) y Orientación (Dcha) -->
+        <div style="display: flex; gap: 8px; align-items: center; justify-content: center; width: 100%; padding: 4px; box-sizing: border-box; margin-top: 5px; margin-bottom: 5px;">
+            
+            <!-- 1️⃣ COLUMNA IZQUIERDA: filtros en vertical (Con borde rojo aislado) -->
+            <div id="control-rapidos-container" style="display: flex; flex-direction: column; align-items: flex-start; gap: 6px; width: 122px; flex-shrink: 0; padding: 5px; border: 1.5px solid transparent; border-radius: 8px; box-sizing: border-box; transition: all 0.2s;">
+                
+                <!-- Fila 1: Botón Favoritos -->
+                <div style="display: flex; align-items: center; gap: 6px; width: 100%;">
+                    <button id="btn-mapa-filtro-favoritos" class="btn-info" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; border-radius: 8px; background: #fff; border: 1.5px solid #ccc; box-shadow: 1px 1px 3px rgba(0,0,0,0.15);" onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosMapa()">
+                        <!-- SVG -->
+                    </button>
+                    <span style="font-weight: bold; color: #333; white-space: nowrap;" data-i18n="mapa.Favoritos">Favoritos</span>
+                </div>
+
+                <!-- Fila 2: Botón Seguimiento -->
+                <div style="display: flex; align-items: center; gap: 6px; width: 100%;">
+                    <button id="btn-mapa-filtro-seguimiento" class="btn-info" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; border-radius: 8px; background: #fff; border: 1.5px solid #ccc; box-shadow: 1px 1px 3px rgba(0,0,0,0.15);" onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoMapa()">
+                        <!-- SVG -->
+                    </button>
+                    <span style="font-weight: bold; color: #333; white-space: nowrap;" data-i18n="mapa.Seguimiento">Seguimiento</span>
+                </div>
+
+                <!-- Fila 3: Slider Actividad (1 a 5) -->
+                <div style="width: 100%; text-align: left; margin-top: 3px;">
+                    <label for="sliderActividad" style="font-weight: bold; display: block; margin-bottom: 2px; white-space: nowrap;" data-i18n="mapa.Actividad">
+                        Actividad >= </label><span id="valorActividadTexto"">1</span>
+                    <input type="range" id="sliderActividad" min="1" max="5" value="1" step="1" style="width: 100%; height: 10px; margin: 0; cursor: pointer;">
+                </div>
+
+            </div>
+
+            <!-- 2️⃣ COLUMNA DERECHA: Rosa de los vientos original (Con borde rojo aislado) -->
+            <div class="control-orientacion-container" style="flex: 1; margin: 0 !important; padding: 4px !important; border-radius: 8px; border: 1.5px solid transparent; box-sizing: border-box; transition: all 0.2s;">
+                <div style="font-weight: bold; margin-bottom: 5px; text-align: center; width: 100%;" data-i18n="mapa.orientacion">
+                    Orientación:
+                </div>
+                <div id="rosaDeLosVientos">
+                    <label class="filtro-orientacion" data-orientacion="NO" data-i18n="[title]orientaciones.noroeste"> 
+                        <input type="checkbox" class="filtro-orientacion-checkbox" value="NO"> 
+                        <span data-i18n="orientaciones.NO">NO</span> 
+                    </label>
+                    <label class="filtro-orientacion" data-orientacion="N" data-i18n="[title]orientaciones.norte"> 
+                        <input type="checkbox" class="filtro-orientacion-checkbox" value="N"> 
+                        <span data-i18n="orientaciones.N">N</span> 
+                    </label>
+                    <label class="filtro-orientacion" data-orientacion="NE" data-i18n="[title]orientaciones.noreste"> 
+                        <input type="checkbox" class="filtro-orientacion-checkbox" value="NE"> 
+                        <span data-i18n="orientaciones.NE">NE</span> 
+                    </label>
+                    <label class="filtro-orientacion" data-orientacion="O" data-i18n="[title]orientaciones.oeste"> 
+                        <input type="checkbox" class="filtro-orientacion-checkbox" value="O"> 
+                        <span data-i18n="orientaciones.O">O</span> 
+                    </label>
                     
-                    <!-- Fila 1: Filtro Ciclo Favoritos -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                        <button id="btn-mapa-filtro-favoritos" class="btn-info" style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; border-radius: 8px; background: #fff; border: 1.5px solid #ccc; box-shadow: 1px 1px 3px rgba(0,0,0,0.15);" onclick="ciclarFiltroFavoritosMapa()">
-                            <!-- Se inyecta por JS -->
-                        </button>
-                        <span style="font-size: 0.85em; font-weight: bold; color: #333;">Fav:</span>
-                    </div>
-
-                    <!-- Fila 2: Filtro Ciclo Seguimiento -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                        <button id="btn-mapa-filtro-seguimiento" class="btn-info" style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; border-radius: 8px; background: #fff; border: 1.5px solid #ccc; box-shadow: 1px 1px 3px rgba(0,0,0,0.15);" onclick="ciclarFiltroSeguimientoMapa()">
-                            <!-- Se inyecta por JS -->
-                        </button>
-                        <span style="font-size: 0.85em; font-weight: bold; color: #333;">Seg:</span>
-                    </div>
-
-                    <!-- Fila 3: Slider de Actividad mínima -->
-                    <div style="width: 100%; text-align: left; margin-top: 3px;">
-                        <label for="sliderActividad" style="font-weight: bold; font-size: 0.75em; display: block; margin-bottom: 2px; white-space: nowrap; color: #333;">
-                            Actividad >= <span id="valorActividadTexto" style="color: #007aff; font-weight: 800;">1</span>
-                        </label>
-                        <input type="range" id="sliderActividad" min="0" max="5" value="0" step="1" style="width: 100%; height: 10px; margin: 0; cursor: pointer;">
-                    </div>
-
+                    <!-- Centro de la rosa (Reset) -->
+                    <label class="centro-rosa filtro-maestro" data-i18n="[title]orientaciones.todos_title">
+                        <input type="checkbox" id="filtroMaestroOrientacion" class="filtro-orientacion-checkbox" value="TODOS">
+                    </label>	
+                    
+                    <label class="filtro-orientacion" data-orientacion="E" data-i18n="[title]orientaciones.este"> 
+                        <input type="checkbox" class="filtro-orientacion-checkbox" value="E"> 
+                        <span data-i18n="orientaciones.E">E</span> 
+                    </label>
+                    <label class="filtro-orientacion" data-orientacion="SO" data-i18n="[title]orientaciones.suroeste"> 
+                        <input type="checkbox" class="filtro-orientacion-checkbox" value="SO"> 
+                        <span data-i18n="orientaciones.SO">SO</span> 
+                    </label>
+                    <label class="filtro-orientacion" data-orientacion="S" data-i18n="[title]orientaciones.sur"> 
+                        <input type="checkbox" class="filtro-orientacion-checkbox" value="S"> 
+                        <span data-i18n="orientaciones.S">S</span> 
+                    </label>
+                    <label class="filtro-orientacion" data-orientacion="SE" data-i18n="[title]orientaciones.sureste"> 
+                        <input type="checkbox" class="filtro-orientacion-checkbox" value="SE"> 
+                        <span data-i18n="orientaciones.SE">SE</span> 
+                    </label>
                 </div>
+            </div>
 
-                <!-- 🧭 COLUMNA DERECHA: Rosa de los vientos original -->
-                <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
-                    <div style="font-weight: bold; margin-bottom: 5px; font-size: 0.9em; text-align: center; width: 100%;" data-i18n="mapa.orientacion">
-                        Orientación:
-                    </div>
-                    <div id="rosaDeLosVientos">
-                        <label class="filtro-orientacion" data-orientacion="NO" data-i18n="[title]orientaciones.noroeste"> 
-                            <input type="checkbox" class="filtro-orientacion-checkbox" value="NO"> 
-                            <span data-i18n="orientaciones.NO">NO</span> 
-                        </label>
-                        <label class="filtro-orientacion" data-orientacion="N" data-i18n="[title]orientaciones.norte"> 
-                            <input type="checkbox" class="filtro-orientacion-checkbox" value="N"> 
-                            <span data-i18n="orientaciones.N">N</span> 
-                        </label>
-                        <label class="filtro-orientacion" data-orientacion="NE" data-i18n="[title]orientaciones.noreste"> 
-                            <input type="checkbox" class="filtro-orientacion-checkbox" value="NE"> 
-                            <span data-i18n="orientaciones.NE">NE</span> 
-                        </label>
-                        <label class="filtro-orientacion" data-orientacion="O" data-i18n="[title]orientaciones.oeste"> 
-                            <input type="checkbox" class="filtro-orientacion-checkbox" value="O"> 
-                            <span data-i18n="orientaciones.O">O</span> 
-                        </label>
-                        
-                        <!-- Centro de la rosa (Reset) -->
-                        <label class="centro-rosa filtro-maestro" data-i18n="[title]orientaciones.todos_title">
-                            <input type="checkbox" id="filtroMaestroOrientacion" class="filtro-orientacion-checkbox" value="TODOS">
-                        </label>	
-                        
-                        <label class="filtro-orientacion" data-orientacion="E" data-i18n="[title]orientaciones.este"> 
-                            <input type="checkbox" class="filtro-orientacion-checkbox" value="E"> 
-                            <span data-i18n="orientaciones.E">E</span> 
-                        </label>
-                        <label class="filtro-orientacion" data-orientacion="SO" data-i18n="[title]orientaciones.suroeste"> 
-                            <input type="checkbox" class="filtro-orientacion-checkbox" value="SO"> 
-                            <span data-i18n="orientaciones.SO">SO</span> 
-                        </label>
-                        <label class="filtro-orientacion" data-orientacion="S" data-i18n="[title]orientaciones.sur"> 
-                            <input type="checkbox" class="filtro-orientacion-checkbox" value="S"> 
-                            <span data-i18n="orientaciones.S">S</span> 
-                        </label>
-                        <label class="filtro-orientacion" data-orientacion="SE" data-i18n="[title]orientaciones.sureste"> 
-                            <input type="checkbox" class="filtro-orientacion-checkbox" value="SE"> 
-                            <span data-i18n="orientaciones.SE">SE</span> 
-                        </label>
-                    </div>
-                </div>
-
-			</div>	
+        </div>	
 					
 			<div class="control-vuelos-container" style="margin-bottom: 9px;" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
 				<label for="sliderVuelos" style="font-weight: bold; line-height: 1.2;" data-i18n="mapa.minVuelosTexto">

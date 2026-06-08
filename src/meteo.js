@@ -8851,7 +8851,7 @@ window.evaluarEstadoNuevosUsuarios = function() {
 
 let filtroFavoritosMapa = 0;   // 0 = Todos, 1 = Solo Favoritos, 2 = Solo No Favoritos
 let filtroSeguimientoMapa = 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
-let filtroActividadMapa = 0;   // 0 = Nada (Todos), 1 a 5 = Actividad mínima
+let filtroActividadMapa = 1;   // El valor inicial de actividad mínima es 1 (Todos)
 
 // SVGs del Botón Favorito (Todos / Solo Favs / Excluir Favs)
 const SVG_FAV_TODOS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
@@ -8873,22 +8873,15 @@ window.actualizarBotonFavoritosMapa = function() {
     if (!btn) return;
     if (filtroFavoritosMapa === 0) {
         btn.innerHTML = SVG_FAV_TODOS;
-        btn.style.borderColor = '#ccc';
-        btn.style.backgroundColor = '#fff';
-    } else if (filtroFavoritosMapa === 1) {
-        btn.innerHTML = SVG_FAV_SOLO;
-        btn.style.borderColor = '#ff0000';
-        btn.style.backgroundColor = '#ff000015';
+        btn.classList.remove('borde-rojo-externo'); 
     } else {
-        btn.innerHTML = SVG_FAV_NO;
-        btn.style.borderColor = '#ff0000';
-        btn.style.backgroundColor = '#ff000015';
+        btn.innerHTML = (filtroFavoritosMapa === 1) ? SVG_FAV_SOLO : SVG_FAV_NO;
+        btn.classList.add('borde-rojo-externo');
     }
 };
 
-// LÓGICA DE 2 ESTADOS (ACTIVO/DESACTIVO) PARA EL OJO DEL MAPA
 window.ciclarFiltroSeguimientoMapa = function() {
-    filtroSeguimientoMapa = (filtroSeguimientoMapa + 1) % 2; // Ciclo binario (0 o 1)
+    filtroSeguimientoMapa = (filtroSeguimientoMapa + 1) % 2; 
     actualizarBotonSeguimientoMapa();
     actualizarFiltrosMapa();
     actualizarEstadoVisualFiltros();
@@ -8899,15 +8892,12 @@ window.actualizarBotonSeguimientoMapa = function() {
     if (!btn) return;
     
     const esActivo = (filtroSeguimientoMapa === 1);
-    
     btn.innerHTML = svgOjoBoton(esActivo);
     
     if (esActivo) {
-        btn.style.borderColor = '#16a34a';
-        btn.style.backgroundColor = '#16a34a15';
+        btn.classList.add('borde-rojo-externo');
     } else {
-        btn.style.borderColor = '#ccc';
-        btn.style.backgroundColor = '#fff';
+        btn.classList.remove('borde-rojo-externo');
     }
 };
 
@@ -9650,13 +9640,13 @@ function inicializarMapaLeaflet() {
                 if (filtroFavoritosMapa === 1 && !esFav) return false; // Solo favoritos
                 if (filtroFavoritosMapa === 2 && esFav) return false;  // Solo NO favoritos
 
-                // --- 0c. FILTRO DE SEGUIMIENTO
+                // --- 0c. NUEVO FILTRO DE SEGUIMIENTO (Ojo - 2 Estados) ---
                 const esSeg = idMarcador ? obtenerSeguimientos().map(s => Number(s.id)).includes(idMarcador) : false;
-                if (filtroSeguimientoMapa === 1 && !esSeg) return false; // Si está activo (1), oculta los que NO están seguidos
+                if (filtroSeguimientoMapa === 1 && !esSeg) return false; 
 
-                // --- 0d. NUEVO FILTRO DE ACTIVIDAD MÍNIMA (1 a 5) ---
-                const notaActividad = marker.metadata.actividad ? parseInt(marker.metadata.actividad, 10) : 0;
-                if (filtroActividadMapa > 0 && (isNaN(notaActividad) || notaActividad < filtroActividadMapa)) return false;
+                // Como el valor inicial es 1 (Todos), solo ocultamos si la actividad mínima exigida es > 1
+                const examinaActividad = marker.metadata.actividad ? parseInt(marker.metadata.actividad, 10) : 0;
+                if (filtroActividadMapa > 1 && (isNaN(examinaActividad) || examinaActividad < filtroActividadMapa)) return false;
 
                 // --- 0. FILTRO DE PUNTUACIÓN MÍNIMA ---
                 if (puntuacionMinimaMapa > 0) {
@@ -9775,6 +9765,8 @@ function inicializarMapaLeaflet() {
         const indiceUltimoVuelo = sliderUltimoVuelo ? parseInt(sliderUltimoVuelo.value, 10) : 0;
         const hayFiltroAnio = indiceUltimoVuelo !== 0;
 
+        const hayFiltroRapidos = filtroFavoritosMapa !== 0 || filtroSeguimientoMapa !== 0 || filtroActividadMapa > 1;
+
         // 2. COMPROBAR CONFIGURACIÓN INICIAL (Ajustes Generales)
         const hayConfiguracionInicialFiltroVuelos = parseInt(localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0', 10) > 0;
         const hayConfiguracionInicialFiltroUltimoVuelo = parseInt(localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0', 10) > 0;
@@ -9793,6 +9785,15 @@ function inicializarMapaLeaflet() {
                 contOrientacion.classList.add('borde-rojo-externo');
             } else {
                 contOrientacion.classList.remove('borde-rojo-externo');
+            }
+        }
+
+        const contRapidos = document.getElementById('control-rapidos-container');
+        if (contRapidos) {
+            if (hayFiltroRapidos) {
+                contRapidos.classList.add('borde-rojo-externo');
+            } else {
+                contRapidos.classList.remove('borde-rojo-externo');
             }
         }
 
@@ -9840,7 +9841,7 @@ function inicializarMapaLeaflet() {
         }
 
         // 6. ACTUALIZAR PANEL GLOBAL (Borde rojo externo al estar retraído)
-        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || filtroFavoritosMapa !== 0 || filtroSeguimientoMapa !== 0 || filtroActividadMapa > 0;
+        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos;
         const infoPanelPrincipal = document.getElementById('infoPanel');
         
         if (infoPanelPrincipal) {
@@ -12019,11 +12020,11 @@ function inicializarMapaLeaflet() {
     const txtAct = document.getElementById('valorActividadTexto');
     if (sliderAct && txtAct) {
         sliderAct.value = filtroActividadMapa;
-        txtAct.textContent = filtroActividadMapa === 0 ? 'Nada' : filtroActividadMapa;
+        txtAct.textContent = filtroActividadMapa;
         
         sliderAct.addEventListener('input', function() {
             filtroActividadMapa = parseInt(this.value, 10);
-            txtAct.textContent = filtroActividadMapa === 0 ? 'Nada' : filtroActividadMapa;
+            txtAct.textContent = filtroActividadMapa;
             actualizarFiltrosMapa();
             actualizarEstadoVisualFiltros();
         });
