@@ -8812,6 +8812,11 @@ window.toggleFiltrosMapa = function() {
     const divFH      = document.getElementById('div-filtro-horario');
     if (!divFH) return;
 
+    // Cierra inmediatamente cualquier popup abierto en el mapa (el objetivo es que al abrirlo manualmente se regeneren los datos correctos de orientación...)
+    if (typeof map !== 'undefined' && map) {
+        map.closePopup();
+    }
+
     const visible = divFH.classList.contains('flotando-en-mapa');
 
     if (visible) { // Cerrarlo
