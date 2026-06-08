@@ -164,14 +164,27 @@ function actualizarVistaOjo(btn, esActivo) {
     btn.innerHTML = svgOjoBoton(esActivo);
 }
 
-// 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
-// Asegúrate de que Capacitor está disponible
-// if (window.Capacitor && window.Capacitor.Plugins.StatusBar) {
-//   const StatusBar = window.Capacitor.Plugins.StatusBar;
-//   StatusBar.setOverlaysWebView({ overlay: false });
-//   StatusBar.setBackgroundColor({ color: '#d9ebf9' });
-//   StatusBar.setStyle({ style: 'DARK' }); 
-// }
+// ===============================================================
+// 🔴 VIBRACIÓN GLOBAL (HAPTICS) PARA TODOS LOS BOTONES DE LA APP
+// ===============================================================
+
+document.addEventListener('click', function(event) {
+    const selectorBotones = 'button, .nav-item, .pip-dia-btn, [role="button"], .leaflet-bar a, .leaflet-control-layers-toggle, summary, .tippy-close-btn, .close-x, .close-btn, .cerrar-capas-btn, .filtro-orientacion, .centro-rosa';
+    const botonClicado = event.target.closest(selectorBotones);
+    
+    if (botonClicado) {
+        // EXCEPCIÓN: Los botones del popup del mapa detienen la propagación (stopPropagation) para que no se mueva el mapa. Por tanto, los hacemos vibrar localmente en sus funciones y aquí los ignoramos para evitar doble vibración en la tabla.
+        if (botonClicado.classList.contains('btn-favorito-tabla') || 
+            botonClicado.classList.contains('btn-ojo-tabla') || 
+            botonClicado.classList.contains('btn-accion')) {
+            return;
+        }
+
+        if (typeof window.Capacitor !== 'undefined' && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
+            window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
+        }
+    }
+}, { passive: true });
 
 // ===============================================================
 // 🔴 FILTRO DISTANCIA. GESTIÓN DE UBICACIÓN (MAPA Y GPS UNIFICADO)
@@ -1679,12 +1692,12 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
 
     const ejecutarCambioDOM = () => {
         const esNuevoFavorito = toggleFavorito(id); 
-        
+
         if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Haptics) {
             Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
         }
-
-        // 🛑 NUEVO: Sincronizar la plantilla estática interna de Leaflet inmediatamente
+        
+        // Sincronizar la plantilla estática interna de Leaflet inmediatamente
         actualizarContenidoPopupGuardado(id, esNuevoFavorito, undefined);
 
         // Helper interno para actualizar estados de botones y filas
@@ -2042,7 +2055,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
         Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
     }
 
-    // 🛑 NUEVO: Sincronizar la plantilla estática interna de Leaflet inmediatamente
+    // Sincronizar la plantilla estática interna de Leaflet inmediatamente
     actualizarContenidoPopupGuardado(id, undefined, esNuevo);
 
     // 1. Actualizar el botón presionado directamente
