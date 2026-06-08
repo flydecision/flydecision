@@ -168,23 +168,36 @@ function actualizarVistaOjo(btn, esActivo) {
 // 🔴 VIBRACIÓN GLOBAL (HAPTICS) PARA TODOS LOS BOTONES DE LA APP
 // ===============================================================
 
+window.vibrarDispositivo = function() {
+    const vibracionActiva = localStorage.getItem("METEO_VIBRACION_ACTIVA") !== "false"; // True por defecto
+    if (vibracionActiva && typeof window.Capacitor !== 'undefined' && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
+        window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
+    }
+};
+
+// Escuchador global de clics para hacer vibrar todos los botones de la app
 document.addEventListener('click', function(event) {
-    const selectorBotones = 'button, .nav-item, .pip-dia-btn, [role="button"], .leaflet-bar a, .leaflet-control-layers-toggle, summary, .tippy-close-btn, .close-x, .close-btn, .cerrar-capas-btn, .filtro-orientacion, .centro-rosa';
+    const selectorBotones = 'button, .nav-item, .pip-dia-btn, [role="button"], .leaflet-bar a, .leaflet-control-layers-toggle, summary, .tippy-close-btn, .close-x, .close-btn, .cerrar-capas-btn, .filtro-orientacion, .centro-rosa, input[type="checkbox"]';
     const botonClicado = event.target.closest(selectorBotones);
     
     if (botonClicado) {
-        // EXCEPCIÓN: Los botones del popup del mapa detienen la propagación (stopPropagation) para que no se mueva el mapa. Por tanto, los hacemos vibrar localmente en sus funciones y aquí los ignoramos para evitar doble vibración en la tabla.
+        // Excepciones que se gestionan localmente por culpa del stopPropagation de Leaflet
         if (botonClicado.classList.contains('btn-favorito-tabla') || 
             botonClicado.classList.contains('btn-ojo-tabla') || 
             botonClicado.classList.contains('btn-accion')) {
             return;
         }
-
-        if (typeof window.Capacitor !== 'undefined' && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
-            window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
-        }
+        window.vibrarDispositivo(); // Llamada unificada
     }
 }, { passive: true });
+
+// Función para alternar el checkbox de vibración
+window.alternarVibracion = function() {
+    const chk = document.getElementById("chkActivarVibracion");
+    if (chk) {
+        localStorage.setItem("METEO_VIBRACION_ACTIVA", chk.checked);
+    }
+};
 
 // ===============================================================
 // 🔴 FILTRO DISTANCIA. GESTIÓN DE UBICACIÓN (MAPA Y GPS UNIFICADO)
@@ -1693,9 +1706,7 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
     const ejecutarCambioDOM = () => {
         const esNuevoFavorito = toggleFavorito(id); 
 
-        if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Haptics) {
-            Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
-        }
+        window.vibrarDispositivo();
         
         // Sincronizar la plantilla estática interna de Leaflet inmediatamente
         actualizarContenidoPopupGuardado(id, esNuevoFavorito, undefined);
@@ -2051,9 +2062,7 @@ function toggleSeguimiento(id) {
 window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
     const esNuevo = toggleSeguimiento(id);
 
-    if (typeof Capacitor !== 'undefined' && Capacitor.Plugins && Capacitor.Plugins.Haptics) {
-        Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
-    }
+    window.vibrarDispositivo(); 
 
     // Sincronizar la plantilla estática interna de Leaflet inmediatamente
     actualizarContenidoPopupGuardado(id, undefined, esNuevo);
@@ -7462,6 +7471,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 	
     document.getElementById("chkMostrarVientoAlturas").checked = chkMostrarVientoAlturas;
     document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
+    document.getElementById("chkActivarVibracion").checked = (localStorage.getItem("METEO_VIBRACION_ACTIVA") !== "false");
     
     // ECMWF Checks
     //if (document.getElementById("chkMostrarPrecipitacion")) document.getElementById("chkMostrarPrecipitacion").checked = chkMostrarPrecipitacion;
@@ -8125,6 +8135,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
     // ---------------------------------------------------------------
     window.verMeteoEnTabla = function(idDespegue) {
+
+        window.vibrarDispositivo();
         // 1. Buscamos el despegue en la BD global usando el ID para obtener su nombre EXACTO en la tabla
         const despegueBD = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(idDespegue));
         if (!despegueBD) return; // Si por algún motivo no existe, abortamos
