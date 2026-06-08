@@ -3811,7 +3811,7 @@ h3 {
     margin-left: auto !important;
     margin-right: auto !important;
     margin-bottom: 9px !important;
-    margin-top: 8px !important;
+    margin-top: 9px !important;
     padding: 5px 5px !important;
     background-color: transparent !important;
     border-radius: 8px;
@@ -3825,7 +3825,8 @@ h3 {
 }
 
 .control-vuelos-container,
-.control-ultimovuelo-container {  
+.control-ultimovuelo-container,
+.control-actividad-mapa-container {  
     width: 96% !important;      /* Ocupar el 95% de la anchura de su contenedor padre */
     margin-left: auto !important;  /* Centrado perfecto horizontal */
     margin-right: auto !important; /* Centrado perfecto horizontal */

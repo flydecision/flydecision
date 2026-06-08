@@ -8846,6 +8846,62 @@ window.evaluarEstadoNuevosUsuarios = function() {
 };
 
 // ---------------------------------------------------------------
+// 🗺️ BOTONES FILTRO MAPA: FAVORITOS, SEGUIMIENTO, ACTIVIDAD
+// ---------------------------------------------------------------
+
+let filtroFavoritosMapa = 0;   // 0 = Todos, 1 = Solo Favoritos, 2 = Solo No Favoritos
+let filtroSeguimientoMapa = 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
+let filtroActividadMapa = 1;   // El valor inicial de actividad mínima es 1 (Todos)
+
+// SVGs del Botón Favorito (Todos / Solo Favs / Excluir Favs)
+const SVG_FAV_TODOS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+const SVG_FAV_SOLO = `<svg viewBox="0 0 24 24" width="20" height="20" fill="#ff0000" stroke="#ff0000" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+const SVG_FAV_NO = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#ff0000" stroke-width="2">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="#ff0000" opacity="0.3"></path>
+    <line x1="3" y1="3" x2="21" y2="21" stroke="#ff0000" stroke-width="3" stroke-linecap="round"></line>
+</svg>`;
+
+window.ciclarFiltroFavoritosMapa = function() {
+    filtroFavoritosMapa = (filtroFavoritosMapa + 1) % 3;
+    actualizarBotonFavoritosMapa();
+    actualizarFiltrosMapa();
+    actualizarEstadoVisualFiltros();
+};
+
+window.actualizarBotonFavoritosMapa = function() {
+    const btn = document.getElementById('btn-mapa-filtro-favoritos');
+    if (!btn) return;
+    if (filtroFavoritosMapa === 0) {
+        btn.innerHTML = SVG_FAV_TODOS;
+        btn.classList.remove('borde-rojo-externo'); 
+    } else {
+        btn.innerHTML = (filtroFavoritosMapa === 1) ? SVG_FAV_SOLO : SVG_FAV_NO;
+        btn.classList.add('borde-rojo-externo');
+    }
+};
+
+window.ciclarFiltroSeguimientoMapa = function() {
+    filtroSeguimientoMapa = (filtroSeguimientoMapa + 1) % 2; 
+    actualizarBotonSeguimientoMapa();
+    actualizarFiltrosMapa();
+    actualizarEstadoVisualFiltros();
+};
+
+window.actualizarBotonSeguimientoMapa = function() {
+    const btn = document.getElementById('btn-mapa-filtro-seguimiento');
+    if (!btn) return;
+    
+    const esActivo = (filtroSeguimientoMapa === 1);
+    btn.innerHTML = svgOjoBoton(esActivo);
+    
+    if (esActivo) {
+        btn.classList.add('borde-rojo-externo');
+    } else {
+        btn.classList.remove('borde-rojo-externo');
+    }
+};
+
+// ---------------------------------------------------------------
 // 🗺️ BOTÓN FILTROS + SLIDER HORARIO EN MAPA
 // ---------------------------------------------------------------
 
@@ -9576,6 +9632,22 @@ function inicializarMapaLeaflet() {
             // Los despegues del mundo NO tienen pronóstico meteo, por lo que 
             // ignoramos los filtros de puntuación y operatividad para ellos.
             if (!esDespegueMundo) {
+
+                // --- 0b. NUEVO FILTRO DE FAVORITOS (Corazón) ---
+                const idMarcador = Number(marker.metadata.id);
+                const esFav = idMarcador ? obtenerFavoritos().map(Number).includes(idMarcador) : false;
+                
+                if (filtroFavoritosMapa === 1 && !esFav) return false; // Solo favoritos
+                if (filtroFavoritosMapa === 2 && esFav) return false;  // Solo NO favoritos
+
+                // --- 0c. NUEVO FILTRO DE SEGUIMIENTO (Ojo - 2 Estados) ---
+                const esSeg = idMarcador ? obtenerSeguimientos().map(s => Number(s.id)).includes(idMarcador) : false;
+                if (filtroSeguimientoMapa === 1 && !esSeg) return false; 
+
+                // Como el valor inicial es 1 (Todos), solo ocultamos si la actividad mínima exigida es > 1
+                const examinaActividad = marker.metadata.actividad ? parseInt(marker.metadata.actividad, 10) : 0;
+                if (filtroActividadMapa > 1 && (isNaN(examinaActividad) || examinaActividad < filtroActividadMapa)) return false;
+
                 // --- 0. FILTRO DE PUNTUACIÓN MÍNIMA ---
                 if (puntuacionMinimaMapa > 0) {
                     const nota = marker._notaMapa !== undefined ? marker._notaMapa : -1;
@@ -9680,6 +9752,12 @@ function inicializarMapaLeaflet() {
     function actualizarEstadoVisualFiltros() {
 
         // 1. COMPROBAR ESTADO DE LOS FILTROS EN EL MAPA
+
+        // Actividad: Comprueba si el valor es mayor que 0
+        const sliderActividad = document.getElementById('sliderActividad');
+        const indiceActividad = sliderActividad ? parseInt(sliderActividad.value, 10) : 1;
+        const hayFiltroActividad = indiceActividad > 1; 
+
         // Orientación: Comprueba si hay al menos uno marcado
         const hayFiltroOrientacion = obtenerOrientacionesSeleccionadas().length > 0;
         
@@ -9693,6 +9771,8 @@ function inicializarMapaLeaflet() {
         const indiceUltimoVuelo = sliderUltimoVuelo ? parseInt(sliderUltimoVuelo.value, 10) : 0;
         const hayFiltroAnio = indiceUltimoVuelo !== 0;
 
+        const hayFiltroRapidos = filtroFavoritosMapa !== 0 || filtroSeguimientoMapa !== 0 || filtroActividadMapa > 1;
+
         // 2. COMPROBAR CONFIGURACIÓN INICIAL (Ajustes Generales)
         const hayConfiguracionInicialFiltroVuelos = parseInt(localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0', 10) > 0;
         const hayConfiguracionInicialFiltroUltimoVuelo = parseInt(localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0', 10) > 0;
@@ -9702,6 +9782,15 @@ function inicializarMapaLeaflet() {
         const INACTIVO_COLOR = '#ffffff';
 
         // 4. ACTUALIZAR CONTENEDORES INDIVIDUALES DEL MAPA
+        const contActividad = document.querySelector('.control-actividad-mapa-container');
+        if (contActividad) {
+            contActividad.style.backgroundColor = 'transparent';
+            if (hayFiltroActividad) {
+                contActividad.classList.add('borde-rojo-externo');
+            } else {
+                contActividad.classList.remove('borde-rojo-externo');
+            }
+        }
         
         // Contenedor Orientación (Ahora transparente + borde rojo cuando esté activo)
         const contOrientacion = document.querySelector('.control-orientacion-container');
@@ -9758,7 +9847,7 @@ function inicializarMapaLeaflet() {
         }
 
         // 6. ACTUALIZAR PANEL GLOBAL (Borde rojo externo al estar retraído)
-        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio;
+        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos;
         const infoPanelPrincipal = document.getElementById('infoPanel');
         
         if (infoPanelPrincipal) {
@@ -9770,7 +9859,7 @@ function inicializarMapaLeaflet() {
         }
     }
 
-    // 🛑 Listener que asegura que se pueda cambiar el estilo del popup original que ofrece Leaflet. Esa función no reemplaza clases, añade una clase adicional a los elementos internos del popup que Leaflet genera dinámicamente (.leaflet-popup-content-wrapper y .leaflet-popup-tip). Leaflet crea esos nodos cada vez que se abre un popup, por eso no puedes modificarlos con CSS global antes: no existen hasta que el popup se muestra. El map.on('popupopen', …) intercepta ese momento y añade tu clase personalizada (por ejemplo, popup-despegues). Se puede añadir más clases. Objetivo: aplicar un estilo distinto solo a ciertos popups sin afectar al resto.
+    // Listener que asegura que se pueda cambiar el estilo del popup original que ofrece Leaflet. Esa función no reemplaza clases, añade una clase adicional a los elementos internos del popup que Leaflet genera dinámicamente (.leaflet-popup-content-wrapper y .leaflet-popup-tip). Leaflet crea esos nodos cada vez que se abre un popup, por eso no puedes modificarlos con CSS global antes: no existen hasta que el popup se muestra. El map.on('popupopen', …) intercepta ese momento y añade tu clase personalizada (por ejemplo, popup-despegues). Se puede añadir más clases. Objetivo: aplicar un estilo distinto solo a ciertos popups sin afectar al resto.
     map.on('popupopen', function (e) {
         
         const popupNode = e.popup._container;
@@ -10494,6 +10583,7 @@ function inicializarMapaLeaflet() {
                     const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
 
                     marker._esMasterMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'sí' || row.Master_meteo.trim().toLowerCase() === 'si'));
+                    marker._esSecundarioMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'no'));
 
                     // 1. Traducimos el nombre largo (noroeste -> northwest)
                     const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
@@ -11927,6 +12017,25 @@ function inicializarMapaLeaflet() {
 
     adjuntarListenersFiltros();
     actualizarEstadoVisualFiltros();
+
+    // INICIALIZAR LOS BOTONES FILTRO MAPA: FAVORITOS, SEGUIMIENTO, ACTIVIDAD
+    actualizarBotonFavoritosMapa();
+    actualizarBotonSeguimientoMapa();
+
+    // INICIALIZAR EL SLIDER DE ACTIVIDAD DEL MAPA
+    const sliderAct = document.getElementById('sliderActividad');
+    const txtAct = document.getElementById('valorActividadTexto');
+    if (sliderAct && txtAct) {
+        sliderAct.value = filtroActividadMapa;
+        txtAct.textContent = filtroActividadMapa;
+        
+        sliderAct.addEventListener('input', function() {
+            filtroActividadMapa = parseInt(this.value, 10);
+            txtAct.textContent = filtroActividadMapa;
+            actualizarFiltrosMapa();
+            actualizarEstadoVisualFiltros();
+        });
+    }
 
     function obtenerOrientacionesSeleccionadas() {
         // 1. Encontrar todos los checkboxes de orientación (los 8)
