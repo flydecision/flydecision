@@ -8850,7 +8850,7 @@ window.evaluarEstadoNuevosUsuarios = function() {
 // ---------------------------------------------------------------
 
 let filtroFavoritosMapa = 0;   // 0 = Todos, 1 = Solo Favoritos, 2 = Solo No Favoritos
-let filtroSeguimientoMapa = 0; // 0 = Todos, 1 = Solo Seguimiento, 2 = Solo No Seguimiento
+let filtroSeguimientoMapa = 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
 let filtroActividadMapa = 0;   // 0 = Nada (Todos), 1 a 5 = Actividad mínima
 
 // SVGs del Botón Favorito (Todos / Solo Favs / Excluir Favs)
@@ -8860,11 +8860,6 @@ const SVG_FAV_NO = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" 
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="#ff0000" opacity="0.3"></path>
     <line x1="3" y1="3" x2="21" y2="21" stroke="#ff0000" stroke-width="3" stroke-linecap="round"></line>
 </svg>`;
-
-// SVGs del Botón Seguimiento (Todos / Solo Ojos / Excluir Ojos)
-const SVG_SEG_TODOS = `<svg viewBox="0 4 24 16" width="22" height="22" preserveAspectRatio="xMidYMid meet"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="#555" stroke-width="2"/></svg>`;
-const SVG_SEG_SOLO = `<svg viewBox="0 4 24 16" width="22" height="22" preserveAspectRatio="xMidYMid meet"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/><circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/><circle cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/></svg>`;
-const SVG_SEG_NO = `<svg viewBox="0 4 24 16" width="22" height="22" preserveAspectRatio="xMidYMid meet"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="none" stroke="#16a34a" stroke-width="2"/><line x1="3" y1="4" x2="21" y2="20" stroke="#ff0000" stroke-width="2.5" stroke-linecap="round"></line></svg>`;
 
 window.ciclarFiltroFavoritosMapa = function() {
     filtroFavoritosMapa = (filtroFavoritosMapa + 1) % 3;
@@ -8891,8 +8886,9 @@ window.actualizarBotonFavoritosMapa = function() {
     }
 };
 
+// LÓGICA DE 2 ESTADOS (ACTIVO/DESACTIVO) PARA EL OJO DEL MAPA
 window.ciclarFiltroSeguimientoMapa = function() {
-    filtroSeguimientoMapa = (filtroSeguimientoMapa + 1) % 3;
+    filtroSeguimientoMapa = (filtroSeguimientoMapa + 1) % 2; // Ciclo binario (0 o 1)
     actualizarBotonSeguimientoMapa();
     actualizarFiltrosMapa();
     actualizarEstadoVisualFiltros();
@@ -8901,18 +8897,17 @@ window.ciclarFiltroSeguimientoMapa = function() {
 window.actualizarBotonSeguimientoMapa = function() {
     const btn = document.getElementById('btn-mapa-filtro-seguimiento');
     if (!btn) return;
-    if (filtroSeguimientoMapa === 0) {
-        btn.innerHTML = SVG_SEG_TODOS;
-        btn.style.borderColor = '#ccc';
-        btn.style.backgroundColor = '#fff';
-    } else if (filtroSeguimientoMapa === 1) {
-        btn.innerHTML = SVG_SEG_SOLO;
+    
+    const esActivo = (filtroSeguimientoMapa === 1);
+    
+    btn.innerHTML = svgOjoBoton(esActivo);
+    
+    if (esActivo) {
         btn.style.borderColor = '#16a34a';
         btn.style.backgroundColor = '#16a34a15';
     } else {
-        btn.innerHTML = SVG_SEG_NO;
-        btn.style.borderColor = '#16a34a';
-        btn.style.backgroundColor = '#16a34a15';
+        btn.style.borderColor = '#ccc';
+        btn.style.backgroundColor = '#fff';
     }
 };
 
@@ -9648,24 +9643,18 @@ function inicializarMapaLeaflet() {
             // ignoramos los filtros de puntuación y operatividad para ellos.
             if (!esDespegueMundo) {
 
-                // --- 0a. LÓGICA DE VISIBILIDAD METEO / MASTER METEO ---
-                if (filtrosMapaAbiertos && marker._esOperativo !== true) return false;
-                if (!filtrosMapaAbiertos && marker._esMasterMeteo) return false;
-
-                // --- 0b. FILTRO DE FAVORITOS (Corazón) ---
+                // --- 0b. NUEVO FILTRO DE FAVORITOS (Corazón) ---
                 const idMarcador = Number(marker.metadata.id);
                 const esFav = idMarcador ? obtenerFavoritos().map(Number).includes(idMarcador) : false;
                 
                 if (filtroFavoritosMapa === 1 && !esFav) return false; // Solo favoritos
                 if (filtroFavoritosMapa === 2 && esFav) return false;  // Solo NO favoritos
 
-                // --- 0c. FILTRO DE SEGUIMIENTO (Ojo) ---
+                // --- 0c. FILTRO DE SEGUIMIENTO
                 const esSeg = idMarcador ? obtenerSeguimientos().map(s => Number(s.id)).includes(idMarcador) : false;
-                
-                if (filtroSeguimientoMapa === 1 && !esSeg) return false; // Solo seguimiento
-                if (filtroSeguimientoMapa === 2 && esSeg) return false;  // Solo NO seguimiento
+                if (filtroSeguimientoMapa === 1 && !esSeg) return false; // Si está activo (1), oculta los que NO están seguidos
 
-                // --- 0d. FILTRO DE ACTIVIDAD MÍNIMA (1 a 5) ---
+                // --- 0d. NUEVO FILTRO DE ACTIVIDAD MÍNIMA (1 a 5) ---
                 const notaActividad = marker.metadata.actividad ? parseInt(marker.metadata.actividad, 10) : 0;
                 if (filtroActividadMapa > 0 && (isNaN(notaActividad) || notaActividad < filtroActividadMapa)) return false;
 
