@@ -657,24 +657,24 @@
                     
                     <!-- Fila 1: Filtro Ciclo Favoritos -->
                     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                        <span style="font-size: 0.85em; font-weight: bold; color: #333;">Fav:</span>
                         <button id="btn-mapa-filtro-favoritos" class="btn-info" style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; border-radius: 8px; background: #fff; border: 1.5px solid #ccc; box-shadow: 1px 1px 3px rgba(0,0,0,0.15);" onclick="ciclarFiltroFavoritosMapa()">
                             <!-- Se inyecta por JS -->
                         </button>
+                        <span style="font-size: 0.85em; font-weight: bold; color: #333;">Fav:</span>
                     </div>
 
                     <!-- Fila 2: Filtro Ciclo Seguimiento -->
                     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                        <span style="font-size: 0.85em; font-weight: bold; color: #333;">Seg:</span>
                         <button id="btn-mapa-filtro-seguimiento" class="btn-info" style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; border-radius: 8px; background: #fff; border: 1.5px solid #ccc; box-shadow: 1px 1px 3px rgba(0,0,0,0.15);" onclick="ciclarFiltroSeguimientoMapa()">
                             <!-- Se inyecta por JS -->
                         </button>
+                        <span style="font-size: 0.85em; font-weight: bold; color: #333;">Seg:</span>
                     </div>
 
                     <!-- Fila 3: Slider de Actividad mínima -->
                     <div style="width: 100%; text-align: left; margin-top: 3px;">
                         <label for="sliderActividad" style="font-weight: bold; font-size: 0.75em; display: block; margin-bottom: 2px; white-space: nowrap; color: #333;">
-                            Actividad >= <span id="valorActividadTexto" style="color: #007aff; font-weight: 800;">Nada</span>
+                            Actividad >= <span id="valorActividadTexto" style="color: #007aff; font-weight: 800;">1</span>
                         </label>
                         <input type="range" id="sliderActividad" min="0" max="5" value="0" step="1" style="width: 100%; height: 10px; margin: 0; cursor: pointer;">
                     </div>
@@ -734,13 +734,13 @@
 				<label for="sliderVuelos" style="font-weight: bold; line-height: 1.2;" data-i18n="mapa.minVuelosTexto">
 					Nº vuelos registrados >= </label><span id="valorVuelosTexto">0</span>
 				<br>
-				<input type="range" id="sliderVuelos" min="0" max="9" value="0" step="1" style="width: 98%; margin-top: 10px;">
+				<input type="range" id="sliderVuelos" min="0" max="9" value="0" step="1" style="width: 98%;">
 			</div>
 			
 			<div class="control-ultimovuelo-container" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
 				<label for="sliderUltimoVuelo" style="font-weight: bold; line-height: 1.2;" data-i18n="mapa.anioUltimoVueloTexto">
 					Año del último vuelo >= </label><span id="valorUltimoVueloTexto" data-i18n="mapa.todos">Todos</span>
-				<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 98%; margin-top: 10px;">
+				<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 98%;">
 			</div>
 				
 		</div>
