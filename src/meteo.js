@@ -9533,6 +9533,7 @@ function inicializarMapaLeaflet() {
 
                 // --- 0b. OCULTAR NO-OPERATIVOS SI EL FILTRO ESTÁ ACTIVO ---
                 if (filtrosMapaAbiertos && marker._esOperativo !== true) return false;
+                if (!filtrosMapaAbiertos && marker._esMasterMeteo) return false; // ← oculta el clon Master meteo (sí) cuando filtro OFF
             }
 
             // --- 1. VALIDACIÓN DE VUELOS ---
@@ -10433,6 +10434,8 @@ function inicializarMapaLeaflet() {
         // Creamos el icono usando el nombre "Despegue" (que ahora es el agrupado de la tabla si hubo match)
         const icon = createIconDespegue(despegue, actividad, orientaciones, null, actividadScore);
         const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
+
+        marker._esMasterMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'sí' || row.Master_meteo.trim().toLowerCase() === 'si'));
 
         // 1. Traducimos el nombre largo (noroeste -> northwest)
         const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
