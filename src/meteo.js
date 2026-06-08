@@ -4598,7 +4598,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
                 ⛅ <a href='https://meteo-parapente.com/#/${latitud},${longitud},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
                 ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
-                ⛅ <a href='https://meteo-fly.com/?lat=${latitud}&lon=${longitud}&day=1&model=meteofrance_seamless&maxAlt=3000&cellSelection=nearest&view=wind&hour=0' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a>
+                ⛅ <a href='https://meteo-fly.com/?lat=${latitud}&lon=${longitud}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a>
             `;
 
             // 3. Escapamos todas las comillas dobles para que no rompan el atributo data-tippy-content
@@ -8812,6 +8812,11 @@ window.toggleFiltrosMapa = function() {
     const divFH      = document.getElementById('div-filtro-horario');
     if (!divFH) return;
 
+    // Cierra inmediatamente cualquier popup abierto en el mapa (el objetivo es que al abrirlo manualmente se regeneren los datos correctos de orientación...)
+    if (typeof map !== 'undefined' && map) {
+        map.closePopup();
+    }
+
     const visible = divFH.classList.contains('flotando-en-mapa');
 
     if (visible) { // Cerrarlo
@@ -9533,6 +9538,7 @@ function inicializarMapaLeaflet() {
 
                 // --- 0b. OCULTAR NO-OPERATIVOS SI EL FILTRO ESTÁ ACTIVO ---
                 if (filtrosMapaAbiertos && marker._esOperativo !== true) return false;
+                if (!filtrosMapaAbiertos && marker._esMasterMeteo) return false; // ← oculta el clon Master meteo (sí) cuando filtro OFF
             }
 
             // --- 1. VALIDACIÓN DE VUELOS ---
@@ -10373,7 +10379,7 @@ function inicializarMapaLeaflet() {
             );
 
             if (matchTabla) {
-                despegue = matchTabla.Despegue;
+                //despegue = matchTabla.Despegue;
                 idDespegue = matchTabla.ID;
                 actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla
 
@@ -10386,7 +10392,7 @@ function inicializarMapaLeaflet() {
                 <div style="display: flex; align-items: stretch; gap: 8px; margin-top: 8px; margin-bottom: 8px;">
                     
                     <!-- Contenedor para alinear los iconos (Corazón y Ojo) a la izquierda -->
-                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                    <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
                         <!-- Botón Favorito -->
                         <button class="btn-info btn-favorito-tabla"
                             style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
@@ -10434,6 +10440,8 @@ function inicializarMapaLeaflet() {
         const icon = createIconDespegue(despegue, actividad, orientaciones, null, actividadScore);
         const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
 
+        marker._esMasterMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'sí' || row.Master_meteo.trim().toLowerCase() === 'si'));
+
         // 1. Traducimos el nombre largo (noroeste -> northwest)
         const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
         const codigosOriTraducidos = traducirCadenaOrientacion(row.Orientaciones);
@@ -10448,7 +10456,7 @@ function inicializarMapaLeaflet() {
                 <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                 <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
                 <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
-                <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=3000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
+                <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
                 
                 <div class="popup-toggle-header" 
                     style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
@@ -10651,7 +10659,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=3000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
+                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
@@ -10852,7 +10860,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=3000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
+                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
@@ -11061,7 +11069,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=3000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
+                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
@@ -11435,7 +11443,7 @@ function inicializarMapaLeaflet() {
                     <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
-                    <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=3000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
+                    <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
                     
                     <div class="popup-toggle-header" 
                         style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
