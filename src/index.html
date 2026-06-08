@@ -650,92 +650,60 @@
 				</label>
 			</div>
 			
-            <!-- Filtros favoritos, seguimiento y actividad -->
-            <div id="control-rapidos-container" style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; flex-shrink:0; box-sizing:border-box; transition:all 0.2s; padding-top:10px; padding-bottom:10px;"">
-                
-                <!-- Fila 1: Botón Favoritos -->
-                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
-                    <button id="btn-mapa-filtro-favoritos" class="btn-info" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; border-radius: 8px; background: #fff; border: 1.5px solid #ccc; box-shadow: 1px 1px 3px rgba(0,0,0,0.15);" onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosMapa()">
-                        <!-- SVG -->
-                    </button>
-                    <span style="font-weight: bold; color: #333; white-space: nowrap;" data-i18n="mapa.Favoritos">Favoritos</span>
-                </div>
-
-                <!-- Fila 2: Botón Seguimiento -->
-                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
-                    <button id="btn-mapa-filtro-seguimiento" class="btn-info" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; border-radius: 8px; background: #fff; border: 1.5px solid #ccc; box-shadow: 1px 1px 3px rgba(0,0,0,0.15);" onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoMapa()">
-                        <!-- SVG -->
-                    </button>
-                    <span style="font-weight: bold; color: #333; white-space: nowrap;" data-i18n="mapa.Seguimiento">Seguimiento</span>
-                </div>
-
-                <!-- Fila 3: Slider Actividad (1 a 5) -->
-                <div style="width: 100%; text-align: left; margin-top: 3px;">
-                    <label for="sliderActividad" style="font-weight: bold; margin-bottom: 2px;" data-i18n="mapa.Actividad">
-                        Actividad >= </label><span id="valorActividadTexto">1</span>
-                    <input type="range" id="sliderActividad" min="1" max="5" value="1" step="1" style="width: 98%;">
-                </div>
-
-            </div>
-
-            <!-- Rosa de los vientos original (Con borde rojo aislado) -->
-            <div class="control-orientacion-container" style="flex: 1; margin: 0 !important; padding: 4px !important; border-radius: 8px; border: 1.5px solid transparent; box-sizing: border-box; transition: all 0.2s;">
-                <div style="font-weight: bold; margin-bottom: 5px; text-align: center; width: 100%;" data-i18n="mapa.orientacion">
-                    Orientación:
-                </div>
-                <div id="rosaDeLosVientos">
-                    <label class="filtro-orientacion" data-orientacion="NO" data-i18n="[title]orientaciones.noroeste"> 
-                        <input type="checkbox" class="filtro-orientacion-checkbox" value="NO"> 
-                        <span data-i18n="orientaciones.NO">NO</span> 
-                    </label>
-                    <label class="filtro-orientacion" data-orientacion="N" data-i18n="[title]orientaciones.norte"> 
-                        <input type="checkbox" class="filtro-orientacion-checkbox" value="N"> 
-                        <span data-i18n="orientaciones.N">N</span> 
-                    </label>
-                    <label class="filtro-orientacion" data-orientacion="NE" data-i18n="[title]orientaciones.noreste"> 
-                        <input type="checkbox" class="filtro-orientacion-checkbox" value="NE"> 
-                        <span data-i18n="orientaciones.NE">NE</span> 
-                    </label>
-                    <label class="filtro-orientacion" data-orientacion="O" data-i18n="[title]orientaciones.oeste"> 
-                        <input type="checkbox" class="filtro-orientacion-checkbox" value="O"> 
-                        <span data-i18n="orientaciones.O">O</span> 
-                    </label>
-                    
-                    <!-- Centro de la rosa (Reset) -->
-                    <label class="centro-rosa filtro-maestro" data-i18n="[title]orientaciones.todos_title">
-                        <input type="checkbox" id="filtroMaestroOrientacion" class="filtro-orientacion-checkbox" value="TODOS">
-                    </label>	
-                    
-                    <label class="filtro-orientacion" data-orientacion="E" data-i18n="[title]orientaciones.este"> 
-                        <input type="checkbox" class="filtro-orientacion-checkbox" value="E"> 
-                        <span data-i18n="orientaciones.E">E</span> 
-                    </label>
-                    <label class="filtro-orientacion" data-orientacion="SO" data-i18n="[title]orientaciones.suroeste"> 
-                        <input type="checkbox" class="filtro-orientacion-checkbox" value="SO"> 
-                        <span data-i18n="orientaciones.SO">SO</span> 
-                    </label>
-                    <label class="filtro-orientacion" data-orientacion="S" data-i18n="[title]orientaciones.sur"> 
-                        <input type="checkbox" class="filtro-orientacion-checkbox" value="S"> 
-                        <span data-i18n="orientaciones.S">S</span> 
-                    </label>
-                    <label class="filtro-orientacion" data-orientacion="SE" data-i18n="[title]orientaciones.sureste"> 
-                        <input type="checkbox" class="filtro-orientacion-checkbox" value="SE"> 
-                        <span data-i18n="orientaciones.SE">SE</span> 
-                    </label>
-                </div>
-            </div>
-
-			<div class="control-vuelos-container" style="margin-bottom: 9px;" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
-				<label for="sliderVuelos" style="font-weight: bold; line-height: 1.2;" data-i18n="mapa.minVuelosTexto">
-					Nº vuelos registrados >= </label><span id="valorVuelosTexto">0</span>
-				<br>
-				<input type="range" id="sliderVuelos" min="0" max="9" value="0" step="1" style="width: 98%;">
+			<!-- Filtro Favoritos -->
+			<div id="control-favoritos-mapa-container" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-top: 7px; margin-bottom: 1px; padding-left: 5px;">
+				<button id="btn-mapa-filtro-favoritos" class="btn-info"
+					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
+					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosMapa()">
+					<!-- SVG -->
+				</button>
+				<span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.Favoritos">Favoritos</span>
 			</div>
-			
+
+			<!-- Filtro Seguimiento -->
+			<div id="control-seguimiento-mapa-container" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 5px; padding-left: 5px;">
+				<button id="btn-mapa-filtro-seguimiento" class="btn-info"
+					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
+					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoMapa()">
+					<!-- SVG -->
+				</button>
+				<span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.Seguimiento">Seguimiento</span>
+			</div>
+
+			<!-- Filtro Actividad -->
+			<div class="control-actividad-mapa-container" title="Mostrar solo los despegues con el nivel de Actividad seleccionado">
+				<label for="sliderActividad" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.Actividad">Actividad >= </label><span id="valorActividadTexto">1</span>
+				<br>
+				<input type="range" id="sliderActividad" min="1" max="5" value="1" step="1" style="width:98%;">
+			</div>
+
+			<!-- Rosa de los vientos (Con borde rojo aislado) -->
+			<div class="control-orientacion-container" style="flex:1; padding:4px !important; border-radius:8px; border:1.5px solid transparent; box-sizing:border-box; transition:all 0.2s;">
+				<div style="font-weight:bold; margin-bottom:5px; text-align:center; width:100%;" data-i18n="mapa.orientacion">Orientación:</div>
+				<div id="rosaDeLosVientos">
+					<label class="filtro-orientacion" data-orientacion="NO" data-i18n="[title]orientaciones.noroeste"><input type="checkbox" class="filtro-orientacion-checkbox" value="NO"><span data-i18n="orientaciones.NO">NO</span></label>
+					<label class="filtro-orientacion" data-orientacion="N"  data-i18n="[title]orientaciones.norte">  <input type="checkbox" class="filtro-orientacion-checkbox" value="N"> <span data-i18n="orientaciones.N">N</span></label>
+					<label class="filtro-orientacion" data-orientacion="NE" data-i18n="[title]orientaciones.noreste"><input type="checkbox" class="filtro-orientacion-checkbox" value="NE"><span data-i18n="orientaciones.NE">NE</span></label>
+					<label class="filtro-orientacion" data-orientacion="O"  data-i18n="[title]orientaciones.oeste">  <input type="checkbox" class="filtro-orientacion-checkbox" value="O"> <span data-i18n="orientaciones.O">O</span></label>
+					<label class="centro-rosa filtro-maestro" data-i18n="[title]orientaciones.todos_title">
+						<input type="checkbox" id="filtroMaestroOrientacion" class="filtro-orientacion-checkbox" value="TODOS">
+					</label>
+					<label class="filtro-orientacion" data-orientacion="E"  data-i18n="[title]orientaciones.este">    <input type="checkbox" class="filtro-orientacion-checkbox" value="E"> <span data-i18n="orientaciones.E">E</span></label>
+					<label class="filtro-orientacion" data-orientacion="SO" data-i18n="[title]orientaciones.suroeste"><input type="checkbox" class="filtro-orientacion-checkbox" value="SO"><span data-i18n="orientaciones.SO">SO</span></label>
+					<label class="filtro-orientacion" data-orientacion="S"  data-i18n="[title]orientaciones.sur">    <input type="checkbox" class="filtro-orientacion-checkbox" value="S"> <span data-i18n="orientaciones.S">S</span></label>
+					<label class="filtro-orientacion" data-orientacion="SE" data-i18n="[title]orientaciones.sureste"> <input type="checkbox" class="filtro-orientacion-checkbox" value="SE"><span data-i18n="orientaciones.SE">SE</span></label>
+				</div>
+			</div>
+
+			<div class="control-vuelos-container" style="margin-bottom:9px;" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
+				<label for="sliderVuelos" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.minVuelosTexto">Nº vuelos registrados >= </label><span id="valorVuelosTexto">0</span>
+				<br>
+				<input type="range" id="sliderVuelos" min="0" max="9" value="0" step="1" style="width:98%;">
+			</div>
+
 			<div class="control-ultimovuelo-container" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
-				<label for="sliderUltimoVuelo" style="font-weight: bold; line-height: 1.2;" data-i18n="mapa.anioUltimoVueloTexto">
-					Año del último vuelo >= </label><span id="valorUltimoVueloTexto" data-i18n="mapa.todos">Todos</span>
-				<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width: 98%;">
+				<label for="sliderUltimoVuelo" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.anioUltimoVueloTexto">Año del último vuelo >= </label><span id="valorUltimoVueloTexto" data-i18n="mapa.todos">Todos</span>
+				<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width:98%;">
 			</div>
 				
 		</div>

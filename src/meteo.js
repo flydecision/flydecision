@@ -9752,6 +9752,12 @@ function inicializarMapaLeaflet() {
     function actualizarEstadoVisualFiltros() {
 
         // 1. COMPROBAR ESTADO DE LOS FILTROS EN EL MAPA
+
+        // Actividad: Comprueba si el valor es mayor que 0
+        const sliderActividad = document.getElementById('sliderActividad');
+        const indiceActividad = sliderActividad ? parseInt(sliderActividad.value, 10) : 1;
+        const hayFiltroActividad = indiceActividad > 1; 
+
         // Orientación: Comprueba si hay al menos uno marcado
         const hayFiltroOrientacion = obtenerOrientacionesSeleccionadas().length > 0;
         
@@ -9776,6 +9782,15 @@ function inicializarMapaLeaflet() {
         const INACTIVO_COLOR = '#ffffff';
 
         // 4. ACTUALIZAR CONTENEDORES INDIVIDUALES DEL MAPA
+        const contActividad = document.querySelector('.control-actividad-mapa-container');
+        if (contActividad) {
+            contActividad.style.backgroundColor = 'transparent';
+            if (hayFiltroActividad) {
+                contActividad.classList.add('borde-rojo-externo');
+            } else {
+                contActividad.classList.remove('borde-rojo-externo');
+            }
+        }
         
         // Contenedor Orientación (Ahora transparente + borde rojo cuando esté activo)
         const contOrientacion = document.querySelector('.control-orientacion-container');
@@ -9785,15 +9800,6 @@ function inicializarMapaLeaflet() {
                 contOrientacion.classList.add('borde-rojo-externo');
             } else {
                 contOrientacion.classList.remove('borde-rojo-externo');
-            }
-        }
-
-        const contRapidos = document.getElementById('control-rapidos-container');
-        if (contRapidos) {
-            if (hayFiltroRapidos) {
-                contRapidos.classList.add('borde-rojo-externo');
-            } else {
-                contRapidos.classList.remove('borde-rojo-externo');
             }
         }
 
@@ -10577,6 +10583,7 @@ function inicializarMapaLeaflet() {
                     const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
 
                     marker._esMasterMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'sí' || row.Master_meteo.trim().toLowerCase() === 'si'));
+                    marker._esSecundarioMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'no'));
 
                     // 1. Traducimos el nombre largo (noroeste -> northwest)
                     const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
