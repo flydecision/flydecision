@@ -140,6 +140,42 @@ const _ojoVerde = `<svg viewBox="0 4 24 16" width="26" height="26" preserveAspec
     <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
 </svg>`;
 
+// SVG del ojo en estado desactivado: outline negro, 2px, sin relleno (coherente con el resto de SVGs)
+const ojo_seguimiento_desactivado = `<svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
+    <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="none" stroke="#222" stroke-width="2"/>
+    <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2" fill="#222" stroke="none"/>
+</svg>`;
+
+// Devuelve el SVG del ojo correcto para usar en template literals
+function svgOjoBoton(esActivo) {
+    if (esActivo) {
+        return `<svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
+    <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/>
+    <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="#16a34a" stroke="none"/>
+    <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
+</svg>`;
+    }
+    return ojo_seguimiento_desactivado;
+}
+
+// Actualiza visualmente el botón ojo (maneja fill Y stroke según estado)
+function actualizarVistaOjo(btn, esActivo) {
+    if (!btn) return;
+    const ext    = btn.querySelector('.ojo-exterior');
+    const iris   = btn.querySelector('.ojo-iris');
+    const pupila = btn.querySelector('.ojo-pupila');
+    if (esActivo) {
+        if (ext)    { ext.setAttribute('fill', '#16a34a');  ext.setAttribute('stroke', 'none'); }
+        if (iris)   { iris.setAttribute('fill', '#16a34a'); iris.setAttribute('stroke', 'none'); }
+        if (pupila) { pupila.setAttribute('fill', '#16a34a'); pupila.setAttribute('stroke', 'none'); }
+    } else {
+        if (ext)    { ext.setAttribute('fill', 'none');  ext.setAttribute('stroke', '#222'); ext.setAttribute('stroke-width', '2'); ext.setAttribute('stroke-linecap', 'round'); }
+        if (iris)   { iris.setAttribute('fill', 'none'); iris.setAttribute('stroke', '#222'); iris.setAttribute('stroke-width', '2'); }
+        if (pupila) { pupila.setAttribute('fill', '#222'); pupila.setAttribute('stroke', 'none'); }
+    }
+}
+
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
 // Asegúrate de que Capacitor está disponible
 // if (window.Capacitor && window.Capacitor.Plugins.StatusBar) {
@@ -1642,8 +1678,7 @@ function actualizarContenidoPopupGuardado(id, esFavorito, esSeguimiento) {
         const btnSeg = tempDiv.querySelector('.btn-ojo-tabla');
         if (btnSeg) {
             btnSeg.title = esSeguimiento ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
-            const colorSeg = esSeguimiento ? '#16a34a' : '#959595';
-            btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
+            actualizarVistaOjo(btnSeg, esSeguimiento);
         }
     }
 
@@ -2019,14 +2054,12 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
         Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
     }
 
-    const color = esNuevo ? '#16a34a' : '#959595';
-
     // 🛑 NUEVO: Sincronizar la plantilla estática interna de Leaflet inmediatamente
     actualizarContenidoPopupGuardado(id, undefined, esNuevo);
 
     // 1. Actualizar el botón presionado directamente
     if (btnElement) {
-        btnElement.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
+        actualizarVistaOjo(btnElement, esNuevo);
         btnElement.title = esNuevo ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
     }
 
@@ -2037,7 +2070,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
         if (onclickAttr.includes(`toggleSeguimientoDesdeTabla(${id},`) || 
             onclickAttr.includes(`toggleSeguimientoDesdeTabla('${id}',`)) {
             if (btn !== btnElement) {
-                btn.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', color));
+                actualizarVistaOjo(btn, esNuevo);
                 btn.title = esNuevo ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
             }
         }
@@ -4655,17 +4688,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             `;
 
             const esSeguimiento = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(d.ID));
-            const _oc = esSeguimiento ? '#16a34a' : '#959595';
             const botonOjoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-ojo-tabla"
                     style="position: absolute; bottom: 2px; left: 56px;"
                     onclick="toggleSeguimientoDesdeTabla(${d.ID}, this); return false;"
                     title="${t('seguimiento.activar_desactivar')}">
-                    <svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
-                        <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_oc}" stroke="none"/>
-                        <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="${_oc}" stroke="none"/>
-                        <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="${_oc}" stroke="none"/>
-                    </svg>
+                    ${svgOjoBoton(esSeguimiento)}
                 </button>
             `;
 
@@ -10401,7 +10429,6 @@ function inicializarMapaLeaflet() {
 
                             const esFavoritoPopup  = obtenerFavoritos().map(Number).includes(Number(idDespegue));
                             const esSeguimientoPopup = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
-                            const _ocPopup = esSeguimientoPopup ? '#16a34a' : '#959595';
 
                             // Agrupamos TODOS los botones en un solo contenedor Flexbox
                             botonesAccionPopupHTML = `
@@ -10428,11 +10455,7 @@ function inicializarMapaLeaflet() {
                                         style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
                                         onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleSeguimientoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
                                         title="${esSeguimientoPopup ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar')}">
-                                        <svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
-                                            <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_ocPopup}" stroke="none"/>
-                                            <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="${_ocPopup}" stroke="none"/>
-                                            <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="${_ocPopup}" stroke="none"/>
-                                        </svg>
+                                        ${svgOjoBoton(esSeguimientoPopup)}
                                     </button>
                                 </div>
 
@@ -10532,8 +10555,7 @@ function inicializarMapaLeaflet() {
                         if (btnSeg) {
                             const esSeg = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
                             btnSeg.title = esSeg ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
-                            const colorSeg = esSeg ? '#16a34a' : '#959595';
-                            btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
+                            actualizarVistaOjo(btnSeg, esSeg);
                         }
                     });
 
