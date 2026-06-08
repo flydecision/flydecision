@@ -10307,30 +10307,34 @@ function inicializarMapaLeaflet() {
     }
 
     // crea icono compuesto (dot + etiqueta) usando L.divIcon
-    window.createIconDespegue = function(despegue, actividad, orientacionesMetadata, bgColor, actividadScore) {
+    window.createIconDespegue = function(despegue, actividadColor, orientacionesMetadata, bgColor, actividadScore) {
         const orientacionHTML = createOrientationSVG(orientacionesMetadata);
-        const color = actividadToColor(actividad);
         
-        //const mostrarDot = (typeof filtrosMapaAbiertos !== 'undefined') ? !filtrosMapaAbiertos : true; // oculta el icono de nivel de actividad si está activo el filtro Meteo en mapa
-        const mostrarDot = true;
+        // Unificamos: Cogemos la puntuación venga del parámetro nuevo o del antiguo
+        const valorActividad = actividadScore || actividadColor || '';
         
         let elementoActividad = '';
-        if (mostrarDot) {
-            // Si hay nota de actividad de la tabla, pintamos las barritas. Si no, el dot de color tradicional
-            elementoActividad = actividadScore 
-                ? crearIconoActividad(actividadScore) 
-                : `<span class="dot" style="background:${color}"></span>`;
+        
+        if (valorActividad !== '') {
+            // Si el valor es un número (ej: "4", "5"), pintamos las barritas grises
+            if (!isNaN(valorActividad) && Number(valorActividad) > 0) {
+                elementoActividad = crearIconoActividad(valorActividad);
+            } 
+            // Fallback de seguridad: si alguna vez lee "verde", "rojo", pintamos el círculo
+            else {
+                const color = actividadToColor(valorActividad);
+                elementoActividad = `<span class="dot" style="background:${color}"></span>`;
+            }
         }
         
         const bgStyle = bgColor ? ` style="background-color:${bgColor}"` : '';
         
-        // Envolvemos el escapeHtml(despegue) en un span con clase "nombre-despegue-label"
         const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}${elementoActividad}<span class="nombre-despegue-label">${escapeHtml(despegue)}</span></span>`;
 
         return L.divIcon({
             html: labelHTML,
             className: 'custom-div-icon',
-            iconAnchor: [0, 40] // ajusta según dimensiones reales
+            iconAnchor: [0, 40] 
         });
     };
 
@@ -10359,9 +10363,7 @@ function inicializarMapaLeaflet() {
         const orientacion = row.Orientación || '';
         const orientaciones = row.Orientaciones || '';
         const OrientacionesGrados = row.Orientaciones_Grados || '';
-        const actividad = row.Actividad || '';
-        const color = actividadToColor(row.Actividad);
-        const dot = `<span class="dot" style="background:${color}"></span>`;
+        let actividadScore = row.Actividad || ''; 
 
         const kmmax = row.Km_máx || '';
         const vuelos = row.Vuelos || '';
@@ -10369,8 +10371,7 @@ function inicializarMapaLeaflet() {
         const info = row.Más_información || '';
 
         let idDespegue = row.ID || '';
-        let botonesAccionPopupHTML = ''; 
-        let actividadScore = null; 
+        let botonesAccionPopupHTML = '';
 
         if (window.bdGlobalDespegues) {
             const matchTabla = window.bdGlobalDespegues.find(d =>
@@ -10431,13 +10432,14 @@ function inicializarMapaLeaflet() {
             }
         }
 
-        // Si tenemos nota numérica, creamos las barritas; si no, usamos el punto de color
+        // 2. Dibujamos las barritas siempre que haya número (tenga meteo o no)
         const htmlActividadPopup = actividadScore 
             ? crearIconoActividad(actividadScore) 
-            : dot;
+            : ''; // Si está vacío, no pintamos nada
 
-        // Creamos el icono usando el nombre "Despegue" (que ahora es el agrupado de la tabla si hubo match)
-        const icon = createIconDespegue(despegue, actividad, orientaciones, null, actividadScore);
+        // Pasamos la 'actividadScore' a la función del mapa para que también pinte las barras en la etiqueta. 
+        // Dejamos en blanco el segundo parámetro (que era el antiguo de los colores).
+        const icon = createIconDespegue(despegue, '', orientaciones, null, actividadScore);
         const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
 
         marker._esMasterMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'sí' || row.Master_meteo.trim().toLowerCase() === 'si'));
@@ -10520,7 +10522,7 @@ function inicializarMapaLeaflet() {
             }
         });
 
-        marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividad, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
+        marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividadScore, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
         markersDespegues.push(marker); //inserta marker al grupo markersDespegues
         clustergroupDespegues.addLayer(marker);
     });
