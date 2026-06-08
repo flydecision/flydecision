@@ -10379,7 +10379,7 @@ function inicializarMapaLeaflet() {
             );
 
             if (matchTabla) {
-                despegue = matchTabla.Despegue;
+                //despegue = matchTabla.Despegue;
                 idDespegue = matchTabla.ID;
                 actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla
 
