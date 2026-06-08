@@ -138,42 +138,30 @@ const _ojoVerde = `<svg viewBox="0 4 24 16" width="26" height="26" preserveAspec
     <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/>
     <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="#16a34a" stroke="none"/>
     <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
-</svg>`;
+    </svg>`;
 
-// SVG del ojo en estado desactivado: outline negro, 2px, sin relleno (coherente con el resto de SVGs)
+// SVG del ojo en estado desactivado: outline exterior 2px + un único círculo gris (iris+pupila unidos)
 const ojo_seguimiento_desactivado = `<svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
     <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="none" stroke="#222" stroke-width="2"/>
-    <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2" fill="#222" stroke="none"/>
-</svg>`;
+    <circle class="ojo-color ojo-iris" cx="12" cy="12" r="3.5" fill="#888" stroke="none"/>
+    </svg>`;
 
 // Devuelve el SVG del ojo correcto para usar en template literals
 function svgOjoBoton(esActivo) {
     if (esActivo) {
         return `<svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
-    <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/>
-    <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="#16a34a" stroke="none"/>
-    <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
-</svg>`;
+        <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/>
+        <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="#16a34a" stroke="none"/>
+        <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/>
+        </svg>`;
     }
     return ojo_seguimiento_desactivado;
 }
 
-// Actualiza visualmente el botón ojo (maneja fill Y stroke según estado)
+// Actualiza visualmente el botón ojo reemplazando el SVG completo (evita desajustes de r entre estados)
 function actualizarVistaOjo(btn, esActivo) {
     if (!btn) return;
-    const ext    = btn.querySelector('.ojo-exterior');
-    const iris   = btn.querySelector('.ojo-iris');
-    const pupila = btn.querySelector('.ojo-pupila');
-    if (esActivo) {
-        if (ext)    { ext.setAttribute('fill', '#16a34a');  ext.setAttribute('stroke', 'none'); }
-        if (iris)   { iris.setAttribute('fill', '#16a34a'); iris.setAttribute('stroke', 'none'); }
-        if (pupila) { pupila.setAttribute('fill', '#16a34a'); pupila.setAttribute('stroke', 'none'); }
-    } else {
-        if (ext)    { ext.setAttribute('fill', 'none');  ext.setAttribute('stroke', '#222'); ext.setAttribute('stroke-width', '2'); ext.setAttribute('stroke-linecap', 'round'); }
-        if (iris)   { iris.setAttribute('fill', 'none'); iris.setAttribute('stroke', '#222'); iris.setAttribute('stroke-width', '2'); }
-        if (pupila) { pupila.setAttribute('fill', '#222'); pupila.setAttribute('stroke', 'none'); }
-    }
+    btn.innerHTML = svgOjoBoton(esActivo);
 }
 
 // 🔴 PROBLEMA MONTAJE BOTONES EN EL ÁREA DE NOTIFICACIONES ANDROID
