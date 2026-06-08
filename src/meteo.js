@@ -3553,6 +3553,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // Guardamos todos los despegues en la variable global para el buscador
 		window.bdGlobalDespegues = data.despegues;
 
+        // Si el usuario abrió el mapa súper rápido antes de que terminara la red,
+        // cargamos los marcadores ahora que el JSON ya está listo en memoria.
+        if (typeof window.cargarMarcadoresCSV === 'function') {
+            window.cargarMarcadoresCSV();
+        }
+
         // 🗺️ Guardar datos para puntuación en mapa
         window.respuestasGlobalMapa = data.respuestas;
         window.respuestasEcmwfGlobalMapa = dataEcmwf.respuestas;
@@ -10344,254 +10350,267 @@ function inicializarMapaLeaflet() {
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    Papa.parse('map/despegues.csv', {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    delimiter: ';',
-    encoding: 'utf8',
-    complete: function(results) {
-    results.data.forEach(row => {
-        
-        const lat = parseFloat(row.Latitud);
-        const lon = parseFloat(row.Longitud);
-        const altitud = row.Altitud || '';	
-        const region = row.Región || ''; 
-        const provincia = row.Provincia || '';
-        let despegue = row.Despegue || ''; 
-        const SVGorientaciones = createOrientationSVG(row.Orientaciones);
-        const orientacion = row.Orientación || '';
-        const orientaciones = row.Orientaciones || '';
-        const OrientacionesGrados = row.Orientaciones_Grados || '';
-        let actividadScore = row.Actividad || ''; 
+    window.marcadoresCSVCargados = false;
 
-        const kmmax = row.Km_máx || '';
-        const vuelos = row.Vuelos || '';
-        const ultimovuelo = row.Último_vuelo || '';
-        const info = row.Más_información || '';
+    window.cargarMarcadoresCSV = function() {
+        // Si ya los hemos cargado, o si el JSON de la meteo aún no está listo, no hacemos nada
+        if (window.marcadoresCSVCargados) return;
+        if (!window.bdGlobalDespegues || window.bdGlobalDespegues.length === 0) return;
 
-        let idDespegue = row.ID || '';
-        let botonesAccionPopupHTML = '';
+        window.marcadoresCSVCargados = true;
 
-        if (window.bdGlobalDespegues) {
-            const matchTabla = window.bdGlobalDespegues.find(d =>
-                parseFloat(d.Latitud).toFixed(4) === lat.toFixed(4) &&
-                parseFloat(d.Longitud).toFixed(4) === lon.toFixed(4)
-            );
-
-            if (matchTabla) {
-                //despegue = matchTabla.Despegue;
-                idDespegue = matchTabla.ID;
-                actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla
-
-                const esFavoritoPopup  = obtenerFavoritos().map(Number).includes(Number(idDespegue));
-                const esSeguimientoPopup = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
-                const _ocPopup = esSeguimientoPopup ? '#16a34a' : '#959595';
-
-                // Agrupamos TODOS los botones en un solo contenedor Flexbox
-                botonesAccionPopupHTML = `
-                <div style="display: flex; align-items: stretch; gap: 8px; margin-top: 8px; margin-bottom: 8px;">
+        Papa.parse('map/despegues.csv', {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            delimiter: ';',
+            encoding: 'utf8',
+            complete: function(results) {
+                results.data.forEach(row => {
                     
-                    <!-- Contenedor para alinear los iconos (Corazón y Ojo) a la izquierda -->
-                    <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
-                        <!-- Botón Favorito -->
-                        <button class="btn-info btn-favorito-tabla"
-                            style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
-                            onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleFavoritoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
-                            title="${esFavoritoPopup ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
-                            <svg viewBox="0 0 24 24" width="20" height="20"
-                                fill="${esFavoritoPopup ? '#e00' : 'none'}"
-                                stroke="${esFavoritoPopup ? '#e00' : '#555'}"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                style="vertical-align: middle;">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                            </svg>
-                        </button>
+                    const lat = parseFloat(row.Latitud);
+                    const lon = parseFloat(row.Longitud);
+                    const altitud = row.Altitud || '';	
+                    const region = row.Región || ''; 
+                    const provincia = row.Provincia || '';
+                    let despegue = row.Despegue || ''; 
+                    const SVGorientaciones = createOrientationSVG(row.Orientaciones);
+                    const orientacion = row.Orientación || '';
+                    const orientaciones = row.Orientaciones || '';
+                    const OrientacionesGrados = row.Orientaciones_Grados || '';
+                    let actividadScore = row.Actividad || ''; 
 
-                        <!-- Botón Seguimiento (Ojo) -->
-                        <button class="btn-info btn-ojo-tabla"
-                            style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
-                            onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleSeguimientoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
-                            title="${esSeguimientoPopup ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar')}">
-                            <svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
-                                <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_ocPopup}" stroke="none"/>
-                                <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="${_ocPopup}" stroke="none"/>
-                                <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="${_ocPopup}" stroke="none"/>
-                            </svg>
-                        </button>
-                    </div>
+                    const kmmax = row.Km_máx || '';
+                    const vuelos = row.Vuelos || '';
+                    const ultimovuelo = row.Último_vuelo || '';
+                    const info = row.Más_información || '';
 
-                    <!-- Botón "Ver en Tabla" -->
-                    <button class="btn-accion" 
-                        onclick="if(event){event.stopPropagation(); event.preventDefault();} verMeteoEnTabla('${escapeHtml(idDespegue)}'); return false;" 
-                        style="flex: 1; height: auto; min-height: 34px; padding: 6px 8px; white-space: normal; word-break: break-word; line-height: 1.2; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
-                        ${t('mapa.verEnTabla')}
-                    </button>
+                    let idDespegue = row.ID || '';
+                    let botonesAccionPopupHTML = '';
 
-                </div>`;
-            }
-        }
+                    if (window.bdGlobalDespegues) {
+                        const matchTabla = window.bdGlobalDespegues.find(d =>
+                            parseFloat(d.Latitud).toFixed(4) === lat.toFixed(4) &&
+                            parseFloat(d.Longitud).toFixed(4) === lon.toFixed(4)
+                        );
 
-        // 2. Dibujamos las barritas siempre que haya número (tenga meteo o no)
-        const htmlActividadPopup = actividadScore 
-            ? crearIconoActividad(actividadScore) 
-            : ''; // Si está vacío, no pintamos nada
+                        if (matchTabla) {
+                            //despegue = matchTabla.Despegue;
+                            idDespegue = matchTabla.ID;
+                            actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla
 
-        // Pasamos la 'actividadScore' a la función del mapa para que también pinte las barras en la etiqueta. 
-        // Dejamos en blanco el segundo parámetro (que era el antiguo de los colores).
-        const icon = createIconDespegue(despegue, '', orientaciones, null, actividadScore);
-        const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
+                            const esFavoritoPopup  = obtenerFavoritos().map(Number).includes(Number(idDespegue));
+                            const esSeguimientoPopup = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
+                            const _ocPopup = esSeguimientoPopup ? '#16a34a' : '#959595';
 
-        marker._esMasterMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'sí' || row.Master_meteo.trim().toLowerCase() === 'si'));
+                            // Agrupamos TODOS los botones en un solo contenedor Flexbox
+                            botonesAccionPopupHTML = `
+                            <div style="display: flex; align-items: stretch; gap: 8px; margin-top: 8px; margin-bottom: 8px;">
+                                
+                                <!-- Contenedor para alinear los iconos (Corazón y Ojo) a la izquierda -->
+                                <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+                                    <!-- Botón Favorito -->
+                                    <button class="btn-info btn-favorito-tabla"
+                                        style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
+                                        onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleFavoritoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
+                                        title="${esFavoritoPopup ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
+                                        <svg viewBox="0 0 24 24" width="20" height="20"
+                                            fill="${esFavoritoPopup ? '#e00' : 'none'}"
+                                            stroke="${esFavoritoPopup ? '#e00' : '#555'}"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                            style="vertical-align: middle;">
+                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                        </svg>
+                                    </button>
 
-        // 1. Traducimos el nombre largo (noroeste -> northwest)
-        const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
-        const codigosOriTraducidos = traducirCadenaOrientacion(row.Orientaciones);
-                
-        const popupHtml = `<div style="line-height: 1.2;">
-        
-                <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
-                <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
-                
-                ${botonesAccionPopupHTML}
+                                    <!-- Botón Seguimiento (Ojo) -->
+                                    <button class="btn-info btn-ojo-tabla"
+                                        style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
+                                        onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleSeguimientoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
+                                        title="${esSeguimientoPopup ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar')}">
+                                        <svg viewBox="0 4 24 16" width="26" height="26" preserveAspectRatio="xMidYMid meet">
+                                            <path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="${_ocPopup}" stroke="none"/>
+                                            <circle class="ojo-color ojo-iris" cx="12" cy="12" r="4.5" fill="${_ocPopup}" stroke="none"/>
+                                            <circle class="ojo-color ojo-pupila" cx="12" cy="12" r="2.5" fill="${_ocPopup}" stroke="none"/>
+                                        </svg>
+                                    </button>
+                                </div>
 
-                <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
-                <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
-                <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
-                <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
-                
-                <div class="popup-toggle-header" 
-                    style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
-                    ${t('mapa.masInformacion')}
-                </div>
-                
-                <div class="popup-collapsible-content" style="display: none; overflow-wrap: break-word; ">
+                                <!-- Botón "Ver en Tabla" -->
+                                <button class="btn-accion" 
+                                    onclick="if(event){event.stopPropagation(); event.preventDefault();} verMeteoEnTabla('${escapeHtml(idDespegue)}'); return false;" 
+                                    style="flex: 1; height: auto; min-height: 34px; padding: 6px 8px; white-space: normal; word-break: break-word; line-height: 1.2; font-weight: bold; background-color: #e7f5ff; border-color: #007aff; color: #0056b3;">
+                                    ${t('mapa.verEnTabla')}
+                                </button>
 
-                    <div style="margin-bottom: 5px;">${t('mapa.labelCoordenadas')} <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
-                    <div style="margin-bottom: 5px;">${t('mapa.labelAltitud')} <b>${escapeHtml(altitud)} m</b></div>
+                            </div>`;
+                        }
+                    }
+
+                    // 2. Dibujamos las barritas siempre que haya número (tenga meteo o no)
+                    const htmlActividadPopup = actividadScore 
+                        ? crearIconoActividad(actividadScore) 
+                        : ''; // Si está vacío, no pintamos nada
+
+                    // Pasamos la 'actividadScore' a la función del mapa para que también pinte las barras en la etiqueta. 
+                    // Dejamos en blanco el segundo parámetro (que era el antiguo de los colores).
+                    const icon = createIconDespegue(despegue, '', orientaciones, null, actividadScore);
+                    const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
+
+                    marker._esMasterMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'sí' || row.Master_meteo.trim().toLowerCase() === 'si'));
+
+                    // 1. Traducimos el nombre largo (noroeste -> northwest)
+                    const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
+                    const codigosOriTraducidos = traducirCadenaOrientacion(row.Orientaciones);
+                            
+                    const popupHtml = `<div style="line-height: 1.2;">
                     
-                    <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="${t('popupDespegue.nivelActividadTitle')}">
-                        ${t('mapa.labelActividad')} &nbsp;${htmlActividadPopup} <span style="margin-left: 2px;"><b>${actividadScore || '?'}/5</b></span>
-                    </div>
-                    
-                    <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
-                    <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
-                    <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
-                    <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
-                    <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
-                    <div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
-                    
-                </div>
-                
-                </div>`;		
+                            <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
+                            <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
+                            
+                            ${botonesAccionPopupHTML}
 
-        marker.bindPopup(popupHtml, { 
-            className: 'popup-despegues', 
-            maxWidth: 300,
-            maxHeight: 450,
-            autoPanPaddingTopLeft: L.point(10, 350) 
-        });
+                            <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
+                            <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
+                            <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
+                            <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
+                            
+                            <div class="popup-toggle-header" 
+                                style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
+                                ${t('mapa.masInformacion')}
+                            </div>
+                            
+                            <div class="popup-collapsible-content" style="display: none; overflow-wrap: break-word; ">
 
-        // Regeneramos el popup por si venimos de consultarlo en la tabla o hemos cambiado estados.
-        marker.on('popupopen', function() {
-            const popupEl = this.getPopup().getElement();
-            if (!popupEl) return;
-            
-            const btn = popupEl.querySelector('.btn-accion');
-            if (btn) btn.innerHTML = `${t('mapa.verEnTabla')}`;
+                                <div style="margin-bottom: 5px;">${t('mapa.labelCoordenadas')} <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
+                                <div style="margin-bottom: 5px;">${t('mapa.labelAltitud')} <b>${escapeHtml(altitud)} m</b></div>
+                                
+                                <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="${t('popupDespegue.nivelActividadTitle')}">
+                                    ${t('mapa.labelActividad')} &nbsp;${htmlActividadPopup} <span style="margin-left: 2px;"><b>${actividadScore || '?'}/5</b></span>
+                                </div>
+                                
+                                <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
+                                <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
+                                <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
+                                <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
+                                <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
+                                <div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
+                                
+                            </div>
+                            
+                            </div>`;		
 
-            // Actualizar estado del botón Favorito dinámicamente
-            const btnFav = popupEl.querySelector('.btn-favorito-tabla');
-            if (btnFav) {
-                const esFav = obtenerFavoritos().map(Number).includes(Number(idDespegue));
-                btnFav.title = esFav ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
-                const svgFav = btnFav.querySelector('svg');
-                if (svgFav) {
-                    svgFav.setAttribute('fill', esFav ? '#e00' : 'none');
-                    svgFav.setAttribute('stroke', esFav ? '#e00' : '#555');
-                }
-            }
+                    marker.bindPopup(popupHtml, { 
+                        className: 'popup-despegues', 
+                        maxWidth: 300,
+                        maxHeight: 450,
+                        autoPanPaddingTopLeft: L.point(10, 350) 
+                    });
 
-            // Actualizar estado del botón Seguimiento dinámicamente
-            const btnSeg = popupEl.querySelector('.btn-ojo-tabla');
-            if (btnSeg) {
-                const esSeg = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
-                btnSeg.title = esSeg ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
-                const colorSeg = esSeg ? '#16a34a' : '#959595';
-                btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
-            }
-        });
+                    // Regeneramos el popup por si venimos de consultarlo en la tabla o hemos cambiado estados.
+                    marker.on('popupopen', function() {
+                        const popupEl = this.getPopup().getElement();
+                        if (!popupEl) return;
+                        
+                        const btn = popupEl.querySelector('.btn-accion');
+                        if (btn) btn.innerHTML = `${t('mapa.verEnTabla')}`;
 
-        marker.metadata = { id: row.ID || '', despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividadScore, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
-        markersDespegues.push(marker); //inserta marker al grupo markersDespegues
-        clustergroupDespegues.addLayer(marker);
-    });
+                        // Actualizar estado del botón Favorito dinámicamente
+                        const btnFav = popupEl.querySelector('.btn-favorito-tabla');
+                        if (btnFav) {
+                            const esFav = obtenerFavoritos().map(Number).includes(Number(idDespegue));
+                            btnFav.title = esFav ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
+                            const svgFav = btnFav.querySelector('svg');
+                            if (svgFav) {
+                                svgFav.setAttribute('fill', esFav ? '#e00' : 'none');
+                                svgFav.setAttribute('stroke', esFav ? '#e00' : '#555');
+                            }
+                        }
 
-        map.addLayer(clustergroupDespegues);
-    
-        // Comprobar si hay petición de apertura externa en la URL (?q=...) (link desde Meteo)
-        // --- LÓGICA DE APERTURA AUTOMÁTICA (NOMBRE -> COORDENADAS) ---
-        const params = new URLSearchParams(window.location.search);
-        const busquedaURL = params.get('q');
-        const urlLat = parseFloat(params.get('lat'));
-        const urlLon = parseFloat(params.get('lon'));
+                        // Actualizar estado del botón Seguimiento dinámicamente
+                        const btnSeg = popupEl.querySelector('.btn-ojo-tabla');
+                        if (btnSeg) {
+                            const esSeg = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
+                            btnSeg.title = esSeg ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
+                            const colorSeg = esSeg ? '#16a34a' : '#959595';
+                            btnSeg.querySelectorAll('.ojo-color').forEach(el => el.setAttribute('fill', colorSeg));
+                        }
+                    });
 
-        let despegueEncontrado = null;
-
-        // 1. PRIMER INTENTO: Buscar por NOMBRE (parámetro 'q')
-        if (busquedaURL) {
-            const textoNormalizado = normalizeText(decodeURIComponent(busquedaURL));
-            
-            // Intento coincidencia exacta por nombre
-            despegueEncontrado = markersDespegues.find(m => 
-                normalizeText(m.metadata.despegue) === textoNormalizado
-            );
-
-            // Si no hay exacta, intento coincidencia parcial
-            if (!despegueEncontrado) {
-                despegueEncontrado = markersDespegues.find(m => 
-                    normalizeText(m.metadata.despegue).includes(textoNormalizado)
-                );
-            }
-        }
-
-        // 2. SEGUNDO INTENTO: Si no hay nombre o el nombre falló, buscar por COORDENADAS
-        if (!despegueEncontrado && !isNaN(urlLat) && !isNaN(urlLon)) {
-            despegueEncontrado = markersDespegues.find(m => {
-                const mLat = m.getLatLng().lat;
-                const mLon = m.getLatLng().lng;
-                // Margen de error de 0.0001 grados (aprox 10 metros)
-                return Math.abs(mLat - urlLat) < 0.0001 && Math.abs(mLon - urlLon) < 0.0001;
-            });
-        }
-
-        // 3. EJECUCIÓN: Si cualquiera de los dos métodos encontró un despegue, abrirlo
-        if (despegueEncontrado) {		
-            setTimeout(() => {
-                // Usamos zoomToShowLayer por si el despegue está dentro de un grupo (cluster)
-                clustergroupDespegues.zoomToShowLayer(despegueEncontrado, function() {
-                    // Dejamos que Leaflet haga el centrado automático con los 160px de margen que añadimos al popup
-                    despegueEncontrado.openPopup();
+                    marker.metadata = { id: idDespegue, despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividadScore, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
+                    markersDespegues.push(marker); //inserta marker al grupo markersDespegues
+                    clustergroupDespegues.addLayer(marker);
                 });
-            }, 600); // Pequeña pausa para asegurar que los clusters están dibujados
-        }
-    
-        // APLICAR COLORES A LOS MARCADORES RECIÉN CREADOS
-        if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-            marcarOperativosEnMarkers();
-            aplicarPuntuacionEnMapa();
-        } else {
-            actualizarFiltrosMapa();
-        }
-    },
 
-    error: function(error) {
-    console.error('Error cargando CSV:', error.message || error);
-    alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
+                map.addLayer(clustergroupDespegues);
+            
+                // Comprobar si hay petición de apertura externa en la URL (?q=...) (link desde Meteo)
+                // --- LÓGICA DE APERTURA AUTOMÁTICA (NOMBRE -> COORDENADAS) ---
+                const params = new URLSearchParams(window.location.search);
+                const busquedaURL = params.get('q');
+                const urlLat = parseFloat(params.get('lat'));
+                const urlLon = parseFloat(params.get('lon'));
+
+                let despegueEncontrado = null;
+
+                // 1. PRIMER INTENTO: Buscar por NOMBRE (parámetro 'q')
+                if (busquedaURL) {
+                    const textoNormalizado = normalizeText(decodeURIComponent(busquedaURL));
+                    
+                    // Intento coincidencia exacta por nombre
+                    despegueEncontrado = markersDespegues.find(m => 
+                        normalizeText(m.metadata.despegue) === textoNormalizado
+                    );
+
+                    // Si no hay exacta, intento coincidencia parcial
+                    if (!despegueEncontrado) {
+                        despegueEncontrado = markersDespegues.find(m => 
+                            normalizeText(m.metadata.despegue).includes(textoNormalizado)
+                        );
+                    }
+                }
+
+                // 2. SEGUNDO INTENTO: Si no hay nombre o el nombre falló, buscar por COORDENADAS
+                if (!despegueEncontrado && !isNaN(urlLat) && !isNaN(urlLon)) {
+                    despegueEncontrado = markersDespegues.find(m => {
+                        const mLat = m.getLatLng().lat;
+                        const mLon = m.getLatLng().lng;
+                        // Margen de error de 0.0001 grados (aprox 10 metros)
+                        return Math.abs(mLat - urlLat) < 0.0001 && Math.abs(mLon - urlLon) < 0.0001;
+                    });
+                }
+
+                // 3. EJECUCIÓN: Si cualquiera de los dos métodos encontró un despegue, abrirlo
+                if (despegueEncontrado) {		
+                    setTimeout(() => {
+                        // Usamos zoomToShowLayer por si el despegue está dentro de un grupo (cluster)
+                        clustergroupDespegues.zoomToShowLayer(despegueEncontrado, function() {
+                            // Dejamos que Leaflet haga el centrado automático con los 160px de margen que añadimos al popup
+                            despegueEncontrado.openPopup();
+                        });
+                    }, 600); // Pequeña pausa para asegurar que los clusters están dibujados
+                }
+            
+                // APLICAR COLORES A LOS MARCADORES RECIÉN CREADOS
+                if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
+                    marcarOperativosEnMarkers();
+                    aplicarPuntuacionEnMapa();
+                } else {
+                    actualizarFiltrosMapa();
+                }
+            },
+
+            error: function(error) {
+                console.error('Error cargando CSV:', error.message || error);
+                alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
+            }
+        });
+    };
+
+    // Llamamos a la función recién creada para envolver el papa.parse, por si la usuaria va nada más arrancar al mapa y no se mostrarían los 3 controles de favorito, seguimiento e ir a la tabla en los popups
+    if (window.bdGlobalDespegues && window.bdGlobalDespegues.length > 0) {
+            window.cargarMarcadoresCSV();
     }
-
-    });
-
 
     // 🔴 INICIO CAPA MAPA DE CALOR PENÍNSULA IBÉRICA (OPTIMIZADA CON SUPERCLUSTER)
     //___________________________________________________________________________________
@@ -11964,7 +11983,7 @@ function inicializarMapaLeaflet() {
     // FIN filtro orientaciones
     //___________________________________________________________________________________
 
-}
+} // Fin inicializarMapaLeaflet()
 
 // --- DELEGADO GLOBAL PARA POPUPS DEL MAPA (MÁS INFO) ---
 document.addEventListener('click', function(e) {
