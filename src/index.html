@@ -654,7 +654,7 @@
             <div id="control-rapidos-container" style="display:flex; flex-direction:column; align-items:flex-start; gap:6px; flex-shrink:0; box-sizing:border-box; transition:all 0.2s; padding-top:10px; padding-bottom:10px;"">
                 
                 <!-- Fila 1: Botón Favoritos -->
-                <div style="display: flex; align-items: center; gap: 6px; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
                     <button id="btn-mapa-filtro-favoritos" class="btn-info" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; border-radius: 8px; background: #fff; border: 1.5px solid #ccc; box-shadow: 1px 1px 3px rgba(0,0,0,0.15);" onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosMapa()">
                         <!-- SVG -->
                     </button>
@@ -662,7 +662,7 @@
                 </div>
 
                 <!-- Fila 2: Botón Seguimiento -->
-                <div style="display: flex; align-items: center; gap: 6px; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
                     <button id="btn-mapa-filtro-seguimiento" class="btn-info" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; border-radius: 8px; background: #fff; border: 1.5px solid #ccc; box-shadow: 1px 1px 3px rgba(0,0,0,0.15);" onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoMapa()">
                         <!-- SVG -->
                     </button>
@@ -671,7 +671,7 @@
 
                 <!-- Fila 3: Slider Actividad (1 a 5) -->
                 <div style="width: 100%; text-align: left; margin-top: 3px;">
-                    <label for="sliderActividad" style="font-weight: bold; display: block; margin-bottom: 2px; white-space: nowrap;" data-i18n="mapa.Actividad">
+                    <label for="sliderActividad" style="font-weight: bold; margin-bottom: 2px;" data-i18n="mapa.Actividad">
                         Actividad >= </label><span id="valorActividadTexto">1</span>
                     <input type="range" id="sliderActividad" min="1" max="5" value="1" step="1" style="width: 98%;">
                 </div>
