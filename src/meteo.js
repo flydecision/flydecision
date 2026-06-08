@@ -9657,6 +9657,7 @@ function inicializarMapaLeaflet() {
 
                 // --- 0b. OCULTAR NO-OPERATIVOS SI EL FILTRO ESTÁ ACTIVO ---
                 if (filtrosMapaAbiertos && marker._esOperativo !== true) return false;
+                if (filtrosMapaAbiertos && marker._esSecundarioMeteo) return false;
                 if (!filtrosMapaAbiertos && marker._esMasterMeteo) return false; // ← oculta el clon Master meteo (sí) cuando filtro OFF
             }
 
