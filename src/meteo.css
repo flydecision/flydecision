@@ -271,6 +271,19 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
         inset 1px 1px 3px rgba(0,0,0,0.4) !important;
     background-color: #ff000042 !important;
 }
+#btn-filtro-seguimiento-toggle.filtro-aplicado .ojo-exterior {
+    fill: #16a34a !important;
+    stroke: none !important;
+}
+#btn-filtro-seguimiento-toggle.filtro-aplicado .ojo-iris {
+    fill: white !important;
+    stroke: none !important;
+    r: 4.5px !important; /* Forzamos que crezca de 3.5 a 4.5 para formar el anillo blanco */
+}
+#btn-filtro-seguimiento-toggle.filtro-aplicado .ojo-pupila {
+    fill: #16a34a !important;
+    stroke: none !important;
+}
 
 /* =========================================
    OJO SEGUIMIENTO (Inactivo / Activo)
@@ -290,7 +303,7 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
     stroke-width: 2px !important;
 }
 .ojo-pupila[fill="#959595"], .ojo-pupila {
-    fill: #555555 !important;
+    /* fill: #555555 !important; */
     stroke: none !important;
 }
 /* ESTADO ACTIVO (Verde - por atributo de JS o por clase en menú superior) */
