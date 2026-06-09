@@ -3058,16 +3058,22 @@ details.config-accordion .accordion-content {
     height: 30px;      /* Altura fija total */
     padding: 0;        /* Eliminamos los paddings asimétricos */
     cursor: pointer;
+    background-color: #ffffff;
     line-height: 1.8;    /* Reseteamos el line-height */
     
     /* --- CENTRADO PERFECTO --- */
-    display: flex;
+    display: flex !important; 
     align-items: center;    /* Centra verticalmente */
     justify-content: center; /* Centra horizontalmente */
 
-    white-space: nowrap; /* evita salto de línea */
-    overflow: visible;   /* permite que sobresalga */
+    /* white-space: nowrap; evita salto de línea */
+    /* overflow: visible;   permite que sobresalga */
     border-radius: 10px;
+}
+
+.info-panel.retraido:hover {
+    background-color: #f4f4f4;
+    color: #000;
 }
 
 /* Regla para que Leaflet ponga el Panel 2 al lado del Panel 1 en lugar de debajo */
@@ -3625,11 +3631,11 @@ h3 {
 	padding-top: 6.5px;
 	padding-bottom: 6.6px;
 	padding-left: 10px;
-	font-weight: bold;
+	/* font-weight: bold; */
     border-radius: 10px;
 }
 .leaflet-text-search-input::placeholder {
-	color: black;
+	color: rgb(97, 97, 97);
 }
 
 /* CONTENEDOR ROSA DE LOS VIENTOS (3x3 Grid) */
@@ -3775,12 +3781,16 @@ h3 {
 	transform: scale(1.2);
 	margin: 2px;
 }
+/* El span que envuelve al SVG. Lo convertimos en caja flex para centrar el icono */
 .labelMostrarOpciones {
-    font-weight: bold;
-    display: block; /* Cambiado a block para que flex lo maneje mejor */
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
     padding: 0;
     margin: 0;
-    text-align: center;
+    margin-left: 6px;
 }
 /* Ajuste fino posición del la clase original para que coincida con el punto exacto.Original: -20px */
 .leaflet-popup-tip-container { 

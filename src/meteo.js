@@ -11806,7 +11806,7 @@ function inicializarMapaLeaflet() {
         if (isFijado || !infoPanel) return;
         divOpciones.classList.add('oculto');
         infoPanel.classList.add('retraido');
-        labelMostrarOpciones.style.display = 'block';
+        //labelMostrarOpciones.style.display = 'block';
         evaluarUXPaneles();
         L.DomEvent.on(infoPanel, 'click', expandirAlClicar);
     }
@@ -11814,7 +11814,7 @@ function inicializarMapaLeaflet() {
         if (!infoPanel) return;
         divOpciones.classList.remove('oculto');
         infoPanel.classList.remove('retraido');
-        labelMostrarOpciones.style.display = 'none';
+        //labelMostrarOpciones.style.display = 'none';
         evaluarUXPaneles();
         L.DomEvent.off(infoPanel, 'click', expandirAlClicar);	
     }
@@ -11830,7 +11830,7 @@ function inicializarMapaLeaflet() {
         if (isFijado2 || !infoPanel2) return;
         divOpciones2.classList.add('oculto');
         infoPanel2.classList.add('retraido');
-        labelMostrarOpciones2.style.display = 'block';
+        //labelMostrarOpciones2.style.display = 'block';
         evaluarUXPaneles();
         L.DomEvent.on(infoPanel2, 'click', expandirAlClicar2);
     }
@@ -11838,7 +11838,7 @@ function inicializarMapaLeaflet() {
         if (!infoPanel2) return;
         divOpciones2.classList.remove('oculto');
         infoPanel2.classList.remove('retraido');
-        labelMostrarOpciones2.style.display = 'none';
+        //labelMostrarOpciones2.style.display = 'none';
         evaluarUXPaneles();
         L.DomEvent.off(infoPanel2, 'click', expandirAlClicar2);	
     }
