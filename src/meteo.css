@@ -3643,7 +3643,7 @@ h3 {
 }
 
 .leaflet-text-search-input {
-	font-size: 1em;
+	font-size: 0.8em;
 	border: none;
 	width: 133px;
 	outline: none;
@@ -3652,6 +3652,7 @@ h3 {
 	padding-left: 10px;
 	/* font-weight: bold; */
     border-radius: 10px;
+    max-width: 99px;
 }
 .leaflet-text-search-input::placeholder {
 	color: rgb(97, 97, 97);
