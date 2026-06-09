@@ -3233,6 +3233,25 @@ h3 {
 	width: 30px !important;
 	height: 30px !important;
 }
+
+/* ==========================================================================
+   🗺️ REEMPLAZO DEL ICONO DE CAPAS NATIVO DE LEAFLET
+   ========================================================================== */
+
+/* Sustituye la pila de cuadrados por el mapa plegado en formato SVG */
+.leaflet-control-layers-toggle {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23444444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'/%3E%3Cline x1='8' y1='2' x2='8' y2='18'/%3E%3Cline x1='16' y1='6' x2='16' y2='22'/%3E%3C/svg%3E") !important;
+    background-size: 20px 20px !important; /* Tamaño ajustado para que quede centrado y elegante */
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Leaflet usa una regla especial para pantallas de alta resolución (Retina/Móviles), 
+   debemos sobrescribirla también para que no vuelva a aparecer el icono original */
+.leaflet-retina .leaflet-control-layers-toggle {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23444444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'/%3E%3Cline x1='8' y1='2' x2='8' y2='18'/%3E%3Cline x1='16' y1='6' x2='16' y2='22'/%3E%3C/svg%3E") !important;
+}
+
 .leaflet-control-locate {
 	margin-top: 8px;
     border-radius: 10px !important;
@@ -3790,7 +3809,7 @@ h3 {
     height: 100%;
     padding: 0;
     margin: 0;
-    margin-left: 6px;
+    margin-left: 5px;
 }
 /* Ajuste fino posición del la clase original para que coincida con el punto exacto.Original: -20px */
 .leaflet-popup-tip-container { 

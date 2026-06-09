@@ -9953,8 +9953,10 @@ function inicializarMapaLeaflet() {
             autocompleteList.style.overflowY = 'auto';
             autocompleteList.style.backgroundColor = '#eddff5';
             autocompleteList.style.padding = '6px 6px 3px 6px';
+            autocompleteList.style.maxWidth = '300px';
 
             L.DomEvent.disableClickPropagation(container); // Evita que los clics en el control afecten al mapa
+            L.DomEvent.disableScrollPropagation(container); // Evita que la rueda del ratón haga zoom en el mapa
 
             // Limpieza al Foco ---
             L.DomEvent.addListener(input, 'focus', function() {
@@ -10007,6 +10009,8 @@ function inicializarMapaLeaflet() {
                         item.style.padding = '0px';
                         item.style.cursor = 'pointer';
                         item.style.borderBottom = '1px solid #D3D3D3';
+                        item.style.paddingBottom = '3px';
+                        item.style.paddingTop = '3px';
 
                         // Al hacer clic en un elemento de la lista
                         L.DomEvent.addListener(item, 'click', function() {
