@@ -4079,10 +4079,10 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
 }
 
 /* Bajar controles Leaflet cuando el filtro horario está abierto (móviles, tablets y pantallas intermedias) */
-@media (max-width: 693px) {
+@media (max-width: 635px) {
     #vista-mapa.filtros-abiertos .leaflet-top {
         transition: margin-top 0.2s ease;
-        margin-top: calc(141px + var(--safe-area-inset-top, 25px));
+        margin-top: calc(148px + var(--safe-area-inset-top, 25px));
     }
 }
 
