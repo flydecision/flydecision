@@ -460,6 +460,7 @@
     "miUbicacion": "La meva ubicació",
     "irMiUbicacion": "Anar a la meva ubicació",
     "titlebtnFiltrosMeteo": "Filtres per Condicions meteorològiques",
+    "btnFiltros": "Filtres meteo",
     "filtros": "Filtres",
     "buscadorPlaceholder": "Cercar lloc o coordenades...",
     "buscadorTitulo": "Cerca general (llocs i coordenades)",

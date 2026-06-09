@@ -460,6 +460,7 @@
     "miUbicacion": "Mi ubicación",
     "irMiUbicacion": "Ir a mi ubicación",
     "titlebtnFiltrosMeteo": "Filtros por Condiciones meteorológicas",
+    "btnFiltros": "Filtros meteo",
     "filtros": "Filtros",
     "buscadorPlaceholder": "Buscar lugar o coordenadas...",
     "buscadorTitulo": "Buscador general (poblaciones, lugares y coordenadas)",
