@@ -3809,7 +3809,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 		thRegion.rowSpan = 2;
 		thRegion.style.fontSize = "18px";
 		thRegion.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda", "borde-grueso-arriba");
-		thRegion.style.minWidth = "100px";
+		thRegion.style.minWidth = "90px";
 		
         // ---------------------------------------------------------------		
         // 🟡 CONSTRUCCIÓN DE LA TABLA. Cabecera. Provincia
@@ -3820,7 +3820,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 		thProvincia.rowSpan = 2; // Ocupa las dos filas de la cabecera
 		thProvincia.style.fontSize = "18px";
 		thProvincia.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda", "borde-grueso-arriba");
-		thProvincia.style.minWidth = "100px";
+		thProvincia.style.minWidth = "90px";
 
         // ---------------------------------------------------------------
         // 🟡 CONSTRUCCIÓN DE LA TABLA. Cabecera. Despegue

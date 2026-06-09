@@ -1418,11 +1418,9 @@ table.tabla-tooltip-desglose {
 
 /* Columna Favoritos */
 .columna-favoritos {	
-	left: 0px;	
 	width: 30px !important;	
 	min-width: 30px !important;	
 	max-width: 30px !important;
-    z-index: 15; /* Por encima de las celdas de datos normales */
     background-color: #ffffff; /* Necesario para tapar el contenido al hacer scroll lateral */
 }
 
