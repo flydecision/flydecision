@@ -10200,7 +10200,7 @@ function inicializarMapaLeaflet() {
     return container;
         }
     });
-    map.addControl(new L.Control.Locate({ position: 'topleft' }));
+    map.addControl(new L.Control.Locate({ position: 'topright' }));
     
     // Añadir marcador al obtener ubicación
     var currentLocationMarker = null;
@@ -10227,7 +10227,7 @@ function inicializarMapaLeaflet() {
     // 🟡 CONTROL "Buscador general" (oculto inicialmente en el desplegable)
     var geocoderControl = L.Control.geocoder({
         defaultMarkGeocode: false,
-        position: 'topleft'
+        position: 'topright'
     }).on('markgeocode', function(e) {
         // Recuperar texto tal como lo escribió el usuario
         var inputValue = geocoderControl._container.querySelector('input').value.trim();
@@ -10292,7 +10292,7 @@ function inicializarMapaLeaflet() {
     // ------------------------------------------------------------
 
     // 🟡 CONTROL "Capas"
-    const controlCapas = L.control.layers(baseMaps, overlayMaps, { position: 'topleft' }).addTo(map);
+    const controlCapas = L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(map);
     window.capasLeaflet = controlCapas; // exposición global para poder cerrarlo con Atrás Android
 
     map.on('baselayerchange', function(e) {
