@@ -8747,6 +8747,9 @@ window.cambiarVista = function(vista) {
                 // Restaurar estado abierto
                 divFH.style.display = '';
                 divFH.classList.add('flotando-en-mapa');
+                if (typeof puntuacionMinimaMapa !== 'undefined' && puntuacionMinimaMapa > 0) {
+                    divFH.classList.add('borde-rojo-externo');
+                }
                 if (btnFiltros) btnFiltros.style.display = 'none';
                 if (btnCerrar)  btnCerrar.style.display  = 'flex';
                 document.getElementById('vista-mapa')?.classList.add('filtros-abiertos');
@@ -8811,6 +8814,7 @@ window.cambiarVista = function(vista) {
             // SI ESTAMOS EN MODO EDICIÓN, SE QUEDA OCULTO; SI NO, SE MUESTRA
             divFH.style.display = modoEdicionFavoritos ? 'none' : ''; 
             divFH.classList.remove('flotando-en-mapa');
+            divFH.classList.remove('borde-rojo-externo');
             contenedorControles.insertBefore(divFH, divBuscador);
             const divPunt = document.getElementById('wrapper-filtro-puntuacion-mapa');
             if (divPunt) divPunt.style.display = 'none';
@@ -8932,6 +8936,7 @@ window.toggleFiltrosMapa = function() {
     if (visible) { // Cerrarlo
         divFH.style.display = 'none';
         divFH.classList.remove('flotando-en-mapa');
+        divFH.classList.remove('borde-rojo-externo');
         if (btnFiltros) btnFiltros.style.display = '';
         if (btnCerrar)  btnCerrar.style.display  = 'none';
         filtrosMapaAbiertos = false;
@@ -9137,8 +9142,14 @@ function inicializarSliderPuntuacionMapa() {
         const val = Math.round(Number(values[0]));
         puntuacionMinimaMapa = val;
         
-        // 🗑️ Eliminamos la lógica que actualizaba 'puntuacion-mapa-etiqueta' 
-        // ya que ahora el tooltip se encarga de todo.
+        const divFiltroHorario = document.getElementById('div-filtro-horario');
+        if (divFiltroHorario) {
+            if (puntuacionMinimaMapa > 0) {
+                divFiltroHorario.classList.add('borde-rojo-externo');
+            } else {
+                divFiltroHorario.classList.remove('borde-rojo-externo');
+            }
+        }
 
         const divPunt = document.getElementById('div-filtro-puntuacion-mapa');
         
