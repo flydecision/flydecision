@@ -60,7 +60,7 @@
 
   "buscador": {
     "placeholder": "🔍 Descolagem ou província...",
-    "placeholderEdicion": "🔍 Descolagem ou território...",
+    "placeholderEdicion": "🔍 País, Região, Província ou Descolagem",
     "sugerenciaTitulo": "💡 Não foram encontrados favoritos para * <b>{{termino}}</b> *, mas estes estão disponíveis na base de dados:",
     "anadirFavorito": "+ Adicionar aos favoritos"
   },
@@ -151,6 +151,7 @@
     "techoTooltip": "Teto de voo utilizável: {{altitudMSL}} m MSL\nCálculo = {{espesorUtil}} m de espessura utilizável AGL ({{pct}}% dos {{blh}} m BLH teóricos) + {{elevacion}} m de elevação (nível médio do terreno da célula ECMWF 9km)\n",
     "despegueTooltip": "Província: {{provincia}}\nDescolagem: {{despegue}}\nOrientação: {{orientacion}}",
     "cargando": "A carregar...",
+    "cabeceraPais": "País",
     "cabeceraRegion": "Região",
     "cabeceraProvincia": "Província",
     "cabeceraDespegue": "Descolagem",

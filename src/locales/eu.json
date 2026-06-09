@@ -60,7 +60,7 @@
 
   "buscador": {
     "placeholder": "🔍 Aireratzea edo probintzia...",
-    "placeholderEdicion": "🔍 Aireratzea edo lurraldea...",
+    "placeholderEdicion": "🔍 Herrialdea, Eskualdea, Probintzia edo Aireratzea",
     "sugerenciaTitulo": "💡 Ez da gogokorik aurkitu * <b>{{termino}}</b> * bilaketarako, baina hauek datu-basean daude:",
     "anadirFavorito": "+ Gogokoetara gehitu"
   },
@@ -151,6 +151,7 @@
     "techoTooltip": "Hegaldi-sabai erabilgarria: {{altitudMSL}} m MSL\nKalkulua = {{espesorUtil}} m lodiera erabilgarria AGL ({{blh}} m BLH teorikoaren %{{pct}}) + {{elevacion}} m altuera (ECMWF 9km zelularen batez besteko lur-maila)\n",
     "despegueTooltip": "Probintzia: {{provincia}}\nAireratzea: {{despegue}}\nNorabidea: {{orientacion}}",
     "cargando": "Kargatzen...",
+    "cabeceraPais": "Herrialdea",
     "cabeceraRegion": "Eskualdea",
     "cabeceraProvincia": "Probintzia",
     "cabeceraDespegue": "Aireratzea",

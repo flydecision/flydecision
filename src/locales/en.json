@@ -60,7 +60,7 @@
 
   "buscador": {
     "placeholder": "🔍 Takeoff or province...",
-    "placeholderEdicion": "🔍 Takeoff or territory...",
+    "placeholderEdicion": "🔍 Country, Region, Province or Takeoff",
     "sugerenciaTitulo": "💡 No favorites found for * <b>{{termino}}</b> *, but these are available in the database:",
     "anadirFavorito": "+ Add favorite"
   },
@@ -151,6 +151,7 @@
     "techoTooltip": "Usable flight ceiling: {{altitudMSL}} m MSL\nCalculation = {{espesorUtil}} m usable thickness AGL ({{pct}}% of the theoretical {{blh}} m BLH) + {{elevacion}} m altitude (ECMWF 9km cell mean ground level)\n",
     "despegueTooltip": "Province: {{provincia}}\nTakeoff: {{despegue}}\nOrientation: {{orientacion}}",
     "cargando": "Loading...",
+    "cabeceraPais": "Country",
     "cabeceraRegion": "Region",
     "cabeceraProvincia": "Province",
     "cabeceraDespegue": "Takeoff",

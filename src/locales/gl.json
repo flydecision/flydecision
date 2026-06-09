@@ -60,7 +60,7 @@
 
   "buscador": {
     "placeholder": "🔍 Engalaxe ou provincia...",
-    "placeholderEdicion": "🔍 Despegue ou territorio...",
+    "placeholderEdicion": "🔍 País, Rexión, Provincia ou Despegue",
     "sugerenciaTitulo": "💡 Non se atoparon favoritos para * <b>{{termino}}</b> *, pero estes están dispoñibles na base de datos:",
     "anadirFavorito": "+ Engadir a favoritos"
   },
@@ -151,6 +151,7 @@
     "techoTooltip": "Teito de voo utilizable: {{altitudMSL}} m MSL\nCálculo = {{espesorUtil}} m de grosor utilizable AGL ({{pct}}% dos {{blh}} m BLH teóricos) + {{elevacion}} m de elevación (nivel medio do terreo da cela ECMWF 9km)\n",
     "despegueTooltip": "Provincia: {{provincia}}\nEngalaxe: {{despegue}}\nOrientación: {{orientacion}}",
     "cargando": "Cargando...",
+    "cabeceraPais": "País",
     "cabeceraRegion": "Rexión",
     "cabeceraProvincia": "Provincia",
     "cabeceraDespegue": "Engalaxe",

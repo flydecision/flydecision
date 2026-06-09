@@ -60,7 +60,7 @@
 
   "buscador": {
     "placeholder": "🔍 Décollage ou province...",
-    "placeholderEdicion": "🔍 Décollage ou territoire...",
+    "placeholderEdicion": "🔍 Pays, Région, Province ou Décollage",
     "sugerenciaTitulo": "💡 Aucun favori trouvé pour * <b>{{termino}}</b> *, mais ceux-ci sont disponibles dans la base de données :",
     "anadirFavorito": "+ Ajouter aux favoris"
   },
@@ -151,6 +151,7 @@
     "techoTooltip": "Plafond de vol utilisable : {{altitudMSL}} m MSL\nCalcul = {{espesorUtil}} m d'épaisseur utilisable AGL ({{pct}}% des {{blh}} m BLH théoriques) + {{elevacion}} m d'altitude (niveau du sol moyen de la cellule ECMWF 9km)\n",
     "despegueTooltip": "Province : {{provincia}}\nDécollage : {{despegue}}\nOrientation : {{orientacion}}",
     "cargando": "Chargement...",
+    "cabeceraPais": "Pays",
     "cabeceraRegion": "Région",
     "cabeceraProvincia": "Province",
     "cabeceraDespegue": "Décollage",

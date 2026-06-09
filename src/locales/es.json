@@ -60,7 +60,7 @@
 
   "buscador": {
     "placeholder": "🔍 Despegue o provincia...",
-    "placeholderEdicion": "🔍 Despegue o territorio...",
+    "placeholderEdicion": "🔍 País, Región, Provincia o Despegue",
     "sugerenciaTitulo": "💡 No tienes favoritos con * <b>{{termino}}</b> *, pero tienes disponibles en la base de datos de despegues:",
     "anadirFavorito": "+ Añadir favorito"
   },
@@ -151,6 +151,7 @@
     "techoTooltip": "Techo usable en parapente: {{altitudMSL}} m MSL\nCálculo = {{espesorUtil}} m espesor útil AGL ({{pct}}% de la BLH teórica de {{blh}} m) + {{elevacion}} m altitud (suelo medio celda ECMWF 9km)\n",
     "despegueTooltip": "Provincia: {{provincia}}\nDespegue: {{despegue}}\nOrientación: {{orientacion}}",
     "cargando": "Cargando...",
+    "cabeceraPais": "País",
     "cabeceraRegion": "Región",
     "cabeceraProvincia": "Provincia",
     "cabeceraDespegue": "Despegue",
