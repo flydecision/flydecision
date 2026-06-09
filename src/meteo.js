@@ -8409,69 +8409,31 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const overlay = document.getElementById('msgActualizando...');
         if (overlay && overlay.classList.contains('loader-activo')) return;
 
-        let necesitaReconstruir = false;
-
-        // Comprobamos si ya estábamos en la pestaña Tabla ANTES de hacer nada
         const btnInicio = document.getElementById('nav-home');
         const yaEnInicio = btnInicio && btnInicio.classList.contains('active');
 
-        // 1. Salir de edición de favoritos si estamos en ella O en un desvío de ella
+        // 1. Salir del modo edición si está activo
         if ((typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) || window.venirDeEdicionActiva) {
             if (!finalizarEdicionFavoritos(true)) return; 
         }
         
-        // 🚀 NUEVO: Si el filtro de distancia está visible pero en "Infinito/Todo", lo ocultamos al ir a Tabla
-        const panelDistancia = document.getElementById('div-filtro-distancia');
-        if (panelDistancia && panelDistancia.classList.contains('activo')) {
-            const sliderDist = document.getElementById('distancia-slider');
-            if (sliderDist && sliderDist.noUiSlider) {
-                const currentValue = Math.round(parseFloat(sliderDist.noUiSlider.get()));
-                const maxIndex = CORTES_DISTANCIA_GLOBAL.length - 1;
-                
-                // Si el valor actual es el máximo (Todo/Infinito), lo cerramos visualmente
-                if (currentValue === maxIndex) {
-                    panelDistancia.classList.remove('activo');
-                }
-            }
-        }
-
-        // 2. 🚀 LÓGICA DE FILTROS AL HACER CLIC EN INICIO
-        if (yaEnInicio) {
-            // SI YA ESTÁBAMOS EN INICIO (SEGUNDO CLIC):
-            // Solo ahora reseteamos los filtros y forzamos la reconstrucción limpia de la tabla
-            
-            // A. Reset del Filtro de Distancia
-            if (typeof resetFiltroDistancia === 'function') { resetFiltroDistancia(false); }
-
-            // B. Limpiar Buscador
-            if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
-            
-            necesitaReconstruir = true;
-        }
-
-        // 3. Cerrar panel de configuración silenciosamente
+        // 2. Cerrar panel de configuración silenciosamente
         cerrarAjustesSilencioso();
 
-        // 4. Volver a la vista de tabla
-        cambiarVista('tabla');
-
-        // 5. EJECUCIÓN FINAL (Reconstruir o hacer Scroll)
-        if (necesitaReconstruir) {
-            construir_tabla(); 
-        } else if (window.necesitaScrollTopMeteo) {
-            const wrapper = document.querySelector('.tabla-wrapper');
-            const principal = document.querySelector('.contenedor-principal-tabla');
-            const scrollOptions = { top: 0, behavior: 'instant' };
-            if (wrapper) wrapper.scrollTo(scrollOptions);
-            if (principal) principal.scrollTo(scrollOptions);
-            window.scrollTo(scrollOptions);
+        if (yaEnInicio) {
+            // SI YA ESTÁBAMOS EN INICIO (SEGUNDO CLIC):
+            // Limpiamos filtros y reconstruimos la tabla (esto hará scroll-top automático).
+            if (typeof resetFiltroDistancia === 'function') { resetFiltroDistancia(false); }
+            if (typeof limpiarBuscador === 'function') { limpiarBuscador(); }
             
-            window.necesitaScrollTopMeteo = false; // Apagamos el chivato
+            construir_tabla(); // Forzamos reconstrucción y scroll-top
+        } else {
+            // SI VENÍAMOS DEL MAPA (PRIMER CLIC):
+            // Simplemente cambiamos la vista. La restauración del scroll la hará 'cambiarVista'.
+            cambiarVista('tabla');
         }
-        // 🚀 Si no es segundo clic y venías del mapa, los filtros se quedan intactos 
-        // y se preserva tu scroll anterior exactamente en el mismo píxel.
 
-        // 6. Iluminar botón inicio
+        // 3. Iluminar siempre el botón de inicio
         window.activarMenuInferior(btnInicio);
     };
 
@@ -8806,10 +8768,20 @@ window.cambiarVista = function(vista) {
 
     } 
     else if (vista === 'tabla') {
-        sessionStorage.removeItem('METEO_ENTRO_POR_MAPA_YA_VISITADO'); // Eliminamos el flag de que entró vía URL directa al mapa (contenía "lat o lon") pero no tenía favoritos.
+        sessionStorage.removeItem('METEO_ENTRO_POR_MAPA_YA_VISITADO');
         if (vistaMapa) vistaMapa.style.display = 'none';
         if (vistaTabla) vistaTabla.style.display = 'flex'; 
         if (vistaControles) vistaControles.style.display = 'block';
+
+        // Pequeño retardo para dar tiempo a que la tabla sea visible antes de mover el scroll
+        setTimeout(() => {
+            if (window.guardarScrollY !== undefined && window.guardarScrollY !== null) {
+                const wrapper = document.querySelector('.tabla-wrapper');
+                if (wrapper) wrapper.scrollTop = window.guardarScrollY;
+                // IMPORTANTE: Reseteamos la variable para que los siguientes clics puedan hacer scroll top
+                window.guardarScrollY = null;
+            }
+        }, 10); // 10ms es suficiente
 
         // Mostrar el botón de volver si estamos en un desvío (aislando un despegue) ---
         if (btnVolver) {
