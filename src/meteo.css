@@ -3040,6 +3040,7 @@ details.config-accordion .accordion-content {
 	padding-bottom: 8px;
 	padding-top: 8px;
     border-radius: 10px;
+    position: relative;
 }	
 
 /* Panel del mapa con filtros activos (Tanto abierto como retraído) */
@@ -3054,41 +3055,105 @@ details.config-accordion .accordion-content {
 }
 
 .info-panel.retraido {
-    width: 133px;
+    width: 30px; /* Ajustado para que quepan dos lado a lado */
     height: 30px;      /* Altura fija total */
     padding: 0;        /* Eliminamos los paddings asimétricos */
     cursor: pointer;
+    background-color: #ffffff;
     line-height: 1.8;    /* Reseteamos el line-height */
     
     /* --- CENTRADO PERFECTO --- */
-    display: flex;
+    display: flex !important; 
     align-items: center;    /* Centra verticalmente */
     justify-content: center; /* Centra horizontalmente */
 
-    white-space: nowrap; /* evita salto de línea */
-    overflow: visible;   /* permite que sobresalga */
+    /* white-space: nowrap; evita salto de línea */
+    /* overflow: visible;   permite que sobresalga */
     border-radius: 10px;
 }
+
+.info-panel.retraido:hover {
+    background-color: #f4f4f4;
+    color: #000;
+}
+
+/* Apilar paneles de la izquierda en vertical con separación */
+.leaflet-control-infopanel1,
+.leaflet-control-infopanel2 {
+    clear: both !important;
+    margin-top: 8px !important;
+}
+
+/* Agrupación de selectores para compartir el estilo entre panel 1 y panel 2 */
+#divOpciones, #divOpciones2 {
+	overflow: hidden;
+}
+#divOpciones.oculto, #divOpciones2.oculto {
+  max-height: 0; /* se retrae hasta 0 */
+}
+
+/* Estilos de los botones del panel */
+#buttonFijar, #buttonFijar2 {
+	font-size: 1.2em;
+	float: right;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 42px;
+}
+#buttonFijar.activo-fijado, #buttonFijar2.activo-fijado {
+	background-color: #f0f0f0; 
+	box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(0, 0, 0, 0.1); 	
+	border-color: #555;
+	transform: translateY(1px);
+}
+#buttonFijar #iconoFijar, #buttonFijar2 #iconoFijar2 {
+	display: inline-block;
+	font-size: 1em; 
+	line-height: 1;
+	cursor: pointer;
+}	
+#buttonCerrar, #buttonCerrar2 {
+    float: right;
+    margin-left: 10px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 32px;
+    height: 32px;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+    z-index: 1101;
+    padding: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    backdrop-filter: blur(2px);
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    margin-top: -2px;
+}
+/* Ocultar los botones de cerrar cuando el panel está retraído */
+.info-panel.retraido #buttonCerrar, 
+.info-panel.retraido #buttonCerrar2 {
+    display: none !important;
+}
+
+/* Mostrar los botones de cerrar (usando flex para centrar el icono) cuando el panel se expande */
+.info-panel:not(.retraido) #buttonCerrar, 
+.info-panel:not(.retraido) #buttonCerrar2 {
+    display: flex !important;
+}
+
 /* Heredamos la clase roja para que el panel de filtros cerrado avise de que está actuando */
 .info-panel.retraido.borde-rojo-externo {
     /* border: 2px solid #ff0000; */
     box-shadow: inset 0 0 0 3px #ff0000 !important;
     box-sizing: border-box; 
-}
-
-<!--Antes de integrarlo en los controles leaflet
-#divOpciones {
-  max-height: 500px; /* altura máxima cuando está desplegado */
-  overflow: hidden;
-  transition: max-height 0.6s ease; /* transición suave */
-  position: relative;
-}
--->	
-#divOpciones {
-	overflow: hidden;
-}
-#divOpciones.oculto {
-  max-height: 0; /* se retrae hasta 0 */
 }
 
 .legend-item {
@@ -3187,6 +3252,25 @@ h3 {
 	width: 30px !important;
 	height: 30px !important;
 }
+
+/* ==========================================================================
+   🗺️ REEMPLAZO DEL ICONO DE CAPAS NATIVO DE LEAFLET
+   ========================================================================== */
+
+/* Sustituye la pila de cuadrados por el mapa plegado en formato SVG */
+.leaflet-control-layers-toggle {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23444444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'/%3E%3Cline x1='8' y1='2' x2='8' y2='18'/%3E%3Cline x1='16' y1='6' x2='16' y2='22'/%3E%3C/svg%3E") !important;
+    background-size: 20px 20px !important; /* Tamaño ajustado para que quede centrado y elegante */
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Leaflet usa una regla especial para pantallas de alta resolución (Retina/Móviles), 
+   debemos sobrescribirla también para que no vuelva a aparecer el icono original */
+.leaflet-retina .leaflet-control-layers-toggle {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23444444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'/%3E%3Cline x1='8' y1='2' x2='8' y2='18'/%3E%3Cline x1='16' y1='6' x2='16' y2='22'/%3E%3C/svg%3E") !important;
+}
+
 .leaflet-control-locate {
 	margin-top: 8px;
     border-radius: 10px !important;
@@ -3201,10 +3285,10 @@ h3 {
 	cursor: pointer;
 }
 .leaflet-left .leaflet-control {
-	margin-left: 3px;
+	margin-left: 8px;
 }
 .leaflet-top .leaflet-control {
-	margin-top: 3px;
+	margin-top: 8px;
 }		
 .leaflet-bar button {
 	background-color: white !important;
@@ -3250,24 +3334,11 @@ h3 {
     border-radius: 10px !important;
 }
 
-/* 🟡 Alineación controles Leaflet */
-
-/* 1. ALINEAR LOS 4 BOTONES EN PARALELO */
-.leaflet-top.leaflet-left .leaflet-control-locate {
-    clear: both !important; /* Fuerza a que se ponga en una línea nueva */
-}
-
-/* 2. LOS OTROS 3 BOTONES SE PONEN A SU LADO EN PARALELO */
-.leaflet-top.leaflet-left .leaflet-control-geocoder,
-.leaflet-top.leaflet-left .leaflet-control-layers {
-    clear: none !important; /* Quita el salto de línea para que se pongan a la derecha del GPS */
-}
-/* 2. COMPORTAMIENTO INTELIGENTE (Smart Wrapping) */
-
-/* Si el BUSCADOR se expande, empuja el botón de CAPAS a la línea de abajo */
-/* (El botón de Configuración bajará automáticamente acompañando al de Capas) */
-.leaflet-control-geocoder-expanded ~ .leaflet-control-layers {
-    clear: left !important; 
+/* Apilar controles de la derecha en vertical con separación */
+.leaflet-top.leaflet-right .leaflet-control {
+    clear: both !important;
+    margin-top: 8px !important;
+    margin-right: 8px !important; /* Separación del borde de la pantalla */
 }
 
 /* ==========================================================================
@@ -3578,18 +3649,19 @@ h3 {
 }
 
 .leaflet-text-search-input {
-	font-size: 1em;
+	font-size: 0.9em;
 	border: none;
 	width: 133px;
 	outline: none;
 	padding-top: 6.5px;
 	padding-bottom: 6.6px;
-	padding-left: 10px;
-	font-weight: bold;
+	padding-left: 6px;
+	/* font-weight: bold; */
     border-radius: 10px;
+    max-width: 99px;
 }
 .leaflet-text-search-input::placeholder {
-	color: black;
+	color: rgb(97, 97, 97);
 }
 
 /* CONTENEDOR ROSA DE LOS VIENTOS (3x3 Grid) */
@@ -3709,38 +3781,20 @@ h3 {
 	padding: 0;
 	cursor: pointer;
 }
-#buttonCerrar {
-    float: right;
-    margin-left: 10px;
-    top: 1px;
-    right: 1px;
-    width: 32px;
-    height: 32px;
-    justify-content: center;
-    align-items: center;
-    border: none;
-    cursor: pointer;
-    z-index: 1101;
-    padding: 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    backdrop-filter: blur(2px);
-    background: rgba(255, 255, 255, 0.9);
-    font-size: 16px;
-    margin-top: -2px;
-}
-
 #filtroMaestroOrientacion {
 	transform-origin: center;
 	transform: scale(1.2);
 	margin: 2px;
 }
+/* El span que envuelve al SVG. Lo convertimos en caja flex para centrar el icono */
 .labelMostrarOpciones {
-    font-weight: bold;
-    display: block; /* Cambiado a block para que flex lo maneje mejor */
+    display: flex; 
+    align-items: center;
+    width: 100%;
+    height: 100%;
     padding: 0;
     margin: 0;
-    text-align: center;
+    margin-left: 5px;
 }
 /* Ajuste fino posición del la clase original para que coincida con el punto exacto.Original: -20px */
 .leaflet-popup-tip-container { 
@@ -3948,7 +4002,7 @@ h3 {
 
 .btn-filtros-mapa {
     position: absolute;
-    top: calc(3px + var(--safe-area-inset-top, 0px));
+    top: calc(8px + var(--safe-area-inset-top, 0px));
     left: 50%;
     transform: translateX(-50%);
     z-index: 1010;
@@ -3957,7 +4011,6 @@ h3 {
     padding-right: 6px;
     padding-bottom: 6px;
     padding-left: 6px;
-    font-weight: bold;
     /* color: #007aff; */
     cursor: pointer;
     /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); */
@@ -3982,7 +4035,7 @@ h3 {
 /* Cuando está flotando sobre el mapa */
 #div-filtro-horario.flotando-en-mapa {
     position: fixed;
-    top: calc(var(--safe-area-inset-top, 0px) + 3px);
+    top: calc(var(--safe-area-inset-top, 0px) + 8px);
     left: 50%;
     transform: translateX(-50%);
     z-index: 1100;
@@ -4026,10 +4079,10 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
 }
 
 /* Bajar controles Leaflet cuando el filtro horario está abierto (móviles, tablets y pantallas intermedias) */
-@media (max-width: 693px) {
+@media (max-width: 635px) {
     #vista-mapa.filtros-abiertos .leaflet-top {
         transition: margin-top 0.2s ease;
-        margin-top: calc(141px + var(--safe-area-inset-top, 25px));
+        margin-top: calc(148px + var(--safe-area-inset-top, 25px));
     }
 }
 

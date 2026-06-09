@@ -583,37 +583,28 @@
 
 	<!-- 🔵 BOTÓN FILTROS + PANEL HORARIO EN MAPA -->
 	<button id="btn-filtros-mapa" class="btn-filtros-mapa" onclick="toggleFiltrosMapa()" data-i18n="[title]mapa.titlebtnFiltrosMeteo">
-		<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:5px;"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
+		<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:5px;"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="8" y1="12" x2="16" y2="12"></line><line x1="11" y1="18" x2="13" y2="18"></line></svg>
 		<span data-i18n="mapa.filtros">Meteo</span>
 	</button>
 
     <div id="map" style="height: 100%; width: 100%;"></div>
 
     <div id="infoPanel" class="info-panel">
-
-		<span id="labelMostrarOpciones" class="labelMostrarOpciones" data-i18n="mapa.capasYFiltros">
-			Capas y filtros
+		<!-- Cabecera retraída del Panel 1 (Capas) -->
+		<span id="labelMostrarOpciones" class="labelMostrarOpciones" data-i18n="[title]mapa.capas" title="Capas">
+			<!-- Icono SVG de Capas (Cuadrados apilados) -->
+			<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+				<polyline points="2 12 12 17 22 12"></polyline>
+				<polyline points="2 17 12 22 22 17"></polyline>
+			</svg>
 		</span>
-					
+
 		<div id="divOpciones">
-		
-			<button id="buttonCerrar" data-i18n="[title]mapa.cerrarPanel">
-					<spa>❌</span>
-			</button>			 
-		
-			<button id="buttonFijar"  data-i18n="[title]mapa.fijarPanel"">
-					<span id="iconoFijar">📌</span>
-			</button>			 
+			<button id="buttonCerrar" data-i18n="[title]mapa.cerrarPanel"><span>❌</span></button>			 
+			<button id="buttonFijar" data-i18n="[title]mapa.fijarPanel"><span id="iconoFijar">📌</span></button>			 
 				
-			<div style="font-weight: bold">
-				<a href="/ayuda/#map" style="color: #fc6668; text-decoration: underline; float: right; padding-right: 20px;" target="_blank"><span style="font-weight: bold;" data-i18n="ajustes.ayuda">Ayuda</span></a>
-			</div>
-			
-			<div style="font-weight: bold; margin-bottom: 5px;">
-				<br><br><span data-i18n="mapa.capas">Capas:</span>
-			</div>
-		
-			<div class="legend-item" title="Despegues de parapente">
+			<div class="legend-item" style="margin-top: 12px;" title="Despegues de parapente">
 				<label for="checkboxDespegues" class="custom-checkbox">
 				<input type="checkbox" id="checkboxDespegues" class="custom-checkbox" checked>
 				<span data-i18n="mapa.capasCheckbox.despegues">🪂 Despegues</span>
@@ -643,19 +634,35 @@
 				<span data-i18n="mapa.capasCheckbox.notas">✏️ Notas</span>
 				</label>
 			</div>
-			<div class="legend-item" title="Despegues Paragliding.earth">
+			<div class="legend-item" style="margin-bottom: 10px;" title="Despegues Paragliding.earth">
 				<label for="checkboxDespeguesMundo" class="custom-checkbox">
 				<input type="checkbox" id="checkboxDespeguesMundo" class="custom-checkbox">
 				<span data-i18n="mapa.capasCheckbox.despeguesMundo">🪂 Despegues Paraglidingearth</span>
 				</label>
 			</div>
+		</div>
+	</div>
+
+    <div id="infoPanel2" class="info-panel">
+		<!-- Cabecera retraída del Panel 2 (Filtros) -->
+		<span id="labelMostrarOpciones2" class="labelMostrarOpciones" data-i18n="[title]mapa.filtros" title="Filtros">
+			<!-- Icono SVG de Filtros (Pirámide de líneas, igual que el de tu botón Meteo) -->
+			<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<line x1="4" y1="6" x2="20" y2="6"></line>
+				<line x1="8" y1="12" x2="16" y2="12"></line>
+				<line x1="11" y1="18" x2="13" y2="18"></line>
+			</svg>
+		</span>
+
+		<div id="divOpciones2">
+			<button id="buttonCerrar2" data-i18n="[title]mapa.cerrarPanel"><span>❌</span></button>			 
+			<button id="buttonFijar2" data-i18n="[title]mapa.fijarPanel"><span id="iconoFijar2">📌</span></button>			 
 			
 			<!-- Filtro Favoritos -->
-			<div id="control-favoritos-mapa-container" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-top: 7px; margin-bottom: 1px; padding-left: 5px;">
+			<div id="control-favoritos-mapa-container" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-top: 6px; margin-bottom: 1px; padding-left: 5px;">
 				<button id="btn-mapa-filtro-favoritos" class="btn-info"
 					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
 					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosMapa()">
-					<!-- SVG -->
 				</button>
 				<span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.Favoritos">Favoritos</span>
 			</div>
@@ -665,7 +672,6 @@
 				<button id="btn-mapa-filtro-seguimiento" class="btn-info"
 					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
 					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoMapa()">
-					<!-- SVG -->
 				</button>
 				<span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.Seguimiento">Seguimiento</span>
 			</div>
@@ -677,7 +683,7 @@
 				<input type="range" id="sliderActividad" min="1" max="5" value="1" step="1" style="width:98%;">
 			</div>
 
-			<!-- Rosa de los vientos (Con borde rojo aislado) -->
+			<!-- Rosa de los vientos -->
 			<div class="control-orientacion-container" style="flex:1; padding:4px !important; border-radius:8px; border:1.5px solid transparent; box-sizing:border-box; transition:all 0.2s;">
 				<div style="font-weight:bold; margin-bottom:5px; text-align:center; width:100%;" data-i18n="mapa.orientacion">Orientación:</div>
 				<div id="rosaDeLosVientos">
@@ -707,7 +713,6 @@
 			</div>
 				
 		</div>
-							
 	</div>
 
 </div>
