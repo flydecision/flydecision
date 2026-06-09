@@ -189,7 +189,7 @@ document.addEventListener('click', function(event) {
         }
         window.vibrarDispositivo(); // Llamada unificada
     }
-}, { passive: true });
+}, { capture: true, passive: true });
 
 // Función para alternar el checkbox de vibración
 window.alternarVibracion = function() {
@@ -2739,9 +2739,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
             const pips = sliderHoras.querySelectorAll('.noUi-value');
             pips.forEach(p => p.classList.remove('pip-activo'));
 
-            if (typeof window.Capacitor !== 'undefined') { 
-                window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); 
-            }
+            window.vibrarDispositivo();
         });
 
     } else {
@@ -6547,8 +6545,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		// Se ejecuta continuamente al arrastrar. NO toca la tabla.
 		distanciaSlider.noUiSlider.on('slide', function(values) {
 
-            // Si existe Capacitor (es la App), vibramos. Si es web, no hace nada.
-            if (typeof Capacitor !== 'undefined') { Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); }
+            window.vibrarDispositivo();
 
 			const valorNuevo = Math.round(values[0]);
 			const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
@@ -6734,7 +6731,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 	});
 
     rachaSlider.noUiSlider.on('slide', function () {
-        if (typeof Capacitor !== 'undefined') { Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); }
+        window.vibrarDispositivo();
     });
 
 	// ===============================================================
@@ -6779,7 +6776,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 	});
 
     velocidadSlider.noUiSlider.on('slide', function () {
-        if (typeof Capacitor !== 'undefined') { Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); }
+        window.vibrarDispositivo();
     });
 
 	// 2. Variable de estado inicial para RACHA
@@ -6869,7 +6866,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
     });
 
     configuracionhorarioSlider.noUiSlider.on('slide', function () {
-        if (typeof Capacitor !== 'undefined') { Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); }
+        window.vibrarDispositivo();
     });
 	
 	// ---------------------------------------------------------------
@@ -8138,9 +8135,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // ---------------------------------------------------------------
     // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
     // ---------------------------------------------------------------
-    // ---------------------------------------------------------------
-    // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
-    // ---------------------------------------------------------------
     window.verMeteoEnTabla = function(idDespegue) {
 
         window.vibrarDispositivo();
@@ -8339,10 +8333,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // ==========================================================================
 
     const idsSlidersEstandar = [
-        'sliderVuelos',                               // Filtro vuelos (Mapa)
-        'sliderUltimoVuelo',                          // Filtro año último vuelo (Mapa)
-        'sliderValorInicialFiltroNumeroMinimoVuelos',  // Configuración vuelos (Ajustes mapa)
-        'sliderValorInicialFiltroUltimoVuelo'         // Configuración año último vuelo (Ajustes mapa)
+        'sliderVuelos',
+        'sliderUltimoVuelo',
+        'sliderValorInicialFiltroNumeroMinimoVuelos',
+        'sliderValorInicialFiltroUltimoVuelo',
+        'sliderActividad'         
     ];
 
     idsSlidersEstandar.forEach(id => {
@@ -8350,9 +8345,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         if (slider) {
             slider.addEventListener('input', function() {
                 // Verificación de seguridad para evitar errores en navegadores web de ordenador (PC)
-                if (typeof window.Capacitor !== 'undefined' && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) {
-                    window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
-                }
+                window.vibrarDispositivo();
             });
         }
     });
@@ -9158,9 +9151,7 @@ function inicializarSliderPuntuacionMapa() {
 
     // 📳 Vibración ligera (SOLO se ejecuta cuando el usuario arrastra físicamente el slider)
     sliderEl.noUiSlider.on('slide', function() {
-        if (typeof window.Capacitor !== 'undefined' && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics) { 
-            window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); 
-        }
+        window.vibrarDispositivo();
     });
 
     // Zonas táctiles laterales siguen funcionando igual
