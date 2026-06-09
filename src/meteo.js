@@ -10252,45 +10252,6 @@ function inicializarMapaLeaflet() {
     document.querySelector('.leaflet-control-geocoder-form input[type="search"]').setAttribute('placeholder', t('mapa.buscadorPlaceholder'));
     document.querySelector('.leaflet-control-geocoder-form input[type="search"]').style.fontSize = '16px';
 
-    // 🚀 NUEVO: INTELIGENCIA UX PARA EL BUSCADOR GLOBAL (Smart Collapse)
-    const contenedorGeocoder = document.querySelector('.leaflet-control-geocoder');
-    if (contenedorGeocoder) {
-        const observerGeocoder = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.attributeName === "class") {
-                    const expandido = contenedorGeocoder.classList.contains('leaflet-control-geocoder-expanded');
-                    
-                    if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-                        if (expandido) {
-                            // Al desplegarse la lupa, escondemos la Meteo
-                            if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-                                window.meteoEscondidoPorGeocoder = true;
-                                const divFH = document.getElementById('div-filtro-horario');
-                                if (divFH) divFH.style.display = 'none';
-                            } else {
-                                const btnFiltros = document.getElementById('btn-filtros-mapa');
-                                if (btnFiltros) btnFiltros.style.visibility = 'hidden';
-                            }
-                        } else {
-                            // Al cerrarse la lupa, restauramos la Meteo
-                            if (window.meteoEscondidoPorGeocoder) {
-                                window.meteoEscondidoPorGeocoder = false;
-                                const divFH = document.getElementById('div-filtro-horario');
-                                if (divFH) divFH.style.display = '';
-                            } else {
-                                const btnFiltros = document.getElementById('btn-filtros-mapa');
-                                if (btnFiltros) btnFiltros.style.visibility = '';
-                            }
-                        }
-                    }
-                }
-            });
-        });
-
-        observerGeocoder.observe(contenedorGeocoder, { attributes: true });
-    }
-    // ------------------------------------------------------------
-
     // 🟡 CONTROL "Capas"
     const controlCapas = L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(map);
     window.capasLeaflet = controlCapas; // exposición global para poder cerrarlo con Atrás Android
@@ -10341,69 +10302,6 @@ function inicializarMapaLeaflet() {
 
     // Al abrir el menú de capas nativo
     map.on('layeradd', function() {}); // No nos sirve, usamos los eventos del DOM
-
-    // Como Leaflet no expone eventos puros para expand/collapse en L.Control.Layers,
-    // inyectamos los listeners directamente en los contenedores físicos
-    L.DomEvent.on(contenedorCapas, 'mouseenter', function() {
-        // En PC se abre con hover
-        if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-            if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-                window.meteoEscondidoPorCapasNativas = true;
-                const divFH = document.getElementById('div-filtro-horario');
-                if (divFH) divFH.style.display = 'none';
-            } else {
-                const btnFiltros = document.getElementById('btn-filtros-mapa');
-                if (btnFiltros) btnFiltros.style.visibility = 'hidden';
-            }
-        }
-    });
-
-    L.DomEvent.on(contenedorCapas, 'mouseleave', function() {
-        // Al quitar el ratón se cierra
-        if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-            if (window.meteoEscondidoPorCapasNativas) {
-                window.meteoEscondidoPorCapasNativas = false;
-                const divFH = document.getElementById('div-filtro-horario');
-                if (divFH) divFH.style.display = '';
-            } else {
-                const btnFiltros = document.getElementById('btn-filtros-mapa');
-                if (btnFiltros) btnFiltros.style.visibility = '';
-            }
-        }
-    });
-
-    // En móviles funciona por clic, así que interceptamos la expansión de la clase CSS
-    const observerCapas = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.attributeName === "class") {
-                const expandido = contenedorCapas.classList.contains('leaflet-control-layers-expanded');
-                
-                if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-                    if (expandido) {
-                        if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-                            window.meteoEscondidoPorCapasNativas = true;
-                            const divFH = document.getElementById('div-filtro-horario');
-                            if (divFH) divFH.style.display = 'none';
-                        } else {
-                            const btnFiltros = document.getElementById('btn-filtros-mapa');
-                            if (btnFiltros) btnFiltros.style.visibility = 'hidden';
-                        }
-                    } else {
-                        if (window.meteoEscondidoPorCapasNativas) {
-                            window.meteoEscondidoPorCapasNativas = false;
-                            const divFH = document.getElementById('div-filtro-horario');
-                            if (divFH) divFH.style.display = '';
-                        } else {
-                            const btnFiltros = document.getElementById('btn-filtros-mapa');
-                            if (btnFiltros) btnFiltros.style.visibility = '';
-                        }
-                    }
-                }
-            }
-        });
-    });
-
-    observerCapas.observe(contenedorCapas, { attributes: true });
         
     //------------------------------------------------------------
     // 🔴 INICIO CAPA DESPEGUES
@@ -11704,34 +11602,6 @@ function inicializarMapaLeaflet() {
     divOpciones2 = document.getElementById('divOpciones2');
     labelMostrarOpciones2 = document.getElementById('labelMostrarOpciones2'); 
     
-    // Función centralizada para controlar UX del Meteo al abrir/cerrar cualquier panel
-    function evaluarUXPaneles() {
-        const panel1Abierto = infoPanel && !infoPanel.classList.contains('retraido');
-        const panel2Abierto = infoPanel2 && !infoPanel2.classList.contains('retraido');
-        
-        if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-            if (panel1Abierto || panel2Abierto) {
-                if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-                    window.meteoEscondidoPorCapas = true;
-                    const divFH = document.getElementById('div-filtro-horario');
-                    if (divFH) divFH.style.display = 'none';
-                } else {
-                    const btnFiltros = document.getElementById('btn-filtros-mapa');
-                    if (btnFiltros) btnFiltros.style.visibility = 'hidden';
-                }
-            } else {
-                if (window.meteoEscondidoPorCapas) {
-                    window.meteoEscondidoPorCapas = false;
-                    const divFH = document.getElementById('div-filtro-horario');
-                    if (divFH) divFH.style.display = '';
-                } else {
-                    const btnFiltros = document.getElementById('btn-filtros-mapa');
-                    if (btnFiltros) btnFiltros.style.visibility = '';
-                }
-            }
-        }
-    }
-
     //  2. Lógica de Inicialización y Listeners DOM/LEAFLET (Panel 1)
     if (infoPanel && labelMostrarOpciones && buttonFijar && buttonCerrar && divOpciones) {
         infoPanel.style.display = 'block'; 
@@ -11822,7 +11692,6 @@ function inicializarMapaLeaflet() {
         divOpciones.classList.add('oculto');
         infoPanel.classList.add('retraido');
         //labelMostrarOpciones.style.display = 'block';
-        evaluarUXPaneles();
         L.DomEvent.on(infoPanel, 'click', expandirAlClicar);
     }
     function expandirOpciones() {
@@ -11830,7 +11699,6 @@ function inicializarMapaLeaflet() {
         divOpciones.classList.remove('oculto');
         infoPanel.classList.remove('retraido');
         //labelMostrarOpciones.style.display = 'none';
-        evaluarUXPaneles();
         L.DomEvent.off(infoPanel, 'click', expandirAlClicar);	
     }
 
@@ -11846,7 +11714,6 @@ function inicializarMapaLeaflet() {
         divOpciones2.classList.add('oculto');
         infoPanel2.classList.add('retraido');
         //labelMostrarOpciones2.style.display = 'block';
-        evaluarUXPaneles();
         L.DomEvent.on(infoPanel2, 'click', expandirAlClicar2);
     }
     function expandirOpciones2() {
@@ -11854,7 +11721,6 @@ function inicializarMapaLeaflet() {
         divOpciones2.classList.remove('oculto');
         infoPanel2.classList.remove('retraido');
         //labelMostrarOpciones2.style.display = 'none';
-        evaluarUXPaneles();
         L.DomEvent.off(infoPanel2, 'click', expandirAlClicar2);	
     }
 

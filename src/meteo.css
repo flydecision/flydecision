@@ -4078,6 +4078,13 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     border-radius: 4px;
 }
 
+/* Fix stacking context: los infoPaneles viven dentro de .leaflet-top (z-index Leaflet: 1000),
+   pero div-filtro-horario.flotando-en-mapa tiene z-index: 1100. Al elevar .leaflet-top a 1200
+   los paneles desplegados siempre quedan por encima del filtro horario, sin necesidad de ocultarlo. */
+#vista-mapa .leaflet-top {
+    z-index: 1200;
+}
+
 /* Bajar controles Leaflet cuando el filtro horario está abierto (móviles, tablets y pantallas intermedias) */
 @media (max-width: 635px) {
     #vista-mapa.filtros-abiertos .leaflet-top {
