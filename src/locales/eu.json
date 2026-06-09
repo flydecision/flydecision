@@ -151,6 +151,7 @@
     "techoTooltip": "Hegaldi-sabai erabilgarria: {{altitudMSL}} m MSL\nKalkulua = {{espesorUtil}} m lodiera erabilgarria AGL ({{blh}} m BLH teorikoaren %{{pct}}) + {{elevacion}} m altuera (ECMWF 9km zelularen batez besteko lur-maila)\n",
     "despegueTooltip": "Probintzia: {{provincia}}\nAireratzea: {{despegue}}\nNorabidea: {{orientacion}}",
     "cargando": "Kargatzen...",
+    "cabeceraPais": "Herrialdea",
     "cabeceraRegion": "Eskualdea",
     "cabeceraProvincia": "Probintzia",
     "cabeceraDespegue": "Aireratzea",

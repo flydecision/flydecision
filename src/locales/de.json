@@ -151,6 +151,7 @@
     "techoTooltip": "Nutzbare Flughöhe: {{altitudMSL}} m MSL\nBerechnung = {{espesorUtil}} m nutzbare Dicke AGL ({{pct}}% der theoretischen {{blh}} m BLH) + {{elevacion}} m Höhe (mittlere Bodenhöhe der ECMWF 9km-Zelle)\n",
     "despegueTooltip": "Provinz: {{provincia}}\nStartplatz: {{despegue}}\nAusrichtung: {{orientacion}}",
     "cargando": "Laden...",
+    "cabeceraPais": "Land",
     "cabeceraRegion": "Region",
     "cabeceraProvincia": "Provinz",
     "cabeceraDespegue": "Startplatz",

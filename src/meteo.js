@@ -3787,13 +3787,26 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
 		thFavorito.onclick = function() { gestionarClickMasivoFavoritos(); };
 
+        // ---------------------------------------------------------------
+        // 🟡 CONSTRUCCIÓN DE LA TABLA Cabecera. País
+        // ---------------------------------------------------------------
+
+        const thPais = document.createElement("th");
+        thPais.textContent = t("tabla.cabeceraPais") || "País";
+        thPais.rowSpan = 2;
+        thPais.style.fontSize = "18px";
+        thPais.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda", "borde-grueso-arriba");
+        thPais.style.width = "70px";
+        thPais.style.minWidth = "70px";
+        thPais.style.maxWidth = "70px";
+
         // ---------------------------------------------------------------		
         // 🟡 CONSTRUCCIÓN DE LA TABLA. Cabecera. Región
         // ---------------------------------------------------------------
 
  		const thRegion = document.createElement("th");
 		thRegion.textContent = t("tabla.cabeceraRegion");
-		thRegion.rowSpan = 2; // Ocupa las dos filas de la cabecera
+		thRegion.rowSpan = 2;
 		thRegion.style.fontSize = "18px";
 		thRegion.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda", "borde-grueso-arriba");
 		thRegion.style.minWidth = "100px";
@@ -3865,6 +3878,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
 		if (modoEdicionFavoritos) {
 			trDias.appendChild(thFavorito);
+            trDias.appendChild(thPais);
 			trDias.appendChild(thRegion);
 			trDias.appendChild(thProvincia);
 			trDias.appendChild(thDespegue);
@@ -4557,6 +4571,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 };
 			
 				filaPrincipal.appendChild(tdFavorito);
+
+                // ---------------------------------------------------------------
+                // 🟡 CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Columna País
+                // ---------------------------------------------------------------
+
+                const tdPais = document.createElement("td");
+
+                const paisValor = d.País || d['País'] || '';
+                tdPais.innerHTML = `<div class="texto-multilinea-2" style="max-width: 44px;" title="${paisValor}">${paisValor}</div>`;	
+                tdPais.rowSpan = totalFilasRowSpan;	
+                tdPais.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda");
+                //tdPais.style.width = "50px";
+                //tdPais.style.minWidth = "50px";
+                //tdPais.style.maxWidth = "50px";
+                
+                filaPrincipal.appendChild(tdPais);
 
                 // ---------------------------------------------------------------
                 // 🟡 CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Columna Región
@@ -5898,10 +5928,11 @@ function aplicarFiltrosVisuales(evitarScroll = false) {
         // A) Comprobar Texto
 		let txtBusqueda = "";
         if (modoEdicionFavoritos) {
-            const txtRegion = filaPrincipal.cells[1] ? filaPrincipal.cells[1].textContent : "";
-            const txtProvincia = filaPrincipal.cells[2] ? filaPrincipal.cells[2].textContent : "";
-            const txtDespegue = filaPrincipal.cells[3] ? filaPrincipal.cells[3].textContent : "";
-            txtBusqueda = normalizar(txtRegion + " " + txtProvincia + " " + txtDespegue);
+            const txtPais = filaPrincipal.cells[1] ? filaPrincipal.cells[1].textContent : "";
+            const txtRegion = filaPrincipal.cells[2] ? filaPrincipal.cells[2].textContent : "";
+            const txtProvincia = filaPrincipal.cells[3] ? filaPrincipal.cells[3].textContent : "";
+            const txtDespegue = filaPrincipal.cells[4] ? filaPrincipal.cells[4].textContent : "";
+            txtBusqueda = normalizar(txtPais + " " + txtRegion + " " + txtProvincia + " " + txtDespegue);
         } else {
             const celda = filaPrincipal.cells[0];
             txtBusqueda = celda ? normalizar(celda.textContent) : "";

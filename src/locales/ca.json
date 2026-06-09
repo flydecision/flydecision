@@ -151,6 +151,7 @@
     "techoTooltip": "Sostre de vol utilitzable: {{altitudMSL}} m MSL\nCàlcul = {{espesorUtil}} m de gruix utilitzable AGL ({{pct}}% dels {{blh}} m BLH teòrics) + {{elevacion}} m d'elevació (nivell mitjà del terreny de la cel·la ECMWF 9km)\n",
     "despegueTooltip": "Província: {{provincia}}\nEnlairament: {{despegue}}\nOrientació: {{orientacion}}",
     "cargando": "Carregant...",
+    "cabeceraPais": "País",
     "cabeceraRegion": "Regió",
     "cabeceraProvincia": "Província",
     "cabeceraDespegue": "Enlairament",
