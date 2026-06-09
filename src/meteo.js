@@ -4647,7 +4647,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
                 ⛅ <a href='https://meteo-parapente.com/#/${latitud},${longitud},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
                 ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
-                ⛅ <a href='https://meteo-fly.com/?lat=${latitud}&lon=${longitud}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a>
+                ⛅ <a href='https://meteo-fly.com/?lat=${latitud}&lon=${longitud}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a>
             `;
 
             // 3. Escapamos todas las comillas dobles para que no rompan el atributo data-tippy-content
@@ -7690,10 +7690,17 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     return; 
                 }
 
-                // infoPanel (Capas y Filtros) — click en buttonCerrar para que gestione también isFijado
-                const infoPanel = document.getElementById('infoPanel');
-                if (infoPanel && !infoPanel.classList.contains('retraido')) {
+                // infoPanel (Capas) 
+                const infoPanelCerrar = document.getElementById('infoPanel');
+                if (infoPanelCerrar && !infoPanelCerrar.classList.contains('retraido')) {
                     document.getElementById('buttonCerrar')?.click();
+                    return;
+                }
+                
+                // infoPanel2 (Filtros)
+                const infoPanel2Cerrar = document.getElementById('infoPanel2');
+                if (infoPanel2Cerrar && !infoPanel2Cerrar.classList.contains('retraido')) {
+                    document.getElementById('buttonCerrar2')?.click();
                     return;
                 }
 
@@ -9849,13 +9856,14 @@ function inicializarMapaLeaflet() {
 
         // 6. ACTUALIZAR PANEL GLOBAL (Borde rojo externo al estar retraído)
         const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos;
-        const infoPanelPrincipal = document.getElementById('infoPanel');
+        // Ahora el borde rojo indica filtros, así que lo aplicamos solo al infoPanel2
+        const infoPanelFiltros = document.getElementById('infoPanel2'); 
         
-        if (infoPanelPrincipal) {
+        if (infoPanelFiltros) {
             if (hayCualquierFiltro) {
-                infoPanelPrincipal.classList.add('borde-rojo-externo');
+                infoPanelFiltros.classList.add('borde-rojo-externo');
             } else {
-                infoPanelPrincipal.classList.remove('borde-rojo-externo');
+                infoPanelFiltros.classList.remove('borde-rojo-externo');
             }
         }
     }
@@ -10121,28 +10129,31 @@ function inicializarMapaLeaflet() {
 
     map.addControl(new L.Control.textSearch({ position: 'topleft' }));
 
-    // 🟡 CONTROL "infoPanel" (Capas y Filtros)
-
+    // 🟡 CONTROL "infoPanel" (Capas)
     const infopanelControl = L.Control.extend({
         onAdd: function (map) {
-            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-            
-            // Lo buscamos directamente en el HTML en este exacto momento
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-infopanel1');
             const panelHTML = document.getElementById('infoPanel');
-            
-            if (panelHTML) {
-                container.appendChild(panelHTML);
-            } else {
-                console.error("⚠️ Error: No encuentro el <div id='infoPanel'> en el HTML");
-            }
-
+            if (panelHTML) container.appendChild(panelHTML);
             L.DomEvent.disableClickPropagation(container);
             L.DomEvent.disableScrollPropagation(container);
             return container;
         }
     });
-
     map.addControl(new infopanelControl({ position: 'topleft' }));
+
+    // 🟡 CONTROL "infoPanel2" (Filtros)
+    const infopanelControl2 = L.Control.extend({
+        onAdd: function (map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-infopanel2');
+            const panelHTML = document.getElementById('infoPanel2');
+            if (panelHTML) container.appendChild(panelHTML);
+            L.DomEvent.disableClickPropagation(container);
+            L.DomEvent.disableScrollPropagation(container);
+            return container;
+        }
+    });
+    map.addControl(new infopanelControl2({ position: 'topleft' }));
 
     // 🟡 CONTROL Escala
     L.control.scale({
@@ -10600,7 +10611,7 @@ function inicializarMapaLeaflet() {
                             <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                             <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
                             <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
-                            <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
+                            <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                             
                             <div class="popup-toggle-header" 
                                 style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
@@ -10806,7 +10817,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
+                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
@@ -11007,7 +11018,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
+                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
@@ -11216,7 +11227,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
+                        <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${lat.toFixed(4)}/${lon.toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${lat.toFixed(4)}/${lon.toFixed(4)}/${lat.toFixed(4)}, ${lon.toFixed(4)}' target='_blank'>Nakarte</a></div>
@@ -11590,7 +11601,7 @@ function inicializarMapaLeaflet() {
                     <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
-                    <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0' target='_blank'>Meteo-fly</a></div>
+                    <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                     
                     <div class="popup-toggle-header" 
                         style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
@@ -11656,35 +11667,61 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
 
-    let isFijado = false; // Estado inicial
-    let buttonFijar;
-    let buttonCerrar;
-    let iconoFijar;
+    let isFijado = false; 
+    let buttonFijar, buttonCerrar, iconoFijar, infoPanel, divOpciones, labelMostrarOpciones;
 
-    //  1. Inicialización de variables locales 
-    var infoPanel = document.getElementById('infoPanel');
+    let isFijado2 = false; 
+    let buttonFijar2, buttonCerrar2, iconoFijar2, infoPanel2, divOpciones2, labelMostrarOpciones2;
+
+    //  1. Inicialización de variables locales PANEL 1 (Capas)
+    infoPanel = document.getElementById('infoPanel');
     buttonFijar = document.getElementById('buttonFijar');
     buttonCerrar = document.getElementById('buttonCerrar');
     iconoFijar = document.getElementById('iconoFijar');
-    var divOpciones = document.getElementById('divOpciones');
-    var labelMostrarOpciones = document.getElementById('labelMostrarOpciones'); 
+    divOpciones = document.getElementById('divOpciones');
+    labelMostrarOpciones = document.getElementById('labelMostrarOpciones'); 
+
+    //  1.1 Inicialización de variables locales PANEL 2 (Filtros)
+    infoPanel2 = document.getElementById('infoPanel2');
+    buttonFijar2 = document.getElementById('buttonFijar2');
+    buttonCerrar2 = document.getElementById('buttonCerrar2');
+    iconoFijar2 = document.getElementById('iconoFijar2');
+    divOpciones2 = document.getElementById('divOpciones2');
+    labelMostrarOpciones2 = document.getElementById('labelMostrarOpciones2'); 
     
-    // Reasignación (opcional, pero asegura el scope)
-    buttonFijar = buttonFijar; 
-    buttonCerrar = buttonCerrar; 
-    iconoFijar = iconoFijar;
-    
-    //  2. Lógica de Inicialización y Listeners DOM/LEAFLET 
-    if (infoPanel && labelMostrarOpciones && buttonFijar && buttonCerrar && divOpciones && typeof L !== 'undefined' && typeof map !== 'undefined') {
+    // Función centralizada para controlar UX del Meteo al abrir/cerrar cualquier panel
+    function evaluarUXPaneles() {
+        const panel1Abierto = infoPanel && !infoPanel.classList.contains('retraido');
+        const panel2Abierto = infoPanel2 && !infoPanel2.classList.contains('retraido');
         
-        // --- 2.1 ESTADO INICIAL ---
+        if (window.innerWidth > 693 && window.innerWidth <= 1230) {
+            if (panel1Abierto || panel2Abierto) {
+                if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
+                    window.meteoEscondidoPorCapas = true;
+                    const divFH = document.getElementById('div-filtro-horario');
+                    if (divFH) divFH.style.display = 'none';
+                } else {
+                    const btnFiltros = document.getElementById('btn-filtros-mapa');
+                    if (btnFiltros) btnFiltros.style.visibility = 'hidden';
+                }
+            } else {
+                if (window.meteoEscondidoPorCapas) {
+                    window.meteoEscondidoPorCapas = false;
+                    const divFH = document.getElementById('div-filtro-horario');
+                    if (divFH) divFH.style.display = '';
+                } else {
+                    const btnFiltros = document.getElementById('btn-filtros-mapa');
+                    if (btnFiltros) btnFiltros.style.visibility = '';
+                }
+            }
+        }
+    }
+
+    //  2. Lógica de Inicialización y Listeners DOM/LEAFLET (Panel 1)
+    if (infoPanel && labelMostrarOpciones && buttonFijar && buttonCerrar && divOpciones) {
         infoPanel.style.display = 'block'; 
         retraerOpciones();
-        //expandirOpciones(); // Inicialmente expandido
         
-        // --- 2.2 LISTENERS DE CONTROLES ---
-        
-        // 📌 Listener del Botón FIJAR
         L.DomEvent.on(buttonFijar, 'click', function (event) {
             L.DomEvent.stopPropagation(event);
             isFijado = !isFijado;
@@ -11693,18 +11730,6 @@ function inicializarMapaLeaflet() {
                 buttonFijar.classList.add('activo-fijado');
                 iconoFijar.textContent = '📍';
                 expandirOpciones();
-                
-                // 🚀 INTELIGENCIA UX: Si fija el panel, le devolvemos la visibilidad de la Meteo
-                if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-                    if (window.meteoEscondidoPorCapas) {
-                        window.meteoEscondidoPorCapas = false;
-                        const divFH = document.getElementById('div-filtro-horario');
-                        if (divFH) divFH.style.display = ''; // Lo volvemos a mostrar
-                    } else {
-                        const btnFiltros = document.getElementById('btn-filtros-mapa');
-                        if (btnFiltros) btnFiltros.style.visibility = '';
-                    }
-                }
             } else {
                 buttonFijar.classList.remove('activo-fijado');
                 iconoFijar.textContent = '📌';
@@ -11712,110 +11737,110 @@ function inicializarMapaLeaflet() {
             }
         }); 
         
-        // ❌ Listener del Botón CERRAR
         L.DomEvent.on(buttonCerrar, 'click', function (event) {
             L.DomEvent.stopPropagation(event);
-            
-            // 1. Restablecer el estado "Fijado"
             if (isFijado) {
-                isFijado = false; // Desactiva el modo fijado
+                isFijado = false;
                 buttonFijar.classList.remove('activo-fijado');
                 iconoFijar.textContent = '📌';
             }
-            
             retraerOpciones();
         }); 
-                
-        // --- 2.3 LISTENERS DEL MAPA ---
-
-        // Al hacer clic/tocar fuera del panel (en el mapa): Retraer el panel
-        map.on('click', function() {
-            retraerOpciones();
-        });
-        
-        // Tras mover el mapa: Retraer el panel
-        map.on('moveend', function() {
-            // Limpieza del campo de búsqueda de despegues
-            const input = document.querySelector('.leaflet-text-search-input');
-            const autocompleteList = document.querySelector('.autocomplete-list');
-        
-            if (input) {
-                input.value = '';
-            }
-            if (autocompleteList) {
-                autocompleteList.style.display = 'none';
-            }		
-            
-            // Retraer el panel de opciones al terminar de mover el mapa
-            retraerOpciones();
-        });
-        
     }
 
-    // Función auxiliar para manejar la expansión por clic
+    //  2.1 Lógica de Inicialización y Listeners DOM/LEAFLET (Panel 2)
+    if (infoPanel2 && labelMostrarOpciones2 && buttonFijar2 && buttonCerrar2 && divOpciones2) {
+        infoPanel2.style.display = 'block'; 
+        retraerOpciones2();
+        
+        L.DomEvent.on(buttonFijar2, 'click', function (event) {
+            L.DomEvent.stopPropagation(event);
+            isFijado2 = !isFijado2;
+            
+            if (isFijado2) {
+                buttonFijar2.classList.add('activo-fijado');
+                iconoFijar2.textContent = '📍';
+                expandirOpciones2();
+            } else {
+                buttonFijar2.classList.remove('activo-fijado');
+                iconoFijar2.textContent = '📌';
+                retraerOpciones2(); 
+            }
+        }); 
+        
+        L.DomEvent.on(buttonCerrar2, 'click', function (event) {
+            L.DomEvent.stopPropagation(event);
+            if (isFijado2) {
+                isFijado2 = false;
+                buttonFijar2.classList.remove('activo-fijado');
+                iconoFijar2.textContent = '📌';
+            }
+            retraerOpciones2();
+        }); 
+    }
+
+    // --- LISTENERS GENERALES DEL MAPA ---
+    map.on('click', function() {
+        retraerOpciones();
+        retraerOpciones2();
+    });
+    
+    map.on('moveend', function() {
+        const input = document.querySelector('.leaflet-text-search-input');
+        const autocompleteList = document.querySelector('.autocomplete-list');
+        if (input) input.value = '';
+        if (autocompleteList) autocompleteList.style.display = 'none';		
+        
+        retraerOpciones();
+        retraerOpciones2();
+    });
+
+    // --- FUNCIONES EXPANSIÓN/RETRACCIÓN PANEL 1 ---
     function expandirAlClicar(event) {
-        const infoPanel = document.getElementById('infoPanel');
-        // Si el panel está retraído Y NO fijado, se expande
         if (infoPanel.classList.contains('retraido') && !isFijado) {
             L.DomEvent.stopPropagation(event);
             expandirOpciones();
         }
     }
-
-    // Función para retraer infoPanel
     function retraerOpciones() {
-        const infoPanel = document.getElementById('infoPanel');
-        const divOpciones = document.getElementById('divOpciones');
-        const labelMostrarOpciones = document.getElementById('labelMostrarOpciones');
-
-        if (isFijado) {return;} // Si está fijado, no hacemos nada.
-        
-        if (!infoPanel || !divOpciones || !labelMostrarOpciones) return;
-
+        if (isFijado || !infoPanel) return;
         divOpciones.classList.add('oculto');
         infoPanel.classList.add('retraido');
         labelMostrarOpciones.style.display = 'block';
-
-        // 🚀 INTELIGENCIA UX: Restauramos la visibilidad de la Meteo o su botón (Solo si afectó por pantalla pequeña)
-        if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-            if (window.meteoEscondidoPorCapas) {
-                window.meteoEscondidoPorCapas = false;
-                const divFH = document.getElementById('div-filtro-horario');
-                if (divFH) divFH.style.display = ''; // Restauramos el panel visualmente
-            } else {
-                const btnFiltros = document.getElementById('btn-filtros-mapa');
-                if (btnFiltros) btnFiltros.style.visibility = '';
-            }
-        }
-
+        evaluarUXPaneles();
         L.DomEvent.on(infoPanel, 'click', expandirAlClicar);
     }
-
-    // Función para expandir infoPanel
     function expandirOpciones() {
-        const infoPanel = document.getElementById('infoPanel');
-        const divOpciones = document.getElementById('divOpciones');
-        const labelMostrarOpciones = document.getElementById('labelMostrarOpciones');
-        
-        if (!infoPanel || !divOpciones || !labelMostrarOpciones) return;
-
+        if (!infoPanel) return;
         divOpciones.classList.remove('oculto');
         infoPanel.classList.remove('retraido');
         labelMostrarOpciones.style.display = 'none';
-        
-        // 🚀 INTELIGENCIA UX: Escondemos temporalmente la Meteo de forma PURAMENTE VISUAL
-        if (window.innerWidth > 693 && window.innerWidth <= 1230) {
-            if (typeof filtrosMapaAbiertos !== 'undefined' && filtrosMapaAbiertos) {
-                window.meteoEscondidoPorCapas = true;
-                const divFH = document.getElementById('div-filtro-horario');
-                if (divFH) divFH.style.display = 'none'; // Escondemos el panel sin apagar el filtro
-            } else {
-                const btnFiltros = document.getElementById('btn-filtros-mapa');
-                if (btnFiltros) btnFiltros.style.visibility = 'hidden';
-            }
-        }
-
+        evaluarUXPaneles();
         L.DomEvent.off(infoPanel, 'click', expandirAlClicar);	
+    }
+
+    // --- FUNCIONES EXPANSIÓN/RETRACCIÓN PANEL 2 ---
+    function expandirAlClicar2(event) {
+        if (infoPanel2.classList.contains('retraido') && !isFijado2) {
+            L.DomEvent.stopPropagation(event);
+            expandirOpciones2();
+        }
+    }
+    function retraerOpciones2() {
+        if (isFijado2 || !infoPanel2) return;
+        divOpciones2.classList.add('oculto');
+        infoPanel2.classList.add('retraido');
+        labelMostrarOpciones2.style.display = 'block';
+        evaluarUXPaneles();
+        L.DomEvent.on(infoPanel2, 'click', expandirAlClicar2);
+    }
+    function expandirOpciones2() {
+        if (!infoPanel2) return;
+        divOpciones2.classList.remove('oculto');
+        infoPanel2.classList.remove('retraido');
+        labelMostrarOpciones2.style.display = 'none';
+        evaluarUXPaneles();
+        L.DomEvent.off(infoPanel2, 'click', expandirAlClicar2);	
     }
 
     // --- SINCRONIZACIÓN INICIAL DEL PANEL INTERNO DEL MAPA ---
