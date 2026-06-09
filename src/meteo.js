@@ -1339,7 +1339,7 @@ function activarEdicionFavoritos() {
     }
     if (inputBuscador) {
         //inputBuscador.placeholder = t('buscador.placeholderEdicion');
-        inputBuscador.placeholder = '🔍';
+        inputBuscador.placeholder = t('buscador.placeholderEdicion') || "🔍 País, Región, Provincia o Despegue";
     }
 
     document.body.classList.add('modo-edicion-tabla');
@@ -6207,7 +6207,12 @@ function limpiarBuscador() {
     botonLimpiar.style.display = 'none';
 	
     inputBuscador.classList.remove('filtrado');
-    inputBuscador.placeholder = '🔍';
+    
+    if (modoEdicionFavoritos) {
+        inputBuscador.placeholder = t('buscador.placeholderEdicion') || "🔍 País, Región, Provincia o Despegue";
+    } else {
+        inputBuscador.placeholder = '🔍';
+    }
     
     // Si había un despegue temporal cargado, lo olvidamos y reconstruimos ---
     if (window.despegueTemporalParaTabla) {
@@ -6488,14 +6493,14 @@ document.addEventListener('i18nReady', function() {
 
     // 5. Blur (Pérdida de Foco)
     inputBuscador.addEventListener('blur', function() {
-        // Ocultamos la 'X' inmediatamente al perder el foco
-        //botonLimpiar.style.display = 'none';
-
-        // SÓLO si el campo está vacío, restauramos el placeholder.
+        // SÓLO si el campo está vacío, restauramos el placeholder correspondiente.
         if (this.value === '') {
-            this.placeholder = placeholderOriginal;
+            if (modoEdicionFavoritos) {
+                this.placeholder = t('buscador.placeholderEdicion') || "🔍 País, Región, Provincia o Despegue";
+            } else {
+                this.placeholder = '🔍';
+            }
         }
-		
 		// Ajusta visibilidad de la X y badge según el contenido
 		gestionarBotonLimpiar();
     });

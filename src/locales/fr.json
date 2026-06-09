@@ -60,7 +60,7 @@
 
   "buscador": {
     "placeholder": "🔍 Décollage ou province...",
-    "placeholderEdicion": "🔍 Décollage ou territoire...",
+    "placeholderEdicion": "🔍 Pays, Région, Province ou Décollage",
     "sugerenciaTitulo": "💡 Aucun favori trouvé pour * <b>{{termino}}</b> *, mais ceux-ci sont disponibles dans la base de données :",
     "anadirFavorito": "+ Ajouter aux favoris"
   },

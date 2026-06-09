@@ -60,7 +60,7 @@
 
   "buscador": {
     "placeholder": "🔍 Startplatz oder Provinz...",
-    "placeholderEdicion": "🔍 Startplatz oder Region...",
+    "placeholderEdicion": "🔍 Land, Region, Provinz oder Startplatz",
     "sugerenciaTitulo": "💡 Keine Favoriten für * <b>{{termino}}</b> * gefunden, aber diese sind in der Datenbank verfügbar:",
     "anadirFavorito": "+ Favorit hinzufügen"
   },

@@ -60,7 +60,7 @@
 
   "buscador": {
     "placeholder": "🔍 Descolagem ou província...",
-    "placeholderEdicion": "🔍 Descolagem ou território...",
+    "placeholderEdicion": "🔍 País, Região, Província ou Descolagem",
     "sugerenciaTitulo": "💡 Não foram encontrados favoritos para * <b>{{termino}}</b> *, mas estes estão disponíveis na base de dados:",
     "anadirFavorito": "+ Adicionar aos favoritos"
   },

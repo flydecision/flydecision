@@ -60,7 +60,7 @@
 
   "buscador": {
     "placeholder": "🔍 Despegue o provincia...",
-    "placeholderEdicion": "🔍 Despegue o territorio...",
+    "placeholderEdicion": "🔍 País, Región, Provincia o Despegue",
     "sugerenciaTitulo": "💡 No tienes favoritos con * <b>{{termino}}</b> *, pero tienes disponibles en la base de datos de despegues:",
     "anadirFavorito": "+ Añadir favorito"
   },
