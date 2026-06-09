@@ -12055,13 +12055,24 @@ function inicializarMapaLeaflet() {
     // INICIALIZAR EL SLIDER DE ACTIVIDAD DEL MAPA
     const sliderAct = document.getElementById('sliderActividad');
     const txtAct = document.getElementById('valorActividadTexto');
+    
+    // Función auxiliar para que el texto y las barras se alineen perfectamente
+    function renderizarTextoActividad(nivel) {
+        return `<span style="display:inline-flex; align-items:center; gap:5px; vertical-align:middle; margin-left: 6px; margin-top: -3px;">
+                    ${crearIconoActividad(nivel)}
+                    <span>${nivel}/5</span>
+                </span>`;
+    }
+
     if (sliderAct && txtAct) {
         sliderAct.value = filtroActividadMapa;
-        txtAct.textContent = filtroActividadMapa;
+        txtAct.innerHTML = renderizarTextoActividad(filtroActividadMapa);
         
         sliderAct.addEventListener('input', function() {
             filtroActividadMapa = parseInt(this.value, 10);
-            txtAct.textContent = filtroActividadMapa;
+            // Inyectamos el HTML de las barras + el texto
+            txtAct.innerHTML = renderizarTextoActividad(filtroActividadMapa);
+            
             actualizarFiltrosMapa();
             actualizarEstadoVisualFiltros();
         });
