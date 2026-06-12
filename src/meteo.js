@@ -7042,8 +7042,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 const timeAgoMF = typeof formatTimeAgo === 'function' ? formatTimeAgo(lastDataGenerationTimestamp, ahoraMs) : '';
                 const timeAgoEC = (typeof formatTimeAgo === 'function' && lastDataGenerationTimestampEcmwf > 0) ? formatTimeAgo(lastDataGenerationTimestampEcmwf, ahoraMs) : '...';
                 
-                const refMF = (jsonModelInitTimestamp > 0 && typeof formatHourUTC === 'function') ? formatHourUTC(new Date(jsonModelInitTimestamp)) : '';
-                const refEC = (jsonModelInitTimestampEcmwf > 0 && typeof formatHourUTC === 'function') ? formatHourUTC(new Date(jsonModelInitTimestampEcmwf)) : '';
+                let refMF = '';
+                if (jsonModelInitTimestamp > 0 && typeof formatHourUTC === 'function') {
+                    const dateMF = new Date(jsonModelInitTimestamp);
+                    const dayMF = String(dateMF.getUTCDate()).padStart(2, '0');
+                    refMF = `${dayMF}t${formatHourUTC(dateMF)}`;
+                }
+
+                let refEC = '';
+                if (jsonModelInitTimestampEcmwf > 0 && typeof formatHourUTC === 'function') {
+                    const dateEC = new Date(jsonModelInitTimestampEcmwf);
+                    const dayEC = String(dateEC.getUTCDate()).padStart(2, '0');
+                    refEC = `${dayEC}t${formatHourUTC(dateEC)}`;
+                }
 
                 // --- 2. TEXTOS DE FUTURO O ACTUALIZANDO ---
                 const MARGEN_TOLERANCIA_MS = 45 * 60 * 1000; 
@@ -7166,11 +7177,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 dataGenElement.innerHTML = `
                     <ul style="margin: 5px 0 0 0; padding-left: 27px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
                         <li style="margin-bottom: 8px;">
-                            <b>Météo-France:</b> ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-style:italic;">(ref.${refMF}Z)</span><br>
+                            <b>Météo-France:</b> ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
                             <span>${textoFuturoMF}</span>
                         </li>
                         <li>
-                            <b>ECMWF:</b> ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-style:italic;">(ref.${refEC}Z)</span><br>
+                            <b>ECMWF:</b> ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
                             <span>${textoFuturoEC}</span>
                         </li>
                     </ul>`;
