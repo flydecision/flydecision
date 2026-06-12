@@ -402,6 +402,11 @@
     "avisoNuevoMeteo": "<p>ℹ️ Eguraldi datu berriak eskuragarri honetarako:</p><p><b>{{modelos}}</b></p><p>Orain eguneratu?</p>"
   },
 
+  "retrasoInusual": {
+    "titulo": "ℹ️ Iragarpenari buruzko abisua",
+    "mensaje": "<p><b>{{modelos}}</b>-en datu meteorologikoen zerbitzaria atzerapen ezohikoa izaten ari da bere datuen argitalpenean.</p><p>Kontuan izan aplikazioak eskuragarri dagoen azken iragarpena erakusten dizula.</p><p>Automatikoki eguneratuko da eskuragarri dagoenean. Egoeraren jarraipena egin dezakezu <b>Ezarpenak > Meteo ereduen eguneraketak</b> atalean.</p>"
+  },
+
   "ajustes": {
     "probPrecipitacion": "Prezipitazio probabilitatea",
     "vientoAlturas": "Haizea 80, 120 eta 180 m-tan",    

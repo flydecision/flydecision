@@ -402,6 +402,11 @@
     "avisoNuevoMeteo": "<p>ℹ️ Neue Wetterdaten verfügbar für:</p><p><b>{{modelos}}</b></p><p>Jetzt aktualisieren?</p>"
   },
 
+  "retrasoInusual": {
+    "titulo": "ℹ️ Hinweis zur Vorhersage",
+    "mensaje": "<p>Der meteorologische Datenserver von <b>{{modelos}}</b> weist eine ungewöhnliche Verzögerung bei der Veröffentlichung seiner Daten auf.</p><p>Bitte beachte, dass dir die Anwendung die letzte verfügbare Vorhersage anzeigt.</p><p>Sie wird automatisch aktualisiert, sobald sie verfügbar ist. Den Status kannst du unter <b>Einstellungen > Wettermodell-Updates</b> verfolgen.</p>"
+  },
+
   "ajustes": {
     "probPrecipitacion": "Niederschlagswahrscheinlichkeit",
     "vientoAlturas": "Wind auf 80, 120 und 180 m",    

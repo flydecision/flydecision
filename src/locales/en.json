@@ -402,6 +402,11 @@
     "avisoNuevoMeteo": "<p>ℹ️ New weather data available for:</p><p><b>{{modelos}}</b></p><p>Update now?</p>"
   },
 
+  "retrasoInusual": {
+    "titulo": "ℹ️ Forecast notice",
+    "mensaje": "<p>The meteorological data server for <b>{{modelos}}</b> is experiencing an unusual delay in publishing its data.</p><p>Keep in mind that the application is showing you the latest available forecast.</p><p>It will update automatically as soon as it is available. You can follow the status in <b>Settings > Meteo model updates</b>.</p>"
+  },
+
   "ajustes": {
     "probPrecipitacion": "Precipitation probability",
     "vientoAlturas": "Wind at 80, 120 y 180 m",    

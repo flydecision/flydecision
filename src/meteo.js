@@ -3219,9 +3219,11 @@ const leerDeCacheIDB = async (key) => {
 
 async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
 	
-	if (!silencioso) {
-        mostrarLoading();
-        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // Pausa técnica solo si mostramos loader
+    if (!silencioso) {
+        // Si estamos forzando descarga de red, el cartel sale casi al instante (50ms).
+        // Si es solo un filtro local en RAM, esperamos 250ms antes de mostrarlo.
+        mostrarLoading(forzarRecarga ? 50 : 250);
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // Pausa técnica
     }
 
     // Ponemos la bandera de "Carga en proceso". Si el navegador peta durante esta función, esta bandera se quedará grabada.
@@ -5842,18 +5844,31 @@ function recargarPagina() {
     location.reload();
 }
 
-const mostrarLoading = () => {
-    const overlay = document.getElementById('msgActualizando...');
-    if (overlay) {
-        overlay.classList.add('loader-activo');
-    }
+let timerLoader = null; // Variable global para controlar el tiempo
+
+const mostrarLoading = (retraso = 250) => {
+    // Si ya había un temporizador, lo cancelamos
+    if (timerLoader) clearTimeout(timerLoader);
+    
+    // Programamos la aparición del cartel tras 'X' milisegundos
+    timerLoader = setTimeout(() => {
+        const overlay = document.getElementById('msgActualizando...');
+        if (overlay) {
+            overlay.classList.add('loader-activo');
+        }
+    }, retraso);
 };
 
 const ocultarLoading = () => {
+    // Si la función termina ANTES de que salte el temporizador, lo cancelamos. Así el cartel nunca llega a aparecer.
+    if (timerLoader) {
+        clearTimeout(timerLoader);
+        timerLoader = null;
+    }
+    
     const overlay = document.getElementById('msgActualizando...');
     if (overlay) {
         overlay.classList.remove('loader-activo');
-        
         // Forzamos un reflow (repintado) por si se vuelve a llamar rápido
         void overlay.offsetWidth; 
     }
@@ -7314,6 +7329,35 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     actualizacionesPendientes = [...new Set(actualizacionesPendientes)];
                 } else {
                     mostrarAvisoActualizacionMeteo(modelosRecientes);
+                }
+            }
+
+            // LÓGICA DE AVISO DE RETRASO INUSUAL
+            // Usamos sessionStorage para que solo salga una vez mientras la pestaña/app esté abierta
+            if (!sessionStorage.getItem('METEO_AVISO_RETRASO_VISTO')) {
+                let modelosRetrasados = [];
+                
+                // Comprobamos si el texto original del servidor incluye la alerta
+                if (currentStatusText && (currentStatusText.includes("Unusual delay") || currentStatusText.includes("retraso inusual") || currentStatusText.includes("⏳⏳"))) {
+                    modelosRetrasados.push("Météo-France");
+                }
+                
+                if (currentStatusTextEcmwf && (currentStatusTextEcmwf.includes("Unusual delay") || currentStatusTextEcmwf.includes("retraso inusual") || currentStatusTextEcmwf.includes("⏳⏳"))) {
+                    modelosRetrasados.push("ECMWF");
+                }
+
+                if (modelosRetrasados.length > 0) {
+                    // Marcamos como visto ANTES de mostrarlo para asegurar que no se duplique
+                    sessionStorage.setItem('METEO_AVISO_RETRASO_VISTO', 'true');
+                    
+                    // Unimos los nombres (Ej: "Météo-France" o "Météo-France y ECMWF")
+                    const modelosTexto = modelosRetrasados.join(" y ");
+                    
+                    // Llamamos a tu gestor de mensajes modal estándar
+                    mensajeModalAceptar(
+                        t('retrasoInusual.titulo'), 
+                        t('retrasoInusual.mensaje', { modelos: modelosTexto })
+                    );
                 }
             }
 

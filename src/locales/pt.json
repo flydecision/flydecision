@@ -402,6 +402,11 @@
     "avisoNuevoMeteo": "<p>ℹ️ Novos dados meteorológicos disponíveis para:</p><p><b>{{modelos}}</b></p><p>Atualizar agora?</p>"
   },
 
+  "retrasoInusual": {
+    "titulo": "ℹ️ Aviso sobre a previsão",
+    "mensaje": "<p>O servidor de dados meteorológicos de <b>{{modelos}}</b> está a registar um atraso inusual na publicação dos seus dados.</p><p>Tem em conta que a aplicação está a mostrar-te a última previsão disponível.</p><p>Irá atualizar-se automaticamente assim que estiver disponível. Podes seguir o estado em <b>Definições > Atualizações modelos meteo</b>.</p>"
+  },
+
   "ajustes": {
     "probPrecipitacion": "Probabilidade de precipitação",
     "vientoAlturas": "Vento a 80, 120 e 180 m",    

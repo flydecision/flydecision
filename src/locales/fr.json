@@ -402,6 +402,11 @@
     "avisoNuevoMeteo": "<p>ℹ️ Nouvelles données météorologiques disponibles pour:</p><p><b>{{modelos}}</b></p><p>Mettre à jour maintenant ?</p>"
   },
 
+  "retrasoInusual": {
+    "titulo": "ℹ️ Avis concernant les prévisions",
+    "mensaje": "<p>Le serveur de données météorologiques de <b>{{modelos}}</b> connaît un retard inhabituel dans la publication de ses données.</p><p>Garde à l'esprit que l'application t'affiche la dernière prévision disponible.</p><p>Elle se mettra à jour automatiquement dès qu'elle sera disponible. Tu peux suivre le statut dans <b>Paramètres > Mises à jour modèles météo</b>.</p>"
+  },
+
   "ajustes": {
     "probPrecipitacion": "Probabilité de précipitations",
     "vientoAlturas": "Vent à 80, 120 et 180 m",    
