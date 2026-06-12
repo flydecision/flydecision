@@ -4581,7 +4581,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const tdPais = document.createElement("td");
 
                 const paisValor = d.País || d['País'] || '';
-                tdPais.innerHTML = `<div class="texto-multilinea-2" style="max-width: 44px;" title="${paisValor}">${paisValor}</div>`;	
+                const paisTraducido = t('paises.' + paisValor, { defaultValue: paisValor });
+                tdPais.innerHTML = `<div class="texto-multilinea-2" style="max-width: 44px;" title="${paisTraducido}">${paisTraducido}</div>`;	
                 tdPais.rowSpan = totalFilasRowSpan;	
                 tdPais.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda");
                 //tdPais.style.width = "50px";
@@ -4596,7 +4597,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 				
 				const tdRegion = document.createElement("td");
 				
-				tdRegion.innerHTML = `<div class="texto-multilinea-2" title="${d.Región}">${d.Región}</div>`;	
+				const regionTraducida = t('regiones.' + d.Región, { defaultValue: d.Región });
+                tdRegion.innerHTML = `<div class="texto-multilinea-2" title="${regionTraducida}">${regionTraducida}</div>`;	
 				tdRegion.rowSpan = totalFilasRowSpan;	
 				tdRegion.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda");
 				
@@ -4659,7 +4661,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
                 <b><span style='font-size: 18px; padding-right: 20px;'>🪂 ${d.Despegue}</b></span><br>
-                ${t('popupDespegue.region')} <b>${d.Región}</b><br>
+                ${t('popupDespegue.region')} <b>${t('regiones.' + d.Región, { defaultValue: d.Región })}</b><br>
                 ${t('popupDespegue.provincia')} <b>${d.Provincia}</b><br>
                 
                 <div style="margin-bottom: 2px;">
@@ -10480,8 +10482,11 @@ function inicializarMapaLeaflet() {
                     const lat = parseFloat(row.Latitud);
                     const lon = parseFloat(row.Longitud);
                     const altitud = row.Altitud || '';	
-                    const region = row.Región || ''; 
+                    const regionRaw = row.Región || ''; 
                     const provincia = row.Provincia || '';
+
+                    // Traducir al vuelo
+                    const region = t('regiones.' + regionRaw, { defaultValue: regionRaw });
                     let despegue = row.Despegue || ''; 
                     const SVGorientaciones = createOrientationSVG(row.Orientaciones);
                     const orientacion = row.Orientación || '';
