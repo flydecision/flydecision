@@ -3219,9 +3219,11 @@ const leerDeCacheIDB = async (key) => {
 
 async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
 	
-	if (!silencioso) {
-        mostrarLoading();
-        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // Pausa técnica solo si mostramos loader
+    if (!silencioso) {
+        // Si estamos forzando descarga de red, el cartel sale casi al instante (50ms).
+        // Si es solo un filtro local en RAM, esperamos 250ms antes de mostrarlo.
+        mostrarLoading(forzarRecarga ? 50 : 250);
+        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // Pausa técnica
     }
 
     // Ponemos la bandera de "Carga en proceso". Si el navegador peta durante esta función, esta bandera se quedará grabada.
@@ -5842,18 +5844,31 @@ function recargarPagina() {
     location.reload();
 }
 
-const mostrarLoading = () => {
-    const overlay = document.getElementById('msgActualizando...');
-    if (overlay) {
-        overlay.classList.add('loader-activo');
-    }
+let timerLoader = null; // Variable global para controlar el tiempo
+
+const mostrarLoading = (retraso = 250) => {
+    // Si ya había un temporizador, lo cancelamos
+    if (timerLoader) clearTimeout(timerLoader);
+    
+    // Programamos la aparición del cartel tras 'X' milisegundos
+    timerLoader = setTimeout(() => {
+        const overlay = document.getElementById('msgActualizando...');
+        if (overlay) {
+            overlay.classList.add('loader-activo');
+        }
+    }, retraso);
 };
 
 const ocultarLoading = () => {
+    // Si la función termina ANTES de que salte el temporizador, lo cancelamos. Así el cartel nunca llega a aparecer.
+    if (timerLoader) {
+        clearTimeout(timerLoader);
+        timerLoader = null;
+    }
+    
     const overlay = document.getElementById('msgActualizando...');
     if (overlay) {
         overlay.classList.remove('loader-activo');
-        
         // Forzamos un reflow (repintado) por si se vuelve a llamar rápido
         void overlay.offsetWidth; 
     }
@@ -7042,8 +7057,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 const timeAgoMF = typeof formatTimeAgo === 'function' ? formatTimeAgo(lastDataGenerationTimestamp, ahoraMs) : '';
                 const timeAgoEC = (typeof formatTimeAgo === 'function' && lastDataGenerationTimestampEcmwf > 0) ? formatTimeAgo(lastDataGenerationTimestampEcmwf, ahoraMs) : '...';
                 
-                const refMF = (jsonModelInitTimestamp > 0 && typeof formatHourUTC === 'function') ? formatHourUTC(new Date(jsonModelInitTimestamp)) : '';
-                const refEC = (jsonModelInitTimestampEcmwf > 0 && typeof formatHourUTC === 'function') ? formatHourUTC(new Date(jsonModelInitTimestampEcmwf)) : '';
+                let refMF = '';
+                if (jsonModelInitTimestamp > 0 && typeof formatHourUTC === 'function') {
+                    const dateMF = new Date(jsonModelInitTimestamp);
+                    const dayMF = String(dateMF.getUTCDate()).padStart(2, '0');
+                    refMF = `${dayMF}t${formatHourUTC(dateMF)}`;
+                }
+
+                let refEC = '';
+                if (jsonModelInitTimestampEcmwf > 0 && typeof formatHourUTC === 'function') {
+                    const dateEC = new Date(jsonModelInitTimestampEcmwf);
+                    const dayEC = String(dateEC.getUTCDate()).padStart(2, '0');
+                    refEC = `${dayEC}t${formatHourUTC(dateEC)}`;
+                }
 
                 // --- 2. TEXTOS DE FUTURO O ACTUALIZANDO ---
                 const MARGEN_TOLERANCIA_MS = 45 * 60 * 1000; 
@@ -7166,11 +7192,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 dataGenElement.innerHTML = `
                     <ul style="margin: 5px 0 0 0; padding-left: 27px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
                         <li style="margin-bottom: 8px;">
-                            <b>Météo-France:</b> ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-style:italic;">(ref.${refMF}Z)</span><br>
+                            <b>Météo-France:</b> ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
                             <span>${textoFuturoMF}</span>
                         </li>
                         <li>
-                            <b>ECMWF:</b> ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-style:italic;">(ref.${refEC}Z)</span><br>
+                            <b>ECMWF:</b> ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
                             <span>${textoFuturoEC}</span>
                         </li>
                     </ul>`;
@@ -7303,6 +7329,35 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     actualizacionesPendientes = [...new Set(actualizacionesPendientes)];
                 } else {
                     mostrarAvisoActualizacionMeteo(modelosRecientes);
+                }
+            }
+
+            // LÓGICA DE AVISO DE RETRASO INUSUAL
+            // Usamos sessionStorage para que solo salga una vez mientras la pestaña/app esté abierta
+            if (!sessionStorage.getItem('METEO_AVISO_RETRASO_VISTO')) {
+                let modelosRetrasados = [];
+                
+                // Comprobamos si el texto original del servidor incluye la alerta
+                if (currentStatusText && (currentStatusText.includes("Unusual delay") || currentStatusText.includes("retraso inusual") || currentStatusText.includes("⏳⏳"))) {
+                    modelosRetrasados.push("Météo-France");
+                }
+                
+                if (currentStatusTextEcmwf && (currentStatusTextEcmwf.includes("Unusual delay") || currentStatusTextEcmwf.includes("retraso inusual") || currentStatusTextEcmwf.includes("⏳⏳"))) {
+                    modelosRetrasados.push("ECMWF");
+                }
+
+                if (modelosRetrasados.length > 0) {
+                    // Marcamos como visto ANTES de mostrarlo para asegurar que no se duplique
+                    sessionStorage.setItem('METEO_AVISO_RETRASO_VISTO', 'true');
+                    
+                    // Unimos los nombres (Ej: "Météo-France" o "Météo-France y ECMWF")
+                    const modelosTexto = modelosRetrasados.join(" y ");
+                    
+                    // Llamamos a tu gestor de mensajes modal estándar
+                    mensajeModalAceptar(
+                        t('retrasoInusual.titulo'), 
+                        t('retrasoInusual.mensaje', { modelos: modelosTexto })
+                    );
                 }
             }
 
