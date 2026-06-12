@@ -10468,7 +10468,7 @@ function inicializarMapaLeaflet() {
 
         window.marcadoresCSVCargados = true;
 
-        Papa.parse('map/despegues.csv', {
+        Papa.parse('https://flydecision.com/map/despegues.csv', {
             download: true,
             header: true,
             skipEmptyLines: true,
