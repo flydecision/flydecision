@@ -356,10 +356,13 @@
       "btnSecundario": "Ver la guía general",
       "btnImportar": "Importar configuración",
       "subtitulo": "¿Dónde ir a volar?",
+      "subtitulo2": "Selecciona tus despegues favoritos 👉❤️ para tener su previsión y puntuación",
       "btnFavoritos": "Configurar mis favoritos",
       "btnSubtituloFavoritos": "Para ver la meteo de tus despegues",
       "btnExplorarMapa": "Explorar el mapa",
-      "btnSubtituloExplorarMapa": "Sin necesidad de configurar nada"      
+      "btnSubtituloExplorarMapa": "Sin configurar nada",
+      "btnSelecMapa": "Seleccionar con el mapa",
+      "btnSelecLista": "Seleccionar con la lista"    
     },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Análisis automático del pronóstico meteorológico para vuelo en parapente.</p><p>🙄 <b>¿Para qué sirve?:</b> para ayudarte a decidir dónde ir a volar. Muestra una tabla con tus despegues favoritos, sus pronósticos y hace un análisis automático de esas <b>condiciones meteorológicas</b>.</p><p>🧮 <b>¿Qué análisis hace?:</b> compara el pronóstico con los límites de viento medio y racha máxima configurados y con la orientación de cada despegue; también analiza el viento a alturas cercanas al despegue (80, 120 y 180 m), lo que da idea del gradiente y de la fiabilidad del pronóstico de viento medio. Muestra datos meteo de interés para XC (techo, CAPE y CIN).</p><p>Con toda la información, puntúa de 0 a 10 cada despegue y colorea 🟩&nbsp;🟨&nbsp;🟥 los datos para el rango horario o días que elijas. Puedes personalizar todos esos límites para que el análisis se adapte a tus preferencias.</p>"

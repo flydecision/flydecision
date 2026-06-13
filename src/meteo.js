@@ -3344,49 +3344,79 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     display: flex; flex-direction: column;
                 ">
                     <!-- Cabecera -->
-                    <div style="text-align:center; margin-bottom: 2.55rem;">
+                    <div style="text-align:center; margin-bottom: 1.75rem;">
                         <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🪂</div>
-                        <div style="font-size: 35px; font-weight: 500; color: var(--color-text-primary, #111); margin-bottom: 4px;">Fly Decision</div>
-                        <div style="font-size: 20px; color: var(--color-text-secondary, #666);">${t('asistente.paso1.subtitulo')}</div>
+                        <div style="font-size: 35px; font-weight: 500; color: var(--color-text-primary, #111); margin-bottom: 8px;">Fly Decision</div>
+                        <div style="font-size: 20px; color: var(--color-text-secondary, #666); line-height: 1.45;">${t('asistente.paso1.subtitulo')}</div><br>
+                        <div style="font-size: 20px; color: var(--color-text-secondary, #666); line-height: 1.45;">${t('asistente.paso1.subtitulo2')}</div>
                     </div>
 
                     <!-- Botones principales -->
-                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem;">
-                        <button id="paso1-btn-favoritos" style="
-                            display: flex; align-items: center; gap: 10px;
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 3rem;">
+
+                        <!-- Seleccionar con el mapa -->
+                        <button id="paso1-btn-selec-mapa" style="
+                            display: flex; align-items: center; gap: 12px;
                             padding: 14px 18px; border-radius: 12px; border: none;
-                            background: #378ADD;
-                            color: #fff;
-                            font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
-                            width: 100%;
+                            background: #378ADD; color: #fff;
+                            cursor: pointer; text-align: left; width: 100%;
                         ">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                                <line x1="8" y1="2" x2="8" y2="18"></line>
+                                <line x1="16" y1="6" x2="16" y2="22"></line>
+                            </svg>
                             <div>
-                                <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnFavoritos')}</div>
-                                <div style="font-size:16px; font-weight:400; margin-top:2px; opacity:0.8;">${t('asistente.paso1.btnSubtituloFavoritos')}</div>
+                                <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnSelecMapa')}</div>
                             </div>
                         </button>
 
+                        <!-- Seleccionar con la lista -->
+                        <button id="paso1-btn-selec-lista" style="
+                            display: flex; align-items: center; gap: 12px;
+                            padding: 14px 18px; border-radius: 12px; border: none;
+                            background: #378ADD; color: #fff;
+                            cursor: pointer; text-align: left; width: 100%;
+                        ">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <circle cx="3" cy="6" r="0.5" fill="#fff"></circle>
+                                <circle cx="3" cy="12" r="0.5" fill="#fff"></circle>
+                                <circle cx="3" cy="18" r="0.5" fill="#fff"></circle>
+                            </svg>
+                            <div>
+                                <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnSelecLista')}</div>
+                            </div>
+                        </button>
+
+                        <!-- Explorar mapa (sin configurar) -->
                         <button id="paso1-btn-mapa" style="
-                            display: flex; align-items: center; gap: 10px;
-                            padding: 14px 18px; border-radius: 12px;
+                            display: flex; align-items: center; gap: 12px;
+                            padding: 12px 18px; border-radius: 12px;
                             border: 0.5px solid var(--color-border-secondary, #ccc);
                             background: var(--color-background-secondary, #f5f5f5);
                             color: var(--color-text-primary, #111);
-                            font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
-                            width: 100%; margin-bottom: 35px;
+                            cursor: pointer; text-align: left; width: 100%;
+                            margin-top: 4px;
                         ">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; opacity:0.7;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
                             <div>
                                 <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnExplorarMapa')}</div>
                                 <div style="font-size:16px; font-weight:400; margin-top:2px; opacity: 0.75;">${t('asistente.paso1.btnSubtituloExplorarMapa')}</div>
                             </div>
                         </button>
+
                     </div>
 
                     <!-- Separador + botones secundarios -->
-                    <div style="border-top: 0.5px solid var(--color-border-tertiary, #e0e0e0); padding-top: 1rem; display: flex; flex-direction: row; gap: 8px;">
-    
+                    <div style="padding-top: 1rem; display: flex; flex-direction: row; gap: 8px;">
+
                         <button id="paso1-btn-importar" style="
                             flex: 2;
                             display: flex; align-items: center; gap: 8px;
@@ -3431,7 +3461,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             const cerrar = () => overlay.remove();
 
-            document.getElementById('paso1-btn-favoritos').addEventListener('click', () => {
+            document.getElementById('paso1-btn-selec-mapa').addEventListener('click', () => {
+                cerrar();
+                clicBotonMapa();
+            });
+
+            document.getElementById('paso1-btn-selec-lista').addEventListener('click', () => {
                 cerrar();
                 activarEdicionFavoritos();
             });

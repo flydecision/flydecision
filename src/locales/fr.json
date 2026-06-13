@@ -356,10 +356,13 @@
       "btnSecundario": "Voir le guide général",
       "btnImportar": "Importer les paramètres",
       "subtitulo": "Où aller voler ?",
+      "subtitulo2": "Sélectionne tes décollages favoris 👉❤️ pour avoir leur prévision et leur score",
       "btnFavoritos": "Configurer mes favoris",
       "btnSubtituloFavoritos": "Pour voir la météo de tes décollages",
       "btnExplorarMapa": "Explorer la carte",
-      "btnSubtituloExplorarMapa": "Sans avoir besoin de rien configurer"
+      "btnSubtituloExplorarMapa": "Sans rien configurer",
+      "btnSelecMapa": "Sélectionner avec la carte",
+      "btnSelecLista": "Sélectionner avec la liste"
     },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Analyse automatisée des prévisions météorologiques pour le parapente.</p><p>🙄 <b>À quoi ça sert ? :</b> à vous aider à décider où voler. Il affiche un tableau avec vos décollages favoris, leurs prévisions, et effectue une analyse automatisée de ces <b>conditions météorologiques</b>.</p><p>🧮 <b>Quelle analyse effectue-t-il ? :</b> il compare les prévisions avec vos limites configurées de vent moyen et de rafales maximales et l'orientation de chaque décollage ; il analyse également le vent à des altitudes proches du décollage (80, 120 et 180 m), donnant un aperçu du gradient de vent et de la fiabilité des prévisions. Il affiche les données clés de XC (plafond, CAPE et CIN).</p><p>Avec toutes ces informations, il note chaque décollage de 0 à 10 et code en couleur 🟩&nbsp;🟨&nbsp;🟥 les données pour la plage horaire choisie. Vous pouvez personnaliser toutes les limites pour correspondre à vos préférences.</p>"

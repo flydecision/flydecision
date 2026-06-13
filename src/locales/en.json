@@ -356,10 +356,13 @@
       "btnSecundario": "View general guide",
       "btnImportar": "Import settings",
       "subtitulo": "Where to go flying?",
+      "subtitulo2": "Select your favorite takeoffs 👉❤️ to have their forecast and score",
       "btnFavoritos": "Configure my favorites",
       "btnSubtituloFavoritos": "To see the meteo for your takeoffs",
       "btnExplorarMapa": "Explore the map",
-      "btnSubtituloExplorarMapa": "No configuration needed"
+      "btnSubtituloExplorarMapa": "Without configuring anything",
+      "btnSelecMapa": "Select with the map",
+      "btnSelecLista": "Select with the list"
     },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Automated weather forecast analysis for paragliding.</p><p>🙄 <b>What is it for?:</b> to help you decide where to fly. It shows a table with your favorite takeoffs, their forecasts, and performs an automated analysis of those <b>weather conditions</b>.</p><p>🧮 <b>What analysis does it perform?:</b> it compares the forecast against your configured mean wind and max gust limits and each takeoff's orientation; it also analyzes wind at altitudes near the takeoff (80, 120, and 180 m), providing insight into wind gradient and forecast reliability. It shows key XC data (ceiling, CAPE, and CIN).</p><p>With all this info, it scores each takeoff from 0 to 10 and color-codes 🟩&nbsp;🟨&nbsp;🟥 the data for your chosen time range. You can customize all limits to match your preferences.</p>"
