@@ -7963,8 +7963,16 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 // Detectamos si la usuaria está físicamente viendo el mapa
                 const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
                 
-                // Si está haciendo el Onboarding desde el mapa y pulsa Atrás
+                // 1. PRIMERO: Si estamos en un "desvío" (modoEdicionFavoritos == false temporalmente)
+                // Queremos VOLVER al modo de edición (al mapa o a la tabla según corresponda)
+                if (!modoEdicionFavoritos) {
+                    volverAEdicionDesdeDesvio();
+                    return;
+                }
+
+                // 2. Si estamos activamente editando y pulsamos atrás, queremos SALIR o CANCELAR:
                 if (window.onboardingMapaActivo) {
+                    // Cancelar el onboarding del mapa
                     window.onboardingMapaActivo = false;
                     window.venirDeEdicionActiva = false;
                     modoEdicionFavoritos = false;
@@ -7986,18 +7994,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     if (typeof window.mostrarPaso1General === 'function') {
                         window.mostrarPaso1General();
                     }
-                    return;
-                }
-
-                // Si no está en modo edición (vista de desvío tabla) O si está en el mapa normal, 
-                // queremos VOLVER a la pantalla de edición de favoritos de la tabla
-                if (!modoEdicionFavoritos || enMapa) {
-                    volverAEdicionDesdeDesvio();
                 } else {
-                    // Caso normal: Estamos en la TABLA en modo edición y queremos SALIR del modo edición al pulsar atrás
+                    // Caso normal: Estamos en la TABLA en modo edición y queremos cancelar
                     const esPrimeraVisita = !localStorage.getItem("METEO_PRIMERA_VISITA_HECHA");
                     const sinFavoritos = obtenerFavoritos().length === 0;
+                    
                     if (esPrimeraVisita && sinFavoritos) {
+                        // Cancelar onboarding de la tabla
                         modoEdicionFavoritos = false;
                         soloFavoritos = true;
                         window.venirDeEdicionActiva = false;
@@ -8013,11 +8016,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
                         if (typeof limpiarBuscador === 'function') limpiarBuscador();
                         construir_tabla();
                         
-                        // 🚀 Usamos la variable global para asegurarnos de que la llama bien
                         if (typeof window.mostrarPaso1General === 'function') {
                             window.mostrarPaso1General();
                         }
                     } else {
+                        // Si ya tiene favoritos o es recurrente, usamos tu función centralizada
                         finalizarEdicionFavoritos();
                     }
                 }
@@ -8555,10 +8558,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
     window.volverAEdicionDesdeDesvio = function() {
         window.despegueTemporalParaTabla = null; 
 
-        // 2. Limpiamos el buscador (ahora llamará a aplicarFiltrosVisuales de forma segura)
+        // Limpiamos el buscador 
         if (typeof limpiarBuscador === 'function') limpiarBuscador();
 
-        // 3. Restauramos banderas de modo edición
+        // Restauramos banderas de modo edición
         modoEdicionFavoritos = true;
         soloFavoritos = false; 
         soloSeguimiento = false; 
@@ -8569,7 +8572,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             soloFavoritos = true;
         }
 
-        // 4. Restauramos las clases visuales de los menús
+        // Restauramos las clases visuales de los menús
         document.body.classList.add('modo-edicion-tabla');
         const divMenu = document.getElementById('div-menu');
         if (divMenu) divMenu.classList.add('mode-editing');
@@ -8582,16 +8585,35 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const panelDistancia = document.getElementById("div-filtro-distancia");
         if (panelDistancia) panelDistancia.classList.add("activo");
 
-        // 5. Volvemos a la vista tabla (esto ocultará el botón automáticamente)
-        cambiarVista('tabla');
-        
-        // 6. Devolvemos la luz al botón de Ajustes
-        const btnSettings = document.getElementById('nav-settings');
-        if (btnSettings && typeof window.activarMenuInferior === 'function') {
-            window.activarMenuInferior(btnSettings);
+        // Decidir a dónde volver
+        if (window.onboardingMapaActivo) {
+            // Volvemos al MAPA
+            cambiarVista('mapa');
+            
+            // Devolvemos la luz al botón del mapa
+            const btnMap = document.getElementById('nav-map');
+            if (btnMap && typeof window.activarMenuInferior === 'function') {
+                window.activarMenuInferior(btnMap);
+            }
+            
+            // Garantizar que en el mapa los filtros meteo sigan apagados (limpieza visual)
+            if (typeof limpiarColoresMapa === 'function') limpiarColoresMapa();
+            const btnFiltros = document.getElementById('btn-filtros-mapa');
+            if (btnFiltros) btnFiltros.style.display = 'none';
+            document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
+            
+        } else {
+            // Volvemos a la TABLA
+            cambiarVista('tabla');
+            
+            // Devolvemos la luz al botón de Ajustes
+            const btnSettings = document.getElementById('nav-settings');
+            if (btnSettings && typeof window.activarMenuInferior === 'function') {
+                window.activarMenuInferior(btnSettings);
+            }
         }
 
-        // 7. Reconstruimos la tabla conservando la posición de scroll
+        // Reconstruimos la tabla conservando la posición de scroll
         window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
         construir_tabla();
     };
@@ -9173,8 +9195,8 @@ window.evaluarEstadoNuevosUsuarios = function() {
     const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
 
     if (!configHecha) {
-        if (enEdicion && enMapa) {
-            // 🗺️ CASO 1: Está haciendo el onboarding desde el MAPA
+        if (enEdicion && window.onboardingMapaActivo) {
+            // 🗺️ CASO 1: Está haciendo el onboarding expresamente desde el MAPA
             if (navMenu) navMenu.style.display = 'none'; 
             if (btnConfigMapa) {
                 btnConfigMapa.style.display = 'flex'; 
@@ -9213,6 +9235,7 @@ window.evaluarEstadoNuevosUsuarios = function() {
             }
         } else {
             // 📝 CASO 3: Está haciendo el onboarding desde la TABLA (usará el menú flotante rojo de la tabla)
+            // (Si viene de la tabla y entra al mapa, como onboardingMapaActivo es falso, cae aquí y oculta el botón)
             if (navMenu) navMenu.style.display = 'none'; 
             if (btnConfigMapa) btnConfigMapa.style.display = 'none'; 
         }
