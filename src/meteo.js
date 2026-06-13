@@ -1985,10 +1985,114 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
     favoritos = obtenerFavoritos();
 
     if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { 
+        const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") === "true";
+        
         if (window.onboardingMapaActivo) {
-            mensajeModalAceptar('', t('favoritos.necesarioMarcarUnoEnMapa'));
+            // 🗺️ MODAL ESPECIAL PARA EL MAPA CON BOTÓN DE ESCAPE
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: `<div style="text-align: center; font-size: 1.1em;">${t('favoritos.necesarioMarcarUnoEnMapa')}</div>`,
+                botones: [
+                    {
+                        texto: (typeof t === 'function' ? t('botones.volverAlMenuInicial', {defaultValue: 'Volver al menú inicial'}) : 'Volver al menú inicial'),
+                        estilo: 'secundario',
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                            
+                            // Limpieza profunda para abortar la edición en el mapa
+                            window.onboardingMapaActivo = false;
+                            window.venirDeEdicionActiva = false;
+                            modoEdicionFavoritos = false;
+                            soloFavoritos = true; 
+                            
+                            // Devolver el botón meteo al mapa
+                            const btnFiltros = document.getElementById('btn-filtros-mapa');
+                            if (btnFiltros) btnFiltros.style.display = '';
+                            
+                            // Limpiar clases visuales
+                            document.body.classList.remove('modo-edicion-tabla');
+                            const divMenu = document.getElementById('div-menu');
+                            if (divMenu) divMenu.classList.remove('mode-editing');
+                            const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+                            if (divMenu2) divMenu2.classList.remove('mode-editing');
+                            
+                            // Volver a la tabla y restaurar todo
+                            cambiarVista('tabla');
+                            if (typeof limpiarBuscador === 'function') limpiarBuscador();
+                            construir_tabla();
+                            
+                            // Mostrar de nuevo el menú inicial (Paso 1)
+                            if (typeof window.mostrarPaso1General === 'function') {
+                                window.mostrarPaso1General();
+                            }
+                        }
+                    },
+                    {
+                        texto: (typeof t === 'function' ? t('botones.entendido', {defaultValue: 'Entendido'}) : 'Entendido'),
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                        }
+                    }
+                ]
+            });
         } else {
-            mensajeModalAceptar('', t('favoritos.necesarioMarcarUno'));
+            // 📝 MODAL ESTÁNDAR PARA LA TABLA CON BOTÓN DE ESCAPE
+            let botonesTabla = [];
+            
+            if (!configHecha) {
+                // A) Si es la primera visita: Volver al menú inicial (Paso 1)
+                botonesTabla.push({
+                    texto: (typeof t === 'function' ? t('botones.volverAlMenuInicial', {defaultValue: 'Volver al menú inicial'}) : 'Volver al menú inicial'),
+                    estilo: 'secundario',
+                    onclick: function() {
+                        GestorMensajes.ocultar();
+                        window.venirDeEdicionActiva = false;
+                        modoEdicionFavoritos = false;
+                        soloFavoritos = true; 
+                        
+                        document.body.classList.remove('modo-edicion-tabla');
+                        const divMenu = document.getElementById('div-menu');
+                        if (divMenu) divMenu.classList.remove('mode-editing');
+                        const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+                        if (divMenu2) divMenu2.classList.remove('mode-editing');
+                        
+                        cambiarVista('tabla');
+                        if (typeof limpiarBuscador === 'function') limpiarBuscador();
+                        construir_tabla();
+                        
+                        if (typeof window.mostrarPaso1General === 'function') {
+                            window.mostrarPaso1General();
+                        }
+                    }
+                });
+            } else {
+                // B) Si es usuaria recurrente que borró todos los favoritos: Escapar al mapa
+                // (No le podemos dar una "tabla normal sin favoritos", así que el mapa es su única salida visual)
+                botonesTabla.push({
+                    texto: (typeof t === 'function' ? t('asistente.paso1.btnExplorarMapa', {defaultValue: 'Explorar mapa'}) : 'Explorar mapa'),
+                    estilo: 'secundario',
+                    onclick: function() {
+                        GestorMensajes.ocultar();
+                        if (typeof clicBotonMapa === 'function') {
+                            clicBotonMapa();
+                        }
+                    }
+                });
+            }
+            
+            // Botón principal (Entendido)
+            botonesTabla.push({
+                texto: (typeof t === 'function' ? t('botones.entendido', {defaultValue: 'Entendido'}) : 'Entendido'),
+                onclick: function() {
+                    GestorMensajes.ocultar();
+                }
+            });
+
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: `<div style="text-align: center; font-size: 1.1em;">${t('favoritos.necesarioMarcarUno')}</div>`,
+                botones: botonesTabla
+            });
         }
         return false; 
     }
@@ -1999,13 +2103,6 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
         // Pasamos 'false' para que no reconstruya la tabla todavía (lo haremos al final)
         resetFiltroDistancia(false); 
     }
-
-    // BOTÓN BUSCAR DESACTIVADO. 🔍 CERRAR BUSCADOR (Desactivado para hacerlo permanente)
-    // const searchContainer = document.getElementById('floating-search-container');
-    // if (searchContainer) {
-    //     searchContainer.classList.add('floating-search-hidden');
-    //     buscadorVisible = false;
-    // }
     
     document.body.classList.remove('modo-edicion-tabla');
     const divMenu = document.getElementById('div-menu');
@@ -2016,27 +2113,29 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
     
     const panelHorario = document.querySelector('.div-filtro-horario');
     if (panelHorario) panelHorario.style.display = ''; 
-	
+    
     localStorage.setItem("METEO_PRIMERA_VISITA_HECHA", "true");
     modoEdicionFavoritos = false; 
-    window.venirDeEdicionActiva = false; // Apagamos el chivato al finalizar de editar
+    window.venirDeEdicionActiva = false; 
     
-    // Al limpiar el buscador aquí, ya se restaurará el placeholder normal
-    limpiarBuscador(); 
+    // --- LIMPIEZA DE ONBOARDING MAPA ---
+    window.onboardingMapaActivo = false;
+    const btnFiltros = document.getElementById('btn-filtros-mapa');
+    if (btnFiltros) btnFiltros.style.display = ''; // Devolvemos el botón Meteo al mapa
+
+    if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
 
     // --- RESTAURAR EL FILTRO DE SEGUIMIENTO ---
     if (window.seguimientoPrevioEdicion === true) {
-        // Comprobación de seguridad: ¿siguen existiendo seguimientos tras la edición?
         if (obtenerSeguimientos().length > 0) {
             soloSeguimiento = true;
         } else {
-            // Si el usuario los borró todos desde el mapa durante un desvío, lo apagamos definitivamente
             soloSeguimiento = false;
             const btnSegTog = document.getElementById('btn-filtro-seguimiento-toggle');
             if (btnSegTog) btnSegTog.classList.remove('activo', 'filtro-aplicado');
         }
     }
-    window.seguimientoPrevioEdicion = null; // Limpiamos la memoria
+    window.seguimientoPrevioEdicion = null; 
 
     // --- RESTAURAR FILTRO METEO SI SE ENTRÓ DESDE EL MAPA ---
     if (window.filtroMeteoPreEdicion !== undefined) {
@@ -2054,11 +2153,6 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
             window.activarMenuInferior(navHome);
         }
     }
-
-    // --- LIMPIEZA DE ONBOARDING MAPA ---
-    window.onboardingMapaActivo = false;
-    const btnFiltros = document.getElementById('btn-filtros-mapa');
-    if (btnFiltros) btnFiltros.style.display = ''; // Devolvemos el botón Meteo al mapa
 
     return true; 
 }
@@ -3368,6 +3462,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
         // Pantalla de bienvenida
         const mostrarPaso1 = function() {
+
+            // Prevenir duplicados borrando el anterior si existe
+            const existingOverlay = document.getElementById('paso1-overlay');
+            if (existingOverlay) existingOverlay.remove();
+
             const tieneFavs = (localStorage.getItem("METEO_FAVORITOS_LISTA") ? JSON.parse(localStorage.getItem("METEO_FAVORITOS_LISTA")) : []).length > 0;
             const haVistoMapa = window.seHaExploradoMapa === true;
 
@@ -7853,12 +7952,44 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 return;
             }
 
+            // --- PRIORIDAD 1.8: Si el menú de bienvenida está abierto, salir de la app ---
+            if (document.getElementById('paso1-overlay')) {
+                confirmarSalidaApp();
+                return;
+            }
+
             // --- PRIORIDAD 2: Modo Edición Favoritos ---
             if (window.venirDeEdicionActiva === true) {
                 // Detectamos si la usuaria está físicamente viendo el mapa
                 const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
                 
-                // Si no está en modo edición (vista de desvío tabla) O si está en el mapa, 
+                // Si está haciendo el Onboarding desde el mapa y pulsa Atrás
+                if (window.onboardingMapaActivo) {
+                    window.onboardingMapaActivo = false;
+                    window.venirDeEdicionActiva = false;
+                    modoEdicionFavoritos = false;
+                    soloFavoritos = true; 
+                    
+                    const btnFiltros = document.getElementById('btn-filtros-mapa');
+                    if (btnFiltros) btnFiltros.style.display = '';
+                    
+                    document.body.classList.remove('modo-edicion-tabla');
+                    const divMenu = document.getElementById('div-menu');
+                    if (divMenu) divMenu.classList.remove('mode-editing');
+                    const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+                    if (divMenu2) divMenu2.classList.remove('mode-editing');
+                    
+                    cambiarVista('tabla');
+                    if (typeof limpiarBuscador === 'function') limpiarBuscador();
+                    construir_tabla();
+                    
+                    if (typeof window.mostrarPaso1General === 'function') {
+                        window.mostrarPaso1General();
+                    }
+                    return;
+                }
+
+                // Si no está en modo edición (vista de desvío tabla) O si está en el mapa normal, 
                 // queremos VOLVER a la pantalla de edición de favoritos de la tabla
                 if (!modoEdicionFavoritos || enMapa) {
                     volverAEdicionDesdeDesvio();
@@ -7881,7 +8012,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
                         if (panelDistancia) panelDistancia.classList.remove('activo');
                         if (typeof limpiarBuscador === 'function') limpiarBuscador();
                         construir_tabla();
-                        mostrarPaso1();
+                        
+                        // 🚀 Usamos la variable global para asegurarnos de que la llama bien
+                        if (typeof window.mostrarPaso1General === 'function') {
+                            window.mostrarPaso1General();
+                        }
                     } else {
                         finalizarEdicionFavoritos();
                     }
