@@ -3385,27 +3385,44 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     </div>
 
                     <!-- Separador + botones secundarios -->
-                    <div style="border-top: 0.5px solid var(--color-border-tertiary, #e0e0e0); padding-top: 1rem; display: flex; flex-direction: column; gap: 4px;">
-                        <button id="paso1-btn-guia" style="
-                            display: flex; align-items: center; gap: 8px;
-                            padding: 10px 12px; border-radius: 8px;
-                            border: none; background: transparent;
-                            color: var(--color-text-secondary, #666);
-                            font-size: 16px; cursor: pointer; text-align: left; width: 100%;
-                        ">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="8"></line><polyline points="11 12 12 12 12 16"></polyline></svg>
-                            ${t('botones.verGuiaGeneral')}
-                        </button>
+                    <div style="border-top: 0.5px solid var(--color-border-tertiary, #e0e0e0); padding-top: 1rem; display: flex; flex-direction: row; gap: 8px;">
+    
                         <button id="paso1-btn-importar" style="
+                            flex: 2;
                             display: flex; align-items: center; gap: 8px;
                             padding: 10px 12px; border-radius: 8px;
                             border: none; background: transparent;
                             color: var(--color-text-secondary, #666);
-                            font-size: 16px; cursor: pointer; text-align: left; width: 100%;
+                            font-size: 16px; cursor: pointer; text-align: left;
                         ">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                            ${t('botones.importarConfiguracion')}
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <span style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; line-height: 1.2;">
+                                ${t('botones.importarConfiguracion')}
+                            </span>
                         </button>
+
+                        <button id="paso1-btn-guia" style="
+                            flex: 1;
+                            display: flex; align-items: center; gap: 8px;
+                            padding: 10px 12px; border-radius: 8px;
+                            border: none; background: transparent;
+                            color: var(--color-text-secondary, #666);
+                            font-size: 16px; cursor: pointer; text-align: left;
+                        ">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="8"></line>
+                                <polyline points="11 12 12 12 12 16"></polyline>
+                            </svg>
+                            <span style="white-space: normal; line-height: 1.2; word-break: break-word;">
+                                ${t('botones.verGuiaGeneral')}
+                            </span>
+                        </button>
+
                     </div>
                 </div>
             `;
