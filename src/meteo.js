@@ -4849,7 +4849,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
                 <div style="line-height: 1.4; max-width: 232px;">
-                    <b><span style='font-size: 20px; padding-right: 20px;'>🪂 ${d.Despegue}</b></span><br><br>   
+                    <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'>🪂 ${d.Despegue}</b></span><br><br>   
                     
                     ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
 
@@ -10866,7 +10866,7 @@ function inicializarMapaLeaflet() {
                             
                     const popupHtml = `
                         <div style="line-height: 1.4;">
-                            <b><span style='font-size: 20px; padding-right: 20px;'>🪂 ${escapeHtml(despegue)}</b></span><br>
+                            <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'>🪂 ${escapeHtml(despegue)}</b></span><br>
                             
                             ${botonesAccionPopupHTML}
 
@@ -11873,7 +11873,7 @@ function inicializarMapaLeaflet() {
                     
             const popupHtml = `<div style="line-height: 1.2;">
             
-                    <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
+                    <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px; max-width: 212px; display: inline-block;"><b>🪂 ${escapeHtml(despegue)}</b></div>
                     <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
                     <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
@@ -11881,7 +11881,7 @@ function inicializarMapaLeaflet() {
                     <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                     
                     <div class="popup-toggle-header" 
-                        style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
+                        style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px; margin-bottom: 10px;">
                         ${t('mapa.masInformacion')}
                     </div>
                     

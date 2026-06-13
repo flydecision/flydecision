@@ -3606,9 +3606,20 @@ h3 {
 .choices[data-type*=select-one] .choices__inner {
 	padding-bottom: 1.5px;
 }	
+
+/* PREVENCIÓN DE GLITCHES EN POPUPS LEAFLET  Desactiva transiciones y animaciones que confunden al motor del móvil durante los zooms */
+.leaflet-popup,
+.leaflet-popup-content-wrapper,
+.leaflet-popup-content {
+    transition: none !important;
+    animation: none !important;
+}
+
 .leaflet-popup-content-wrapper.popup-despegues {
 	background-color: #ffffff !important;
 	border: 2px solid #007AFF;
+    min-width: 260px !important; /* Fuerza estabilidad horizontal */
+    max-width: 260px !important;
 }
 .leaflet-popup-tip.popup-despegues {
 	background-color: #007AFF !important;
@@ -3619,6 +3630,8 @@ h3 {
 .leaflet-popup-content-wrapper.popup-despeguesmundo {
 	background-color: #dadada !important;
 	border: 2px solid #007AFF;
+    min-width: 260px !important; /* Fuerza estabilidad horizontal */
+    max-width: 260px !important;
 }
 .leaflet-popup-tip.popup-despeguesmundo {
 	background-color: #007AFF !important;
@@ -3630,6 +3643,8 @@ h3 {
 .leaflet-popup-content-wrapper.popup-despegueindividual {
 	background-color: #eddff5 !important;
 	border: 2px solid #007AFF;
+    min-width: 260px !important; /* Al ser individual, es un poco más estrecho */
+    max-width: 260px !important;
 }
 .leaflet-popup-tip.popup-despegueindividual {
 	background-color: #007AFF !important;
