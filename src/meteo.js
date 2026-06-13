@@ -2989,6 +2989,144 @@ window.toggleVerTodosLosDias = function() {
 // 🔴 FUNCIONES GLOBALES (hay otras más, pero éstas tienen que estar antes de construir la tabla)
 // ---------------------------------------------------------------
 
+// 🟡 FUNCIÓN COMÚN DE PUNTUACIÓN (Unificado para Tabla y Mapa)
+
+function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indicesEvaluacion) {
+    if (!hourlyData || !indicesEvaluacion || indicesEvaluacion.length === 0) {
+        return { notaCondiciones: null, notaXC: null, horasValidas: 0, horasValidasXC: 0 };
+    }
+
+    const velArray = hourlyData.wind_speed_10m;
+    const rachaArray = hourlyData.wind_gusts_10m;
+    const dirArray = hourlyData.wind_direction_10m;
+    
+    let puntosAcumulados = 0;
+    let horasValidas = 0;
+    let puntosAcumuladosXC = 0;
+    let horasValidasXC = 0;
+
+    const orientaciones = despegueObj.Orientaciones_Grados
+        ? despegueObj.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()))
+        : [];
+
+    indicesEvaluacion.forEach(i => {
+        if (velArray[i] === undefined || velArray[i] === null) return;
+
+        horasValidas++;
+
+        let dirCorregida = dirArray[i];
+        let velocidad = Math.round(Math.max(0, velArray[i]));
+        let rachaCorregida = Math.round(Math.max(0, rachaArray[i]));
+
+        // --- DIRECCIÓN Y LADERA CONTINUA ---
+        let minimoAngulo = 180;
+        if (orientaciones.length > 0) {
+            minimoAngulo = Math.min(...orientaciones.map(o => diferenciaAngular(dirCorregida, o)));
+            if (orientaciones.length > 1) {
+                const UMBRAL_CONTIGUAS = 46;
+                const oriOrdenadas = [...orientaciones].sort((a, b) => a - b);
+                for (let j = 0; j < oriOrdenadas.length; j++) {
+                    let o1 = oriOrdenadas[j];
+                    let o2 = oriOrdenadas[(j + 1) % oriOrdenadas.length];
+                    let diff = (o2 - o1 + 360) % 360;
+                    if (diff > 180) { diff = 360 - diff; let temp = o1; o1 = o2; o2 = temp; }
+                    if (diff <= UMBRAL_CONTIGUAS) {
+                        let diffViento = (dirCorregida - o1 + 360) % 360;
+                        if (diffViento <= diff) { minimoAngulo = 0; break; }
+                    }
+                }
+            }
+        }
+
+        // --- PUNTUACIÓN DE VUELO ---
+        let ptsHora = 0;
+        let vetoActivado = false;
+
+        let ptsDir = 0, ratioCorreccionPorDireccion = 1, ratioCorreccionPorRacha = 1;
+        if (minimoAngulo > 120)      { ptsDir = 0; vetoActivado = true; }
+        else if (minimoAngulo > 100) { ptsDir = 5;  ratioCorreccionPorDireccion = 0.2; }
+        else if (minimoAngulo > 80)  { ptsDir = 10; ratioCorreccionPorDireccion = 0.3; }
+        else if (minimoAngulo > 45)  { ptsDir = 15; ratioCorreccionPorDireccion = 0.4; }
+        else if (minimoAngulo > 22)  { ptsDir = 35; ratioCorreccionPorDireccion = 0.6; }
+        else if (minimoAngulo > 10)  { ptsDir = 45; ratioCorreccionPorDireccion = 0.9; }
+        else                         { ptsDir = 50; ratioCorreccionPorDireccion = 1; }
+
+        let ptsRacha = 0;
+        if (!vetoActivado) {
+            if (rachaCorregida > RachaMax * 1.5)      { ptsRacha = 0; vetoActivado = true; }
+            else if (rachaCorregida > RachaMax * 1.1) { ptsRacha = 0;  ratioCorreccionPorRacha = 0.2; }
+            else if (rachaCorregida > RachaMax)       { ptsRacha = 5;  ratioCorreccionPorRacha = 0.5; }
+            else if (rachaCorregida > RachaMax * 0.8) { ptsRacha = 20; ratioCorreccionPorRacha = 0.8; }
+            else                                      { ptsRacha = 30; }
+        }
+
+        let ptsVel = 0;
+        if (!vetoActivado) {
+            if      (velocidad > VelocidadMax * 2)   { ptsVel = 0; vetoActivado = true; }
+            else if (velocidad > VelocidadMax * 1.5) { ptsVel = 3; }
+            else if (velocidad > VelocidadMax)       { ptsVel = 5; }
+            else if (velocidad > VelocidadMin)       { ptsVel = 20; }
+            else                                     { ptsVel = 15; }
+        }
+
+        // 💦 Veto Supremo: Lluvia
+        if (hourlyEcmwf && hourlyEcmwf.precipitation && Number(hourlyEcmwf.precipitation[i]) > 0) {
+            vetoActivado = true;
+        }
+
+        if (!vetoActivado) {
+            ptsHora = (ptsDir + ptsRacha + ptsVel) * ratioCorreccionPorDireccion * ratioCorreccionPorRacha;
+        }
+        puntosAcumulados += ptsHora;
+
+        // --- PUNTUACIÓN DE XC ---
+        if (hourlyEcmwf && typeof chkMostrarXC !== 'undefined' && chkMostrarXC) {
+            let ptsXC_hora = 0;
+            let lluviaXC = (hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] != null) ? Number(hourlyEcmwf.precipitation[i]) : 0;
+            let capeXC = (hourlyEcmwf.cape && hourlyEcmwf.cape[i] != null) ? Number(hourlyEcmwf.cape[i]) : 0;
+
+            if (lluviaXC > 0 || capeXC > XCCapeLims.riesgo) {
+                ptsXC_hora = 0;
+            } else {
+                let techoRaw = (hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[i] != null) ? Number(hourlyEcmwf.boundary_layer_height[i]) : 0;
+                let techoUtil = techoRaw * RATIO_TECHO_UTIL;
+                let cin = (hourlyEcmwf.convective_inhibition && hourlyEcmwf.convective_inhibition[i] != null) ? Math.max(0, Number(hourlyEcmwf.convective_inhibition[i])) : 0;
+
+                let ptsTecho = 0;
+                if (techoUtil >= XCTechoLims.verde) ptsTecho = 40;
+                else if (techoUtil > XCTechoLims.rojo) ptsTecho = 10 + 30 * ((techoUtil - XCTechoLims.rojo) / (XCTechoLims.verde - XCTechoLims.rojo));
+                else ptsTecho = 10 * (techoUtil / XCTechoLims.rojo);
+
+                let ptsCape = 0;
+                if (capeXC >= XCCapeLims.idealMin && capeXC <= XCCapeLims.idealMax) ptsCape = 40;
+                else if (capeXC > XCCapeLims.idealMax && capeXC <= XCCapeLims.riesgo) ptsCape = 40 - 40 * ((capeXC - XCCapeLims.idealMax) / (XCCapeLims.riesgo - XCCapeLims.idealMax));
+
+                let ptsCin = 0;
+                if (cin <= XCCinLims.verde) ptsCin = 20;
+                else if (cin < XCCinLims.rojo) ptsCin = 20 * (1 - (cin - XCCinLims.verde) / (XCCinLims.rojo - XCCinLims.verde));
+
+                ptsXC_hora = ptsTecho + ptsCape + ptsCin;
+            }
+            puntosAcumuladosXC += ptsXC_hora;
+            horasValidasXC++;
+        }
+    });
+
+    let notaCondiciones = null;
+    if (horasValidas > 0) {
+        notaCondiciones = (puntosAcumulados / (horasValidas * 100)) * 10;
+    }
+
+    let notaXC = null;
+    if (horasValidasXC > 0) {
+        notaXC = (puntosAcumuladosXC / (horasValidasXC * 100)) * 10;
+    }
+
+    return { notaCondiciones, notaXC, horasValidas, horasValidasXC };
+}
+
+// 🟡 Más funciones
+
 function createOrientationSVG(orientacionesStr) {
     
     // 1. SI YA ESTÁ EN CACHÉ, LO DEVOLVEMOS AL INSTANTE
@@ -4310,347 +4448,62 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             distanciaLimite = CORTES_DISTANCIA_GLOBAL[indiceSeleccionado];
         }
 		
-		// Creamos el array vacío ANTES de empezar a recorrer los despegues, para luego guardarlos ahí, ordenarlos por puntuación y dibujar todo de golpe
-		let listaFilasParaOrdenar = [];
+		// Creamos el array vacío ANTES de empezar a recorrer los despegues
+        let listaFilasParaOrdenar = [];
 
-        // ⚡ OPTIMIZACIÓN: Pre-cálculo de fechas y noches (Calculamos 1 vez en lugar de miles)
-        // Creamos un array que ya sabe si la hora 'i' es de noche o no.
+        // ⚡ OPTIMIZACIÓN: Pre-cálculo de fechas, noches y horas a evaluar
         const cacheEsNoche = [];
         const cacheFechas = [];
+        const indicesEvaluacionTabla = []; // Contendrá solo los índices válidos a evaluar
 
         if (horas && horas.length > 0) {
-            horas.forEach(h => {
+            horas.forEach((h, i) => {
                 const d = new Date(h.endsWith('Z') ? h : h + 'Z');
                 cacheFechas.push(d);
-                cacheEsNoche.push(esCeldaNoche(d));
+                const noche = esCeldaNoche(d);
+                cacheEsNoche.push(noche);
+                
+                // Si entra en el rango horario y no es noche (o el filtro de noche está apagado)
+                if (i >= indiceInicioRangoHorario && i <= indiceFinRangoHorario) {
+                    if (!soloHorasDeLuz || !noche) {
+                        indicesEvaluacionTabla.push(i);
+                    }
+                }
             });
         }
 
-		// 🔃 Bucle principal que recorre cada despegue y sus datos por hora
-		despegues.forEach((d, idx) => {
-					
-			// Verificar si hay datos meteo para este despegue (solo aplica si hicimos filtrado de favoritos)
-			const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
-			const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
+        // 🔃 Bucle principal que recorre cada despegue
+        despegues.forEach((d, idx) => {
+            
+            const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
+            const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
             const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0;
-			const hayDatosMeteo = hourlyData !== null;
-			let orientaciones = d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()));
+            const hayDatosMeteo = hourlyData !== null;
+            let orientaciones = d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()));
 
             // -----------------------------------------------------------
-            // 🟩🟧🟥 LÓGICA DE FILTRADO POR Slider condiciones / Puntuación
+            // 🟩🟧🟥 LÓGICA DE FILTRADO POR PUNTUACIÓN (Usando la función unificada)
             // -----------------------------------------------------------
-			
-			// Variables locales (se reinician en cada vuelta con el siguiente despegue)
-			let notaFinal = 0;
-			let horasValidas = 0; 
-            let puntosAcumulados = 0;  
-
+            let notaFinal = 0;
+            let horasValidas = 0;
             let notaFinalXC = 0;
             let horasValidasXC = 0;
-            let puntosAcumuladosXC = 0;
-
-            const MODO_DEBUG = false; // 🟢 'false' cuando no necesitemos log
             
             if (hayDatosMeteo) {
- 
                 try {
-                    // --- 🐛 INICIO DEBUG (Cabecera del despegue) ---
-                    if (MODO_DEBUG) {
-                        console.groupCollapsed(`🛫 DEBUG Despegue: ${d.Despegue || 'Desconocido'}`);
-                    }
-                    // --- 🐛 FIN DEBUG ---
-
-                    const velArray = hourlyData.wind_speed_10m.slice(0, horas.length);
-                    const rachaArray = hourlyData.wind_gusts_10m.slice(0, horas.length);
-                    const dirArray = hourlyData.wind_direction_10m.slice(0, horas.length);
+                    // Llamada mágica a la nueva función
+                    const evaluacion = calcularPuntuacionesDespegue(d, hourlyData, hourlyEcmwf, indicesEvaluacionTabla);
                     
-                    const orientaciones = d.Orientaciones_Grados ? d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim())) :[];
-                    
-                    // 🔃 Bucle que recorre cada hora del rango seleccionado
-                    velArray.forEach((velModelo, i) => {
-                        
-                        // Filtros
-                        if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-                        
-                        // ⚡ OPTIMIZACIÓN: Leemos de la caché en vez de calcular
-                        // Si tienes activa la opción "Solo día" y en nuestra lista de chuletas dice que es noche (true), saltamos.
-                        if (soloHorasDeLuz && cacheEsNoche[i]) return;
-
-                        // Si necesitas la fecha para algo más abajo, úsala de la caché:
-                        const fechaHora = cacheFechas[i]; 
-
-                        // ✅ Hora válida
-                        horasValidas++; 
-                        
-                        // --- PREPARACIÓN DE DATOS COMUNES ---
-
-						let dirCorregida = dirArray[i];
-
-                        let velocidad = Math.round(Math.max(0, velModelo));
-                        let rachaCorregida = Math.round(Math.max(0, rachaArray[i]));                      
-						
-                        // 3. Ángulo mínimo (mejor orientación)
-                        let minimoAngulo = 180;
-                        
-                        if (orientaciones.length > 0) {
-                            // 🎯 A) CÁLCULO BASE: Distancia al punto fijo más cercano
-                            minimoAngulo = Math.min(...orientaciones.map(o => diferenciaAngular(dirCorregida, o)));
-                            
-                            // ⛰️ B) LÓGICA DE LADERA CONTINUA (Abanicos)
-                            // Si el despegue tiene más de una orientación, comprobamos si forman una ladera continua.
-                            if (orientaciones.length > 1) {
-                                
-                                // ¿Qué consideramos "contiguas"? En una rosa de 8 vientos (N, NE, E...), 
-                                // la separación estándar es de 45º. Ponemos 46º por si hay algún decimal suelto.
-                                // 💡 NOTA: Si en tu base de datos pusieras S (180) y W (270) y quisieras que
-                                // todo ese hueco de 90º fuera ladera continua, deberías subir este valor a 91.
-                                const UMBRAL_CONTIGUAS = 46; 
-                                
-                                // 1. Ordenamos de menor a mayor (ej:[0, 45, 315] -> [0, 45, 315])
-                                const oriOrdenadas = [...orientaciones].sort((a, b) => a - b);
-                                
-                                for (let j = 0; j < oriOrdenadas.length; j++) {
-                                    let o1 = oriOrdenadas[j];
-                                    let o2 = oriOrdenadas[(j + 1) % oriOrdenadas.length]; // El siguiente (y cierra el círculo al final)
-                                    
-                                    // Calculamos la distancia angular más corta entre estas dos orientaciones
-                                    let diff = (o2 - o1 + 360) % 360;
-                                    
-                                    // Si la distancia es > 180, el camino más corto cruza por el Norte (ej: de 315 a 0)
-                                    if (diff > 180) {
-                                        diff = 360 - diff;
-                                        // Intercambiamos para que o1 sea el inicio del arco en sentido horario
-                                        let temp = o1;
-                                        o1 = o2;
-                                        o2 = temp;
-                                    }
-                                    
-                                    // Si la separación entre ellas es menor o igual al umbral (ej: <= 46), forman ladera
-                                    if (diff <= UMBRAL_CONTIGUAS) {
-                                        // Calculamos qué tan lejos está el viento del punto de inicio de la ladera (o1)
-                                        let diffViento = (dirCorregida - o1 + 360) % 360;
-                                        
-                                        // Si esa distancia es menor que la amplitud de la ladera, ¡el viento está DENTRO!
-                                        if (diffViento <= diff) {
-                                            minimoAngulo = 0; // Viento perfecto
-                                            
-                                            // Solo para que lo veas en la consola si activas el debug
-                                            if (MODO_DEBUG && i === 0) { 
-                                                // (Solo lo pintamos la primera vez para no ensuciar la consola)
-                                            }
-                                            break; // Ya encontramos que está dentro, dejamos de buscar
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            minimoAngulo = 180; // Si no hay datos, asumimos lo peor
-                        }
-
-                        // =========================================================
-                        // 🟢 ALGORITMO CONDICIONES DESPEGUE
-                        // =========================================================
-
-                        let ptsHora = 0;
-                        let vetoActivado = false; 
-                        let motivoVeto = ""; // Variable de apoyo para el debug
-
-                        // --- A. DIRECCIÓN (Máx 50 pts) ---
-                        let ptsDir = 0;
-						let ratioCorreccionPorDireccion = 1; 
-						let ratioCorreccionPorRacha = 1; 
-						
-                        if (minimoAngulo > 120) {
-                            ptsDir = 0;
-                            vetoActivado = true; // ⛔ VETO: Viento de cola o muy cruzado extremo
-                            motivoVeto = "Viento de cola/cruzado extremo (> 120º)";
-                        } else if (minimoAngulo > 100) { // 100-120
-                            ptsDir = 5;
-							ratioCorreccionPorDireccion = 0.2;
-                        } else if (minimoAngulo > 80) { // 80-100
-                            ptsDir = 10;
-							ratioCorreccionPorDireccion = 0.3;
-                        } else if (minimoAngulo > 45) { // 45-80
-                            ptsDir = 15;
-							ratioCorreccionPorDireccion = 0.4;
-                        } else if (minimoAngulo > 22) { // 22-45
-                            ptsDir = 35;
-							ratioCorreccionPorDireccion = 0.6;
-                        } else if (minimoAngulo > 10) { // 10-22
-                            ptsDir = 45;
-							ratioCorreccionPorDireccion = 0.9; 
-                        } else {
-                            ptsDir = 50; // < 10 grados
-							ratioCorreccionPorDireccion = 1;
-                        }
-
-                        // --- B. RACHA (Máx 30 pts) ---
-                        let ptsRacha = 0;
-
-                        if (!vetoActivado) {
-                            if (rachaCorregida > RachaMax * 1.5) {
-                                ptsRacha = 0;
-                                vetoActivado = true; // ⛔ VETO: Racha muy peligrosa
-                                motivoVeto = `Racha Peligrosa (${rachaCorregida} > ${RachaMax * 1.5})`;
-                            } else if (rachaCorregida > RachaMax * 1.1) {
-                                ptsRacha = 0;
-								ratioCorreccionPorRacha = 0.2
-                            } else if (rachaCorregida > RachaMax) {
-                                ptsRacha = 5;
-								ratioCorreccionPorRacha = 0.5
-                            } else if (rachaCorregida > RachaMax * 0.8) { 
-                                ptsRacha = 20;
-								ratioCorreccionPorRacha = 0.8;
-                            } else {
-                                ptsRacha = 30; 
-                            }
-                        }
-
-                        // --- C. VELOCIDAD (Máx 20 pts) ---
-                        let ptsVel = 0;
-
-                        if (!vetoActivado) {
-                            if (velocidad > VelocidadMax * 2) {
-                                ptsVel = 0;
-                                vetoActivado = true; // ⛔ VETO: Viento medio muy fuerte
-                                motivoVeto = `Viento muy fuerte (${velocidad} > ${VelocidadMax * 2})`;
-                            } else if (velocidad > VelocidadMax * 1.5) {
-                                ptsVel = 3;
-                            } else if (velocidad > VelocidadMax) {
-                                ptsVel = 5;
-                            } else if (velocidad > VelocidadMin) {
-                                ptsVel = 20; // Zona ideal
-                            } else {
-                                ptsVel = 15; // Menor que la mínima (flojo)
-                            }
-                        }
-
-                        // 💦 --- D. PRECIPITACIÓN (VETO SUPREMO) ---
-                        let precipitacion = 0;
-                        if (hourlyEcmwf && hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] !== null) {
-                            precipitacion = Number(hourlyEcmwf.precipitation[i]);
-                        }
-                        // Si hay más de 0mm, ignoramos cualquier otro cálculo y aplicamos veto
-                        if (precipitacion > 0) {
-                            vetoActivado = true;
-                            motivoVeto = `Lluvia prevista (${precipitacion.toFixed(1)} mm)`;
-                        }
-
-                        if (vetoActivado) {
-                            ptsHora = 0;
-                        } else {
-                            ptsHora = (ptsDir + ptsRacha + ptsVel) * ratioCorreccionPorDireccion * ratioCorreccionPorRacha;
-                        }
-                        
-                        puntosAcumulados += ptsHora;
-
-                        // ---------------------------------------------------------
-                        // 🟢 ALGORITMO XC (INDEPENDIENTE DEL DESPEGUE)
-                        // ---------------------------------------------------------
-                        if (chkMostrarXC && hourlyEcmwf) {
-                            let ptsXC_hora = 0;
-                            
-                            // Único veto lógico para XC: Lluvia o Tormenta severa (CAPE altísimo)
-                            let lluviaXC = (hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] != null) ? Number(hourlyEcmwf.precipitation[i]) : 0;
-                            let capeXC = (hourlyEcmwf.cape && hourlyEcmwf.cape[i] != null) ? Number(hourlyEcmwf.cape[i]) : 0;
-
-                            if (lluviaXC > 0 || capeXC > XCCapeLims.riesgo) {
-                                ptsXC_hora = 0; // Si llueve o hay tormenta, no hay XC posible
-                            } else {
-                                // 1. Obtener el dato crudo de la capa límite (AGL)
-                                let techoRaw = (hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[i] != null) ? Number(hourlyEcmwf.boundary_layer_height[i]) : 0;
-
-                                // 2. Aplicar el ratio global de realismo para parapente (0.85)
-                                let techoUtil = techoRaw * RATIO_TECHO_UTIL;
-
-                                let cin = (hourlyEcmwf.convective_inhibition && hourlyEcmwf.convective_inhibition[i] != null) ? Math.max(0, Number(hourlyEcmwf.convective_inhibition[i])) : 0;
-
-                                // Techo Útil (0-40 pts)
-                                let ptsTecho = 0;
-                                if (techoUtil >= XCTechoLims.verde) ptsTecho = 40;
-                                else if (techoUtil > XCTechoLims.rojo) ptsTecho = 10 + 30 * ((techoUtil - XCTechoLims.rojo) / (XCTechoLims.verde - XCTechoLims.rojo));
-                                else ptsTecho = 10 * (techoUtil / XCTechoLims.rojo);
-
-                                // CAPE (0-40 pts)
-                                let ptsCape = 0;
-                                if (capeXC >= XCCapeLims.idealMin && capeXC <= XCCapeLims.idealMax) {
-                                    ptsCape = 40; 
-                                } else if (capeXC > XCCapeLims.idealMax && capeXC <= XCCapeLims.riesgo) {
-                                    ptsCape = 40 - 40 * ((capeXC - XCCapeLims.idealMax) / (XCCapeLims.riesgo - XCCapeLims.idealMax));
-                                }
-
-                                // CIN (0-20 pts)
-                                let ptsCin = 0;
-                                if (cin <= XCCinLims.verde) ptsCin = 20;
-                                else if (cin < XCCinLims.rojo) ptsCin = 20 * (1 - (cin - XCCinLims.verde) / (XCCinLims.rojo - XCCinLims.verde));
-                                else ptsCin = 0;
-
-                                // Puntuación total Pura (sin ratios de viento/orientación del despegue)
-                                ptsXC_hora = ptsTecho + ptsCape + ptsCin;
-                            }
-                            
-                            puntosAcumuladosXC += ptsXC_hora;
-                            horasValidasXC++;
-                        }
-
-                        // --- 🐛 INICIO DEBUG (Desglose por hora) ---
-                        if (MODO_DEBUG) {
-                            console.log(`⏱ %c${horaStr}`, 'font-weight: bold; color: #1d4ed8;');
-                            console.log(`   └─ Datos Reales : Dif. Ángulo: ${minimoAngulo.toFixed(1)}º | Vel: ${velocidad} | Racha: ${rachaCorregida}`);
-                            console.log(`   └─ Pts Base     : Dir: ${ptsDir}/50 | Vel: ${ptsVel}/20 | Racha: ${ptsRacha}/30`);
-                            console.log(`   └─ Ratios       : xDir: ${ratioCorreccionPorDireccion} | xRacha: ${ratioCorreccionPorRacha}`);
-                            
-                            if (vetoActivado) {
-                                console.log(`   └─ %c⛔ VETO ACTIVADO: ${motivoVeto}`, 'color: #ef4444; font-weight: bold;');
-                                console.log(`   └─ %cPuntos Hora: 0`, 'color: #ef4444; font-weight: bold;');
-                            } else {
-                                console.log(`   └─ %c✅ Puntos Hora: (${ptsDir} + ${ptsVel} + ${ptsRacha}) * ${ratioCorreccionPorDireccion} * ${ratioCorreccionPorRacha} = ${ptsHora.toFixed(2)}`, 'color: #10b981; font-weight: bold;');
-                            }
-                        }
-                        // --- 🐛 FIN DEBUG ---
-
-                    }); // Fin Loop Horas
-
-                    // --- EVALUACIÓN FINAL DEL DESPEGUE ---
-                    
-                    let pasaFiltro = true; 
-
-					if (horasValidas > 0) {
-                        const maximosPuntosPosibles = horasValidas * 100;
-                        
-                        // Cálculo nota final Condiciones despegue
-                        let ratio = puntosAcumulados / maximosPuntosPosibles;
-                        notaFinal = ratio * 10;
-                        
-                        // Cálculo nota final XC
-                        if (horasValidasXC > 0) {
-                            const maximosPuntosPosiblesXC = horasValidasXC * 100;
-                            notaFinalXC = (puntosAcumuladosXC / maximosPuntosPosiblesXC) * 10;
-                        }
-
-                        // --- 🐛 INICIO DEBUG (Resumen Final) ---
-                        if (MODO_DEBUG) {
-                            console.log(`📊 %cRESUMEN FINAL '${d.Despegue}'`, 'font-weight: bold; color: #8b5cf6;');
-                            console.log(`   - Horas válidas procesadas: ${horasValidas}`);
-                            console.log(`   - Puntos Acumulados: ${puntosAcumulados.toFixed(2)} / ${maximosPuntosPosibles}`);
-                            console.log(`   - NOTA FINAL: %c${notaFinal.toFixed(2)} / 10`, 'font-weight: bold; font-size: 1.1em;');
-                            console.groupEnd(); // Cerramos el grupo de este despegue
-                        }
-                        // --- 🐛 FIN DEBUG ---
-                        
-					} else {
-                        console.log(`⚠️ Despegue ${d.Despegue} sin horas válidas`);
-                        if (MODO_DEBUG) console.groupEnd(); // Asegurar cierre del grupo en caso de error
-                    }
-
-					if (!pasaFiltro) return; 
+                    notaFinal = evaluacion.notaCondiciones !== null ? evaluacion.notaCondiciones : 0;
+                    horasValidas = evaluacion.horasValidas;
+                    notaFinalXC = evaluacion.notaXC !== null ? evaluacion.notaXC : 0;
+                    horasValidasXC = evaluacion.horasValidasXC;
 
                 } catch (error) {
                     console.error(`💥 ERROR CRÍTICO en despegue ${d.Despegue}:`, error);
-                    if (MODO_DEBUG) console.groupEnd(); // Asegurar cierre del grupo si el catch se dispara
                     return; 
                 }
-            } // Fin if(hayDatosMeteo)
+            }
 
             // -----------------------------------------------------------
             // 🟩🟧🟥 FIN LÓGICA DE FILTRADO POR Slider condiciones / Puntuación
@@ -9410,11 +9263,9 @@ function aplicarPuntuacionEnMapa() {
     const despegues = window.bdGlobalDespegues;
     if (!horas || !respuestas || !despegues || markersDespegues.length === 0) return;
 
-    // --- ESCUDO INICIO (Síncrono) ---
     const _todos = [...markersDespegues, ...markersDespeguesMundo];
     const marcadorAbierto = _todos.find(m => m.isPopupOpen && m.isPopupOpen()) || null;
 
-    // Leer índices DESDE EL SLIDER PRINCIPAL
     let indiceInicio = 0, indiceFin = 99999;
     const sliderHoras = document.getElementById('horario-slider');
     if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario.length > 0) {
@@ -9423,12 +9274,21 @@ function aplicarPuntuacionEnMapa() {
         indiceFin    = window.indicesDiaActualSlider[vals[1]];
     }
 
+    // Preparamos los índices para el mapa (incluyendo el check de horas de luz que le faltaba)
+    const soloHorasDeLuz = localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") === "true";
+    const indicesEvaluacionMapa = [];
+    horas.forEach((h, i) => {
+        if (i < indiceInicio || i > indiceFin) return;
+        const d = new Date(h.endsWith('Z') ? h : h + 'Z');
+        if (soloHorasDeLuz && esCeldaNoche(d)) return;
+        indicesEvaluacionMapa.push(i);
+    });
+
     const idxPorId = new Map();
     despegues.forEach((d, i) => idxPorId.set(Number(d.ID), i));
 
     markersDespegues.forEach(marker => {
         const meta = marker.metadata;
-
         if (!meta) return;
 
         const despObj = marker._despObj || null;
@@ -9440,7 +9300,9 @@ function aplicarPuntuacionEnMapa() {
         const hourlyData  = respuestas[idx] ? respuestas[idx].hourly : null;
         const hourlyEcmwf = respuestasEcmwf && respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
 
-        const nota  = calcularNotaMapa(despObj, hourlyData, hourlyEcmwf, horas, indiceInicio, indiceFin);
+        // Llamada a la nueva función unificada
+        const evaluacion = calcularPuntuacionesDespegue(despObj, hourlyData, hourlyEcmwf, indicesEvaluacionMapa);
+        const nota = evaluacion.notaCondiciones;
         const color = colorNotaMapa(nota);
 
         marker._notaMapa = (nota !== null) ? nota : -1;
@@ -9457,7 +9319,6 @@ function aplicarPuntuacionEnMapa() {
         actualizarFiltrosMapa();
     }
 
-    // --- ESCUDO FIN (Síncrono e inmediato) ---
     if (marcadorAbierto) {
         if (map.hasLayer(marcadorAbierto) || clustergroupDespegues.hasLayer(marcadorAbierto)) {
             marcadorAbierto.openPopup();
@@ -9553,102 +9414,13 @@ function limpiarColoresMapa() {
 }
 
 // ---------------------------------------------------------------
-// 🗺️ PUNTUACIÓN DE CONDICIONES PARA EL MAPA
+// 🔴🗺️ MAPA
 // ---------------------------------------------------------------
 
 const COLORES_NOTA_MAPA = [
     "#fb796e","#f9876d","#f7966c","#f4a46c","#f2b36b",
     "#f0c16a","#d5ca78","#bbd386","#a0dd93","#86e6a1","#6befaf"
 ];
-
-function calcularNotaMapa(despegueObj, hourlyData, hourlyEcmwf, horas, indiceInicio, indiceFin) {
-    if (!hourlyData || !horas || horas.length === 0) return null;
-
-    const velArray   = hourlyData.wind_speed_10m;
-    const rachaArray = hourlyData.wind_gusts_10m;
-    const dirArray   = hourlyData.wind_direction_10m;
-    const orientaciones = despegueObj.Orientaciones_Grados
-        ? despegueObj.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()))
-        : [];
-
-    let puntosAcumulados = 0;
-    let horasValidas = 0;
-
-    horas.forEach((h, i) => {
-        if (i < indiceInicio || i > indiceFin) return;
-        if (velArray[i] === undefined || velArray[i] === null) return;
-
-        horasValidas++;
-
-        const velocidad      = Math.round(Math.max(0, velArray[i]));
-        const rachaCorregida = Math.round(Math.max(0, rachaArray[i]));
-        const dirCorregida   = dirArray[i];
-
-        // — DIRECCIÓN —
-        let minimoAngulo = orientaciones.length > 0
-            ? Math.min(...orientaciones.map(o => diferenciaAngular(dirCorregida, o)))
-            : 180;
-
-        if (orientaciones.length > 1) {
-            const UMBRAL_CONTIGUAS = 46;
-            const oriOrdenadas = [...orientaciones].sort((a, b) => a - b);
-            for (let j = 0; j < oriOrdenadas.length; j++) {
-                let o1 = oriOrdenadas[j];
-                let o2 = oriOrdenadas[(j + 1) % oriOrdenadas.length];
-                let diff = (o2 - o1 + 360) % 360;
-                if (diff > 180) { diff = 360 - diff; let tmp = o1; o1 = o2; o2 = tmp; }
-                if (diff <= UMBRAL_CONTIGUAS) {
-                    let diffViento = (dirCorregida - o1 + 360) % 360;
-                    if (diffViento <= diff) { minimoAngulo = 0; break; }
-                }
-            }
-        }
-
-        let ptsDir = 0, ratioDir = 1;
-        let vetoActivado = false, motivoVeto = '';
-
-        if (minimoAngulo > 120) {
-            ptsDir = 0; vetoActivado = true; motivoVeto = 'Viento de cola > 120°';
-        } else if (minimoAngulo > 100) { ptsDir = 5;  ratioDir = 0.2;
-        } else if (minimoAngulo > 80)  { ptsDir = 10; ratioDir = 0.3;
-        } else if (minimoAngulo > 45)  { ptsDir = 15; ratioDir = 0.4;
-        } else if (minimoAngulo > 22)  { ptsDir = 35; ratioDir = 0.6;
-        } else if (minimoAngulo > 10)  { ptsDir = 45; ratioDir = 0.9;
-        } else                          { ptsDir = 50; ratioDir = 1;   }
-
-        // — RACHA —
-        let ptsRacha = 0, ratioRacha = 1;
-        if (!vetoActivado) {
-            if (rachaCorregida > RachaMax * 1.5) {
-                ptsRacha = 0; vetoActivado = true; motivoVeto = 'Racha peligrosa';
-            } else if (rachaCorregida > RachaMax * 1.1) { ptsRacha = 0;  ratioRacha = 0.2;
-            } else if (rachaCorregida > RachaMax)        { ptsRacha = 5;  ratioRacha = 0.5;
-            } else if (rachaCorregida > RachaMax * 0.8)  { ptsRacha = 20; ratioRacha = 0.8;
-            } else                                        { ptsRacha = 30; }
-        }
-
-        // — VELOCIDAD —
-        let ptsVel = 0;
-        if (!vetoActivado) {
-            if      (velocidad > VelocidadMax * 2)   { ptsVel = 0; vetoActivado = true; motivoVeto = 'Viento muy fuerte'; }
-            else if (velocidad > VelocidadMax * 1.5)  { ptsVel = 3; }
-            else if (velocidad > VelocidadMax)         { ptsVel = 5; }
-            else if (velocidad > VelocidadMin)         { ptsVel = 20; }
-            else                                       { ptsVel = 15; }
-        }
-
-        // — PRECIPITACIÓN (veto supremo) —
-        if (hourlyEcmwf && hourlyEcmwf.precipitation && Number(hourlyEcmwf.precipitation[i]) > 0) {
-            vetoActivado = true;
-        }
-
-        const ptsHora = vetoActivado ? 0 : (ptsDir + ptsRacha + ptsVel) * ratioDir * ratioRacha;
-        puntosAcumulados += ptsHora;
-    });
-
-    if (horasValidas === 0) return null;
-    return (puntosAcumulados / (horasValidas * 100)) * 10;
-}
 
 function colorNotaMapa(nota) {
     if (nota === null) return '#ffffff';
@@ -9688,7 +9460,7 @@ const ESCALA_KMMEDIA = [
 
 function inicializarMapaLeaflet() {
 
-    // --- 🟢 BLOQUE DE SEGURIDAD ANTI-CRASH LEAFLET ---
+    // --- BLOQUE DE SEGURIDAD ANTI-CRASH LEAFLET ---
     const mapContainer = document.getElementById('map');
     
     // Si Leaflet ya metió sus zarpas en este div, lo limpiamos a la fuerza
