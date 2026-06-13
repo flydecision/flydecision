@@ -1366,34 +1366,15 @@ function activarEdicionFavoritos() {
 }
 
 function activarEdicionFavoritosConMapa() {
-    // 1. Guardar para restaurar al finalizar
-    window.filtroMeteoPreEdicion = filtrosMapaAbiertos; 
-    filtrosMapaAbiertos = false; // Apaga la lógica de mostrar solo operativos
-
-    // 2. Bandera especial para saber que estamos seleccionando desde el mapa en el onboarding
+    // 1. Bandera especial para saber que estamos seleccionando desde el mapa en el onboarding
     if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA")) {
         window.onboardingMapaActivo = true;
     }
 
-    // 3. Reutilizar la lógica de activarEdicionFavoritos (limpia tabla, filtros, etc.)
+    // 2. Reutilizar la lógica de activarEdicionFavoritos (limpia tabla, filtros, etc.)
     activarEdicionFavoritos();
 
-    // 4. Forzamos la limpieza VISUAL del mapa (quita colores meteo a los despegues)
-    if (typeof limpiarColoresMapa === 'function') {
-        limpiarColoresMapa();
-    }
-    
-    // Ocultamos elementos meteo del mapa para no confundir al usuario nuevo
-    const divFH = document.getElementById('div-filtro-horario');
-    if (divFH) {
-        divFH.style.display = 'none';
-        divFH.classList.remove('flotando-en-mapa');
-    }
-    const btnFiltros = document.getElementById('btn-filtros-mapa');
-    if (btnFiltros) btnFiltros.style.display = 'none';
-    document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
-
-    // 5. Ir al mapa
+    // 3. Ir al mapa (al estar la meteo activa, se mostrarán automáticamente sus controles)
     cambiarVista('mapa');
     window.activarMenuInferior(document.getElementById('nav-map'));
 }
@@ -1800,14 +1781,21 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
             }
         });
 
-        // 4. Gestión de reconstrucción de tabla si el filtro de favoritos está encendido
-        const btnFiltroFav = document.getElementById('btn-filtro-favoritos-toggle');
-        if (btnFiltroFav && btnFiltroFav.classList.contains('activo') && !esNuevoFavorito) {
-            const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+        // 4. Gestión de reconstrucción de tabla
+        const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+        
+        if (enMapa) {
+            // SI ESTAMOS EN EL MAPA: Reconstruimos la tabla silenciosamente en segundo plano
             window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
-            construir_tabla(false, enMapa, enMapa);
+            construir_tabla(false, true, true); 
         } else {
-            aplicarFiltrosVisuales(true); 
+            // SI ESTAMOS EN LA PROPIA TABLA: Bastan los cambios visuales instantáneos que ya hicimos arriba
+            const btnFiltroFav = document.getElementById('btn-filtro-favoritos-toggle');
+            if (btnFiltroFav && btnFiltroFav.classList.contains('activo') && !esNuevoFavorito) {
+                construir_tabla(false, false, false);
+            } else {
+                aplicarFiltrosVisuales(true); 
+            }
         }
     };
 
@@ -8568,26 +8556,17 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
         // Decidir a dónde volver
         if (window.onboardingMapaActivo) {
-            // Volvemos al MAPA
+            // Volvemos al MAPA (conservando la meteo y sus colores intactos)
             cambiarVista('mapa');
             
-            // Devolvemos la luz al botón del mapa
             const btnMap = document.getElementById('nav-map');
             if (btnMap && typeof window.activarMenuInferior === 'function') {
                 window.activarMenuInferior(btnMap);
             }
-            
-            // Garantizar que en el mapa los filtros meteo sigan apagados (limpieza visual)
-            if (typeof limpiarColoresMapa === 'function') limpiarColoresMapa();
-            const btnFiltros = document.getElementById('btn-filtros-mapa');
-            if (btnFiltros) btnFiltros.style.display = 'none';
-            document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
-            
         } else {
             // Volvemos a la TABLA
             cambiarVista('tabla');
             
-            // Devolvemos la luz al botón de Ajustes
             const btnSettings = document.getElementById('nav-settings');
             if (btnSettings && typeof window.activarMenuInferior === 'function') {
                 window.activarMenuInferior(btnSettings);
