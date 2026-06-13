@@ -2669,22 +2669,48 @@ label.custom-checkbox {
 
 .tippy-scroll-area {
     flex: 1; 
-    overflow-y: auto !important; 
-    padding: 15px 15px 15px 15px;
-    padding-right: 20px; 
+    /* Cambiado a 'scroll' para que la barra esté siempre presente de forma fija */
+    overflow-y: scroll !important; 
+    padding: 15px;
+    padding-right: 18px; /* Espacio para que el texto no colisione con el scroll */
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    
+    /* Soporte nativo para Firefox */
+    scrollbar-width: thin; 
+    scrollbar-color: #bbb transparent; 
+    margin: 0px 0px 0px 0px;
 }
 
-.tippy-scroll-area::-webkit-scrollbar { width: 15px; }
+/* 1. Ancho total del área de scroll (lo aumentamos para poder simular los márgenes laterales) */
+.tippy-scroll-area::-webkit-scrollbar { 
+    width: 10px !important; 
+    background: transparent !important;
+}
+
 .tippy-scroll-area::-webkit-scrollbar-track { 
-    background: #f1f1f1; 
-    border-radius: 4px; 
-    margin-top: 40px; /* Deja un hueco vacío arriba para que no pise el botón */
+    background: transparent !important; 
+    border: none !important; 
+    box-shadow: none !important;
+    margin-top: 40px; 
     margin-bottom: 10px;
 }
-.tippy-scroll-area::-webkit-scrollbar-thumb { background: #666; border-radius: 4px; border: 2px solid #f1f1f1; }
-.tippy-scroll-area::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* 2. Píldora de arrastre con margen derecho e izquierdo simulado mediante bordes transparentes */
+.tippy-scroll-area::-webkit-scrollbar-thumb { 
+    background-color: #bbb !important; 
+    /* El grosor de este borde transparente actúa como el margen lateral */
+    border: 3px solid transparent !important; 
+    /* Obliga al color gris a pintarse solo dentro del borde, creando el hueco transparente */
+    background-clip: padding-box !important;   
+    border-radius: 6px !important;              
+    box-shadow: none !important;
+}
+
+/* Efecto hover (píldora un poco más oscura al pasar el cursor) */
+.tippy-scroll-area::-webkit-scrollbar-thumb:hover { 
+    background-color: #999 !important; 
+}
 
 .tippy-header {
     width: 100%;
@@ -3517,7 +3543,7 @@ h3 {
 	font-size: 1em;
 	width: 240px;
 	line-height: 1;
-	margin: 5px 10px 5px 10px;
+	margin: 5px 10px 0px 10px;
 }
 
 /* =========================================================================

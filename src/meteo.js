@@ -10620,7 +10620,7 @@ function inicializarMapaLeaflet() {
 
                             ⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a><br>
 
-                            <div class="popup-toggle-header" style="cursor: pointer; border-radius: 3px; padding-top: 8px;">
+                            <div class="popup-toggle-header" style="cursor: pointer; border-radius: 3px; padding-top: 8px; margin-bottom: 10px;">
                                 ${t('mapa.masInformacion')}
                             </div>
                             
