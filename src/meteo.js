@@ -7958,6 +7958,16 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 return;
             }
 
+            // --- PRIORIDAD 1.9: Si hay un popup de despegue abierto en el mapa, lo cerramos primero ---
+            const vistaMapaParaPopup = document.getElementById('vista-mapa');
+            if (vistaMapaParaPopup && vistaMapaParaPopup.style.display === 'flex') {
+                const popupAbierto = document.querySelector('.leaflet-popup');
+                if (popupAbierto && typeof map !== 'undefined') {
+                    map.closePopup();
+                    return; 
+                }
+            }
+
             // --- PRIORIDAD 2: Modo Edición Favoritos ---
             if (window.venirDeEdicionActiva === true) {
                 // Detectamos si la usuaria está físicamente viendo el mapa
@@ -8045,13 +8055,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // --- PRIORIDAD 5: Salir de la App desde el Mapa ---
             const vistaMapa = document.getElementById('vista-mapa');
             if (vistaMapa && vistaMapa.style.display === 'flex') {
-                
-                // Si hay un popup de despegue abierto en el mapa, lo cerramos y paramos aquí.
-                const popupAbierto = document.querySelector('.leaflet-popup');
-                if (popupAbierto && typeof map !== 'undefined') {
-                    map.closePopup();
-                    return; 
-                }
 
                 // infoPanel (Capas) 
                 const infoPanelCerrar = document.getElementById('infoPanel');
@@ -8108,28 +8111,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 }
                 return;
             }
-
-            // BOTÓN BUSCAR DESACTIVADO. B. Buscador Flotante
-            // const searchContainer = document.getElementById('floating-search-container');
-            // const searchInput = document.getElementById('buscador-despegues-provincias');
-            // if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
-            //     let tieneTexto = searchInput && searchInput.value.trim() !== '';
-                
-            //     if (tieneTexto) {
-            //         if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
-            //     }
-                
-            //     searchContainer.classList.add('floating-search-hidden');
-            //     if (typeof buscadorVisible !== 'undefined') buscadorVisible = false;
-            //     if (searchInput) searchInput.blur();
-                
-            //     if (panelDistancia && panelDistancia.classList.contains("activo")) {
-            //         window.activarMenuInferior(document.getElementById('nav-distance'));
-            //     } else {
-            //         window.activarMenuInferior(document.getElementById('nav-home'));
-            //     }
-            //     return;
-            // }
 
             // B. Buscador Flotante (Permanente)
             const searchInput = document.getElementById('buscador-despegues-provincias');
