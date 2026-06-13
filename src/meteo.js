@@ -4267,7 +4267,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         let vetoActivado = false; 
                         let motivoVeto = ""; // Variable de apoyo para el debug
 
-                        // ⛅ --- A. DIRECCIÓN (Máx 50 pts) ---
+                        // --- A. DIRECCIÓN (Máx 50 pts) ---
                         let ptsDir = 0;
 						let ratioCorreccionPorDireccion = 1; 
 						let ratioCorreccionPorRacha = 1; 
@@ -4296,7 +4296,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 							ratioCorreccionPorDireccion = 1;
                         }
 
-                        // ⛅ --- B. RACHA (Máx 30 pts) ---
+                        // --- B. RACHA (Máx 30 pts) ---
                         let ptsRacha = 0;
 
                         if (!vetoActivado) {
@@ -4318,7 +4318,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             }
                         }
 
-                        // ⛅ --- C. VELOCIDAD (Máx 20 pts) ---
+                        // --- C. VELOCIDAD (Máx 20 pts) ---
                         let ptsVel = 0;
 
                         if (!vetoActivado) {
@@ -4660,26 +4660,52 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
-                <b><span style='font-size: 18px; padding-right: 20px;'>🪂 ${d.Despegue}</b></span><br>
-                ${t('popupDespegue.region')} <b>${t('regiones.' + d.Región, { defaultValue: d.Región })}</b><br>
-                ${t('popupDespegue.provincia')} <b>${d.Provincia}</b><br>
-                
-                <div style="margin-bottom: 2px;">
-                    ${t('popupDespegue.orientacion')} 
-                    <span style="display: inline-block; vertical-align: 2px; margin-left: 4px;">${svgParaTooltip}</span> 
-                    <b style="vertical-align: 1px;">${traducirCadenaOrientacion(d["Orientación"])}</b>
+                <div style="line-height: 1.4; max-width: 232px;">
+                    <b><span style='font-size: 20px; padding-right: 20px;'>🪂 ${d.Despegue}</b></span><br><br>   
+                    
+                    ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
+
+                    ⛅ <a href='https://meteo-parapente.com/#/${latitud},${longitud},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
+
+                    ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
+
+                    ⛅ <a href='https://meteo-fly.com/?lat=${latitud}&lon=${longitud}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a><br>
+
+                    <div class="popup-toggle-header" style="cursor: pointer; border-radius: 3px; padding-top: 8px;">
+                        ${t('mapa.masInformacion')}
+                    </div>
+                                
+                    <div class="popup-collapsible-content" style="display: none; overflow-wrap: break-word; ">
+
+                        <br>${t('popupDespegue.region')} <b>${t('regiones.' + d.Región, { defaultValue: d.Región })}</b><br>
+                        ${t('popupDespegue.provincia')} <b>${d.Provincia}</b><br>
+                        
+                        <div style="margin-bottom: 2px;">
+                            ${t('popupDespegue.orientacion')} 
+                            <span style="display: inline-block; vertical-align: 2px; margin-left: 4px;">${svgParaTooltip}</span> 
+                            <b style="vertical-align: 1px;">${traducirCadenaOrientacion(d["Orientación"])}</b>
+                        </div>
+
+                        ${t('mapa.labelCoordenadas')} <b>${Number(latitud).toFixed(4)}, ${Number(longitud).toFixed(4)}</b><br>
+                        ${t('mapa.labelAltitud')} <b>${d.Altitud} m</b><br>
+                        
+                        <div>
+                            ${t('popupDespegue.nivelActividad')} 
+                            <span style='margin-left: 6px;'>${iconoActividadParaTooltip}</span> 
+                            <b>${d.Actividad || '?'}/5</b>
+                        </div>
+
+                        ${t('mapa.labelVuelos')} <b>${d.Vuelos}</b><br>
+
+                        <br>🗺️ <a href='https://maps.google.com/?q=${Number(latitud).toFixed(4)},${Number(longitud).toFixed(4)}' onclick='abrirLinkExterno(this.href); return false;'>Google Maps</a><br>
+                        🗺️ <a href='https://brouter.de/brouter-web/#map=15/${Number(latitud).toFixed(4)}/${Number(longitud).toFixed(4)}/OpenTopoMap&pois=${Number(longitud).toFixed(4)},${Number(latitud).toFixed(4)}' onclick='abrirLinkExterno(this.href); return false;'>Brouter</a><br>
+                        🗺️ <a href='https://nakarte.me/#m=15/${Number(latitud).toFixed(4)}/${Number(longitud).toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${Number(latitud).toFixed(4)}/${Number(longitud).toFixed(4)}/${d.Despegue} (${d.Orientación}' onclick='abrirLinkExterno(this.href); return false;'>Nakarte</a><br>
+                        🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${longitud}%20${latitud}&filter[radius]=500' onclick='abrirLinkExterno(this.href); return false;'>XContest (&plusmn; 500 m)</a><br>
+
+                        <br><div style="margin-bottom: 5px;">${d.Más_información}</div>
+
+                    </div>
                 </div>
-                
-                <div style="margin-bottom: 4px;">
-                    ${t('popupDespegue.nivelActividad')} 
-                    <span style='margin-left: 6px;'>${iconoActividadParaTooltip}</span> 
-                    <b>${d.Actividad || '?'}/5</b>
-                </div>
-                
-                ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
-                ⛅ <a href='https://meteo-parapente.com/#/${latitud},${longitud},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
-                ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
-                ⛅ <a href='https://meteo-fly.com/?lat=${latitud}&lon=${longitud}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a>
             `;
 
             // 3. Escapamos todas las comillas dobles para que no rompan el atributo data-tippy-content
@@ -4692,6 +4718,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 <button class="btn-info" 
                     style="position: absolute; bottom: ${btnRowBottom}; left: 13px;"
                     data-tippy-content="${contenidoEscapado}"
+                    data-tippy-type="despegue-info" 
                     title="${t('tabla.tooltips.masInfo')}">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -7515,9 +7542,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 ],
             },
 
-            // INYECCIÓN DE ESTRUCTURA (X FIJA + CONTENIDO CON SCROLL)
+            // INYECCIÓN DE ESTRUCTURA (X FIJA + CONTENIDO CON SCROLL SELECTIVO)
             onCreate(instance) {
                 const content = instance.props.content;
+                
+                // Comprobar si el elemento que ha disparado el popup es el botón "i" de despegue
+                const esInfoDespegue = instance.reference.getAttribute('data-tippy-type') === 'despegue-info';
 
                 // 1. Creamos un fragmento de documento para no repintar muchas veces
                 const fragment = document.createDocumentFragment();
@@ -7541,15 +7571,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 // 3. Área de Scroll (Contenido)
                 const scrollArea = document.createElement('div');
                 scrollArea.className = 'tippy-scroll-area';
-                scrollArea.innerHTML = content;
                 
-                // 4. Unimos todo
-                // NOTA: No creamos un wrapper extra, inyectamos los dos elementos
-                // directamente en el tippy-content, que ya tiene display: flex gracias al CSS
+                // Aplicar límites de altura y scroll vertical únicamente para el botón "i" del despegue
+                if (esInfoDespegue) {
+                    scrollArea.style.maxHeight = '400px';
+                    scrollArea.style.overflowY = 'auto';
+                    scrollArea.style.paddingRight = '8px';
+                    scrollArea.style.boxSizing = 'border-box';
+                }
+                
+                scrollArea.innerHTML = content;
                 fragment.appendChild(header);
                 fragment.appendChild(scrollArea);
 
-                // 5. Limpiamos y asignamos
                 instance.setContent(fragment);
             }
         });
@@ -9973,7 +10007,6 @@ function inicializarMapaLeaflet() {
     // 🛑 CONTROLES DEL MAPA
     // ___________________________________________________________________________________
 
-
     // 🟡 CONTROL Búsqueda nombres de despegues
 
     //Función auxiliar para normalizar texto (quitar acentos y minúsculas)
@@ -10518,7 +10551,7 @@ function inicializarMapaLeaflet() {
 
                             // Agrupamos TODOS los botones en un solo contenedor Flexbox
                             botonesAccionPopupHTML = `
-                            <div style="display: flex; align-items: stretch; gap: 8px; margin-top: 8px; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: stretch; gap: 8px; margin-top: 12px; margin-bottom: 8px;">
                                 
                                 <!-- Contenedor para alinear los iconos (Corazón y Ojo) a la izquierda -->
                                 <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
@@ -10573,42 +10606,56 @@ function inicializarMapaLeaflet() {
                     const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
                     const codigosOriTraducidos = traducirCadenaOrientacion(row.Orientaciones);
                             
-                    const popupHtml = `<div style="line-height: 1.2;">
-                    
-                            <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
-                            <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
+                    const popupHtml = `
+                        <div style="line-height: 1.4;">
+                            <b><span style='font-size: 20px; padding-right: 20px;'>🪂 ${escapeHtml(despegue)}</b></span><br>
                             
                             ${botonesAccionPopupHTML}
 
-                            <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
-                            <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
-                            <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
-                            <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
-                            
-                            <div class="popup-toggle-header" 
-                                style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
+                            ⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
+
+                            ⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
+
+                            ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
+
+                            ⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a><br>
+
+                            <div class="popup-toggle-header" style="cursor: pointer; border-radius: 3px; padding-top: 8px; margin-bottom: 10px;">
                                 ${t('mapa.masInformacion')}
                             </div>
                             
                             <div class="popup-collapsible-content" style="display: none; overflow-wrap: break-word; ">
 
-                                <div style="margin-bottom: 5px;">${t('mapa.labelCoordenadas')} <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>
-                                <div style="margin-bottom: 5px;">${t('mapa.labelAltitud')} <b>${escapeHtml(altitud)} m</b></div>
-                                
-                                <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;" title="${t('popupDespegue.nivelActividadTitle')}">
-                                    ${t('mapa.labelActividad')} &nbsp;${htmlActividadPopup} <span style="margin-left: 2px;"><b>${actividadScore || '?'}/5</b></span>
+                                <br>${t('popupDespegue.region')} <b>${t('regiones.' + escapeHtml(region), {defaultValue: escapeHtml(region)})}</b><br>
+                                ${t('popupDespegue.provincia')} <b>${escapeHtml(provincia)}</b><br>
+
+                                <div style="margin-bottom: 2px;">
+                                    ${t('popupDespegue.orientacion')} 
+                                    <span style="display: inline-block; vertical-align: 2px; margin-left: 4px;">${SVGorientaciones}</span> 
+                                    <b style="vertical-align: 1px;">${escapeHtml(traducirCadenaOrientacion(orientacion))}</b>
+                                </div>
+
+                                ${t('mapa.labelCoordenadas')} <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b><br>
+                                ${t('mapa.labelAltitud')} <b>${escapeHtml(altitud)} m</b><br>
+
+                                <div>
+                                    ${t('popupDespegue.nivelActividad')} 
+                                    <span style='margin-left: 6px;'>${htmlActividadPopup}</span> 
+                                    <b>${actividadScore || '?'}/5</b>
                                 </div>
                                 
-                                <div style="margin-bottom: 5px;">${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b></div>
-                                <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' target='_blank'>Google Maps</a></div>
-                                <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' target='_blank'>Brouter</a></div>
-                                <div style="margin-bottom: 3px;">🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' target='_blank'>Nakarte</a></div>
-                                <div style="margin-bottom: 5px;">🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' target='_blank'>XContest (&plusmn; 500 m)</a></div>
-                                <div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
+                                ${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b><br>
+
+                                <br>🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Google Maps</a><br>
+                                🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Brouter</a><br>
+                                🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' onclick='abrirLinkExterno(this.href); return false;'>Nakarte</a><br>
+                                🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' onclick='abrirLinkExterno(this.href); return false;'>XContest (&plusmn; 500 m)</a><br>
+
+                                <br><div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
                                 
                             </div>
-                            
-                            </div>`;		
+                        </div>
+                    `;		
 
                     marker.bindPopup(popupHtml, { 
                         className: 'popup-despegues', 
