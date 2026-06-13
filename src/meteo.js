@@ -3614,19 +3614,19 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     background: var(--color-background-primary, #fff);
                     border-radius: 16px;
                     border: 0.5px solid var(--color-border-tertiary, #e0e0e0);
-                    padding: 2rem 1.5rem;
+                    padding: 1.2rem 1.5rem;
                     display: flex; flex-direction: column;
                 ">
                     <!-- Cabecera -->
                     <div style="text-align:center; margin-bottom: 1.75rem;">
                         <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🪂</div>
                         <div style="font-size: 35px; font-weight: 500; color: var(--color-text-primary, #111); margin-bottom: 8px;">Fly Decision</div>
-                        <div style="font-size: 20px; color: var(--color-text-secondary, #666); line-height: 1.45;">${t('asistente.paso1.subtitulo')}</div><br>
+                        <div style="font-size: 20px; color: var(--color-text-secondary, #666); line-height: 1.45;">${t('asistente.paso1.subtitulo')}</div><br><br>
                         <div style="font-size: 20px; color: var(--color-text-secondary, #666); line-height: 1.45;">${t('asistente.paso1.subtitulo2')}</div>
                     </div>
 
                     <!-- Botones principales -->
-                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 3rem;">
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 1rem;">
 
                         <!-- Seleccionar con el mapa -->
                         <button id="paso1-btn-selec-mapa" style="
