@@ -3045,6 +3045,26 @@ details.config-accordion .accordion-content {
   border-top: 13px solid #007AFF; /* color del borde */
 }
 
+/* Estilo refinado para el botón "Más información" */
+.popup-toggle-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Empuja el texto a la izq y la flecha a la der */
+    color: #007aff;                 /* Azul de tu marca para indicar interacción */
+    font-weight: bold;
+    cursor: pointer;
+    padding-top: 10px;
+    margin-top: 10px;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+/* Efecto hover/active al tocarlo */
+.popup-toggle-header:hover,
+.popup-toggle-header:active {
+    color: #0056b3; /* Un azul más oscuro al pulsar */
+}
+
 .dot {
   width:18px;
   height:18px;
@@ -3557,7 +3577,7 @@ h3 {
 }
 /* 2. Limita la altura máxima de todos los globos */
 .leaflet-popup-content {
-    max-height: 400px !important; /* Altura máxima ideal para que quepa bien en todos los móviles */
+    max-height: 347px !important; /* Para que se corte a la mitad en la última fila e invite a hacer scroll */
     overflow-y: auto !important;   /* Activa el scroll solo si el contenido supera los 300px */
     padding-right: 8px !important;  /* Margen de seguridad para el texto */
     box-sizing: border-box;

@@ -4868,7 +4868,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         <br>${t('popupDespegue.region')} <b>${t('regiones.' + d.Región, { defaultValue: d.Región })}</b><br>
                         ${t('popupDespegue.provincia')} <b>${d.Provincia}</b><br>
                         
-                        <div style="margin-bottom: 2px;">
+                        <div>
                             ${t('popupDespegue.orientacion')} 
                             <span style="display: inline-block; vertical-align: 2px; margin-left: 4px;">${svgParaTooltip}</span> 
                             <b style="vertical-align: 1px;">${traducirCadenaOrientacion(d["Orientación"])}</b>
@@ -7762,7 +7762,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 
                 // Aplicar límites de altura y scroll vertical únicamente para el botón "i" del despegue
                 if (esInfoDespegue) {
-                    scrollArea.style.maxHeight = '400px';
+                    scrollArea.style.maxHeight = '330px';
                     scrollArea.style.overflowY = 'auto';
                     scrollArea.style.paddingRight = '8px';
                     scrollArea.style.boxSizing = 'border-box';
@@ -10887,7 +10887,7 @@ function inicializarMapaLeaflet() {
                                 <br>${t('popupDespegue.region')} <b>${t('regiones.' + escapeHtml(region), {defaultValue: escapeHtml(region)})}</b><br>
                                 ${t('popupDespegue.provincia')} <b>${escapeHtml(provincia)}</b><br>
 
-                                <div style="margin-bottom: 2px;">
+                                <div>
                                     ${t('popupDespegue.orientacion')} 
                                     <span style="display: inline-block; vertical-align: 2px; margin-left: 4px;">${SVGorientaciones}</span> 
                                     <b style="vertical-align: 1px;">${escapeHtml(traducirCadenaOrientacion(orientacion))}</b>
