@@ -1363,6 +1363,23 @@ function activarEdicionFavoritos() {
     setTimeout(() => { sugerirGuiaFavoritos(); }, 500);
 }
 
+function activarEdicionFavoritosConMapa() {
+    // Desactivar filtro meteo ANTES de cambiar de vista,
+    // para que cambiarVista('mapa') lo lea ya correcto
+    window.filtroMeteoPreEdicion = filtrosMapaAbiertos; // guardar para restaurar al finalizar
+    filtrosMapaAbiertos = false;
+
+    // Reutilizar toda la lógica de activarEdicionFavoritos:
+    // sets modoEdicionFavoritos=true, venirDeEdicionActiva=true,
+    // limpia filtros, activa modo-edicion-tabla, etc.
+    // (internamente hace cambiarVista('tabla'), lo sobreescribimos enseguida)
+    activarEdicionFavoritos();
+
+    // Ir al mapa en lugar de quedarse en la tabla
+    cambiarVista('mapa');
+    window.activarMenuInferior(document.getElementById('nav-map'));
+}
+
 function filtroVerSoloFavoritos() {
     const btn = document.getElementById('btn-filtro-favoritos-toggle');
     const iconContainer = document.getElementById('icon-filter-favs');
@@ -1998,7 +2015,12 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
         }
     }
     window.seguimientoPrevioEdicion = null; // Limpiamos la memoria
-    // -------------------------------------------------
+
+    // --- RESTAURAR FILTRO METEO SI SE ENTRÓ DESDE EL MAPA ---
+    if (window.filtroMeteoPreEdicion !== undefined) {
+        filtrosMapaAbiertos = window.filtroMeteoPreEdicion;
+        window.filtroMeteoPreEdicion = undefined;
+    }
 
     construir_tabla(); 
 
@@ -3463,7 +3485,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             document.getElementById('paso1-btn-selec-mapa').addEventListener('click', () => {
                 cerrar();
-                clicBotonMapa();
+                activarEdicionFavoritosConMapa();
             });
 
             document.getElementById('paso1-btn-selec-lista').addEventListener('click', () => {
