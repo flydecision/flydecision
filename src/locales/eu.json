@@ -27,10 +27,11 @@
     "configurarOrigen": "Jatorria ezarri",
     "marcarFavoritos": "⚙️ Aplikazioa konfiguratu",
     "explorarMapa": "🗺️ Aireratzeen mapa arakatu",
-    "verGuiaGeneral": "Informazio orokorra eta Laguntza",
+    "verGuiaGeneral": "Laguntza",
     "importarConfiguracion": "Konfigurazioa inportatu",
     "marcarFavoritosFlecha": "Gogokoak markatu →",
-    "entendido": "Ulertuta"
+    "entendido": "Ulertuta",
+    "volverAlMenuInicial": "Hasierako menura itzuli"
   },
 
   "dias": {
@@ -85,6 +86,7 @@
     "noHayParaExportar": "Ez dago gogoko aireratzerik esportatzeko",
     "noTienesFavoritos": "<p>Ez dago aireratzerik gogoko gisa markatuta ♥️</p>",
     "necesarioMarcarUno": "<p>Gutxienez gogoko aireratze bat behar da ♥️</p><p>Nahi baduzu, pantaila honen gida azkarra ikus dezakezu <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Gida'> botoia erabiliz.</p>",
+    "necesarioMarcarUnoEnMapa": "<p>Beharrezkoa da gutxienez gogoko aireratze bat markatzea.</p><p>Hautatu aireratze bat eta bere informazioa duen mezu bat agertuko da. Bilatu 🤍 eta hautatu aireratzea gogoko gisa markatzeko ♥️</p><p>Geroago gogokoak markatu eta desmarkatu ahal izango dituzu Mapara itzulita edo <i>Ezarpenak > Gogokoak editatu</i> atalean</p>",
     "confirmacionMasiva": "<span style='font-weight:bold;'>{{cantidad}}</span> aireratze gogoko gisa markatu nahi dituzu?",
     "confirmarDesmarcarTodos": "Zure gogoko guztien markaketa kendu nahi duzu?",
     "anadidoOk": "<b>{{nombre}}</b> gogokoetara gehitu da ♥️",
@@ -356,10 +358,13 @@
       "btnSecundario": "Ikusi gida orokorra",
       "btnImportar": "Inportatu ezarpenak",
       "subtitulo": "Nora joan hegan egitera?",
+      "subtitulo2": "Hautatu zure gogoko aireratzeak 👉&#8239;❤️ haien iragarpena eta puntuazioa izateko",
       "btnFavoritos": "Nire gogokoak konfiguratu",
       "btnSubtituloFavoritos": "Zure aireratzeen meteoa ikusteko",
       "btnExplorarMapa": "Mapa arakatu",
-      "btnSubtituloExplorarMapa": "Ezer konfiguratu beharrik gabe"
+      "btnSubtituloExplorarMapa": "Ezer konfiguratu gabe",
+      "btnSelecMapa": "Maparekin hautatu",
+      "btnSelecLista": "Zerrendarekin hautatu"
     },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Parapenterako eguraldi iragarpenaren analisi automatizatua.</p><p>🙄 <b>Zertarako balio du?:</b> non hegan egin erabakitzen laguntzeko. Zure aireratze gogokoen taula bat erakusten du, haien iragarpenekin, eta <b>eguraldi baldintza</b> horien analisi automatizatua egiten du.</p><p>🧮 <b>Zer analisi egiten du?:</b> iragarpena zuk konfiguratutako batez besteko haizearen eta gehienezko boladen mugekin eta aireratze bakoitzaren norabidearekin alderatzen du; aireratzetik gertu dauden altueretako haizea ere aztertzen du (80, 120 eta 180 m), haize-gradientearen eta iragarpenaren fidagarritasunaren ikuspegia emanez. XC datu gakoak erakusten ditu (sabaia, CAPE eta CIN).</p><p>Informazio honekin guztiarekin, aireratze bakoitza 0-tik 10-era puntuatzen du eta kolorez kodetzen ditu 🟩&nbsp;🟨&nbsp;🟥 datuak zuk aukeratutako ordu-tarterako. Muga guztiak pertsonaliza ditzakezu zure hobespenetara egokitzeko.</p>"

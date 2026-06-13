@@ -27,10 +27,11 @@
     "configurarOrigen": "Set origin",
     "marcarFavoritos": "⚙️ Configure the app",
     "explorarMapa": "🗺️ Explore takeoffs map",
-    "verGuiaGeneral": "General information and Help",
+    "verGuiaGeneral": "Help",
     "importarConfiguracion": "Import configuration",
     "marcarFavoritosFlecha": "Mark favorites →",
-    "entendido": "Got it"
+    "entendido": "Got it",
+    "volverAlMenuInicial": "Back to start menu"
   },
 
   "dias": {
@@ -85,6 +86,7 @@
     "noHayParaExportar": "No favorite takeoffs to export",
     "noTienesFavoritos": "<p>No takeoffs marked as favorites ♥️</p>",
     "necesarioMarcarUno": "<p>At least one favorite takeoff is required ♥️</p><p>If you want, you can check the quick guide for this screen using the <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guide'> button.</p>",
+    "necesarioMarcarUnoEnMapa": "<p>It is necessary to mark at least one favorite takeoff.</p><p>Select a takeoff and a message with its information will be displayed. Look for the 🤍 and select it to mark the takeoff as a favorite ♥️</p><p>You will be able to mark and unmark favorites later by returning to the Map or in <i>Settings > Edit favorites</i></p>",
     "confirmacionMasiva": "Do you want to mark <span style='font-weight:bold;'>{{cantidad}}</span> takeoffs as favorites?",
     "confirmarDesmarcarTodos": "Do you want to unmark all your favorites?",
     "anadidoOk": "<b>{{nombre}}</b> added to favorites ♥️",
@@ -356,10 +358,13 @@
       "btnSecundario": "View general guide",
       "btnImportar": "Import settings",
       "subtitulo": "Where to go flying?",
+      "subtitulo2": "Select your favorite takeoffs 👉&#8239;❤️ to have their forecast and score",
       "btnFavoritos": "Configure my favorites",
       "btnSubtituloFavoritos": "To see the meteo for your takeoffs",
       "btnExplorarMapa": "Explore the map",
-      "btnSubtituloExplorarMapa": "No configuration needed"
+      "btnSubtituloExplorarMapa": "Without configuring anything",
+      "btnSelecMapa": "Select with the map",
+      "btnSelecLista": "Select with the list"
     },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Automated weather forecast analysis for paragliding.</p><p>🙄 <b>What is it for?:</b> to help you decide where to fly. It shows a table with your favorite takeoffs, their forecasts, and performs an automated analysis of those <b>weather conditions</b>.</p><p>🧮 <b>What analysis does it perform?:</b> it compares the forecast against your configured mean wind and max gust limits and each takeoff's orientation; it also analyzes wind at altitudes near the takeoff (80, 120, and 180 m), providing insight into wind gradient and forecast reliability. It shows key XC data (ceiling, CAPE, and CIN).</p><p>With all this info, it scores each takeoff from 0 to 10 and color-codes 🟩&nbsp;🟨&nbsp;🟥 the data for your chosen time range. You can customize all limits to match your preferences.</p>"

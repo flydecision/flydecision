@@ -27,10 +27,11 @@
     "configurarOrigen": "Configurar origem",
     "marcarFavoritos": "⚙️ Configurar a aplicação",
     "explorarMapa": "🗺️ Explorar mapa de descolagens",
-    "verGuiaGeneral": "Informação geral e Ajuda",
+    "verGuiaGeneral": "Ajuda",
     "importarConfiguracion": "Importar configuração",
     "marcarFavoritosFlecha": "Marcar favoritos →",
-    "entendido": "Entendido"
+    "entendido": "Entendido",
+    "volverAlMenuInicial": "Voltar ao menu inicial"
   },
 
   "dias": {
@@ -85,6 +86,7 @@
     "noHayParaExportar": "Não há descolagens favoritas para exportar",
     "noTienesFavoritos": "<p>Não há descolagens marcadas como favoritas ♥️</p>",
     "necesarioMarcarUno": "<p>É necessária pelo menos uma descolagem favorita ♥️</p><p>Se desejar, pode consultar o guia rápido deste ecrã utilizando o botão <img src='icons/icono_ayuda_60.webp' width='20' height='20' style='vertical-align:middle;' alt='Guia'>.</p>",
+    "necesarioMarcarUnoEnMapa": "<p>É necessário marcar pelo menos uma descolagem favorita.</p><p>Seleciona uma descolagem e será mostrada uma mensagem com a sua informação. Procura o 🤍 e seleciona-o para marcar a descolagem como favorita ♥️</p><p>Poderás marcar e desmarcar favoritos mais tarde voltando ao Mapa ou em <i>Definições > Editar favoritos</i></p>",
     "confirmacionMasiva": "Deseja marcar <span style='font-weight:bold;'>{{cantidad}}</span> descolagens como favoritas?",
     "confirmarDesmarcarTodos": "Deseja desmarcar todos os seus favoritos?",
     "anadidoOk": "<b>{{nombre}}</b> adicionado aos favoritos ♥️",
@@ -356,10 +358,13 @@
       "btnSecundario": "Ver guia geral",
       "btnImportar": "Importar definições",
       "subtitulo": "Onde ir voar?",
+      "subtitulo2": "Seleciona as tuas descolagens favoritas 👉&#8239;❤️ para teres a sua previsão e pontuação",
       "btnFavoritos": "Configurar os meus favoritos",
       "btnSubtituloFavoritos": "Para ver a meteo das tuas descolagens",
       "btnExplorarMapa": "Explorar o mapa",
-      "btnSubtituloExplorarMapa": "Sem necessidade de configurar nada"
+      "btnSubtituloExplorarMapa": "Sem configurar nada",
+      "btnSelecMapa": "Selecionar com o mapa",
+      "btnSelecLista": "Selecionar com a lista"
     },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Análise automatizada da previsão meteorológica para parapente.</p><p>🙄 <b>Para que serve?:</b> para ajudá-lo a decidir onde voar. Mostra uma tabela com as suas descolagens favoritas, as respetivas previsões, e realiza uma análise automatizada destas <b>condições meteorológicas</b>.</p><p>🧮 <b>Que análise faz?:</b> compara a previsão com os seus limites configurados de vento médio e rajadas máximas, e a orientação de cada descolagem; também analisa o vento a altitudes próximas da descolagem (80, 120 e 180 m), fornecendo informações sobre o gradiente de vento e a fiabilidade da previsão. Mostra dados essenciais de XC (teto, CAPE e CIN).</p><p>Com toda esta informação, pontua cada descolagem de 0 a 10 e codifica com cores 🟩&nbsp;🟨&nbsp;🟥 os dados para a janela de tempo escolhida. Pode personalizar todos os limites para adaptá-los às suas preferências.</p>"

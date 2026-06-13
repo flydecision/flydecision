@@ -1046,6 +1046,8 @@ function iniciarGuiaPrincipal(forzar = false) {
 // ---------------------------------------------------------------
 
 function sugerirGuiaFavoritos(forzar = false) {
+
+    if (window.onboardingMapaActivo) return;
     
     if (!forzar && localStorage.getItem('METEO_GUIA_FAVORITOS_VISTA') === 'true') {
         return; 
@@ -1361,6 +1363,20 @@ function activarEdicionFavoritos() {
     actualizarContadorVisualFavoritos(); 
 
     setTimeout(() => { sugerirGuiaFavoritos(); }, 500);
+}
+
+function activarEdicionFavoritosConMapa() {
+    // 1. Bandera especial para saber que estamos seleccionando desde el mapa en el onboarding
+    if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA")) {
+        window.onboardingMapaActivo = true;
+    }
+
+    // 2. Reutilizar la lógica de activarEdicionFavoritos (limpia tabla, filtros, etc.)
+    activarEdicionFavoritos();
+
+    // 3. Ir al mapa (al estar la meteo activa, se mostrarán automáticamente sus controles)
+    cambiarVista('mapa');
+    window.activarMenuInferior(document.getElementById('nav-map'));
 }
 
 function filtroVerSoloFavoritos() {
@@ -1765,14 +1781,21 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
             }
         });
 
-        // 4. Gestión de reconstrucción de tabla si el filtro de favoritos está encendido
-        const btnFiltroFav = document.getElementById('btn-filtro-favoritos-toggle');
-        if (btnFiltroFav && btnFiltroFav.classList.contains('activo') && !esNuevoFavorito) {
-            const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+        // 4. Gestión de reconstrucción de tabla
+        const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+        
+        if (enMapa) {
+            // SI ESTAMOS EN EL MAPA: Reconstruimos la tabla silenciosamente en segundo plano
             window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
-            construir_tabla(false, enMapa, enMapa);
+            construir_tabla(false, true, true); 
         } else {
-            aplicarFiltrosVisuales(true); 
+            // SI ESTAMOS EN LA PROPIA TABLA: Bastan los cambios visuales instantáneos que ya hicimos arriba
+            const btnFiltroFav = document.getElementById('btn-filtro-favoritos-toggle');
+            if (btnFiltroFav && btnFiltroFav.classList.contains('activo') && !esNuevoFavorito) {
+                construir_tabla(false, false, false);
+            } else {
+                aplicarFiltrosVisuales(true); 
+            }
         }
     };
 
@@ -1950,7 +1973,115 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
     favoritos = obtenerFavoritos();
 
     if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { 
-        mensajeModalAceptar('', t('favoritos.necesarioMarcarUno'));
+        const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") === "true";
+        
+        if (window.onboardingMapaActivo) {
+            // 🗺️ MODAL ESPECIAL PARA EL MAPA CON BOTÓN DE ESCAPE
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: `<div style="text-align: center; font-size: 1.1em;">${t('favoritos.necesarioMarcarUnoEnMapa')}</div>`,
+                botones: [
+                    {
+                        texto: (typeof t === 'function' ? t('botones.volverAlMenuInicial', {defaultValue: 'Volver al menú inicial'}) : 'Volver al menú inicial'),
+                        estilo: 'secundario',
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                            
+                            // Limpieza profunda para abortar la edición en el mapa
+                            window.onboardingMapaActivo = false;
+                            window.venirDeEdicionActiva = false;
+                            modoEdicionFavoritos = false;
+                            soloFavoritos = true; 
+                            
+                            // Devolver el botón meteo al mapa
+                            const btnFiltros = document.getElementById('btn-filtros-mapa');
+                            if (btnFiltros) btnFiltros.style.display = '';
+                            
+                            // Limpiar clases visuales
+                            document.body.classList.remove('modo-edicion-tabla');
+                            const divMenu = document.getElementById('div-menu');
+                            if (divMenu) divMenu.classList.remove('mode-editing');
+                            const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+                            if (divMenu2) divMenu2.classList.remove('mode-editing');
+                            
+                            // Volver a la tabla y restaurar todo
+                            cambiarVista('tabla');
+                            if (typeof limpiarBuscador === 'function') limpiarBuscador();
+                            construir_tabla();
+                            
+                            // Mostrar de nuevo el menú inicial (Paso 1)
+                            if (typeof window.mostrarPaso1General === 'function') {
+                                window.mostrarPaso1General();
+                            }
+                        }
+                    },
+                    {
+                        texto: (typeof t === 'function' ? t('botones.entendido', {defaultValue: 'Entendido'}) : 'Entendido'),
+                        onclick: function() {
+                            GestorMensajes.ocultar();
+                        }
+                    }
+                ]
+            });
+        } else {
+            // 📝 MODAL ESTÁNDAR PARA LA TABLA CON BOTÓN DE ESCAPE
+            let botonesTabla = [];
+            
+            if (!configHecha) {
+                // A) Si es la primera visita: Volver al menú inicial (Paso 1)
+                botonesTabla.push({
+                    texto: (typeof t === 'function' ? t('botones.volverAlMenuInicial', {defaultValue: 'Volver al menú inicial'}) : 'Volver al menú inicial'),
+                    estilo: 'secundario',
+                    onclick: function() {
+                        GestorMensajes.ocultar();
+                        window.venirDeEdicionActiva = false;
+                        modoEdicionFavoritos = false;
+                        soloFavoritos = true; 
+                        
+                        document.body.classList.remove('modo-edicion-tabla');
+                        const divMenu = document.getElementById('div-menu');
+                        if (divMenu) divMenu.classList.remove('mode-editing');
+                        const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+                        if (divMenu2) divMenu2.classList.remove('mode-editing');
+                        
+                        cambiarVista('tabla');
+                        if (typeof limpiarBuscador === 'function') limpiarBuscador();
+                        construir_tabla();
+                        
+                        if (typeof window.mostrarPaso1General === 'function') {
+                            window.mostrarPaso1General();
+                        }
+                    }
+                });
+            } else {
+                // B) Si es usuaria recurrente que borró todos los favoritos: Escapar al mapa
+                // (No le podemos dar una "tabla normal sin favoritos", así que el mapa es su única salida visual)
+                botonesTabla.push({
+                    texto: (typeof t === 'function' ? t('asistente.paso1.btnExplorarMapa', {defaultValue: 'Explorar mapa'}) : 'Explorar mapa'),
+                    estilo: 'secundario',
+                    onclick: function() {
+                        GestorMensajes.ocultar();
+                        if (typeof clicBotonMapa === 'function') {
+                            clicBotonMapa();
+                        }
+                    }
+                });
+            }
+            
+            // Botón principal (Entendido)
+            botonesTabla.push({
+                texto: (typeof t === 'function' ? t('botones.entendido', {defaultValue: 'Entendido'}) : 'Entendido'),
+                onclick: function() {
+                    GestorMensajes.ocultar();
+                }
+            });
+
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: `<div style="text-align: center; font-size: 1.1em;">${t('favoritos.necesarioMarcarUno')}</div>`,
+                botones: botonesTabla
+            });
+        }
         return false; 
     }
 
@@ -1960,13 +2091,6 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
         // Pasamos 'false' para que no reconstruya la tabla todavía (lo haremos al final)
         resetFiltroDistancia(false); 
     }
-
-    // BOTÓN BUSCAR DESACTIVADO. 🔍 CERRAR BUSCADOR (Desactivado para hacerlo permanente)
-    // const searchContainer = document.getElementById('floating-search-container');
-    // if (searchContainer) {
-    //     searchContainer.classList.add('floating-search-hidden');
-    //     buscadorVisible = false;
-    // }
     
     document.body.classList.remove('modo-edicion-tabla');
     const divMenu = document.getElementById('div-menu');
@@ -1977,28 +2101,35 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
     
     const panelHorario = document.querySelector('.div-filtro-horario');
     if (panelHorario) panelHorario.style.display = ''; 
-	
+    
     localStorage.setItem("METEO_PRIMERA_VISITA_HECHA", "true");
     modoEdicionFavoritos = false; 
-    window.venirDeEdicionActiva = false; // Apagamos el chivato al finalizar de editar
+    window.venirDeEdicionActiva = false; 
     
-    // Al limpiar el buscador aquí, ya se restaurará el placeholder normal
-    limpiarBuscador(); 
+    // --- LIMPIEZA DE ONBOARDING MAPA ---
+    window.onboardingMapaActivo = false;
+    const btnFiltros = document.getElementById('btn-filtros-mapa');
+    if (btnFiltros) btnFiltros.style.display = ''; // Devolvemos el botón Meteo al mapa
+
+    if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
 
     // --- RESTAURAR EL FILTRO DE SEGUIMIENTO ---
     if (window.seguimientoPrevioEdicion === true) {
-        // Comprobación de seguridad: ¿siguen existiendo seguimientos tras la edición?
         if (obtenerSeguimientos().length > 0) {
             soloSeguimiento = true;
         } else {
-            // Si el usuario los borró todos desde el mapa durante un desvío, lo apagamos definitivamente
             soloSeguimiento = false;
             const btnSegTog = document.getElementById('btn-filtro-seguimiento-toggle');
             if (btnSegTog) btnSegTog.classList.remove('activo', 'filtro-aplicado');
         }
     }
-    window.seguimientoPrevioEdicion = null; // Limpiamos la memoria
-    // -------------------------------------------------
+    window.seguimientoPrevioEdicion = null; 
+
+    // --- RESTAURAR FILTRO METEO SI SE ENTRÓ DESDE EL MAPA ---
+    if (window.filtroMeteoPreEdicion !== undefined) {
+        filtrosMapaAbiertos = window.filtroMeteoPreEdicion;
+        window.filtroMeteoPreEdicion = undefined;
+    }
 
     construir_tabla(); 
 
@@ -3319,6 +3450,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
         // Pantalla de bienvenida
         const mostrarPaso1 = function() {
+
+            // Prevenir duplicados borrando el anterior si existe
+            const existingOverlay = document.getElementById('paso1-overlay');
+            if (existingOverlay) existingOverlay.remove();
+
             const tieneFavs = (localStorage.getItem("METEO_FAVORITOS_LISTA") ? JSON.parse(localStorage.getItem("METEO_FAVORITOS_LISTA")) : []).length > 0;
             const haVistoMapa = window.seHaExploradoMapa === true;
 
@@ -3344,68 +3480,115 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     display: flex; flex-direction: column;
                 ">
                     <!-- Cabecera -->
-                    <div style="text-align:center; margin-bottom: 2.55rem;">
+                    <div style="text-align:center; margin-bottom: 1.75rem;">
                         <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🪂</div>
-                        <div style="font-size: 35px; font-weight: 500; color: var(--color-text-primary, #111); margin-bottom: 4px;">Fly Decision</div>
-                        <div style="font-size: 20px; color: var(--color-text-secondary, #666);">${t('asistente.paso1.subtitulo')}</div>
+                        <div style="font-size: 35px; font-weight: 500; color: var(--color-text-primary, #111); margin-bottom: 8px;">Fly Decision</div>
+                        <div style="font-size: 20px; color: var(--color-text-secondary, #666); line-height: 1.45;">${t('asistente.paso1.subtitulo')}</div><br>
+                        <div style="font-size: 20px; color: var(--color-text-secondary, #666); line-height: 1.45;">${t('asistente.paso1.subtitulo2')}</div>
                     </div>
 
                     <!-- Botones principales -->
-                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem;">
-                        <button id="paso1-btn-favoritos" style="
-                            display: flex; align-items: center; gap: 10px;
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 3rem;">
+
+                        <!-- Seleccionar con el mapa -->
+                        <button id="paso1-btn-selec-mapa" style="
+                            display: flex; align-items: center; gap: 12px;
                             padding: 14px 18px; border-radius: 12px; border: none;
-                            background: #378ADD;
-                            color: #fff;
-                            font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
-                            width: 100%;
+                            background: #378ADD; color: #fff;
+                            cursor: pointer; text-align: left; width: 100%;
                         ">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                                <line x1="8" y1="2" x2="8" y2="18"></line>
+                                <line x1="16" y1="6" x2="16" y2="22"></line>
+                            </svg>
                             <div>
-                                <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnFavoritos')}</div>
-                                <div style="font-size:16px; font-weight:400; margin-top:2px; opacity:0.8;">${t('asistente.paso1.btnSubtituloFavoritos')}</div>
+                                <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnSelecMapa')}</div>
                             </div>
                         </button>
 
+                        <!-- Seleccionar con la lista -->
+                        <button id="paso1-btn-selec-lista" style="
+                            display: flex; align-items: center; gap: 12px;
+                            padding: 14px 18px; border-radius: 12px; border: none;
+                            background: #378ADD; color: #fff;
+                            cursor: pointer; text-align: left; width: 100%;
+                        ">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <circle cx="3" cy="6" r="0.5" fill="#fff"></circle>
+                                <circle cx="3" cy="12" r="0.5" fill="#fff"></circle>
+                                <circle cx="3" cy="18" r="0.5" fill="#fff"></circle>
+                            </svg>
+                            <div>
+                                <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnSelecLista')}</div>
+                            </div>
+                        </button>
+
+                        <!-- Explorar mapa (sin configurar) -->
                         <button id="paso1-btn-mapa" style="
-                            display: flex; align-items: center; gap: 10px;
-                            padding: 14px 18px; border-radius: 12px;
+                            display: flex; align-items: center; gap: 12px;
+                            padding: 12px 18px; border-radius: 12px;
                             border: 0.5px solid var(--color-border-secondary, #ccc);
                             background: var(--color-background-secondary, #f5f5f5);
                             color: var(--color-text-primary, #111);
-                            font-size: 20px; font-weight: bold; cursor: pointer; text-align: left;
-                            width: 100%; margin-bottom: 35px;
+                            cursor: pointer; text-align: left; width: 100%;
+                            margin-top: 4px;
                         ">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; opacity:0.7;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="2" y1="12" x2="22" y2="12"></line>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                            </svg>
                             <div>
                                 <div style="font-size:20px; font-weight:500;">${t('asistente.paso1.btnExplorarMapa')}</div>
                                 <div style="font-size:16px; font-weight:400; margin-top:2px; opacity: 0.75;">${t('asistente.paso1.btnSubtituloExplorarMapa')}</div>
                             </div>
                         </button>
+
                     </div>
 
                     <!-- Separador + botones secundarios -->
-                    <div style="border-top: 0.5px solid var(--color-border-tertiary, #e0e0e0); padding-top: 1rem; display: flex; flex-direction: column; gap: 4px;">
-                        <button id="paso1-btn-guia" style="
-                            display: flex; align-items: center; gap: 8px;
-                            padding: 10px 12px; border-radius: 8px;
-                            border: none; background: transparent;
-                            color: var(--color-text-secondary, #666);
-                            font-size: 16px; cursor: pointer; text-align: left; width: 100%;
-                        ">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="8"></line><polyline points="11 12 12 12 12 16"></polyline></svg>
-                            ${t('botones.verGuiaGeneral')}
-                        </button>
+                    <div style="padding-top: 1rem; display: flex; flex-direction: row; gap: 8px;">
+
                         <button id="paso1-btn-importar" style="
+                            flex: 2;
                             display: flex; align-items: center; gap: 8px;
                             padding: 10px 12px; border-radius: 8px;
                             border: none; background: transparent;
                             color: var(--color-text-secondary, #666);
-                            font-size: 16px; cursor: pointer; text-align: left; width: 100%;
+                            font-size: 16px; cursor: pointer; text-align: left;
                         ">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                            ${t('botones.importarConfiguracion')}
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <span style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: normal; line-height: 1.2;">
+                                ${t('botones.importarConfiguracion')}
+                            </span>
                         </button>
+
+                        <button id="paso1-btn-guia" style="
+                            flex: 1;
+                            display: flex; align-items: center; gap: 8px;
+                            padding: 10px 12px; border-radius: 8px;
+                            border: none; background: transparent;
+                            color: var(--color-text-secondary, #666);
+                            font-size: 16px; cursor: pointer; text-align: left;
+                        ">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="8"></line>
+                                <polyline points="11 12 12 12 12 16"></polyline>
+                            </svg>
+                            <span style="white-space: normal; line-height: 1.2; word-break: break-word;">
+                                ${t('botones.verGuiaGeneral')}
+                            </span>
+                        </button>
+
                     </div>
                 </div>
             `;
@@ -3414,7 +3597,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             const cerrar = () => overlay.remove();
 
-            document.getElementById('paso1-btn-favoritos').addEventListener('click', () => {
+            document.getElementById('paso1-btn-selec-mapa').addEventListener('click', () => {
+                cerrar();
+                activarEdicionFavoritosConMapa();
+            });
+
+            document.getElementById('paso1-btn-selec-lista').addEventListener('click', () => {
                 cerrar();
                 activarEdicionFavoritos();
             });
@@ -4661,7 +4849,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
                 <div style="line-height: 1.4; max-width: 232px;">
-                    <b><span style='font-size: 20px; padding-right: 20px;'>🪂 ${d.Despegue}</b></span><br><br>   
+                    <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'>🪂 ${d.Despegue}</b></span><br><br>   
                     
                     ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
 
@@ -4680,7 +4868,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         <br>${t('popupDespegue.region')} <b>${t('regiones.' + d.Región, { defaultValue: d.Región })}</b><br>
                         ${t('popupDespegue.provincia')} <b>${d.Provincia}</b><br>
                         
-                        <div style="margin-bottom: 2px;">
+                        <div>
                             ${t('popupDespegue.orientacion')} 
                             <span style="display: inline-block; vertical-align: 2px; margin-left: 4px;">${svgParaTooltip}</span> 
                             <b style="vertical-align: 1px;">${traducirCadenaOrientacion(d["Orientación"])}</b>
@@ -7574,7 +7762,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 
                 // Aplicar límites de altura y scroll vertical únicamente para el botón "i" del despegue
                 if (esInfoDespegue) {
-                    scrollArea.style.maxHeight = '400px';
+                    scrollArea.style.maxHeight = '330px';
                     scrollArea.style.overflowY = 'auto';
                     scrollArea.style.paddingRight = '8px';
                     scrollArea.style.boxSizing = 'border-box';
@@ -7752,20 +7940,65 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 return;
             }
 
+            // --- PRIORIDAD 1.8: Si el menú de bienvenida está abierto, salir de la app ---
+            if (document.getElementById('paso1-overlay')) {
+                confirmarSalidaApp();
+                return;
+            }
+
+            // --- PRIORIDAD 1.9: Si hay un popup de despegue abierto en el mapa, lo cerramos primero ---
+            const vistaMapaParaPopup = document.getElementById('vista-mapa');
+            if (vistaMapaParaPopup && vistaMapaParaPopup.style.display === 'flex') {
+                const popupAbierto = document.querySelector('.leaflet-popup');
+                if (popupAbierto && typeof map !== 'undefined') {
+                    map.closePopup();
+                    return; 
+                }
+            }
+
             // --- PRIORIDAD 2: Modo Edición Favoritos ---
             if (window.venirDeEdicionActiva === true) {
                 // Detectamos si la usuaria está físicamente viendo el mapa
                 const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
                 
-                // Si no está en modo edición (vista de desvío tabla) O si está en el mapa, 
-                // queremos VOLVER a la pantalla de edición de favoritos de la tabla
-                if (!modoEdicionFavoritos || enMapa) {
+                // 1. PRIMERO: Si estamos en un "desvío" (modoEdicionFavoritos == false temporalmente)
+                // Queremos VOLVER al modo de edición (al mapa o a la tabla según corresponda)
+                if (!modoEdicionFavoritos) {
                     volverAEdicionDesdeDesvio();
+                    return;
+                }
+
+                // 2. Si estamos activamente editando y pulsamos atrás, queremos SALIR o CANCELAR:
+                if (window.onboardingMapaActivo) {
+                    // Cancelar el onboarding del mapa
+                    window.onboardingMapaActivo = false;
+                    window.venirDeEdicionActiva = false;
+                    modoEdicionFavoritos = false;
+                    soloFavoritos = true; 
+                    
+                    const btnFiltros = document.getElementById('btn-filtros-mapa');
+                    if (btnFiltros) btnFiltros.style.display = '';
+                    
+                    document.body.classList.remove('modo-edicion-tabla');
+                    const divMenu = document.getElementById('div-menu');
+                    if (divMenu) divMenu.classList.remove('mode-editing');
+                    const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+                    if (divMenu2) divMenu2.classList.remove('mode-editing');
+                    
+                    cambiarVista('tabla');
+                    if (typeof limpiarBuscador === 'function') limpiarBuscador();
+                    construir_tabla();
+                    
+                    if (typeof window.mostrarPaso1General === 'function') {
+                        window.mostrarPaso1General();
+                    }
                 } else {
-                    // Caso normal: Estamos en la TABLA en modo edición y queremos SALIR del modo edición al pulsar atrás
+                    // Caso normal: Estamos en la TABLA en modo edición y queremos cancelar
                     const esPrimeraVisita = !localStorage.getItem("METEO_PRIMERA_VISITA_HECHA");
                     const sinFavoritos = obtenerFavoritos().length === 0;
+                    
                     if (esPrimeraVisita && sinFavoritos) {
+                        // Cancelar onboarding de la tabla
                         modoEdicionFavoritos = false;
                         soloFavoritos = true;
                         window.venirDeEdicionActiva = false;
@@ -7780,8 +8013,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
                         if (panelDistancia) panelDistancia.classList.remove('activo');
                         if (typeof limpiarBuscador === 'function') limpiarBuscador();
                         construir_tabla();
-                        mostrarPaso1();
+                        
+                        if (typeof window.mostrarPaso1General === 'function') {
+                            window.mostrarPaso1General();
+                        }
                     } else {
+                        // Si ya tiene favoritos o es recurrente, usamos tu función centralizada
                         finalizarEdicionFavoritos();
                     }
                 }
@@ -7806,13 +8043,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // --- PRIORIDAD 5: Salir de la App desde el Mapa ---
             const vistaMapa = document.getElementById('vista-mapa');
             if (vistaMapa && vistaMapa.style.display === 'flex') {
-                
-                // Si hay un popup de despegue abierto en el mapa, lo cerramos y paramos aquí.
-                const popupAbierto = document.querySelector('.leaflet-popup');
-                if (popupAbierto && typeof map !== 'undefined') {
-                    map.closePopup();
-                    return; 
-                }
 
                 // infoPanel (Capas) 
                 const infoPanelCerrar = document.getElementById('infoPanel');
@@ -7869,28 +8099,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 }
                 return;
             }
-
-            // BOTÓN BUSCAR DESACTIVADO. B. Buscador Flotante
-            // const searchContainer = document.getElementById('floating-search-container');
-            // const searchInput = document.getElementById('buscador-despegues-provincias');
-            // if (searchContainer && !searchContainer.classList.contains('floating-search-hidden')) {
-            //     let tieneTexto = searchInput && searchInput.value.trim() !== '';
-                
-            //     if (tieneTexto) {
-            //         if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
-            //     }
-                
-            //     searchContainer.classList.add('floating-search-hidden');
-            //     if (typeof buscadorVisible !== 'undefined') buscadorVisible = false;
-            //     if (searchInput) searchInput.blur();
-                
-            //     if (panelDistancia && panelDistancia.classList.contains("activo")) {
-            //         window.activarMenuInferior(document.getElementById('nav-distance'));
-            //     } else {
-            //         window.activarMenuInferior(document.getElementById('nav-home'));
-            //     }
-            //     return;
-            // }
 
             // B. Buscador Flotante (Permanente)
             const searchInput = document.getElementById('buscador-despegues-provincias');
@@ -8319,10 +8527,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
     window.volverAEdicionDesdeDesvio = function() {
         window.despegueTemporalParaTabla = null; 
 
-        // 2. Limpiamos el buscador (ahora llamará a aplicarFiltrosVisuales de forma segura)
+        // Limpiamos el buscador 
         if (typeof limpiarBuscador === 'function') limpiarBuscador();
 
-        // 3. Restauramos banderas de modo edición
+        // Restauramos banderas de modo edición
         modoEdicionFavoritos = true;
         soloFavoritos = false; 
         soloSeguimiento = false; 
@@ -8333,7 +8541,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             soloFavoritos = true;
         }
 
-        // 4. Restauramos las clases visuales de los menús
+        // Restauramos las clases visuales de los menús
         document.body.classList.add('modo-edicion-tabla');
         const divMenu = document.getElementById('div-menu');
         if (divMenu) divMenu.classList.add('mode-editing');
@@ -8346,16 +8554,26 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const panelDistancia = document.getElementById("div-filtro-distancia");
         if (panelDistancia) panelDistancia.classList.add("activo");
 
-        // 5. Volvemos a la vista tabla (esto ocultará el botón automáticamente)
-        cambiarVista('tabla');
-        
-        // 6. Devolvemos la luz al botón de Ajustes
-        const btnSettings = document.getElementById('nav-settings');
-        if (btnSettings && typeof window.activarMenuInferior === 'function') {
-            window.activarMenuInferior(btnSettings);
+        // Decidir a dónde volver
+        if (window.onboardingMapaActivo) {
+            // Volvemos al MAPA (conservando la meteo y sus colores intactos)
+            cambiarVista('mapa');
+            
+            const btnMap = document.getElementById('nav-map');
+            if (btnMap && typeof window.activarMenuInferior === 'function') {
+                window.activarMenuInferior(btnMap);
+            }
+        } else {
+            // Volvemos a la TABLA
+            cambiarVista('tabla');
+            
+            const btnSettings = document.getElementById('nav-settings');
+            if (btnSettings && typeof window.activarMenuInferior === 'function') {
+                window.activarMenuInferior(btnSettings);
+            }
         }
 
-        // 7. Reconstruimos la tabla conservando la posición de scroll
+        // Reconstruimos la tabla conservando la posición de scroll
         window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
         construir_tabla();
     };
@@ -8802,7 +9020,8 @@ window.cambiarVista = function(vista) {
         // ¿De dónde venimos? ---
         if (btnVolver) {
             // Solo mostramos el botón si venimos de una edición ACTIVA real iniciada por el usuario
-            if (window.venirDeEdicionActiva === true) {
+            // Y OMITIMOS el botón si es la primera vez (onboarding mediante mapa)
+            if (window.venirDeEdicionActiva === true && !window.onboardingMapaActivo) {
                 btnVolver.style.display = 'flex';
                 btnVolver.classList.remove('en-tabla');
             } else {
@@ -8928,21 +9147,60 @@ window.cambiarVista = function(vista) {
 // ___________________________________________________________________________________
 
 window.evaluarEstadoNuevosUsuarios = function() {
-    // Especificamos la etiqueta "nav" para no confundirlo con el botón
     const navMenu = document.querySelector('nav.bottom-nav'); 
     const btnConfigMapa = document.getElementById('btn-configurar-app-mapa');
     
-    // Evaluamos la bandera maestra de si completó el flujo oficial
     const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") === "true";
-    // 🚀 CORRECCIÓN: Usamos venirDeEdicionActiva (edición real iniciada) en lugar de modoEdicionFavoritos
     const enEdicion = window.venirDeEdicionActiva === true; 
+    const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
 
-    if (!configHecha && !enEdicion) {
-        // Mientras no haya pulsado "Finalizar edición" al menos una vez, el botón azul se queda de forma global (tanto en mapa como en tabla)
-        if (navMenu) navMenu.style.display = 'none'; 
-        if (btnConfigMapa) btnConfigMapa.style.display = 'flex'; 
+    if (!configHecha) {
+        if (enEdicion && window.onboardingMapaActivo) {
+            // 🗺️ CASO 1: Está haciendo el onboarding expresamente desde el MAPA
+            if (navMenu) navMenu.style.display = 'none'; 
+            if (btnConfigMapa) {
+                btnConfigMapa.style.display = 'flex'; 
+                //btnConfigMapa.style.backgroundColor = '#16a34a'; // Color Verde OK
+                //btnConfigMapa.style.borderColor = '#16a34a';
+                
+                // Le cambiamos el comportamiento para que finalice la edición
+                btnConfigMapa.onclick = function() {
+                    if (finalizarEdicionFavoritos(true)) {
+                        clicBotonInicio(); // Forzamos volver a la vista principal
+                    }
+                };
+                
+                // Le cambiamos el texto y forzamos la traducción si está disponible
+                const spanBtn = btnConfigMapa.querySelector('span');
+                if (spanBtn) {
+                    spanBtn.innerHTML = (typeof t === 'function' ? t('html.finalizarEdicion') : 'Finalizar edición de despegues favoritos');
+                }
+            }
+        } else if (!enEdicion) {
+            // ⚙️ CASO 2: Acaba de abrir la app y aún no ha hecho nada
+            if (navMenu) navMenu.style.display = 'none'; 
+            if (btnConfigMapa) {
+                btnConfigMapa.style.display = 'flex'; 
+                btnConfigMapa.style.backgroundColor = '#0078d4'; // Color Azul original
+                btnConfigMapa.style.borderColor = 'white';
+                
+                btnConfigMapa.onclick = function() {
+                    if(typeof window.mostrarPaso1General === 'function') window.mostrarPaso1General();
+                };
+                
+                const spanBtn = btnConfigMapa.querySelector('span');
+                if (spanBtn) {
+                    spanBtn.innerHTML = (typeof t === 'function' ? t('botones.marcarFavoritos') : 'Configurar la aplicación');
+                }
+            }
+        } else {
+            // 📝 CASO 3: Está haciendo el onboarding desde la TABLA (usará el menú flotante rojo de la tabla)
+            // (Si viene de la tabla y entra al mapa, como onboardingMapaActivo es falso, cae aquí y oculta el botón)
+            if (navMenu) navMenu.style.display = 'none'; 
+            if (btnConfigMapa) btnConfigMapa.style.display = 'none'; 
+        }
     } else {
-        // Una vez completada la primera visita, o si estamos editando favoritos, todo vuelve a la normalidad
+        // ✅ CASO NORMAL: App ya configurada en el pasado
         if (navMenu) navMenu.style.display = 'flex'; 
         if (btnConfigMapa) btnConfigMapa.style.display = 'none'; 
     }
@@ -10608,7 +10866,7 @@ function inicializarMapaLeaflet() {
                             
                     const popupHtml = `
                         <div style="line-height: 1.4;">
-                            <b><span style='font-size: 20px; padding-right: 20px;'>🪂 ${escapeHtml(despegue)}</b></span><br>
+                            <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'>🪂 ${escapeHtml(despegue)}</b></span><br>
                             
                             ${botonesAccionPopupHTML}
 
@@ -10629,7 +10887,7 @@ function inicializarMapaLeaflet() {
                                 <br>${t('popupDespegue.region')} <b>${t('regiones.' + escapeHtml(region), {defaultValue: escapeHtml(region)})}</b><br>
                                 ${t('popupDespegue.provincia')} <b>${escapeHtml(provincia)}</b><br>
 
-                                <div style="margin-bottom: 2px;">
+                                <div>
                                     ${t('popupDespegue.orientacion')} 
                                     <span style="display: inline-block; vertical-align: 2px; margin-left: 4px;">${SVGorientaciones}</span> 
                                     <b style="vertical-align: 1px;">${escapeHtml(traducirCadenaOrientacion(orientacion))}</b>
@@ -11615,7 +11873,7 @@ function inicializarMapaLeaflet() {
                     
             const popupHtml = `<div style="line-height: 1.2;">
             
-                    <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂 ${escapeHtml(despegue)}</b></div>
+                    <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px; max-width: 212px; display: inline-block;"><b>🪂 ${escapeHtml(despegue)}</b></div>
                     <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
                     <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
@@ -11623,7 +11881,7 @@ function inicializarMapaLeaflet() {
                     <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                     
                     <div class="popup-toggle-header" 
-                        style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px;">
+                        style="cursor: pointer; border-radius: 3px; font-weight: bold; padding-top: 3px; margin-bottom: 10px;">
                         ${t('mapa.masInformacion')}
                     </div>
                     
