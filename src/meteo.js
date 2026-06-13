@@ -1046,6 +1046,8 @@ function iniciarGuiaPrincipal(forzar = false) {
 // ---------------------------------------------------------------
 
 function sugerirGuiaFavoritos(forzar = false) {
+
+    if (window.onboardingMapaActivo) return;
     
     if (!forzar && localStorage.getItem('METEO_GUIA_FAVORITOS_VISTA') === 'true') {
         return; 
@@ -1364,18 +1366,34 @@ function activarEdicionFavoritos() {
 }
 
 function activarEdicionFavoritosConMapa() {
-    // Desactivar filtro meteo ANTES de cambiar de vista,
-    // para que cambiarVista('mapa') lo lea ya correcto
-    window.filtroMeteoPreEdicion = filtrosMapaAbiertos; // guardar para restaurar al finalizar
-    filtrosMapaAbiertos = false;
+    // 1. Guardar para restaurar al finalizar
+    window.filtroMeteoPreEdicion = filtrosMapaAbiertos; 
+    filtrosMapaAbiertos = false; // Apaga la lógica de mostrar solo operativos
 
-    // Reutilizar toda la lógica de activarEdicionFavoritos:
-    // sets modoEdicionFavoritos=true, venirDeEdicionActiva=true,
-    // limpia filtros, activa modo-edicion-tabla, etc.
-    // (internamente hace cambiarVista('tabla'), lo sobreescribimos enseguida)
+    // 2. Bandera especial para saber que estamos seleccionando desde el mapa en el onboarding
+    if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA")) {
+        window.onboardingMapaActivo = true;
+    }
+
+    // 3. Reutilizar la lógica de activarEdicionFavoritos (limpia tabla, filtros, etc.)
     activarEdicionFavoritos();
 
-    // Ir al mapa en lugar de quedarse en la tabla
+    // 4. Forzamos la limpieza VISUAL del mapa (quita colores meteo a los despegues)
+    if (typeof limpiarColoresMapa === 'function') {
+        limpiarColoresMapa();
+    }
+    
+    // Ocultamos elementos meteo del mapa para no confundir al usuario nuevo
+    const divFH = document.getElementById('div-filtro-horario');
+    if (divFH) {
+        divFH.style.display = 'none';
+        divFH.classList.remove('flotando-en-mapa');
+    }
+    const btnFiltros = document.getElementById('btn-filtros-mapa');
+    if (btnFiltros) btnFiltros.style.display = 'none';
+    document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
+
+    // 5. Ir al mapa
     cambiarVista('mapa');
     window.activarMenuInferior(document.getElementById('nav-map'));
 }
@@ -1967,7 +1985,11 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
     favoritos = obtenerFavoritos();
 
     if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { 
-        mensajeModalAceptar('', t('favoritos.necesarioMarcarUno'));
+        if (window.onboardingMapaActivo) {
+            mensajeModalAceptar('', t('favoritos.necesarioMarcarUnoEnMapa'));
+        } else {
+            mensajeModalAceptar('', t('favoritos.necesarioMarcarUno'));
+        }
         return false; 
     }
 
@@ -2032,6 +2054,11 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
             window.activarMenuInferior(navHome);
         }
     }
+
+    // --- LIMPIEZA DE ONBOARDING MAPA ---
+    window.onboardingMapaActivo = false;
+    const btnFiltros = document.getElementById('btn-filtros-mapa');
+    if (btnFiltros) btnFiltros.style.display = ''; // Devolvemos el botón Meteo al mapa
 
     return true; 
 }
@@ -8876,7 +8903,8 @@ window.cambiarVista = function(vista) {
         // ¿De dónde venimos? ---
         if (btnVolver) {
             // Solo mostramos el botón si venimos de una edición ACTIVA real iniciada por el usuario
-            if (window.venirDeEdicionActiva === true) {
+            // Y OMITIMOS el botón si es la primera vez (onboarding mediante mapa)
+            if (window.venirDeEdicionActiva === true && !window.onboardingMapaActivo) {
                 btnVolver.style.display = 'flex';
                 btnVolver.classList.remove('en-tabla');
             } else {
@@ -9002,21 +9030,59 @@ window.cambiarVista = function(vista) {
 // ___________________________________________________________________________________
 
 window.evaluarEstadoNuevosUsuarios = function() {
-    // Especificamos la etiqueta "nav" para no confundirlo con el botón
     const navMenu = document.querySelector('nav.bottom-nav'); 
     const btnConfigMapa = document.getElementById('btn-configurar-app-mapa');
     
-    // Evaluamos la bandera maestra de si completó el flujo oficial
     const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") === "true";
-    // 🚀 CORRECCIÓN: Usamos venirDeEdicionActiva (edición real iniciada) en lugar de modoEdicionFavoritos
     const enEdicion = window.venirDeEdicionActiva === true; 
+    const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
 
-    if (!configHecha && !enEdicion) {
-        // Mientras no haya pulsado "Finalizar edición" al menos una vez, el botón azul se queda de forma global (tanto en mapa como en tabla)
-        if (navMenu) navMenu.style.display = 'none'; 
-        if (btnConfigMapa) btnConfigMapa.style.display = 'flex'; 
+    if (!configHecha) {
+        if (enEdicion && enMapa) {
+            // 🗺️ CASO 1: Está haciendo el onboarding desde el MAPA
+            if (navMenu) navMenu.style.display = 'none'; 
+            if (btnConfigMapa) {
+                btnConfigMapa.style.display = 'flex'; 
+                //btnConfigMapa.style.backgroundColor = '#16a34a'; // Color Verde OK
+                //btnConfigMapa.style.borderColor = '#16a34a';
+                
+                // Le cambiamos el comportamiento para que finalice la edición
+                btnConfigMapa.onclick = function() {
+                    if (finalizarEdicionFavoritos(true)) {
+                        clicBotonInicio(); // Forzamos volver a la vista principal
+                    }
+                };
+                
+                // Le cambiamos el texto y forzamos la traducción si está disponible
+                const spanBtn = btnConfigMapa.querySelector('span');
+                if (spanBtn) {
+                    spanBtn.innerHTML = (typeof t === 'function' ? t('html.finalizarEdicion') : 'Finalizar edición de despegues favoritos');
+                }
+            }
+        } else if (!enEdicion) {
+            // ⚙️ CASO 2: Acaba de abrir la app y aún no ha hecho nada
+            if (navMenu) navMenu.style.display = 'none'; 
+            if (btnConfigMapa) {
+                btnConfigMapa.style.display = 'flex'; 
+                btnConfigMapa.style.backgroundColor = '#0078d4'; // Color Azul original
+                btnConfigMapa.style.borderColor = 'white';
+                
+                btnConfigMapa.onclick = function() {
+                    if(typeof window.mostrarPaso1General === 'function') window.mostrarPaso1General();
+                };
+                
+                const spanBtn = btnConfigMapa.querySelector('span');
+                if (spanBtn) {
+                    spanBtn.innerHTML = (typeof t === 'function' ? t('botones.marcarFavoritos') : 'Configurar la aplicación');
+                }
+            }
+        } else {
+            // 📝 CASO 3: Está haciendo el onboarding desde la TABLA (usará el menú flotante rojo de la tabla)
+            if (navMenu) navMenu.style.display = 'none'; 
+            if (btnConfigMapa) btnConfigMapa.style.display = 'none'; 
+        }
     } else {
-        // Una vez completada la primera visita, o si estamos editando favoritos, todo vuelve a la normalidad
+        // ✅ CASO NORMAL: App ya configurada en el pasado
         if (navMenu) navMenu.style.display = 'flex'; 
         if (btnConfigMapa) btnConfigMapa.style.display = 'none'; 
     }
