@@ -4718,6 +4718,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 <button class="btn-info" 
                     style="position: absolute; bottom: ${btnRowBottom}; left: 13px;"
                     data-tippy-content="${contenidoEscapado}"
+                    data-tippy-type="despegue-info" 
                     title="${t('tabla.tooltips.masInfo')}">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -7541,9 +7542,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 ],
             },
 
-            // INYECCIÓN DE ESTRUCTURA (X FIJA + CONTENIDO CON SCROLL)
+            // INYECCIÓN DE ESTRUCTURA (X FIJA + CONTENIDO CON SCROLL SELECTIVO)
             onCreate(instance) {
                 const content = instance.props.content;
+                
+                // Comprobar si el elemento que ha disparado el popup es el botón "i" de despegue
+                const esInfoDespegue = instance.reference.getAttribute('data-tippy-type') === 'despegue-info';
 
                 // 1. Creamos un fragmento de documento para no repintar muchas veces
                 const fragment = document.createDocumentFragment();
@@ -7567,15 +7571,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 // 3. Área de Scroll (Contenido)
                 const scrollArea = document.createElement('div');
                 scrollArea.className = 'tippy-scroll-area';
-                scrollArea.innerHTML = content;
                 
-                // 4. Unimos todo
-                // NOTA: No creamos un wrapper extra, inyectamos los dos elementos
-                // directamente en el tippy-content, que ya tiene display: flex gracias al CSS
+                // Aplicar límites de altura y scroll vertical únicamente para el botón "i" del despegue
+                if (esInfoDespegue) {
+                    scrollArea.style.maxHeight = '400px';
+                    scrollArea.style.overflowY = 'auto';
+                    scrollArea.style.paddingRight = '8px';
+                    scrollArea.style.boxSizing = 'border-box';
+                }
+                
+                scrollArea.innerHTML = content;
                 fragment.appendChild(header);
                 fragment.appendChild(scrollArea);
 
-                // 5. Limpiamos y asignamos
                 instance.setContent(fragment);
             }
         });
