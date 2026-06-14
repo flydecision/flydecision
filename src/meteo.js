@@ -5974,7 +5974,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 		
 		tbody.appendChild(tbodyFragmento);
 
-		ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
+		aplicarFiltrosVisuales();
 
 		// const chkMostrarSoloHorasDiurnas = localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") === "true";
 
