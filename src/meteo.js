@@ -5872,13 +5872,18 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (chkMostrarVientoEcmwf && rowsEcmwfWind.length > 0) {
                     const tdHueco = document.createElement("td");
                     tdHueco.rowSpan = rowsEcmwfWind.length;
-                    // Añadimos borde-grueso-abajo siempre, para que dibuje la línea divisoria inferior
-                    tdHueco.classList.add("borde-grueso-izquierda", "borde-grueso-derecha", "borde-grueso-abajo");
+                    
+                    // Mantenemos bordes gruesos laterales
+                    tdHueco.classList.add("borde-grueso-izquierda", "borde-grueso-derecha");
                     tdHueco.style.backgroundColor = "#ffffff";
                     
-                    // Si el grupo de abajo (XC) no existe, este hueco redondea la esquina inferior derecha
+                    // Aplicamos la línea fina de 1px negra abajo por defecto
+                    tdHueco.style.borderBottom = "1px solid #000";
+                    
+                    // Si el grupo de abajo (XC) no existe, quitamos la fina, ponemos la gruesa y redondeamos
                     if (rowsGroup2.length === 0) {
-                        tdHueco.classList.add("celda-condiciones-final");
+                        tdHueco.style.borderBottom = ""; // Limpiamos la línea fina
+                        tdHueco.classList.add("borde-grueso-abajo", "celda-condiciones-final");
                     }
                     
                     rowsEcmwfWind[0].appendChild(tdHueco);
@@ -5895,12 +5900,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tdCondicionesXC.style.fontWeight = "bold";
                     tdCondicionesXC.style.textAlign = "center";
                     tdCondicionesXC.classList.add("borde-grueso-izquierda", "borde-grueso-abajo", "borde-grueso-derecha", "celda-condiciones-final");
-                    
-                    // Si NO hay grupo ECMWF entre medias, le ponemos un borde negro arriba para separar de la nota de condiciones. 
-                    // Si SÍ lo hay, el borde superior negro lo dibuja la celda de la nota principal (que es borde-grueso-abajo).
-                    if (!chkMostrarVientoEcmwf || rowsEcmwfWind.length === 0) {
-                        tdCondicionesXC.style.borderTop = "2px solid #000";
-                    }
 
                     if (valorVisualXC !== "-") {
                         tdCondicionesXC.style.backgroundColor = coloresNota[valorVisualXC];
