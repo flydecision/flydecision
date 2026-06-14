@@ -4553,7 +4553,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             // GRUPO: Viento ECMWF (beta)
             let filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500;
-            let filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfViv, filaEcmwfDiv;
+            let filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt;
             if (chkMostrarVientoEcmwf) {
                 filaEcmwfVel3000  = document.createElement("tr");
                 filaEcmwfDir3000  = document.createElement("tr");
@@ -4571,14 +4571,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaEcmwfVel10    = document.createElement("tr");
                 filaEcmwfRacha10  = document.createElement("tr");
                 filaEcmwfDir10    = document.createElement("tr");
-                filaEcmwfViv      = document.createElement("tr"); // Velocidad interpolada 10 m
-                filaEcmwfDiv      = document.createElement("tr"); // Dirección interpolada 10 m
+                filaEcmwfValt      = document.createElement("tr"); 
+                filaEcmwfDalt      = document.createElement("tr"); 
 
                 [
                     filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                     filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
                     filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, 
-                    filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfViv, filaEcmwfDiv
+                    filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt
                 ].forEach(f => {
                     f.classList.add("ecmwf-neutral-row");
                 });
@@ -4589,7 +4589,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                 filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
                 filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, 
-                filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfViv, filaEcmwfDiv
+                filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt
             ].filter(Boolean);
             const rowsGroup2 = [filaTecho, filaCape, filaCin].filter(Boolean);
 
@@ -5014,30 +5014,34 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const addIconCellEcmwf = (tr, html, title) => {
                     if (!tr) return;
                     const td = document.createElement("td");
-                    td.innerHTML = `<span style="font-size:10px; font-weight:bold;">${html}</span>`;
+                    td.innerHTML = `<span style="font-size:9px;">${html}</span>`;
                     td.setAttribute("title", title);
                     td.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda", "ecmwf-neutral");
                     tr.appendChild(td);
                 };
 
-                addIconCellEcmwf(filaEcmwfVel3000, "V3000", "Velocidad del viento a 3000m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', "Dirección del viento a 3000m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfVel1500, "V1500", "Velocidad del viento a 1500m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', "Dirección del viento a 1500m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfVel1000, "V1000", "Velocidad del viento a 1000m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', "Dirección del viento a 1000m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfVel500, "V500m", "Velocidad del viento a 500m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', "Dirección del viento a 500m (ECMWF)");
+                addIconCellEcmwf(filaEcmwfVel3000, "3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span>", t('tabla.tooltips.3000mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.Direccion3000mECMWF'));
 
-                addIconCellEcmwf(filaEcmwfVel200, "V200m", "Velocidad del viento a 200m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', "Dirección del viento a 200m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfVel100, "V100m", "Velocidad del viento a 100m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', "Dirección del viento a 100m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfVel10, "V10m", "Velocidad del viento a 10m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', "Racha máxima a 10m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', "Dirección del viento a 10m (ECMWF)");
-                addIconCellEcmwf(filaEcmwfViv, "Viv", `Velocidad por interpolación vertical a la altitud real del despegue (${d.Altitud || 0} m)`);
-                addIconCellEcmwf(filaEcmwfDiv, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', `Dirección por interpolación vertical a la altitud real del despegue (${d.Altitud || 0} m)`);
+                addIconCellEcmwf(filaEcmwfVel1500, "1500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span>", t('tabla.tooltips.1500mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.Direccion1500mECMWF'));
+
+                addIconCellEcmwf(filaEcmwfVel1000, "1000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span>", t('tabla.tooltips.1000mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.Direccion1000mECMWF'));
+
+                addIconCellEcmwf(filaEcmwfVel500, "500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span>", t('tabla.tooltips.500mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.Direccion500mECMWF'));
+
+                addIconCellEcmwf(filaEcmwfVel200, "200 m", t('tabla.tooltips.AGL200mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.DireccionAGL200mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel100, "100 m", t('tabla.tooltips.AGL100mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.DireccionAGL100mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel10, "10 m", t('tabla.tooltips.AGL10mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.DireccionAGL10mECMWF'));
+                addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', t('tabla.tooltips.RachaAGL10mECMWF'));
+
+                addIconCellEcmwf(filaEcmwfValt, `${d.Altitud || 0} m`, `${t('tabla.tooltips.VelocidadAltitudRealECMWF')}`);
+                addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', `${t('tabla.tooltips.DireccionAltitudRealECMWF')}`);
 
 				// ---------------------------------------------------------------
 				// ⚪ CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Columnas de datos por hora
@@ -5776,7 +5780,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             crearCeldasInterpoladas(filaEcmwfVel500,  filaEcmwfDir500,  500,  500,  i);
 
                             // Interpolación maestra para la altitud real del despegue
-                            crearCeldasInterpoladas(filaEcmwfViv, filaEcmwfDiv, altReal, altReal, i);
+                            crearCeldasInterpoladas(filaEcmwfValt, filaEcmwfDalt, altReal, altReal, i);
                         });
 
                         // 3. APLICAR BORDES ITERANDO CELDA POR CELDA (Como en el bloque de 80m/10m)
@@ -5795,7 +5799,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             filaEcmwfDir200, 
                             filaEcmwfDir100, 
                             filaEcmwfDir10, 
-                            filaEcmwfDiv
+                            filaEcmwfDalt
                         ];
 
                         filasConBordeInferior.forEach(fila => {
