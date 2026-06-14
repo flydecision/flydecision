@@ -440,7 +440,7 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
 
 /* Cuando editamos favoritos, el buscador se ensancha a 365px para albergar el placeholder largo */
 body.modo-edicion-tabla #buscador-despegues-provincias {
-    width: 373px !important;
+    width: 300px !important;
     
     /* Regla de seguridad: evita que desborde si el móvil mide menos de 370px de pantalla */
     max-width: calc(100vw - 40px) !important; 
@@ -1054,7 +1054,7 @@ details.config-accordion .accordion-content {
     padding: 5px 10px;
     background-color: #007bff;
     color: white;
-    border-radius: 5px;
+    border-radius: 20px;
     cursor: pointer;
     font-weight: bold;
     font-size: 1em;
@@ -4017,7 +4017,7 @@ h3 {
     font-weight: bold;
     font-size: 16px;
     padding: 8px 16px;
-    border-radius: 8px;
+    border-radius: 20px;
     border: 2px solid white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     display: flex;

@@ -1312,11 +1312,8 @@ function activarEdicionFavoritos() {
 
     cambiarVista('tabla');  
 
-    // 2. ILUMINAR BOTÓN DE AJUSTES EN EL MENÚ INFERIOR
-    const btnSettings = document.getElementById('nav-settings');
-    if (btnSettings && typeof window.activarMenuInferior === 'function') {
-        window.activarMenuInferior(btnSettings);
-    }
+    // 2. APAGAR LA ILUMINACIÓN DE TODOS LOS BOTONES DEL MENÚ INFERIOR (Para dar máximo foco UX a la edición)
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
 
     // Resetear visualmente el botón de filtro de favoritos
     const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
