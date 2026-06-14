@@ -5020,28 +5020,32 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tr.appendChild(td);
                 };
 
-                addIconCellEcmwf(filaEcmwfVel3000, "3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span>", t('tabla.tooltips.3000mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.Direccion3000mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel3000, "<span style='position: relative; top: -1px; display: inline-block;'>3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.3000mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion3000mECMWF'));
 
-                addIconCellEcmwf(filaEcmwfVel1500, "1500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span>", t('tabla.tooltips.1500mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.Direccion1500mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel1500, "<span style='position: relative; top: -1px; display: inline-block;'>1500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.1500mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion1500mECMWF'));
 
-                addIconCellEcmwf(filaEcmwfVel1000, "1000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span>", t('tabla.tooltips.1000mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.Direccion1000mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel1000, "<span style='position: relative; top: -1px; display: inline-block;'>1000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.1000mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion1000mECMWF'));
 
-                addIconCellEcmwf(filaEcmwfVel500, "500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span>", t('tabla.tooltips.500mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.Direccion500mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel500, "<span style='position: relative; top: -1px; display: inline-block;'>500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.500mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion500mECMWF'));
 
-                addIconCellEcmwf(filaEcmwfVel200, "200 m", t('tabla.tooltips.AGL200mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.DireccionAGL200mECMWF'));
-                addIconCellEcmwf(filaEcmwfVel100, "100 m", t('tabla.tooltips.AGL100mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.DireccionAGL100mECMWF'));
-                addIconCellEcmwf(filaEcmwfVel10, "10 m", t('tabla.tooltips.AGL10mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', t('tabla.tooltips.DireccionAGL10mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel200, "<span style='position: relative; top: -1px; display: inline-block;'>200 m</span>", t('tabla.tooltips.AGL200mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL200mECMWF'));
+                
+                addIconCellEcmwf(filaEcmwfVel100, "<span style='position: relative; top: -1px; display: inline-block;'>100 m</span>", t('tabla.tooltips.AGL100mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL100mECMWF'));
+                
+                addIconCellEcmwf(filaEcmwfVel10, "<span style='position: relative; top: -1px; display: inline-block;'>10 m</span>", t('tabla.tooltips.AGL10mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL10mECMWF'));
+                
+                // A la racha no se le aplica el "top: -3px" porque no es texto, pero sí se centra si lo requiere (la he dejado como estaba ya que no se solicitó moverla)
                 addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', t('tabla.tooltips.RachaAGL10mECMWF'));
 
-                addIconCellEcmwf(filaEcmwfValt, `${d.Altitud || 0} m`, `${t('tabla.tooltips.VelocidadAltitudRealECMWF')}`);
-                addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', `${t('tabla.tooltips.DireccionAltitudRealECMWF')}`);
+                addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m</span>`, `${t('tabla.tooltips.VelocidadAltitudRealECMWF')}`);
+                addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', `${t('tabla.tooltips.DireccionAltitudRealECMWF')}`);
 
 				// ---------------------------------------------------------------
 				// ⚪ CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Columnas de datos por hora
