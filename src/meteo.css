@@ -2747,26 +2747,35 @@ label.custom-checkbox {
 
 .loader-container {
     position: fixed;
-    /* Flota en la parte superior, respetando el "notch" de la cámara del móvil */
-    top: 50%; 
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: auto; 
-    height: auto;
-    z-index: 2147483647; 
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.06) !important; /* Tu fondo sutil */
+    z-index: 999999;
+    
+    /* En lugar de 'display: none', usamos flex de forma constante */
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+
+    /* Estado inicial: Invisible y no permite clics */
     opacity: 0;
     visibility: hidden;
-    
-    /* Esto hace que los clics atraviesen el cartel como si fuera un fantasma */
-    pointer-events: none !important; 
-    
-    transition: opacity 0.3s ease;
+    pointer-events: none;
+
+    /* 
+       Transición suave de 0.25 segundos controlada por la GPU.
+       Es sumamente eficiente y no gasta hilo de CPU.
+    */
+    transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
 }
 
-.loader-activo {
-    visibility: visible;
+.loader-container.loader-activo {
+    /* Estado activo: Visible y bloquea clics */
     opacity: 1;
-    /* Hemos eliminado el "pointer-events: all" para que NUNCA bloquee */
+    visibility: visible;
+    pointer-events: auto; 
 }
 
 .loader-container::before {
@@ -2792,8 +2801,8 @@ label.custom-checkbox {
 
 /* Spinner un poco más pequeño para que sea elegante */
 .spinner {
-    width: 20px;
-    height: 20px;
+    width: 40px;
+    height: 40px;
     border: 3px solid #e0e0e0; 
     border-top: 3px solid #0078d4;
     border-radius: 50%;
