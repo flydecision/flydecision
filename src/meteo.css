@@ -4227,7 +4227,7 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
 }
 
 /* ==========================================================================
-   Estilos neutros para el nuevo grupo de Viento ECMWF (beta)
+   Estilos especiales para el nuevo grupo de Viento ECMWF (beta)
    ========================================================================== */
 /* .ecmwf-neutral-row {
     background-color: #ffffff !important;
@@ -4249,3 +4249,18 @@ td.ecmwf-neutral {
         color: #ecf0f1 !important;
     }
 } */
+ 
+tr.fila-separador-fino td, 
+tr.fila-separador-fino th {
+    border-bottom: 1px solid #000 !important;
+}
+
+tr.fila-separador-interno-grueso td, 
+tr.fila-separador-interno-grueso th {
+    border-bottom: 2px solid #000 !important;
+}
+
+tr.fila-separador-gris td, 
+tr.fila-separador-gris th {
+    border-bottom: 1px solid #999 !important;
+}

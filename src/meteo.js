@@ -5032,13 +5032,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCellEcmwf(filaEcmwfVel500, "<span style='position: relative; top: -1px; display: inline-block;'>500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.500mECMWF'));
                 addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion500mECMWF'));
 
-                addIconCellEcmwf(filaEcmwfVel200, "<span style='position: relative; top: -1px; display: inline-block;'>200 m</span>", t('tabla.tooltips.AGL200mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel200, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>200 m</span>", t('tabla.tooltips.AGL200mECMWF'));
                 addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL200mECMWF'));
                 
-                addIconCellEcmwf(filaEcmwfVel100, "<span style='position: relative; top: -1px; display: inline-block;'>100 m</span>", t('tabla.tooltips.AGL100mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel100, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>100 m</span>", t('tabla.tooltips.AGL100mECMWF'));
                 addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL100mECMWF'));
                 
-                addIconCellEcmwf(filaEcmwfVel10, "<span style='position: relative; top: -1px; display: inline-block;'>10 m</span>", t('tabla.tooltips.AGL10mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel10, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>10 m</span>", t('tabla.tooltips.AGL10mECMWF'));
                 addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL10mECMWF'));
                 
                 // A la racha no se le aplica el "top: -3px" porque no es texto, pero sí se centra si lo requiere (la he dejado como estaba ya que no se solicitó moverla)
@@ -5795,21 +5795,34 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         });
 
                         // Borde inferior para separar visualmente cada subgrupo de altitud
-                        const filasConBordeInferior = [
+                        const filasConBordeInferiorFino = [
                             filaEcmwfDir3000, 
                             filaEcmwfDir1500, 
                             filaEcmwfDir1000, 
-                            filaEcmwfDir500, 
                             filaEcmwfDir200, 
-                            filaEcmwfDir100, 
-                            filaEcmwfDir10, 
-                            filaEcmwfDalt
+                            filaEcmwfDir100
+                             
                         ];
 
-                        filasConBordeInferior.forEach(fila => {
+                        filasConBordeInferiorFino.forEach(fila => {
                             if (fila) {
                                 Array.from(fila.children).forEach(td => {
                                     td.style.borderBottom = "1px solid #000";
+                                });
+                            }
+                        });
+                        
+                        // Bordes inferiores gruesos específicos internos (2px)
+                        const filasConBordeInferiorGrueso = [
+                            filaEcmwfDir500,
+                            filaEcmwfDir10,
+                            filaEcmwfDalt
+                        ];
+                        
+                        filasConBordeInferiorGrueso.forEach(fila => {
+                            if (fila) {
+                                Array.from(fila.children).forEach(td => {
+                                    td.style.borderBottom = "2px solid #000";
                                 });
                             }
                         });
