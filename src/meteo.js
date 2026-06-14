@@ -4609,24 +4609,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 rowsGroup1[rowsGroup1.length - 1].style.borderBottom = "1px solid #999";
             }
             
-            // Si hay un Grupo de viento ECMWF activo, ponemos separadores en cada bloque de altura
-            if (rowsEcmwfWind.length > 0) {
-                // Separador arriba de todo el bloque
-                rowsGroup1[rowsGroup1.length - 1].style.borderBottom = "1px solid #000";
-                
-                // Separadores internos para dividir cada grupo de altitud
-                filaEcmwfDir3000.style.borderBottom = "1px solid #000";
-                filaEcmwfDir1500.style.borderBottom = "1px solid #000";
-                filaEcmwfDir1000.style.borderBottom = "1px solid #000";
-                filaEcmwfDir500.style.borderBottom = "1px solid #000";
-                filaEcmwfDir200.style.borderBottom = "1px solid #000";
-                filaEcmwfDir100.style.borderBottom = "1px solid #000";
-                filaEcmwfDir10.style.borderBottom = "1px solid #000";
-                
-                // Separador abajo de todo el bloque (debajo de Div, que es la última fila del grupo)
-                filaEcmwfDiv.style.borderBottom = "1px solid #000";
-            }
-
             // La ultimísima fila del despegue recibe la separación grande principal
             if (todasLasFilas.length > 0) {
                 todasLasFilas[0].classList.add("fila-inicio-despegue");
@@ -5796,6 +5778,33 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             // Interpolación maestra para la altitud real del despegue
                             crearCeldasInterpoladas(filaEcmwfViv, filaEcmwfDiv, altReal, altReal, i);
                         });
+
+                        // 3. APLICAR BORDES ITERANDO CELDA POR CELDA (Como en el bloque de 80m/10m)
+                        
+                        // Borde superior para separar visualmente este bloque entero de la meteo de arriba
+                        Array.from(filaEcmwfVel3000.children).forEach(td => {
+                            td.style.borderTop = "1px solid #000";
+                        });
+
+                        // Borde inferior para separar visualmente cada subgrupo de altitud
+                        const filasConBordeInferior = [
+                            filaEcmwfDir3000, 
+                            filaEcmwfDir1500, 
+                            filaEcmwfDir1000, 
+                            filaEcmwfDir500, 
+                            filaEcmwfDir200, 
+                            filaEcmwfDir100, 
+                            filaEcmwfDir10, 
+                            filaEcmwfDiv
+                        ];
+
+                        filasConBordeInferior.forEach(fila => {
+                            if (fila) {
+                                Array.from(fila.children).forEach(td => {
+                                    td.style.borderBottom = "1px solid #000";
+                                });
+                            }
+                        });
                     }
 				}
 			}
@@ -5855,6 +5864,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 				    rowsGroup1[0].appendChild(tdCondiciones);	
                 }
 
+                // NUEVO: Añadir celda hueca (puente) si el grupo ECMWF (vientos de altura) está activo
+                if (chkMostrarVientoEcmwf && rowsEcmwfWind.length > 0) {
+                    const tdHueco = document.createElement("td");
+                    tdHueco.rowSpan = rowsEcmwfWind.length;
+                    // Añadimos borde-grueso-abajo siempre, para que dibuje la línea divisoria inferior
+                    tdHueco.classList.add("borde-grueso-izquierda", "borde-grueso-derecha", "borde-grueso-abajo");
+                    tdHueco.style.backgroundColor = "#ffffff";
+                    
+                    // Si el grupo de abajo (XC) no existe, este hueco redondea la esquina inferior derecha
+                    if (rowsGroup2.length === 0) {
+                        tdHueco.classList.add("celda-condiciones-final");
+                    }
+                    
+                    rowsEcmwfWind[0].appendChild(tdHueco);
+                }
+
                 // Añadimos la NUEVA puntuación en la misma columna vertical, pero para el bloque del Grupo 2 (XC)
                 if (rowsGroup2.length > 0) {
                     const tdCondicionesXC = document.createElement("td");
@@ -5867,6 +5892,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tdCondicionesXC.style.textAlign = "center";
                     tdCondicionesXC.classList.add("borde-grueso-izquierda", "borde-grueso-abajo", "borde-grueso-derecha", "celda-condiciones-final");
                     
+                    // Si NO hay grupo ECMWF entre medias, le ponemos un borde negro arriba para separar de la nota de condiciones. 
+                    // Si SÍ lo hay, el borde superior negro lo dibuja la celda de la nota principal (que es borde-grueso-abajo).
+                    if (!chkMostrarVientoEcmwf || rowsEcmwfWind.length === 0) {
+                        tdCondicionesXC.style.borderTop = "2px solid #000";
+                    }
+
                     if (valorVisualXC !== "-") {
                         tdCondicionesXC.style.backgroundColor = coloresNota[valorVisualXC];
                         tdCondicionesXC.style.color = "#000";
@@ -5878,8 +5909,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     }
 
                     rowsGroup2[0].appendChild(tdCondicionesXC);
-                } else {
-                    // Si no hay Grupo 2 (XC desactivado), la celda principal debe redondearse también por abajo
+                } else if (!chkMostrarVientoEcmwf || rowsEcmwfWind.length === 0) {
+                    // Si no hay Grupo 2 (XC) ni Grupo ECMWF, la celda principal se redondea por abajo
                     tdCondiciones.classList.add("celda-condiciones-final");
                 }
 			}
