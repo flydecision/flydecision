@@ -263,7 +263,7 @@ function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
         window.distanciaPendienteFiltro = null; // Limpiamos la memoria
     } else {
         // Si no había intención previa, solo aplicamos filtros normales
-        aplicarFiltrosVisuales();
+        ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
     }
 }
 
@@ -826,7 +826,7 @@ function iniciarGuiaPrincipal(forzar = false) {
     // pueda posicionar sus popups correctamente.
     if (typeof limpiarBuscador === 'function') limpiarBuscador();
     if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
-    if (typeof aplicarFiltrosVisuales === 'function') aplicarFiltrosVisuales();
+    if (typeof aplicarFiltrosVisuales === 'function') ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
 
     guiaActiva = true; //para que no muestre actualización si hay
 
@@ -1112,7 +1112,7 @@ function iniciarGuiaFavoritos(forzar = false) {
 
     // 1. Limpiamos solo el buscador y la lógica visual de los filtros
     if (typeof limpiarBuscador === 'function') limpiarBuscador();
-    if (typeof aplicarFiltrosVisuales === 'function') aplicarFiltrosVisuales();
+    if (typeof aplicarFiltrosVisuales === 'function') ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
 
     // 2. Nos aseguramos de que el panel de Distancia esté abierto y visible
     const panelDistancia = document.getElementById("div-filtro-distancia");
@@ -3491,10 +3491,14 @@ const leerDeCacheIDB = async (key) => {
 async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
 	
     if (!silencioso) {
-        // Si estamos forzando descarga de red, el cartel sale casi al instante (50ms).
-        // Si es solo un filtro local en RAM, esperamos 250ms antes de mostrarlo.
-        mostrarLoading(forzarRecarga ? 50 : 250);
-        await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // Pausa técnica
+        const overlay = document.getElementById('msgActualizando...');
+        if (overlay) {
+            overlay.classList.add('loader-activo');
+        }
+
+        // Pausa de 120ms para permitir que la transición de 100ms del CSS 
+        // termine por completo antes de que la CPU se sature con miles de filas.
+        await new Promise(resolve => setTimeout(resolve, 120));
     }
 
     // Ponemos la bandera de "Carga en proceso". Si el navegador peta durante esta función, esta bandera se quedará grabada.
@@ -5970,7 +5974,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 		
 		tbody.appendChild(tbodyFragmento);
 
-		aplicarFiltrosVisuales();
+		ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
 
 		// const chkMostrarSoloHorasDiurnas = localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") === "true";
 
@@ -6263,6 +6267,20 @@ const ocultarLoading = () => {
         void overlay.offsetWidth; 
     }
 };
+
+/* Envuelve operaciones pesadas síncronas. Fuerza al navegador a pintar el spinner ANTES de congelarse calculando. */
+function ejecutarOperacionPesada(tareaCallback) {
+    const overlay = document.getElementById('msgActualizando...');
+    if (overlay) {
+        overlay.classList.add('loader-activo');
+    }
+
+    // Pausa sincronizada de 120ms
+    setTimeout(() => {
+        tareaCallback();
+        ocultarLoading();
+    }, 120); 
+}
 
 // Genera un icono de 5 barras tipo "cobertura" según la actividad (1 a 5)
 function crearIconoActividad(nivelStr) {
@@ -6625,7 +6643,7 @@ function limpiarBuscador() {
         window.despegueTemporalParaTabla = null;
         construir_tabla(); // Lo forzamos a desaparecer del DOM
     } else {
-        aplicarFiltrosVisuales();
+        ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
     }
 }
 
@@ -7071,7 +7089,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     // if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo'); // Comentado
                 }
 
-				aplicarFiltrosVisuales(); 
+				ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); }); 
 			}
 		});
 	}
@@ -12330,9 +12348,11 @@ function inicializarMapaLeaflet() {
         const botonesOrientacion = document.querySelectorAll('.filtro-orientacion-checkbox:not(#filtroMaestroOrientacion)');
         botonesOrientacion.forEach(checkbox => {
             checkbox.addEventListener('change', function() {
-                actualizarEstadoMaestro(); 
-                actualizarFiltrosMapa();
-                actualizarEstadoVisualFiltros();			
+                ejecutarOperacionPesada(() => {
+                    actualizarEstadoMaestro(); 
+                    actualizarFiltrosMapa();
+                    actualizarEstadoVisualFiltros();			
+                });			
             });
         });
 
@@ -12351,8 +12371,10 @@ function inicializarMapaLeaflet() {
             // Usamos 'input' para que filtre en tiempo real mientras arrastras
             // Si va muy lento el mapa, cámbialo por 'change' (filtra al soltar el ratón)
             sliderVuelos.addEventListener('input', function() {
-                actualizarFiltrosMapa();
-                actualizarEstadoVisualFiltros();
+                ejecutarOperacionPesada(() => {
+                    actualizarFiltrosMapa();
+                    actualizarEstadoVisualFiltros();
+                });
             });
         }
         
