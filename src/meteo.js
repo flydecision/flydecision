@@ -3491,16 +3491,14 @@ const leerDeCacheIDB = async (key) => {
 async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
 	
     if (!silencioso) {
-        // 1. Añadimos la clase visual INMEDIATAMENTE (sin esperar ni 1 milisegundo)
         const overlay = document.getElementById('msgActualizando...');
         if (overlay) {
             overlay.classList.add('loader-activo');
         }
 
-        // 2. LA MAGIA: Obligamos al código JS a detenerse por completo durante 50ms.
-        // Esto le cede el control al navegador para que le dé tiempo a "pintar" 
-        // el fondo gris y el spinner en la pantalla ANTES de que empiece el cálculo masivo.
-        await new Promise(resolve => setTimeout(resolve, 50));
+        // Pausa de 120ms para permitir que la transición de 100ms del CSS 
+        // termine por completo antes de que la CPU se sature con miles de filas.
+        await new Promise(resolve => setTimeout(resolve, 120));
     }
 
     // Ponemos la bandera de "Carga en proceso". Si el navegador peta durante esta función, esta bandera se quedará grabada.
@@ -6272,22 +6270,16 @@ const ocultarLoading = () => {
 
 /* Envuelve operaciones pesadas síncronas. Fuerza al navegador a pintar el spinner ANTES de congelarse calculando. */
 function ejecutarOperacionPesada(tareaCallback) {
-    // 1. Añadimos la clase visual para mostrar el spinner inmediatamente
     const overlay = document.getElementById('msgActualizando...');
     if (overlay) {
         overlay.classList.add('loader-activo');
     }
 
-    // 2. Cedemos el hilo principal al navegador durante 50ms.
-    // Esto garantiza que el navegador pinte el fondo gris y el spinner 
-    // en la pantalla antes de congelarse con la tarea pesada.
+    // Pausa sincronizada de 120ms
     setTimeout(() => {
-        // 3. Ejecutamos la tarea (ej: aplicarFiltrosVisuales)
         tareaCallback();
-
-        // 4. Al finalizar, ocultamos el spinner
         ocultarLoading();
-    }, 50); 
+    }, 120); 
 }
 
 // Genera un icono de 5 barras tipo "cobertura" según la actividad (1 a 5)
