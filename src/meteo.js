@@ -5894,8 +5894,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tdHueco.classList.add("borde-grueso-izquierda", "borde-grueso-derecha");
                     tdHueco.style.backgroundColor = "#ffffff";
                     
-                    // Aplicamos la línea fina de 1px negra abajo por defecto
-                    tdHueco.style.borderBottom = "1px solid #000";
+                    tdHueco.style.borderBottom = "2px solid #000";
                     
                     // Si el grupo de abajo (XC) no existe, quitamos la fina, ponemos la gruesa y redondeamos
                     if (rowsGroup2.length === 0) {
