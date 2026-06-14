@@ -5044,7 +5044,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // A la racha no se le aplica el "top: -3px" porque no es texto, pero sí se centra si lo requiere (la he dejado como estaba ya que no se solicitó moverla)
                 addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', t('tabla.tooltips.RachaAGL10mECMWF'));
 
-                addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m</span>`, `${t('tabla.tooltips.VelocidadAltitudRealECMWF')}`);
+                addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>`, `${t('tabla.tooltips.VelocidadAltitudRealECMWF')}`);
                 addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', `${t('tabla.tooltips.DireccionAltitudRealECMWF')}`);
 
 				// ---------------------------------------------------------------
