@@ -61,7 +61,14 @@ let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_P
 //let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") !== "false";
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
 let chkOrdenarPorXC = localStorage.getItem("METEO_CHECKBOX_ORDENAR_POR_XC") === "true"; // false por defecto
-let diasSeguimiento = parseInt(localStorage.getItem('METEO_DIAS_SEGUIMIENTO') || '2');
+let diasSeguimiento = parseInt(localStorage.getItem('METEO_DIAS_SEGUIMIENTO') || '3');
+let chkMostrarVientoEcmwf = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ECMWF") === "true";
+
+function alternarMostrarVientoEcmwf() {
+    chkMostrarVientoEcmwf = document.getElementById("chkMostrarVientoEcmwf").checked;
+    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ECMWF", chkMostrarVientoEcmwf);
+    construir_tabla();
+}
 
 // Si entra por url mapa con coordenadas y no hay configuración se marca este flag
 const paramsArranque = new URLSearchParams(window.location.search);
@@ -1838,11 +1845,10 @@ function gestionarClickMasivoFavoritos() {
     // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
     let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
     if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-    //if (chkMostrarBaseNube) filasPorDespegue++;
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    //if (chkMostrarPrecipitacion) filasPorDespegue++;
+    if (chkMostrarVientoEcmwf) filasPorDespegue += 17;
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
         
@@ -1922,11 +1928,10 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
     let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
     if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-    //if (chkMostrarBaseNube) filasPorDespegue++;
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    //if (chkMostrarPrecipitacion) filasPorDespegue++;
+    if (chkMostrarVientoEcmwf) filasPorDespegue += 17;
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
         
@@ -4546,10 +4551,49 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaCin = document.createElement("tr");
             }
 
+            // GRUPO: Viento ECMWF (beta)
+            let filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500;
+            let filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt;
+            if (chkMostrarVientoEcmwf) {
+                filaEcmwfVel3000  = document.createElement("tr");
+                filaEcmwfDir3000  = document.createElement("tr");
+                filaEcmwfVel1500  = document.createElement("tr");
+                filaEcmwfDir1500  = document.createElement("tr");
+                filaEcmwfVel1000  = document.createElement("tr");
+                filaEcmwfDir1000  = document.createElement("tr");
+                filaEcmwfVel500   = document.createElement("tr");
+                filaEcmwfDir500   = document.createElement("tr");
+
+                filaEcmwfVel200   = document.createElement("tr");
+                filaEcmwfDir200   = document.createElement("tr");
+                filaEcmwfVel100   = document.createElement("tr");
+                filaEcmwfDir100   = document.createElement("tr");
+                filaEcmwfVel10    = document.createElement("tr");
+                filaEcmwfRacha10  = document.createElement("tr");
+                filaEcmwfDir10    = document.createElement("tr");
+                filaEcmwfValt      = document.createElement("tr"); 
+                filaEcmwfDalt      = document.createElement("tr"); 
+
+                [
+                    filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
+                    filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
+                    filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, 
+                    filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt
+                ].forEach(f => {
+                    f.classList.add("ecmwf-neutral-row");
+                });
+            }
+
             const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, fila180, fila120, fila80, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
+            const rowsEcmwfWind = [
+                filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
+                filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
+                filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, 
+                filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt
+            ].filter(Boolean);
             const rowsGroup2 = [filaTecho, filaCape, filaCin].filter(Boolean);
 
-            const todasLasFilas = [...rowsGroup1, ...rowsGroup2];
+            const todasLasFilas = [...rowsGroup1, ...rowsEcmwfWind, ...rowsGroup2];
             const filaPrincipal = todasLasFilas[0];
             const totalFilasRowSpan = todasLasFilas.length;
 
@@ -4965,6 +5009,43 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCell(filaTecho, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.techo')}</span>`, t('tabla.tooltips.techo'));
                 addIconCell(filaCape, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.cape')}</span>`, t('tabla.tooltips.cape'));
                 addIconCell(filaCin, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.cin')}</span>`, t('tabla.tooltips.cin'));
+
+                // Iconos del Grupo: Viento ECMWF (beta) con clase ecmwf-neutral
+                const addIconCellEcmwf = (tr, html, title) => {
+                    if (!tr) return;
+                    const td = document.createElement("td");
+                    td.innerHTML = `<span style="font-size:9px;">${html}</span>`;
+                    td.setAttribute("title", title);
+                    td.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda", "ecmwf-neutral");
+                    tr.appendChild(td);
+                };
+
+                addIconCellEcmwf(filaEcmwfVel3000, "<span style='position: relative; top: -1px; display: inline-block;'>3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.3000mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion3000mECMWF'));
+
+                addIconCellEcmwf(filaEcmwfVel1500, "<span style='position: relative; top: -1px; display: inline-block;'>1500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.1500mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion1500mECMWF'));
+
+                addIconCellEcmwf(filaEcmwfVel1000, "<span style='position: relative; top: -1px; display: inline-block;'>1000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.1000mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion1000mECMWF'));
+
+                addIconCellEcmwf(filaEcmwfVel500, "<span style='position: relative; top: -1px; display: inline-block;'>500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.500mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion500mECMWF'));
+
+                addIconCellEcmwf(filaEcmwfVel200, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>200 m</span>", t('tabla.tooltips.AGL200mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL200mECMWF'));
+                
+                addIconCellEcmwf(filaEcmwfVel100, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>100 m</span>", t('tabla.tooltips.AGL100mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL100mECMWF'));
+                
+                addIconCellEcmwf(filaEcmwfVel10, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>10 m</span>", t('tabla.tooltips.AGL10mECMWF'));
+                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL10mECMWF'));
+                
+                // A la racha no se le aplica el "top: -3px" porque no es texto, pero sí se centra si lo requiere (la he dejado como estaba ya que no se solicitó moverla)
+                addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', t('tabla.tooltips.RachaAGL10mECMWF'));
+
+                addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>`, `${t('tabla.tooltips.VelocidadAltitudRealECMWF')}`);
+                addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', `${t('tabla.tooltips.DireccionAltitudRealECMWF')}`);
 
 				// ---------------------------------------------------------------
 				// ⚪ CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Columnas de datos por hora
@@ -5524,6 +5605,228 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.style.borderTop = "1px solid #000";
                         });
                     }
+
+                    // NUEVO: Funciones de renderizado neutro para el Grupo de Viento ECMWF (Usando datos de hourlyEcmwf)
+                    const renderEcmwfSpeedCell = (tr, speedArr) => {
+                        if (!tr || !speedArr) return;
+                        speedArr.slice(0, horas.length).forEach((val, i) => {
+                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
+                            const td = document.createElement("td");
+                            td.classList.add("ecmwf-neutral");
+                            if (cacheEsNoche[i]) td.classList.add("celda-noche");
+                            if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
+
+                            td.textContent = val !== null ? Math.round(Number(val)) : "—";
+                            td.title = val !== null ? `${Math.round(Number(val))} km/h` : "N/A";
+                            tr.appendChild(td);
+                        });
+                    };
+
+                    const renderEcmwfDirCell = (tr, dirArr) => {
+                        if (!tr || !dirArr) return;
+                        dirArr.slice(0, horas.length).forEach((val, i) => {
+                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
+                            const td = document.createElement("td");
+                            td.classList.add("ecmwf-neutral");
+                            if (cacheEsNoche[i]) td.classList.add("celda-noche");
+                            if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
+
+                            if (val === null) {
+                                td.textContent = "—";
+                            } else {
+                                const dir = Math.round(Number(val));
+                                td.innerHTML = `
+                                    <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg);">
+                                        <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
+                                    </svg>
+                                `;
+                                td.title = `${dir}º`;
+                            }
+                            tr.appendChild(td);
+                        });
+                    };
+
+                    // Función matemática de interpolación de viento vectorial mediante geopotenciales para la altitud real
+                    const interpolarVientoAltitudReal = (H_target, h1000, h925, h850, h700, v1000, v925, v850, v700, d1000, d925, d850, d700) => {
+                        const heights = [h1000, h925, h850, h700];
+                        const speeds = [v1000, v925, v850, v700];
+                        const directions = [d1000, d925, d850, d700];
+
+                        let points = [];
+                        for (let k = 0; k < 4; k++) {
+                            const z = heights[k];
+                            const v = speeds[k];
+                            const d = directions[k];
+                            if (z !== null && v !== null && d !== null) {
+                                const rad = Number(d) * Math.PI / 180;
+                                const u = Number(v) * Math.sin(rad);
+                                const v_comp = Number(v) * Math.cos(rad);
+                                points.push({ z: Number(z), u, v_comp });
+                            }
+                        }
+
+                        if (points.length === 0) return null;
+                        if (points.length === 1) {
+                            const speed = Math.sqrt(points[0].u * points[0].u + points[0].v_comp * points[0].v_comp);
+                            const dir = (Math.atan2(points[0].u, points[0].v_comp) * 180 / Math.PI + 360) % 360;
+                            return { speed, dir };
+                        }
+
+                        points.sort((a, b) => a.z - b.z);
+
+                        let u_interp = null, v_interp = null;
+                        const interp = (h, p1, p2, key) => p1[key] + ((h - p1.z) / (p2.z - p1.z)) * (p2[key] - p1[key]);
+
+                        let bracketFound = false;
+                        for (let j = 0; j < points.length - 1; j++) {
+                            const p1 = points[j];
+                            const p2 = points[j+1];
+                            if (H_target >= p1.z && H_target <= p2.z) {
+                                u_interp = interp(H_target, p1, p2, 'u');
+                                v_interp = interp(H_target, p1, p2, 'v_comp');
+                                bracketFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!bracketFound) {
+                            if (H_target < points[0].z) {
+                                u_interp = interp(H_target, points[0], points[1], 'u');
+                                v_interp = interp(H_target, points[0], points[1], 'v_comp');
+                            } else {
+                                u_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'u');
+                                v_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'v_comp');
+                            }
+                        }
+
+                        const speed = Math.sqrt(u_interp * u_interp + v_interp * v_interp);
+                        const dir = (Math.atan2(u_interp, v_interp) * 180 / Math.PI + 360) % 360;
+                        return { speed, dir };
+                    };
+
+                    if (chkMostrarVientoEcmwf) {
+                        // 1. Pintar viento y racha en capas estándar
+                        renderEcmwfSpeedCell(filaEcmwfVel200, hourlyEcmwf ? hourlyEcmwf.wind_speed_200m : null);
+                        renderEcmwfDirCell(filaEcmwfDir200, hourlyEcmwf ? hourlyEcmwf.wind_direction_200m : null);
+                        renderEcmwfSpeedCell(filaEcmwfVel100, hourlyEcmwf ? hourlyEcmwf.wind_speed_100m : null);
+                        renderEcmwfDirCell(filaEcmwfDir100, hourlyEcmwf ? hourlyEcmwf.wind_direction_100m : null);
+                        
+                        renderEcmwfSpeedCell(filaEcmwfVel10, hourlyEcmwf ? hourlyEcmwf.wind_speed_10m : null);
+                        renderEcmwfSpeedCell(filaEcmwfRacha10, hourlyEcmwf ? hourlyEcmwf.wind_gusts_10m : null);
+                        renderEcmwfDirCell(filaEcmwfDir10, hourlyEcmwf ? hourlyEcmwf.wind_direction_10m : null);
+
+                        // 2. Pintar las filas especiales de interpolación vertical (Fijas + Altitud Real)
+                        const altReal = Number(d.Altitud) || 0;
+
+                        // Helper para instanciar las celdas de interpolación (Aprovecha los datos calculados)
+                        const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHora) => {
+                            const tdVel = document.createElement("td");
+                            tdVel.classList.add("ecmwf-neutral");
+                            if (cacheEsNoche[indiceHora]) tdVel.classList.add("celda-noche");
+                            if (indicesInicioDia.includes(indiceHora)) tdVel.classList.add("borde-grueso-izquierda");
+                            tdVel.style.fontSize = "12px";
+
+                            const tdDir = document.createElement("td");
+                            tdDir.classList.add("ecmwf-neutral");
+                            if (cacheEsNoche[indiceHora]) tdDir.classList.add("celda-noche");
+                            if (indicesInicioDia.includes(indiceHora)) tdDir.classList.add("borde-grueso-izquierda");
+                            tdDir.style.fontSize = "12px";
+
+                            if (!hourlyEcmwf) {
+                                tdVel.textContent = "—";
+                                tdDir.textContent = "—";
+                            } else {
+                                const interp = interpolarVientoAltitudReal(
+                                    altObj,
+                                    hourlyEcmwf.geopotential_height_1000hPa[indiceHora],
+                                    hourlyEcmwf.geopotential_height_925hPa[indiceHora],
+                                    hourlyEcmwf.geopotential_height_850hPa[indiceHora],
+                                    hourlyEcmwf.geopotential_height_700hPa[indiceHora],
+                                    hourlyEcmwf.wind_speed_1000hPa[indiceHora],
+                                    hourlyEcmwf.wind_speed_925hPa[indiceHora],
+                                    hourlyEcmwf.wind_speed_850hPa[indiceHora],
+                                    hourlyEcmwf.wind_speed_700hPa[indiceHora],
+                                    hourlyEcmwf.wind_direction_1000hPa[indiceHora],
+                                    hourlyEcmwf.wind_direction_925hPa[indiceHora],
+                                    hourlyEcmwf.wind_direction_850hPa[indiceHora],
+                                    hourlyEcmwf.wind_direction_700hPa[indiceHora]
+                                );
+
+                                if (interp === null) {
+                                    tdVel.textContent = "—";
+                                    tdDir.textContent = "—";
+                                } else {
+                                    const vRound = Math.round(interp.speed);
+                                    const dRound = Math.round(interp.dir);
+
+                                    tdVel.textContent = vRound;
+                                    tdVel.title = `${vRound} km/h (Velocidad interpolada verticalmente para la altura de ${altInfo} m)`;
+
+                                    tdDir.innerHTML = `
+                                        <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dRound + 180}deg);">
+                                            <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
+                                        </svg>
+                                    `;
+                                    tdDir.title = `${dRound}º (Dirección interpolada verticalmente para la altura de ${altInfo} m)`;
+                                }
+                            }
+                            trVel.appendChild(tdVel);
+                            trDir.appendChild(tdDir);
+                        };
+
+                        horas.forEach((_, i) => {
+                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
+
+                            // Ejecutamos la interpolación para cada piso en altitud fija
+                            crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i);
+                            crearCeldasInterpoladas(filaEcmwfVel1500, filaEcmwfDir1500, 1500, 1500, i);
+                            crearCeldasInterpoladas(filaEcmwfVel1000, filaEcmwfDir1000, 1000, 1000, i);
+                            crearCeldasInterpoladas(filaEcmwfVel500,  filaEcmwfDir500,  500,  500,  i);
+
+                            // Interpolación maestra para la altitud real del despegue
+                            crearCeldasInterpoladas(filaEcmwfValt, filaEcmwfDalt, altReal, altReal, i);
+                        });
+
+                        // 3. APLICAR BORDES ITERANDO CELDA POR CELDA (Como en el bloque de 80m/10m)
+                        
+                        // Borde superior para separar visualmente este bloque entero de la meteo de arriba
+                        Array.from(filaEcmwfVel3000.children).forEach(td => {
+                            td.style.borderTop = "1px solid #000";
+                        });
+
+                        // Borde inferior para separar visualmente cada subgrupo de altitud
+                        const filasConBordeInferiorFino = [
+                            filaEcmwfDir3000, 
+                            filaEcmwfDir1500, 
+                            filaEcmwfDir1000, 
+                            filaEcmwfDir200, 
+                            filaEcmwfDir100
+                             
+                        ];
+
+                        filasConBordeInferiorFino.forEach(fila => {
+                            if (fila) {
+                                Array.from(fila.children).forEach(td => {
+                                    td.style.borderBottom = "1px solid #000";
+                                });
+                            }
+                        });
+                        
+                        // Bordes inferiores gruesos específicos internos (2px)
+                        const filasConBordeInferiorGrueso = [
+                            filaEcmwfDir500,
+                            filaEcmwfDir10,
+                            filaEcmwfDalt
+                        ];
+                        
+                        filasConBordeInferiorGrueso.forEach(fila => {
+                            if (fila) {
+                                Array.from(fila.children).forEach(td => {
+                                    td.style.borderBottom = "2px solid #000";
+                                });
+                            }
+                        });
+                    }
 				}
 			}
 
@@ -5582,6 +5885,26 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 				    rowsGroup1[0].appendChild(tdCondiciones);	
                 }
 
+                // NUEVO: Añadir celda hueca (puente) si el grupo ECMWF (vientos de altura) está activo
+                if (chkMostrarVientoEcmwf && rowsEcmwfWind.length > 0) {
+                    const tdHueco = document.createElement("td");
+                    tdHueco.rowSpan = rowsEcmwfWind.length;
+                    
+                    // Mantenemos bordes gruesos laterales
+                    tdHueco.classList.add("borde-grueso-izquierda", "borde-grueso-derecha");
+                    tdHueco.style.backgroundColor = "#ffffff";
+                    
+                    tdHueco.style.borderBottom = "2px solid #000";
+                    
+                    // Si el grupo de abajo (XC) no existe, quitamos la fina, ponemos la gruesa y redondeamos
+                    if (rowsGroup2.length === 0) {
+                        tdHueco.style.borderBottom = ""; // Limpiamos la línea fina
+                        tdHueco.classList.add("borde-grueso-abajo", "celda-condiciones-final");
+                    }
+                    
+                    rowsEcmwfWind[0].appendChild(tdHueco);
+                }
+
                 // Añadimos la NUEVA puntuación en la misma columna vertical, pero para el bloque del Grupo 2 (XC)
                 if (rowsGroup2.length > 0) {
                     const tdCondicionesXC = document.createElement("td");
@@ -5593,7 +5916,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tdCondicionesXC.style.fontWeight = "bold";
                     tdCondicionesXC.style.textAlign = "center";
                     tdCondicionesXC.classList.add("borde-grueso-izquierda", "borde-grueso-abajo", "borde-grueso-derecha", "celda-condiciones-final");
-                    
+
                     if (valorVisualXC !== "-") {
                         tdCondicionesXC.style.backgroundColor = coloresNota[valorVisualXC];
                         tdCondicionesXC.style.color = "#000";
@@ -5605,8 +5928,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     }
 
                     rowsGroup2[0].appendChild(tdCondicionesXC);
-                } else {
-                    // Si no hay Grupo 2 (XC desactivado), la celda principal debe redondearse también por abajo
+                } else if (!chkMostrarVientoEcmwf || rowsEcmwfWind.length === 0) {
+                    // Si no hay Grupo 2 (XC) ni Grupo ECMWF, la celda principal se redondea por abajo
                     tdCondiciones.classList.add("celda-condiciones-final");
                 }
 			}
@@ -5998,11 +6321,12 @@ function aplicarFiltrosVisuales(evitarScroll = false) {
     const totalFavoritos = favoritos.length;
 
     // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
-    let filasPorDespegue = 5; 
+    let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
     if (chkMostrarProbPrecipitacion) filasPorDespegue++;
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
+    if (chkMostrarVientoEcmwf) filasPorDespegue += 17;
 
     // 4. BUCLE DE FILTRADO SÚPER RÁPIDO (Solo DOM/CSS)
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
@@ -7643,6 +7967,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
     if (document.getElementById("chkMostrarProbPrecipitacion")) document.getElementById("chkMostrarProbPrecipitacion").checked = chkMostrarProbPrecipitacion;
     //if (document.getElementById("chkMostrarBaseNube")) document.getElementById("chkMostrarBaseNube").checked = chkMostrarBaseNube;
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
+    if (document.getElementById("chkMostrarVientoEcmwf")) document.getElementById("chkMostrarVientoEcmwf").checked = chkMostrarVientoEcmwf;
 
     document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkOrdenarPorXC")) document.getElementById("chkOrdenarPorXC").checked = chkOrdenarPorXC;
