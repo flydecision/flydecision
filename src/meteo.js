@@ -5612,7 +5612,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             } else {
                                 const dir = Math.round(Number(val));
                                 td.innerHTML = `
-                                    <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg); width:15px; height:15px;">
+                                    <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg);">
                                         <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
                                     </svg>
                                 `;
@@ -5743,11 +5743,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 // Celda de velocidad "Viv" (Solo el valor numérico)
                                 tdViv.textContent = vRound;
                                 tdViv.title = `${vRound} km/h (Velocidad interpolada verticalmente para la altura de ${altReal} m)`;
-                                tdViv.style.fontWeight = "bold";
 
                                 // Celda de dirección "Div" (La flecha del viento con ángulo exacto)
                                 tdDiv.innerHTML = `
-                                    <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dRound + 180}deg); width:15px; height:15px; vertical-align: middle;">
+                                    <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dRound + 180}deg);">
                                         <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
                                     </svg>
                                 `;
