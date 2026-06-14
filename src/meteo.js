@@ -1848,7 +1848,7 @@ function gestionarClickMasivoFavoritos() {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf) filasPorDespegue += 7;
+    if (chkMostrarVientoEcmwf) filasPorDespegue += 9;
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
         
@@ -1931,7 +1931,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf) filasPorDespegue += 7;
+    if (chkMostrarVientoEcmwf) filasPorDespegue += 9;
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
         
@@ -4551,8 +4551,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaCin = document.createElement("tr");
             }
 
-            // Viento ECMWF (beta)
-            let filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10;
+            // GRUPO: Viento ECMWF (beta) con fondo blanco neutro
+            let filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfViv, filaEcmwfDiv;
             if (chkMostrarVientoEcmwf) {
                 filaEcmwfVel200   = document.createElement("tr");
                 filaEcmwfDir200   = document.createElement("tr");
@@ -4561,15 +4561,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaEcmwfVel10    = document.createElement("tr");
                 filaEcmwfRacha10  = document.createElement("tr");
                 filaEcmwfDir10    = document.createElement("tr");
+                filaEcmwfViv      = document.createElement("tr"); // Fila de velocidad interpolada
+                filaEcmwfDiv      = document.createElement("tr"); // Fila de dirección interpolada
 
                 // Forzamos la clase neutra a todas las filas del grupo
-                [filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10].forEach(f => {
+                [filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfViv, filaEcmwfDiv].forEach(f => {
                     f.classList.add("ecmwf-neutral-row");
                 });
             }
 
             const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, fila180, fila120, fila80, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
-            const rowsEcmwfWind = [filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10].filter(Boolean);
+            const rowsEcmwfWind = [filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfViv, filaEcmwfDiv].filter(Boolean);
             const rowsGroup2 = [filaTecho, filaCape, filaCin].filter(Boolean);
 
             const todasLasFilas = [...rowsGroup1, ...rowsEcmwfWind, ...rowsGroup2];
@@ -4596,8 +4598,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // Separador interno abajo de Dir 100m (para separar de la sección de 10m)
                 filaEcmwfDir100.style.borderBottom = "1px solid #000";
                 
-                // Separador abajo de todo el bloque (debajo de Dir 10m)
-                filaEcmwfDir10.style.borderBottom = "1px solid #000";
+                // Separador abajo de todo el bloque (debajo de Div, que es la última fila del grupo)
+                filaEcmwfDiv.style.borderBottom = "1px solid #000";
             }
 
             // La ultimísima fila del despegue recibe la separación grande principal
@@ -5018,6 +5020,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCellEcmwf(filaEcmwfVel10, "V10m", "Velocidad del viento a 10m (ECMWF)");
                 addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', "Racha máxima a 10m (ECMWF)");
                 addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', "Dirección del viento a 10m (ECMWF)");
+                addIconCellEcmwf(filaEcmwfViv, "Viv", `Velocidad por interpolación vertical a la altitud real del despegue (${d.Altitud || 0} m)`);
+                addIconCellEcmwf(filaEcmwfDiv, '<img src="icons/icono_direccion_45.webp" width="15" height="15">', `Dirección por interpolación vertical a la altitud real del despegue (${d.Altitud || 0} m)`);
 
 				// ---------------------------------------------------------------
 				// ⚪ CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Columnas de datos por hora
@@ -5618,8 +5622,66 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         });
                     };
 
+                    // Función matemática de interpolación de viento vectorial mediante geopotenciales para la altitud real
+                    const interpolarVientoAltitudReal = (H_target, h1000, h925, h850, h700, v1000, v925, v850, v700, d1000, d925, d850, d700) => {
+                        const heights = [h1000, h925, h850, h700];
+                        const speeds = [v1000, v925, v850, v700];
+                        const directions = [d1000, d925, d850, d700];
+
+                        let points = [];
+                        for (let k = 0; k < 4; k++) {
+                            const z = heights[k];
+                            const v = speeds[k];
+                            const d = directions[k];
+                            if (z !== null && v !== null && d !== null) {
+                                const rad = Number(d) * Math.PI / 180;
+                                const u = Number(v) * Math.sin(rad);
+                                const v_comp = Number(v) * Math.cos(rad);
+                                points.push({ z: Number(z), u, v_comp });
+                            }
+                        }
+
+                        if (points.length === 0) return null;
+                        if (points.length === 1) {
+                            const speed = Math.sqrt(points[0].u * points[0].u + points[0].v_comp * points[0].v_comp);
+                            const dir = (Math.atan2(points[0].u, points[0].v_comp) * 180 / Math.PI + 360) % 360;
+                            return { speed, dir };
+                        }
+
+                        points.sort((a, b) => a.z - b.z);
+
+                        let u_interp = null, v_interp = null;
+                        const interp = (h, p1, p2, key) => p1[key] + ((h - p1.z) / (p2.z - p1.z)) * (p2[key] - p1[key]);
+
+                        let bracketFound = false;
+                        for (let j = 0; j < points.length - 1; j++) {
+                            const p1 = points[j];
+                            const p2 = points[j+1];
+                            if (H_target >= p1.z && H_target <= p2.z) {
+                                u_interp = interp(H_target, p1, p2, 'u');
+                                v_interp = interp(H_target, p1, p2, 'v_comp');
+                                bracketFound = true;
+                                break;
+                            }
+                        }
+
+                        if (!bracketFound) {
+                            if (H_target < points[0].z) {
+                                u_interp = interp(H_target, points[0], points[1], 'u');
+                                v_interp = interp(H_target, points[0], points[1], 'v_comp');
+                            } else {
+                                u_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'u');
+                                v_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'v_comp');
+                            }
+                        }
+
+                        const speed = Math.sqrt(u_interp * u_interp + v_interp * v_interp);
+                        const dir = (Math.atan2(u_interp, v_interp) * 180 / Math.PI + 360) % 360;
+                        return { speed, dir };
+                    };
+
                     if (chkMostrarVientoEcmwf) {
-                        // Inyección de datos reales desde hourlyEcmwf (meteo-datos-ecmwf.json)
+                        // 1. Pintar viento y racha en capas estándar
                         renderEcmwfSpeedCell(filaEcmwfVel200, hourlyEcmwf ? hourlyEcmwf.wind_speed_200m : null);
                         renderEcmwfDirCell(filaEcmwfDir200, hourlyEcmwf ? hourlyEcmwf.wind_direction_200m : null);
                         renderEcmwfSpeedCell(filaEcmwfVel100, hourlyEcmwf ? hourlyEcmwf.wind_speed_100m : null);
@@ -5628,6 +5690,72 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         renderEcmwfSpeedCell(filaEcmwfVel10, hourlyEcmwf ? hourlyEcmwf.wind_speed_10m : null);
                         renderEcmwfSpeedCell(filaEcmwfRacha10, hourlyEcmwf ? hourlyEcmwf.wind_gusts_10m : null);
                         renderEcmwfDirCell(filaEcmwfDir10, hourlyEcmwf ? hourlyEcmwf.wind_direction_10m : null);
+
+                        // 2. Pintar las dos filas especiales de interpolación vertical: "Viv" (Velocidad) y "Div" (Dirección)
+                        const altReal = Number(d.Altitud) || 0;
+
+                        horas.forEach((_, i) => {
+                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
+                            
+                            const tdViv = document.createElement("td");
+                            tdViv.classList.add("ecmwf-neutral");
+                            if (cacheEsNoche[i]) tdViv.classList.add("celda-noche");
+                            if (indicesInicioDia.includes(i)) tdViv.classList.add("borde-grueso-izquierda");
+                            tdViv.style.fontSize = "12px";
+
+                            const tdDiv = document.createElement("td");
+                            tdDiv.classList.add("ecmwf-neutral");
+                            if (cacheEsNoche[i]) tdDiv.classList.add("celda-noche");
+                            if (indicesInicioDia.includes(i)) tdDiv.classList.add("borde-grueso-izquierda");
+                            tdDiv.style.fontSize = "12px";
+
+                            if (!hourlyEcmwf) {
+                                tdViv.textContent = "—";
+                                tdDiv.textContent = "—";
+                                filaEcmwfViv.appendChild(tdViv);
+                                filaEcmwfDiv.appendChild(tdDiv);
+                                return;
+                            }
+
+                            const interp = interpolarVientoAltitudReal(
+                                altReal,
+                                hourlyEcmwf.geopotential_height_1000hPa[i],
+                                hourlyEcmwf.geopotential_height_925hPa[i],
+                                hourlyEcmwf.geopotential_height_850hPa[i],
+                                hourlyEcmwf.geopotential_height_700hPa[i],
+                                hourlyEcmwf.wind_speed_1000hPa[i],
+                                hourlyEcmwf.wind_speed_925hPa[i],
+                                hourlyEcmwf.wind_speed_850hPa[i],
+                                hourlyEcmwf.wind_speed_700hPa[i],
+                                hourlyEcmwf.wind_direction_1000hPa[i],
+                                hourlyEcmwf.wind_direction_925hPa[i],
+                                hourlyEcmwf.wind_direction_850hPa[i],
+                                hourlyEcmwf.wind_direction_700hPa[i]
+                            );
+
+                            if (interp === null) {
+                                tdViv.textContent = "—";
+                                tdDiv.textContent = "—";
+                            } else {
+                                const vRound = Math.round(interp.speed);
+                                const dRound = Math.round(interp.dir);
+
+                                // Celda de velocidad "Viv" (Solo el valor numérico)
+                                tdViv.textContent = vRound;
+                                tdViv.title = `${vRound} km/h (Velocidad interpolada verticalmente para la altura de ${altReal} m)`;
+                                tdViv.style.fontWeight = "bold";
+
+                                // Celda de dirección "Div" (La flecha del viento con ángulo exacto)
+                                tdDiv.innerHTML = `
+                                    <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dRound + 180}deg); width:15px; height:15px; vertical-align: middle;">
+                                        <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
+                                    </svg>
+                                `;
+                                tdDiv.title = `${dRound}º (Dirección interpolada verticalmente para la altura de ${altReal} m)`;
+                            }
+                            filaEcmwfViv.appendChild(tdViv);
+                            filaEcmwfDiv.appendChild(tdDiv);
+                        });
                     }
 				}
 			}
@@ -6108,7 +6236,7 @@ function aplicarFiltrosVisuales(evitarScroll = false) {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf) filasPorDespegue += 7;
+    if (chkMostrarVientoEcmwf) filasPorDespegue += 9;
 
     // 4. BUCLE DE FILTRADO SÚPER RÁPIDO (Solo DOM/CSS)
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
