@@ -2501,7 +2501,12 @@ function clickOnDia(sliderElement, diaIndex) {
     window.ultimoRangoSlider = null;
     window.restaurarRangoDesdeCalendario = false;
 
-    construir_tabla();
+    // Detectamos si el usuario está físicamente viendo el mapa
+    const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+
+    // Sincronizamos la tabla de forma silenciosa si estamos en el mapa
+    construir_tabla(false, enMapa); 
+    
     if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
 }
 
@@ -2853,19 +2858,25 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         window.sliderHorasValues = startIndices;
 
         // Listener de cambios manuales
-		sliderHoras.noUiSlider.on('change', function(values) {
-			const valoresNuevos = values.map(Number);
-			const haCambiado = valoresNuevos.some((val, i) => val !== window.sliderHorasValues[i]);
+        sliderHoras.noUiSlider.on('change', function(values) {
+            const valoresNuevos = values.map(Number);
+            const haCambiado = valoresNuevos.some((val, i) => val !== window.sliderHorasValues[i]);
             window.rangoHorarioPersonalizado = true;
-			if (haCambiado) {
-				window.sliderHorasValues = valoresNuevos;
-				construir_tabla(false, false);
-			}
+            
+            if (haCambiado) {
+                window.sliderHorasValues = valoresNuevos;
+
+                // Detectamos si el usuario está físicamente viendo el mapa
+                const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+
+                // Si está en el mapa, la actualización de la tabla trasera será SILENCIOSA (segundo parámetro = true)
+                construir_tabla(false, enMapa); 
+            }
             // Si estamos en el mapa con filtros activos, recalcular colores
             if (typeof aplicarPuntuacionEnMapa === 'function') {
                 aplicarPuntuacionEnMapa();
             }
-		});
+        });
 
         sliderHoras.noUiSlider.on('slide', function () {
             // --- Quitar azul si la usuaria mueve los tiradores manuales ---
