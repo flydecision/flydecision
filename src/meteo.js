@@ -3491,14 +3491,16 @@ const leerDeCacheIDB = async (key) => {
 async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
 	
     if (!silencioso) {
+        // 1. Añadimos la clase visual INMEDIATAMENTE (sin esperar ni 1 milisegundo)
         const overlay = document.getElementById('msgActualizando...');
         if (overlay) {
             overlay.classList.add('loader-activo');
         }
 
-        // Pausa de 120ms para permitir que la transición de 100ms del CSS 
-        // termine por completo antes de que la CPU se sature con miles de filas.
-        await new Promise(resolve => setTimeout(resolve, 120));
+        // 2. LA MAGIA: Obligamos al código JS a detenerse por completo durante 50ms.
+        // Esto le cede el control al navegador para que le dé tiempo a "pintar" 
+        // el fondo gris y el spinner en la pantalla ANTES de que empiece el cálculo masivo.
+        await new Promise(resolve => setTimeout(resolve, 50));
     }
 
     // Ponemos la bandera de "Carga en proceso". Si el navegador peta durante esta función, esta bandera se quedará grabada.
