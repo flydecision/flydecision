@@ -6443,18 +6443,21 @@ window.toggleEcmwfDesplegable = function(e, idDespegue) {
         e.preventDefault();
     }
     
+    const wrapper = document.querySelector('.tabla-wrapper');
+    if (wrapper) {
+        window.guardarScrollY = wrapper.scrollTop;
+    }
+
     const idNum = Number(idDespegue);
     const estaExpandido = window.sessionExpandedEcmwfTakeoffs.has(idNum);
 
-    // Invertimos el estado en el Set
     if (estaExpandido) {
         window.sessionExpandedEcmwfTakeoffs.delete(idNum);
     } else {
         window.sessionExpandedEcmwfTakeoffs.add(idNum);
     }
 
-    // Reconstruimos la tabla en silencio (es súper rápido e inmune a errores de descuadre)
-    construir_tabla(false, true);
+    construir_tabla(false, false);
 
     if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
 };
