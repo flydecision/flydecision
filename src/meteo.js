@@ -64,24 +64,12 @@ let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_P
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
 let chkOrdenarPorXC = localStorage.getItem("METEO_CHECKBOX_ORDENAR_POR_XC") === "true"; // false por defecto
 let diasSeguimiento = parseInt(localStorage.getItem('METEO_DIAS_SEGUIMIENTO') || '3');
-let chkMostrarVientoEcmwf = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ECMWF") === "true";
+const ecmwfMode = localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off";
 
-function alternarMostrarVientoEcmwf() {
-    chkMostrarVientoEcmwf = document.getElementById("chkMostrarVientoEcmwf").checked;
-    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ECMWF", chkMostrarVientoEcmwf);
-    construir_tabla();
-}
+let chkMostrarVientoEcmwf = (ecmwfMode === "permanente");
+let chkMostrarVientoEcmwfDesplegable = (ecmwfMode === "desplegable");
+window.sessionExpandedEcmwfTakeoffs = new Set();
 
-let chkMostrarVientoEcmwfDesplegable = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ECMWF_DESPLEGABLE") === "true";
-window.sessionExpandedEcmwfTakeoffs = new Set(); // Almacena los IDs de los despegues expandidos manualmente
-
-function alternarMostrarVientoEcmwfDesplegable() {
-    chkMostrarVientoEcmwfDesplegable = document.getElementById("chkMostrarVientoEcmwfDesplegable").checked;
-    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ECMWF_DESPLEGABLE", chkMostrarVientoEcmwfDesplegable);
-    
-    mostrarLoading(50);
-    requestAnimationFrame(() => requestAnimationFrame(() => construir_tabla()));
-}
 // Si entra por url mapa con coordenadas y no hay configuración se marca este flag
 const paramsArranque = new URLSearchParams(window.location.search);
 if (paramsArranque.has('lat') && paramsArranque.has('lon')) {
@@ -1853,7 +1841,9 @@ function gestionarClickMasivoFavoritos() {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf) filasPorDespegue += 17;
+    if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
+        filasPorDespegue += 17;
+    }
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
         
@@ -1936,7 +1926,9 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf) filasPorDespegue += 17;
+    if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
+        filasPorDespegue += 17;
+    }
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
         
@@ -6167,7 +6159,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 // ---------------------------------------------------------------
 
 // ---------------------------------------------------------------
-// 🔴 OTRAS FUNCIONES
+// 🔴 OTRAS FUNCIONES. FUNCIONES AUXILIARES
 // ---------------------------------------------------------------
 
 // Variables y Constantes
@@ -6435,6 +6427,24 @@ window.toggleEcmwfDesplegable = function(e, idDespegue) {
     construir_tabla(false, true);
 
     if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+};
+
+window.cambiarModoEcmwf = function(nuevoModo) {
+    // Guardamos la preferencia en memoria de sesión
+    localStorage.setItem("METEO_CONFIG_ECMWF_MODE", nuevoModo);
+    
+    // Sincronizamos las variables que lee el renderizador de la tabla
+    chkMostrarVientoEcmwf = (nuevoModo === "permanente");
+    chkMostrarVientoEcmwfDesplegable = (nuevoModo === "desplegable");
+    
+    // Si el usuario apaga la opción, limpiamos los despegues expandidos de esta sesión
+    if (nuevoModo === "off") {
+        window.sessionExpandedEcmwfTakeoffs.clear();
+    }
+
+    // Forzamos actualización de la tabla con loader sutil de 50ms
+    mostrarLoading(50);
+    requestAnimationFrame(() => requestAnimationFrame(() => construir_tabla()));
 };
 
 // ---------------------------------------------------------------
@@ -8118,7 +8128,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
     if (document.getElementById("chkMostrarProbPrecipitacion")) document.getElementById("chkMostrarProbPrecipitacion").checked = chkMostrarProbPrecipitacion;
     //if (document.getElementById("chkMostrarBaseNube")) document.getElementById("chkMostrarBaseNube").checked = chkMostrarBaseNube;
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
-    if (document.getElementById("chkMostrarVientoEcmwf")) document.getElementById("chkMostrarVientoEcmwf").checked = chkMostrarVientoEcmwf;
+    
+    // --- 2. Sincronizar el estado visual de los botones de radio ECMWF ---
+    const currentEcmwfMode = localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off";
+    if (currentEcmwfMode === "off") {
+        const rad = document.getElementById("radEcmwfOff");
+        if (rad) rad.checked = true;
+    } else if (currentEcmwfMode === "desplegable") {
+        const rad = document.getElementById("radEcmwfDesplegable");
+        if (rad) rad.checked = true;
+    } else if (currentEcmwfMode === "permanente") {
+        const rad = document.getElementById("radEcmwfPermanente");
+        if (rad) rad.checked = true;
+    }
 
     document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkOrdenarPorXC")) document.getElementById("chkOrdenarPorXC").checked = chkOrdenarPorXC;
