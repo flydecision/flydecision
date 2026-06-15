@@ -4957,23 +4957,32 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 </span>
             ` : '';
 
-            // --- NUEVO: CONFIGURACIÓN DEL BOTÓN DE EXPANSIÓN ---
+            // --- CONFIGURACIÓN DEL BOTÓN DE EXPANSIÓN ---
             let botonToggleEcmwfHTML = '';
             let paddingExtraBoton = 0;
 
-            // --- CORRECCIÓN: Solo creamos el botón si la opción permanente está apagada Y NO estamos en modo edición ---
+            // --- Solo creamos el botón si la opción permanente está apagada Y NO estamos en modo edición ---
             if (chkMostrarVientoEcmwfDesplegable  && !modoEdicionFavoritos) {
                 const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
-                const textoBtn = estaAmpliando ? '[-] Viento ECMWF' : '[+] Viento ECMWF';
-                
+                const chevron = estaAmpliando ? '▲' : '▼';
+
                 const bottomNum = parseInt(btnRowBottom) || 2;
-                const newBottom = bottomNum + 32; 
-                
+                const newBottom = bottomNum + 32;
+
                 botonToggleEcmwfHTML = `
-                    <button class="popup-toggle-header" 
-                         onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
-                         style="position: absolute; bottom: ${newBottom}px; left: 13px; cursor: pointer; border-radius: 3px; padding: 2px 6px; font-size: 11px; font-weight: bold; background: #eef2f5; border: 1px solid #b9d4ea; color: #0056b3; display: inline-block;">
-                        ${textoBtn}
+                    <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
+
+                        style="position:absolute; bottom:75px; left:11px; cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; font-size:12px; color:#4a6785; display:inline-flex; align-items:center; gap:3px; line-height:1.6; white-space:nowrap; box-shadow:1px 1px 3px rgba(0,0,0,0.1);">
+
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                            style="flex-shrink:0; opacity:0.8">
+                            <path d="M9.59 4.59A2 2 0 1 1 11 8H2"/>
+                            <path d="M12.59 19.41A2 2 0 1 0 14 16H2"/>
+                            <path d="M6 12h14a2 2 0 1 1 0 4"/>
+                        </svg>
+                        ECMWF
+                        <span style="font-size: 9px; opacity: 0.7">${chevron}</span>
                     </button>
                 `;
                 paddingExtraBoton = 32; 
