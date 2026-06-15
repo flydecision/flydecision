@@ -4685,10 +4685,20 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 rowsGroup1[rowsGroup1.length - 1].style.borderBottom = "1px solid #999";
             }
             
-            // La ultimísima fila del despegue recibe la separación grande principal
+            // La ultimísima fila VISIBLE del despegue recibe la separación grande principal
             if (todasLasFilas.length > 0) {
                 todasLasFilas[0].classList.add("fila-inicio-despegue");
-                todasLasFilas[todasLasFilas.length - 1].classList.add("fila-separador", "fila-fin-despegue");
+
+                // --- CALCULAMOS LA ÚLTIMA FILA VISIBLE REAL ---
+                let filaFin = todasLasFilas[todasLasFilas.length - 1]; // Por defecto, la última absoluta
+
+                if (rowsGroup2.length === 0 && !debeMostrarse) {
+                    // Si el XC está apagado y el viento ECMWF está colapsado, el final real es el Grupo 1
+                    filaFin = rowsGroup1[rowsGroup1.length - 1];
+                }
+
+                // Le aplicamos el borde negro grueso de 2px a la última fila visible
+                filaFin.classList.add("fila-separador", "fila-fin-despegue");
             }
 
 			// Clase para el filtrado
