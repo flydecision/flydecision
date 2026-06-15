@@ -2,6 +2,8 @@
 // 🔴 VARIABLES O CONSTANTES GLOBALES
 // ---------------------------------------------------------------
 
+let ultimoIdLlamadaTabla = 0; // Control de concurrencia para evitar destellos en la tabla
+
 // Aquí guardaremos los JSON
 let DATOS_METEO_CACHE = null;
 let DATOS_METEO_ECMWF_CACHE = null;
@@ -2501,7 +2503,12 @@ function clickOnDia(sliderElement, diaIndex) {
     window.ultimoRangoSlider = null;
     window.restaurarRangoDesdeCalendario = false;
 
-    construir_tabla();
+    // DETECTOR DE NAVEGACIÓN ROBUSTO: Comprobamos si el botón de mapa del menú inferior está azul (active)
+    const enMapa = document.getElementById('nav-map')?.classList.contains('active');
+
+    // Sincronizamos la tabla de forma silenciosa si estamos navegando en el mapa
+    construir_tabla(false, enMapa); 
+    
     if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
 }
 
@@ -2782,7 +2789,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         ? new Date(window.horasCrudasRangoHorario[0].endsWith('Z') ? window.horasCrudasRangoHorario[0] : window.horasCrudasRangoHorario[0] + 'Z').getTime() 
         : 0;
 
-        // --- 🚀 CÁLCULO PREVIO DEL RANGO INICIAL DIRECTO ---
+        // --- CÁLCULO PREVIO DEL RANGO INICIAL DIRECTO ---
         let startIndices = [0, maxSteps]; // Por defecto todo
 
         if (!autoSeleccionInicialHecha) {
@@ -2853,19 +2860,31 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         window.sliderHorasValues = startIndices;
 
         // Listener de cambios manuales
-		sliderHoras.noUiSlider.on('change', function(values) {
-			const valoresNuevos = values.map(Number);
-			const haCambiado = valoresNuevos.some((val, i) => val !== window.sliderHorasValues[i]);
+        sliderHoras.noUiSlider.on('change', function(values) {
+            const valoresNuevos = values.map(Number);
+            const haCambiado = valoresNuevos.some((val, i) => val !== window.sliderHorasValues[i]);
             window.rangoHorarioPersonalizado = true;
-			if (haCambiado) {
-				window.sliderHorasValues = valoresNuevos;
-				construir_tabla(false, false);
-			}
-            // Si estamos en el mapa con filtros activos, recalcular colores
+            
+            if (haCambiado) {
+                window.sliderHorasValues = valoresNuevos;
+
+                const enMapa = document.getElementById('nav-map')?.classList.contains('active');
+
+                if (enMapa) {
+                    // En el mapa: actualización silenciosa directa (no requiere spinner)
+                    construir_tabla(false, true);
+                } else {
+                    // En la tabla: Usamos setTimeout de 0ms para salir del hilo de eventos de noUiSlider.
+                    // Esto permite al navegador pintar el spinner inmediatamente antes de congelarse.
+                    setTimeout(() => {
+                        construir_tabla(false, false);
+                    }, 0);
+                }
+            }
             if (typeof aplicarPuntuacionEnMapa === 'function') {
                 aplicarPuntuacionEnMapa();
             }
-		});
+        });
 
         sliderHoras.noUiSlider.on('slide', function () {
             // --- Quitar azul si la usuaria mueve los tiradores manuales ---
@@ -2957,34 +2976,46 @@ window.toggleVerTodosLosDias = function() {
     const btnCal = document.getElementById('btn-ver-todos-dias');
     const panelFiltro = document.getElementById('div-filtro-horario');
     
-    if (modoVerTodosLosDias) {
-        // 🔄 Si ya estaba activo y volvemos a pulsar: APAGAMOS el modo Calendario
-        modoVerTodosLosDias = false;
-        btnCal.classList.remove('activo');
-        panelFiltro.classList.remove('ocultar-slider-por-calendario');
+    // 1. Mostramos el spinner y el fondo sutil inmediatamente
+    const overlay = document.getElementById('msgActualizando...');
+    if (overlay) {
+        overlay.classList.add('loader-activo');
+    }
+
+    // 2. Pausamos 50ms para permitir que la GPU pinte el spinner en pantalla
+    setTimeout(() => {
         
-        // Simulamos un clic automático en el botón del día en que estábamos
-        const botones = document.querySelectorAll('.pip-dia-btn');
-        if (botones.length > 0) {
-            const idx = Math.min(ultimoDiaSeleccionado, botones.length - 1);
-            botones[idx].click(); // Esto restaura el slider, el día azul y reconstruye la tabla
+        if (modoVerTodosLosDias) {
+            // 🔄 APAGAMOS el modo Calendario (Volvemos a vista de 1 día)
+            modoVerTodosLosDias = false;
+            if (btnCal) btnCal.classList.remove('activo');
+            if (panelFiltro) panelFiltro.classList.remove('ocultar-slider-por-calendario');
+            
+            // Simulamos el clic automático en el botón del día en que estábamos.
+            // (La llamada a construir_tabla() dentro del click se encargará de ocultar el loader al finalizar).
+            const botones = document.querySelectorAll('.pip-dia-btn');
+            if (botones.length > 0) {
+                const idx = Math.min(ultimoDiaSeleccionado, botones.length - 1);
+                botones[idx].click(); 
+            } else {
+                ocultarLoading(); // Fallback de seguridad si no se encontraran botones
+            }
+        } else {
+            // 🔄 ACTIVAMOS el modo Calendario (Mostramos todos los días)
+            ultimoDiaSeleccionado = window.diaSeleccionadoSlider !== null ? window.diaSeleccionadoSlider : 0;
+            window.ultimoRangoSlider = window.sliderHorasValues ? [...window.sliderHorasValues] : null;
+            window.restaurarRangoDesdeCalendario = true;
+
+            modoVerTodosLosDias = true;
+            if (btnCal) btnCal.classList.add('activo');
+            if (panelFiltro) panelFiltro.classList.add('ocultar-slider-por-calendario');
+
+            // Reconstruimos la tabla con los 4 días.
+            // (La propia función construir_tabla() ocultará el loader al finalizar).
+            construir_tabla();
         }
-        return;
-    } 
 
-    // Antes de activar el calendario, guardamos el día exacto en el que está el usuario
-    ultimoDiaSeleccionado = window.diaSeleccionadoSlider !== null ? window.diaSeleccionadoSlider : 0;
-    window.ultimoRangoSlider = window.sliderHorasValues ? [...window.sliderHorasValues] : null;
-    window.restaurarRangoDesdeCalendario = true;
-
-    modoVerTodosLosDias = true;
-    
-    // Estética del botón Calendario
-    btnCal.classList.add('activo');
-    panelFiltro.classList.add('ocultar-slider-por-calendario');
-
-    // Reconstruir la tabla mostrando todo
-    construir_tabla();
+    }, 50);
 };
 
 // ---------------------------------------------------------------
@@ -3490,15 +3521,38 @@ const leerDeCacheIDB = async (key) => {
 
 async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
 	
-    if (!silencioso) {
+    // 1. REGISTRO DE CONCURRENCIA: Asignamos un número único a esta llamada
+    const miIdLlamada = ++ultimoIdLlamadaTabla;
+
+    // 2. DETECTOR INTELIGENTE: Evaluamos si realmente necesitamos mostrar el spinner.
+    // - Si requiere descargar de red (forzarRecarga o caché vacía).
+    // - Si mostramos toda la base de datos de 400 despegues (soloFavoritos = false).
+    // - Si tienes más de 15 favoritos (ya que renderizar más de 250 filas satura la CPU).
+    // - Si el modo calendario de 4 días está activo.
+    const totalFavoritos = obtenerFavoritos().length;
+    const esOperacionPesada = forzarRecarga || 
+                              (!DATOS_METEO_CACHE) || 
+                              (!soloFavoritos) || 
+                              (totalFavoritos > 15) || 
+                              (typeof modoVerTodosLosDias !== 'undefined' && modoVerTodosLosDias);
+
+    if (!silencioso && esOperacionPesada) {
+        // Añadimos la clase visual INMEDIATAMENTE
         const overlay = document.getElementById('msgActualizando...');
         if (overlay) {
             overlay.classList.add('loader-activo');
         }
 
-        // Pausa de 120ms para permitir que la transición de 100ms del CSS 
-        // termine por completo antes de que la CPU se sature con miles de filas.
+        // Obligamos al código JS a detenerse por completo durante 120ms.
+        // Esto le da tiempo de sobra a la transición de CSS (100ms) a completarse
+        // y mostrar el spinner en pantalla antes de que comience el cálculo masivo.
         await new Promise(resolve => setTimeout(resolve, 120));
+    }
+
+    // 3. SEGURIDAD: Si entró otra llamada mientras esperábamos el temporizador, 
+    // abortamos esta ejecución silenciosamente para evitar destellos y duplicados en el DOM.
+    if (miIdLlamada !== ultimoIdLlamadaTabla) {
+        return; 
     }
 
     // Ponemos la bandera de "Carga en proceso". Si el navegador peta durante esta función, esta bandera se quedará grabada.
