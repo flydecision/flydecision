@@ -4935,8 +4935,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const iconoActividadLimpio = d.Actividad ? crearIconoActividad(d.Actividad) : '';
 
             // Siempre se muestra en edición, o si hay más de 7 filas en vista normal
-            const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 9);
-            const modoCompacto = !modoEdicionFavoritos && totalFilasRowSpan <= 8;
+            const mostrarRosayActividad = modoEdicionFavoritos || (initialRowSpan > 11);
+            const modoCompacto = !modoEdicionFavoritos && (initialRowSpan < 10);
 
             // Preparamos el texto del tooltip limpiando las comillas dobles
             const textoCrudoActividad = t('tabla.tooltips.tooltipNivelDeActividad');
@@ -4966,13 +4966,24 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
                 const chevron = estaAmpliando ? '▲' : '▼';
 
+                // --- AJUSTE DINÁMICO PARA FILAS ULTRA-CORTAS ---
+                let bottomValue = 0;
+
+                if (initialRowSpan < 10) {
+                    paddingExtraBoton = 0; 
+                    bottomValue = 24;
+                } else {
+                    paddingExtraBoton = 32;
+                    const bottomNum = parseInt(btnRowBottom) || 2;
+                    bottomValue = bottomNum + 32; 
+                }
+
                 const bottomNum = parseInt(btnRowBottom) || 2;
-                const newBottom = bottomNum + 32;
 
                 botonToggleEcmwfHTML = `
                     <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
 
-                        style="position:absolute; bottom:75px; left:11px; cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; font-size:12px; color:#4a6785; display:inline-flex; align-items:center; gap:3px; line-height:1.6; white-space:nowrap; box-shadow:1px 1px 3px rgba(0,0,0,0.1);">
+                        style="position:absolute; bottom: ${bottomValue}px; left:11px; cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; font-size:12px; color:#4a6785; display:inline-flex; align-items:center; gap:3px; line-height:1.6; white-space:nowrap; box-shadow:1px 1px 3px rgba(0,0,0,0.1);">
 
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
@@ -4985,7 +4996,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         <span style="font-size: 9px; opacity: 0.7">${chevron}</span>
                     </button>
                 `;
-                paddingExtraBoton = 32; 
             }
 
             // Inyectamos el botón en tu innerHTML
@@ -5006,7 +5016,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             
             if (modoEdicionFavoritos) {
                 tdDespegue.classList.add("borde-grueso-derecha");
-                tdDespegue.style.paddingBottom = (34 + paddingExtraBoton) + 'px';
+                tdDespegue.style.paddingBottom = (34) + 'px';
             } else {
                 if (modoCompacto) {
                     tdDespegue.classList.add('modo-compacto');
@@ -6042,7 +6052,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     }
 
                     rowsGroup2[0].appendChild(tdCondicionesXC);
-                } else if (!chkMostrarVientoEcmwf || rowsEcmwfWind.length === 0) {
+                } else if (!debeMostrarse) {
                     // Si no hay Grupo 2 (XC) ni Grupo ECMWF, la celda principal se redondea por abajo
                     tdCondiciones.classList.add("celda-condiciones-final");
                 }
