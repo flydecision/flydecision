@@ -4961,12 +4961,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             let botonToggleEcmwfHTML = '';
             let paddingExtraBoton = 0;
 
-            if (chkMostrarVientoEcmwfDesplegable) {
+            // --- CORRECCIÓN: Solo creamos el botón si la opción permanente está apagada Y NO estamos en modo edición ---
+            if (chkMostrarVientoEcmwfDesplegable  && !modoEdicionFavoritos) {
                 const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
                 const textoBtn = estaAmpliando ? '[-] Viento ECMWF' : '[+] Viento ECMWF';
                 
                 const bottomNum = parseInt(btnRowBottom) || 2;
-                const newBottom = bottomNum + 32; // Lo posicionamos encima de la botonera base
+                const newBottom = bottomNum + 32; 
                 
                 botonToggleEcmwfHTML = `
                     <button class="popup-toggle-header" 
@@ -4975,7 +4976,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         ${textoBtn}
                     </button>
                 `;
-                paddingExtraBoton = 32; // Reservamos espacio de padding
+                paddingExtraBoton = 32; 
             }
 
             // Inyectamos el botón en tu innerHTML
