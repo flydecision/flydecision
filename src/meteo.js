@@ -73,6 +73,7 @@ function alternarMostrarVientoEcmwf() {
 }
 
 let chkMostrarVientoEcmwfDesplegable = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ECMWF_DESPLEGABLE") === "true";
+window.sessionExpandedEcmwfTakeoffs = new Set(); // Almacena los IDs de los despegues expandidos manualmente
 
 function alternarMostrarVientoEcmwfDesplegable() {
     chkMostrarVientoEcmwfDesplegable = document.getElementById("chkMostrarVientoEcmwfDesplegable").checked;
@@ -4645,12 +4646,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, 
                     filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt
                 ].forEach(f => {
-                    // Les añadimos una clase única con su ID para poder ocultarlas/mostrarlas con el botón
-                    f.classList.add("ecmwf-neutral-row", `ecmwf-row-desp-${idDespegue}`);
+                    f.classList.add("ecmwf-neutral-row");
                     
-                    // Si el permanente está apagado, las ocultamos inicialmente
-                    if (!chkMostrarVientoEcmwf) {
-                        f.style.display = 'none';
+                    // COMPROBACIÓN DE VISIBILIDAD INICIAL:
+                    const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
+                    const debeMostrarse = chkMostrarVientoEcmwf || (chkMostrarVientoEcmwfDesplegable && estaAmpliando);
+                    
+                    if (!debeMostrarse) {
+                        f.classList.add('ecmwf-oculto-temp'); // Si no debe mostrarse, se oculta por CSS
                     }
                 });
             }
@@ -4666,14 +4669,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             const todasLasFilas = [...rowsGroup1, ...rowsEcmwfWind, ...rowsGroup2];
             const filaPrincipal = todasLasFilas[0];
-            
-            // 1. DEBEMOS MANTENER ESTA VARIABLE porque tu código la usa más abajo para el Modo Compacto
             const totalFilasRowSpan = todasLasFilas.length;
+
+            // --- CALCULAMOS EL ROWSPAN REAL INICIAL ---
+            const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
+            const debeMostrarse = chkMostrarVientoEcmwf || (chkMostrarVientoEcmwfDesplegable && estaAmpliando);
             
-            // 2. Calculamos el RowSpan inicial (restando las filas ECMWF si están ocultas)
             let initialRowSpan = totalFilasRowSpan;
-            if (mostrarEcmwfDOM && !chkMostrarVientoEcmwf) {
-                initialRowSpan -= rowsEcmwfWind.length;
+            if (mostrarEcmwfDOM && !debeMostrarse) {
+                // Si están colapsadas, restamos las 17 filas del total
+                initialRowSpan -= rowsEcmwfWind.length; 
             }
 
             // Guardamos las coordenadas en la fila principal para el filtro rápido
@@ -4960,26 +4965,28 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 </span>
             ` : '';
 
-            // --- NUEVO: Construcción del botón ECMWF ---
+            // --- NUEVO: CONFIGURACIÓN DEL BOTÓN DE EXPANSIÓN ---
             let botonToggleEcmwfHTML = '';
             let paddingExtraBoton = 0;
 
             if (chkMostrarVientoEcmwfDesplegable) {
-                const textoBtn = chkMostrarVientoEcmwf ? '[-] Viento ECMWF' : '[+] Viento ECMWF';
+                const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
+                const textoBtn = estaAmpliando ? '[-] Viento ECMWF' : '[+] Viento ECMWF';
+                
                 const bottomNum = parseInt(btnRowBottom) || 2;
-                const newBottom = bottomNum + 32; // Lo subimos 32px por encima de los otros botones
+                const newBottom = bottomNum + 32; // Lo posicionamos encima de la botonera base
                 
                 botonToggleEcmwfHTML = `
-                    <div class="popup-toggle-header" 
-                         onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}, ${rowsEcmwfWind.length}); return false;"
+                    <button class="popup-toggle-header" 
+                         onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
                          style="position: absolute; bottom: ${newBottom}px; left: 13px; cursor: pointer; border-radius: 3px; padding: 2px 6px; font-size: 11px; font-weight: bold; background: #eef2f5; border: 1px solid #b9d4ea; color: #0056b3; display: inline-block;">
                         ${textoBtn}
-                    </div>
+                    </button>
                 `;
-                paddingExtraBoton = 32; // Le daremos más espacio a la celda por debajo
+                paddingExtraBoton = 32; // Reservamos espacio de padding
             }
 
-            // Inyectamos el botón en el HTML de la celda
+            // Inyectamos el botón en tu innerHTML
             tdDespegue.innerHTML = `
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
@@ -4992,9 +4999,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 <span class="linea-divisora-edit" style="position: absolute; bottom: 34px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
 
-            // Asignamos el nuevo RowSpan, la clase y el Padding extra
             tdDespegue.rowSpan = initialRowSpan;	
-            tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda", `cell-span-desp-${idDespegue}`);
+            tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda");
             
             if (modoEdicionFavoritos) {
                 tdDespegue.classList.add("borde-grueso-derecha");
@@ -5004,7 +5010,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tdDespegue.classList.add('modo-compacto');
                     tdDespegue.style.paddingBottom = (26 + paddingExtraBoton) + 'px';
                 } else if (paddingExtraBoton > 0) {
-                    // Si estamos en modo normal pero está el botón, le damos aire por debajo
                     tdDespegue.style.paddingBottom = (6 + paddingExtraBoton) + 'px';
                 }
             }
@@ -5993,7 +5998,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 }
 
                 // NUEVO: Añadir celda hueca (puente) si el grupo ECMWF (vientos de altura) está activo
-                if (chkMostrarVientoEcmwf && rowsEcmwfWind.length > 0) {
+                if (debeMostrarse && rowsEcmwfWind.length > 0) {
                     const tdHueco = document.createElement("td");
                     tdHueco.rowSpan = rowsEcmwfWind.length;
                     
@@ -6410,31 +6415,25 @@ function crearIconoActividad(nivelStr) {
     `;
 }
 
-window.toggleEcmwfDesplegable = function(e, idDespegue, countEcmwf) {
-    // Frenamos eventos para no hacer clics fantasma
-    e.stopPropagation();
-    
-    const btn = e.currentTarget;
-    const isExpanded = btn.innerText.includes('[-]');
-    
-    // Buscamos las filas y celdas específicas de este despegue
-    const tbody = document.getElementById('tabla').tBodies[0];
-    const rows = tbody.querySelectorAll(`.ecmwf-row-desp-${idDespegue}`);
-    const spanCells = tbody.querySelectorAll(`.cell-span-desp-${idDespegue}`);
-    
-    if (isExpanded) {
-        // Contraer
-        rows.forEach(r => r.style.display = 'none');
-        spanCells.forEach(c => c.rowSpan = parseInt(c.rowSpan, 10) - countEcmwf);
-        btn.innerText = '[+] Viento ECMWF';
-    } else {
-        // Expandir
-        rows.forEach(r => r.style.display = ''); // Al vaciarlo, recupera su 'table-row' nativo
-        spanCells.forEach(c => c.rowSpan = parseInt(c.rowSpan, 10) + countEcmwf);
-        btn.innerText = '[-] Viento ECMWF';
+window.toggleEcmwfDesplegable = function(e, idDespegue) {
+    if (e) {
+        e.stopPropagation();
+        e.preventDefault();
     }
     
-    // Pequeña vibración de respuesta
+    const idNum = Number(idDespegue);
+    const estaExpandido = window.sessionExpandedEcmwfTakeoffs.has(idNum);
+
+    // Invertimos el estado en el Set
+    if (estaExpandido) {
+        window.sessionExpandedEcmwfTakeoffs.delete(idNum);
+    } else {
+        window.sessionExpandedEcmwfTakeoffs.add(idNum);
+    }
+
+    // Reconstruimos la tabla en silencio (es súper rápido e inmune a errores de descuadre)
+    construir_tabla(false, true);
+
     if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
 };
 
@@ -6475,7 +6474,10 @@ function aplicarFiltrosVisuales(evitarScroll = false) {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf) filasPorDespegue += 17;
+    
+    if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
+        filasPorDespegue += 17;
+    }
 
     // 4. BUCLE DE FILTRADO SÚPER RÁPIDO (Solo DOM/CSS)
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
