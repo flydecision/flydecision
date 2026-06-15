@@ -1290,23 +1290,18 @@ function iniciarGuiaFavoritos(forzar = false) {
 // 🔴 GESTIÓN DE FAVORITOS
 // ---------------------------------------------------------------
 
-function activarEdicionFavoritos() {
-
-    // BANDERA: El usuario ya sabe cómo llegar aquí
+// --- FUNCIÓN AUXILIAR PRIVADA (No la llamas directamente) ---
+function _activarEdicionFavoritosSync() {
     localStorage.setItem("METEO_CONFIG_FAVS_HECHA", "true");
-    window.venirDeEdicionActiva = true; // Flag de que estamos editando activamente
-
+    window.venirDeEdicionActiva = true; 
     modoEdicionFavoritos = true;
 
-    // --- GUARDAR MEMORIA DEL FILTRO Y APAGARLO TEMPORALMENTE ---
     if (typeof window.seguimientoPrevioEdicion === 'undefined' || window.seguimientoPrevioEdicion === null) {
         window.seguimientoPrevioEdicion = soloSeguimiento;
     }
     soloSeguimiento = false;
     soloFavoritos = false;
-    // -------------------------------------------------------------------
 
-    // 1. LIMPIAR BÚSQUEDA Y OTROS FILTROS PREVIOS
     if (typeof limpiarBuscador === 'function') {
         limpiarBuscador(); 
     }
@@ -1314,39 +1309,28 @@ function activarEdicionFavoritos() {
 
     cambiarVista('tabla');  
 
-    // 2. APAGAR LA ILUMINACIÓN DE TODOS LOS BOTONES DEL MENÚ INFERIOR (Para dar máximo foco UX a la edición)
     document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
 
-    // Resetear visualmente el botón de filtro de favoritos
     const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
     if (btnFavsTog) {
         btnFavsTog.classList.remove('filtro-aplicado', 'activo');
-        const heartSvg = btnFavsTog.querySelector('.heart-icon-svg');
-        // if (heartSvg) {
-        //     heartSvg.setAttribute('fill', 'none');
-        //     heartSvg.setAttribute('stroke', 'currentColor');
-        // }
     }
 
-    // 📍 1. ABRIR FILTRO DISTANCIA
     const panelDistancia = document.getElementById("div-filter-distancia") || document.getElementById("div-filtro-distancia");
     if (panelDistancia) {
         panelDistancia.classList.add("activo");
-        // Forzar actualización del slider de distancia
         setTimeout(() => {
             const sliderDist = document.getElementById('distancia-slider');
             if (sliderDist && sliderDist.noUiSlider) sliderDist.noUiSlider.updateOptions({}, true);
         }, 50);
     }
 
-    // 🔍 2. ABRIR BUSCADOR (Forzado manual para evitar que alternardivDistancia lo cierre)
     const searchContainer = document.getElementById('floating-search-container');
     if (searchContainer) {
         searchContainer.classList.remove('floating-search-hidden');
-        buscadorVisible = true; // Actualizamos la variable global del buscador
+        buscadorVisible = true; 
     }
     if (inputBuscador) {
-        //inputBuscador.placeholder = t('buscador.placeholderEdicion');
         inputBuscador.placeholder = t('buscador.placeholderEdicion') || "🔍 País, Región, Provincia o Despegue";
     }
 
@@ -1356,10 +1340,10 @@ function activarEdicionFavoritos() {
     
     const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
     if (divMenu2) divMenu2.classList.add('mode-editing');
-	
+    
     const panelHorario = document.querySelector('.div-filtro-horario');
     if (panelHorario) panelHorario.style.display = 'none';
-	
+    
     const divConfig = document.getElementById("div-configuracion");
     if (divConfig) divConfig.classList.remove("activo");
 
@@ -1369,6 +1353,18 @@ function activarEdicionFavoritos() {
     actualizarContadorVisualFavoritos(); 
 
     setTimeout(() => { sugerirGuiaFavoritos(); }, 500);
+}
+
+// --- FUNCIÓN PRINCIPAL 1: ACTIVAR DESDE LISTA ---
+function activarEdicionFavoritos() {
+    // 1. Mostrar spinner inmediatamente
+    const overlay = document.getElementById('msgActualizando...');
+    if (overlay) overlay.classList.add('loader-activo');
+
+    // 2. Liberar el hilo de la CPU durante 120ms para pintar el spinner
+    setTimeout(() => {
+        _activarEdicionFavoritosSync();
+    }, 120);
 }
 
 function activarEdicionFavoritosConMapa() {
@@ -2089,62 +2085,64 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
         return false; 
     }
 
-    // 📍 CERRAR FILTRO DISTANCIA
-    // 1. Resetear el Filtro de Distancia (Valores y Variables)
-    if (typeof resetFiltroDistancia === 'function') {
-        // Pasamos 'false' para que no reconstruya la tabla todavía (lo haremos al final)
-        resetFiltroDistancia(false); 
-    }
-    
-    document.body.classList.remove('modo-edicion-tabla');
-    const divMenu = document.getElementById('div-menu');
-    if (divMenu) divMenu.classList.remove('mode-editing');
-    
-    const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
-    if (divMenu2) divMenu2.classList.remove('mode-editing');
-    
-    const panelHorario = document.querySelector('.div-filtro-horario');
-    if (panelHorario) panelHorario.style.display = ''; 
-    
-    localStorage.setItem("METEO_PRIMERA_VISITA_HECHA", "true");
-    modoEdicionFavoritos = false; 
-    window.venirDeEdicionActiva = false; 
-    
-    // --- LIMPIEZA DE ONBOARDING MAPA ---
-    window.onboardingMapaActivo = false;
-    const btnFiltros = document.getElementById('btn-filtros-mapa');
-    if (btnFiltros) btnFiltros.style.display = ''; // Devolvemos el botón Meteo al mapa
+    // Si todo está OK y vamos a salir del modo edición:
+    // 1. Mostramos el spinner inmediatamente
+    const overlay = document.getElementById('msgActualizando...');
+    if (overlay) overlay.classList.add('loader-activo');
 
-    if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
-
-    // --- RESTAURAR EL FILTRO DE SEGUIMIENTO ---
-    if (window.seguimientoPrevioEdicion === true) {
-        if (obtenerSeguimientos().length > 0) {
-            soloSeguimiento = true;
-        } else {
-            soloSeguimiento = false;
-            const btnSegTog = document.getElementById('btn-filtro-seguimiento-toggle');
-            if (btnSegTog) btnSegTog.classList.remove('activo', 'filtro-aplicado');
+    // 2. Pausamos para pintar y luego hacemos el desmontaje pesado
+    setTimeout(() => {
+        if (typeof resetFiltroDistancia === 'function') {
+            resetFiltroDistancia(false); 
         }
-    }
-    window.seguimientoPrevioEdicion = null; 
+        
+        document.body.classList.remove('modo-edicion-tabla');
+        const divMenu = document.getElementById('div-menu');
+        if (divMenu) divMenu.classList.remove('mode-editing');
+        
+        const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+        if (divMenu2) divMenu2.classList.remove('mode-editing');
+        
+        const panelHorario = document.querySelector('.div-filtro-horario');
+        if (panelHorario) panelHorario.style.display = ''; 
+        
+        localStorage.setItem("METEO_PRIMERA_VISITA_HECHA", "true");
+        modoEdicionFavoritos = false; 
+        window.venirDeEdicionActiva = false; 
+        
+        window.onboardingMapaActivo = false;
+        const btnFiltros = document.getElementById('btn-filtros-mapa');
+        if (btnFiltros) btnFiltros.style.display = ''; 
 
-    // --- RESTAURAR FILTRO METEO SI SE ENTRÓ DESDE EL MAPA ---
-    if (window.filtroMeteoPreEdicion !== undefined) {
-        filtrosMapaAbiertos = window.filtroMeteoPreEdicion;
-        window.filtroMeteoPreEdicion = undefined;
-    }
+        if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
 
-    construir_tabla(); 
-
-    setTimeout(() => { sugerirGuiaPrincipal(); }, 500);
-
-    if (ignorarMenu !== true) {
-        const navHome = document.getElementById('nav-home');
-        if (navHome && typeof window.activarMenuInferior === 'function') {
-            window.activarMenuInferior(navHome);
+        if (window.seguimientoPrevioEdicion === true) {
+            if (obtenerSeguimientos().length > 0) {
+                soloSeguimiento = true;
+            } else {
+                soloSeguimiento = false;
+                const btnSegTog = document.getElementById('btn-filtro-seguimiento-toggle');
+                if (btnSegTog) btnSegTog.classList.remove('activo', 'filtro-aplicado');
+            }
         }
-    }
+        window.seguimientoPrevioEdicion = null; 
+
+        if (window.filtroMeteoPreEdicion !== undefined) {
+            filtrosMapaAbiertos = window.filtroMeteoPreEdicion;
+            window.filtroMeteoPreEdicion = undefined;
+        }
+
+        construir_tabla(); 
+
+        setTimeout(() => { sugerirGuiaPrincipal(); }, 500);
+
+        if (ignorarMenu !== true) {
+            const navHome = document.getElementById('nav-home');
+            if (navHome && typeof window.activarMenuInferior === 'function') {
+                window.activarMenuInferior(navHome);
+            }
+        }
+    }, 120);
 
     return true; 
 }
@@ -8772,57 +8770,54 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // 🔴 FUNCIÓN PARA VOLVER A LA EDICIÓN TRAS UN DESVÍO AL MAPA/TABLA AISLADA
     // ---------------------------------------------------------------
     window.volverAEdicionDesdeDesvio = function() {
-        window.despegueTemporalParaTabla = null; 
+        // 1. Mostrar spinner inmediatamente
+        const overlay = document.getElementById('msgActualizando...');
+        if (overlay) overlay.classList.add('loader-activo');
 
-        // Limpiamos el buscador 
-        if (typeof limpiarBuscador === 'function') limpiarBuscador();
+        // 2. Liberar el hilo de la CPU
+        setTimeout(() => {
+            window.despegueTemporalParaTabla = null; 
 
-        // Restauramos banderas de modo edición
-        modoEdicionFavoritos = true;
-        soloFavoritos = false; 
-        soloSeguimiento = false; 
-        
-        // Respetar si el usuario tenía activado el "Ver solo favoritos" antes de salir
-        const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
-        if (btnFavsTog && btnFavsTog.classList.contains('activo')) {
-            soloFavoritos = true;
-        }
+            if (typeof limpiarBuscador === 'function') limpiarBuscador();
 
-        // Restauramos las clases visuales de los menús
-        document.body.classList.add('modo-edicion-tabla');
-        const divMenu = document.getElementById('div-menu');
-        if (divMenu) divMenu.classList.add('mode-editing');
-        const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
-        if (divMenu2) divMenu2.classList.add('mode-editing');
-        const panelHorario = document.querySelector('.div-filtro-horario');
-        if (panelHorario) panelHorario.style.display = 'none';
-
-        // Mostramos de nuevo el filtro de distancia como estaba
-        const panelDistancia = document.getElementById("div-filtro-distancia");
-        if (panelDistancia) panelDistancia.classList.add("activo");
-
-        // Decidir a dónde volver
-        if (window.onboardingMapaActivo) {
-            // Volvemos al MAPA (conservando la meteo y sus colores intactos)
-            cambiarVista('mapa');
+            modoEdicionFavoritos = true;
+            soloFavoritos = false; 
+            soloSeguimiento = false; 
             
-            const btnMap = document.getElementById('nav-map');
-            if (btnMap && typeof window.activarMenuInferior === 'function') {
-                window.activarMenuInferior(btnMap);
+            const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
+            if (btnFavsTog && btnFavsTog.classList.contains('activo')) {
+                soloFavoritos = true;
             }
-        } else {
-            // Volvemos a la TABLA
-            cambiarVista('tabla');
-            
-            const btnSettings = document.getElementById('nav-settings');
-            if (btnSettings && typeof window.activarMenuInferior === 'function') {
-                window.activarMenuInferior(btnSettings);
-            }
-        }
 
-        // Reconstruimos la tabla conservando la posición de scroll
-        window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
-        construir_tabla();
+            document.body.classList.add('modo-edicion-tabla');
+            const divMenu = document.getElementById('div-menu');
+            if (divMenu) divMenu.classList.add('mode-editing');
+            const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+            if (divMenu2) divMenu2.classList.add('mode-editing');
+            const panelHorario = document.querySelector('.div-filtro-horario');
+            if (panelHorario) panelHorario.style.display = 'none';
+
+            const panelDistancia = document.getElementById("div-filtro-distancia");
+            if (panelDistancia) panelDistancia.classList.add("activo");
+
+            if (window.onboardingMapaActivo) {
+                cambiarVista('mapa');
+                const btnMap = document.getElementById('nav-map');
+                if (btnMap && typeof window.activarMenuInferior === 'function') {
+                    window.activarMenuInferior(btnMap);
+                }
+            } else {
+                cambiarVista('tabla');
+                const btnSettings = document.getElementById('nav-settings');
+                if (btnSettings && typeof window.activarMenuInferior === 'function') {
+                    window.activarMenuInferior(btnSettings);
+                }
+            }
+
+            window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
+            construir_tabla();
+            
+        }, 120);
     };
 
     // ==========================================================================

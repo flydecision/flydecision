@@ -447,6 +447,19 @@ body.modo-edicion-tabla #buscador-despegues-provincias {
     
     transition: width 0.3s ease; /* Opcional: transición suave al cambiar de pantalla */
 }
+/* Selector estándar moderno */
+body.modo-edicion-tabla #buscador-despegues-provincias::placeholder {
+    font-size: 14px;
+}
+/* Selector para WebKit (motores de Android, iOS, Chrome y Safari) */
+body.modo-edicion-tabla #buscador-despegues-provincias::-webkit-input-placeholder {
+    font-size: 14px;
+}
+
+/* Selector para Firefox (por si se consulta desde PC) */
+body.modo-edicion-tabla #buscador-despegues-provincias::-moz-placeholder {
+    font-size: 14px;
+}
 
 .buscador-despegues-sin-resultados {
     color: #ff0000  !important;    /* Rojo (tu variable --tag-fix) */
