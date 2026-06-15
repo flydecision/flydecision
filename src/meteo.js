@@ -4972,28 +4972,30 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             let paddingExtraBoton = 0;
 
             // --- Solo creamos el botón si la opción permanente está apagada Y NO estamos en modo edición ---
-            if (chkMostrarVientoEcmwfDesplegable  && !modoEdicionFavoritos) {
+            if (chkMostrarVientoEcmwfDesplegable && !modoEdicionFavoritos) {
                 const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
                 const chevron = estaAmpliando ? '▲' : '▼';
 
                 // --- AJUSTE DINÁMICO PARA FILAS ULTRA-CORTAS ---
                 let bottomValue = 0;
+                const bottomNum = parseInt(btnRowBottom) || 2; // Declaramos bottomNum una sola vez aquí arriba
 
                 if (initialRowSpan < 10) {
                     paddingExtraBoton = 0; 
                     bottomValue = 24;
                 } else {
                     paddingExtraBoton = 32;
-                    const bottomNum = parseInt(btnRowBottom) || 2;
                     bottomValue = bottomNum + 32; 
                 }
 
-                const bottomNum = parseInt(btnRowBottom) || 2;
+                // --- Si hay más de 12 filas, subimos el botón 10px más de forma dinámica ---
+                if (initialRowSpan > 12) {
+                    bottomValue += 10;
+                }
 
                 botonToggleEcmwfHTML = `
                     <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
-
-                        style="position:absolute; bottom: ${bottomValue}px; left:11px; cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; font-size:12px; color:#4a6785; display:inline-flex; align-items:center; gap:3px; line-height:1.6; white-space:nowrap; box-shadow:1px 1px 3px rgba(0,0,0,0.1);">
+                        style="position:absolute; bottom: ${bottomValue}px; left:50%; transform:translateX(-50%); cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; font-size:12px; color:#4a6785; display:inline-flex; align-items:center; gap:3px; line-height:1.6; white-space:nowrap; box-shadow:1px 1px 3px rgba(0,0,0,0.1);">
 
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
