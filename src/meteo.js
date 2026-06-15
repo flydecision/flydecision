@@ -64,13 +64,11 @@ let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_P
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
 let chkOrdenarPorXC = localStorage.getItem("METEO_CHECKBOX_ORDENAR_POR_XC") === "true"; // false por defecto
 let diasSeguimiento = parseInt(localStorage.getItem('METEO_DIAS_SEGUIMIENTO') || '3');
-let chkMostrarVientoEcmwf = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ECMWF") === "true";
+const ecmwfMode = localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off";
 
-function alternarMostrarVientoEcmwf() {
-    chkMostrarVientoEcmwf = document.getElementById("chkMostrarVientoEcmwf").checked;
-    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ECMWF", chkMostrarVientoEcmwf);
-    construir_tabla();
-}
+let chkMostrarVientoEcmwf = (ecmwfMode === "permanente");
+let chkMostrarVientoEcmwfDesplegable = (ecmwfMode === "desplegable");
+window.sessionExpandedEcmwfTakeoffs = new Set();
 
 // Si entra por url mapa con coordenadas y no hay configuración se marca este flag
 const paramsArranque = new URLSearchParams(window.location.search);
@@ -1843,7 +1841,9 @@ function gestionarClickMasivoFavoritos() {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf) filasPorDespegue += 17;
+    if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
+        filasPorDespegue += 17;
+    }
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
         
@@ -1926,7 +1926,9 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf) filasPorDespegue += 17;
+    if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
+        filasPorDespegue += 17;
+    }
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
         
@@ -4604,10 +4606,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaCin = document.createElement("tr");
             }
 
-            // GRUPO: Viento ECMWF (beta)
+            // GRUPO: Viento ECMWF. Evaluamos si debemos crear las filas en el DOM
+            const mostrarEcmwfDOM = chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable;
+
             let filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500;
             let filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt;
-            if (chkMostrarVientoEcmwf) {
+            
+            if (mostrarEcmwfDOM) {
                 filaEcmwfVel3000  = document.createElement("tr");
                 filaEcmwfDir3000  = document.createElement("tr");
                 filaEcmwfVel1500  = document.createElement("tr");
@@ -4634,6 +4639,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt
                 ].forEach(f => {
                     f.classList.add("ecmwf-neutral-row");
+                    
+                    // COMPROBACIÓN DE VISIBILIDAD INICIAL:
+                    const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
+                    const debeMostrarse = chkMostrarVientoEcmwf || (chkMostrarVientoEcmwfDesplegable && estaAmpliando);
+                    
+                    if (!debeMostrarse) {
+                        f.classList.add('ecmwf-oculto-temp'); // Si no debe mostrarse, se oculta por CSS
+                    }
                 });
             }
 
@@ -4650,6 +4663,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const filaPrincipal = todasLasFilas[0];
             const totalFilasRowSpan = todasLasFilas.length;
 
+            // --- CALCULAMOS EL ROWSPAN REAL INICIAL ---
+            const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
+            const debeMostrarse = chkMostrarVientoEcmwf || (chkMostrarVientoEcmwfDesplegable && estaAmpliando);
+            
+            let initialRowSpan = totalFilasRowSpan;
+            if (mostrarEcmwfDOM && !debeMostrarse) {
+                // Si están colapsadas, restamos las 17 filas del total
+                initialRowSpan -= rowsEcmwfWind.length; 
+            }
+
             // Guardamos las coordenadas en la fila principal para el filtro rápido
             filaPrincipal.dataset.lat = latitud;
             filaPrincipal.dataset.lon = longitud;
@@ -4662,10 +4685,20 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 rowsGroup1[rowsGroup1.length - 1].style.borderBottom = "1px solid #999";
             }
             
-            // La ultimísima fila del despegue recibe la separación grande principal
+            // La ultimísima fila VISIBLE del despegue recibe la separación grande principal
             if (todasLasFilas.length > 0) {
                 todasLasFilas[0].classList.add("fila-inicio-despegue");
-                todasLasFilas[todasLasFilas.length - 1].classList.add("fila-separador", "fila-fin-despegue");
+
+                // --- CALCULAMOS LA ÚLTIMA FILA VISIBLE REAL ---
+                let filaFin = todasLasFilas[todasLasFilas.length - 1]; // Por defecto, la última absoluta
+
+                if (rowsGroup2.length === 0 && !debeMostrarse) {
+                    // Si el XC está apagado y el viento ECMWF está colapsado, el final real es el Grupo 1
+                    filaFin = rowsGroup1[rowsGroup1.length - 1];
+                }
+
+                // Le aplicamos el borde negro grueso de 2px a la última fila visible
+                filaFin.classList.add("fila-separador", "fila-fin-despegue");
             }
 
 			// Clase para el filtrado
@@ -4683,7 +4716,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			if (modoEdicionFavoritos) {
                 const tdFavorito = document.createElement("td");
                 
-                tdFavorito.rowSpan = totalFilasRowSpan;
+                tdFavorito.rowSpan = initialRowSpan;
+                tdFavorito.classList.add(`cell-span-desp-${idDespegue}`);
                 tdFavorito.classList.add("columna-favoritos", "borde-grueso-abajo", "borde-grueso-izquierda");
                 
                 tdFavorito.dataset.id = idDespegue; // Guardamos el ID en el HTML para leerlo luego
@@ -4721,7 +4755,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const paisValor = d.País || d['País'] || '';
                 const paisTraducido = t('paises.' + paisValor, { defaultValue: paisValor });
                 tdPais.innerHTML = `<div class="texto-multilinea-2" style="max-width: 44px;" title="${paisTraducido}">${paisTraducido}</div>`;	
-                tdPais.rowSpan = totalFilasRowSpan;	
+                tdPais.rowSpan = initialRowSpan;
+                tdPais.classList.add(`cell-span-desp-${idDespegue}`);	
                 tdPais.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda");
                 //tdPais.style.width = "50px";
                 //tdPais.style.minWidth = "50px";
@@ -4737,7 +4772,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 				
 				const regionTraducida = t('regiones.' + d.Región, { defaultValue: d.Región });
                 tdRegion.innerHTML = `<div class="texto-multilinea-2" title="${regionTraducida}">${regionTraducida}</div>`;	
-				tdRegion.rowSpan = totalFilasRowSpan;	
+				tdRegion.rowSpan = initialRowSpan;
+                tdRegion.classList.add(`cell-span-desp-${idDespegue}`);	
 				tdRegion.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda");
 				
 				filaPrincipal.appendChild(tdRegion);	
@@ -4749,7 +4785,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 				const tdProvincia = document.createElement("td");
 				
 				tdProvincia.innerHTML = `<div class="texto-multilinea-2" title="${d.Provincia}">${d.Provincia}</div>`;	
-				tdProvincia.rowSpan = totalFilasRowSpan;	
+				tdProvincia.rowSpan = initialRowSpan;
+                tdProvincia.classList.add(`cell-span-desp-${idDespegue}`);	
 				tdProvincia.classList.add("columna-provincia-region", "borde-grueso-abajo", "borde-grueso-izquierda");
 				
 				filaPrincipal.appendChild(tdProvincia);	
@@ -4908,8 +4945,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const iconoActividadLimpio = d.Actividad ? crearIconoActividad(d.Actividad) : '';
 
             // Siempre se muestra en edición, o si hay más de 7 filas en vista normal
-            const mostrarRosayActividad = modoEdicionFavoritos || (totalFilasRowSpan > 9);
-            const modoCompacto = !modoEdicionFavoritos && totalFilasRowSpan <= 8;
+            const mostrarRosayActividad = modoEdicionFavoritos || (initialRowSpan > 11);
+            const modoCompacto = !modoEdicionFavoritos && (initialRowSpan < 10);
 
             // Preparamos el texto del tooltip limpiando las comillas dobles
             const textoCrudoActividad = t('tabla.tooltips.tooltipNivelDeActividad');
@@ -4930,29 +4967,73 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 </span>
             ` : '';
 
-            // Montamos la celda con los tres botones y el contenido calculado
+            // --- CONFIGURACIÓN DEL BOTÓN DE EXPANSIÓN ---
+            let botonToggleEcmwfHTML = '';
+            let paddingExtraBoton = 0;
+
+            // --- Solo creamos el botón si la opción permanente está apagada Y NO estamos en modo edición ---
+            if (chkMostrarVientoEcmwfDesplegable  && !modoEdicionFavoritos) {
+                const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
+                const chevron = estaAmpliando ? '▲' : '▼';
+
+                // --- AJUSTE DINÁMICO PARA FILAS ULTRA-CORTAS ---
+                let bottomValue = 0;
+
+                if (initialRowSpan < 10) {
+                    paddingExtraBoton = 0; 
+                    bottomValue = 24;
+                } else {
+                    paddingExtraBoton = 32;
+                    const bottomNum = parseInt(btnRowBottom) || 2;
+                    bottomValue = bottomNum + 32; 
+                }
+
+                const bottomNum = parseInt(btnRowBottom) || 2;
+
+                botonToggleEcmwfHTML = `
+                    <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
+
+                        style="position:absolute; bottom: ${bottomValue}px; left:11px; cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; font-size:12px; color:#4a6785; display:inline-flex; align-items:center; gap:3px; line-height:1.6; white-space:nowrap; box-shadow:1px 1px 3px rgba(0,0,0,0.1);">
+
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                            style="flex-shrink:0; opacity:0.8">
+                            <path d="M9.59 4.59A2 2 0 1 1 11 8H2"/>
+                            <path d="M12.59 19.41A2 2 0 1 0 14 16H2"/>
+                            <path d="M6 12h14a2 2 0 1 1 0 4"/>
+                        </svg>
+                        ECMWF
+                        <span style="font-size: 9px; opacity: 0.7">${chevron}</span>
+                    </button>
+                `;
+            }
+
+            // Inyectamos el botón en tu innerHTML
             tdDespegue.innerHTML = `
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
                 ${botonFavoritoHTML}
                 ${botonOjoHTML}
+                ${botonToggleEcmwfHTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
                 ${htmlIconosCentrales}
-
                 <span class="linea-divisora-edit" style="position: absolute; bottom: 34px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
 
-			// ROWSPAN DINÁMICO
-            tdDespegue.rowSpan = totalFilasRowSpan;	
-			tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda");
+            tdDespegue.rowSpan = initialRowSpan;	
+            tdDespegue.classList.add("columna-despegue", "borde-grueso-abajo", "borde-grueso-izquierda");
+            
             if (modoEdicionFavoritos) {
                 tdDespegue.classList.add("borde-grueso-derecha");
-                tdDespegue.style.paddingBottom = '34px';
-            }
-            if (modoCompacto) {
-                tdDespegue.classList.add('modo-compacto');
-                tdDespegue.style.paddingBottom = '26px';
+                tdDespegue.style.paddingBottom = (34) + 'px';
+            } else {
+                if (modoCompacto) {
+                    tdDespegue.classList.add('modo-compacto');
+                    tdDespegue.style.paddingBottom = (26 + paddingExtraBoton) + 'px';
+                } else if (paddingExtraBoton > 0) {
+                    tdDespegue.style.paddingBottom = (6 + paddingExtraBoton) + 'px';
+                }
             }
 			
 			filaPrincipal.appendChild(tdDespegue);
@@ -5757,7 +5838,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         return { speed, dir };
                     };
 
-                    if (chkMostrarVientoEcmwf) {
+                    if (mostrarEcmwfDOM) {
                         // 1. Pintar viento y racha en capas estándar
                         renderEcmwfSpeedCell(filaEcmwfVel200, hourlyEcmwf ? hourlyEcmwf.wind_speed_200m : null);
                         renderEcmwfDirCell(filaEcmwfDir200, hourlyEcmwf ? hourlyEcmwf.wind_direction_200m : null);
@@ -5939,7 +6020,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 }
 
                 // NUEVO: Añadir celda hueca (puente) si el grupo ECMWF (vientos de altura) está activo
-                if (chkMostrarVientoEcmwf && rowsEcmwfWind.length > 0) {
+                if (debeMostrarse && rowsEcmwfWind.length > 0) {
                     const tdHueco = document.createElement("td");
                     tdHueco.rowSpan = rowsEcmwfWind.length;
                     
@@ -5981,7 +6062,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     }
 
                     rowsGroup2[0].appendChild(tdCondicionesXC);
-                } else if (!chkMostrarVientoEcmwf || rowsEcmwfWind.length === 0) {
+                } else if (!debeMostrarse) {
                     // Si no hay Grupo 2 (XC) ni Grupo ECMWF, la celda principal se redondea por abajo
                     tdCondiciones.classList.add("celda-condiciones-final");
                 }
@@ -6108,7 +6189,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 // ---------------------------------------------------------------
 
 // ---------------------------------------------------------------
-// 🔴 OTRAS FUNCIONES
+// 🔴 OTRAS FUNCIONES. FUNCIONES AUXILIARES
 // ---------------------------------------------------------------
 
 // Variables y Constantes
@@ -6356,6 +6437,46 @@ function crearIconoActividad(nivelStr) {
     `;
 }
 
+window.toggleEcmwfDesplegable = function(e, idDespegue) {
+    if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+    }
+    
+    const idNum = Number(idDespegue);
+    const estaExpandido = window.sessionExpandedEcmwfTakeoffs.has(idNum);
+
+    // Invertimos el estado en el Set
+    if (estaExpandido) {
+        window.sessionExpandedEcmwfTakeoffs.delete(idNum);
+    } else {
+        window.sessionExpandedEcmwfTakeoffs.add(idNum);
+    }
+
+    // Reconstruimos la tabla en silencio (es súper rápido e inmune a errores de descuadre)
+    construir_tabla(false, true);
+
+    if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+};
+
+window.cambiarModoEcmwf = function(nuevoModo) {
+    // Guardamos la preferencia en memoria de sesión
+    localStorage.setItem("METEO_CONFIG_ECMWF_MODE", nuevoModo);
+    
+    // Sincronizamos las variables que lee el renderizador de la tabla
+    chkMostrarVientoEcmwf = (nuevoModo === "permanente");
+    chkMostrarVientoEcmwfDesplegable = (nuevoModo === "desplegable");
+    
+    // Si el usuario apaga la opción, limpiamos los despegues expandidos de esta sesión
+    if (nuevoModo === "off") {
+        window.sessionExpandedEcmwfTakeoffs.clear();
+    }
+
+    // Forzamos actualización de la tabla con loader sutil de 50ms
+    mostrarLoading(50);
+    requestAnimationFrame(() => requestAnimationFrame(() => construir_tabla()));
+};
+
 // ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------
@@ -6393,7 +6514,10 @@ function aplicarFiltrosVisuales(evitarScroll = false) {
     if (chkMostrarVientoAlturas) filasPorDespegue += 3;
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf) filasPorDespegue += 17;
+    
+    if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
+        filasPorDespegue += 17;
+    }
 
     // 4. BUCLE DE FILTRADO SÚPER RÁPIDO (Solo DOM/CSS)
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
@@ -8034,7 +8158,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
     if (document.getElementById("chkMostrarProbPrecipitacion")) document.getElementById("chkMostrarProbPrecipitacion").checked = chkMostrarProbPrecipitacion;
     //if (document.getElementById("chkMostrarBaseNube")) document.getElementById("chkMostrarBaseNube").checked = chkMostrarBaseNube;
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
-    if (document.getElementById("chkMostrarVientoEcmwf")) document.getElementById("chkMostrarVientoEcmwf").checked = chkMostrarVientoEcmwf;
+    
+    // --- 2. Sincronizar el estado visual de los botones de radio ECMWF ---
+    const currentEcmwfMode = localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off";
+    if (currentEcmwfMode === "off") {
+        const rad = document.getElementById("radEcmwfOff");
+        if (rad) rad.checked = true;
+    } else if (currentEcmwfMode === "desplegable") {
+        const rad = document.getElementById("radEcmwfDesplegable");
+        if (rad) rad.checked = true;
+    } else if (currentEcmwfMode === "permanente") {
+        const rad = document.getElementById("radEcmwfPermanente");
+        if (rad) rad.checked = true;
+    }
 
     document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkOrdenarPorXC")) document.getElementById("chkOrdenarPorXC").checked = chkOrdenarPorXC;

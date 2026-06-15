@@ -4279,3 +4279,7 @@ tr.fila-separador-gris td,
 tr.fila-separador-gris th {
     border-bottom: 1px solid #999 !important;
 }
+
+tr.ecmwf-oculto-temp {
+    display: none !important;
+}
