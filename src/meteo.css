@@ -2751,7 +2751,7 @@ label.custom-checkbox {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.08) !important; /* Un poco más visible para notar el fundido */
+    background-color: rgba(0, 0, 0, 0.06) !important; /* Un poco más visible para notar el fundido */
     z-index: 999999;
     display: flex; 
     justify-content: center;
