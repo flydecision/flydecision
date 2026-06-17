@@ -1288,8 +1288,8 @@ function iniciarGuiaFavoritos(forzar = false) {
 // 🔴 GESTIÓN DE FAVORITOS
 // ---------------------------------------------------------------
 
-// --- FUNCIÓN AUXILIAR PRIVADA (No la llamas directamente) ---
-function _activarEdicionFavoritosSync() {
+// --- FUNCIÓN AUXILIAR PRIVADA ---
+function _activarEdicionFavoritosSync(irAlMapa = false) {
     localStorage.setItem("METEO_CONFIG_FAVS_HECHA", "true");
     window.venirDeEdicionActiva = true; 
     modoEdicionFavoritos = true;
@@ -1305,9 +1305,14 @@ function _activarEdicionFavoritosSync() {
     }
     resetFiltroDistancia(false);
 
-    cambiarVista('tabla');  
-
-    document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
+    // Vamos al mapa o a la tabla según corresponda
+    if (irAlMapa) {
+        cambiarVista('mapa');
+        window.activarMenuInferior(document.getElementById('nav-map'));
+    } else {
+        cambiarVista('tabla');  
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
+    }
 
     const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
     if (btnFavsTog) {
@@ -1324,10 +1329,12 @@ function _activarEdicionFavoritosSync() {
     }
 
     const searchContainer = document.getElementById('floating-search-container');
-    if (searchContainer) {
+    // Si vamos al mapa, no hace falta forzar la apertura del buscador de texto
+    if (searchContainer && !irAlMapa) { 
         searchContainer.classList.remove('floating-search-hidden');
         buscadorVisible = true; 
     }
+    
     if (inputBuscador) {
         inputBuscador.placeholder = t('buscador.placeholderEdicion') || "🔍 País, Región, Provincia o Despegue";
     }
@@ -1355,28 +1362,26 @@ function _activarEdicionFavoritosSync() {
 
 // --- FUNCIÓN PRINCIPAL 1: ACTIVAR DESDE LISTA ---
 function activarEdicionFavoritos() {
-    // 1. Mostrar spinner inmediatamente
     const overlay = document.getElementById('msgActualizando...');
     if (overlay) overlay.classList.add('loader-activo');
 
-    // 2. Liberar el hilo de la CPU durante 120ms para pintar el spinner
     setTimeout(() => {
-        _activarEdicionFavoritosSync();
+        _activarEdicionFavoritosSync(false); // false = Queremos quedarnos en la tabla
     }, 120);
 }
 
+// --- FUNCIÓN PRINCIPAL 2: ACTIVAR DESDE MAPA ---
 function activarEdicionFavoritosConMapa() {
-    // 1. Bandera especial para saber que estamos seleccionando desde el mapa en el onboarding
     if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA")) {
         window.onboardingMapaActivo = true;
     }
 
-    // 2. Reutilizar la lógica de activarEdicionFavoritos (limpia tabla, filtros, etc.)
-    activarEdicionFavoritos();
+    const overlay = document.getElementById('msgActualizando...');
+    if (overlay) overlay.classList.add('loader-activo');
 
-    // 3. Ir al mapa (al estar la meteo activa, se mostrarán automáticamente sus controles)
-    cambiarVista('mapa');
-    window.activarMenuInferior(document.getElementById('nav-map'));
+    setTimeout(() => {
+        _activarEdicionFavoritosSync(true); // true = Queremos ir directamente al mapa
+    }, 120);
 }
 
 function filtroVerSoloFavoritos() {
@@ -2413,103 +2418,96 @@ const chkDiaNoche = document.getElementById('chkDiaNoche');
 
 function clickOnDia(sliderElement, diaIndex) {
     const mismodia = window.diaSeleccionadoSlider === diaIndex;
-    window.diaSeleccionadoSlider = diaIndex;
-    const dayRanges = sliderElement.dayRanges;
-    if (!dayRanges || !dayRanges[diaIndex]) return;
+    
+    // INICIAMOS EL SPINNER INMEDIATAMENTE AL TOCAR EL BOTÓN DEL DÍA
+    ejecutarOperacionPesada(() => {
+        window.diaSeleccionadoSlider = diaIndex;
+        const dayRanges = sliderElement.dayRanges;
+        if (!dayRanges || !dayRanges[diaIndex]) return;
 
-    const { startPos, endPos } = dayRanges[diaIndex];
-    window.indicesDiaActualSlider = window.indicesHorasRangoHorario.slice(startPos, endPos + 1);
+        const { startPos, endPos } = dayRanges[diaIndex];
+        window.indicesDiaActualSlider = window.indicesHorasRangoHorario.slice(startPos, endPos + 1);
 
-    const newMax = window.indicesDiaActualSlider.length - 1;
+        const newMax = window.indicesDiaActualSlider.length - 1;
 
-    // Actualizar rango del slider
-    sliderElement.noUiSlider.updateOptions({
-        range: { min: 0, max: newMax }
-    });
+        // Actualizar rango del slider
+        sliderElement.noUiSlider.updateOptions({
+            range: { min: 0, max: newMax }
+        });
 
-    // Aplicar preferencias horarias
-    let finalStart = 0;
-    let finalEnd = newMax;
+        // Aplicar preferencias horarias
+        let finalStart = 0;
+        let finalEnd = newMax;
 
-    if (window.restaurarRangoDesdeCalendario) {
-        // Venimos del calendario: restaurar rango guardado
-        const rangoRestaurar = window.ultimoRangoSlider || window.sliderHorasValues;
-        if (rangoRestaurar) {
-            finalStart = Math.min(rangoRestaurar[0], newMax);
-            finalEnd   = Math.min(rangoRestaurar[1], newMax);
+        if (window.restaurarRangoDesdeCalendario) {
+            const rangoRestaurar = window.ultimoRangoSlider || window.sliderHorasValues;
+            if (rangoRestaurar) {
+                finalStart = Math.min(rangoRestaurar[0], newMax);
+                finalEnd   = Math.min(rangoRestaurar[1], newMax);
+                if (finalEnd < finalStart) finalEnd = finalStart;
+            }
+        } else if (!mismodia && window.rangoHorarioPersonalizado && window.sliderHorasValues) {
+            finalStart = Math.min(window.sliderHorasValues[0], newMax);
+            finalEnd   = Math.min(window.sliderHorasValues[1], newMax);
             if (finalEnd < finalStart) finalEnd = finalStart;
-        }
-    } else if (!mismodia && window.rangoHorarioPersonalizado && window.sliderHorasValues) {
-        // Día diferente con rango personalizado: mantenerlo
-        finalStart = Math.min(window.sliderHorasValues[0], newMax);
-        finalEnd   = Math.min(window.sliderHorasValues[1], newMax);
-        if (finalEnd < finalStart) finalEnd = finalStart;
-    } else {
-        // Predeterminado: mismo día 2 veces, o día nuevo sin rango personalizado
-        window.rangoHorarioPersonalizado = false;
-        const rawInicio = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
-        const rawFin    = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
+        } else {
+            window.rangoHorarioPersonalizado = false;
+            const rawInicio = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
+            const rawFin    = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
 
-        if (rawInicio !== null && rawFin !== null) {
-            let prefInicio = parseInt(rawInicio);
-            let prefFin    = parseInt(rawFin);
-            let encontradoInicio = false;
+            if (rawInicio !== null && rawFin !== null) {
+                let prefInicio = parseInt(rawInicio);
+                let prefFin    = parseInt(rawFin);
+                let encontradoInicio = false;
 
-            // 🚀 NUEVA LÓGICA: Atajo "Ir a la hora actual" (Doble clic en el día de Hoy)
-            // 1. Comprobamos si el día que estamos pintando es el día real de hoy
-            const fechaPrimerDato = new Date(window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]].endsWith('Z') ? window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] : window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] + 'Z');
-            const esHoy = new Date().getDate() === fechaPrimerDato.getDate();
+                const fechaPrimerDato = new Date(window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]].endsWith('Z') ? window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] : window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] + 'Z');
+                const esHoy = new Date().getDate() === fechaPrimerDato.getDate();
 
-            if (mismodia && esHoy) {
-                const horaActual = new Date().getHours();
-                
-                // Solo activamos el atajo si ya han pasado al menos 2 horas desde el inicio preferido
-                if (horaActual >= prefInicio + 2) {
-                    prefInicio = Math.max(0, horaActual - 1); // Hora actual - 1 (mínimo 0)
-                    
-                    // Si la hora de fin preferida ya ha pasado, extendemos hasta el final del día
-                    if (prefFin <= prefInicio) {
-                        prefFin = 23; 
+                if (mismodia && esHoy) {
+                    const horaActual = new Date().getHours();
+                    if (horaActual >= prefInicio + 2) {
+                        prefInicio = Math.max(0, horaActual - 1); 
+                        if (prefFin <= prefInicio) {
+                            prefFin = 23; 
+                        }
                     }
                 }
-            }
 
-            window.indicesDiaActualSlider.forEach((idxReal, i) => {
-                const h = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z')
-                    ? window.horasCrudasRangoHorario[idxReal]
-                    : window.horasCrudasRangoHorario[idxReal] + 'Z').getHours();
+                window.indicesDiaActualSlider.forEach((idxReal, i) => {
+                    const h = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z')
+                        ? window.horasCrudasRangoHorario[idxReal]
+                        : window.horasCrudasRangoHorario[idxReal] + 'Z').getHours();
 
+                    if (!encontradoInicio) {
+                        if (prefInicio === 0 || h >= prefInicio) { finalStart = i; encontradoInicio = true; }
+                    }
+                    if (h <= prefFin) finalEnd = i;
+                });
+
+                if (finalStart > newMax) finalStart = newMax;
+                if (finalEnd < finalStart) finalEnd = finalStart; 
+                
                 if (!encontradoInicio) {
-                    if (prefInicio === 0 || h >= prefInicio) { finalStart = i; encontradoInicio = true; }
+                    finalStart = 0; 
+                    finalEnd = newMax;
                 }
-                if (h <= prefFin) finalEnd = i;
-            });
-
-            // Seguridad extra por si los índices se cruzan
-            if (finalStart > newMax) finalStart = newMax;
-            if (finalEnd < finalStart) finalEnd = finalStart; 
-            
-            // Si el filtro "solo día" se comió la hora de inicio, seleccionamos lo que quede visible
-            if (!encontradoInicio) {
-                finalStart = 0; 
-                finalEnd = newMax;
             }
         }
-    }
 
-    sliderElement.noUiSlider.set([finalStart, finalEnd]);
-    window.sliderHorasValues = [finalStart, finalEnd];
+        sliderElement.noUiSlider.set([finalStart, finalEnd]);
+        window.sliderHorasValues = [finalStart, finalEnd];
 
-    window.ultimoRangoSlider = null;
-    window.restaurarRangoDesdeCalendario = false;
+        window.ultimoRangoSlider = null;
+        window.restaurarRangoDesdeCalendario = false;
 
-    // DETECTOR DE NAVEGACIÓN ROBUSTO: Comprobamos si el botón de mapa del menú inferior está azul (active)
-    const enMapa = document.getElementById('nav-map')?.classList.contains('active');
+        const enMapa = document.getElementById('nav-map')?.classList.contains('active');
 
-    // Sincronizamos la tabla de forma silenciosa si estamos navegando en el mapa
-    construir_tabla(false, enMapa); 
-    
-    if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
+        // Todo este trabajo pesado ocurre bajo el escudo del spinner
+        construir_tabla(false, enMapa); 
+        
+        if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
+
+    }); 
 }
 
 // Función que adjunta el evento Y AHORA TAMBIÉN FORZA LA POSICIÓN VISUAL
@@ -2856,33 +2854,25 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
             }
         }
 
-        // Sincronizar la variable global de valores inmediatamente
         window.sliderHorasValues = startIndices;
 
-        // Listener de cambios manuales
         sliderHoras.noUiSlider.on('change', function(values) {
             const valoresNuevos = values.map(Number);
             const haCambiado = valoresNuevos.some((val, i) => val !== window.sliderHorasValues[i]);
             window.rangoHorarioPersonalizado = true;
             
             if (haCambiado) {
-                window.sliderHorasValues = valoresNuevos;
+                ejecutarOperacionPesada(() => {
+                    window.sliderHorasValues = valoresNuevos;
 
-                const enMapa = document.getElementById('nav-map')?.classList.contains('active');
+                    const enMapa = document.getElementById('nav-map')?.classList.contains('active');
 
-                if (enMapa) {
-                    // En el mapa: actualización silenciosa directa (no requiere spinner)
-                    construir_tabla(false, true);
-                } else {
-                    // En la tabla: Usamos setTimeout de 0ms para salir del hilo de eventos de noUiSlider.
-                    // Esto permite al navegador pintar el spinner inmediatamente antes de congelarse.
-                    setTimeout(() => {
-                        construir_tabla(false, false);
-                    }, 0);
-                }
-            }
-            if (typeof aplicarPuntuacionEnMapa === 'function') {
-                aplicarPuntuacionEnMapa();
+                    construir_tabla(false, enMapa); 
+                    
+                    if (typeof aplicarPuntuacionEnMapa === 'function') {
+                        aplicarPuntuacionEnMapa();
+                    }
+                });
             }
         });
 
@@ -4972,28 +4962,30 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             let paddingExtraBoton = 0;
 
             // --- Solo creamos el botón si la opción permanente está apagada Y NO estamos en modo edición ---
-            if (chkMostrarVientoEcmwfDesplegable  && !modoEdicionFavoritos) {
+            if (chkMostrarVientoEcmwfDesplegable && !modoEdicionFavoritos) {
                 const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
                 const chevron = estaAmpliando ? '▲' : '▼';
 
                 // --- AJUSTE DINÁMICO PARA FILAS ULTRA-CORTAS ---
                 let bottomValue = 0;
+                const bottomNum = parseInt(btnRowBottom) || 2; // Declaramos bottomNum una sola vez aquí arriba
 
                 if (initialRowSpan < 10) {
                     paddingExtraBoton = 0; 
                     bottomValue = 24;
                 } else {
                     paddingExtraBoton = 32;
-                    const bottomNum = parseInt(btnRowBottom) || 2;
                     bottomValue = bottomNum + 32; 
                 }
 
-                const bottomNum = parseInt(btnRowBottom) || 2;
+                // --- Si hay más de 12 filas, subimos el botón 10px más de forma dinámica ---
+                if (initialRowSpan > 12) {
+                    bottomValue += 10;
+                }
 
                 botonToggleEcmwfHTML = `
                     <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
-
-                        style="position:absolute; bottom: ${bottomValue}px; left:11px; cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; font-size:12px; color:#4a6785; display:inline-flex; align-items:center; gap:3px; line-height:1.6; white-space:nowrap; box-shadow:1px 1px 3px rgba(0,0,0,0.1);">
+                        style="position:absolute; bottom: ${bottomValue}px; left:50%; transform:translateX(-50%); cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; font-size:12px; color:#4a6785; display:inline-flex; align-items:center; gap:3px; line-height:1.6; white-space:nowrap; box-shadow:1px 1px 3px rgba(0,0,0,0.1);">
 
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
@@ -6443,18 +6435,21 @@ window.toggleEcmwfDesplegable = function(e, idDespegue) {
         e.preventDefault();
     }
     
+    const wrapper = document.querySelector('.tabla-wrapper');
+    if (wrapper) {
+        window.guardarScrollY = wrapper.scrollTop;
+    }
+
     const idNum = Number(idDespegue);
     const estaExpandido = window.sessionExpandedEcmwfTakeoffs.has(idNum);
 
-    // Invertimos el estado en el Set
     if (estaExpandido) {
         window.sessionExpandedEcmwfTakeoffs.delete(idNum);
     } else {
         window.sessionExpandedEcmwfTakeoffs.add(idNum);
     }
 
-    // Reconstruimos la tabla en silencio (es súper rápido e inmune a errores de descuadre)
-    construir_tabla(false, true);
+    construir_tabla(false, false);
 
     if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
 };
@@ -6476,6 +6471,100 @@ window.cambiarModoEcmwf = function(nuevoModo) {
     mostrarLoading(50);
     requestAnimationFrame(() => requestAnimationFrame(() => construir_tabla()));
 };
+
+async function comprobarVersionApp() {
+    // 1. Solo tiene sentido en la App Nativa (Android/iOS)
+    const isNative = typeof window.Capacitor !== 'undefined' && window.Capacitor.isNativePlatform();
+    if (!isNative) return;
+
+    // 2. Si el usuario ya decidió "No volver a mostrar", salimos
+    if (localStorage.getItem('METEO_IGNORAR_ACTUALIZACION') === 'true') return;
+
+    // 3. Si el usuario decidió "Posponer", comprobamos si ya ha pasado el tiempo (ej: 3 días)
+    const fechaPosponer = localStorage.getItem('METEO_POSPONER_ACTUALIZACION');
+    if (fechaPosponer) {
+        const tiempoPasado = Date.now() - parseInt(fechaPosponer, 10);
+        const tresDiasMs = 3 * 24 * 60 * 60 * 1000;
+        if (tiempoPasado < tresDiasMs) return; // Aún no han pasado 3 días
+    }
+
+    try {
+        // 4. Descargamos la última versión del servidor (silenciosamente)
+        const response = await fetch("https://flydecision.com/version_app.txt?t=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) return;
+
+        const versionServidor = (await response.text()).trim();
+        const versionLocal = window.WEB_VERSION || "0.0.0";
+
+        // Función auxiliar simple para comparar versiones (ej: "3.9.0" vs "3.8.5")
+        const versionToNum = (v) => v.split('.').map(n => parseInt(n) || 0);
+        const vS = versionToNum(versionServidor);
+        const vL = versionToNum(versionLocal);
+
+        let necesitaActualizar = false;
+        if (vS[0] > vL[0]) necesitaActualizar = true; // Mayor (Major)
+        else if (vS[0] === vL[0] && vS[1] > vL[1]) necesitaActualizar = true; // Menor (Minor)
+        else if (vS[0] === vL[0] && vS[1] === vL[1] && vS[2] > vL[2]) necesitaActualizar = true; // Parche (Patch)
+
+        if (necesitaActualizar) {
+            
+            // Textos traducidos o fallback
+            const titulo = typeof t === 'function' ? t('actualizacionApp.titulo', {defaultValue: '🚀 Nueva versión disponible'}) : '🚀 Nueva versión disponible';
+            const mensaje = typeof t === 'function' ? 
+                t('actualizacionApp.mensaje', {vS: versionServidor, defaultValue: `Hay una nueva versión de Fly Decision en Google Play.`}) : 
+                `Hay una nueva versión de Fly Decision en Google Play.`;
+            
+            const btnActualizar = typeof t === 'function' ? t('actualizacionApp.btnActualizar', {defaultValue: 'Actualizar ahora'}) : 'Actualizar ahora';
+            const btnChangelog = typeof t === 'function' ? t('actualizacionApp.btnChangelog', {defaultValue: 'Ver novedades'}) : 'Ver novedades';
+            const btnPosponer = typeof t === 'function' ? t('actualizacionApp.btnPosponer', {defaultValue: 'Recordármelo en 3 días'}) : 'Recordármelo en 3 días';
+            const btnIgnorar = typeof t === 'function' ? t('actualizacionApp.btnIgnorar', {defaultValue: 'No volver a mostrar'}) : 'No volver a mostrar';
+
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: `
+                    <div style="text-align: center;">
+                        <p style="font-size: 1.3em; font-weight: bold; margin-bottom: 10px;">${titulo}</p>
+                        <p style="margin-bottom: 20px; line-height: 1.4;">${mensaje}</p>
+                        
+                        <!-- Enlace al Changelog (Se abre fuera) -->
+                        <a href="#" onclick="abrirLinkExterno('https://flydecision.com/changelog/'); return false;" style="color: #0078d4; text-decoration: underline; font-weight: bold; margin-bottom: 20px; display: inline-block;">
+                            ${btnChangelog}
+                        </a>
+                        <br>
+                        
+                        <!-- Botón de Actualizar (Azul Principal) -->
+                        <button onclick="abrirLinkExterno('https://play.google.com/store/apps/details?id=com.flydecision'); GestorMensajes.ocultar();" style="width: 250px; background: #0078d4; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-bottom: 10px;">
+                            ${btnActualizar}
+                        </button>
+                    </div>
+                `,
+                botones: [
+                    {
+                        // Botón Ignorar
+                        texto: btnIgnorar,
+                        estilo: 'secundario',
+                        onclick: function() {
+                            localStorage.setItem('METEO_IGNORAR_ACTUALIZACION', 'true');
+                            GestorMensajes.ocultar();
+                        }
+                    },
+                    {
+                        // Botón Posponer
+                        texto: btnPosponer,
+                        estilo: 'secundario',
+                        onclick: function() {
+                            localStorage.setItem('METEO_POSPONER_ACTUALIZACION', Date.now().toString());
+                            GestorMensajes.ocultar();
+                        }
+                    }
+                ],
+                anchoBotones: 250
+            });
+        }
+    } catch (e) {
+        console.warn("No se pudo comprobar la versión de la app", e);
+    }
+}
 
 // ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
@@ -9276,6 +9365,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
             window.activarMenuInferior(document.getElementById('nav-settings'));
         }
     };
+
+    setTimeout(() => {
+        comprobarVersionApp();
+    }, 3000);
 
 }); //document . addEventListener('DOMContentLoaded', function() {
 
