@@ -429,6 +429,15 @@
     "mensaje": "<p><b>{{modelos}}</b>-en datu meteorologikoen zerbitzaria atzerapen ezohikoa izaten ari da bere datuen argitalpenean.</p><p>Kontuan izan aplikazioak eskuragarri dagoen azken iragarpena erakusten dizula.</p><p>Automatikoki eguneratuko da eskuragarri dagoenean. Egoeraren jarraipena egin dezakezu <b>Ezarpenak > Meteo ereduen eguneraketak</b> atalean.</p>"
   },
 
+  "actualizacionApp": {
+    "titulo": "🚀 Bertsio berria eskuragarri",
+    "mensaje": "Fly Decision-en bertsio berri bat dago Google Play-n.",
+    "btnActualizar": "Eguneratu orain",
+    "btnChangelog": "Berrikuntzak ikusi",
+    "btnPosponer": "Gogorarazi 3 egun barru",
+    "btnIgnorar": "Ez erakutsi berriro"
+  },
+
   "ajustes": {
     "probPrecipitacion": "Prezipitazio probabilitatea",
     "vientoAlturas": "Haizea 80, 120 eta 180 m-tan",    

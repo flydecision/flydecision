@@ -429,6 +429,15 @@
     "mensaje": "<p>El servidor de dades meteorològiques de <b>{{modelos}}</b> està experimentant un retard inusual en la publicació de les seves dades.</p><p>Tingues en compte que l'aplicació t'està mostrant l'última previsió disponible.</p><p>S'actualitzarà automàticament tan bon punt estigui disponible. Pots seguir l'estat a <b>Ajustaments > Actualitzacions models meteo</b>.</p>"
   },
 
+  "actualizacionApp": {
+    "titulo": "🚀 Nova versió disponible",
+    "mensaje": "Hi ha una nova versió de Fly Decision a Google Play.",
+    "btnActualizar": "Actualitzar ara",
+    "btnChangelog": "Veure novetats",
+    "btnPosponer": "Recorda-m'ho d'aquí a 3 dies",
+    "btnIgnorar": "No tornar a mostrar"
+  },
+
   "ajustes": {
     "probPrecipitacion": "Probabilitat de precipitació",
     "vientoAlturas": "Vent a 80, 120 i 180 m",    

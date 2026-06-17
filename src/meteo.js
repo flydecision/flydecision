@@ -6467,6 +6467,100 @@ window.cambiarModoEcmwf = function(nuevoModo) {
     requestAnimationFrame(() => requestAnimationFrame(() => construir_tabla()));
 };
 
+async function comprobarVersionApp() {
+    // 1. Solo tiene sentido en la App Nativa (Android/iOS)
+    const isNative = typeof window.Capacitor !== 'undefined' && window.Capacitor.isNativePlatform();
+    if (!isNative) return;
+
+    // 2. Si el usuario ya decidió "No volver a mostrar", salimos
+    if (localStorage.getItem('METEO_IGNORAR_ACTUALIZACION') === 'true') return;
+
+    // 3. Si el usuario decidió "Posponer", comprobamos si ya ha pasado el tiempo (ej: 3 días)
+    const fechaPosponer = localStorage.getItem('METEO_POSPONER_ACTUALIZACION');
+    if (fechaPosponer) {
+        const tiempoPasado = Date.now() - parseInt(fechaPosponer, 10);
+        const tresDiasMs = 3 * 24 * 60 * 60 * 1000;
+        if (tiempoPasado < tresDiasMs) return; // Aún no han pasado 3 días
+    }
+
+    try {
+        // 4. Descargamos la última versión del servidor (silenciosamente)
+        const response = await fetch("https://flydecision.com/version_app.txt?t=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) return;
+
+        const versionServidor = (await response.text()).trim();
+        const versionLocal = window.WEB_VERSION || "0.0.0";
+
+        // Función auxiliar simple para comparar versiones (ej: "3.9.0" vs "3.8.5")
+        const versionToNum = (v) => v.split('.').map(n => parseInt(n) || 0);
+        const vS = versionToNum(versionServidor);
+        const vL = versionToNum(versionLocal);
+
+        let necesitaActualizar = false;
+        if (vS[0] > vL[0]) necesitaActualizar = true; // Mayor (Major)
+        else if (vS[0] === vL[0] && vS[1] > vL[1]) necesitaActualizar = true; // Menor (Minor)
+        else if (vS[0] === vL[0] && vS[1] === vL[1] && vS[2] > vL[2]) necesitaActualizar = true; // Parche (Patch)
+
+        if (necesitaActualizar) {
+            
+            // Textos traducidos o fallback
+            const titulo = typeof t === 'function' ? t('actualizacionApp.titulo', {defaultValue: '🚀 Nueva versión disponible'}) : '🚀 Nueva versión disponible';
+            const mensaje = typeof t === 'function' ? 
+                t('actualizacionApp.mensaje', {vS: versionServidor, defaultValue: `Hay una nueva versión de Fly Decision en Google Play.`}) : 
+                `Hay una nueva versión de Fly Decision en Google Play.`;
+            
+            const btnActualizar = typeof t === 'function' ? t('actualizacionApp.btnActualizar', {defaultValue: 'Actualizar ahora'}) : 'Actualizar ahora';
+            const btnChangelog = typeof t === 'function' ? t('actualizacionApp.btnChangelog', {defaultValue: 'Ver novedades'}) : 'Ver novedades';
+            const btnPosponer = typeof t === 'function' ? t('actualizacionApp.btnPosponer', {defaultValue: 'Recordármelo en 3 días'}) : 'Recordármelo en 3 días';
+            const btnIgnorar = typeof t === 'function' ? t('actualizacionApp.btnIgnorar', {defaultValue: 'No volver a mostrar'}) : 'No volver a mostrar';
+
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: `
+                    <div style="text-align: center;">
+                        <p style="font-size: 1.3em; font-weight: bold; margin-bottom: 10px;">${titulo}</p>
+                        <p style="margin-bottom: 20px; line-height: 1.4;">${mensaje}</p>
+                        
+                        <!-- Enlace al Changelog (Se abre fuera) -->
+                        <a href="#" onclick="abrirLinkExterno('https://flydecision.com/changelog/'); return false;" style="color: #0078d4; text-decoration: underline; font-weight: bold; margin-bottom: 20px; display: inline-block;">
+                            ${btnChangelog}
+                        </a>
+                        <br>
+                        
+                        <!-- Botón de Actualizar (Azul Principal) -->
+                        <button onclick="abrirLinkExterno('https://play.google.com/store/apps/details?id=com.flydecision'); GestorMensajes.ocultar();" style="width: 250px; background: #0078d4; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 16px; font-weight: bold; margin-bottom: 10px;">
+                            ${btnActualizar}
+                        </button>
+                    </div>
+                `,
+                botones: [
+                    {
+                        // Botón Ignorar
+                        texto: btnIgnorar,
+                        estilo: 'secundario',
+                        onclick: function() {
+                            localStorage.setItem('METEO_IGNORAR_ACTUALIZACION', 'true');
+                            GestorMensajes.ocultar();
+                        }
+                    },
+                    {
+                        // Botón Posponer
+                        texto: btnPosponer,
+                        estilo: 'secundario',
+                        onclick: function() {
+                            localStorage.setItem('METEO_POSPONER_ACTUALIZACION', Date.now().toString());
+                            GestorMensajes.ocultar();
+                        }
+                    }
+                ],
+                anchoBotones: 250
+            });
+        }
+    } catch (e) {
+        console.warn("No se pudo comprobar la versión de la app", e);
+    }
+}
+
 // ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------
@@ -9266,6 +9360,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
             window.activarMenuInferior(document.getElementById('nav-settings'));
         }
     };
+
+    setTimeout(() => {
+        comprobarVersionApp();
+    }, 3000);
 
 }); //document . addEventListener('DOMContentLoaded', function() {
 
