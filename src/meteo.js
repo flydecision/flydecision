@@ -1288,8 +1288,8 @@ function iniciarGuiaFavoritos(forzar = false) {
 // 🔴 GESTIÓN DE FAVORITOS
 // ---------------------------------------------------------------
 
-// --- FUNCIÓN AUXILIAR PRIVADA (No la llamas directamente) ---
-function _activarEdicionFavoritosSync() {
+// --- FUNCIÓN AUXILIAR PRIVADA ---
+function _activarEdicionFavoritosSync(irAlMapa = false) {
     localStorage.setItem("METEO_CONFIG_FAVS_HECHA", "true");
     window.venirDeEdicionActiva = true; 
     modoEdicionFavoritos = true;
@@ -1305,9 +1305,14 @@ function _activarEdicionFavoritosSync() {
     }
     resetFiltroDistancia(false);
 
-    cambiarVista('tabla');  
-
-    document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
+    // Vamos al mapa o a la tabla según corresponda
+    if (irAlMapa) {
+        cambiarVista('mapa');
+        window.activarMenuInferior(document.getElementById('nav-map'));
+    } else {
+        cambiarVista('tabla');  
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
+    }
 
     const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
     if (btnFavsTog) {
@@ -1324,10 +1329,12 @@ function _activarEdicionFavoritosSync() {
     }
 
     const searchContainer = document.getElementById('floating-search-container');
-    if (searchContainer) {
+    // Si vamos al mapa, no hace falta forzar la apertura del buscador de texto
+    if (searchContainer && !irAlMapa) { 
         searchContainer.classList.remove('floating-search-hidden');
         buscadorVisible = true; 
     }
+    
     if (inputBuscador) {
         inputBuscador.placeholder = t('buscador.placeholderEdicion') || "🔍 País, Región, Provincia o Despegue";
     }
@@ -1355,28 +1362,26 @@ function _activarEdicionFavoritosSync() {
 
 // --- FUNCIÓN PRINCIPAL 1: ACTIVAR DESDE LISTA ---
 function activarEdicionFavoritos() {
-    // 1. Mostrar spinner inmediatamente
     const overlay = document.getElementById('msgActualizando...');
     if (overlay) overlay.classList.add('loader-activo');
 
-    // 2. Liberar el hilo de la CPU durante 120ms para pintar el spinner
     setTimeout(() => {
-        _activarEdicionFavoritosSync();
+        _activarEdicionFavoritosSync(false); // false = Queremos quedarnos en la tabla
     }, 120);
 }
 
+// --- FUNCIÓN PRINCIPAL 2: ACTIVAR DESDE MAPA ---
 function activarEdicionFavoritosConMapa() {
-    // 1. Bandera especial para saber que estamos seleccionando desde el mapa en el onboarding
     if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA")) {
         window.onboardingMapaActivo = true;
     }
 
-    // 2. Reutilizar la lógica de activarEdicionFavoritos (limpia tabla, filtros, etc.)
-    activarEdicionFavoritos();
+    const overlay = document.getElementById('msgActualizando...');
+    if (overlay) overlay.classList.add('loader-activo');
 
-    // 3. Ir al mapa (al estar la meteo activa, se mostrarán automáticamente sus controles)
-    cambiarVista('mapa');
-    window.activarMenuInferior(document.getElementById('nav-map'));
+    setTimeout(() => {
+        _activarEdicionFavoritosSync(true); // true = Queremos ir directamente al mapa
+    }, 120);
 }
 
 function filtroVerSoloFavoritos() {
