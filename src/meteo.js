@@ -2413,103 +2413,96 @@ const chkDiaNoche = document.getElementById('chkDiaNoche');
 
 function clickOnDia(sliderElement, diaIndex) {
     const mismodia = window.diaSeleccionadoSlider === diaIndex;
-    window.diaSeleccionadoSlider = diaIndex;
-    const dayRanges = sliderElement.dayRanges;
-    if (!dayRanges || !dayRanges[diaIndex]) return;
+    
+    // INICIAMOS EL SPINNER INMEDIATAMENTE AL TOCAR EL BOTÓN DEL DÍA
+    ejecutarOperacionPesada(() => {
+        window.diaSeleccionadoSlider = diaIndex;
+        const dayRanges = sliderElement.dayRanges;
+        if (!dayRanges || !dayRanges[diaIndex]) return;
 
-    const { startPos, endPos } = dayRanges[diaIndex];
-    window.indicesDiaActualSlider = window.indicesHorasRangoHorario.slice(startPos, endPos + 1);
+        const { startPos, endPos } = dayRanges[diaIndex];
+        window.indicesDiaActualSlider = window.indicesHorasRangoHorario.slice(startPos, endPos + 1);
 
-    const newMax = window.indicesDiaActualSlider.length - 1;
+        const newMax = window.indicesDiaActualSlider.length - 1;
 
-    // Actualizar rango del slider
-    sliderElement.noUiSlider.updateOptions({
-        range: { min: 0, max: newMax }
-    });
+        // Actualizar rango del slider
+        sliderElement.noUiSlider.updateOptions({
+            range: { min: 0, max: newMax }
+        });
 
-    // Aplicar preferencias horarias
-    let finalStart = 0;
-    let finalEnd = newMax;
+        // Aplicar preferencias horarias
+        let finalStart = 0;
+        let finalEnd = newMax;
 
-    if (window.restaurarRangoDesdeCalendario) {
-        // Venimos del calendario: restaurar rango guardado
-        const rangoRestaurar = window.ultimoRangoSlider || window.sliderHorasValues;
-        if (rangoRestaurar) {
-            finalStart = Math.min(rangoRestaurar[0], newMax);
-            finalEnd   = Math.min(rangoRestaurar[1], newMax);
+        if (window.restaurarRangoDesdeCalendario) {
+            const rangoRestaurar = window.ultimoRangoSlider || window.sliderHorasValues;
+            if (rangoRestaurar) {
+                finalStart = Math.min(rangoRestaurar[0], newMax);
+                finalEnd   = Math.min(rangoRestaurar[1], newMax);
+                if (finalEnd < finalStart) finalEnd = finalStart;
+            }
+        } else if (!mismodia && window.rangoHorarioPersonalizado && window.sliderHorasValues) {
+            finalStart = Math.min(window.sliderHorasValues[0], newMax);
+            finalEnd   = Math.min(window.sliderHorasValues[1], newMax);
             if (finalEnd < finalStart) finalEnd = finalStart;
-        }
-    } else if (!mismodia && window.rangoHorarioPersonalizado && window.sliderHorasValues) {
-        // Día diferente con rango personalizado: mantenerlo
-        finalStart = Math.min(window.sliderHorasValues[0], newMax);
-        finalEnd   = Math.min(window.sliderHorasValues[1], newMax);
-        if (finalEnd < finalStart) finalEnd = finalStart;
-    } else {
-        // Predeterminado: mismo día 2 veces, o día nuevo sin rango personalizado
-        window.rangoHorarioPersonalizado = false;
-        const rawInicio = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
-        const rawFin    = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
+        } else {
+            window.rangoHorarioPersonalizado = false;
+            const rawInicio = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO');
+            const rawFin    = localStorage.getItem('METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN');
 
-        if (rawInicio !== null && rawFin !== null) {
-            let prefInicio = parseInt(rawInicio);
-            let prefFin    = parseInt(rawFin);
-            let encontradoInicio = false;
+            if (rawInicio !== null && rawFin !== null) {
+                let prefInicio = parseInt(rawInicio);
+                let prefFin    = parseInt(rawFin);
+                let encontradoInicio = false;
 
-            // 🚀 NUEVA LÓGICA: Atajo "Ir a la hora actual" (Doble clic en el día de Hoy)
-            // 1. Comprobamos si el día que estamos pintando es el día real de hoy
-            const fechaPrimerDato = new Date(window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]].endsWith('Z') ? window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] : window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] + 'Z');
-            const esHoy = new Date().getDate() === fechaPrimerDato.getDate();
+                const fechaPrimerDato = new Date(window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]].endsWith('Z') ? window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] : window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] + 'Z');
+                const esHoy = new Date().getDate() === fechaPrimerDato.getDate();
 
-            if (mismodia && esHoy) {
-                const horaActual = new Date().getHours();
-                
-                // Solo activamos el atajo si ya han pasado al menos 2 horas desde el inicio preferido
-                if (horaActual >= prefInicio + 2) {
-                    prefInicio = Math.max(0, horaActual - 1); // Hora actual - 1 (mínimo 0)
-                    
-                    // Si la hora de fin preferida ya ha pasado, extendemos hasta el final del día
-                    if (prefFin <= prefInicio) {
-                        prefFin = 23; 
+                if (mismodia && esHoy) {
+                    const horaActual = new Date().getHours();
+                    if (horaActual >= prefInicio + 2) {
+                        prefInicio = Math.max(0, horaActual - 1); 
+                        if (prefFin <= prefInicio) {
+                            prefFin = 23; 
+                        }
                     }
                 }
-            }
 
-            window.indicesDiaActualSlider.forEach((idxReal, i) => {
-                const h = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z')
-                    ? window.horasCrudasRangoHorario[idxReal]
-                    : window.horasCrudasRangoHorario[idxReal] + 'Z').getHours();
+                window.indicesDiaActualSlider.forEach((idxReal, i) => {
+                    const h = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z')
+                        ? window.horasCrudasRangoHorario[idxReal]
+                        : window.horasCrudasRangoHorario[idxReal] + 'Z').getHours();
 
+                    if (!encontradoInicio) {
+                        if (prefInicio === 0 || h >= prefInicio) { finalStart = i; encontradoInicio = true; }
+                    }
+                    if (h <= prefFin) finalEnd = i;
+                });
+
+                if (finalStart > newMax) finalStart = newMax;
+                if (finalEnd < finalStart) finalEnd = finalStart; 
+                
                 if (!encontradoInicio) {
-                    if (prefInicio === 0 || h >= prefInicio) { finalStart = i; encontradoInicio = true; }
+                    finalStart = 0; 
+                    finalEnd = newMax;
                 }
-                if (h <= prefFin) finalEnd = i;
-            });
-
-            // Seguridad extra por si los índices se cruzan
-            if (finalStart > newMax) finalStart = newMax;
-            if (finalEnd < finalStart) finalEnd = finalStart; 
-            
-            // Si el filtro "solo día" se comió la hora de inicio, seleccionamos lo que quede visible
-            if (!encontradoInicio) {
-                finalStart = 0; 
-                finalEnd = newMax;
             }
         }
-    }
 
-    sliderElement.noUiSlider.set([finalStart, finalEnd]);
-    window.sliderHorasValues = [finalStart, finalEnd];
+        sliderElement.noUiSlider.set([finalStart, finalEnd]);
+        window.sliderHorasValues = [finalStart, finalEnd];
 
-    window.ultimoRangoSlider = null;
-    window.restaurarRangoDesdeCalendario = false;
+        window.ultimoRangoSlider = null;
+        window.restaurarRangoDesdeCalendario = false;
 
-    // DETECTOR DE NAVEGACIÓN ROBUSTO: Comprobamos si el botón de mapa del menú inferior está azul (active)
-    const enMapa = document.getElementById('nav-map')?.classList.contains('active');
+        const enMapa = document.getElementById('nav-map')?.classList.contains('active');
 
-    // Sincronizamos la tabla de forma silenciosa si estamos navegando en el mapa
-    construir_tabla(false, enMapa); 
-    
-    if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
+        // Todo este trabajo pesado ocurre bajo el escudo del spinner
+        construir_tabla(false, enMapa); 
+        
+        if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
+
+    }); 
 }
 
 // Función que adjunta el evento Y AHORA TAMBIÉN FORZA LA POSICIÓN VISUAL
@@ -2856,33 +2849,25 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
             }
         }
 
-        // Sincronizar la variable global de valores inmediatamente
         window.sliderHorasValues = startIndices;
 
-        // Listener de cambios manuales
         sliderHoras.noUiSlider.on('change', function(values) {
             const valoresNuevos = values.map(Number);
             const haCambiado = valoresNuevos.some((val, i) => val !== window.sliderHorasValues[i]);
             window.rangoHorarioPersonalizado = true;
             
             if (haCambiado) {
-                window.sliderHorasValues = valoresNuevos;
+                ejecutarOperacionPesada(() => {
+                    window.sliderHorasValues = valoresNuevos;
 
-                const enMapa = document.getElementById('nav-map')?.classList.contains('active');
+                    const enMapa = document.getElementById('nav-map')?.classList.contains('active');
 
-                if (enMapa) {
-                    // En el mapa: actualización silenciosa directa (no requiere spinner)
-                    construir_tabla(false, true);
-                } else {
-                    // En la tabla: Usamos setTimeout de 0ms para salir del hilo de eventos de noUiSlider.
-                    // Esto permite al navegador pintar el spinner inmediatamente antes de congelarse.
-                    setTimeout(() => {
-                        construir_tabla(false, false);
-                    }, 0);
-                }
-            }
-            if (typeof aplicarPuntuacionEnMapa === 'function') {
-                aplicarPuntuacionEnMapa();
+                    construir_tabla(false, enMapa); 
+                    
+                    if (typeof aplicarPuntuacionEnMapa === 'function') {
+                        aplicarPuntuacionEnMapa();
+                    }
+                });
             }
         });
 
