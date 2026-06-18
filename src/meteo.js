@@ -4532,11 +4532,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         for (let idx = 0; idx < despegues.length; idx++) {
             const d = despegues[idx];
 
-            // TRUCO DE RENDIMIENTO: Cada 15 despegues, liberamos la CPU un milisegundo
-            if (idx > 0 && idx % 15 === 0) {
-                await new Promise(resolve => setTimeout(resolve, 0));
-            }
-            
             const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
             const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
             const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0;
