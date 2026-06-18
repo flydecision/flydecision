@@ -4580,10 +4580,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // GRUPO 1: Meteo Base + Precipitaciones + Alturas
             const filaNubesTotal = document.createElement("tr");
 
-            let filaPreci, filaProbPreci, filaBaseNube;
+            let filaPreci, filaProbPreci;
             if (chkMostrarPrecipitacion) filaPreci = document.createElement("tr");
             if (chkMostrarProbPrecipitacion) filaProbPreci = document.createElement("tr");
-            //if (chkMostrarBaseNube) filaBaseNube = document.createElement("tr");
 
             let fila180, fila120, fila80;
             
@@ -4652,7 +4651,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 });
             }
 
-            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, fila180, fila120, fila80, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
+            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, fila180, fila120, fila80, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                 filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
@@ -5065,7 +5064,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', t('tabla.tooltips.meteoGeneral'));
                 addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', t('tabla.tooltips.precipitacion'));
                 addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', t('tabla.tooltips.probPrecipitacion'));
-                addIconCell(filaBaseNube, '<span style="font-size:16px; font-weight:bold;">☁️↕</span>', t('tabla.tooltips.baseNube'));
 
                 // Velocidades alturas
                 if (chkMostrarVientoAlturas) {
@@ -5275,57 +5273,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             }
                         );
                         
-                        // renderEcmwfData(filaBaseNube, hourlyEcmwf.cloud_cover_low, 
-                        //     v => v == null ? "" : (Math.round(Number(v)) === 0 ? "" : Math.round(Number(v)) + ""), "12px",
-                        //     v => v == null ? "" : (Math.round(Number(v)) === 0 ? "fondo-verde" : (Math.round(Number(v)) <= 20 ? "fondo-naranja" : "fondo-rojo"))
-                        // );
-
-                        // Base de nubes estimada (Temperatura y Punto de Rocío)
-                        renderEcmwfData(filaBaseNube, hourlyEcmwf.temperature_2m, 
-                            (temp, i) => {
-                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
-                                
-                                let t = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[i]);
-                                
-                                let baseMts = Math.max(0, Math.round((t - roc) * 125));
-                                let baseKm = (baseMts / 1000).toFixed(1);
-                                
-                                return baseKm === "0.0" ? "0" : baseKm;
-                            }, 
-                            "12px", 
-                            (temp, i) => {
-                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
-                                
-                                let t = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[i]);
-                                let baseMts = Math.max(0, Math.round((t - roc) * 125));
-
-                                // Lógica de colores solicitada
-                                if (baseMts < 100) return "fondo-rojo";
-                                if (baseMts <= 300) return "fondo-naranja";
-                                return "fondo-verde";
-                            },
-                            "0px",
-                            (temp, i) => { // Tooltip para que el usuario sepa de qué es ese número
-                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
-        
-                                let t = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[i]);
-                                let baseMts = Math.max(0, Math.round((t - roc) * 125));
-                                let baseKm = (baseMts / 1000).toFixed(1);
-                                let valorFinal = (baseKm === "0.0" ? "0" : baseKm);
-                                
-                                return `Altura de la base de la nube: ${valorFinal} km sobre el suelo (AGL)`;
-                            }
-                        );
-
                     } else {
                         const emptyArr = new Array(horas.length).fill(null);
                         renderEcmwfData(filaNubesTotal, emptyArr, () => "", "9px", () => "");
                         renderEcmwfData(filaPreci, emptyArr, () => "", "9px", () => "");
                         renderEcmwfData(filaProbPreci, emptyArr, () => "", "9px", () => "");
-                        renderEcmwfData(filaBaseNube, emptyArr, () => "", "9px", () => "");
                     }
 
 					// ⚪ Velocidades alturas 80, 120, 180 m *****************************
