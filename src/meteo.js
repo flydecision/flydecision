@@ -6333,7 +6333,7 @@ function ejecutarOperacionPesada(tareaCallback) {
         if (ultimoIdLlamadaTabla === idAntes || window.ultimoConstruirTablaSilencioso) {
             ocultarLoading();
         }
-    }, 10); 
+    }, 100); 
 }
 
 // Genera un icono de 5 barras tipo "cobertura" según la actividad (1 a 5)
