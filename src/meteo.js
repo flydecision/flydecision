@@ -5566,161 +5566,86 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         }
                     }
 
-                    // Datos ECMWF Grupo 2 (XC)
+                    // ⚪ MEGA-BUCLE: Techo + CAPE + CIN (XC) *****************************
                     if (hourlyEcmwf) {
-                        // Techo Útil MSL (Suma: (Espesor BLH * RATIO_TECHO_UTIL) + Elevación de la celda del modelo)
-                        if (hourlyEcmwf.boundary_layer_height) {
-                            for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
-                                let v = hourlyEcmwf.boundary_layer_height[i];
+                        let htmlTecho = "";
+                        let htmlCape = "";
+                        let htmlCin = "";
 
-                                const td = document.createElement("td");
-                                td.style.paddingBottom = "0px";
-                                td.style.setProperty('font-size', '12px', 'important');
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            
+                            let clasesBase = "";
+                            if (cacheEsNoche[i]) clasesBase += " celda-noche";
+                            if (setInicioDia.has(i)) clasesBase += " borde-grueso-izquierda";
+
+                            // === 1. TECHO ===
+                            let vTecho = hourlyEcmwf.boundary_layer_height[i];
+                            let txtTecho = "", colorTecho = "", bgTecho = "";
+                            
+                            if (vTecho != null) {
+                                let espesorUtil = Math.round(Number(vTecho) * RATIO_TECHO_UTIL);
+                                let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
+                                let valorTexto = (altitudMSL / 1000).toFixed(1);
+                                txtTecho = (valorTexto === "0.0") ? "0" : valorTexto;
                                 
-                                if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
-
-                                let colorClass = "";
-
-                                if (v == null) {
-                                    td.textContent = "";
-                                } else {
-                                    // 🚀 MATEMÁTICA UNA SOLA VEZ
-                                    let espesorBLH = Math.round(Number(v));
-                                    let espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
-                                    let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
-
-                                    let valorTexto = (altitudMSL / 1000).toFixed(1);
-                                    td.textContent = valorTexto === "0.0" ? "0" : valorTexto;
-
-                                    td.title = t('tabla.techoTooltip', {
-                                        altitudMSL: altitudMSL,
-                                        espesorUtil: espesorUtil,
-                                        pct: Math.round(RATIO_TECHO_UTIL * 100),
-                                        blh: espesorBLH,
-                                        elevacion: Math.round(elevacionModeloECMWF)
-                                    });
-
-                                    // Asignar color
-                                    if (espesorUtil < XCTechoLims.rojo) colorClass = "fondo-rojo";
-                                    else if (espesorUtil >= XCTechoLims.verde) colorClass = "fondo-verde";
-                                    else colorClass = "fondo-naranja";
-                                    
-                                    td.classList.add(colorClass);
-                                }
-
-                                if (cacheEsNoche[i]) {
-                                    td.classList.add("celda-noche");
-                                } else if (!colorClass) {
-                                    td.style.backgroundColor = "#ffffff";
-                                }
-
-                                filaTecho.appendChild(td);
+                                if (espesorUtil < XCTechoLims.rojo) colorTecho = "fondo-rojo";
+                                else if (espesorUtil >= XCTechoLims.verde) colorTecho = "fondo-verde";
+                                else colorTecho = "fondo-naranja";
                             }
-                        }
-                        // CAPE OPTIMIZADO
-                        if (hourlyEcmwf.cape) {
-                            for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
-                                let v = hourlyEcmwf.cape[i];
+                            bgTecho = (!cacheEsNoche[i] && !colorTecho) ? 'background-color: #ffffff;' : '';
+                            htmlTecho += `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; ${bgTecho}">${txtTecho}</td>`;
 
-                                const td = document.createElement("td");
-                                td.style.paddingBottom = "0px";
-                                td.style.setProperty('font-size', '11px', 'important');
+                            // === 2. CAPE ===
+                            let vCape = hourlyEcmwf.cape[i];
+                            let txtCape = "", colorCape = "", bgCape = "";
+                            
+                            if (vCape != null && vCape !== "") {
+                                let n = Math.round(Number(vCape));
+                                txtCape = (n >= 1000) ? (n / 1000).toFixed(1) + "k" : n;
                                 
-                                if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
-
-                                let colorClass = "";
-
-                                if (v == null || v === "") {
-                                    td.textContent = "";
-                                } else {
-                                    // Matemática 1 sola vez
-                                    let n = Math.round(Number(v));
-                                    
-                                    // Texto
-                                    if (n >= 1000) {
-                                        td.textContent = (n / 1000).toFixed(1) + "k"; // 1200 -> 1.2k
-                                    } else {
-                                        td.textContent = n;
-                                    }
-                                    
-                                    // Tooltip
-                                    td.title = "CAPE: " + n + " J/kg";
-
-                                    // Color
-                                    if (n <= XCCapeLims.idealMax) colorClass = "fondo-verde";
-                                    else if (n <= XCCapeLims.riesgo) colorClass = "fondo-naranja";
-                                    else colorClass = "fondo-rojo";
-                                    
-                                    td.classList.add(colorClass);
-                                }
-
-                                if (cacheEsNoche[i]) {
-                                    td.classList.add("celda-noche");
-                                } else if (!colorClass) {
-                                    td.style.backgroundColor = "#ffffff";
-                                }
-
-                                filaCape.appendChild(td);
+                                if (n <= XCCapeLims.idealMax) colorCape = "fondo-verde";
+                                else if (n <= XCCapeLims.riesgo) colorCape = "fondo-naranja";
+                                else colorCape = "fondo-rojo";
                             }
+                            bgCape = (!cacheEsNoche[i] && !colorCape) ? 'background-color: #ffffff;' : '';
+                            htmlCape += `<td class="${clasesBase} ${colorCape}" style="padding-bottom: 0px; font-size: 11px !important; ${bgCape}" title="CAPE: ${vCape || 0} J/kg">${txtCape}</td>`;
+
+                            // === 3. CIN ===
+                            let vCin = hourlyEcmwf.convective_inhibition[i];
+                            let txtCin = "", colorCin = "", bgCin = "";
+                            
+                            if (vCin != null && vCin !== "") {
+                                let n = Math.max(0, Math.round(Number(vCin)));
+                                txtCin = (n === 0) ? "0" : n;
+                                
+                                if (n <= XCCinLims.verde) colorCin = "fondo-verde";
+                                else if (n <= XCCinLims.rojo) colorCin = "fondo-naranja";
+                                else colorCin = "fondo-rojo";
+                            }
+                            bgCin = (!cacheEsNoche[i] && !colorCin) ? 'background-color: #ffffff;' : '';
+                            htmlCin += `<td class="${clasesBase} ${colorCin}" style="padding-bottom: 0px; font-size: 11px !important; ${bgCin}" title="CIN: ${vCin != null ? Math.max(0, Math.round(Number(vCin))) : 0} J/kg">${txtCin}</td>`;
                         }
 
-                        // CIN OPTIMIZADO
-                        if (hourlyEcmwf.convective_inhibition) {
-                            for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
-                                let v = hourlyEcmwf.convective_inhibition[i];
-
-                                const td = document.createElement("td");
-                                td.style.paddingBottom = "0px";
-                                td.style.setProperty('font-size', '11px', 'important');
-                                
-                                if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
-
-                                let colorClass = "";
-
-                                // Matemática y limpieza de errores 1 sola vez
-                                let n = (v === null || v === "null" || v === "") ? 0 : Number(v);
-                                if (n < 0) n = 0;
-                                n = Math.round(n);
-
-                                td.textContent = (n === 0) ? "0" : n;
-                                td.title = "CIN: " + n + " J/kg";
-
-                                // Color
-                                if (n <= XCCinLims.verde) colorClass = "fondo-verde";
-                                else if (n <= XCCinLims.rojo) colorClass = "fondo-naranja";
-                                else colorClass = "fondo-rojo";
-                                
-                                td.classList.add(colorClass);
-
-                                if (cacheEsNoche[i]) {
-                                    td.classList.add("celda-noche");
-                                } else if (!colorClass) {
-                                    td.style.backgroundColor = "#ffffff";
-                                }
-
-                                filaCin.appendChild(td);
-                            }
-                        }
+                        // Inyección ultra-rápida (El DOM se toca 1 sola vez por fila)
+                        if (filaTecho) filaTecho.insertAdjacentHTML('beforeend', htmlTecho);
+                        if (filaCape) filaCape.insertAdjacentHTML('beforeend', htmlCape);
+                        if (filaCin) filaCin.insertAdjacentHTML('beforeend', htmlCin);
 
                     } else {
-                        // ELSE OPTIMIZADO: Si no hay datos, no creamos arrays, solo inyectamos TDs vacíos
+                        // Si no hay datos, metemos celdas vacías como texto (mucho más rápido que antes)
+                        let htmlVacio = "";
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
-                            const createEmptyCell = () => {
-                                const td = document.createElement("td");
-                                td.style.setProperty('font-size', '9px', 'important');
-                                if (cacheEsNoche[i]) td.classList.add("celda-noche");
-                                else td.style.backgroundColor = "#ffffff";
-                                if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
-                                return td;
-                            };
-
-                            if (filaTecho) filaTecho.appendChild(createEmptyCell());
-                            if (filaCape) filaCape.appendChild(createEmptyCell());
-                            if (filaCin) filaCin.appendChild(createEmptyCell());
+                            let clase = cacheEsNoche[i] ? "celda-noche" : "";
+                            if (setInicioDia.has(i)) clase += " borde-grueso-izquierda";
+                            let bg = (!cacheEsNoche[i]) ? 'background-color: #ffffff;' : '';
+                            htmlVacio += `<td class="${clase}" style="font-size: 9px !important; ${bg}"></td>`;
                         }
+                        if (filaTecho) filaTecho.insertAdjacentHTML('beforeend', htmlVacio);
+                        if (filaCape) filaCape.insertAdjacentHTML('beforeend', htmlVacio);
+                        if (filaCin) filaCin.insertAdjacentHTML('beforeend', htmlVacio);
                     }
 
-                    // (Este bloque se queda igual, gestiona la línea superior del bloque XC)
+                    // Borde superior del grupo XC
                     if (!chkMostrarCizalladura && chkMostrarXC && filaTecho) {
                         Array.from(filaTecho.children).forEach(td => {
                             td.style.borderTop = "1px solid #000";
