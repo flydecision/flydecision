@@ -3538,7 +3538,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // Obligamos al código JS a detenerse por completo durante 120ms.
         // Esto le da tiempo de sobra a la transición de CSS (100ms) a completarse
         // y mostrar el spinner en pantalla antes de que comience el cálculo masivo.
-        await new Promise(resolve => setTimeout(resolve, 120));
+        //await new Promise(resolve => setTimeout(resolve, 120));
     }
 
     // 3. SEGURIDAD: Si entró otra llamada mientras esperábamos el temporizador, 
@@ -6333,7 +6333,7 @@ function ejecutarOperacionPesada(tareaCallback) {
         if (ultimoIdLlamadaTabla === idAntes || window.ultimoConstruirTablaSilencioso) {
             ocultarLoading();
         }
-    }, 120); 
+    }, 10); 
 }
 
 // Genera un icono de 5 barras tipo "cobertura" según la actividad (1 a 5)
