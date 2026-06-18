@@ -5427,147 +5427,133 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
 					// ⚪ Velocidad 10 m *****************************
 					
-					const velocidades = hourlyData.wind_speed_10m.slice(0, horas.length);
-                    // NUEVOS DATOS (Añadir esto) con protección por si el JSON es antiguo
-                    const vel80 = hourlyData.wind_speed_80m ? hourlyData.wind_speed_80m.slice(0, horas.length) : [];
-                    const vel120 = hourlyData.wind_speed_120m ? hourlyData.wind_speed_120m.slice(0, horas.length) : [];
-                    const vel180 = hourlyData.wind_speed_180m ? hourlyData.wind_speed_180m.slice(0, horas.length) : [];
+					// Ponemos esta constante fuera del bucle para no calcularla 100 veces
+                    const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
 
-					velocidades.forEach((velocidadModelo, i) => {
-						
-						/* 🕜 Filtro del slider de rango horario */
-						if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
+                    // Creamos un bucle que va EXACTAMENTE desde el inicio del slider hasta el fin del slider.
+                    // Le añadimos Math.min() como medida de seguridad por si el JSON tiene menos horas de las esperadas.
+                    const limiteFin = Math.min(indiceFinRangoHorario, horas.length - 1);
 
-                        let velocidad = velocidadModelo;
+                    for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                        
+                        // Leemos el dato DIRECTAMENTE de la base de datos original (hourlyData) para esta hora 'i'
+                        let velocidadModelo = hourlyData.wind_speed_10m[i];
 
-                        velocidad = Math.round(Math.max(0, velocidad)); // Redondeo a 0 decimales
+                        // (NOTA: Si en algún momento en este bucle necesitaras los de 80 o 120m, 
+                        // se leen exactamente igual, sin hacer .slice() previamente:)
+                        // let v80 = hourlyData.wind_speed_80m ? hourlyData.wind_speed_80m[i] : null;
 
-						const td = document.createElement("td");
+                        let velocidad = Math.round(Math.max(0, velocidadModelo)); // Redondeo a 0 decimales
 
-						// Marcar celdas de noche en datos (Usando la caché)
+                        const td = document.createElement("td");
+
+                        // Marcar celdas de noche en datos (Usando la caché)
                         if (cacheEsNoche[i]) {
                             td.classList.add("celda-noche");
                         }
-									
-						if (setInicioDia.has(i)) {
-						td.classList.add("borde-grueso-izquierda");
-						}
-								
-						const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
+                                    
+                        // ¡Veo que aquí ya has puesto lo del PASO 1 (setInicioDia)! ¡Genial!
+                        if (setInicioDia.has(i)) {
+                            td.classList.add("borde-grueso-izquierda");
+                        }
 
-						if (velocidad < VelocidadMin) {
-							td.classList.add("fondo-naranja");
-						} 
-						else if (velocidad <= velocidadTolerableSuperior) {
-							// Velocidad ideal: entre el mínimo y la mitad del camino al máximo
-							td.classList.add("fondo-verde");
-						} 
-						else if (velocidad < VelocidadMax) {
-							// Velocidad entre la ideal y velocidadTolerableSuperior
-							td.classList.add("fondo-naranja");
-						} 
-						else { // velocidad >= VelocidadMax
-							td.classList.add("fondo-rojo");
-						} 
+                        if (velocidad < VelocidadMin) {
+                            td.classList.add("fondo-naranja");
+                        } 
+                        else if (velocidad <= velocidadTolerableSuperior) {
+                            td.classList.add("fondo-verde"); // Velocidad ideal
+                        } 
+                        else if (velocidad < VelocidadMax) {
+                            td.classList.add("fondo-naranja");
+                        } 
+                        else { 
+                            td.classList.add("fondo-rojo");
+                        } 
 
                         td.textContent = velocidad;
-                        //td.style.cursor = "help";
-
                         td.title = `${velocidad} km/h`;
 
                         filaVel.appendChild(td);
-					});
+                    }
 
 					// ⚪ Racha *****************************
-					
-					const rachas = hourlyData.wind_gusts_10m.slice(0, horas.length);
-					rachas.forEach((rachaModelo, i) => {
-						
-						/* 🕜 Filtro del slider de rango horario */
-						if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
 
-						// 1. Calculamos la velocidad de referencia para esta hora (necesario para la corrección)
-                        const velModeloRef = hourlyData.wind_speed_10m[i];
-                        let velRef = velModeloRef;
-                        velRef = Math.round(Math.max(0, velRef));
+                    const rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3;
 
-                        let racha = rachaModelo;
-                        racha = Math.round(Math.max(0, racha));
+                    for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                        
+                        // Leemos directamente del JSON original
+                        let rachaModelo = hourlyData.wind_gusts_10m[i];
+                        let racha = Math.round(Math.max(0, rachaModelo));
 
-						const td = document.createElement("td");
+                        const td = document.createElement("td");
 
-                        // Marcar celdas de noche en datos (Usando la caché)
+                        // Usamos la caché de noches
                         if (cacheEsNoche[i]) {
                             td.classList.add("celda-noche");
                         }
-									
-						if (setInicioDia.has(i)) {
-						td.classList.add("borde-grueso-izquierda");
-						}
+                                    
+                        // Usamos el Set del PASO 1 (ultrarrápido)
+                        if (setInicioDia.has(i)) {
+                            td.classList.add("borde-grueso-izquierda");
+                        }
 
-						const rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3;
+                        // Lógica de colores
+                        if (racha < rachaTolerable) {
+                            td.classList.add("fondo-verde");
+                        } 
+                        else if (racha < RachaMax) { 
+                            td.classList.add("fondo-naranja");
+                        } 
+                        else { 
+                            td.classList.add("fondo-rojo");
+                        } 
 
-						if (racha < rachaTolerable) {
-							td.classList.add("fondo-verde");
-						} 
-						else if (racha < RachaMax) { // estamos entre la tolerable y la máxima
-							td.classList.add("fondo-naranja");
-						} 
-						else { // racha >= RachaMax
-							td.classList.add("fondo-rojo");
-						} 
-
-						td.textContent = racha;
-
+                        td.textContent = racha;
                         td.title = `${racha} km/h racha máxima`;
 
-						filaRacha.appendChild(td);
-					});
+                        filaRacha.appendChild(td);
+                    }
 
 					// ⚪ Dirección *****************************
-					
-					const direcciones = hourlyData.wind_direction_10m.slice(0, horas.length);
-					direcciones.forEach((dirModelo, i) => {
-						
-						/* 🕜 Filtro del slider de rango horario */
-						if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-						
-                        let dir = dirModelo;
+
+                    for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
-                        dir = Math.round(dir);
+                        // Leemos directamente del JSON original
+                        let dirModelo = hourlyData.wind_direction_10m[i];
+                        let dir = Math.round(dirModelo);
 
-						const td = document.createElement("td");
+                        const td = document.createElement("td");
 
-                        // Marcar celdas de noche en datos (Usando la caché)
+                        // Usamos la caché de noches
                         if (cacheEsNoche[i]) {
                             td.classList.add("celda-noche");
                         }
-									
-						if (setInicioDia.has(i)) {
-						td.classList.add("borde-grueso-izquierda");
-						}
-						
-						
-						// Versión segura si orientaciones está vacío, Math.min(...) devuelve Infinity
-						let minimoAnguloDiferencia = 180;  // Valor seguro por defecto
+                                    
+                        // Usamos el Set del PASO 1 (ultrarrápido)
+                        if (setInicioDia.has(i)) {
+                            td.classList.add("borde-grueso-izquierda");
+                        }
+                        
+                        // Calcular el color según el ángulo
+                        let minimoAnguloDiferencia = 180;  // Valor seguro por defecto
+                        if (orientaciones && orientaciones.length > 0) {
+                            minimoAnguloDiferencia = Math.min(...orientaciones.map(o => diferenciaAngular(dir, o)));
+                        }
 
-						if (orientaciones && orientaciones.length > 0) {
-							minimoAnguloDiferencia = Math.min(...orientaciones.map(o => diferenciaAngular(dir, o)));
-						}
+                        td.classList.add(colorPorDiferencia(minimoAnguloDiferencia));
 
-						td.classList.add(colorPorDiferencia(minimoAnguloDiferencia));
-
-						td.innerHTML = `
-							<svg class="flecha-viento" viewBox="0 0 30 36" style="
-								transform: rotate(${dir + 180}deg);">
-								<polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
-							</svg>
-							`;
-							
+                        // Inyectar el icono SVG
+                        td.innerHTML = `
+                            <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg);">
+                                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
+                            </svg>
+                        `;
+                            
                         td.title = `${dir}º`;
 
-						filaDir.appendChild(td);
-					});
+                        filaDir.appendChild(td);
+                    }
 
                     // ⚪ Cizalladura / Fiabilidad *****************************
 
