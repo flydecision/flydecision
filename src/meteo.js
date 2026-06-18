@@ -5574,86 +5574,158 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     // Datos ECMWF Grupo 2 (XC)
                     if (hourlyEcmwf) {
                         // Techo Útil MSL (Suma: (Espesor BLH * RATIO_TECHO_UTIL) + Elevación de la celda del modelo)
-                        renderEcmwfData(filaTecho, hourlyEcmwf.boundary_layer_height, 
-                            v => {
-                                if (v == null) return "";
-                                // Usamos la variable global
-                                let espesorUtil = Number(v) * RATIO_TECHO_UTIL;
-                                let altitudMSL = (espesorUtil + elevacionModeloECMWF) / 1000;
-                                let valorTexto = altitudMSL.toFixed(1);
-                                return valorTexto === "0.0" ? "0" : valorTexto;
-                            }, 
-                            "12px",
-                            v => {
-                                if (v == null) return "";
-                                // El color se basa en el espesor corregido
-                                let espesorUtil = Number(v) * RATIO_TECHO_UTIL;
-                                return (espesorUtil < XCTechoLims.rojo ? "fondo-rojo" : (espesorUtil >= XCTechoLims.verde ? "fondo-verde" : "fondo-naranja"));
-                            },
-                            "0px",
-                            v => {
-                                if (v == null) return "";
-                                let espesorBLH = Math.round(Number(v));
-                                let espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
-                                let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
+                        if (hourlyEcmwf.boundary_layer_height) {
+                            for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                                let v = hourlyEcmwf.boundary_layer_height[i];
+
+                                const td = document.createElement("td");
+                                td.style.paddingBottom = "0px";
+                                td.style.setProperty('font-size', '12px', 'important');
                                 
-                                return t('tabla.techoTooltip', {
-                                    altitudMSL: altitudMSL,
-                                    espesorUtil: espesorUtil,
-                                    pct: Math.round(RATIO_TECHO_UTIL * 100),
-                                    blh: espesorBLH,
-                                    elevacion: Math.round(elevacionModeloECMWF)
-                                });
-                            }
-                        );
-                        // CAPE
-                        renderEcmwfData(filaCape, hourlyEcmwf.cape, 
-                            v => {
-                                if (v == null || v === "") return "";
-                                let n = Math.round(Number(v));
-                                if (n >= 1000) {
-                                    return (n / 1000).toFixed(1) + "k"; // 1200 -> 1.2k
+                                if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+
+                                let colorClass = "";
+
+                                if (v == null) {
+                                    td.textContent = "";
+                                } else {
+                                    // 🚀 MATEMÁTICA UNA SOLA VEZ
+                                    let espesorBLH = Math.round(Number(v));
+                                    let espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
+                                    let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
+
+                                    let valorTexto = (altitudMSL / 1000).toFixed(1);
+                                    td.textContent = valorTexto === "0.0" ? "0" : valorTexto;
+
+                                    td.title = t('tabla.techoTooltip', {
+                                        altitudMSL: altitudMSL,
+                                        espesorUtil: espesorUtil,
+                                        pct: Math.round(RATIO_TECHO_UTIL * 100),
+                                        blh: espesorBLH,
+                                        elevacion: Math.round(elevacionModeloECMWF)
+                                    });
+
+                                    // Asignar color
+                                    if (espesorUtil < XCTechoLims.rojo) colorClass = "fondo-rojo";
+                                    else if (espesorUtil >= XCTechoLims.verde) colorClass = "fondo-verde";
+                                    else colorClass = "fondo-naranja";
+                                    
+                                    td.classList.add(colorClass);
                                 }
-                                return n;
-                            }, 
-                            "11px",
-                            v => {
-                                if (v == null || v === "") return "";
-                                let n = Number(v);
-                                if (n <= XCCapeLims.idealMax) return "fondo-verde";    // 0 a 400
-                                if (n <= XCCapeLims.riesgo) return "fondo-naranja";    // 400 a 800
-                                return "fondo-rojo";                                   // > 800
-                            },
-                            "0px",
-                            v => v == null ? "" : "CAPE: " + Math.round(Number(v)) + " J/kg"
-                        );
-                        // CIN
-                        renderEcmwfData(filaCin, hourlyEcmwf.convective_inhibition, 
-                            v => {
+
+                                if (cacheEsNoche[i]) {
+                                    td.classList.add("celda-noche");
+                                } else if (!colorClass) {
+                                    td.style.backgroundColor = "#ffffff";
+                                }
+
+                                filaTecho.appendChild(td);
+                            }
+                        }
+                        // CAPE OPTIMIZADO
+                        if (hourlyEcmwf.cape) {
+                            for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                                let v = hourlyEcmwf.cape[i];
+
+                                const td = document.createElement("td");
+                                td.style.paddingBottom = "0px";
+                                td.style.setProperty('font-size', '11px', 'important');
+                                
+                                if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+
+                                let colorClass = "";
+
+                                if (v == null || v === "") {
+                                    td.textContent = "";
+                                } else {
+                                    // Matemática 1 sola vez
+                                    let n = Math.round(Number(v));
+                                    
+                                    // Texto
+                                    if (n >= 1000) {
+                                        td.textContent = (n / 1000).toFixed(1) + "k"; // 1200 -> 1.2k
+                                    } else {
+                                        td.textContent = n;
+                                    }
+                                    
+                                    // Tooltip
+                                    td.title = "CAPE: " + n + " J/kg";
+
+                                    // Color
+                                    if (n <= XCCapeLims.idealMax) colorClass = "fondo-verde";
+                                    else if (n <= XCCapeLims.riesgo) colorClass = "fondo-naranja";
+                                    else colorClass = "fondo-rojo";
+                                    
+                                    td.classList.add(colorClass);
+                                }
+
+                                if (cacheEsNoche[i]) {
+                                    td.classList.add("celda-noche");
+                                } else if (!colorClass) {
+                                    td.style.backgroundColor = "#ffffff";
+                                }
+
+                                filaCape.appendChild(td);
+                            }
+                        }
+
+                        // CIN OPTIMIZADO
+                        if (hourlyEcmwf.convective_inhibition) {
+                            for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                                let v = hourlyEcmwf.convective_inhibition[i];
+
+                                const td = document.createElement("td");
+                                td.style.paddingBottom = "0px";
+                                td.style.setProperty('font-size', '11px', 'important');
+                                
+                                if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+
+                                let colorClass = "";
+
+                                // Matemática y limpieza de errores 1 sola vez
                                 let n = (v === null || v === "null" || v === "") ? 0 : Number(v);
                                 if (n < 0) n = 0;
                                 n = Math.round(n);
-                                return n === 0 ? "0" : n;
-                            }, 
-                            "11px",
-                            v => { 
-                                let n = (v === null || v === "null" || v === "") ? 0 : Number(v);
-                                if (n < 0) n = 0;
-                                return n <= XCCinLims.verde ? "fondo-verde" : (n <= XCCinLims.rojo ? "fondo-naranja" : "fondo-rojo");  
-                            },
-                            "0px",
-                            v => {
-                                let n = (v === null || v === "null" || v === "") ? 0 : Number(v);
-                                if (n < 0) n = 0;
-                                return "CIN: " + Math.round(n) + " J/kg";
+
+                                td.textContent = (n === 0) ? "0" : n;
+                                td.title = "CIN: " + n + " J/kg";
+
+                                // Color
+                                if (n <= XCCinLims.verde) colorClass = "fondo-verde";
+                                else if (n <= XCCinLims.rojo) colorClass = "fondo-naranja";
+                                else colorClass = "fondo-rojo";
+                                
+                                td.classList.add(colorClass);
+
+                                if (cacheEsNoche[i]) {
+                                    td.classList.add("celda-noche");
+                                } else if (!colorClass) {
+                                    td.style.backgroundColor = "#ffffff";
+                                }
+
+                                filaCin.appendChild(td);
                             }
-                        );
+                        }
+
                     } else {
-                        const emptyArr = new Array(horas.length).fill(null);
-                        renderEcmwfData(filaTecho, emptyArr, () => "", "9px", () => "");
-                        renderEcmwfData(filaCape, emptyArr, () => "", "9px", () => "");
-                        renderEcmwfData(filaCin, emptyArr, () => "", "9px", () => "");
+                        // ELSE OPTIMIZADO: Si no hay datos, no creamos arrays, solo inyectamos TDs vacíos
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            const createEmptyCell = () => {
+                                const td = document.createElement("td");
+                                td.style.setProperty('font-size', '9px', 'important');
+                                if (cacheEsNoche[i]) td.classList.add("celda-noche");
+                                else td.style.backgroundColor = "#ffffff";
+                                if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+                                return td;
+                            };
+
+                            if (filaTecho) filaTecho.appendChild(createEmptyCell());
+                            if (filaCape) filaCape.appendChild(createEmptyCell());
+                            if (filaCin) filaCin.appendChild(createEmptyCell());
+                        }
                     }
+
+                    // (Este bloque se queda igual, gestiona la línea superior del bloque XC)
                     if (!chkMostrarCizalladura && chkMostrarXC && filaTecho) {
                         Array.from(filaTecho.children).forEach(td => {
                             td.style.borderTop = "1px solid #000";
