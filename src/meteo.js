@@ -4134,14 +4134,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // ---------------------------------------------------------------
 
 		const tabla = document.getElementById("tabla");
-		tabla.innerHTML = "";
 
-		const thead = document.createElement("thead");
-		const tbody = document.createElement("tbody");
-		const tbodyFragmento = document.createDocumentFragment();
-
-		tabla.appendChild(thead);
-		tabla.appendChild(tbody);
+        // NO borramos la tabla todavía. Dejamos que el usuario vea la antigua mientras carga.
+        const thead = document.createElement("thead");
+        const tbody = document.createElement("tbody");
+        const tbodyFragmento = document.createDocumentFragment();
 
         // ---------------------------------------------------------------
         // 🟡 CONSTRUCCIÓN DE LA TABLA. Cabecera. Favorito
@@ -4531,6 +4528,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // 🔃 Bucle principal que recorre cada despegue
         for (let idx = 0; idx < despegues.length; idx++) {
             const d = despegues[idx];
+
+            // Liberamos la CPU 1 milisegundo cada 15 despegues. Como no hemos borrado la tabla, NO habrá parpadeo.
+            if (idx > 0 && idx % 15 === 0) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
 
             const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
             const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
@@ -6015,11 +6017,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			});
 		});
 		
-		tbody.appendChild(tbodyFragmento);
+		// 1. Metemos el fragmento en nuestro tbody "en la sombra"
+        tbody.appendChild(tbodyFragmento);
+
+        // 2. AHORA SÍ, borramos la tabla vieja y metemos la nueva de un solo golpe (Atomic Swap)
+        tabla.innerHTML = "";
+        tabla.appendChild(thead);
+        tabla.appendChild(tbody);
 
 		aplicarFiltrosVisuales();
-
-		// const chkMostrarSoloHorasDiurnas = localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") === "true";
 
 		if (soloHorasDeLuz) {
 			const chk = document.getElementById("chkMostrarSoloHorasDiurnas");
@@ -6027,9 +6033,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			document.body.classList.add("solo-dia");
 		}
 		
-        // 1. Lógica de salida: con o sin animación
+        // 3. PAUSA MÁGICA: Obligamos al código a esperar 50 milisegundos.
+        // Esto le da tiempo al navegador a "dibujar" la nueva tabla en la pantalla 
+        // MIENTRAS el spinner sigue dando vueltas tapándolo todo.
+        await new Promise(resolve => setTimeout(resolve, 50));
+
+        // 4. Lógica de salida: con o sin animación
 		if (!silencioso) {
-			ocultarLoading();
+			ocultarLoading(); // Ahora sí, con la tabla dibujada, quitamos el spinner
 
 			setTimeout(() => {
                 localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
@@ -6062,7 +6073,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     window.scrollTo(scrollOptions);
                     window.necesitaScrollTopMeteo = false;
                 }
-            }, 100);
+            }, 50); // Lo bajamos de 100 a 50 porque ya hemos esperado 50ms arriba
 		} else {
 			// En modo silencioso no tocamos el scroll ni mostramos loader
 			localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
@@ -6085,7 +6096,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // Forzamos la evaluación de seguridad al arrancar la app
         if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
 
-	} // cierre de: try {	
+	} // cierre de: try {
 
 	catch (error) {
 		console.error("Error en la aplicación:", error);
