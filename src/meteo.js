@@ -4909,13 +4909,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			
             const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block; color: #777; margin-top: -1px; margin-bottom: 2px;">(${d.Provincia})</span>`;
 
-            const esFavoritoBtn  = obtenerFavoritos().map(Number).includes(Number(d.ID));
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-favorito-tabla"
                     style="position: absolute; bottom: 2px; left: 13px;"
                     onclick="toggleFavoritoDesdeTabla(${d.ID}, this); return false;"
-                    title="${esFavoritoBtn  ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="${esFavoritoBtn  ? '#e00' : 'none'}" stroke="${esFavoritoBtn  ? '#e00' : '#555'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                    title="${esFavorito  ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="${esFavorito  ? '#e00' : 'none'}" stroke="${esFavorito  ? '#e00' : '#555'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                     </svg>
                 </button>
