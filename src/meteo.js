@@ -4522,6 +4522,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             });
         }
 
+        const setInicioDia = new Set(indicesInicioDia);
+
         // 🔃 Bucle principal que recorre cada despegue
         despegues.forEach((d, idx) => {
             
@@ -5209,7 +5211,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 td.style.backgroundColor = "#ffffff"; 
                             }
                             
-                            if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
+                            if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
                             
                             if (fontSize) {
                                 td.style.setProperty('font-size', fontSize, 'important');
@@ -5338,7 +5340,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                                 const td = document.createElement("td");
                                 if (cacheEsNoche[i]) td.classList.add("celda-noche");
-                                if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
+                                if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
                                 // 1. Datos Reales (para mostrar en texto)
                                 let valAltura = Math.round(Math.max(0, rawVal));
@@ -5441,7 +5443,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.classList.add("celda-noche");
                         }
 									
-						if (indicesInicioDia.includes(i)) {
+						if (setInicioDia.has(i)) {
 						td.classList.add("borde-grueso-izquierda");
 						}
 								
@@ -5493,7 +5495,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.classList.add("celda-noche");
                         }
 									
-						if (indicesInicioDia.includes(i)) {
+						if (setInicioDia.has(i)) {
 						td.classList.add("borde-grueso-izquierda");
 						}
 
@@ -5535,7 +5537,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.classList.add("celda-noche");
                         }
 									
-						if (indicesInicioDia.includes(i)) {
+						if (setInicioDia.has(i)) {
 						td.classList.add("borde-grueso-izquierda");
 						}
 						
@@ -5582,7 +5584,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 td.style.borderRight = "1px solid #000";
                             }
 					        if (cacheEsNoche[i]) td.classList.add("celda-noche");
-					        if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
+					        if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
 					        // Si no hay datos de altura en el JSON, mostramos un guión
 					        if (arr80[i] === undefined && arr120[i] === undefined && arr180[i] === undefined) {
@@ -5739,7 +5741,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             const td = document.createElement("td");
                             td.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[i]) td.classList.add("celda-noche");
-                            if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
+                            if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
                             td.textContent = val !== null ? Math.round(Number(val)) : "—";
                             td.title = val !== null ? `${Math.round(Number(val))} km/h` : "N/A";
@@ -5754,7 +5756,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             const td = document.createElement("td");
                             td.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[i]) td.classList.add("celda-noche");
-                            if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
+                            if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
                             if (val === null) {
                                 td.textContent = "—";
