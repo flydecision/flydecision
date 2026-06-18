@@ -4524,6 +4524,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
         const setInicioDia = new Set(indicesInicioDia);
 
+        // Creamos un bucle que va EXACTAMENTE desde el inicio del slider hasta el fin del slider. Le añadimos Math.min() como medida de seguridad por si el JSON tiene menos horas de las esperadas.
+        const limiteFin = Math.min(indiceFinRangoHorario, horas.length - 1);
+
+
         // 🔃 Bucle principal que recorre cada despegue
         for (let idx = 0; idx < despegues.length; idx++) {
             const d = despegues[idx];
@@ -5191,13 +5195,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     // Helper para renderizar los datos del nuevo JSON ECMWF rápidamente
                     const renderEcmwfData = (tr, dataArr, formatFn, fontSize, colorFn, paddingBottom = "0px", titleFn = null) => {
                         if (!tr || !dataArr) return;
-                        dataArr.slice(0, horas.length).forEach((val, i) => {
-                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-                            const td = document.createElement("td");
+                        
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            let val = dataArr[i];
                             
+                            const td = document.createElement("td");
                             let appliedColor = false;
                             
-                            // 1. Aplicamos el color de fondo si existe la regla
                             if (colorFn) {
                                 const colorClass = colorFn(val, i);
                                 if (colorClass) {
@@ -5210,7 +5214,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 td.title = titleFn(val, i);
                             }
                             
-                            // 2. Gestionamos modo Noche y fondo blanco por defecto
                             if (cacheEsNoche[i]) {
                                 td.classList.add("celda-noche");
                             } else if (!appliedColor) {
@@ -5219,17 +5222,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             
                             if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
                             
-                            if (fontSize) {
-                                td.style.setProperty('font-size', fontSize, 'important');
-                            }
-
-                            if (paddingBottom) {
-                                td.style.paddingBottom = paddingBottom;
-                            }
+                            if (fontSize) td.style.setProperty('font-size', fontSize, 'important');
+                            if (paddingBottom) td.style.paddingBottom = paddingBottom;
                             
                             td.textContent = formatFn(val, i);
                             tr.appendChild(td);
-                        });
+                        }
                     };
 
                     // Datos ECMWF Grupo 1 (Precipitaciones, nubes bajas)
@@ -5339,12 +5337,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         const arr80  = hourlyData.wind_speed_80m  || [];
                         const arr10  = hourlyData.wind_speed_10m  || []; // Necesario para comparar
 
-                        // Función helper para pintar celdas de altura
+                        // Función helper para pintar celdas de altura optimizada
                         const pintarCeldaAltura = (tr, dataArray, alturaKey) => {
-                            dataArray.slice(0, horas.length).forEach((rawVal, i) => {
-                                if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
+                            // Ya no hacemos dataArray.slice().forEach(...)
+                            for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                                
+                                let rawVal = dataArray[i]; // Leemos directamente
 
                                 const td = document.createElement("td");
+                                
+                                // Optimizaciones de caché y Set
                                 if (cacheEsNoche[i]) td.classList.add("celda-noche");
                                 if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
@@ -5406,7 +5408,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 td.classList.add(claseColor);
                                 td.title = `${valAltura} km/h a ${alturaKey}\n\n${motivo}`;
                                 tr.appendChild(td);
-                            });
+                            }
                         };
 
                         // Pasamos la clave "80m", "120m" para que busque en el objeto LIMITES_CIZALLADURA
@@ -5429,10 +5431,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 					
 					// Ponemos esta constante fuera del bucle para no calcularla 100 veces
                     const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
-
-                    // Creamos un bucle que va EXACTAMENTE desde el inicio del slider hasta el fin del slider.
-                    // Le añadimos Math.min() como medida de seguridad por si el JSON tiene menos horas de las esperadas.
-                    const limiteFin = Math.min(indiceFinRangoHorario, horas.length - 1);
 
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
@@ -5556,85 +5554,70 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     }
 
                     // ⚪ Cizalladura / Fiabilidad *****************************
+                    if (chkMostrarCizalladura) {
+                        const arr180 = hourlyData.wind_speed_180m || [];
+                        const arr120 = hourlyData.wind_speed_120m || [];
+                        const arr80  = hourlyData.wind_speed_80m  || [];
+                        const arr10  = hourlyData.wind_speed_10m  || []; 
 
-					if (chkMostrarCizalladura) {
-					    const arr180 = hourlyData.wind_speed_180m ||[];
-					    const arr120 = hourlyData.wind_speed_120m ||[];
-					    const arr80  = hourlyData.wind_speed_80m  ||[];
-					    const arr10  = hourlyData.wind_speed_10m  ||[]; 
+                        // TRUCO OPTIMIZACIÓN: Sacamos los textos fijos fuera del bucle
+                        const txtBaja = t('tabla.cizalladura.baja');
+                        const txtMotivoBajo = t('tabla.cizalladura.motivoBajo');
+                        const txtAlta = t('tabla.cizalladura.alta');
+                        const txtMedia = t('tabla.cizalladura.media');
 
-					    arr10.slice(0, horas.length).forEach((vel10Raw, i) => {
-					        if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-
-					        const td = document.createElement("td");
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            
+                            const td = document.createElement("td");
                             td.classList.add("celda-altura-4px");
-                            //td.style.cursor = "help";
                             td.style.borderTop = "1px solid #000";
                             td.style.borderBottom = "1px solid #000";
-                            // Solo ponemos la línea derecha si NO es la última celda visible
+                            
                             if (i !== indiceFinRangoHorario) {
                                 td.style.borderRight = "1px solid #000";
                             }
-					        if (cacheEsNoche[i]) td.classList.add("celda-noche");
-					        if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+                            if (cacheEsNoche[i]) td.classList.add("celda-noche");
+                            if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
-					        // Si no hay datos de altura en el JSON, mostramos un guión
-					        if (arr80[i] === undefined && arr120[i] === undefined && arr180[i] === undefined) {
-					            td.textContent = "-";
-					            filaCizalladura.appendChild(td);
-					            return;
-					        }
+                            if (arr80[i] === undefined && arr120[i] === undefined && arr180[i] === undefined) {
+                                td.textContent = "-";
+                                filaCizalladura.appendChild(td);
+                                continue; // Equivalente a return en un bucle for
+                            }
 
-					        const vel80 = arr80[i] !== undefined ? Math.round(Math.max(0, arr80[i])) : 0;
-					        const vel120 = arr120[i] !== undefined ? Math.round(Math.max(0, arr120[i])) : 0;
-					        const vel180 = arr180[i] !== undefined ? Math.round(Math.max(0, arr180[i])) : 0;
-					        const vel10 = Math.round(Math.max(0, vel10Raw));
+                            const vel80 = arr80[i] !== undefined ? Math.round(Math.max(0, arr80[i])) : 0;
+                            const vel120 = arr120[i] !== undefined ? Math.round(Math.max(0, arr120[i])) : 0;
+                            const vel180 = arr180[i] !== undefined ? Math.round(Math.max(0, arr180[i])) : 0;
+                            
+                            // Leemos directo sin vel10Raw
+                            const vel10 = Math.round(Math.max(0, arr10[i]));
 
-					        const vientoMaxAltura = Math.max(vel80, vel120, vel180);
-					        const delta = vientoMaxAltura - vel10;
-					        const vel10Calculo = Math.max(8, vel10);
-					        const ratio = vientoMaxAltura / vel10Calculo;
+                            const vientoMaxAltura = Math.max(vel80, vel120, vel180);
+                            const delta = vientoMaxAltura - vel10;
+                            const vel10Calculo = Math.max(8, vel10);
+                            const ratio = vientoMaxAltura / vel10Calculo;
 
-					        let colorCizalladura = "fondo-verde";
-					        let textoCelda = delta > 0 ? `+${delta}` : `${delta}`;
+                            let colorCizalladura = "fondo-verde";
+                            let textoResultado = txtBaja;
+                            let motivoCalculo = txtMotivoBajo;
 
-                            let iconoResultado = "🟩";
-                            let textoResultado = t('tabla.cizalladura.baja');
-                            let motivoCalculo = t('tabla.cizalladura.motivoBajo');
-
-                            // 🔴 ROJO (Peligro alto / Fiabilidad baja)
                             if (ratio > 2.0 && delta > 12) {
                                 colorCizalladura = "fondo-rojo";
-                                iconoResultado = "🟥";
-                                textoResultado = t('tabla.cizalladura.alta');
-                                // Pasamos ratio y delta como variables para la traducción
-                                motivoCalculo = t('tabla.cizalladura.motivoAlto', { 
-                                    ratio: ratio.toFixed(1), 
-                                    delta: delta 
-                                });
+                                textoResultado = txtAlta;
+                                motivoCalculo = t('tabla.cizalladura.motivoAlto', { ratio: ratio.toFixed(1), delta: delta });
                             } 
-                            // 🟡 NARANJA (Atención / Fiabilidad media)
                             else if (ratio > 1.5 && delta > 8) {
                                 colorCizalladura = "fondo-naranja";
-                                iconoResultado = "🟧";
-                                textoResultado = t('tabla.cizalladura.media');
-                                // Pasamos ratio y delta como variables para la traducción
-                                motivoCalculo = t('tabla.cizalladura.motivoMedio', { 
-                                    ratio: ratio.toFixed(1), 
-                                    delta: delta 
-                                });
+                                textoResultado = txtMedia;
+                                motivoCalculo = t('tabla.cizalladura.motivoMedio', { ratio: ratio.toFixed(1), delta: delta });
                             } 
 
-					        // PINTADO DE LA CELDA
-
-					        td.classList.add(colorCizalladura);
-					        //td.innerHTML = `<span style="font-size: 0.8em; color: #666;">${textoCelda}</span>`;
-
+                            td.classList.add(colorCizalladura);
                             td.title = `${textoResultado}\n${motivoCalculo}`;
 
-					        filaCizalladura.appendChild(td);
-					    });
-					}
+                            filaCizalladura.appendChild(td);
+                        }
+                    }
 
                     // Datos ECMWF Grupo 2 (XC)
                     if (hourlyEcmwf) {
@@ -5725,11 +5708,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         });
                     }
 
-                    // NUEVO: Funciones de renderizado neutro para el Grupo de Viento ECMWF (Usando datos de hourlyEcmwf)
+                    // NUEVO: Funciones de renderizado neutro para el Grupo de Viento ECMWF
                     const renderEcmwfSpeedCell = (tr, speedArr) => {
                         if (!tr || !speedArr) return;
-                        speedArr.slice(0, horas.length).forEach((val, i) => {
-                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            let val = speedArr[i];
                             const td = document.createElement("td");
                             td.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[i]) td.classList.add("celda-noche");
@@ -5738,13 +5721,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.textContent = val !== null ? Math.round(Number(val)) : "—";
                             td.title = val !== null ? `${Math.round(Number(val))} km/h` : "N/A";
                             tr.appendChild(td);
-                        });
+                        }
                     };
 
                     const renderEcmwfDirCell = (tr, dirArr) => {
                         if (!tr || !dirArr) return;
-                        dirArr.slice(0, horas.length).forEach((val, i) => {
-                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            let val = dirArr[i];
                             const td = document.createElement("td");
                             td.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[i]) td.classList.add("celda-noche");
@@ -5762,7 +5745,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 td.title = `${dir}º`;
                             }
                             tr.appendChild(td);
-                        });
+                        }
                     };
 
                     // Función matemática de interpolación de viento vectorial mediante geopotenciales para la altitud real
@@ -5842,13 +5825,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             const tdVel = document.createElement("td");
                             tdVel.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[indiceHora]) tdVel.classList.add("celda-noche");
-                            if (indicesInicioDia.includes(indiceHora)) tdVel.classList.add("borde-grueso-izquierda");
+                            if (setInicioDia.has(indiceHora)) tdVel.classList.add("borde-grueso-izquierda");
                             tdVel.style.fontSize = "12px";
 
                             const tdDir = document.createElement("td");
                             tdDir.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[indiceHora]) tdDir.classList.add("celda-noche");
-                            if (indicesInicioDia.includes(indiceHora)) tdDir.classList.add("borde-grueso-izquierda");
+                            if (setInicioDia.has(indiceHora)) tdDir.classList.add("borde-grueso-izquierda");
                             tdDir.style.fontSize = "12px";
 
                             if (!hourlyEcmwf) {
@@ -5893,9 +5876,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             trDir.appendChild(tdDir);
                         };
 
-                        horas.forEach((_, i) => {
-                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             // Ejecutamos la interpolación para cada piso en altitud fija
                             crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i);
                             crearCeldasInterpoladas(filaEcmwfVel1500, filaEcmwfDir1500, 1500, 1500, i);
@@ -5904,7 +5885,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                             // Interpolación maestra para la altitud real del despegue
                             crearCeldasInterpoladas(filaEcmwfValt, filaEcmwfDalt, altReal, altReal, i);
-                        });
+                        }
 
                         // 3. APLICAR BORDES ITERANDO CELDA POR CELDA (Como en el bloque de 80m/10m)
                         
