@@ -3510,6 +3510,8 @@ const leerDeCacheIDB = async (key) => {
 
 
 async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
+
+    window.ultimoConstruirTablaSilencioso = silencioso;
 	
     // 1. REGISTRO DE CONCURRENCIA: Asignamos un número único a esta llamada
     const miIdLlamada = ++ultimoIdLlamadaTabla;
@@ -6322,17 +6324,14 @@ function ejecutarOperacionPesada(tareaCallback) {
 
     // Pausa de 120ms para que se dibuje el spinner
     setTimeout(() => {
-        // 1. Memorizamos el ID de la tabla antes de ejecutar la tarea
         const idAntes = ultimoIdLlamadaTabla;
 
-        // 2. Ejecutamos la tarea (ej: cambiar el día del slider)
         tareaCallback();
 
-        // 3. INTELIGENCIA: Si la tarea ha llamado a construir_tabla(), "ultimoIdLlamadaTabla" habrá aumentado.
-        // En ese caso, NO ocultamos el loader desde aquí. Dejamos que sea la propia construir_tabla()
-        // la que lo oculte al final de su renderizado.
-        if (ultimoIdLlamadaTabla === idAntes) {
-            ocultarLoading(); // Solo lo ocultamos si era una tarea simple (como aplicar un filtro rápido)
+        // Si la tabla no se ha llamado, O si se ha llamado pero de forma silenciosa (como en el mapa),
+        // apagamos el spinner inmediatamente aquí.
+        if (ultimoIdLlamadaTabla === idAntes || window.ultimoConstruirTablaSilencioso) {
+            ocultarLoading();
         }
     }, 120); 
 }
