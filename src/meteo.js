@@ -4529,11 +4529,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         for (let idx = 0; idx < despegues.length; idx++) {
             const d = despegues[idx];
 
-            // Liberamos la CPU 1 milisegundo cada 15 despegues. Como no hemos borrado la tabla, NO habrá parpadeo.
-            if (idx > 0 && idx % 15 === 0) {
-                await new Promise(resolve => setTimeout(resolve, 0));
-            }
-
             const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
             const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
             const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0;
@@ -6032,17 +6027,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			if (chk) chk.checked = true;
 			document.body.classList.add("solo-dia");
 		}
-		
-        // 3. PAUSA MÁGICA: Obligamos al código a esperar 50 milisegundos.
-        // Esto le da tiempo al navegador a "dibujar" la nueva tabla en la pantalla 
-        // MIENTRAS el spinner sigue dando vueltas tapándolo todo.
-        await new Promise(resolve => setTimeout(resolve, 50));
 
         // 4. Lógica de salida: con o sin animación
 		if (!silencioso) {
-			ocultarLoading(); // Ahora sí, con la tabla dibujada, quitamos el spinner
-
 			setTimeout(() => {
+
+                ocultarLoading(); 
+
                 localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
                 localStorage.removeItem('METEO_CRASH_COUNTER');
                 
@@ -6073,7 +6064,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     window.scrollTo(scrollOptions);
                     window.necesitaScrollTopMeteo = false;
                 }
-            }, 50); // Lo bajamos de 100 a 50 porque ya hemos esperado 50ms arriba
+            }, 50); 
 		} else {
 			// En modo silencioso no tocamos el scroll ni mostramos loader
 			localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
@@ -6322,17 +6313,27 @@ const ocultarLoading = () => {
     }
 };
 
-/* Envuelve operaciones pesadas síncronas. Fuerza al navegador a pintar el spinner ANTES de congelarse calculando. */
+/* Envuelve operaciones pesadas. Fuerza al navegador a pintar el spinner ANTES de congelarse calculando y es inteligente al ocultarlo. */
 function ejecutarOperacionPesada(tareaCallback) {
     const overlay = document.getElementById('msgActualizando...');
     if (overlay) {
         overlay.classList.add('loader-activo');
     }
 
-    // Pausa sincronizada de 120ms
+    // Pausa de 120ms para que se dibuje el spinner
     setTimeout(() => {
+        // 1. Memorizamos el ID de la tabla antes de ejecutar la tarea
+        const idAntes = ultimoIdLlamadaTabla;
+
+        // 2. Ejecutamos la tarea (ej: cambiar el día del slider)
         tareaCallback();
-        ocultarLoading();
+
+        // 3. INTELIGENCIA: Si la tarea ha llamado a construir_tabla(), "ultimoIdLlamadaTabla" habrá aumentado.
+        // En ese caso, NO ocultamos el loader desde aquí. Dejamos que sea la propia construir_tabla()
+        // la que lo oculte al final de su renderizado.
+        if (ultimoIdLlamadaTabla === idAntes) {
+            ocultarLoading(); // Solo lo ocultamos si era una tarea simple (como aplicar un filtro rápido)
+        }
     }, 120); 
 }
 
