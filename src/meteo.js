@@ -6322,7 +6322,6 @@ function ejecutarOperacionPesada(tareaCallback) {
         overlay.classList.add('loader-activo');
     }
 
-    // Pausa de 120ms para que se dibuje el spinner
     setTimeout(() => {
         const idAntes = ultimoIdLlamadaTabla;
 
@@ -6333,7 +6332,7 @@ function ejecutarOperacionPesada(tareaCallback) {
         if (ultimoIdLlamadaTabla === idAntes || window.ultimoConstruirTablaSilencioso) {
             ocultarLoading();
         }
-    }, 100); 
+    }, 50); 
 }
 
 // Genera un icono de 5 barras tipo "cobertura" según la actividad (1 a 5)
