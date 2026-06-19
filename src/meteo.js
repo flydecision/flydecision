@@ -4526,6 +4526,19 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // Creamos un bucle que va EXACTAMENTE desde el inicio del slider hasta el fin del slider. Le añadimos Math.min() como medida de seguridad por si el JSON tiene menos horas de las esperadas.
         const limiteFin = Math.min(indiceFinRangoHorario, horas.length - 1);
 
+        const coloresNota = [
+            "#fb796e", // 0  — Rojo (ancla)
+            "#f9876d", // 1
+            "#f7966c", // 2
+            "#f4a46c", // 3
+            "#f2b36b", // 4
+            "#f0c16a", // 5  — Naranja (ancla)
+            "#d5ca78", // 6
+            "#bbd386", // 7
+            "#a0dd93", // 8
+            "#86e6a1", // 9
+            "#6befaf"  // 10 — Verde (ancla)
+        ];
 
         // 🔃 Bucle principal que recorre cada despegue
         for (let idx = 0; idx < despegues.length; idx++) {
@@ -4801,9 +4814,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			
 			tdDespegue.title = titleText;
 			
-			const gradosOrientacion = d["Orientaciones_Grados"]
-				? d["Orientaciones_Grados"].split(',').map(g => parseInt(g.trim(), 10))
-				: [];
+			const gradosOrientacion = orientaciones || [];
 
 			const svgFlechasHTML = gradosOrientacion.map(grado => {
 				return `
@@ -5896,26 +5907,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 tdCondiciones.title = "Sin datos suficientes para puntuar";
             }
 			
-            // const coloresNota =[
-            //     "#fb796e", // 0  (Rojo inicial)
-            //     "#ffa500", // 5  (Naranja medio intermedio)
-            //     "#6befaf"  // 10 (Verde final)
-            // ];
-
-            const coloresNota = [
-                "#fb796e", // 0  — Rojo (ancla)
-                "#f9876d", // 1
-                "#f7966c", // 2
-                "#f4a46c", // 3
-                "#f2b36b", // 4
-                "#f0c16a", // 5  — Naranja (ancla)
-                "#d5ca78", // 6
-                "#bbd386", // 7
-                "#a0dd93", // 8
-                "#86e6a1", // 9
-                "#6befaf"  // 10 — Verde (ancla)
-            ];
-
             if (valorVisual !== "-") {
                 // El color ahora responde a la notaFinal2 (valorVisual)
                 tdCondiciones.style.backgroundColor = coloresNota[valorVisual];
