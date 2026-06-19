@@ -4540,6 +4540,50 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             "#6befaf"  // 10 — Verde (ancla)
         ];
 
+        // ⚡ Pre-cálculo: traducciones estáticas (no dependen del despegue ni de la hora)
+        const labelViento180 = t('tabla.viento_altura', { metros: 180 });
+        const labelViento120 = t('tabla.viento_altura', { metros: 120 });
+        const labelViento80  = t('tabla.viento_altura', { metros: 80 });
+        const tituloViento180 = t('tabla.tooltips.viento180m');
+        const tituloViento120 = t('tabla.tooltips.viento120m');
+        const tituloViento80  = t('tabla.tooltips.viento80m');
+        const labelViento10  = t('tabla.viento_altura', { metros: 10 });
+        const tituloViento10 = t('tabla.tooltips.viento10m');
+        const tituloRacha10 = t('tabla.tooltips.racha10m');
+        const tituloDireccion10 = t('tabla.tooltips.direccion10m');
+        const tituloCizalladura = t('tabla.tooltips.cizalladura');
+        const labelTecho = t('tabla.labels.techo');
+        const labelCape  = t('tabla.labels.cape');
+        const labelCin   = t('tabla.labels.cin');
+        const tituloTecho = t('tabla.tooltips.techo');
+        const tituloCape  = t('tabla.tooltips.cape');
+        const tituloCin   = t('tabla.tooltips.cin');
+        const tituloMeteoGeneral = t('tabla.tooltips.meteoGeneral');
+        const tituloPrecipitacion = t('tabla.tooltips.precipitacion');
+        const tituloProbPrecipitacion = t('tabla.tooltips.probPrecipitacion');
+        const tituloBaseNube = t('tabla.tooltips.baseNube');
+        const tituloEcmwf3000 = t('tabla.tooltips.3000mECMWF');
+        const tituloEcmwfDir3000 = t('tabla.tooltips.Direccion3000mECMWF');
+        const tituloEcmwf1500 = t('tabla.tooltips.1500mECMWF');
+        const tituloEcmwfDir1500 = t('tabla.tooltips.Direccion1500mECMWF');
+        const tituloEcmwf1000 = t('tabla.tooltips.1000mECMWF');
+        const tituloEcmwfDir1000 = t('tabla.tooltips.Direccion1000mECMWF');
+        const tituloEcmwf500 = t('tabla.tooltips.500mECMWF');
+        const tituloEcmwfDir500 = t('tabla.tooltips.Direccion500mECMWF');
+        const tituloEcmwf200 = t('tabla.tooltips.AGL200mECMWF');
+        const tituloEcmwfDir200 = t('tabla.tooltips.DireccionAGL200mECMWF');
+        const tituloEcmwf100 = t('tabla.tooltips.AGL100mECMWF');
+        const tituloEcmwfDir100 = t('tabla.tooltips.DireccionAGL100mECMWF');
+        const tituloEcmwf10 = t('tabla.tooltips.AGL10mECMWF');
+        const tituloEcmwfDir10 = t('tabla.tooltips.DireccionAGL10mECMWF');
+        const tituloEcmwfRacha10 = t('tabla.tooltips.RachaAGL10mECMWF');
+        const tituloEcmwfValt = t('tabla.tooltips.VelocidadAltitudRealECMWF');
+        const tituloEcmwfDalt = t('tabla.tooltips.DireccionAltitudRealECMWF');
+        const tituloCizalladuraBaja = t('tabla.cizalladura.baja');
+        const tituloCizalladuraMotivoBajo = t('tabla.cizalladura.motivoBajo');
+        const tituloCizalladuraAlta = t('tabla.cizalladura.alta');
+        const tituloCizalladuraMedia = t('tabla.cizalladura.media');
+
         // 🔃 Bucle principal que recorre cada despegue
         for (let idx = 0; idx < despegues.length; idx++) {
             const d = despegues[idx];
@@ -5066,16 +5110,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 };
 
                 // Iconos Grupo 1: ECMWF (Precipitación, Nubes bajas)
-                addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', t('tabla.tooltips.meteoGeneral'));
-                addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', t('tabla.tooltips.precipitacion'));
-                addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', t('tabla.tooltips.probPrecipitacion'));
+                addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', tituloMeteoGeneral);
+                addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', tituloPrecipitacion);
+                addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', tituloProbPrecipitacion);
 
                 // Velocidades alturas
                 if (chkMostrarVientoAlturas) {
                     const alturas = [
-                        { tr: fila180, label: t('tabla.viento_altura', { metros: 180 }), title: t('tabla.tooltips.viento180m') },
-                        { tr: fila120, label: t('tabla.viento_altura', { metros: 120 }), title: t('tabla.tooltips.viento120m') },
-                        { tr: fila80,  label: t('tabla.viento_altura', { metros: 80 }),  title: t('tabla.tooltips.viento80m') }
+                        { tr: fila180, label: labelViento180, title: tituloViento180 },
+                        { tr: fila120, label: labelViento120, title: tituloViento120 },
+                        { tr: fila80,  label: labelViento80,  title: tituloViento80 }
                     ];
 
                     alturas.forEach(item => {
@@ -5090,10 +5134,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 // Velocidad 10 m
                 const tdIconoVelocidad = document.createElement("td");
-                // Traducimos la etiqueta "10 m" usando la misma lógica que las alturas superiores
-                const label10m = t('tabla.viento_altura', { metros: 10 });
-                tdIconoVelocidad.innerHTML = `<span style="font-size:10px; font-weight:bold;">${label10m}</span>`;
-                tdIconoVelocidad.setAttribute("title", t('tabla.tooltips.viento10m'));
+                tdIconoVelocidad.innerHTML = `<span style="font-size:10px; font-weight:bold;">${labelViento10}</span>`;
+                tdIconoVelocidad.setAttribute("title", tituloViento10);
                 tdIconoVelocidad.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
 
                 filaVel.appendChild(tdIconoVelocidad);	 	 	 	
@@ -5101,7 +5143,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // Racha 10 m
                 const tdIconoRacha = document.createElement("td");	
                 tdIconoRacha.innerHTML = '<img src="icons/icono_racha_48x42.webp" width="16" height="14">';
-                tdIconoRacha.setAttribute("title", t('tabla.tooltips.racha10m'));
+                tdIconoRacha.setAttribute("title", tituloRacha10);
                 /* Añadir clase para asegurar la posición fija */
                 tdIconoRacha.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
 				
@@ -5118,7 +5160,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 				// Dirección 10 m
                 const tdIconoDireccion = document.createElement("td");	
                 tdIconoDireccion.innerHTML = '<img src="icons/icono_direccion_45.webp" width="15" height="15">';
-                tdIconoDireccion.setAttribute("title", t('tabla.tooltips.direccion10m'));	
+                tdIconoDireccion.setAttribute("title", tituloDireccion10);	
                 tdIconoDireccion.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
 
                 // Forzamos altura a 20px
@@ -5136,7 +5178,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     const tdIconoCiz = document.createElement("td");	
                     tdIconoCiz.innerHTML = '';
                     tdIconoCiz.style.background = "linear-gradient(to right, #6befaf 33.3%, #f0c16a 33.3%, #f0c16a 66.6%, #fb796e 66.6%)";
-                    tdIconoCiz.setAttribute("title", t('tabla.tooltips.cizalladura'));	
+                    tdIconoCiz.setAttribute("title", tituloCizalladura);	
                     tdIconoCiz.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda", "celda-altura-4px");
                     tdIconoCiz.style.borderTop = "1px solid #000";
                     tdIconoCiz.style.borderBottom = "1px solid #000";
@@ -5146,9 +5188,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 // Iconos Grupo 2: XC
                 // Nota: He creado claves para los nombres de las etiquetas (Techo, CAPE, CIN) para que cambien en inglés
-                addIconCell(filaTecho, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.techo')}</span>`, t('tabla.tooltips.techo'));
-                addIconCell(filaCape, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.cape')}</span>`, t('tabla.tooltips.cape'));
-                addIconCell(filaCin, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.cin')}</span>`, t('tabla.tooltips.cin'));
+                addIconCell(filaTecho, `<span style="font-size:10px; font-weight:bold;">${labelTecho}</span>`, tituloTecho);
+                addIconCell(filaCape, `<span style="font-size:10px; font-weight:bold;">${labelCape}</span>`, tituloCape);
+                addIconCell(filaCin, `<span style="font-size:10px; font-weight:bold;">${labelCin}</span>`, tituloCin);
 
                 // Iconos del Grupo: Viento ECMWF (beta) con clase ecmwf-neutral
                 const addIconCellEcmwf = (tr, html, title) => {
@@ -5160,32 +5202,31 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tr.appendChild(td);
                 };
 
-                addIconCellEcmwf(filaEcmwfVel3000, "<span style='position: relative; top: -1px; display: inline-block;'>3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.3000mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion3000mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel3000, "<span style='position: relative; top: -1px; display: inline-block;'>3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf3000);
+                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir3000);
 
-                addIconCellEcmwf(filaEcmwfVel1500, "<span style='position: relative; top: -1px; display: inline-block;'>1500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.1500mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion1500mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel1500, "<span style='position: relative; top: -1px; display: inline-block;'>1500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf1500);
+                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1500);
 
-                addIconCellEcmwf(filaEcmwfVel1000, "<span style='position: relative; top: -1px; display: inline-block;'>1000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.1000mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion1000mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel1000, "<span style='position: relative; top: -1px; display: inline-block;'>1000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf1000);
+                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1000);
 
-                addIconCellEcmwf(filaEcmwfVel500, "<span style='position: relative; top: -1px; display: inline-block;'>500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.500mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion500mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel500, "<span style='position: relative; top: -1px; display: inline-block;'>500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf500);
+                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir500);
 
-                addIconCellEcmwf(filaEcmwfVel200, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>200 m</span>", t('tabla.tooltips.AGL200mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL200mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel200, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>200 m</span>", tituloEcmwf200);
+                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir200);
                 
-                addIconCellEcmwf(filaEcmwfVel100, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>100 m</span>", t('tabla.tooltips.AGL100mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL100mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel100, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>100 m</span>", tituloEcmwf100);
+                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir100);
                 
-                addIconCellEcmwf(filaEcmwfVel10, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>10 m</span>", t('tabla.tooltips.AGL10mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL10mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel10, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>10 m</span>", tituloEcmwf10);
+                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir10);
                 
-                // A la racha no se le aplica el "top: -3px" porque no es texto, pero sí se centra si lo requiere (la he dejado como estaba ya que no se solicitó moverla)
-                addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', t('tabla.tooltips.RachaAGL10mECMWF'));
+                addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', tituloEcmwfRacha10);
 
-                addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>`, `${t('tabla.tooltips.VelocidadAltitudRealECMWF')}`);
-                addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', `${t('tabla.tooltips.DireccionAltitudRealECMWF')}`);
+                addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>`, tituloEcmwfValt);
+                addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDalt);
 
 				// ---------------------------------------------------------------
 				// ⚪ CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Columnas de datos por hora
