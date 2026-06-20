@@ -4584,6 +4584,24 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         const tituloCizalladuraAlta = t('tabla.cizalladura.alta');
         const tituloCizalladuraMedia = t('tabla.cizalladura.media');
 
+        // ⚡ Plantilla SVG de flecha de viento: se crea UNA vez y se clona por cada celda,
+        // evitando que el navegador parsee la cadena <svg>...</svg> como HTML miles de veces.
+        const SVGNS = "http://www.w3.org/2000/svg";
+        const plantillaFlechaViento = document.createElementNS(SVGNS, "svg");
+        plantillaFlechaViento.setAttribute("class", "flecha-viento");
+        plantillaFlechaViento.setAttribute("viewBox", "0 0 30 36");
+        const polygonFlechaViento = document.createElementNS(SVGNS, "polygon");
+        polygonFlechaViento.setAttribute("points", "15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20");
+        polygonFlechaViento.setAttribute("fill", "black");
+        plantillaFlechaViento.appendChild(polygonFlechaViento);
+
+        // Helper: clona la plantilla y le aplica la rotación correspondiente a la dirección del viento
+        const crearFlechaViento = (gradosDireccion) => {
+            const nodo = plantillaFlechaViento.cloneNode(true);
+            nodo.style.transform = `rotate(${gradosDireccion + 180}deg)`;
+            return nodo;
+        };
+
         // 🔃 Bucle principal que recorre cada despegue
         for (let idx = 0; idx < despegues.length; idx++) {
             const d = despegues[idx];
@@ -5536,13 +5554,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         td.classList.add(colorPorDiferencia(minimoAnguloDiferencia));
 
-                        // Inyectar el icono SVG
-                        td.innerHTML = `
-                            <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg);">
-                                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
-                            </svg>
-                        `;
-                            
+						td.appendChild(crearFlechaViento(dir));
+							
                         td.title = `${dir}º`;
 
                         filaDir.appendChild(td);
@@ -5730,7 +5743,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             if (bordeBottomPx) td.style.borderBottom = bordeBottomPx;
 
                             if (!debeMostrarse) {
-                                // Despegue colapsado: placeholder, sin calcular grados ni dibujar el SVG de la flecha
                                 td.textContent = "…";
                             } else {
                                 let val = dirArr[i];
@@ -5738,11 +5750,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     td.textContent = "—";
                                 } else {
                                     const dir = Math.round(Number(val));
-                                    td.innerHTML = `
-                                        <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg);">
-                                            <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
-                                        </svg>
-                                    `;
+                                    td.appendChild(crearFlechaViento(dir));
                                     td.title = `${dir}º`;
                                 }
                             }
@@ -5873,11 +5881,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     tdVel.textContent = vRound;
                                     tdVel.title = `${vRound} km/h (Velocidad interpolada verticalmente para la altura de ${altInfo} m)`;
 
-                                    tdDir.innerHTML = `
-                                        <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dRound + 180}deg);">
-                                            <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
-                                        </svg>
-                                    `;
+                                    tdDir.appendChild(crearFlechaViento(dRound));
                                     tdDir.title = `${dRound}º (Dirección interpolada verticalmente para la altura de ${altInfo} m)`;
                                 }
                             }
