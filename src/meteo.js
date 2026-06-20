@@ -5656,20 +5656,33 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                             // === 1. TECHO ===
                             let vTecho = hourlyEcmwf.boundary_layer_height[i];
-                            let txtTecho = "", colorTecho = "", bgTecho = "";
+                            let txtTecho = "", colorTecho = "", bgTecho = "", titleTecho = "";
                             
                             if (vTecho != null) {
-                                let espesorUtil = Math.round(Number(vTecho) * RATIO_TECHO_UTIL);
+                                let espesorBLH = Math.round(Number(vTecho));
+                                let espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
                                 let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
+                                
                                 let valorTexto = (altitudMSL / 1000).toFixed(1);
                                 txtTecho = (valorTexto === "0.0") ? "0" : valorTexto;
                                 
                                 if (espesorUtil < XCTechoLims.rojo) colorTecho = "fondo-rojo";
                                 else if (espesorUtil >= XCTechoLims.verde) colorTecho = "fondo-verde";
                                 else colorTecho = "fondo-naranja";
+
+                                const textoTooltipOriginal = t('tabla.techoTooltip', {
+                                    altitudMSL: altitudMSL,
+                                    espesorUtil: espesorUtil,
+                                    pct: Math.round(RATIO_TECHO_UTIL * 100),
+                                    blh: espesorBLH,
+                                    elevacion: Math.round(elevacionModeloECMWF)
+                                });
+
+                                // Protegemos el texto por si tiene comillas que puedan romper el atributo HTML
+                                titleTecho = `title="${textoTooltipOriginal.replace(/"/g, '&quot;')}"`;
                             }
                             bgTecho = (!cacheEsNoche[i] && !colorTecho) ? 'background-color: #ffffff;' : '';
-                            htmlTecho += `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; ${bgTecho}">${txtTecho}</td>`;
+                            htmlTecho += `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; ${bgTecho}" ${titleTecho}>${txtTecho}</td>`;
 
                             // === 2. CAPE ===
                             let vCape = hourlyEcmwf.cape[i];
