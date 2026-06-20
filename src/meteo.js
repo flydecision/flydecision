@@ -5117,9 +5117,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // Velocidades alturas
                 if (chkMostrarVientoAlturas) {
                     const alturas = [
-                        { tr: fila180, label: labelViento180, title: tituloViento180 },
+                        { tr: fila180, label: labelViento180, title: tituloViento180, bordeTop: true },
                         { tr: fila120, label: labelViento120, title: tituloViento120 },
-                        { tr: fila80,  label: labelViento80,  title: tituloViento80 }
+                        { tr: fila80,  label: labelViento80,  title: tituloViento80,  bordeBottom: true }
                     ];
 
                     alturas.forEach(item => {
@@ -5128,6 +5128,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         td.innerHTML = `<span style="font-size:10px; font-weight:bold;">${item.label}</span>`;
                         td.setAttribute("title", item.title);
                         td.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
+                        if (item.bordeTop) td.style.borderTop = "1px solid #000";
+                        if (item.bordeBottom) td.style.borderBottom = "1px solid #000";
                         item.tr.appendChild(td);
                     });
                 }
@@ -5193,40 +5195,42 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCell(filaCin, `<span style="font-size:10px; font-weight:bold;">${labelCin}</span>`, tituloCin);
 
                 // Iconos del Grupo: Viento ECMWF (beta) con clase ecmwf-neutral
-                const addIconCellEcmwf = (tr, html, title) => {
+                const addIconCellEcmwf = (tr, html, title, bordeTopPx, bordeBottomPx) => {
                     if (!tr) return;
                     const td = document.createElement("td");
                     td.innerHTML = `<span style="font-size:9px;">${html}</span>`;
                     td.setAttribute("title", title);
                     td.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda", "ecmwf-neutral");
+                    if (bordeTopPx) td.style.borderTop = bordeTopPx;
+                    if (bordeBottomPx) td.style.borderBottom = bordeBottomPx;
                     tr.appendChild(td);
                 };
 
-                addIconCellEcmwf(filaEcmwfVel3000, "<span style='position: relative; top: -1px; display: inline-block;'>3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf3000);
-                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir3000);
+                addIconCellEcmwf(filaEcmwfVel3000, "<span style='position: relative; top: -1px; display: inline-block;'>3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf3000, "1px solid #000");
+                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir3000, null, "1px solid #000");
 
                 addIconCellEcmwf(filaEcmwfVel1500, "<span style='position: relative; top: -1px; display: inline-block;'>1500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf1500);
-                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1500);
+                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1500, null, "1px solid #000");
 
                 addIconCellEcmwf(filaEcmwfVel1000, "<span style='position: relative; top: -1px; display: inline-block;'>1000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf1000);
-                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1000);
+                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1000, null, "1px solid #000");
 
                 addIconCellEcmwf(filaEcmwfVel500, "<span style='position: relative; top: -1px; display: inline-block;'>500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf500);
-                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir500);
+                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir500, null, "2px solid #000");
 
                 addIconCellEcmwf(filaEcmwfVel200, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>200 m</span>", tituloEcmwf200);
-                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir200);
+                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir200, null, "1px solid #000");
                 
                 addIconCellEcmwf(filaEcmwfVel100, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>100 m</span>", tituloEcmwf100);
-                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir100);
+                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir100, null, "1px solid #000");
                 
                 addIconCellEcmwf(filaEcmwfVel10, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>10 m</span>", tituloEcmwf10);
-                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir10);
+                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir10, null, "2px solid #000");
                 
                 addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', tituloEcmwfRacha10);
 
                 addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>`, tituloEcmwfValt);
-                addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDalt);
+                addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDalt, null, "2px solid #000");
 
 				// ---------------------------------------------------------------
 				// ⚪ CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Columnas de datos por hora
