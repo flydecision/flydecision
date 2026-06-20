@@ -3510,6 +3510,8 @@ const leerDeCacheIDB = async (key) => {
 
 
 async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
+
+    window.ultimoConstruirTablaSilencioso = silencioso;
 	
     // 1. REGISTRO DE CONCURRENCIA: Asignamos un número único a esta llamada
     const miIdLlamada = ++ultimoIdLlamadaTabla;
@@ -3536,7 +3538,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // Obligamos al código JS a detenerse por completo durante 120ms.
         // Esto le da tiempo de sobra a la transición de CSS (100ms) a completarse
         // y mostrar el spinner en pantalla antes de que comience el cálculo masivo.
-        await new Promise(resolve => setTimeout(resolve, 120));
+        //await new Promise(resolve => setTimeout(resolve, 120));
     }
 
     // 3. SEGURIDAD: Si entró otra llamada mientras esperábamos el temporizador, 
@@ -4134,14 +4136,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // ---------------------------------------------------------------
 
 		const tabla = document.getElementById("tabla");
-		tabla.innerHTML = "";
 
-		const thead = document.createElement("thead");
-		const tbody = document.createElement("tbody");
-		const tbodyFragmento = document.createDocumentFragment();
-
-		tabla.appendChild(thead);
-		tabla.appendChild(tbody);
+        // NO borramos la tabla todavía. Dejamos que el usuario vea la antigua mientras carga.
+        const thead = document.createElement("thead");
+        const tbody = document.createElement("tbody");
+        const tbodyFragmento = document.createDocumentFragment();
 
         // ---------------------------------------------------------------
         // 🟡 CONSTRUCCIÓN DE LA TABLA. Cabecera. Favorito
@@ -4522,9 +4521,91 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             });
         }
 
+        const setInicioDia = new Set(indicesInicioDia);
+
+        // Creamos un bucle que va EXACTAMENTE desde el inicio del slider hasta el fin del slider. Le añadimos Math.min() como medida de seguridad por si el JSON tiene menos horas de las esperadas.
+        const limiteFin = Math.min(indiceFinRangoHorario, horas.length - 1);
+
+        const coloresNota = [
+            "#fb796e", // 0  — Rojo (ancla)
+            "#f9876d", // 1
+            "#f7966c", // 2
+            "#f4a46c", // 3
+            "#f2b36b", // 4
+            "#f0c16a", // 5  — Naranja (ancla)
+            "#d5ca78", // 6
+            "#bbd386", // 7
+            "#a0dd93", // 8
+            "#86e6a1", // 9
+            "#6befaf"  // 10 — Verde (ancla)
+        ];
+
+        // ⚡ Pre-cálculo: traducciones estáticas (no dependen del despegue ni de la hora)
+        const labelViento180 = t('tabla.viento_altura', { metros: 180 });
+        const labelViento120 = t('tabla.viento_altura', { metros: 120 });
+        const labelViento80  = t('tabla.viento_altura', { metros: 80 });
+        const tituloViento180 = t('tabla.tooltips.viento180m');
+        const tituloViento120 = t('tabla.tooltips.viento120m');
+        const tituloViento80  = t('tabla.tooltips.viento80m');
+        const labelViento10  = t('tabla.viento_altura', { metros: 10 });
+        const tituloViento10 = t('tabla.tooltips.viento10m');
+        const tituloRacha10 = t('tabla.tooltips.racha10m');
+        const tituloDireccion10 = t('tabla.tooltips.direccion10m');
+        const tituloCizalladura = t('tabla.tooltips.cizalladura');
+        const labelTecho = t('tabla.labels.techo');
+        const labelCape  = t('tabla.labels.cape');
+        const labelCin   = t('tabla.labels.cin');
+        const tituloTecho = t('tabla.tooltips.techo');
+        const tituloCape  = t('tabla.tooltips.cape');
+        const tituloCin   = t('tabla.tooltips.cin');
+        const tituloMeteoGeneral = t('tabla.tooltips.meteoGeneral');
+        const tituloPrecipitacion = t('tabla.tooltips.precipitacion');
+        const tituloProbPrecipitacion = t('tabla.tooltips.probPrecipitacion');
+        const tituloBaseNube = t('tabla.tooltips.baseNube');
+        const tituloEcmwf3000 = t('tabla.tooltips.3000mECMWF');
+        const tituloEcmwfDir3000 = t('tabla.tooltips.Direccion3000mECMWF');
+        const tituloEcmwf1500 = t('tabla.tooltips.1500mECMWF');
+        const tituloEcmwfDir1500 = t('tabla.tooltips.Direccion1500mECMWF');
+        const tituloEcmwf1000 = t('tabla.tooltips.1000mECMWF');
+        const tituloEcmwfDir1000 = t('tabla.tooltips.Direccion1000mECMWF');
+        const tituloEcmwf500 = t('tabla.tooltips.500mECMWF');
+        const tituloEcmwfDir500 = t('tabla.tooltips.Direccion500mECMWF');
+        const tituloEcmwf200 = t('tabla.tooltips.AGL200mECMWF');
+        const tituloEcmwfDir200 = t('tabla.tooltips.DireccionAGL200mECMWF');
+        const tituloEcmwf100 = t('tabla.tooltips.AGL100mECMWF');
+        const tituloEcmwfDir100 = t('tabla.tooltips.DireccionAGL100mECMWF');
+        const tituloEcmwf10 = t('tabla.tooltips.AGL10mECMWF');
+        const tituloEcmwfDir10 = t('tabla.tooltips.DireccionAGL10mECMWF');
+        const tituloEcmwfRacha10 = t('tabla.tooltips.RachaAGL10mECMWF');
+        const tituloEcmwfValt = t('tabla.tooltips.VelocidadAltitudRealECMWF');
+        const tituloEcmwfDalt = t('tabla.tooltips.DireccionAltitudRealECMWF');
+        const tituloCizalladuraBaja = t('tabla.cizalladura.baja');
+        const tituloCizalladuraMotivoBajo = t('tabla.cizalladura.motivoBajo');
+        const tituloCizalladuraAlta = t('tabla.cizalladura.alta');
+        const tituloCizalladuraMedia = t('tabla.cizalladura.media');
+
+        // ⚡ Plantilla SVG de flecha de viento: se crea UNA vez y se clona por cada celda,
+        // evitando que el navegador parsee la cadena <svg>...</svg> como HTML miles de veces.
+        const SVGNS = "http://www.w3.org/2000/svg";
+        const plantillaFlechaViento = document.createElementNS(SVGNS, "svg");
+        plantillaFlechaViento.setAttribute("class", "flecha-viento");
+        plantillaFlechaViento.setAttribute("viewBox", "0 0 30 36");
+        const polygonFlechaViento = document.createElementNS(SVGNS, "polygon");
+        polygonFlechaViento.setAttribute("points", "15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20");
+        polygonFlechaViento.setAttribute("fill", "black");
+        plantillaFlechaViento.appendChild(polygonFlechaViento);
+
+        // Helper: clona la plantilla y le aplica la rotación correspondiente a la dirección del viento
+        const crearFlechaViento = (gradosDireccion) => {
+            const nodo = plantillaFlechaViento.cloneNode(true);
+            nodo.style.transform = `rotate(${gradosDireccion + 180}deg)`;
+            return nodo;
+        };
+
         // 🔃 Bucle principal que recorre cada despegue
-        despegues.forEach((d, idx) => {
-            
+        for (let idx = 0; idx < despegues.length; idx++) {
+            const d = despegues[idx];
+
             const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
             const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
             const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0;
@@ -4568,10 +4649,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // GRUPO 1: Meteo Base + Precipitaciones + Alturas
             const filaNubesTotal = document.createElement("tr");
 
-            let filaPreci, filaProbPreci, filaBaseNube;
+            let filaPreci, filaProbPreci;
             if (chkMostrarPrecipitacion) filaPreci = document.createElement("tr");
             if (chkMostrarProbPrecipitacion) filaProbPreci = document.createElement("tr");
-            //if (chkMostrarBaseNube) filaBaseNube = document.createElement("tr");
 
             let fila180, fila120, fila80;
             
@@ -4640,7 +4720,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 });
             }
 
-            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, fila180, fila120, fila80, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
+            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, fila180, fila120, fila80, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                 filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
@@ -4796,9 +4876,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			
 			tdDespegue.title = titleText;
 			
-			const gradosOrientacion = d["Orientaciones_Grados"]
-				? d["Orientaciones_Grados"].split(',').map(g => parseInt(g.trim(), 10))
-				: [];
+			const gradosOrientacion = orientaciones || [];
 
 			const svgFlechasHTML = gradosOrientacion.map(grado => {
 				return `
@@ -4909,13 +4987,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			
             const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block; color: #777; margin-top: -1px; margin-bottom: 2px;">(${d.Provincia})</span>`;
 
-            const esFavoritoBtn  = obtenerFavoritos().map(Number).includes(Number(d.ID));
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-favorito-tabla"
                     style="position: absolute; bottom: 2px; left: 13px;"
                     onclick="toggleFavoritoDesdeTabla(${d.ID}, this); return false;"
-                    title="${esFavoritoBtn  ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="${esFavoritoBtn  ? '#e00' : 'none'}" stroke="${esFavoritoBtn  ? '#e00' : '#555'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                    title="${esFavorito  ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos')}">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="${esFavorito  ? '#e00' : 'none'}" stroke="${esFavorito  ? '#e00' : '#555'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                     </svg>
                 </button>
@@ -5051,17 +5128,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 };
 
                 // Iconos Grupo 1: ECMWF (Precipitación, Nubes bajas)
-                addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', t('tabla.tooltips.meteoGeneral'));
-                addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', t('tabla.tooltips.precipitacion'));
-                addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', t('tabla.tooltips.probPrecipitacion'));
-                addIconCell(filaBaseNube, '<span style="font-size:16px; font-weight:bold;">☁️↕</span>', t('tabla.tooltips.baseNube'));
+                addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', tituloMeteoGeneral);
+                addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', tituloPrecipitacion);
+                addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', tituloProbPrecipitacion);
 
                 // Velocidades alturas
                 if (chkMostrarVientoAlturas) {
                     const alturas = [
-                        { tr: fila180, label: t('tabla.viento_altura', { metros: 180 }), title: t('tabla.tooltips.viento180m') },
-                        { tr: fila120, label: t('tabla.viento_altura', { metros: 120 }), title: t('tabla.tooltips.viento120m') },
-                        { tr: fila80,  label: t('tabla.viento_altura', { metros: 80 }),  title: t('tabla.tooltips.viento80m') }
+                        { tr: fila180, label: labelViento180, title: tituloViento180, bordeTop: true },
+                        { tr: fila120, label: labelViento120, title: tituloViento120 },
+                        { tr: fila80,  label: labelViento80,  title: tituloViento80,  bordeBottom: true }
                     ];
 
                     alturas.forEach(item => {
@@ -5070,16 +5146,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         td.innerHTML = `<span style="font-size:10px; font-weight:bold;">${item.label}</span>`;
                         td.setAttribute("title", item.title);
                         td.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
+                        if (item.bordeTop) td.style.borderTop = "1px solid #000";
+                        if (item.bordeBottom) td.style.borderBottom = "1px solid #000";
                         item.tr.appendChild(td);
                     });
                 }
 
                 // Velocidad 10 m
                 const tdIconoVelocidad = document.createElement("td");
-                // Traducimos la etiqueta "10 m" usando la misma lógica que las alturas superiores
-                const label10m = t('tabla.viento_altura', { metros: 10 });
-                tdIconoVelocidad.innerHTML = `<span style="font-size:10px; font-weight:bold;">${label10m}</span>`;
-                tdIconoVelocidad.setAttribute("title", t('tabla.tooltips.viento10m'));
+                tdIconoVelocidad.innerHTML = `<span style="font-size:10px; font-weight:bold;">${labelViento10}</span>`;
+                tdIconoVelocidad.setAttribute("title", tituloViento10);
                 tdIconoVelocidad.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
 
                 filaVel.appendChild(tdIconoVelocidad);	 	 	 	
@@ -5087,7 +5163,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // Racha 10 m
                 const tdIconoRacha = document.createElement("td");	
                 tdIconoRacha.innerHTML = '<img src="icons/icono_racha_48x42.webp" width="16" height="14">';
-                tdIconoRacha.setAttribute("title", t('tabla.tooltips.racha10m'));
+                tdIconoRacha.setAttribute("title", tituloRacha10);
                 /* Añadir clase para asegurar la posición fija */
                 tdIconoRacha.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
 				
@@ -5104,7 +5180,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 				// Dirección 10 m
                 const tdIconoDireccion = document.createElement("td");	
                 tdIconoDireccion.innerHTML = '<img src="icons/icono_direccion_45.webp" width="15" height="15">';
-                tdIconoDireccion.setAttribute("title", t('tabla.tooltips.direccion10m'));	
+                tdIconoDireccion.setAttribute("title", tituloDireccion10);	
                 tdIconoDireccion.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
 
                 // Forzamos altura a 20px
@@ -5122,7 +5198,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     const tdIconoCiz = document.createElement("td");	
                     tdIconoCiz.innerHTML = '';
                     tdIconoCiz.style.background = "linear-gradient(to right, #6befaf 33.3%, #f0c16a 33.3%, #f0c16a 66.6%, #fb796e 66.6%)";
-                    tdIconoCiz.setAttribute("title", t('tabla.tooltips.cizalladura'));	
+                    tdIconoCiz.setAttribute("title", tituloCizalladura);	
                     tdIconoCiz.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda", "celda-altura-4px");
                     tdIconoCiz.style.borderTop = "1px solid #000";
                     tdIconoCiz.style.borderBottom = "1px solid #000";
@@ -5132,46 +5208,47 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 // Iconos Grupo 2: XC
                 // Nota: He creado claves para los nombres de las etiquetas (Techo, CAPE, CIN) para que cambien en inglés
-                addIconCell(filaTecho, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.techo')}</span>`, t('tabla.tooltips.techo'));
-                addIconCell(filaCape, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.cape')}</span>`, t('tabla.tooltips.cape'));
-                addIconCell(filaCin, `<span style="font-size:10px; font-weight:bold;">${t('tabla.labels.cin')}</span>`, t('tabla.tooltips.cin'));
+                addIconCell(filaTecho, `<span style="font-size:10px; font-weight:bold;">${labelTecho}</span>`, tituloTecho);
+                addIconCell(filaCape, `<span style="font-size:10px; font-weight:bold;">${labelCape}</span>`, tituloCape);
+                addIconCell(filaCin, `<span style="font-size:10px; font-weight:bold;">${labelCin}</span>`, tituloCin);
 
                 // Iconos del Grupo: Viento ECMWF (beta) con clase ecmwf-neutral
-                const addIconCellEcmwf = (tr, html, title) => {
+                const addIconCellEcmwf = (tr, html, title, bordeTopPx, bordeBottomPx) => {
                     if (!tr) return;
                     const td = document.createElement("td");
                     td.innerHTML = `<span style="font-size:9px;">${html}</span>`;
                     td.setAttribute("title", title);
                     td.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda", "ecmwf-neutral");
+                    if (bordeTopPx) td.style.borderTop = bordeTopPx;
+                    if (bordeBottomPx) td.style.borderBottom = bordeBottomPx;
                     tr.appendChild(td);
                 };
 
-                addIconCellEcmwf(filaEcmwfVel3000, "<span style='position: relative; top: -1px; display: inline-block;'>3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.3000mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion3000mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel3000, "<span style='position: relative; top: -1px; display: inline-block;'>3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf3000, "1px solid #000");
+                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir3000, null, "1px solid #000");
 
-                addIconCellEcmwf(filaEcmwfVel1500, "<span style='position: relative; top: -1px; display: inline-block;'>1500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.1500mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion1500mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel1500, "<span style='position: relative; top: -1px; display: inline-block;'>1500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf1500);
+                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1500, null, "1px solid #000");
 
-                addIconCellEcmwf(filaEcmwfVel1000, "<span style='position: relative; top: -1px; display: inline-block;'>1000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.1000mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion1000mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel1000, "<span style='position: relative; top: -1px; display: inline-block;'>1000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf1000);
+                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1000, null, "1px solid #000");
 
-                addIconCellEcmwf(filaEcmwfVel500, "<span style='position: relative; top: -1px; display: inline-block;'>500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", t('tabla.tooltips.500mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.Direccion500mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel500, "<span style='position: relative; top: -1px; display: inline-block;'>500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf500);
+                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir500, null, "2px solid #000");
 
-                addIconCellEcmwf(filaEcmwfVel200, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>200 m</span>", t('tabla.tooltips.AGL200mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL200mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel200, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>200 m</span>", tituloEcmwf200);
+                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir200, null, "1px solid #000");
                 
-                addIconCellEcmwf(filaEcmwfVel100, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>100 m</span>", t('tabla.tooltips.AGL100mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL100mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel100, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>100 m</span>", tituloEcmwf100);
+                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir100, null, "1px solid #000");
                 
-                addIconCellEcmwf(filaEcmwfVel10, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>10 m</span>", t('tabla.tooltips.AGL10mECMWF'));
-                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', t('tabla.tooltips.DireccionAGL10mECMWF'));
+                addIconCellEcmwf(filaEcmwfVel10, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>10 m</span>", tituloEcmwf10);
+                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir10, null, "2px solid #000");
                 
-                // A la racha no se le aplica el "top: -3px" porque no es texto, pero sí se centra si lo requiere (la he dejado como estaba ya que no se solicitó moverla)
-                addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', t('tabla.tooltips.RachaAGL10mECMWF'));
+                addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', tituloEcmwfRacha10);
 
-                addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>`, `${t('tabla.tooltips.VelocidadAltitudRealECMWF')}`);
-                addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', `${t('tabla.tooltips.DireccionAltitudRealECMWF')}`);
+                addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>`, tituloEcmwfValt);
+                addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDalt, null, "2px solid #000");
 
 				// ---------------------------------------------------------------
 				// ⚪ CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Columnas de datos por hora
@@ -5184,13 +5261,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     // Helper para renderizar los datos del nuevo JSON ECMWF rápidamente
                     const renderEcmwfData = (tr, dataArr, formatFn, fontSize, colorFn, paddingBottom = "0px", titleFn = null) => {
                         if (!tr || !dataArr) return;
-                        dataArr.slice(0, horas.length).forEach((val, i) => {
-                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-                            const td = document.createElement("td");
+                        
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            let val = dataArr[i];
                             
+                            const td = document.createElement("td");
                             let appliedColor = false;
                             
-                            // 1. Aplicamos el color de fondo si existe la regla
                             if (colorFn) {
                                 const colorClass = colorFn(val, i);
                                 if (colorClass) {
@@ -5203,26 +5280,20 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 td.title = titleFn(val, i);
                             }
                             
-                            // 2. Gestionamos modo Noche y fondo blanco por defecto
                             if (cacheEsNoche[i]) {
                                 td.classList.add("celda-noche");
                             } else if (!appliedColor) {
                                 td.style.backgroundColor = "#ffffff"; 
                             }
                             
-                            if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
+                            if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
                             
-                            if (fontSize) {
-                                td.style.setProperty('font-size', fontSize, 'important');
-                            }
-
-                            if (paddingBottom) {
-                                td.style.paddingBottom = paddingBottom;
-                            }
+                            if (fontSize) td.style.setProperty('font-size', fontSize, 'important');
+                            if (paddingBottom) td.style.paddingBottom = paddingBottom;
                             
                             td.textContent = formatFn(val, i);
                             tr.appendChild(td);
-                        });
+                        }
                     };
 
                     // Datos ECMWF Grupo 1 (Precipitaciones, nubes bajas)
@@ -5270,57 +5341,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             }
                         );
                         
-                        // renderEcmwfData(filaBaseNube, hourlyEcmwf.cloud_cover_low, 
-                        //     v => v == null ? "" : (Math.round(Number(v)) === 0 ? "" : Math.round(Number(v)) + ""), "12px",
-                        //     v => v == null ? "" : (Math.round(Number(v)) === 0 ? "fondo-verde" : (Math.round(Number(v)) <= 20 ? "fondo-naranja" : "fondo-rojo"))
-                        // );
-
-                        // Base de nubes estimada (Temperatura y Punto de Rocío)
-                        renderEcmwfData(filaBaseNube, hourlyEcmwf.temperature_2m, 
-                            (temp, i) => {
-                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
-                                
-                                let t = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[i]);
-                                
-                                let baseMts = Math.max(0, Math.round((t - roc) * 125));
-                                let baseKm = (baseMts / 1000).toFixed(1);
-                                
-                                return baseKm === "0.0" ? "0" : baseKm;
-                            }, 
-                            "12px", 
-                            (temp, i) => {
-                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
-                                
-                                let t = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[i]);
-                                let baseMts = Math.max(0, Math.round((t - roc) * 125));
-
-                                // Lógica de colores solicitada
-                                if (baseMts < 100) return "fondo-rojo";
-                                if (baseMts <= 300) return "fondo-naranja";
-                                return "fondo-verde";
-                            },
-                            "0px",
-                            (temp, i) => { // Tooltip para que el usuario sepa de qué es ese número
-                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
-        
-                                let t = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[i]);
-                                let baseMts = Math.max(0, Math.round((t - roc) * 125));
-                                let baseKm = (baseMts / 1000).toFixed(1);
-                                let valorFinal = (baseKm === "0.0" ? "0" : baseKm);
-                                
-                                return `Altura de la base de la nube: ${valorFinal} km sobre el suelo (AGL)`;
-                            }
-                        );
-
                     } else {
                         const emptyArr = new Array(horas.length).fill(null);
                         renderEcmwfData(filaNubesTotal, emptyArr, () => "", "9px", () => "");
                         renderEcmwfData(filaPreci, emptyArr, () => "", "9px", () => "");
                         renderEcmwfData(filaProbPreci, emptyArr, () => "", "9px", () => "");
-                        renderEcmwfData(filaBaseNube, emptyArr, () => "", "9px", () => "");
                     }
 
 					// ⚪ Velocidades alturas 80, 120, 180 m *****************************
@@ -5332,14 +5357,20 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         const arr80  = hourlyData.wind_speed_80m  || [];
                         const arr10  = hourlyData.wind_speed_10m  || []; // Necesario para comparar
 
-                        // Función helper para pintar celdas de altura
-                        const pintarCeldaAltura = (tr, dataArray, alturaKey) => {
-                            dataArray.slice(0, horas.length).forEach((rawVal, i) => {
-                                if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
+                        // Función helper para pintar celdas de altura optimizada
+                        const pintarCeldaAltura = (tr, dataArray, alturaKey, bordeTop, bordeBottom) => {
+                            // Ya no hacemos dataArray.slice().forEach(...)
+                            for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                                
+                                let rawVal = dataArray[i]; // Leemos directamente
 
                                 const td = document.createElement("td");
+                                
+                                // Optimizaciones de caché y Set
                                 if (cacheEsNoche[i]) td.classList.add("celda-noche");
-                                if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
+                                if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+                                if (bordeTop) td.style.borderTop = "1px solid #000";
+                                if (bordeBottom) td.style.borderBottom = "1px solid #000";
 
                                 // 1. Datos Reales (para mostrar en texto)
                                 let valAltura = Math.round(Math.max(0, rawVal));
@@ -5399,377 +5430,332 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 td.classList.add(claseColor);
                                 td.title = `${valAltura} km/h a ${alturaKey}\n\n${motivo}`;
                                 tr.appendChild(td);
-                            });
+                            }
                         };
 
                         // Pasamos la clave "80m", "120m" para que busque en el objeto LIMITES_CIZALLADURA
-                        pintarCeldaAltura(fila180, arr180, "180 m");
-                        pintarCeldaAltura(fila120, arr120, "120 m");
-                        pintarCeldaAltura(fila80,  arr80,  "80 m");
-
-                        // Borde superior para separar visualmente de la meteo general
-                        Array.from(fila180.children).forEach(td => {
-                            td.style.borderTop = "1px solid #000"; 
-                        });
-                        
-                        // Borde inferior para separar visualmente
-                        Array.from(fila80.children).forEach(td => {
-                            td.style.borderBottom = "1px solid #000"; 
-                        });
+                        // Bordes top/bottom aplicados directamente en la creación (ver parámetros), sin segunda pasada
+                        pintarCeldaAltura(fila180, arr180, "180 m", true, false);
+                        pintarCeldaAltura(fila120, arr120, "120 m", false, false);
+                        pintarCeldaAltura(fila80,  arr80,  "80 m", false, true);
                     }
 
 					// ⚪ Velocidad 10 m *****************************
 					
-					const velocidades = hourlyData.wind_speed_10m.slice(0, horas.length);
-                    // NUEVOS DATOS (Añadir esto) con protección por si el JSON es antiguo
-                    const vel80 = hourlyData.wind_speed_80m ? hourlyData.wind_speed_80m.slice(0, horas.length) : [];
-                    const vel120 = hourlyData.wind_speed_120m ? hourlyData.wind_speed_120m.slice(0, horas.length) : [];
-                    const vel180 = hourlyData.wind_speed_180m ? hourlyData.wind_speed_180m.slice(0, horas.length) : [];
+					// Ponemos esta constante fuera del bucle para no calcularla 100 veces
+                    const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
 
-					velocidades.forEach((velocidadModelo, i) => {
-						
-						/* 🕜 Filtro del slider de rango horario */
-						if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
+                    for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                        
+                        // Leemos el dato DIRECTAMENTE de la base de datos original (hourlyData) para esta hora 'i'
+                        let velocidadModelo = hourlyData.wind_speed_10m[i];
 
-                        let velocidad = velocidadModelo;
+                        // (NOTA: Si en algún momento en este bucle necesitaras los de 80 o 120m, 
+                        // se leen exactamente igual, sin hacer .slice() previamente:)
+                        // let v80 = hourlyData.wind_speed_80m ? hourlyData.wind_speed_80m[i] : null;
 
-                        velocidad = Math.round(Math.max(0, velocidad)); // Redondeo a 0 decimales
+                        let velocidad = Math.round(Math.max(0, velocidadModelo)); // Redondeo a 0 decimales
 
-						const td = document.createElement("td");
+                        const td = document.createElement("td");
 
-						// Marcar celdas de noche en datos (Usando la caché)
+                        // Marcar celdas de noche en datos (Usando la caché)
                         if (cacheEsNoche[i]) {
                             td.classList.add("celda-noche");
                         }
-									
-						if (indicesInicioDia.includes(i)) {
-						td.classList.add("borde-grueso-izquierda");
-						}
-								
-						const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
+                                    
+                        // ¡Veo que aquí ya has puesto lo del PASO 1 (setInicioDia)! ¡Genial!
+                        if (setInicioDia.has(i)) {
+                            td.classList.add("borde-grueso-izquierda");
+                        }
 
-						if (velocidad < VelocidadMin) {
-							td.classList.add("fondo-naranja");
-						} 
-						else if (velocidad <= velocidadTolerableSuperior) {
-							// Velocidad ideal: entre el mínimo y la mitad del camino al máximo
-							td.classList.add("fondo-verde");
-						} 
-						else if (velocidad < VelocidadMax) {
-							// Velocidad entre la ideal y velocidadTolerableSuperior
-							td.classList.add("fondo-naranja");
-						} 
-						else { // velocidad >= VelocidadMax
-							td.classList.add("fondo-rojo");
-						} 
+                        if (velocidad < VelocidadMin) {
+                            td.classList.add("fondo-naranja");
+                        } 
+                        else if (velocidad <= velocidadTolerableSuperior) {
+                            td.classList.add("fondo-verde"); // Velocidad ideal
+                        } 
+                        else if (velocidad < VelocidadMax) {
+                            td.classList.add("fondo-naranja");
+                        } 
+                        else { 
+                            td.classList.add("fondo-rojo");
+                        } 
 
                         td.textContent = velocidad;
-                        //td.style.cursor = "help";
-
                         td.title = `${velocidad} km/h`;
 
                         filaVel.appendChild(td);
-					});
+                    }
 
 					// ⚪ Racha *****************************
-					
-					const rachas = hourlyData.wind_gusts_10m.slice(0, horas.length);
-					rachas.forEach((rachaModelo, i) => {
-						
-						/* 🕜 Filtro del slider de rango horario */
-						if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
 
-						// 1. Calculamos la velocidad de referencia para esta hora (necesario para la corrección)
-                        const velModeloRef = hourlyData.wind_speed_10m[i];
-                        let velRef = velModeloRef;
-                        velRef = Math.round(Math.max(0, velRef));
+                    const rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3;
 
-                        let racha = rachaModelo;
-                        racha = Math.round(Math.max(0, racha));
+                    for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                        
+                        // Leemos directamente del JSON original
+                        let rachaModelo = hourlyData.wind_gusts_10m[i];
+                        let racha = Math.round(Math.max(0, rachaModelo));
 
-						const td = document.createElement("td");
+                        const td = document.createElement("td");
 
-                        // Marcar celdas de noche en datos (Usando la caché)
+                        // Usamos la caché de noches
                         if (cacheEsNoche[i]) {
                             td.classList.add("celda-noche");
                         }
-									
-						if (indicesInicioDia.includes(i)) {
-						td.classList.add("borde-grueso-izquierda");
-						}
+                                    
+                        // Usamos el Set del PASO 1 (ultrarrápido)
+                        if (setInicioDia.has(i)) {
+                            td.classList.add("borde-grueso-izquierda");
+                        }
 
-						const rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3;
+                        // Lógica de colores
+                        if (racha < rachaTolerable) {
+                            td.classList.add("fondo-verde");
+                        } 
+                        else if (racha < RachaMax) { 
+                            td.classList.add("fondo-naranja");
+                        } 
+                        else { 
+                            td.classList.add("fondo-rojo");
+                        } 
 
-						if (racha < rachaTolerable) {
-							td.classList.add("fondo-verde");
-						} 
-						else if (racha < RachaMax) { // estamos entre la tolerable y la máxima
-							td.classList.add("fondo-naranja");
-						} 
-						else { // racha >= RachaMax
-							td.classList.add("fondo-rojo");
-						} 
-
-						td.textContent = racha;
-
+                        td.textContent = racha;
                         td.title = `${racha} km/h racha máxima`;
 
-						filaRacha.appendChild(td);
-					});
+                        filaRacha.appendChild(td);
+                    }
 
 					// ⚪ Dirección *****************************
-					
-					const direcciones = hourlyData.wind_direction_10m.slice(0, horas.length);
-					direcciones.forEach((dirModelo, i) => {
-						
-						/* 🕜 Filtro del slider de rango horario */
-						if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-						
-                        let dir = dirModelo;
+
+                    for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
-                        dir = Math.round(dir);
+                        // Leemos directamente del JSON original
+                        let dirModelo = hourlyData.wind_direction_10m[i];
+                        let dir = Math.round(dirModelo);
 
-						const td = document.createElement("td");
+                        const td = document.createElement("td");
 
-                        // Marcar celdas de noche en datos (Usando la caché)
+                        // Usamos la caché de noches
                         if (cacheEsNoche[i]) {
                             td.classList.add("celda-noche");
                         }
-									
-						if (indicesInicioDia.includes(i)) {
-						td.classList.add("borde-grueso-izquierda");
-						}
-						
-						
-						// Versión segura si orientaciones está vacío, Math.min(...) devuelve Infinity
-						let minimoAnguloDiferencia = 180;  // Valor seguro por defecto
+                                    
+                        // Usamos el Set del PASO 1 (ultrarrápido)
+                        if (setInicioDia.has(i)) {
+                            td.classList.add("borde-grueso-izquierda");
+                        }
+                        
+                        // Calcular el color según el ángulo
+                        let minimoAnguloDiferencia = 180;  // Valor seguro por defecto
+                        if (orientaciones && orientaciones.length > 0) {
+                            minimoAnguloDiferencia = Math.min(...orientaciones.map(o => diferenciaAngular(dir, o)));
+                        }
 
-						if (orientaciones && orientaciones.length > 0) {
-							minimoAnguloDiferencia = Math.min(...orientaciones.map(o => diferenciaAngular(dir, o)));
-						}
+                        td.classList.add(colorPorDiferencia(minimoAnguloDiferencia));
 
-						td.classList.add(colorPorDiferencia(minimoAnguloDiferencia));
-
-						td.innerHTML = `
-							<svg class="flecha-viento" viewBox="0 0 30 36" style="
-								transform: rotate(${dir + 180}deg);">
-								<polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
-							</svg>
-							`;
+						td.appendChild(crearFlechaViento(dir));
 							
                         td.title = `${dir}º`;
 
-						filaDir.appendChild(td);
-					});
+                        filaDir.appendChild(td);
+                    }
 
                     // ⚪ Cizalladura / Fiabilidad *****************************
+                    if (chkMostrarCizalladura) {
+                        const arr180 = hourlyData.wind_speed_180m || [];
+                        const arr120 = hourlyData.wind_speed_120m || [];
+                        const arr80  = hourlyData.wind_speed_80m  || [];
+                        const arr10  = hourlyData.wind_speed_10m  || []; 
 
-					if (chkMostrarCizalladura) {
-					    const arr180 = hourlyData.wind_speed_180m ||[];
-					    const arr120 = hourlyData.wind_speed_120m ||[];
-					    const arr80  = hourlyData.wind_speed_80m  ||[];
-					    const arr10  = hourlyData.wind_speed_10m  ||[]; 
+                        // TRUCO OPTIMIZACIÓN: Sacamos los textos fijos fuera del bucle
+                        const txtBaja = t('tabla.cizalladura.baja');
+                        const txtMotivoBajo = t('tabla.cizalladura.motivoBajo');
+                        const txtAlta = t('tabla.cizalladura.alta');
+                        const txtMedia = t('tabla.cizalladura.media');
 
-					    arr10.slice(0, horas.length).forEach((vel10Raw, i) => {
-					        if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-
-					        const td = document.createElement("td");
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            
+                            const td = document.createElement("td");
                             td.classList.add("celda-altura-4px");
-                            //td.style.cursor = "help";
                             td.style.borderTop = "1px solid #000";
                             td.style.borderBottom = "1px solid #000";
-                            // Solo ponemos la línea derecha si NO es la última celda visible
+                            
                             if (i !== indiceFinRangoHorario) {
                                 td.style.borderRight = "1px solid #000";
                             }
-					        if (cacheEsNoche[i]) td.classList.add("celda-noche");
-					        if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
+                            if (cacheEsNoche[i]) td.classList.add("celda-noche");
+                            if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
-					        // Si no hay datos de altura en el JSON, mostramos un guión
-					        if (arr80[i] === undefined && arr120[i] === undefined && arr180[i] === undefined) {
-					            td.textContent = "-";
-					            filaCizalladura.appendChild(td);
-					            return;
-					        }
+                            if (arr80[i] === undefined && arr120[i] === undefined && arr180[i] === undefined) {
+                                td.textContent = "-";
+                                filaCizalladura.appendChild(td);
+                                continue; // Equivalente a return en un bucle for
+                            }
 
-					        const vel80 = arr80[i] !== undefined ? Math.round(Math.max(0, arr80[i])) : 0;
-					        const vel120 = arr120[i] !== undefined ? Math.round(Math.max(0, arr120[i])) : 0;
-					        const vel180 = arr180[i] !== undefined ? Math.round(Math.max(0, arr180[i])) : 0;
-					        const vel10 = Math.round(Math.max(0, vel10Raw));
+                            const vel80 = arr80[i] !== undefined ? Math.round(Math.max(0, arr80[i])) : 0;
+                            const vel120 = arr120[i] !== undefined ? Math.round(Math.max(0, arr120[i])) : 0;
+                            const vel180 = arr180[i] !== undefined ? Math.round(Math.max(0, arr180[i])) : 0;
+                            
+                            // Leemos directo sin vel10Raw
+                            const vel10 = Math.round(Math.max(0, arr10[i]));
 
-					        const vientoMaxAltura = Math.max(vel80, vel120, vel180);
-					        const delta = vientoMaxAltura - vel10;
-					        const vel10Calculo = Math.max(8, vel10);
-					        const ratio = vientoMaxAltura / vel10Calculo;
+                            const vientoMaxAltura = Math.max(vel80, vel120, vel180);
+                            const delta = vientoMaxAltura - vel10;
+                            const vel10Calculo = Math.max(8, vel10);
+                            const ratio = vientoMaxAltura / vel10Calculo;
 
-					        let colorCizalladura = "fondo-verde";
-					        let textoCelda = delta > 0 ? `+${delta}` : `${delta}`;
+                            let colorCizalladura = "fondo-verde";
+                            let textoResultado = txtBaja;
+                            let motivoCalculo = txtMotivoBajo;
 
-                            let iconoResultado = "🟩";
-                            let textoResultado = t('tabla.cizalladura.baja');
-                            let motivoCalculo = t('tabla.cizalladura.motivoBajo');
-
-                            // 🔴 ROJO (Peligro alto / Fiabilidad baja)
                             if (ratio > 2.0 && delta > 12) {
                                 colorCizalladura = "fondo-rojo";
-                                iconoResultado = "🟥";
-                                textoResultado = t('tabla.cizalladura.alta');
-                                // Pasamos ratio y delta como variables para la traducción
-                                motivoCalculo = t('tabla.cizalladura.motivoAlto', { 
-                                    ratio: ratio.toFixed(1), 
-                                    delta: delta 
-                                });
+                                textoResultado = txtAlta;
+                                motivoCalculo = t('tabla.cizalladura.motivoAlto', { ratio: ratio.toFixed(1), delta: delta });
                             } 
-                            // 🟡 NARANJA (Atención / Fiabilidad media)
                             else if (ratio > 1.5 && delta > 8) {
                                 colorCizalladura = "fondo-naranja";
-                                iconoResultado = "🟧";
-                                textoResultado = t('tabla.cizalladura.media');
-                                // Pasamos ratio y delta como variables para la traducción
-                                motivoCalculo = t('tabla.cizalladura.motivoMedio', { 
-                                    ratio: ratio.toFixed(1), 
-                                    delta: delta 
-                                });
+                                textoResultado = txtMedia;
+                                motivoCalculo = t('tabla.cizalladura.motivoMedio', { ratio: ratio.toFixed(1), delta: delta });
                             } 
 
-					        // PINTADO DE LA CELDA
-
-					        td.classList.add(colorCizalladura);
-					        //td.innerHTML = `<span style="font-size: 0.8em; color: #666;">${textoCelda}</span>`;
-
+                            td.classList.add(colorCizalladura);
                             td.title = `${textoResultado}\n${motivoCalculo}`;
 
-					        filaCizalladura.appendChild(td);
-					    });
-					}
-
-                    // Datos ECMWF Grupo 2 (XC)
-                    if (hourlyEcmwf) {
-                        // Techo Útil MSL (Suma: (Espesor BLH * RATIO_TECHO_UTIL) + Elevación de la celda del modelo)
-                        renderEcmwfData(filaTecho, hourlyEcmwf.boundary_layer_height, 
-                            v => {
-                                if (v == null) return "";
-                                // Usamos la variable global
-                                let espesorUtil = Number(v) * RATIO_TECHO_UTIL;
-                                let altitudMSL = (espesorUtil + elevacionModeloECMWF) / 1000;
-                                let valorTexto = altitudMSL.toFixed(1);
-                                return valorTexto === "0.0" ? "0" : valorTexto;
-                            }, 
-                            "12px",
-                            v => {
-                                if (v == null) return "";
-                                // El color se basa en el espesor corregido
-                                let espesorUtil = Number(v) * RATIO_TECHO_UTIL;
-                                return (espesorUtil < XCTechoLims.rojo ? "fondo-rojo" : (espesorUtil >= XCTechoLims.verde ? "fondo-verde" : "fondo-naranja"));
-                            },
-                            "0px",
-                            v => {
-                                if (v == null) return "";
-                                let espesorBLH = Math.round(Number(v));
-                                let espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
-                                let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
-                                
-                                return t('tabla.techoTooltip', {
-                                    altitudMSL: altitudMSL,
-                                    espesorUtil: espesorUtil,
-                                    pct: Math.round(RATIO_TECHO_UTIL * 100),
-                                    blh: espesorBLH,
-                                    elevacion: Math.round(elevacionModeloECMWF)
-                                });
-                            }
-                        );
-                        // CAPE
-                        renderEcmwfData(filaCape, hourlyEcmwf.cape, 
-                            v => {
-                                if (v == null || v === "") return "";
-                                let n = Math.round(Number(v));
-                                if (n >= 1000) {
-                                    return (n / 1000).toFixed(1) + "k"; // 1200 -> 1.2k
-                                }
-                                return n;
-                            }, 
-                            "11px",
-                            v => {
-                                if (v == null || v === "") return "";
-                                let n = Number(v);
-                                if (n <= XCCapeLims.idealMax) return "fondo-verde";    // 0 a 400
-                                if (n <= XCCapeLims.riesgo) return "fondo-naranja";    // 400 a 800
-                                return "fondo-rojo";                                   // > 800
-                            },
-                            "0px",
-                            v => v == null ? "" : "CAPE: " + Math.round(Number(v)) + " J/kg"
-                        );
-                        // CIN
-                        renderEcmwfData(filaCin, hourlyEcmwf.convective_inhibition, 
-                            v => {
-                                let n = (v === null || v === "null" || v === "") ? 0 : Number(v);
-                                if (n < 0) n = 0;
-                                n = Math.round(n);
-                                return n === 0 ? "0" : n;
-                            }, 
-                            "11px",
-                            v => { 
-                                let n = (v === null || v === "null" || v === "") ? 0 : Number(v);
-                                if (n < 0) n = 0;
-                                return n <= XCCinLims.verde ? "fondo-verde" : (n <= XCCinLims.rojo ? "fondo-naranja" : "fondo-rojo");  
-                            },
-                            "0px",
-                            v => {
-                                let n = (v === null || v === "null" || v === "") ? 0 : Number(v);
-                                if (n < 0) n = 0;
-                                return "CIN: " + Math.round(n) + " J/kg";
-                            }
-                        );
-                    } else {
-                        const emptyArr = new Array(horas.length).fill(null);
-                        renderEcmwfData(filaTecho, emptyArr, () => "", "9px", () => "");
-                        renderEcmwfData(filaCape, emptyArr, () => "", "9px", () => "");
-                        renderEcmwfData(filaCin, emptyArr, () => "", "9px", () => "");
+                            filaCizalladura.appendChild(td);
+                        }
                     }
+
+                    // ⚪ MEGA-BUCLE: Techo + CAPE + CIN (XC) *****************************
+                    if (hourlyEcmwf) {
+                        let htmlTecho = "";
+                        let htmlCape = "";
+                        let htmlCin = "";
+
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            
+                            let clasesBase = "";
+                            if (cacheEsNoche[i]) clasesBase += " celda-noche";
+                            if (setInicioDia.has(i)) clasesBase += " borde-grueso-izquierda";
+
+                            // === 1. TECHO ===
+                            let vTecho = hourlyEcmwf.boundary_layer_height[i];
+                            let txtTecho = "", colorTecho = "", bgTecho = "";
+                            
+                            if (vTecho != null) {
+                                let espesorUtil = Math.round(Number(vTecho) * RATIO_TECHO_UTIL);
+                                let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
+                                let valorTexto = (altitudMSL / 1000).toFixed(1);
+                                txtTecho = (valorTexto === "0.0") ? "0" : valorTexto;
+                                
+                                if (espesorUtil < XCTechoLims.rojo) colorTecho = "fondo-rojo";
+                                else if (espesorUtil >= XCTechoLims.verde) colorTecho = "fondo-verde";
+                                else colorTecho = "fondo-naranja";
+                            }
+                            bgTecho = (!cacheEsNoche[i] && !colorTecho) ? 'background-color: #ffffff;' : '';
+                            htmlTecho += `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; ${bgTecho}">${txtTecho}</td>`;
+
+                            // === 2. CAPE ===
+                            let vCape = hourlyEcmwf.cape[i];
+                            let txtCape = "", colorCape = "", bgCape = "";
+                            
+                            if (vCape != null && vCape !== "") {
+                                let n = Math.round(Number(vCape));
+                                txtCape = (n >= 1000) ? (n / 1000).toFixed(1) + "k" : n;
+                                
+                                if (n <= XCCapeLims.idealMax) colorCape = "fondo-verde";
+                                else if (n <= XCCapeLims.riesgo) colorCape = "fondo-naranja";
+                                else colorCape = "fondo-rojo";
+                            }
+                            bgCape = (!cacheEsNoche[i] && !colorCape) ? 'background-color: #ffffff;' : '';
+                            htmlCape += `<td class="${clasesBase} ${colorCape}" style="padding-bottom: 0px; font-size: 11px !important; ${bgCape}" title="CAPE: ${vCape || 0} J/kg">${txtCape}</td>`;
+
+                            // === 3. CIN ===
+                            let vCin = hourlyEcmwf.convective_inhibition[i];
+                            let txtCin = "", colorCin = "", bgCin = "";
+                            
+                            if (vCin != null && vCin !== "") {
+                                let n = Math.max(0, Math.round(Number(vCin)));
+                                txtCin = (n === 0) ? "0" : n;
+                                
+                                if (n <= XCCinLims.verde) colorCin = "fondo-verde";
+                                else if (n <= XCCinLims.rojo) colorCin = "fondo-naranja";
+                                else colorCin = "fondo-rojo";
+                            }
+                            bgCin = (!cacheEsNoche[i] && !colorCin) ? 'background-color: #ffffff;' : '';
+                            htmlCin += `<td class="${clasesBase} ${colorCin}" style="padding-bottom: 0px; font-size: 11px !important; ${bgCin}" title="CIN: ${vCin != null ? Math.max(0, Math.round(Number(vCin))) : 0} J/kg">${txtCin}</td>`;
+                        }
+
+                        // Inyección ultra-rápida (El DOM se toca 1 sola vez por fila)
+                        if (filaTecho) filaTecho.insertAdjacentHTML('beforeend', htmlTecho);
+                        if (filaCape) filaCape.insertAdjacentHTML('beforeend', htmlCape);
+                        if (filaCin) filaCin.insertAdjacentHTML('beforeend', htmlCin);
+
+                    } else {
+                        // Si no hay datos, metemos celdas vacías como texto (mucho más rápido que antes)
+                        let htmlVacio = "";
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            let clase = cacheEsNoche[i] ? "celda-noche" : "";
+                            if (setInicioDia.has(i)) clase += " borde-grueso-izquierda";
+                            let bg = (!cacheEsNoche[i]) ? 'background-color: #ffffff;' : '';
+                            htmlVacio += `<td class="${clase}" style="font-size: 9px !important; ${bg}"></td>`;
+                        }
+                        if (filaTecho) filaTecho.insertAdjacentHTML('beforeend', htmlVacio);
+                        if (filaCape) filaCape.insertAdjacentHTML('beforeend', htmlVacio);
+                        if (filaCin) filaCin.insertAdjacentHTML('beforeend', htmlVacio);
+                    }
+
+                    // Borde superior del grupo XC
                     if (!chkMostrarCizalladura && chkMostrarXC && filaTecho) {
                         Array.from(filaTecho.children).forEach(td => {
                             td.style.borderTop = "1px solid #000";
                         });
                     }
 
-                    // NUEVO: Funciones de renderizado neutro para el Grupo de Viento ECMWF (Usando datos de hourlyEcmwf)
                     const renderEcmwfSpeedCell = (tr, speedArr) => {
                         if (!tr || !speedArr) return;
-                        speedArr.slice(0, horas.length).forEach((val, i) => {
-                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             const td = document.createElement("td");
                             td.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[i]) td.classList.add("celda-noche");
-                            if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
+                            if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
-                            td.textContent = val !== null ? Math.round(Number(val)) : "—";
-                            td.title = val !== null ? `${Math.round(Number(val))} km/h` : "N/A";
-                            tr.appendChild(td);
-                        });
-                    };
-
-                    const renderEcmwfDirCell = (tr, dirArr) => {
-                        if (!tr || !dirArr) return;
-                        dirArr.slice(0, horas.length).forEach((val, i) => {
-                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-                            const td = document.createElement("td");
-                            td.classList.add("ecmwf-neutral");
-                            if (cacheEsNoche[i]) td.classList.add("celda-noche");
-                            if (indicesInicioDia.includes(i)) td.classList.add("borde-grueso-izquierda");
-
-                            if (val === null) {
-                                td.textContent = "—";
+                            if (!debeMostrarse) {
+                                // Despegue colapsado: placeholder, sin formatear el valor real
+                                td.textContent = "…";
                             } else {
-                                const dir = Math.round(Number(val));
-                                td.innerHTML = `
-                                    <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg);">
-                                        <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
-                                    </svg>
-                                `;
-                                td.title = `${dir}º`;
+                                let val = speedArr[i];
+                                td.textContent = val !== null ? Math.round(Number(val)) : "—";
+                                td.title = val !== null ? `${Math.round(Number(val))} km/h` : "N/A";
                             }
                             tr.appendChild(td);
-                        });
+                        }
+                    };
+
+                    const renderEcmwfDirCell = (tr, dirArr, bordeBottomPx) => {
+                        if (!tr || !dirArr) return;
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            const td = document.createElement("td");
+                            td.classList.add("ecmwf-neutral");
+                            if (cacheEsNoche[i]) td.classList.add("celda-noche");
+                            if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+                            if (bordeBottomPx) td.style.borderBottom = bordeBottomPx;
+
+                            if (!debeMostrarse) {
+                                td.textContent = "…";
+                            } else {
+                                let val = dirArr[i];
+                                if (val === null) {
+                                    td.textContent = "—";
+                                } else {
+                                    const dir = Math.round(Number(val));
+                                    td.appendChild(crearFlechaViento(dir));
+                                    td.title = `${dir}º`;
+                                }
+                            }
+                            tr.appendChild(td);
+                        }
                     };
 
                     // Función matemática de interpolación de viento vectorial mediante geopotenciales para la altitud real
@@ -5833,32 +5819,39 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     if (mostrarEcmwfDOM) {
                         // 1. Pintar viento y racha en capas estándar
                         renderEcmwfSpeedCell(filaEcmwfVel200, hourlyEcmwf ? hourlyEcmwf.wind_speed_200m : null);
-                        renderEcmwfDirCell(filaEcmwfDir200, hourlyEcmwf ? hourlyEcmwf.wind_direction_200m : null);
+                        renderEcmwfDirCell(filaEcmwfDir200, hourlyEcmwf ? hourlyEcmwf.wind_direction_200m : null, "1px solid #000");
                         renderEcmwfSpeedCell(filaEcmwfVel100, hourlyEcmwf ? hourlyEcmwf.wind_speed_100m : null);
-                        renderEcmwfDirCell(filaEcmwfDir100, hourlyEcmwf ? hourlyEcmwf.wind_direction_100m : null);
+                        renderEcmwfDirCell(filaEcmwfDir100, hourlyEcmwf ? hourlyEcmwf.wind_direction_100m : null, "1px solid #000");
                         
                         renderEcmwfSpeedCell(filaEcmwfVel10, hourlyEcmwf ? hourlyEcmwf.wind_speed_10m : null);
                         renderEcmwfSpeedCell(filaEcmwfRacha10, hourlyEcmwf ? hourlyEcmwf.wind_gusts_10m : null);
-                        renderEcmwfDirCell(filaEcmwfDir10, hourlyEcmwf ? hourlyEcmwf.wind_direction_10m : null);
+                        renderEcmwfDirCell(filaEcmwfDir10, hourlyEcmwf ? hourlyEcmwf.wind_direction_10m : null, "2px solid #000");
 
                         // 2. Pintar las filas especiales de interpolación vertical (Fijas + Altitud Real)
                         const altReal = Number(d.Altitud) || 0;
 
                         // Helper para instanciar las celdas de interpolación (Aprovecha los datos calculados)
-                        const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHora) => {
+                        const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHora, bordeTopVel, bordeBottomDirPx) => {
                             const tdVel = document.createElement("td");
                             tdVel.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[indiceHora]) tdVel.classList.add("celda-noche");
-                            if (indicesInicioDia.includes(indiceHora)) tdVel.classList.add("borde-grueso-izquierda");
+                            if (setInicioDia.has(indiceHora)) tdVel.classList.add("borde-grueso-izquierda");
                             tdVel.style.fontSize = "12px";
+                            if (bordeTopVel) tdVel.style.borderTop = "1px solid #000";
 
                             const tdDir = document.createElement("td");
                             tdDir.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[indiceHora]) tdDir.classList.add("celda-noche");
-                            if (indicesInicioDia.includes(indiceHora)) tdDir.classList.add("borde-grueso-izquierda");
+                            if (setInicioDia.has(indiceHora)) tdDir.classList.add("borde-grueso-izquierda");
                             tdDir.style.fontSize = "12px";
+                            if (bordeBottomDirPx) tdDir.style.borderBottom = bordeBottomDirPx;
 
-                            if (!hourlyEcmwf) {
+                            if (!debeMostrarse) {
+                                // Despegue colapsado: nos ahorramos el cálculo trigonométrico (sin/cos/atan2/sqrt),
+                                // solo placeholder visual. Si el usuario expande, el siguiente rebuild calculará el valor real.
+                                tdVel.textContent = "…";
+                                tdDir.textContent = "…";
+                            } else if (!hourlyEcmwf) {
                                 tdVel.textContent = "—";
                                 tdDir.textContent = "—";
                             } else {
@@ -5888,11 +5881,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     tdVel.textContent = vRound;
                                     tdVel.title = `${vRound} km/h (Velocidad interpolada verticalmente para la altura de ${altInfo} m)`;
 
-                                    tdDir.innerHTML = `
-                                        <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dRound + 180}deg);">
-                                            <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
-                                        </svg>
-                                    `;
+                                    tdDir.appendChild(crearFlechaViento(dRound));
                                     tdDir.title = `${dRound}º (Dirección interpolada verticalmente para la altura de ${altInfo} m)`;
                                 }
                             }
@@ -5900,58 +5889,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             trDir.appendChild(tdDir);
                         };
 
-                        horas.forEach((_, i) => {
-                            if (i < indiceInicioRangoHorario || i > indiceFinRangoHorario) return;
-
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             // Ejecutamos la interpolación para cada piso en altitud fija
-                            crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i);
-                            crearCeldasInterpoladas(filaEcmwfVel1500, filaEcmwfDir1500, 1500, 1500, i);
-                            crearCeldasInterpoladas(filaEcmwfVel1000, filaEcmwfDir1000, 1000, 1000, i);
-                            crearCeldasInterpoladas(filaEcmwfVel500,  filaEcmwfDir500,  500,  500,  i);
+                            // (bordes aplicados directamente en la creación: top solo en 3000m, bottom fino en 1500/1000m, grueso en 500m y altitud real)
+                            crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i, true, "1px solid #000");
+                            crearCeldasInterpoladas(filaEcmwfVel1500, filaEcmwfDir1500, 1500, 1500, i, false, "1px solid #000");
+                            crearCeldasInterpoladas(filaEcmwfVel1000, filaEcmwfDir1000, 1000, 1000, i, false, "1px solid #000");
+                            crearCeldasInterpoladas(filaEcmwfVel500,  filaEcmwfDir500,  500,  500,  i, false, "2px solid #000");
 
                             // Interpolación maestra para la altitud real del despegue
-                            crearCeldasInterpoladas(filaEcmwfValt, filaEcmwfDalt, altReal, altReal, i);
-                        });
-
-                        // 3. APLICAR BORDES ITERANDO CELDA POR CELDA (Como en el bloque de 80m/10m)
-                        
-                        // Borde superior para separar visualmente este bloque entero de la meteo de arriba
-                        Array.from(filaEcmwfVel3000.children).forEach(td => {
-                            td.style.borderTop = "1px solid #000";
-                        });
-
-                        // Borde inferior para separar visualmente cada subgrupo de altitud
-                        const filasConBordeInferiorFino = [
-                            filaEcmwfDir3000, 
-                            filaEcmwfDir1500, 
-                            filaEcmwfDir1000, 
-                            filaEcmwfDir200, 
-                            filaEcmwfDir100
-                             
-                        ];
-
-                        filasConBordeInferiorFino.forEach(fila => {
-                            if (fila) {
-                                Array.from(fila.children).forEach(td => {
-                                    td.style.borderBottom = "1px solid #000";
-                                });
-                            }
-                        });
-                        
-                        // Bordes inferiores gruesos específicos internos (2px)
-                        const filasConBordeInferiorGrueso = [
-                            filaEcmwfDir500,
-                            filaEcmwfDir10,
-                            filaEcmwfDalt
-                        ];
-                        
-                        filasConBordeInferiorGrueso.forEach(fila => {
-                            if (fila) {
-                                Array.from(fila.children).forEach(td => {
-                                    td.style.borderBottom = "2px solid #000";
-                                });
-                            }
-                        });
+                            crearCeldasInterpoladas(filaEcmwfValt, filaEcmwfDalt, altReal, altReal, i, false, "2px solid #000");
+                        }
                     }
 				}
 			}
@@ -5979,26 +5927,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 tdCondiciones.title = "Sin datos suficientes para puntuar";
             }
 			
-            // const coloresNota =[
-            //     "#fb796e", // 0  (Rojo inicial)
-            //     "#ffa500", // 5  (Naranja medio intermedio)
-            //     "#6befaf"  // 10 (Verde final)
-            // ];
-
-            const coloresNota = [
-                "#fb796e", // 0  — Rojo (ancla)
-                "#f9876d", // 1
-                "#f7966c", // 2
-                "#f4a46c", // 3
-                "#f2b36b", // 4
-                "#f0c16a", // 5  — Naranja (ancla)
-                "#d5ca78", // 6
-                "#bbd386", // 7
-                "#a0dd93", // 8
-                "#86e6a1", // 9
-                "#6befaf"  // 10 — Verde (ancla)
-            ];
-
             if (valorVisual !== "-") {
                 // El color ahora responde a la notaFinal2 (valorVisual)
                 tdCondiciones.style.backgroundColor = coloresNota[valorVisual];
@@ -6067,7 +5995,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 				elementos: todasLasFilas 
 			});
 
-		}); // <--- FIN DEL BUCLE despegues.forEach
+		} // <--- FIN DEL BUCLE despegues.forEach
 		
 		// Solo ordenamos por nota si NO estamos en modo edición. 
 		if (!modoEdicionFavoritos) {
@@ -6097,23 +6025,28 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			});
 		});
 		
-		tbody.appendChild(tbodyFragmento);
+		// 1. Metemos el fragmento en nuestro tbody "en la sombra"
+        tbody.appendChild(tbodyFragmento);
+
+        // 2. AHORA SÍ, borramos la tabla vieja y metemos la nueva de un solo golpe (Atomic Swap)
+        tabla.innerHTML = "";
+        tabla.appendChild(thead);
+        tabla.appendChild(tbody);
 
 		aplicarFiltrosVisuales();
-
-		// const chkMostrarSoloHorasDiurnas = localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") === "true";
 
 		if (soloHorasDeLuz) {
 			const chk = document.getElementById("chkMostrarSoloHorasDiurnas");
 			if (chk) chk.checked = true;
 			document.body.classList.add("solo-dia");
 		}
-		
-        // 1. Lógica de salida: con o sin animación
-		if (!silencioso) {
-			ocultarLoading();
 
+        // 4. Lógica de salida: con o sin animación
+		if (!silencioso) {
 			setTimeout(() => {
+
+                ocultarLoading(); 
+
                 localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
                 localStorage.removeItem('METEO_CRASH_COUNTER');
                 
@@ -6144,7 +6077,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     window.scrollTo(scrollOptions);
                     window.necesitaScrollTopMeteo = false;
                 }
-            }, 100);
+            }, 50); 
 		} else {
 			// En modo silencioso no tocamos el scroll ni mostramos loader
 			localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
@@ -6167,7 +6100,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // Forzamos la evaluación de seguridad al arrancar la app
         if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
 
-	} // cierre de: try {	
+	} // cierre de: try {
 
 	catch (error) {
 		console.error("Error en la aplicación:", error);
@@ -6393,18 +6326,24 @@ const ocultarLoading = () => {
     }
 };
 
-/* Envuelve operaciones pesadas síncronas. Fuerza al navegador a pintar el spinner ANTES de congelarse calculando. */
+/* Envuelve operaciones pesadas. Fuerza al navegador a pintar el spinner ANTES de congelarse calculando y es inteligente al ocultarlo. */
 function ejecutarOperacionPesada(tareaCallback) {
     const overlay = document.getElementById('msgActualizando...');
     if (overlay) {
         overlay.classList.add('loader-activo');
     }
 
-    // Pausa sincronizada de 120ms
     setTimeout(() => {
+        const idAntes = ultimoIdLlamadaTabla;
+
         tareaCallback();
-        ocultarLoading();
-    }, 120); 
+
+        // Si la tabla no se ha llamado, O si se ha llamado pero de forma silenciosa (como en el mapa),
+        // apagamos el spinner inmediatamente aquí.
+        if (ultimoIdLlamadaTabla === idAntes || window.ultimoConstruirTablaSilencioso) {
+            ocultarLoading();
+        }
+    }, 50); 
 }
 
 // Genera un icono de 5 barras tipo "cobertura" según la actividad (1 a 5)
