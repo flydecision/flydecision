@@ -5336,7 +5336,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         const arr10  = hourlyData.wind_speed_10m  || []; // Necesario para comparar
 
                         // Función helper para pintar celdas de altura optimizada
-                        const pintarCeldaAltura = (tr, dataArray, alturaKey) => {
+                        const pintarCeldaAltura = (tr, dataArray, alturaKey, bordeTop, bordeBottom) => {
                             // Ya no hacemos dataArray.slice().forEach(...)
                             for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                                 
@@ -5347,6 +5347,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 // Optimizaciones de caché y Set
                                 if (cacheEsNoche[i]) td.classList.add("celda-noche");
                                 if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+                                if (bordeTop) td.style.borderTop = "1px solid #000";
+                                if (bordeBottom) td.style.borderBottom = "1px solid #000";
 
                                 // 1. Datos Reales (para mostrar en texto)
                                 let valAltura = Math.round(Math.max(0, rawVal));
@@ -5410,19 +5412,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         };
 
                         // Pasamos la clave "80m", "120m" para que busque en el objeto LIMITES_CIZALLADURA
-                        pintarCeldaAltura(fila180, arr180, "180 m");
-                        pintarCeldaAltura(fila120, arr120, "120 m");
-                        pintarCeldaAltura(fila80,  arr80,  "80 m");
-
-                        // Borde superior para separar visualmente de la meteo general
-                        Array.from(fila180.children).forEach(td => {
-                            td.style.borderTop = "1px solid #000"; 
-                        });
-                        
-                        // Borde inferior para separar visualmente
-                        Array.from(fila80.children).forEach(td => {
-                            td.style.borderBottom = "1px solid #000"; 
-                        });
+                        // Bordes top/bottom aplicados directamente en la creación (ver parámetros), sin segunda pasada
+                        pintarCeldaAltura(fila180, arr180, "180 m", true, false);
+                        pintarCeldaAltura(fila120, arr120, "120 m", false, false);
+                        pintarCeldaAltura(fila80,  arr80,  "80 m", false, true);
                     }
 
 					// ⚪ Velocidad 10 m *****************************
@@ -5719,7 +5712,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         }
                     };
 
-                    const renderEcmwfDirCell = (tr, dirArr) => {
+                    const renderEcmwfDirCell = (tr, dirArr, bordeBottomPx) => {
                         if (!tr || !dirArr) return;
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             let val = dirArr[i];
@@ -5727,6 +5720,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[i]) td.classList.add("celda-noche");
                             if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+                            if (bordeBottomPx) td.style.borderBottom = bordeBottomPx;
 
                             if (val === null) {
                                 td.textContent = "—";
@@ -5804,30 +5798,32 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     if (mostrarEcmwfDOM) {
                         // 1. Pintar viento y racha en capas estándar
                         renderEcmwfSpeedCell(filaEcmwfVel200, hourlyEcmwf ? hourlyEcmwf.wind_speed_200m : null);
-                        renderEcmwfDirCell(filaEcmwfDir200, hourlyEcmwf ? hourlyEcmwf.wind_direction_200m : null);
+                        renderEcmwfDirCell(filaEcmwfDir200, hourlyEcmwf ? hourlyEcmwf.wind_direction_200m : null, "1px solid #000");
                         renderEcmwfSpeedCell(filaEcmwfVel100, hourlyEcmwf ? hourlyEcmwf.wind_speed_100m : null);
-                        renderEcmwfDirCell(filaEcmwfDir100, hourlyEcmwf ? hourlyEcmwf.wind_direction_100m : null);
+                        renderEcmwfDirCell(filaEcmwfDir100, hourlyEcmwf ? hourlyEcmwf.wind_direction_100m : null, "1px solid #000");
                         
                         renderEcmwfSpeedCell(filaEcmwfVel10, hourlyEcmwf ? hourlyEcmwf.wind_speed_10m : null);
                         renderEcmwfSpeedCell(filaEcmwfRacha10, hourlyEcmwf ? hourlyEcmwf.wind_gusts_10m : null);
-                        renderEcmwfDirCell(filaEcmwfDir10, hourlyEcmwf ? hourlyEcmwf.wind_direction_10m : null);
+                        renderEcmwfDirCell(filaEcmwfDir10, hourlyEcmwf ? hourlyEcmwf.wind_direction_10m : null, "2px solid #000");
 
                         // 2. Pintar las filas especiales de interpolación vertical (Fijas + Altitud Real)
                         const altReal = Number(d.Altitud) || 0;
 
                         // Helper para instanciar las celdas de interpolación (Aprovecha los datos calculados)
-                        const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHora) => {
+                        const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHora, bordeTopVel, bordeBottomDirPx) => {
                             const tdVel = document.createElement("td");
                             tdVel.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[indiceHora]) tdVel.classList.add("celda-noche");
                             if (setInicioDia.has(indiceHora)) tdVel.classList.add("borde-grueso-izquierda");
                             tdVel.style.fontSize = "12px";
+                            if (bordeTopVel) tdVel.style.borderTop = "1px solid #000";
 
                             const tdDir = document.createElement("td");
                             tdDir.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[indiceHora]) tdDir.classList.add("celda-noche");
                             if (setInicioDia.has(indiceHora)) tdDir.classList.add("borde-grueso-izquierda");
                             tdDir.style.fontSize = "12px";
+                            if (bordeBottomDirPx) tdDir.style.borderBottom = bordeBottomDirPx;
 
                             if (!hourlyEcmwf) {
                                 tdVel.textContent = "—";
@@ -5873,54 +5869,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             // Ejecutamos la interpolación para cada piso en altitud fija
-                            crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i);
-                            crearCeldasInterpoladas(filaEcmwfVel1500, filaEcmwfDir1500, 1500, 1500, i);
-                            crearCeldasInterpoladas(filaEcmwfVel1000, filaEcmwfDir1000, 1000, 1000, i);
-                            crearCeldasInterpoladas(filaEcmwfVel500,  filaEcmwfDir500,  500,  500,  i);
+                            // (bordes aplicados directamente en la creación: top solo en 3000m, bottom fino en 1500/1000m, grueso en 500m y altitud real)
+                            crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i, true, "1px solid #000");
+                            crearCeldasInterpoladas(filaEcmwfVel1500, filaEcmwfDir1500, 1500, 1500, i, false, "1px solid #000");
+                            crearCeldasInterpoladas(filaEcmwfVel1000, filaEcmwfDir1000, 1000, 1000, i, false, "1px solid #000");
+                            crearCeldasInterpoladas(filaEcmwfVel500,  filaEcmwfDir500,  500,  500,  i, false, "2px solid #000");
 
                             // Interpolación maestra para la altitud real del despegue
-                            crearCeldasInterpoladas(filaEcmwfValt, filaEcmwfDalt, altReal, altReal, i);
+                            crearCeldasInterpoladas(filaEcmwfValt, filaEcmwfDalt, altReal, altReal, i, false, "2px solid #000");
                         }
-
-                        // 3. APLICAR BORDES ITERANDO CELDA POR CELDA (Como en el bloque de 80m/10m)
-                        
-                        // Borde superior para separar visualmente este bloque entero de la meteo de arriba
-                        Array.from(filaEcmwfVel3000.children).forEach(td => {
-                            td.style.borderTop = "1px solid #000";
-                        });
-
-                        // Borde inferior para separar visualmente cada subgrupo de altitud
-                        const filasConBordeInferiorFino = [
-                            filaEcmwfDir3000, 
-                            filaEcmwfDir1500, 
-                            filaEcmwfDir1000, 
-                            filaEcmwfDir200, 
-                            filaEcmwfDir100
-                             
-                        ];
-
-                        filasConBordeInferiorFino.forEach(fila => {
-                            if (fila) {
-                                Array.from(fila.children).forEach(td => {
-                                    td.style.borderBottom = "1px solid #000";
-                                });
-                            }
-                        });
-                        
-                        // Bordes inferiores gruesos específicos internos (2px)
-                        const filasConBordeInferiorGrueso = [
-                            filaEcmwfDir500,
-                            filaEcmwfDir10,
-                            filaEcmwfDalt
-                        ];
-                        
-                        filasConBordeInferiorGrueso.forEach(fila => {
-                            if (fila) {
-                                Array.from(fila.children).forEach(td => {
-                                    td.style.borderBottom = "2px solid #000";
-                                });
-                            }
-                        });
                     }
 				}
 			}
