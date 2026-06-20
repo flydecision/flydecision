@@ -8215,6 +8215,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
     document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkOrdenarPorXC")) document.getElementById("chkOrdenarPorXC").checked = chkOrdenarPorXC;
 
+    const chkSoloLuz = document.getElementById("chkMostrarSoloHorasDiurnas");
+    if (chkSoloLuz) {
+        chkSoloLuz.checked = (localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") !== "false");
+    }
+
     const elDias = document.getElementById('valor-dias-seguimiento');
     if (elDias) {
         elDias.textContent = diasSeguimiento;
