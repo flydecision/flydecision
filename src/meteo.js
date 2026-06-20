@@ -2417,6 +2417,7 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 const chkDiaNoche = document.getElementById('chkDiaNoche');
 
 function clickOnDia(sliderElement, diaIndex) {
+    window.limitePaginacionMeteo = 10;
     const mismodia = window.diaSeleccionadoSlider === diaIndex;
     
     // INICIAMOS EL SPINNER INMEDIATAMENTE AL TOCAR EL BOTÓN DEL DÍA
@@ -2862,6 +2863,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
             window.rangoHorarioPersonalizado = true;
             
             if (haCambiado) {
+                window.limitePaginacionMeteo = 10;
                 ejecutarOperacionPesada(() => {
                     window.sliderHorasValues = valoresNuevos;
 
@@ -2963,6 +2965,7 @@ let modoVerTodosLosDias = false;
 let ultimoDiaSeleccionado = 0; // 💾 Almacena el índice del último día que estuvo activo
 
 window.toggleVerTodosLosDias = function() {
+    window.limitePaginacionMeteo = 10;
     const btnCal = document.getElementById('btn-ver-todos-dias');
     const panelFiltro = document.getElementById('div-filtro-horario');
     
@@ -5997,43 +6000,142 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
 		} // <--- FIN DEL BUCLE despegues.forEach
 		
-		// Solo ordenamos por nota si NO estamos en modo edición. 
-		if (!modoEdicionFavoritos) {
-			// 1. Ordenamos el array de mayor a menor nota
-			listaFilasParaOrdenar.sort((a, b) => {
-                // Si el usuario quiere ordenar por XC y además el XC está visible
+		// =========================================================
+        // 🚀 NUEVA LÓGICA DE PAGINACIÓN Y FILTRADO PRE-DOM
+        // =========================================================
+        
+        // 1. Extraemos el valor del Buscador. 
+        // Usamos un nombre de variable distinto para no chocar con el global.
+        const inputBusquedaLocal = document.getElementById('buscador-despegues-provincias');
+        const filtroTexto = inputBusquedaLocal ? inputBusquedaLocal.value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+
+        // Usamos 'distanciaLimite' que ya fue calculada mágicamente en la línea 2552 de tu código original
+        const centroLatFiltro = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) || null;
+        const centroLonFiltro = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL')) || null;
+
+        // 2. Filtramos la lista en memoria (Súper rápido) en lugar de ocultar con CSS
+        let filasValidas = listaFilasParaOrdenar.filter(item => {
+            const filaPrincipal = item.elementos[0];
+            
+            // Comprobar Texto
+            let txtCelda = "";
+            if (modoEdicionFavoritos) {
+                txtCelda = (filaPrincipal.cells[1]?.textContent + " " + filaPrincipal.cells[2]?.textContent + " " + filaPrincipal.cells[3]?.textContent + " " + filaPrincipal.cells[4]?.textContent);
+            } else {
+                txtCelda = filaPrincipal.cells[0]?.textContent || "";
+            }
+            txtCelda = txtCelda.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            const pasaTexto = filtroTexto === "" || txtCelda.includes(filtroTexto);
+
+            // Comprobar Distancia usando 'distanciaLimite'
+            let pasaDistancia = true;
+            if (distanciaLimite < 9999 && centroLatFiltro !== null && centroLonFiltro !== null) {
+                const lat = parseFloat(filaPrincipal.dataset.lat);
+                const lon = parseFloat(filaPrincipal.dataset.lon);
+                if (!isNaN(lat) && !isNaN(lon)) {
+                    if (obtenerDistanciaKm(centroLatFiltro, centroLonFiltro, lat, lon) > distanciaLimite) {
+                        pasaDistancia = false;
+                    }
+                }
+            }
+            return pasaTexto && pasaDistancia;
+        });
+
+        // 3. Ordenamos SÓLO los que han pasado el filtro
+        if (!modoEdicionFavoritos) {
+            filasValidas.sort((a, b) => {
                 if (chkOrdenarPorXC && chkMostrarXC) {
-                    if (b.notaXC === a.notaXC) {
-                        return b.nota - a.nota; // Desempate: Si el XC es igual, gana el que tenga mejor viento
-                    }
-                    return b.notaXC - a.notaXC; // Orden principal por XC
-                } 
-                // Ordenación estándar (Por Condiciones de Despegue)
-                else {
-                    if (b.nota === a.nota) {
-                        return b.notaXC - a.notaXC; // Desempate: Si el viento es igual, gana el que tenga mejor XC
-                    }
-                    return b.nota - a.nota; // Orden principal por Despegue
+                    if (b.notaXC === a.notaXC) return b.nota - a.nota;
+                    return b.notaXC - a.notaXC;
+                } else {
+                    if (b.nota === a.nota) return b.notaXC - a.notaXC;
+                    return b.nota - a.nota;
                 }
             });
-		}
-		
-		// 2. Ahora que están ordenados, los metemos en la tabla uno a uno
-		listaFilasParaOrdenar.forEach(item => {
-			item.elementos.forEach(fila => {
-				tbodyFragmento.appendChild(fila);
-			});
-		});
-		
-		// 1. Metemos el fragmento en nuestro tbody "en la sombra"
-        tbody.appendChild(tbodyFragmento);
+        }
 
-        // 2. AHORA SÍ, borramos la tabla vieja y metemos la nueva de un solo golpe (Atomic Swap)
+        // 4. PAGINACIÓN ("MOSTRAR TODOS")
+        const LIMITE_INICIAL = 10;
+        
+        // Mantenemos el límite actual o empezamos en 10
+        window.limitePaginacionMeteo = window.limitePaginacionMeteo || LIMITE_INICIAL;
+        const maxMostrar = Math.min(window.limitePaginacionMeteo, filasValidas.length);
+
+        // Solo metemos en el DOM el bloque permitido (Ej: 10 despegues)
+        for (let i = 0; i < maxMostrar; i++) {
+            filasValidas[i].elementos.forEach(fila => {
+                tbodyFragmento.appendChild(fila);
+            });
+        }
+
+        // Si quedan despegues sin mostrar, añadimos el botón final
+        if (maxMostrar < filasValidas.length) {
+            const trBtn = document.createElement("tr");
+            const tdBtn = document.createElement("td");
+            tdBtn.colSpan = 100; // Ocupa todo el ancho de la tabla
+            tdBtn.style.textAlign = "center";
+            tdBtn.style.padding = "20px 10px 35px 10px"; // Mucho espacio para que respire
+            tdBtn.style.backgroundColor = "transparent"; // Fondo invisible
+            tdBtn.style.border = "none";
+
+            const btn = document.createElement("button");
+            // No le ponemos clase para evitar conflictos con tu CSS. Lo diseñamos a medida.
+            btn.innerHTML = `
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 2px;">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <polyline points="19 12 12 19 5 12"></polyline>
+                </svg> 
+                Mostrar todos (${filasValidas.length})
+            `;
+            
+            // Diseño moderno e imposible de cortar
+            btn.style.display = "inline-flex";
+            btn.style.alignItems = "center";
+            btn.style.justifyContent = "center";
+            btn.style.gap = "8px";
+            btn.style.width = "100%";
+            btn.style.maxWidth = "350px";
+            btn.style.padding = "16px 20px";
+            btn.style.fontSize = "18px";
+            btn.style.fontWeight = "bold";
+            btn.style.color = "#0056b3"; // Texto azul oscuro
+            btn.style.backgroundColor = "#e7f5ff"; // Fondo azul muy clarito
+            btn.style.border = "2px solid #007aff"; // Borde azul brillante
+            btn.style.borderRadius = "12px";
+            btn.style.cursor = "pointer";
+            btn.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
+
+            // Efecto click
+            btn.onmousedown = function() { this.style.transform = "scale(0.97)"; };
+            btn.onmouseup = function() { this.style.transform = "scale(1)"; };
+
+            // Al hacer clic, mostramos TODOS de golpe
+            btn.onclick = function(e) {
+                e.preventDefault();
+                window.vibrarDispositivo();
+                
+                // Le pasamos un número gigante para que los pinte todos
+                window.limitePaginacionMeteo = 99999; 
+                
+                // Repintamos la tabla (silencioso = true ya evita el scroll sin bugs)
+                construir_tabla(false, true); 
+            };
+
+            tdBtn.appendChild(btn);
+            trBtn.appendChild(tdBtn);
+            tbodyFragmento.appendChild(trBtn);
+        }
+
+        // 5. Inyección en el HTML
+        tbody.appendChild(tbodyFragmento);
         tabla.innerHTML = "";
         tabla.appendChild(thead);
         tabla.appendChild(tbody);
 
-		aplicarFiltrosVisuales();
+        // 6. Actualizamos los contadores visuales
+        if (typeof window.actualizarContadoresVisualesRapidos === 'function') {
+            window.actualizarContadoresVisualesRapidos(filasValidas.length, filtroTexto, distanciaLimite);
+        }
 
 		if (soloHorasDeLuz) {
 			const chk = document.getElementById("chkMostrarSoloHorasDiurnas");
@@ -6509,95 +6611,40 @@ async function comprobarVersionApp() {
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------
 
-function aplicarFiltrosVisuales(evitarScroll = false) {
-    // 1. Obtener valores de Búsqueda de Texto
-    const input = document.getElementById('buscador-despegues-provincias');
-    const filtro = input ? input.value.toLowerCase() : "";
-    const normalizar = (texto) => texto.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    const filtroLimpio = normalizar(filtro);
-
-    // 2. Obtener valores de Filtro de Distancia
-    const sliderDistElem = document.getElementById('distancia-slider');
-    let distanciaLimite = 9999;
-    if (sliderDistElem && sliderDistElem.noUiSlider) {
-        const idxDist = Math.round(parseFloat(sliderDistElem.noUiSlider.get()));
-        distanciaLimite = CORTES_DISTANCIA_GLOBAL[idxDist];
-    }
-    const centroLatFiltro = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) || null;
-    const centroLonFiltro = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL')) || null;
-
-    // 3. Preparativos de la tabla
-    const tabla = document.getElementById('tabla');
-    const tbody = tabla.tBodies[0];
-    if (!tbody) return;
-
-    const filas = tbody.rows;
-    let visibles = 0;
-    const favoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n)); // Seguro Numérico
-    const totalFavoritos = favoritos.length;
-
-    // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
-    let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
-    if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-    if (chkMostrarVientoAlturas) filasPorDespegue += 3;
-    if (chkMostrarXC) filasPorDespegue += 3;
-    if (chkMostrarCizalladura) filasPorDespegue++;
+window.aplicarFiltrosVisuales = function(evitarScroll = false) {
+    // Al escribir en el buscador o mover distancia, reseteamos la paginación a 10 
+    window.limitePaginacionMeteo = 10;
     
-    if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
-        filasPorDespegue += 17;
-    }
+    // Como ahora dibujar la tabla lleva solo milisegundos, la mandamos repintar silenciosamente.
+    construir_tabla(false, true);
 
-    // 4. BUCLE DE FILTRADO SÚPER RÁPIDO (Solo DOM/CSS)
-    for (let i = 0; i < filas.length; i += filasPorDespegue) {
-
-        const filaPrincipal = filas[i];      
-        if (!filaPrincipal) continue;
-		
-        // A) Comprobar Texto
-		let txtBusqueda = "";
-        if (modoEdicionFavoritos) {
-            const txtPais = filaPrincipal.cells[1] ? filaPrincipal.cells[1].textContent : "";
-            const txtRegion = filaPrincipal.cells[2] ? filaPrincipal.cells[2].textContent : "";
-            const txtProvincia = filaPrincipal.cells[3] ? filaPrincipal.cells[3].textContent : "";
-            const txtDespegue = filaPrincipal.cells[4] ? filaPrincipal.cells[4].textContent : "";
-            txtBusqueda = normalizar(txtPais + " " + txtRegion + " " + txtProvincia + " " + txtDespegue);
-        } else {
-            const celda = filaPrincipal.cells[0];
-            txtBusqueda = celda ? normalizar(celda.textContent) : "";
-        }
-        let pasaTexto = txtBusqueda.includes(filtroLimpio);
-
-        // B) Comprobar Distancia
-        let pasaDistancia = true;
-        if (distanciaLimite < 9999 && centroLatFiltro !== null && centroLonFiltro !== null) {
-            const latSpot = parseFloat(filaPrincipal.dataset.lat);
-            const lonSpot = parseFloat(filaPrincipal.dataset.lon);
-            
-            if (!isNaN(latSpot) && !isNaN(lonSpot)) {
-                const distReal = obtenerDistanciaKm(centroLatFiltro, centroLonFiltro, latSpot, lonSpot);
-                if (distReal > distanciaLimite) {
-                    pasaDistancia = false;
-                }
-            }
-        }
-
-        // C) Evaluar y Ocultar/Mostrar el bloque completo
-        const coincide = (pasaTexto && pasaDistancia);
-        if (coincide) visibles++;
+    // Auto-scroll hacia arriba siempre (a menos que la app pida explícitamente evitarlo)
+    if (!evitarScroll && window.guardarScrollY === null) {
         
-        const displayStyle = coincide ? '' : 'none';
-
-        for (let j = 0; j < filasPorDespegue; j++) {
-            const fila = filas[i + j];
-            if (fila) {
-                fila.style.display = displayStyle;
-            }
-        }
+        // Damos un respiro de 10ms para que el DOM aplique la nueva altura de 10 filas
+        // antes de ordenar el scroll, si no el navegador se hace un lío.
+        setTimeout(() => {
+            const wrapper = document.querySelector('.tabla-wrapper');
+            const principal = document.querySelector('.contenedor-principal-tabla');
+            const options = { top: 0, behavior: 'smooth' }; 
+            
+            if (wrapper) wrapper.scrollTo(options);
+            if (principal) principal.scrollTo(options);
+            window.scrollTo(options);
+        }, 10);
     }
-    
-    // 5. EFECTOS VISUALES Y CONTADORES
-    
-    // Marcar input en rojo si no hay resultados
+};
+
+// Esta función extrae la parte visual que actualiza los Textos y Contadores 
+// sin tocar los pesados nodos del DOM.
+window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, distanciaLimite) {
+    const input = document.getElementById('buscador-despegues-provincias');
+    const favoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
+    const totalFavoritos = favoritos.length;
+    const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
+    const incluirNoFavs = btnIncNoFavs ? btnIncNoFavs.classList.contains('activo') : false;
+
+    // 1. Input en rojo si no hay resultados
     if (input) {
         if (visibles === 0 && filtroLimpio.length > 0) {
             input.classList.add('buscador-despegues-sin-resultados');
@@ -6606,168 +6653,119 @@ function aplicarFiltrosVisuales(evitarScroll = false) {
         }
     }
 
-    // Actualizar Contador Superior (modo Edición favoritos)
+    // 2. Contadores Superiores
     const divContador = document.getElementById('contador-despegues');
-    const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
-    const incluirNoFavs = btnIncNoFavs ? btnIncNoFavs.classList.contains('activo') : false;
-
     if (divContador) {
-        // 1. Iconos y Badge (Traducido)
         const iconoFiltro = `<img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">`;
         const heartRed = `<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">`;
         const heartWhite = `<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">`;
-        
-        // El badge usa visibles como número y el título traducido
         const htmlNumeroFiltrado = `<span class="contador-badge-filtro" title="${t('mapa.capasYFiltros')}">${iconoFiltro}<b>${visibles}</b></span>`;
 
         if (modoEdicionFavoritos) {
             if (soloFavoritos) {
-                // "X favoritos (❤️) de Y disponibles"
                 divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesFavoritosEdicion', { n: heartRed, total: totalDespeguesDisponibles })}`;
             } else if (visibles < totalDespeguesDisponibles) {
-                // "X de Y disponibles"
                 divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesDisponiblesFiltrados', { total: totalDespeguesDisponibles })}`;
             } else {
-                // "Y disponibles"
                 divContador.innerHTML = t('contador.despeguesDisponibles', { n: totalDespeguesDisponibles });
             }
         } else {
-            // Lógica de distancia
-            let distLim = 9999;
-            if (sliderDistElem && sliderDistElem.noUiSlider) {
-                distLim = CORTES_DISTANCIA_GLOBAL[Math.round(parseFloat(sliderDistElem.noUiSlider.get()))];
-            }
-            const ignorarFiltroFavoritos = (distLim < 9999 && incluirNoFavs);
-
+            const ignorarFiltroFavoritos = (distanciaLimite < 9999 && incluirNoFavs);
             if (ignorarFiltroFavoritos) {
-                // "X de Y disponibles (❤️+🤍)"
-                const icons = `${heartRed}+${heartWhite}`;
-                divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesDisponiblesFiltrados', { total: totalDespeguesDisponibles })} (${icons})`;
+                divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesDisponiblesFiltrados', { total: totalDespeguesDisponibles })} (${heartRed}+${heartWhite})`;
             } else if (totalFavoritos === 0) {
-                // "Total disponibles: Y"
                 divContador.innerHTML = t('contador.totalDisponibles', { n: totalDespeguesDisponibles });
             } else {
-                if (visibles < totalFavoritos || distLim < 9999) {
-                    // "X de Z favoritos (❤️)"
+                if (visibles < totalFavoritos || distanciaLimite < 9999) {
                     divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesFavoritosFiltrados', { total: totalFavoritos })} (${heartRed})`;
                 } else {
-                    // "X favoritos (❤️)"
                     divContador.innerHTML = `${t('contador.despeguesFavoritos', { n: visibles })} (${heartRed})`;
                 }
             }
         }
     }
 
-    // Actualizar Mini-Contador (modo Normal)
+    // 3. Mini-contador (Cabecera Tabla)
     const miniCounter = document.getElementById('header-contador-mini');
-
     if (miniCounter && !modoEdicionFavoritos) {
-        const totalFavs = favoritos.length;
+        const hayFiltros = filtroLimpio.length > 0 || distanciaLimite < 9999;
         
-        // Detectamos si el botón de "incluir no favoritos" está activo
-        const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
-        const incluirNoFavsActivo = btnIncNoFavs ? btnIncNoFavs.classList.contains('activo') : false;
-
-        // Comprobamos si hay filtros activos
-        const hayFiltroTexto = filtroLimpio.length > 0;
-        const hayFiltroDistancia = distanciaLimite < 9999;
-        const hayFiltros = hayFiltroTexto || hayFiltroDistancia;
-
         if (soloSeguimiento) {
-            // --- MODO "SEGUIMIENTO" (Corazón verde) ---
             const totalSeg = obtenerSeguimientos().length;
             const heartVerde = `<svg viewBox="1 4 22 16" width="16" height="16" style="vertical-align:-0.19em; margin-left:3px; display:inline-block;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="#16a34a" stroke="none"/><circle cx="12" cy="12" r="4.5" fill="white" stroke="none"/><circle cx="12" cy="12" r="2.5" fill="#16a34a" stroke="none"/></svg>`;
-
-            miniCounter.innerHTML = hayFiltros
-                ? `${visibles} de ${totalSeg} ${heartVerde}`
-                : `${visibles} ${heartVerde}`;
+            miniCounter.innerHTML = hayFiltros ? `${visibles} de ${totalSeg} ${heartVerde}` : `${visibles} ${heartVerde}`;
             miniCounter.title = t('contador.miniSeguimiento');
-        } else if (incluirNoFavsActivo) {
-            // --- MODO "BASE DE DATOS TOTAL" (Corazón oculto) ---
-            // Mostramos cuántos se ven respecto al total global de despegues
+        } else if (incluirNoFavs) {
             miniCounter.innerHTML = `${visibles} de ${totalDespeguesDisponibles}`;
             miniCounter.title = t('contador.miniTodosBD');
         } else {
-            // --- MODO "FAVORITOS" (Corazón visible) ---
             miniCounter.title = t('contador.miniFavoritos');
-            
             if (hayFiltros) {
-                miniCounter.innerHTML = `${visibles} de ${totalFavs} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
+                miniCounter.innerHTML = `${visibles} de ${totalFavoritos} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
             } else {
-                miniCounter.innerHTML = `${totalFavs} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
+                miniCounter.innerHTML = `${totalFavoritos} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
             }
         }
     }
 
+    // 4. Corazón de la cabecera (Modo edición)
     if (modoEdicionFavoritos) {
         const thFavorito = document.getElementById('id-thFavorito'); 
         if(thFavorito) thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
     }
 
-    // 6. SUGERENCIAS OTROS DESPEGUES (Aplica filtro de texto Y distancia)
-	let divSugerencias = document.getElementById('sugerencias-globales');
-	if (!divSugerencias) {
-		divSugerencias = document.createElement('div');
-		divSugerencias.id = 'sugerencias-globales'; 
-		if (input && input.parentNode) {
-			input.parentNode.insertBefore(divSugerencias, input.nextSibling);
-		}
-	}
+    // 5. Sugerencias Globales (Buscador Inteligente)
+    let divSugerencias = document.getElementById('sugerencias-globales');
+    if (!divSugerencias) {
+        divSugerencias = document.createElement('div');
+        divSugerencias.id = 'sugerencias-globales'; 
+        if (input && input.parentNode) {
+            input.parentNode.insertBefore(divSugerencias, input.nextSibling);
+        }
+    }
 
     if (filtroLimpio.length > 2 && !modoEdicionFavoritos && visibles === 0) {
-        const coincidenciasGlobales = window.bdGlobalDespegues.filter(d => {
-            const nombreSoloDespegue = normalizar(d.Despegue);
-            const yaEsFavorito = favoritos.includes(Number(d.ID));
-            
-            // 1. Filtro básico (No es favorito y el nombre coincide)
-            if (yaEsFavorito || !nombreSoloDespegue.includes(filtroLimpio)) return false;
+        const centroLatFiltro = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) || null;
+        const centroLonFiltro = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL')) || null;
+        const normalizar = (texto) => texto.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-            // 2. Filtro de distancia para las sugerencias
+        const coincidenciasGlobales = window.bdGlobalDespegues.filter(d => {
+            const nombreSolo = normalizar(d.Despegue);
+            const yaEsFavorito = favoritos.includes(Number(d.ID));
+            if (yaEsFavorito || !nombreSolo.includes(filtroLimpio)) return false;
+
             if (distanciaLimite < 9999 && centroLatFiltro !== null && centroLonFiltro !== null) {
                 const latSpot = parseFloat(d.Latitud);
                 const lonSpot = parseFloat(d.Longitud);
                 if (!isNaN(latSpot) && !isNaN(lonSpot)) {
-                    const distReal = obtenerDistanciaKm(centroLatFiltro, centroLonFiltro, latSpot, lonSpot);
-                    if (distReal > distanciaLimite) {
-                        return false; // Está fuera del radio, NO lo sugerimos
+                    if (obtenerDistanciaKm(centroLatFiltro, centroLonFiltro, latSpot, lonSpot) > distanciaLimite) {
+                        return false; 
                     }
                 }
             }
             return true;
         });
 
-		if (coincidenciasGlobales.length > 0) {
-			let html = `<p class="sugerencia-aviso">${t('buscador.sugerenciaTitulo', { termino: filtroLimpio })}</p><ul class="sugerencia-lista">`;
-			coincidenciasGlobales.slice(0, 3).forEach(d => {
-				html += `
-					<li class="sugerencia-item">
-						<span class="sugerencia-texto"><b>${d.Despegue}</b> <br><small style="color:#666;">(${d.Provincia})</small></span>
-						<button class="sugerencia-btn" onclick="agregarDespegueDesdeBuscador(${d.ID})">
+        if (coincidenciasGlobales.length > 0) {
+            let html = `<p class="sugerencia-aviso">${t('buscador.sugerenciaTitulo', { termino: filtroLimpio })}</p><ul class="sugerencia-lista">`;
+            coincidenciasGlobales.slice(0, 3).forEach(d => {
+                html += `<li class="sugerencia-item">
+                        <span class="sugerencia-texto"><b>${d.Despegue}</b> <br><small style="color:#666;">(${d.Provincia})</small></span>
+                        <button class="sugerencia-btn" onclick="agregarDespegueDesdeBuscador(${d.ID})">
                             ${t('buscador.anadirFavorito')} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">
                         </button>
-					</li>`;
-			});
-			html += `</ul>`;
-			divSugerencias.innerHTML = html;
-			divSugerencias.style.display = 'flex'; 
-		} else {
-			divSugerencias.style.display = 'none';
-		}
-	} else {
-		if(divSugerencias) divSugerencias.style.display = 'none';
-	}
-
-    // 7. AUTO-SCROLL AL INICIO
-    // Si evitarScroll es true, o si tenemos un scroll guardado en memoria, bloqueamos el auto-scroll
-    if (window.guardarScrollY === null && !evitarScroll && (filtroLimpio.length > 0 || distanciaLimite < 9999)) {
-        const wrapper = document.querySelector('.tabla-wrapper');
-        const principal = document.querySelector('.contenedor-principal-tabla');
-        const scrollOptions = { top: 0, behavior: 'smooth' };
-        if (wrapper) wrapper.scrollTo(scrollOptions);
-        if (principal) principal.scrollTo(scrollOptions);
-        window.scrollTo(scrollOptions);
+                    </li>`;
+            });
+            html += `</ul>`;
+            divSugerencias.innerHTML = html;
+            divSugerencias.style.display = 'flex'; 
+        } else {
+            divSugerencias.style.display = 'none';
+        }
+    } else {
+        if(divSugerencias) divSugerencias.style.display = 'none';
     }
-}
+};
 
 // Función auxiliar para el botón del buscador
 function agregarDespegueDesdeBuscador(idDespegue) {
@@ -7413,13 +7411,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		const haCambiado = valoresNuevos.some((val, i) => val !== ultimaVelocidadConfirmada[i]);
 
 		if (haCambiado) {
-			// Actualizamos variable de control
+            window.limitePaginacionMeteo = 10;
 			ultimaVelocidadConfirmada = valoresNuevos;
 
 			let [vMin, vIdeal, vMax] = valoresNuevos;
 			const RachaActual = Number(rachaSlider.noUiSlider.get());
 
-			// Corrección de lógica de negocio (Max no puede superar Racha)
+			// Corrección de lógica (Max no puede superar Racha)
 			if (vMax > RachaActual) {
 				vMax = RachaActual;
 				velocidadSlider.noUiSlider.set([null, null, vMax]);
@@ -7451,14 +7449,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
 		// Comprobamos contra la variable guardada
 		if (RachaNueva !== ultimaRachaConfirmada) {
+            window.limitePaginacionMeteo = 10;
 			
-			// Actualizamos variable de control
 			ultimaRachaConfirmada = RachaNueva;
 
 			const VelRaw = velocidadSlider.noUiSlider.get();
 			const VelMaxActual = Number(Array.isArray(VelRaw) ? VelRaw[2] : VelRaw);
 
-			// Corrección de lógica de negocio
 			if (RachaNueva < VelMaxActual) {
 				RachaNueva = VelMaxActual;
 				rachaSlider.noUiSlider.set(RachaNueva);
