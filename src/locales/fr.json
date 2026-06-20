@@ -31,7 +31,8 @@
     "importarConfiguracion": "Importer la configuration",
     "marcarFavoritosFlecha": "Marquer comme favoris →",
     "entendido": "Compris",
-    "volverAlMenuInicial": "Retour au menu initial"
+    "volverAlMenuInicial": "Retour au menu initial",
+    "mostrarTodos": "Tout afficher ({{n}})"
   },
 
   "dias": {
