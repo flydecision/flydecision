@@ -3816,7 +3816,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             });
 
             document.getElementById('paso1-btn-importar').addEventListener('click', () => {
-                cerrar();
+                //cerrar();
                 importarConfiguracion();
             });
         };
