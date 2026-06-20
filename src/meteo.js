@@ -2417,6 +2417,7 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 const chkDiaNoche = document.getElementById('chkDiaNoche');
 
 function clickOnDia(sliderElement, diaIndex) {
+    window.limitePaginacionMeteo = 10;
     const mismodia = window.diaSeleccionadoSlider === diaIndex;
     
     // INICIAMOS EL SPINNER INMEDIATAMENTE AL TOCAR EL BOTÓN DEL DÍA
@@ -2862,6 +2863,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
             window.rangoHorarioPersonalizado = true;
             
             if (haCambiado) {
+                window.limitePaginacionMeteo = 10;
                 ejecutarOperacionPesada(() => {
                     window.sliderHorasValues = valoresNuevos;
 
@@ -2963,6 +2965,7 @@ let modoVerTodosLosDias = false;
 let ultimoDiaSeleccionado = 0; // 💾 Almacena el índice del último día que estuvo activo
 
 window.toggleVerTodosLosDias = function() {
+    window.limitePaginacionMeteo = 10;
     const btnCal = document.getElementById('btn-ver-todos-dias');
     const panelFiltro = document.getElementById('div-filtro-horario');
     
@@ -6051,13 +6054,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             });
         }
 
-        // 4. PAGINACIÓN ("CARGAR MÁS")
-        const LIMITE_POR_PAGINA = 15;
-        // Mantenemos el límite actual o empezamos en 15
-        window.limitePaginacionMeteo = window.limitePaginacionMeteo || LIMITE_POR_PAGINA;
+        // 4. PAGINACIÓN ("MOSTRAR TODOS")
+        const LIMITE_INICIAL = 10;
+        
+        // Mantenemos el límite actual o empezamos en 10
+        window.limitePaginacionMeteo = window.limitePaginacionMeteo || LIMITE_INICIAL;
         const maxMostrar = Math.min(window.limitePaginacionMeteo, filasValidas.length);
 
-        // Solo metemos en el DOM el bloque permitido (Ej: 15 despegues)
+        // Solo metemos en el DOM el bloque permitido (Ej: 10 despegues)
         for (let i = 0; i < maxMostrar; i++) {
             filasValidas[i].elementos.forEach(fila => {
                 tbodyFragmento.appendChild(fila);
@@ -6068,26 +6072,52 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         if (maxMostrar < filasValidas.length) {
             const trBtn = document.createElement("tr");
             const tdBtn = document.createElement("td");
-            tdBtn.colSpan = 100;
+            tdBtn.colSpan = 100; // Ocupa todo el ancho de la tabla
             tdBtn.style.textAlign = "center";
-            tdBtn.style.padding = "25px 0";
+            tdBtn.style.padding = "20px 10px 35px 10px"; // Mucho espacio para que respire
+            tdBtn.style.backgroundColor = "transparent"; // Fondo invisible
+            tdBtn.style.border = "none";
 
             const btn = document.createElement("button");
-            btn.className = "btn-accion";
-            btn.innerHTML = `⬇️ Mostrar más despegues (${maxMostrar} de ${filasValidas.length})`;
-            btn.style.fontSize = "16px";
-            btn.style.padding = "12px 24px";
-            btn.style.borderRadius = "8px";
+            // No le ponemos clase para evitar conflictos con tu CSS. Lo diseñamos a medida.
+            btn.innerHTML = `
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 2px;">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <polyline points="19 12 12 19 5 12"></polyline>
+                </svg> 
+                Mostrar todos (${filasValidas.length})
+            `;
+            
+            // Diseño moderno e imposible de cortar
+            btn.style.display = "inline-flex";
+            btn.style.alignItems = "center";
+            btn.style.justifyContent = "center";
+            btn.style.gap = "8px";
+            btn.style.width = "100%";
+            btn.style.maxWidth = "350px";
+            btn.style.padding = "16px 20px";
+            btn.style.fontSize = "18px";
             btn.style.fontWeight = "bold";
+            btn.style.color = "#0056b3"; // Texto azul oscuro
+            btn.style.backgroundColor = "#e7f5ff"; // Fondo azul muy clarito
+            btn.style.border = "2px solid #007aff"; // Borde azul brillante
+            btn.style.borderRadius = "12px";
             btn.style.cursor = "pointer";
+            btn.style.boxShadow = "0 4px 6px rgba(0,0,0,0.1)";
 
-            // Al hacer clic, aumentamos el límite y repintamos rápido
+            // Efecto click
+            btn.onmousedown = function() { this.style.transform = "scale(0.97)"; };
+            btn.onmouseup = function() { this.style.transform = "scale(1)"; };
+
+            // Al hacer clic, mostramos TODOS de golpe
             btn.onclick = function(e) {
                 e.preventDefault();
                 window.vibrarDispositivo();
-                window.limitePaginacionMeteo += LIMITE_POR_PAGINA;
-                // Le decimos a la función que ignore el scroll al repintar
-                window.saltarScrollTop = (window.saltarScrollTop || 0) + 1;
+                
+                // Le pasamos un número gigante para que los pinte todos
+                window.limitePaginacionMeteo = 99999; 
+                
+                // Repintamos la tabla (silencioso = true ya evita el scroll sin bugs)
                 construir_tabla(false, true); 
             };
 
@@ -6584,7 +6614,7 @@ async function comprobarVersionApp() {
 window.aplicarFiltrosVisuales = function(evitarScroll = false) {
     // Al escribir en el buscador o mover distancia, reseteamos la paginación a 15 
     // para que la lista empiece desde el principio.
-    window.limitePaginacionMeteo = 15;
+    window.limitePaginacionMeteo = 10;
     
     // Como ahora dibujar la tabla lleva solo milisegundos, la mandamos repintar silenciosamente.
     construir_tabla(false, true);
@@ -7385,13 +7415,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		const haCambiado = valoresNuevos.some((val, i) => val !== ultimaVelocidadConfirmada[i]);
 
 		if (haCambiado) {
-			// Actualizamos variable de control
+            window.limitePaginacionMeteo = 10;
 			ultimaVelocidadConfirmada = valoresNuevos;
 
 			let [vMin, vIdeal, vMax] = valoresNuevos;
 			const RachaActual = Number(rachaSlider.noUiSlider.get());
 
-			// Corrección de lógica de negocio (Max no puede superar Racha)
+			// Corrección de lógica (Max no puede superar Racha)
 			if (vMax > RachaActual) {
 				vMax = RachaActual;
 				velocidadSlider.noUiSlider.set([null, null, vMax]);
@@ -7423,14 +7453,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
 		// Comprobamos contra la variable guardada
 		if (RachaNueva !== ultimaRachaConfirmada) {
+            window.limitePaginacionMeteo = 10;
 			
-			// Actualizamos variable de control
 			ultimaRachaConfirmada = RachaNueva;
 
 			const VelRaw = velocidadSlider.noUiSlider.get();
 			const VelMaxActual = Number(Array.isArray(VelRaw) ? VelRaw[2] : VelRaw);
 
-			// Corrección de lógica de negocio
 			if (RachaNueva < VelMaxActual) {
 				RachaNueva = VelMaxActual;
 				rachaSlider.noUiSlider.set(RachaNueva);
