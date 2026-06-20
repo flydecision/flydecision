@@ -2121,6 +2121,15 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
         const btnFiltros = document.getElementById('btn-filtros-mapa');
         if (btnFiltros) btnFiltros.style.display = ''; 
 
+        // Si venimos del onboarding del mapa, forzamos el cambio de pantalla a la tabla aquí dentro
+        if (ignorarMenu === true) {
+            cambiarVista('tabla');
+            const navHome = document.getElementById('nav-home');
+            if (navHome && typeof window.activarMenuInferior === 'function') {
+                window.activarMenuInferior(navHome);
+            }
+        }
+
         if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
 
         if (window.seguimientoPrevioEdicion === true) {
@@ -2139,16 +2148,13 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
             window.filtroMeteoPreEdicion = undefined;
         }
 
+        // Reseteamos el límite de paginación para la tabla inicial
+        window.limitePaginacionMeteo = 10;
+
         construir_tabla(); 
 
         setTimeout(() => { sugerirGuiaPrincipal(); }, 500);
 
-        if (ignorarMenu !== true) {
-            const navHome = document.getElementById('nav-home');
-            if (navHome && typeof window.activarMenuInferior === 'function') {
-                window.activarMenuInferior(navHome);
-            }
-        }
     }, 120);
 
     return true; 
@@ -6057,19 +6063,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // 4. PAGINACIÓN ("MOSTRAR TODOS")
         const LIMITE_INICIAL = 10;
         
-        // Mantenemos el límite actual o empezamos en 10
-        window.limitePaginacionMeteo = window.limitePaginacionMeteo || LIMITE_INICIAL;
-        const maxMostrar = Math.min(window.limitePaginacionMeteo, filasValidas.length);
+        // Si estamos editando favoritos, NO paginamos. Mostramos la lista completa.
+        const usarPaginacion = !modoEdicionFavoritos;
 
-        // Solo metemos en el DOM el bloque permitido (Ej: 10 despegues)
+        const maxMostrar = usarPaginacion 
+            ? Math.min(window.limitePaginacionMeteo || LIMITE_INICIAL, filasValidas.length)
+            : filasValidas.length;
+
+        // Solo metemos en el DOM el bloque permitido (o todos si la paginación está desactivada)
         for (let i = 0; i < maxMostrar; i++) {
             filasValidas[i].elementos.forEach(fila => {
                 tbodyFragmento.appendChild(fila);
             });
         }
 
-        // Si quedan despegues sin mostrar, añadimos el botón final
-        if (maxMostrar < filasValidas.length) {
+        // Si quedan despegues sin mostrar y la paginación está activa, añadimos el botón final
+        if (usarPaginacion && maxMostrar < filasValidas.length) {
             const trBtn = document.createElement("tr");
             const tdBtn = document.createElement("td");
             tdBtn.colSpan = 100; // Ocupa todo el ancho de la tabla
@@ -9450,8 +9459,21 @@ window.cambiarVista = function(vista) {
             const btnFiltros = document.getElementById('btn-filtros-mapa');
             const btnCerrar  = document.getElementById('btn-cerrar-filtros-mapa');
             
-            
-            if (filtrosMapaAbiertos) {
+            // Si estamos en modo selección de favoritos, ocultamos el botón de Filtros Meteo
+            if (typeof modoEdicionFavoritos !== 'undefined' && modoEdicionFavoritos) {
+                divFH.style.display = 'none';
+                divFH.classList.remove('flotando-en-mapa');
+                if (btnFiltros) btnFiltros.style.display = 'none';
+                if (btnCerrar)  btnCerrar.style.display  = 'none';
+                document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
+                
+                // Forzamos el repintado para que se aplique la capa blanca
+                setTimeout(() => {
+                    marcarOperativosEnMarkers();
+                    aplicarPuntuacionEnMapa();
+                }, 200);
+
+            } else if (filtrosMapaAbiertos) {
                 // Restaurar estado abierto
                 divFH.style.display = '';
                 divFH.classList.add('flotando-en-mapa');
@@ -9570,11 +9592,9 @@ window.evaluarEstadoNuevosUsuarios = function() {
                 //btnConfigMapa.style.backgroundColor = '#16a34a'; // Color Verde OK
                 //btnConfigMapa.style.borderColor = '#16a34a';
                 
-                // Le cambiamos el comportamiento para que finalice la edición
+                // Le cambiamos el comportamiento para que finalice la edición de forma segura
                 btnConfigMapa.onclick = function() {
-                    if (finalizarEdicionFavoritos(true)) {
-                        clicBotonInicio(); // Forzamos volver a la vista principal
-                    }
+                    finalizarEdicionFavoritos(true);
                 };
                 
                 // Le cambiamos el texto y forzamos la traducción si está disponible
@@ -9851,13 +9871,19 @@ function aplicarPuntuacionEnMapa() {
         const idx = idxPorId.get(Number(despObj.ID));
         if (idx === undefined) return;
 
-        const hourlyData  = respuestas[idx] ? respuestas[idx].hourly : null;
-        const hourlyEcmwf = respuestasEcmwf && respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
+        let nota = null;
+        let color = null;
 
-        // Llamada a la nueva función unificada
-        const evaluacion = calcularPuntuacionesDespegue(despObj, hourlyData, hourlyEcmwf, indicesEvaluacionMapa);
-        const nota = evaluacion.notaCondiciones;
-        const color = colorNotaMapa(nota);
+        // ESCUDO: Si no estamos editando favoritos, calculamos la meteo normal.
+        // Si estamos editando, las variables se quedan en 'null' y el despegue se pinta blanco/neutro.
+        if (!modoEdicionFavoritos) {
+            const hourlyData  = respuestas[idx] ? respuestas[idx].hourly : null;
+            const hourlyEcmwf = respuestasEcmwf && respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
+
+            const evaluacion = calcularPuntuacionesDespegue(despObj, hourlyData, hourlyEcmwf, indicesEvaluacionMapa);
+            nota = evaluacion.notaCondiciones;
+            color = colorNotaMapa(nota);
+        }
 
         marker._notaMapa = (nota !== null) ? nota : -1;
         const nombreMostrar = despObj ? despObj.Despegue : meta.despegue;
