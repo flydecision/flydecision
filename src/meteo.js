@@ -6612,30 +6612,26 @@ async function comprobarVersionApp() {
 // ---------------------------------------------------------------
 
 window.aplicarFiltrosVisuales = function(evitarScroll = false) {
-    // Al escribir en el buscador o mover distancia, reseteamos la paginación a 15 
-    // para que la lista empiece desde el principio.
+    // Al escribir en el buscador o mover distancia, reseteamos la paginación a 10 
     window.limitePaginacionMeteo = 10;
     
     // Como ahora dibujar la tabla lleva solo milisegundos, la mandamos repintar silenciosamente.
     construir_tabla(false, true);
 
-    // Auto-scroll hacia arriba si hay filtros activos
+    // Auto-scroll hacia arriba siempre (a menos que la app pida explícitamente evitarlo)
     if (!evitarScroll && window.guardarScrollY === null) {
-        const input = document.getElementById('buscador-despegues-provincias');
-        const sliderDist = document.getElementById('distancia-slider');
-        let distLim = 9999;
-        if (sliderDist && sliderDist.noUiSlider) {
-            distLim = CORTES_DISTANCIA_GLOBAL[Math.round(parseFloat(sliderDist.noUiSlider.get()))];
-        }
         
-        if ((input && input.value.trim() !== '') || distLim < 9999) {
+        // Damos un respiro de 10ms para que el DOM aplique la nueva altura de 10 filas
+        // antes de ordenar el scroll, si no el navegador se hace un lío.
+        setTimeout(() => {
             const wrapper = document.querySelector('.tabla-wrapper');
             const principal = document.querySelector('.contenedor-principal-tabla');
-            const options = { top: 0, behavior: 'instant' };
+            const options = { top: 0, behavior: 'smooth' }; 
+            
             if (wrapper) wrapper.scrollTo(options);
             if (principal) principal.scrollTo(options);
             window.scrollTo(options);
-        }
+        }, 10);
     }
 };
 
