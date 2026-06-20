@@ -2128,6 +2128,12 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
             if (navHome && typeof window.activarMenuInferior === 'function') {
                 window.activarMenuInferior(navHome);
             }
+        } else {
+            // Si salimos de la edición normal (tabla), volvemos a encender la luz del botón "Tabla" de forma limpia al terminar.
+            const navHome = document.getElementById('nav-home');
+            if (navHome && typeof window.activarMenuInferior === 'function') {
+                window.activarMenuInferior(navHome);
+            }
         }
 
         if (typeof limpiarBuscador === 'function') limpiarBuscador(); 
@@ -6128,11 +6134,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 e.preventDefault();
                 window.vibrarDispositivo();
                 
-                // Le pasamos un número gigante para que los pinte todos
+                mostrarLoading(0); 
+
                 window.limitePaginacionMeteo = 99999; 
                 
-                // Repintamos la tabla (silencioso = true ya evita el scroll sin bugs)
-                construir_tabla(false, true); 
+                setTimeout(() => {
+                    construir_tabla(false, true); 
+                    ocultarLoading(); 
+                }, 50);
             };
 
             tdBtn.appendChild(btn);
