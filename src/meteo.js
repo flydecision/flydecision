@@ -5700,18 +5700,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         });
                     }
 
-                    // NUEVO: Funciones de renderizado neutro para el Grupo de Viento ECMWF
                     const renderEcmwfSpeedCell = (tr, speedArr) => {
                         if (!tr || !speedArr) return;
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
-                            let val = speedArr[i];
                             const td = document.createElement("td");
                             td.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[i]) td.classList.add("celda-noche");
                             if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
-                            td.textContent = val !== null ? Math.round(Number(val)) : "—";
-                            td.title = val !== null ? `${Math.round(Number(val))} km/h` : "N/A";
+                            if (!debeMostrarse) {
+                                // Despegue colapsado: placeholder, sin formatear el valor real
+                                td.textContent = "…";
+                            } else {
+                                let val = speedArr[i];
+                                td.textContent = val !== null ? Math.round(Number(val)) : "—";
+                                td.title = val !== null ? `${Math.round(Number(val))} km/h` : "N/A";
+                            }
                             tr.appendChild(td);
                         }
                     };
@@ -5719,23 +5723,28 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     const renderEcmwfDirCell = (tr, dirArr, bordeBottomPx) => {
                         if (!tr || !dirArr) return;
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
-                            let val = dirArr[i];
                             const td = document.createElement("td");
                             td.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[i]) td.classList.add("celda-noche");
                             if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
                             if (bordeBottomPx) td.style.borderBottom = bordeBottomPx;
 
-                            if (val === null) {
-                                td.textContent = "—";
+                            if (!debeMostrarse) {
+                                // Despegue colapsado: placeholder, sin calcular grados ni dibujar el SVG de la flecha
+                                td.textContent = "…";
                             } else {
-                                const dir = Math.round(Number(val));
-                                td.innerHTML = `
-                                    <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg);">
-                                        <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
-                                    </svg>
-                                `;
-                                td.title = `${dir}º`;
+                                let val = dirArr[i];
+                                if (val === null) {
+                                    td.textContent = "—";
+                                } else {
+                                    const dir = Math.round(Number(val));
+                                    td.innerHTML = `
+                                        <svg class="flecha-viento" viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg);">
+                                            <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
+                                        </svg>
+                                    `;
+                                    td.title = `${dir}º`;
+                                }
                             }
                             tr.appendChild(td);
                         }
