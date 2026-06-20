@@ -5825,7 +5825,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             tdDir.style.fontSize = "12px";
                             if (bordeBottomDirPx) tdDir.style.borderBottom = bordeBottomDirPx;
 
-                            if (!hourlyEcmwf) {
+                            if (!debeMostrarse) {
+                                // Despegue colapsado: nos ahorramos el cálculo trigonométrico (sin/cos/atan2/sqrt),
+                                // solo placeholder visual. Si el usuario expande, el siguiente rebuild calculará el valor real.
+                                tdVel.textContent = "…";
+                                tdDir.textContent = "…";
+                            } else if (!hourlyEcmwf) {
                                 tdVel.textContent = "—";
                                 tdDir.textContent = "—";
                             } else {
