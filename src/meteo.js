@@ -1840,14 +1840,17 @@ function gestionarClickMasivoFavoritos() {
     const filas = tbody.rows;
     let idsVisibles = [];
 
-    // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
-    let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
-    if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-    if (chkMostrarVientoAlturas) filasPorDespegue += 3;
-    if (chkMostrarXC) filasPorDespegue += 3;
-    if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
-        filasPorDespegue += 10;
+    let filasPorDespegue = 1;
+
+    if (!modoEdicionFavoritos) {
+        filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
+        if (chkMostrarProbPrecipitacion) filasPorDespegue++;
+        if (chkMostrarVientoAlturas) filasPorDespegue += 3;
+        if (chkMostrarXC) filasPorDespegue += 3;
+        if (chkMostrarCizalladura) filasPorDespegue++;
+        if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
+            filasPorDespegue += 10; 
+        }
     }
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
@@ -1926,13 +1929,17 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     const setAfectados = new Set(idsAfectados.map(Number)); // Búsqueda O(1)
 
     // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
-    let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
-    if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-    if (chkMostrarVientoAlturas) filasPorDespegue += 3;
-    if (chkMostrarXC) filasPorDespegue += 3;
-    if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
-        filasPorDespegue += 17;
+    let filasPorDespegue = 1; 
+
+    if (!modoEdicionFavoritos) {
+        filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
+        if (chkMostrarProbPrecipitacion) filasPorDespegue++;
+        if (chkMostrarVientoAlturas) filasPorDespegue += 3;
+        if (chkMostrarXC) filasPorDespegue += 3;
+        if (chkMostrarCizalladura) filasPorDespegue++;
+        if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
+            filasPorDespegue += 10; 
+        }
     }
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
