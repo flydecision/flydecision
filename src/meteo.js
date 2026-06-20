@@ -6088,13 +6088,18 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             tdBtn.style.border = "none";
 
             const btn = document.createElement("button");
-            // No le ponemos clase para evitar conflictos con tu CSS. Lo diseñamos a medida.
+            
+            const textoTraducido = t('botones.mostrarTodos', { 
+                n: filasValidas.length, 
+                defaultValue: `Mostrar todos (${filasValidas.length})` 
+            });
+
             btn.innerHTML = `
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-top: 2px;">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <polyline points="19 12 12 19 5 12"></polyline>
                 </svg> 
-                Mostrar todos (${filasValidas.length})
+                ${textoTraducido}
             `;
             
             // Diseño moderno e imposible de cortar
@@ -8940,55 +8945,66 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // 🔴 FUNCIÓN PARA VOLVER A LA EDICIÓN TRAS UN DESVÍO AL MAPA/TABLA AISLADA
     // ---------------------------------------------------------------
     window.volverAEdicionDesdeDesvio = function() {
-        // 1. Mostrar spinner inmediatamente
-        const overlay = document.getElementById('msgActualizando...');
-        if (overlay) overlay.classList.add('loader-activo');
+    // 1. Mostrar spinner inmediatamente
+    const overlay = document.getElementById('msgActualizando...');
+    if (overlay) overlay.classList.add('loader-activo');
 
-        // 2. Liberar el hilo de la CPU
-        setTimeout(() => {
-            window.despegueTemporalParaTabla = null; 
+    // 2. Liberar el hilo de la CPU
+    setTimeout(() => {
+        window.despegueTemporalParaTabla = null; 
 
-            if (typeof limpiarBuscador === 'function') limpiarBuscador();
+        // Limpiamos el buscador directamente en el DOM de forma silenciosa.
+        // Esto evita que limpiarBuscador() dispare una reconstrucción de tabla prematura.
+        const input = document.getElementById('buscador-despegues-provincias');
+        if (input) {
+            input.value = '';
+            input.classList.remove('filtrado', 'buscador-despegues-sin-resultados');
+            input.placeholder = t('buscador.placeholderEdicion') || "🔍 País, Región, Provincia o Despegue";
+        }
+        const btnLimpiar = document.getElementById('limpiar-buscador');
+        if (btnLimpiar) btnLimpiar.style.display = 'none';
 
-            modoEdicionFavoritos = true;
-            soloFavoritos = false; 
-            soloSeguimiento = false; 
-            
-            const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
-            if (btnFavsTog && btnFavsTog.classList.contains('activo')) {
-                soloFavoritos = true;
+        modoEdicionFavoritos = true;
+        soloFavoritos = false; 
+        soloSeguimiento = false; 
+        
+        const btnFavsTog = document.getElementById('btn-filtro-favoritos-toggle');
+        if (btnFavsTog && btnFavsTog.classList.contains('activo')) {
+            soloFavoritos = true;
+        }
+
+        document.body.classList.add('modo-edicion-tabla');
+        const divMenu = document.getElementById('div-menu');
+        if (divMenu) divMenu.classList.add('mode-editing');
+        const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
+        if (divMenu2) divMenu2.classList.add('mode-editing');
+        const panelHorario = document.querySelector('.div-filtro-horario');
+        if (panelHorario) panelHorario.style.display = 'none';
+
+        const panelDistancia = document.getElementById("div-filtro-distancia");
+        if (panelDistancia) panelDistancia.classList.add("activo");
+
+        if (window.onboardingMapaActivo) {
+            cambiarVista('mapa');
+            const btnMap = document.getElementById('nav-map');
+            if (btnMap && typeof window.activarMenuInferior === 'function') {
+                window.activarMenuInferior(btnMap);
             }
-
-            document.body.classList.add('modo-edicion-tabla');
-            const divMenu = document.getElementById('div-menu');
-            if (divMenu) divMenu.classList.add('mode-editing');
-            const divMenu2 = document.getElementById('div-menu2-edicion-favoritos');
-            if (divMenu2) divMenu2.classList.add('mode-editing');
-            const panelHorario = document.querySelector('.div-filtro-horario');
-            if (panelHorario) panelHorario.style.display = 'none';
-
-            const panelDistancia = document.getElementById("div-filtro-distancia");
-            if (panelDistancia) panelDistancia.classList.add("activo");
-
-            if (window.onboardingMapaActivo) {
-                cambiarVista('mapa');
-                const btnMap = document.getElementById('nav-map');
-                if (btnMap && typeof window.activarMenuInferior === 'function') {
-                    window.activarMenuInferior(btnMap);
-                }
-            } else {
-                cambiarVista('tabla');
-                const btnSettings = document.getElementById('nav-settings');
-                if (btnSettings && typeof window.activarMenuInferior === 'function') {
-                    window.activarMenuInferior(btnSettings);
-                }
+        } else {
+            cambiarVista('tabla');
+            const btnSettings = document.getElementById('nav-settings');
+            if (btnSettings && typeof window.activarMenuInferior === 'function') {
+                window.activarMenuInferior(btnSettings);
             }
+        }
 
-            window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
-            construir_tabla();
-            
-        }, 120);
-    };
+        // 🚀 Como ahora solo llamamos a construir_tabla() una vez,
+        // solo necesitamos consumir 1 salto de scroll para que se mantenga en su sitio.
+        window.saltarScrollTop = (window.saltarScrollTop || 0) + 1;
+        construir_tabla();
+        
+    }, 120);
+};
 
     // ==========================================================================
     // 🔴 LÓGICA DEL MENÚ INFERIOR Y BUSCADOR FLOTANTE

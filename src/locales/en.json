@@ -31,7 +31,8 @@
     "importarConfiguracion": "Import configuration",
     "marcarFavoritosFlecha": "Mark favorites →",
     "entendido": "Got it",
-    "volverAlMenuInicial": "Back to start menu"
+    "volverAlMenuInicial": "Back to start menu",
+    "mostrarTodos": "Show all ({{n}})"
   },
 
   "dias": {
