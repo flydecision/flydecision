@@ -1799,7 +1799,7 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
             if (btnFiltroFav && btnFiltroFav.classList.contains('activo') && !esNuevoFavorito) {
                 construir_tabla(false, false, false);
             } else {
-                aplicarFiltrosVisuales(true); 
+                aplicarFiltrosVisuales(true, true); 
             }
         }
     };
@@ -2249,7 +2249,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
             construir_tabla(false, enMapa, enMapa);
         }
     } else {
-        aplicarFiltrosVisuales(true);
+        aplicarFiltrosVisuales(true, true);
     }
 };
 
@@ -6625,9 +6625,11 @@ async function comprobarVersionApp() {
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------
 
-window.aplicarFiltrosVisuales = function(evitarScroll = false) {
-    // Al escribir en el buscador o mover distancia, reseteamos la paginación a 10 
-    window.limitePaginacionMeteo = 10;
+window.aplicarFiltrosVisuales = function(evitarScroll = false, preservarPaginacion = false) {
+    // Solo reseteamos el límite a 10 si NO nos piden preservarlo
+    if (!preservarPaginacion) {
+        window.limitePaginacionMeteo = 10;
+    }
     
     // Como ahora dibujar la tabla lleva solo milisegundos, la mandamos repintar silenciosamente.
     construir_tabla(false, true);
@@ -6635,12 +6637,11 @@ window.aplicarFiltrosVisuales = function(evitarScroll = false) {
     // Auto-scroll hacia arriba siempre (a menos que la app pida explícitamente evitarlo)
     if (!evitarScroll && window.guardarScrollY === null) {
         
-        // Damos un respiro de 10ms para que el DOM aplique la nueva altura de 10 filas
-        // antes de ordenar el scroll, si no el navegador se hace un lío.
+        // Damos un respiro de 10ms para que el DOM aplique la nueva altura de 10 filas antes de ordenar el scroll, si no el navegador se hace un lío.
         setTimeout(() => {
             const wrapper = document.querySelector('.tabla-wrapper');
             const principal = document.querySelector('.contenedor-principal-tabla');
-            const options = { top: 0, behavior: 'smooth' }; 
+            const options = { top: 0, behavior: 'smooth' }; // Instantáneo para evitar saltos raros
             
             if (wrapper) wrapper.scrollTo(options);
             if (principal) principal.scrollTo(options);
