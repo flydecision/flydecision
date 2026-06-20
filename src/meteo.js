@@ -1847,7 +1847,7 @@ function gestionarClickMasivoFavoritos() {
     if (chkMostrarXC) filasPorDespegue += 3;
     if (chkMostrarCizalladura) filasPorDespegue++;
     if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
-        filasPorDespegue += 17;
+        filasPorDespegue += 10;
     }
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
@@ -4695,7 +4695,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const mostrarEcmwfDOM = chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable;
 
             let filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500;
-            let filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt;
+            let filaEcmwfValt, filaEcmwfDalt;
             
             if (mostrarEcmwfDOM) {
                 filaEcmwfVel3000  = document.createElement("tr");
@@ -4707,21 +4707,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaEcmwfVel500   = document.createElement("tr");
                 filaEcmwfDir500   = document.createElement("tr");
 
-                filaEcmwfVel200   = document.createElement("tr");
-                filaEcmwfDir200   = document.createElement("tr");
-                filaEcmwfVel100   = document.createElement("tr");
-                filaEcmwfDir100   = document.createElement("tr");
-                filaEcmwfVel10    = document.createElement("tr");
-                filaEcmwfRacha10  = document.createElement("tr");
-                filaEcmwfDir10    = document.createElement("tr");
                 filaEcmwfValt      = document.createElement("tr"); 
                 filaEcmwfDalt      = document.createElement("tr"); 
 
                 [
                     filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                     filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
-                    filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, 
-                    filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt
+                    filaEcmwfValt, filaEcmwfDalt
                 ].forEach(f => {
                     f.classList.add("ecmwf-neutral-row");
                     
@@ -4739,8 +4731,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                 filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
-                filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, 
-                filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt
+                filaEcmwfValt, filaEcmwfDalt
             ].filter(Boolean);
             const rowsGroup2 = [filaTecho, filaCape, filaCin].filter(Boolean);
 
@@ -5250,17 +5241,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 addIconCellEcmwf(filaEcmwfVel500, "<span style='position: relative; top: -1px; display: inline-block;'>500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf500);
                 addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir500, null, "2px solid #000");
-
-                addIconCellEcmwf(filaEcmwfVel200, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>200 m</span>", tituloEcmwf200);
-                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir200, null, "1px solid #000");
-                
-                addIconCellEcmwf(filaEcmwfVel100, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>100 m</span>", tituloEcmwf100);
-                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir100, null, "1px solid #000");
-                
-                addIconCellEcmwf(filaEcmwfVel10, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>10 m</span>", tituloEcmwf10);
-                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir10, null, "2px solid #000");
-                
-                addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', tituloEcmwfRacha10);
 
                 addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>`, tituloEcmwfValt);
                 addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDalt, null, "2px solid #000");
@@ -5845,17 +5825,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     };
 
                     if (mostrarEcmwfDOM) {
-                        // 1. Pintar viento y racha en capas estándar
-                        renderEcmwfSpeedCell(filaEcmwfVel200, hourlyEcmwf ? hourlyEcmwf.wind_speed_200m : null);
-                        renderEcmwfDirCell(filaEcmwfDir200, hourlyEcmwf ? hourlyEcmwf.wind_direction_200m : null, "1px solid #000");
-                        renderEcmwfSpeedCell(filaEcmwfVel100, hourlyEcmwf ? hourlyEcmwf.wind_speed_100m : null);
-                        renderEcmwfDirCell(filaEcmwfDir100, hourlyEcmwf ? hourlyEcmwf.wind_direction_100m : null, "1px solid #000");
-                        
-                        renderEcmwfSpeedCell(filaEcmwfVel10, hourlyEcmwf ? hourlyEcmwf.wind_speed_10m : null);
-                        renderEcmwfSpeedCell(filaEcmwfRacha10, hourlyEcmwf ? hourlyEcmwf.wind_gusts_10m : null);
-                        renderEcmwfDirCell(filaEcmwfDir10, hourlyEcmwf ? hourlyEcmwf.wind_direction_10m : null, "2px solid #000");
 
-                        // 2. Pintar las filas especiales de interpolación vertical (Fijas + Altitud Real)
+                        // Pintar las filas especiales de interpolación vertical (Fijas + Altitud Real)
                         const altReal = Number(d.Altitud) || 0;
 
                         // Helper para instanciar las celdas de interpolación (Aprovecha los datos calculados)
