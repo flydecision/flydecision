@@ -1790,9 +1790,12 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
         const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
         
         if (enMapa) {
-            // SI ESTAMOS EN EL MAPA: Reconstruimos la tabla silenciosamente en segundo plano
-            window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
-            construir_tabla(false, true, true); 
+            // SI ESTAMOS EN EL MAPA: Reconstruimos la tabla silenciosamente en segundo plano.
+            // Esta llamada es silenciosa (silencioso=true) y por tanto nunca toca el scroll,
+            // así que NO incrementamos saltarScrollTop aquí: hacerlo dejaba el contador
+            // "flotando" sin consumir y provocaba que la SIGUIENTE reconstrucción visible
+            // (p. ej. al cambiar el rango horario) se saltase el scroll-top por error.
+            construir_tabla(false, true, true);  
         } else {
             // SI ESTAMOS EN LA PROPIA TABLA: Bastan los cambios visuales instantáneos que ya hicimos arriba
             const btnFiltroFav = document.getElementById('btn-filtro-favoritos-toggle');
@@ -2251,7 +2254,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
         const quedan = obtenerSeguimientos();
         const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
         
-        window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
+        window.saltarScrollTop = (window.saltarScrollTop || 0) + 1;
 
         if (quedan.length === 0) {
             soloSeguimiento = false;
@@ -6198,6 +6201,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			// En modo silencioso no tocamos el scroll ni mostramos loader
 			localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
 			localStorage.removeItem('METEO_CRASH_COUNTER');
+
+            // Red de seguridad: si saltarScrollTop se incrementó pensando en esta
+			// reconstrucción pero resultó ser silenciosa, lo consumimos igualmente.
+			// Una llamada silenciosa nunca hace scroll, así que no hay nada que
+			// "saltar" aquí, pero si no lo consumimos el contador queda flotando
+			// y se come por error el scroll-top de una futura acción no relacionada.
+			if (window.saltarScrollTop > 0) {
+				window.saltarScrollTop--;
+			}
 		}		
 
         // --- ACTUALIZAR MAPA SI ESTABA VISIBLE (Para reconexiones y recargas) ---
