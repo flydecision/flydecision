@@ -1790,16 +1790,19 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
         const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
         
         if (enMapa) {
-            // SI ESTAMOS EN EL MAPA: Reconstruimos la tabla silenciosamente en segundo plano
-            window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
-            construir_tabla(false, true, true); 
+            // SI ESTAMOS EN EL MAPA: Reconstruimos la tabla silenciosamente en segundo plano.
+            // Esta llamada es silenciosa (silencioso=true) y por tanto nunca toca el scroll,
+            // así que NO incrementamos saltarScrollTop aquí: hacerlo dejaba el contador
+            // "flotando" sin consumir y provocaba que la SIGUIENTE reconstrucción visible
+            // (p. ej. al cambiar el rango horario) se saltase el scroll-top por error.
+            construir_tabla(false, true, true);  
         } else {
             // SI ESTAMOS EN LA PROPIA TABLA: Bastan los cambios visuales instantáneos que ya hicimos arriba
             const btnFiltroFav = document.getElementById('btn-filtro-favoritos-toggle');
             if (btnFiltroFav && btnFiltroFav.classList.contains('activo') && !esNuevoFavorito) {
                 construir_tabla(false, false, false);
             } else {
-                aplicarFiltrosVisuales(true); 
+                aplicarFiltrosVisuales(true, true); 
             }
         }
     };
@@ -1840,14 +1843,17 @@ function gestionarClickMasivoFavoritos() {
     const filas = tbody.rows;
     let idsVisibles = [];
 
-    // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
-    let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
-    if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-    if (chkMostrarVientoAlturas) filasPorDespegue += 3;
-    if (chkMostrarXC) filasPorDespegue += 3;
-    if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
-        filasPorDespegue += 17;
+    let filasPorDespegue = 1;
+
+    if (!modoEdicionFavoritos) {
+        filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
+        if (chkMostrarProbPrecipitacion) filasPorDespegue++;
+        if (chkMostrarVientoAlturas) filasPorDespegue += 3;
+        if (chkMostrarXC) filasPorDespegue += 3;
+        if (chkMostrarCizalladura) filasPorDespegue++;
+        if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
+            filasPorDespegue += 10; 
+        }
     }
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
@@ -1926,13 +1932,17 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     const setAfectados = new Set(idsAfectados.map(Number)); // Búsqueda O(1)
 
     // CÁLCULO DINÁMICO DE FILAS POR BLOQUE 
-    let filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
-    if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-    if (chkMostrarVientoAlturas) filasPorDespegue += 3;
-    if (chkMostrarXC) filasPorDespegue += 3;
-    if (chkMostrarCizalladura) filasPorDespegue++;
-    if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
-        filasPorDespegue += 17;
+    let filasPorDespegue = 1; 
+
+    if (!modoEdicionFavoritos) {
+        filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
+        if (chkMostrarProbPrecipitacion) filasPorDespegue++;
+        if (chkMostrarVientoAlturas) filasPorDespegue += 3;
+        if (chkMostrarXC) filasPorDespegue += 3;
+        if (chkMostrarCizalladura) filasPorDespegue++;
+        if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
+            filasPorDespegue += 10; 
+        }
     }
 
     for (let i = 0; i < filas.length; i += filasPorDespegue) {
@@ -2068,6 +2078,16 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
                     estilo: 'secundario',
                     onclick: function() {
                         GestorMensajes.ocultar();
+
+                        window.venirDeEdicionActiva = false;
+                        modoEdicionFavoritos = false;
+
+                        document.body.classList.remove('modo-edicion-tabla');
+                        const divMenuExplorarB = document.getElementById('div-menu');
+                        if (divMenuExplorarB) divMenuExplorarB.classList.remove('mode-editing');
+                        const divMenu2ExplorarB = document.getElementById('div-menu2-edicion-favoritos');
+                        if (divMenu2ExplorarB) divMenu2ExplorarB.classList.remove('mode-editing');
+
                         if (typeof clicBotonMapa === 'function') {
                             clicBotonMapa();
                         }
@@ -2124,6 +2144,12 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
         // Si venimos del onboarding del mapa, forzamos el cambio de pantalla a la tabla aquí dentro
         if (ignorarMenu === true) {
             cambiarVista('tabla');
+            const navHome = document.getElementById('nav-home');
+            if (navHome && typeof window.activarMenuInferior === 'function') {
+                window.activarMenuInferior(navHome);
+            }
+        } else {
+            // Si salimos de la edición normal (tabla), volvemos a encender la luz del botón "Tabla" de forma limpia al terminar.
             const navHome = document.getElementById('nav-home');
             if (navHome && typeof window.activarMenuInferior === 'function') {
                 window.activarMenuInferior(navHome);
@@ -2238,7 +2264,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
         const quedan = obtenerSeguimientos();
         const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
         
-        window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
+        window.saltarScrollTop = (window.saltarScrollTop || 0) + 1;
 
         if (quedan.length === 0) {
             soloSeguimiento = false;
@@ -2249,7 +2275,7 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
             construir_tabla(false, enMapa, enMapa);
         }
     } else {
-        aplicarFiltrosVisuales(true);
+        aplicarFiltrosVisuales(true, true);
     }
 };
 
@@ -3808,6 +3834,19 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             document.getElementById('paso1-btn-mapa').addEventListener('click', () => {
                 cerrar();
+
+                window.onboardingMapaActivo = false;
+                window.venirDeEdicionActiva = false;
+                modoEdicionFavoritos = false;
+
+                sessionStorage.setItem('METEO_ENTRO_POR_MAPA_YA_VISITADO', 'true');
+
+                document.body.classList.remove('modo-edicion-tabla');
+                const divMenuExplorar = document.getElementById('div-menu');
+                if (divMenuExplorar) divMenuExplorar.classList.remove('mode-editing');
+                const divMenu2Explorar = document.getElementById('div-menu2-edicion-favoritos');
+                if (divMenu2Explorar) divMenu2Explorar.classList.remove('mode-editing');
+
                 clicBotonMapa();
             });
 
@@ -3816,7 +3855,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             });
 
             document.getElementById('paso1-btn-importar').addEventListener('click', () => {
-                cerrar();
+                //cerrar();
                 importarConfiguracion();
             });
         };
@@ -3859,9 +3898,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (panelHorario) panelHorario.style.display = 'none';
             } 
                 
-            // NUEVA LÓGICA DE EJECUCIÓN (Solo salta el pop-up si NO vienes de URL directa)
-            if (!enlaceDirectoMapa) {
-                // CONTROL DE FLUJO: ¿Ha elegido idioma manualmente?
+            // NUEVA LÓGICA DE EJECUCIÓN (Solo salta el pop-up si NO vienes de URL directa
+            if (!enlaceDirectoMapa && !sessionStorage.getItem('METEO_ENTRO_POR_MAPA_YA_VISITADO')) {
                 if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) {
                     mostrarPaso0();
                 } else {
@@ -4689,7 +4727,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const mostrarEcmwfDOM = chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable;
 
             let filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500;
-            let filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt;
+            let filaEcmwfValt, filaEcmwfDalt;
             
             if (mostrarEcmwfDOM) {
                 filaEcmwfVel3000  = document.createElement("tr");
@@ -4701,21 +4739,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaEcmwfVel500   = document.createElement("tr");
                 filaEcmwfDir500   = document.createElement("tr");
 
-                filaEcmwfVel200   = document.createElement("tr");
-                filaEcmwfDir200   = document.createElement("tr");
-                filaEcmwfVel100   = document.createElement("tr");
-                filaEcmwfDir100   = document.createElement("tr");
-                filaEcmwfVel10    = document.createElement("tr");
-                filaEcmwfRacha10  = document.createElement("tr");
-                filaEcmwfDir10    = document.createElement("tr");
                 filaEcmwfValt      = document.createElement("tr"); 
                 filaEcmwfDalt      = document.createElement("tr"); 
 
                 [
                     filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                     filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
-                    filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, 
-                    filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt
+                    filaEcmwfValt, filaEcmwfDalt
                 ].forEach(f => {
                     f.classList.add("ecmwf-neutral-row");
                     
@@ -4733,8 +4763,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                 filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
-                filaEcmwfVel200, filaEcmwfDir200, filaEcmwfVel100, filaEcmwfDir100, 
-                filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10, filaEcmwfValt, filaEcmwfDalt
+                filaEcmwfValt, filaEcmwfDalt
             ].filter(Boolean);
             const rowsGroup2 = [filaTecho, filaCape, filaCin].filter(Boolean);
 
@@ -5245,17 +5274,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCellEcmwf(filaEcmwfVel500, "<span style='position: relative; top: -1px; display: inline-block;'>500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf500);
                 addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir500, null, "2px solid #000");
 
-                addIconCellEcmwf(filaEcmwfVel200, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>200 m</span>", tituloEcmwf200);
-                addIconCellEcmwf(filaEcmwfDir200, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir200, null, "1px solid #000");
-                
-                addIconCellEcmwf(filaEcmwfVel100, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>100 m</span>", tituloEcmwf100);
-                addIconCellEcmwf(filaEcmwfDir100, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir100, null, "1px solid #000");
-                
-                addIconCellEcmwf(filaEcmwfVel10, "<span style='font-size:10px; font-weight:bold; position: relative; top: -1px; display: inline-block;'>10 m</span>", tituloEcmwf10);
-                addIconCellEcmwf(filaEcmwfDir10, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir10, null, "2px solid #000");
-                
-                addIconCellEcmwf(filaEcmwfRacha10, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', tituloEcmwfRacha10);
-
                 addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>`, tituloEcmwfValt);
                 addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDalt, null, "2px solid #000");
 
@@ -5650,20 +5668,33 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                             // === 1. TECHO ===
                             let vTecho = hourlyEcmwf.boundary_layer_height[i];
-                            let txtTecho = "", colorTecho = "", bgTecho = "";
+                            let txtTecho = "", colorTecho = "", bgTecho = "", titleTecho = "";
                             
                             if (vTecho != null) {
-                                let espesorUtil = Math.round(Number(vTecho) * RATIO_TECHO_UTIL);
+                                let espesorBLH = Math.round(Number(vTecho));
+                                let espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
                                 let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
+                                
                                 let valorTexto = (altitudMSL / 1000).toFixed(1);
                                 txtTecho = (valorTexto === "0.0") ? "0" : valorTexto;
                                 
                                 if (espesorUtil < XCTechoLims.rojo) colorTecho = "fondo-rojo";
                                 else if (espesorUtil >= XCTechoLims.verde) colorTecho = "fondo-verde";
                                 else colorTecho = "fondo-naranja";
+
+                                const textoTooltipOriginal = t('tabla.techoTooltip', {
+                                    altitudMSL: altitudMSL,
+                                    espesorUtil: espesorUtil,
+                                    pct: Math.round(RATIO_TECHO_UTIL * 100),
+                                    blh: espesorBLH,
+                                    elevacion: Math.round(elevacionModeloECMWF)
+                                });
+
+                                // Protegemos el texto por si tiene comillas que puedan romper el atributo HTML
+                                titleTecho = `title="${textoTooltipOriginal.replace(/"/g, '&quot;')}"`;
                             }
                             bgTecho = (!cacheEsNoche[i] && !colorTecho) ? 'background-color: #ffffff;' : '';
-                            htmlTecho += `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; ${bgTecho}">${txtTecho}</td>`;
+                            htmlTecho += `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; ${bgTecho}" ${titleTecho}>${txtTecho}</td>`;
 
                             // === 2. CAPE ===
                             let vCape = hourlyEcmwf.cape[i];
@@ -5826,17 +5857,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     };
 
                     if (mostrarEcmwfDOM) {
-                        // 1. Pintar viento y racha en capas estándar
-                        renderEcmwfSpeedCell(filaEcmwfVel200, hourlyEcmwf ? hourlyEcmwf.wind_speed_200m : null);
-                        renderEcmwfDirCell(filaEcmwfDir200, hourlyEcmwf ? hourlyEcmwf.wind_direction_200m : null, "1px solid #000");
-                        renderEcmwfSpeedCell(filaEcmwfVel100, hourlyEcmwf ? hourlyEcmwf.wind_speed_100m : null);
-                        renderEcmwfDirCell(filaEcmwfDir100, hourlyEcmwf ? hourlyEcmwf.wind_direction_100m : null, "1px solid #000");
-                        
-                        renderEcmwfSpeedCell(filaEcmwfVel10, hourlyEcmwf ? hourlyEcmwf.wind_speed_10m : null);
-                        renderEcmwfSpeedCell(filaEcmwfRacha10, hourlyEcmwf ? hourlyEcmwf.wind_gusts_10m : null);
-                        renderEcmwfDirCell(filaEcmwfDir10, hourlyEcmwf ? hourlyEcmwf.wind_direction_10m : null, "2px solid #000");
 
-                        // 2. Pintar las filas especiales de interpolación vertical (Fijas + Altitud Real)
+                        // Pintar las filas especiales de interpolación vertical (Fijas + Altitud Real)
                         const altReal = Number(d.Altitud) || 0;
 
                         // Helper para instanciar las celdas de interpolación (Aprovecha los datos calculados)
@@ -6128,11 +6150,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 e.preventDefault();
                 window.vibrarDispositivo();
                 
-                // Le pasamos un número gigante para que los pinte todos
+                mostrarLoading(0); 
+
                 window.limitePaginacionMeteo = 99999; 
                 
-                // Repintamos la tabla (silencioso = true ya evita el scroll sin bugs)
-                construir_tabla(false, true); 
+                setTimeout(() => {
+                    construir_tabla(false, true); 
+                    ocultarLoading(); 
+                }, 50);
             };
 
             tdBtn.appendChild(btn);
@@ -6198,6 +6223,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			// En modo silencioso no tocamos el scroll ni mostramos loader
 			localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
 			localStorage.removeItem('METEO_CRASH_COUNTER');
+
+            // Red de seguridad: si saltarScrollTop se incrementó pensando en esta
+			// reconstrucción pero resultó ser silenciosa, lo consumimos igualmente.
+			// Una llamada silenciosa nunca hace scroll, así que no hay nada que
+			// "saltar" aquí, pero si no lo consumimos el contador queda flotando
+			// y se come por error el scroll-top de una futura acción no relacionada.
+			if (window.saltarScrollTop > 0) {
+				window.saltarScrollTop--;
+			}
 		}		
 
         // --- ACTUALIZAR MAPA SI ESTABA VISIBLE (Para reconexiones y recargas) ---
@@ -6625,9 +6659,11 @@ async function comprobarVersionApp() {
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------
 
-window.aplicarFiltrosVisuales = function(evitarScroll = false) {
-    // Al escribir en el buscador o mover distancia, reseteamos la paginación a 10 
-    window.limitePaginacionMeteo = 10;
+window.aplicarFiltrosVisuales = function(evitarScroll = false, preservarPaginacion = false) {
+    // Solo reseteamos el límite a 10 si NO nos piden preservarlo
+    if (!preservarPaginacion) {
+        window.limitePaginacionMeteo = 10;
+    }
     
     // Como ahora dibujar la tabla lleva solo milisegundos, la mandamos repintar silenciosamente.
     construir_tabla(false, true);
@@ -6635,12 +6671,11 @@ window.aplicarFiltrosVisuales = function(evitarScroll = false) {
     // Auto-scroll hacia arriba siempre (a menos que la app pida explícitamente evitarlo)
     if (!evitarScroll && window.guardarScrollY === null) {
         
-        // Damos un respiro de 10ms para que el DOM aplique la nueva altura de 10 filas
-        // antes de ordenar el scroll, si no el navegador se hace un lío.
+        // Damos un respiro de 10ms para que el DOM aplique la nueva altura de 10 filas antes de ordenar el scroll, si no el navegador se hace un lío.
         setTimeout(() => {
             const wrapper = document.querySelector('.tabla-wrapper');
             const principal = document.querySelector('.contenedor-principal-tabla');
-            const options = { top: 0, behavior: 'smooth' }; 
+            const options = { top: 0, behavior: 'smooth' }; // Instantáneo para evitar saltos raros
             
             if (wrapper) wrapper.scrollTo(options);
             if (principal) principal.scrollTo(options);
@@ -8213,6 +8248,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkOrdenarPorXC")) document.getElementById("chkOrdenarPorXC").checked = chkOrdenarPorXC;
+
+    const chkSoloLuz = document.getElementById("chkMostrarSoloHorasDiurnas");
+    if (chkSoloLuz) {
+        chkSoloLuz.checked = (localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") !== "false");
+    }
 
     const elDias = document.getElementById('valor-dias-seguimiento');
     if (elDias) {
