@@ -1379,9 +1379,7 @@ function activarEdicionFavoritosConMapa() {
     const overlay = document.getElementById('msgActualizando...');
     if (overlay) overlay.classList.add('loader-activo');
 
-    setTimeout(() => {
-        _activarEdicionFavoritosSync(true); // true = Queremos ir directamente al mapa
-    }, 120);
+    _activarEdicionFavoritosSync(true); // true = Queremos ir directamente al mapa
 }
 
 function filtroVerSoloFavoritos() {
@@ -3562,7 +3560,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                               (totalFavoritos > 15) || 
                               (typeof modoVerTodosLosDias !== 'undefined' && modoVerTodosLosDias);
 
-    if (!silencioso && esOperacionPesada) {
+    const probablePrimeraVisita = !localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") &&
+                                   !localStorage.getItem("METEO_FAVORITOS_LISTA") &&
+                                   !modoEdicionFavoritos &&
+                                   !window.despegueTemporalParaTabla;
+
+    if (!silencioso && esOperacionPesada && !probablePrimeraVisita) {
         // Añadimos la clase visual INMEDIATAMENTE
         const overlay = document.getElementById('msgActualizando...');
         if (overlay) {
