@@ -2898,10 +2898,12 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 
                     const enMapa = document.getElementById('nav-map')?.classList.contains('active');
 
-                    construir_tabla(false, enMapa); 
-                    
-                    if (typeof aplicarPuntuacionEnMapa === 'function') {
-                        aplicarPuntuacionEnMapa();
+                    if (enMapa) {
+                        if (typeof aplicarPuntuacionEnMapa === 'function') {
+                            aplicarPuntuacionEnMapa(true);
+                        }
+                    } else {
+                        construir_tabla(false, false);
                     }
                 });
             }
@@ -9892,7 +9894,7 @@ function marcarOperativosEnMarkers() {
     });
 }
 
-function aplicarPuntuacionEnMapa() {
+function aplicarPuntuacionEnMapa(soloPuntuacion = false) {
     const horas = window.horasCrudasRangoHorario;
     const respuestas = window.respuestasGlobalMapa;
     const respuestasEcmwf = window.respuestasEcmwfGlobalMapa;
@@ -9957,7 +9959,7 @@ function aplicarPuntuacionEnMapa() {
     if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
         clustergroupDespegues.refreshClusters();
     }
-    if (typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || filtrosMapaAbiertos)) {
+    if (typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || (filtrosMapaAbiertos && !soloPuntuacion))) {
         actualizarFiltrosMapa();
     }
 
