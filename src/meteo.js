@@ -1790,12 +1790,11 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
         const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
         
         if (enMapa) {
-            // SI ESTAMOS EN EL MAPA: Reconstruimos la tabla silenciosamente en segundo plano.
-            // Esta llamada es silenciosa (silencioso=true) y por tanto nunca toca el scroll,
-            // así que NO incrementamos saltarScrollTop aquí: hacerlo dejaba el contador
-            // "flotando" sin consumir y provocaba que la SIGUIENTE reconstrucción visible
-            // (p. ej. al cambiar el rango horario) se saltase el scroll-top por error.
-            construir_tabla(false, true, true);  
+            if (!modoEdicionFavoritos) {
+                // Solo reconstruimos si es una acción rápida en uso normal (la tabla está filtrada a pocos)
+                //window.saltarScrollTop = (window.saltarScrollTop || 0) + 2;
+                construir_tabla(false, true, true); 
+            }  
         } else {
             // SI ESTAMOS EN LA PROPIA TABLA: Bastan los cambios visuales instantáneos que ya hicimos arriba
             const btnFiltroFav = document.getElementById('btn-filtro-favoritos-toggle');
