@@ -2525,20 +2525,25 @@ function clickOnDia(sliderElement, diaIndex) {
         }
 
         sliderElement.noUiSlider.set([finalStart, finalEnd]);
-        window.sliderHorasValues = [finalStart, finalEnd];
+            window.sliderHorasValues = [finalStart, finalEnd];
 
-        window.ultimoRangoSlider = null;
-        window.restaurarRangoDesdeCalendario = false;
+            window.ultimoRangoSlider = null;
+            window.restaurarRangoDesdeCalendario = false;
 
-        const enMapa = document.getElementById('nav-map')?.classList.contains('active');
+            const vistaMapa = document.getElementById('vista-mapa');
+            const enMapa = vistaMapa && vistaMapa.style.display === 'flex';
 
-        // Todo este trabajo pesado ocurre bajo el escudo del spinner
-        construir_tabla(false, enMapa); 
-        
-        if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
+            if (enMapa) {
+                // Saltamos la reconstrucción de la tabla
+                window.tablaRecrearAlVolver = true;
+                if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
+            } else {
+                construir_tabla(false, false); 
+                if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
+            }
 
-    }); 
-}
+        }); 
+    }
 
 // Función que adjunta el evento Y AHORA TAMBIÉN FORZA LA POSICIÓN VISUAL
 function adjuntarEventoPips(sliderElement) {
@@ -2892,18 +2897,22 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
             window.rangoHorarioPersonalizado = true;
             
             if (haCambiado) {
-                window.limitePaginacionMeteo = 10;
+                window.limitePaginacionMeteo = 10; 
                 ejecutarOperacionPesada(() => {
                     window.sliderHorasValues = valoresNuevos;
 
-                    const enMapa = document.getElementById('nav-map')?.classList.contains('active');
+                    const vistaMapa = document.getElementById('vista-mapa');
+                    const enMapa = vistaMapa && vistaMapa.style.display === 'flex';
 
                     if (enMapa) {
-                        if (typeof aplicarPuntuacionEnMapa === 'function') {
-                            aplicarPuntuacionEnMapa(true);
-                        }
+                        // Si estamos en el mapa, NO perdemos tiempo haciendo la tabla.
+                        // Marcamos la bandera y actualizamos solo los colores del mapa.
+                        window.tablaRecrearAlVolver = true;
+                        if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
                     } else {
-                        construir_tabla(false, false);
+                        // Si estamos viendo la tabla, sí la reconstruimos.
+                        construir_tabla(false, false); 
+                        if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
                     }
                 });
             }
@@ -3034,9 +3043,17 @@ window.toggleVerTodosLosDias = function() {
             if (btnCal) btnCal.classList.add('activo');
             if (panelFiltro) panelFiltro.classList.add('ocultar-slider-por-calendario');
 
-            // Reconstruimos la tabla con los 4 días.
-            // (La propia función construir_tabla() ocultará el loader al finalizar).
-            construir_tabla();
+            const vistaMapa = document.getElementById('vista-mapa');
+            const enMapa = vistaMapa && vistaMapa.style.display === 'flex';
+
+            if (enMapa) {
+                // Actualizamos solo el mapa y marcamos bandera
+                window.tablaRecrearAlVolver = true;
+                if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
+                ocultarLoading(); // Apagamos el spinner manualmente
+            } else {
+                construir_tabla();
+            }
         }
 
     }, 50);
@@ -9630,6 +9647,11 @@ window.cambiarVista = function(vista) {
         if (btnFiltros) btnFiltros.style.display = '';
 
         document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
+
+        if (window.tablaRecrearAlVolver) {
+            window.tablaRecrearAlVolver = false;
+            construir_tabla(false, true); // Reconstruir silenciosamente con la nueva hora
+        }
     }
 
     // Llamamos al evaluador cada vez que cambiamos de pantalla
@@ -9906,7 +9928,12 @@ function aplicarPuntuacionEnMapa(soloPuntuacion = false) {
 
     let indiceInicio = 0, indiceFin = 99999;
     const sliderHoras = document.getElementById('horario-slider');
-    if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario.length > 0) {
+    
+    // Forzar cálculo de toda la semana si el calendario está activo
+    if (typeof modoVerTodosLosDias !== 'undefined' && modoVerTodosLosDias) {
+        indiceInicio = 0;
+        indiceFin = 99999;
+    } else if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario.length > 0) {
         const vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
         indiceInicio = window.indicesDiaActualSlider[vals[0]];
         indiceFin    = window.indicesDiaActualSlider[vals[1]];
