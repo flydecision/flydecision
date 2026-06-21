@@ -6543,6 +6543,10 @@ window.toggleEcmwfDesplegable = function(e, idDespegue) {
 };
 
 window.cambiarModoEcmwf = function(nuevoModo) {
+
+    if (typeof window.vibrarDispositivo === 'function') {
+        window.vibrarDispositivo();
+    }
     // Guardamos la preferencia en memoria de sesión
     localStorage.setItem("METEO_CONFIG_ECMWF_MODE", nuevoModo);
     
