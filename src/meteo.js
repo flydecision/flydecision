@@ -2272,18 +2272,10 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
             construir_tabla(false, enMapa, enMapa);
         }
     } else {
-        // Optimización masiva para cuando NO estamos filtrando en modo exclusivo
         const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
         
-        if (enMapa) {
-            // Si estamos en el mapa, NO perdemos tiempo manipulando la tabla oculta.
-            // Simplemente le avisamos de que se repinte si el usuario vuelve a ella.
-            if (!modoEdicionFavoritos) {
-                window.tablaRecrearAlVolver = true;
-            }
-        } else {
-            // En la tabla, actualizamos rápido sin perder el estado "Mostrar todos"
-            aplicarFiltrosVisuales(true, true);
+        if (enMapa && !modoEdicionFavoritos) {
+            window.tablaRecrearAlVolver = true;
         }
     }
 };
