@@ -2078,6 +2078,16 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
                     estilo: 'secundario',
                     onclick: function() {
                         GestorMensajes.ocultar();
+
+                        window.venirDeEdicionActiva = false;
+                        modoEdicionFavoritos = false;
+
+                        document.body.classList.remove('modo-edicion-tabla');
+                        const divMenuExplorarB = document.getElementById('div-menu');
+                        if (divMenuExplorarB) divMenuExplorarB.classList.remove('mode-editing');
+                        const divMenu2ExplorarB = document.getElementById('div-menu2-edicion-favoritos');
+                        if (divMenu2ExplorarB) divMenu2ExplorarB.classList.remove('mode-editing');
+
                         if (typeof clicBotonMapa === 'function') {
                             clicBotonMapa();
                         }
@@ -3824,6 +3834,19 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             document.getElementById('paso1-btn-mapa').addEventListener('click', () => {
                 cerrar();
+
+                window.onboardingMapaActivo = false;
+                window.venirDeEdicionActiva = false;
+                modoEdicionFavoritos = false;
+
+                sessionStorage.setItem('METEO_ENTRO_POR_MAPA_YA_VISITADO', 'true');
+
+                document.body.classList.remove('modo-edicion-tabla');
+                const divMenuExplorar = document.getElementById('div-menu');
+                if (divMenuExplorar) divMenuExplorar.classList.remove('mode-editing');
+                const divMenu2Explorar = document.getElementById('div-menu2-edicion-favoritos');
+                if (divMenu2Explorar) divMenu2Explorar.classList.remove('mode-editing');
+
                 clicBotonMapa();
             });
 
@@ -3875,9 +3898,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (panelHorario) panelHorario.style.display = 'none';
             } 
                 
-            // NUEVA LÓGICA DE EJECUCIÓN (Solo salta el pop-up si NO vienes de URL directa)
-            if (!enlaceDirectoMapa) {
-                // CONTROL DE FLUJO: ¿Ha elegido idioma manualmente?
+            // NUEVA LÓGICA DE EJECUCIÓN (Solo salta el pop-up si NO vienes de URL directa
+            if (!enlaceDirectoMapa && !sessionStorage.getItem('METEO_ENTRO_POR_MAPA_YA_VISITADO')) {
                 if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) {
                     mostrarPaso0();
                 } else {
