@@ -6718,24 +6718,27 @@ window.aplicarFiltrosVisuales = function(evitarScroll = false, preservarPaginaci
     return promesaTabla;
 };
 
-// Variante exclusiva para el buscador de texto: muestra el spinner SOLO si la operación tarda más de 300ms, para no molestar en búsquedas rápidas.
+// Variable global para recordar el temporizador del teclado
+let temporizadorBuscador = null;
+
 window.aplicarFiltrosVisualesBuscador = function() {
-    const overlay = document.getElementById('msgActualizando...');
-    let terminado = false;
+    // 1. Si el usuario teclea una nueva letra ANTES de 300ms, 
+    // cancelamos la búsqueda que estaba a punto de ejecutarse.
+    if (temporizadorBuscador) {
+        clearTimeout(temporizadorBuscador);
+    }
 
-    const timerSpinner = setTimeout(() => {
-        if (!terminado && overlay) {
-            overlay.classList.add('loader-activo');
-        }
+    // 2. Programamos una nueva búsqueda para dentro de 300ms.
+    // Si el usuario deja de escribir durante ese tiempo, la función se ejecutará.
+    temporizadorBuscador = setTimeout(() => {
+        
+        // 3. Ejecutamos la búsqueda pesada usando nuestra función inteligente
+        // que mostrará el spinner (si lo necesita) sin bloquear el hilo principal.
+        ejecutarOperacionPesada(() => {
+            window.aplicarFiltrosVisuales();
+        });
+
     }, 300);
-
-    const promesa = window.aplicarFiltrosVisuales();
-
-    Promise.resolve(promesa).finally(() => {
-        terminado = true;
-        clearTimeout(timerSpinner);
-        if (overlay) overlay.classList.remove('loader-activo');
-    });
 };
 
 // Esta función extrae la parte visual que actualiza los Textos y Contadores 
