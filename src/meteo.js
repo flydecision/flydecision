@@ -3739,9 +3739,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         const mostrarPasoModo = function() {
 
             window.elegirModoSimple = function(esSimple) {
-                localStorage.setItem("METEO_MODO_SIMPLE", esSimple ? "true" : "false");
-                localStorage.setItem("METEO_MODO_ELEGIDO", "true");
-                if (typeof aplicarModoSimpleUI === 'function') aplicarModoSimpleUI();
+                window.cambiarModoApp(esSimple);
                 GestorMensajes.ocultar();
                 mostrarPaso1();
             };
@@ -5188,7 +5186,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             const esSeguimiento = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(d.ID));
             const botonOjoHTML = modoEdicionFavoritos ? "" : `
-                <button class="btn-info btn-ojo-tabla"
+                <button class="btn-info btn-ojo-tabla solo-modo-avanzado"
                     style="position: absolute; bottom: 2px; left: 56px;"
                     onclick="toggleSeguimientoDesdeTabla(${d.ID}, this); return false;"
                     title="${t('seguimiento.activar_desactivar')}">
@@ -6820,6 +6818,12 @@ function aplicarModoSimpleUI() {
 }
 window.aplicarModoSimpleUI = aplicarModoSimpleUI;
 
+window.cambiarModoApp = function(esSimple) {
+    localStorage.setItem("METEO_MODO_SIMPLE", esSimple ? "true" : "false");
+    localStorage.setItem("METEO_MODO_ELEGIDO", "true");
+    aplicarModoSimpleUI();
+};
+
 // ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------
@@ -8430,6 +8434,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
     document.getElementById("chkMostrarVientoAlturas").checked = chkMostrarVientoAlturas;
     document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
     document.getElementById("chkActivarVibracion").checked = (localStorage.getItem("METEO_VIBRACION_ACTIVA") !== "false");
+
+    // Modo simple / avanzado
+    const modoSimpleActivo = localStorage.getItem("METEO_MODO_SIMPLE") === "true";
+    const radSimple = document.getElementById('radModoSimple');
+    const radAvanzado = document.getElementById('radModoAvanzado');
+    if (radSimple) radSimple.checked = modoSimpleActivo;
+    if (radAvanzado) radAvanzado.checked = !modoSimpleActivo;
     
     // ECMWF Checks
     //if (document.getElementById("chkMostrarPrecipitacion")) document.getElementById("chkMostrarPrecipitacion").checked = chkMostrarPrecipitacion;
