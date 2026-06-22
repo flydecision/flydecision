@@ -3701,6 +3701,36 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             });
         };
 
+        const mostrarAvisoResponsabilidad = function() {
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: `
+                    <div style="text-align: center; padding: 5px;">
+                        <div style="font-size: 3rem; margin-bottom: 5px;">ℹ️</div>
+                        <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 1.3rem;">
+                            ${typeof t === 'function' ? t('avisoResponsabilidad.titulo') : 'Nota'}
+                        </h3>
+                        <p style="margin-bottom: 12px; line-height: 1.5; font-size: 1.05rem;">
+                            ${typeof t === 'function' ? t('avisoResponsabilidad.texto') : 'Los pronósticos y datos pueden contener errores. La decisión de volar es siempre responsabilidad de quien pilota.'}
+                        </p>
+                    </div>
+                `,
+                botones: [
+                    {
+                        texto: typeof t === 'function' ? t('avisoResponsabilidad.btnContinuar', {defaultValue: 'Continuar'}) : 'Continuar',
+                        onclick: function() {
+                            // Guardamos que el usuario ha aceptado
+                            localStorage.setItem("METEO_AVISO_LEGAL_ACEPTADO", "true");
+                            GestorMensajes.ocultar();
+                            // Saltamos a la pantalla del menú principal
+                            mostrarPaso1();
+                        }
+                    }
+                ],
+                anchoBotones: '100%' // Ocupa todo el ancho para facilitar el toque
+            });
+        };
+
         // Pantalla de bienvenida
         const mostrarPaso1 = function() {
 
@@ -3953,6 +3983,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             if (!enlaceDirectoMapa && !sessionStorage.getItem('METEO_ENTRO_POR_MAPA_YA_VISITADO')) {
                 if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) {
                     mostrarPaso0();
+                } else if (!localStorage.getItem("METEO_AVISO_LEGAL_ACEPTADO")) {
+                    // Si ya eligió idioma, pero aún no aceptó el aviso, se lo mostramos
+                    mostrarAvisoResponsabilidad();
                 } else {
                     mostrarPaso1();
                 }
