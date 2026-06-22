@@ -6698,7 +6698,7 @@ window.aplicarFiltrosVisuales = function(evitarScroll = false, preservarPaginaci
     }
     
     // Como ahora dibujar la tabla lleva solo milisegundos, la mandamos repintar silenciosamente.
-    construir_tabla(false, true);
+    const promesaTabla = construir_tabla(false, true);
 
     // Auto-scroll hacia arriba siempre (a menos que la app pida explícitamente evitarlo)
     if (!evitarScroll && window.guardarScrollY === null) {
@@ -6714,6 +6714,31 @@ window.aplicarFiltrosVisuales = function(evitarScroll = false, preservarPaginaci
             window.scrollTo(options);
         }, 10);
     }
+
+    return promesaTabla;
+};
+
+// Variable global para recordar el temporizador del teclado
+let temporizadorBuscador = null;
+
+window.aplicarFiltrosVisualesBuscador = function() {
+    // 1. Si el usuario teclea una nueva letra ANTES de 300ms, 
+    // cancelamos la búsqueda que estaba a punto de ejecutarse.
+    if (temporizadorBuscador) {
+        clearTimeout(temporizadorBuscador);
+    }
+
+    // 2. Programamos una nueva búsqueda para dentro de 300ms.
+    // Si el usuario deja de escribir durante ese tiempo, la función se ejecutará.
+    temporizadorBuscador = setTimeout(() => {
+        
+        // 3. Ejecutamos la búsqueda pesada usando nuestra función inteligente
+        // que mostrará el spinner (si lo necesita) sin bloquear el hilo principal.
+        ejecutarOperacionPesada(() => {
+            window.aplicarFiltrosVisuales();
+        });
+
+    }, 300);
 };
 
 // Esta función extrae la parte visual que actualiza los Textos y Contadores 
