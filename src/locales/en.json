@@ -1,6 +1,6 @@
 {
   "avisoResponsabilidad": {
-    "titulo": "Note",
+    "titulo": "Warning",
     "texto": "Forecasts and data may contain errors.<br><br>The decision to fly is the responsibility of the pilot.",
     "btnContinuar": "Continue"
   },

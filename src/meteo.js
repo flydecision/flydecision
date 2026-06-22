@@ -3706,9 +3706,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 tipo: 'modal',
                 htmlContenido: `
                     <div style="text-align: center; padding: 5px;">
-                        <div style="font-size: 3rem; margin-bottom: 5px;">ℹ️</div>
+                        <div style="font-size: 3rem; margin-bottom: 5px;">⚠️</div>
                         <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 1.3rem;">
-                            ${typeof t === 'function' ? t('avisoResponsabilidad.titulo') : 'Nota'}
+                            ${typeof t === 'function' ? t('avisoResponsabilidad.titulo') : 'Aviso'}
                         </h3>
                         <p style="margin-bottom: 12px; line-height: 1.5; font-size: 1.05rem;">
                             ${typeof t === 'function' ? t('avisoResponsabilidad.texto') : 'Los pronósticos y datos pueden contener errores. La decisión de volar es siempre responsabilidad de quien pilota.'}
@@ -3722,12 +3722,76 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             // Guardamos que el usuario ha aceptado
                             localStorage.setItem("METEO_AVISO_LEGAL_ACEPTADO", "true");
                             GestorMensajes.ocultar();
-                            // Saltamos a la pantalla del menú principal
-                            mostrarPaso1();
+                            // Saltamos al paso de elegir modo simple/avanzado
+                            if (!localStorage.getItem("METEO_MODO_ELEGIDO")) {
+                                mostrarPasoModo();
+                            } else {
+                                mostrarPaso1();
+                            }
                         }
                     }
                 ],
                 anchoBotones: '100%' // Ocupa todo el ancho para facilitar el toque
+            });
+        };
+
+        // Asistente de configuración inicial. Modo simple / avanzado
+        const mostrarPasoModo = function() {
+
+            window.elegirModoSimple = function(esSimple) {
+                localStorage.setItem("METEO_MODO_SIMPLE", esSimple ? "true" : "false");
+                localStorage.setItem("METEO_MODO_ELEGIDO", "true");
+                if (typeof aplicarModoSimpleUI === 'function') aplicarModoSimpleUI();
+                GestorMensajes.ocultar();
+                mostrarPaso1();
+            };
+
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: `
+                    <div style="text-align: center; padding: 5px 0 15px;">
+                        <h3 style="margin-top: 0; margin-bottom: 6px; font-size: 20px;" data-i18n="asistente.pasoModo.titulo">
+                            ¿Cómo quieres usar la aplicación?
+                        </h3>
+                        <p style="margin: 0; color: var(--color-text-secondary, #666);" data-i18n="asistente.pasoModo.subtitulo">
+                            Podrás cambiarlo luego en <i>Ajustes</i>
+                        </p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+
+                        <!-- Modo simple -->
+                        <button id="pasoModo-btn-simple" style="
+                            display: flex; align-items: flex-start; gap: 12px;
+                            padding: 14px 18px; border-radius: 12px; border: none;
+                            background: #378ADD; color: #fff;
+                            cursor: pointer; text-align: left; width: 100%;
+                        " onclick="window.elegirModoSimple(true)">
+                            <span style="font-size: 22px; line-height: 1; flex-shrink: 0;">🟢</span>
+                            <div>
+                                <div style="font-size:20px; font-weight:500;" data-i18n="asistente.pasoModo.btnSimpleTitulo">Modo simple</div>
+                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px;" data-i18n="asistente.pasoModo.btnSimpleDesc">Solo lo esencial, sin opciones avanzadas</div>
+                            </div>
+                        </button>
+
+                        <!-- Modo avanzado -->
+                        <button id="pasoModo-btn-avanzado" style="
+                            display: flex; align-items: flex-start; gap: 12px;
+                            padding: 14px 18px; border-radius: 12px; border: none;
+                            background: #378ADD; color: #fff;
+                            cursor: pointer; text-align: left; width: 100%;
+                        " onclick="window.elegirModoSimple(false)">
+                            <span style="font-size: 22px; line-height: 1; flex-shrink: 0;">🟣</span>
+                            <div>
+                                <div style="font-size:20px; font-weight:500;" data-i18n="asistente.pasoModo.btnAvanzadoTitulo">Modo avanzado</div>
+                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px;" data-i18n="asistente.pasoModo.btnAvanzadoDesc">Todas las opciones y filtros disponibles</div>
+                            </div>
+                        </button>
+
+                    </div>
+                `,
+                botones: [],
+                anchoBotones: '100%'
             });
         };
 
@@ -3986,6 +4050,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 } else if (!localStorage.getItem("METEO_AVISO_LEGAL_ACEPTADO")) {
                     // Si ya eligió idioma, pero aún no aceptó el aviso, se lo mostramos
                     mostrarAvisoResponsabilidad();
+                } else if (!localStorage.getItem("METEO_MODO_ELEGIDO")) {
+                    mostrarPasoModo();
                 } else {
                     mostrarPaso1();
                 }
@@ -6748,6 +6814,12 @@ async function comprobarVersionApp() {
     }
 }
 
+function aplicarModoSimpleUI() {
+    const simple = localStorage.getItem("METEO_MODO_SIMPLE") === "true";
+    document.body.classList.toggle('modo-simple', simple);
+}
+window.aplicarModoSimpleUI = aplicarModoSimpleUI;
+
 // ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------
@@ -7035,6 +7107,8 @@ function limpiarBuscador() {
  */
 // En lugar de DOMContentLoaded, esperamos a nuestro evento personalizado
 document.addEventListener('i18nReady', function() {
+
+    aplicarModoSimpleUI();
 
     // --- ASIGNACIÓN DE TRADUCCIONES DIFERIDAS ---
     //placeholderOriginal = t('buscador.placeholder');
