@@ -6698,7 +6698,7 @@ window.aplicarFiltrosVisuales = function(evitarScroll = false, preservarPaginaci
     }
     
     // Como ahora dibujar la tabla lleva solo milisegundos, la mandamos repintar silenciosamente.
-    construir_tabla(false, true);
+    const promesaTabla = construir_tabla(false, true);
 
     // Auto-scroll hacia arriba siempre (a menos que la app pida explícitamente evitarlo)
     if (!evitarScroll && window.guardarScrollY === null) {
@@ -6714,6 +6714,28 @@ window.aplicarFiltrosVisuales = function(evitarScroll = false, preservarPaginaci
             window.scrollTo(options);
         }, 10);
     }
+
+    return promesaTabla;
+};
+
+// Variante exclusiva para el buscador de texto: muestra el spinner SOLO si la operación tarda más de 300ms, para no molestar en búsquedas rápidas.
+window.aplicarFiltrosVisualesBuscador = function() {
+    const overlay = document.getElementById('msgActualizando...');
+    let terminado = false;
+
+    const timerSpinner = setTimeout(() => {
+        if (!terminado && overlay) {
+            overlay.classList.add('loader-activo');
+        }
+    }, 300);
+
+    const promesa = window.aplicarFiltrosVisuales();
+
+    Promise.resolve(promesa).finally(() => {
+        terminado = true;
+        clearTimeout(timerSpinner);
+        if (overlay) overlay.classList.remove('loader-activo');
+    });
 };
 
 // Esta función extrae la parte visual que actualiza los Textos y Contadores 
