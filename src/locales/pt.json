@@ -1,4 +1,10 @@
 {
+  "avisoResponsabilidad": {
+    "titulo": "Nota",
+    "texto": "As previsões e os dados podem conter erros.<br><br>A decisão de voar é da responsabilidade de quem pilota.",
+    "btnContinuar": "Continuar"
+  },
+  
   "_meta": {
     "_nota": "Ficheiro de tradução base — Português. Gerado a partir da análise de meteo.js e index.html.",
     "_version": "1.0.0"

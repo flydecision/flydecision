@@ -6762,7 +6762,7 @@ window.aplicarFiltrosVisuales = function(evitarScroll = false, preservarPaginaci
     const promesaTabla = construir_tabla(false, true);
 
     // Auto-scroll hacia arriba siempre (a menos que la app pida explícitamente evitarlo)
-    if (!evitarScroll && window.guardarScrollY === null) {
+    if (!evitarScroll && (window.guardarScrollY === null || window.guardarScrollY === undefined)) {
         
         // Damos un respiro de 10ms para que el DOM aplique la nueva altura de 10 filas antes de ordenar el scroll, si no el navegador se hace un lío.
         setTimeout(() => {

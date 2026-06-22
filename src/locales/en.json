@@ -1,4 +1,10 @@
 {
+  "avisoResponsabilidad": {
+    "titulo": "Note",
+    "texto": "Forecasts and data may contain errors.<br><br>The decision to fly is the responsibility of the pilot.",
+    "btnContinuar": "Continue"
+  },
+  
   "_meta": {
     "_nota": "Base translation file — English. Generated from the analysis of meteo.js and index.html.",
     "_version": "1.0.0"

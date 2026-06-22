@@ -1,4 +1,10 @@
 {
+  "avisoResponsabilidad": {
+    "titulo": "Oharra",
+    "texto": "Iragarpenek eta datuek akatsak izan ditzakete.<br><br>Hegan egiteko erabakia pilotuaren erantzukizuna da.",
+    "btnContinuar": "Jarraitu"
+  },
+  
   "_meta": {
     "_nota": "Oinarrizko itzulpen fitxategia — Euskara. meteo.js eta index.html aztertetik sortua.",
     "_version": "1.0.0"
