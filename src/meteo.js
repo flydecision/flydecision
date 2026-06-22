@@ -386,11 +386,11 @@ if (btnIncNoFavsDistancia) {
                 const panelDistancia = document.querySelector('#div-filtro-distancia .div-paneles-controles-transparente');
                 //if (panelDistancia) panelDistancia.classList.add('borde-rojo-externo');
 
-                construir_tabla(false, false);
+                ejecutarOperacionPesada(() => construir_tabla(false, false));
             } 
             // Si el botón se toca y ya había un filtro de distancia aplicado (< 9999)
             else if (currentIdx < CORTES_DISTANCIA_GLOBAL.length - 1) {
-                construir_tabla(false, false); 
+                ejecutarOperacionPesada(() => construir_tabla(false, false)); 
             }
         }
     });
@@ -3577,16 +3577,19 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
     // - Si tienes más de 15 favoritos (ya que renderizar más de 250 filas satura la CPU).
     // - Si el modo calendario de 4 días está activo.
     const totalFavoritos = obtenerFavoritos().length;
+    const incluirNoFavsActivo = document.getElementById('btn-incluir-no-favs-distancia')?.classList.contains('activo') === true;
     const esOperacionPesada = forzarRecarga || 
-                              (!DATOS_METEO_CACHE) || 
-                              (!soloFavoritos) || 
-                              (totalFavoritos > 15) || 
-                              (typeof modoVerTodosLosDias !== 'undefined' && modoVerTodosLosDias);
+                            (!DATOS_METEO_CACHE) || 
+                            (!soloFavoritos) || 
+                            (totalFavoritos > 15) || 
+                            incluirNoFavsActivo ||
+                            (typeof modoVerTodosLosDias !== 'undefined' && modoVerTodosLosDias);
 
     const probablePrimeraVisita = !localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") &&
-                                   !localStorage.getItem("METEO_FAVORITOS_LISTA") &&
-                                   !modoEdicionFavoritos &&
-                                   !window.despegueTemporalParaTabla;
+                               !localStorage.getItem("METEO_FAVORITOS_LISTA") &&
+                               !modoEdicionFavoritos &&
+                               !window.despegueTemporalParaTabla &&
+                               !sessionStorage.getItem('METEO_ENTRO_POR_MAPA_YA_VISITADO');
 
     if (!silencioso && esOperacionPesada && !probablePrimeraVisita) {
         // Añadimos la clase visual INMEDIATAMENTE
