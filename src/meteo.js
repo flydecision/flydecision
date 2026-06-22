@@ -3861,6 +3861,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             });
 
             document.getElementById('paso1-btn-mapa').addEventListener('click', () => {
+                // 1. Mostrar el spinner AL INSTANTE
+                mostrarLoading(0); 
+
                 cerrar();
 
                 window.onboardingMapaActivo = false;
@@ -3876,18 +3879,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (divMenu2Explorar) divMenu2Explorar.classList.remove('mode-editing');
 
                 if (!DATOS_METEO_CACHE) {
-                    mostrarLoading(0); 
-                    construir_tabla(false, true).then(() => {
-                        clicBotonMapa();
-                        
-                        // Fallback de seguridad: si por algún motivo los marcadores ya 
-                        // estaban cargados en memoria, apagamos el spinner nosotros.
-                        if (window.marcadoresCSVCargados) {
-                            ocultarLoading();
-                        }
-                    });
+                    // 🚀 NUEVO: 1. Cambiamos las clases CSS para ir al mapa
+                    clicBotonMapa();
+
+                    // 🚀 NUEVO: 2. Damos un respiro de 50ms al navegador para que 
+                    // PINTE el mapa vacío y aplique el display:none a la tabla en pantalla.
+                    setTimeout(() => {
+                        construir_tabla(false, true).then(() => {
+                            if (window.marcadoresCSVCargados) {
+                                ocultarLoading();
+                            }
+                        });
+                    }, 50); // Este setTimeout es la clave de la fluidez
+                    
                 } else {
                     clicBotonMapa();
+                    ocultarLoading(); 
                 }
             });
 
@@ -8772,7 +8779,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
             
             // Esta lógica funciona tanto para App nativa como para Web (usando visibilitychange)
             const checkResume = async () => {
-            //console.log(new Date().toLocaleString(), "📱 [Resume/Visible] Vuelto a primer plano");
+            
+            // Si el usuario es nuevo y está en pleno Onboarding, le prohibimos a esta función que intente actualizar o construir tablas por detrás.
+            const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA");
+            const entroPorMapa = sessionStorage.getItem("METEO_ENTRO_POR_MAPA_YA_VISITADO");
+            if (!configHecha && !entroPorMapa) return;
 
             const ahora = Date.now();
             // Si lastDataGenerationTimestamp es 0 o null, forzamos antigüedad máxima
