@@ -3899,7 +3899,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             });
 
             document.getElementById('paso1-btn-guia').addEventListener('click', () => {
-                if (typeof abrirLinkExterno === 'function') abrirLinkExterno("https://flydecision.com/ayuda");
+                if (typeof abrirLinkExterno === 'function') {
+                    const lng = localStorage.getItem('i18nextLng') || 'es';
+                    abrirLinkExterno("https://flydecision.com/ayuda?lng=" + lng);
+                }
             });
 
             document.getElementById('paso1-btn-importar').addEventListener('click', () => {

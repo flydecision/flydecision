@@ -564,7 +564,7 @@
 			<div class="enlaces-legales" style="display: flex; align-items: center; gap: 5px; white-space: nowrap; margin: 0;">
 				<a href="#" onclick="sugerirGuiaPrincipal(true)" data-i18n="ajustes.guia">Guía</a>
 				<span class="separador" style="color: #ccc;">|</span>
-				<a href="https://flydecision.com/ayuda" onclick="abrirLinkExterno(this.href); return false;" data-i18n="ajustes.ayuda">Ayuda</a>
+				<a href="https://flydecision.com/ayuda" onclick="const lng = localStorage.getItem('i18nextLng') || 'es'; abrirLinkExterno(this.href + '?lng=' + lng); return false;" data-i18n="ajustes.ayuda">Ayuda</a>
 				<span class="separador" style="color: #ccc;">|</span>
 				<a href="https://flydecision.com/privacidad" onclick="abrirLinkExterno(this.href); return false;" data-i18n="ajustes.legal">Legal</a>
 				<span class="separador" style="color: #ccc;">|</span>
