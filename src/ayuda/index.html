@@ -614,9 +614,11 @@ document.addEventListener("DOMContentLoaded", () => {
             interpolation: { escapeValue: false },
             detection: {
                 // ORDEN DE BÚSQUEDA: 
-                // 1º: localStorage (por si el usuario lo cambió a mano)
-                // 2º: navigator (detecta el idioma del navegador o del sistema Android)
-                order: ['localStorage', 'navigator'],
+                // 1º: querystring (Lee el parámetro ?lng=es de la URL que le manda la App)
+                // 2º: localStorage (por si el usuario lo cambió a mano)
+                // 3º: navigator (detecta el idioma del navegador o del sistema Android)
+                order: ['querystring', 'localStorage', 'navigator'],
+                lookupQuerystring: 'lng', // Le indica que busque "?lng=" en la URL
                 lookupLocalStorage: 'i18nextLng',
                 caches: ['localStorage'] // Guarda el idioma detectado automáticamente
             }
