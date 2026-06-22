@@ -3875,7 +3875,20 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const divMenu2Explorar = document.getElementById('div-menu2-edicion-favoritos');
                 if (divMenu2Explorar) divMenu2Explorar.classList.remove('mode-editing');
 
-                clicBotonMapa();
+                if (!DATOS_METEO_CACHE) {
+                    mostrarLoading(0); 
+                    construir_tabla(false, true).then(() => {
+                        clicBotonMapa();
+                        
+                        // Fallback de seguridad: si por algún motivo los marcadores ya 
+                        // estaban cargados en memoria, apagamos el spinner nosotros.
+                        if (window.marcadoresCSVCargados) {
+                            ocultarLoading();
+                        }
+                    });
+                } else {
+                    clicBotonMapa();
+                }
             });
 
             document.getElementById('paso1-btn-guia').addEventListener('click', () => {
@@ -11504,11 +11517,19 @@ function inicializarMapaLeaflet() {
                 } else {
                     actualizarFiltrosMapa();
                 }
-            },
 
+                // 🚀 NUEVO: Apagamos el spinner exactamente en el milisegundo en el 
+                // que los iconos ya están colocados y coloreados en el mapa.
+                if (typeof ocultarLoading === 'function') {
+                    ocultarLoading();
+                }
+
+            },
             error: function(error) {
                 console.error('Error cargando CSV:', error.message || error);
                 alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
+                // 🚀 NUEVO: Si la red falla y no carga el CSV, también apagamos el spinner
+                if (typeof ocultarLoading === 'function') ocultarLoading();
             }
         });
     };
