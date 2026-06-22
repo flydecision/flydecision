@@ -6490,7 +6490,9 @@ const mostrarLoading = (retraso = 250) => {
 };
 
 const ocultarLoading = () => {
-    // Si la función termina ANTES de que salte el temporizador, lo cancelamos. Así el cartel nunca llega a aparecer.
+    // Desactivamos la bandera inmediatamente al terminar
+    window.loadingActivoActualmente = false;
+
     if (timerLoader) {
         clearTimeout(timerLoader);
         timerLoader = null;
@@ -6499,8 +6501,11 @@ const ocultarLoading = () => {
     const overlay = document.getElementById('msgActualizando...');
     if (overlay) {
         overlay.classList.remove('loader-activo');
-        // Forzamos un reflow (repintado) por si se vuelve a llamar rápido
-        void overlay.offsetWidth; 
+        
+        // Limpiamos la clase transparente para que el spinner vuelva a ser oscuro y bloqueante la próxima vez que se use en la app.
+        overlay.classList.remove('spinner-transparente'); 
+        
+        void overlay.offsetWidth; // Forzar repintado instantáneo en la GPU
     }
 };
 
@@ -6722,23 +6727,35 @@ window.aplicarFiltrosVisuales = function(evitarScroll = false, preservarPaginaci
 let temporizadorBuscador = null;
 
 window.aplicarFiltrosVisualesBuscador = function() {
-    // 1. Si el usuario teclea una nueva letra ANTES de 300ms, 
-    // cancelamos la búsqueda que estaba a punto de ejecutarse.
+    // 1. Feedback visual INSTANTÁNEO de la "X"
+    const input = document.getElementById('buscador-despegues-provincias');
+    const botonLimpiar = document.getElementById('limpiar-buscador');
+    if (input && botonLimpiar) {
+        botonLimpiar.style.display = (input.value.length > 0) ? 'block' : 'none';
+        if (input.value.trim() !== '') {
+            input.classList.add('filtrado');
+        } else {
+            input.classList.remove('filtrado', 'buscador-despegues-sin-resultados');
+        }
+    }
+
     if (temporizadorBuscador) {
         clearTimeout(temporizadorBuscador);
     }
 
-    // 2. Programamos una nueva búsqueda para dentro de 300ms.
-    // Si el usuario deja de escribir durante ese tiempo, la función se ejecutará.
+    // 2. Temporizador de 500 ms
     temporizadorBuscador = setTimeout(() => {
         
-        // 3. Ejecutamos la búsqueda pesada usando nuestra función inteligente
-        // que mostrará el spinner (si lo necesita) sin bloquear el hilo principal.
+        // Le decimos al fondo oscuro que se vuelva transparente y que permita los clics a través de él.
+        const overlay = document.getElementById('msgActualizando...');
+        if (overlay) overlay.classList.add('spinner-transparente');
+
+        // Lanzamos la operación pesada (el spinner saldrá, pero sin bloquear)
         ejecutarOperacionPesada(() => {
             window.aplicarFiltrosVisuales();
         });
 
-    }, 300);
+    }, 500); 
 };
 
 // Esta función extrae la parte visual que actualiza los Textos y Contadores 

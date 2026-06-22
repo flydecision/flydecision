@@ -2820,6 +2820,12 @@ label.custom-checkbox {
     100% { transform: rotate(360deg); }
 }
 
+/* Spinner no bloqueante para el buscador */
+[id="msgActualizando..."].spinner-transparente {
+    background-color: transparent !important;
+    pointer-events: none !important;
+}
+
 body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     display: none !important;
 }
