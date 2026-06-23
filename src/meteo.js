@@ -815,6 +815,8 @@ function iniciarGuiaPrincipal(forzar = false) {
         return; 
     }
 
+    const esModoSimple = document.body.classList.contains('modo-simple');
+
     // Esto cierra buscadores, resetea filtros de distancia y vuelve a la tabla
     if (typeof clicBotonInicio === 'function') {
         clicBotonInicio();
@@ -865,13 +867,13 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.selectorHorario.descripcion')
                 } 
             },
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#btn-ver-todos-dias',
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnVerTodosLosDias.titulo'), 
                     description: t('guiaPrincipal.pasos.btnVerTodosLosDias.descripcion')
                 } 
-            },
+            }] : []),
             { 
                 element: '#buscador-despegues-provincias',
                 popover: { 
@@ -879,14 +881,14 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.navSearch.descripcion')
                 } 
             },
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#nav-distance',
                 popover: { 
                     title: t('guiaPrincipal.pasos.navDistance.titulo'), 
                     description: t('guiaPrincipal.pasos.navDistance.descripcion')
                 }
-            },
-            { 
+            }] : []),
+            ...(!esModoSimple ? [{ 
                 element: '#div-filtro-distancia-interno',
                 popover: { 
                     title: t('guiaPrincipal.pasos.filtroDistancia.titulo'), 
@@ -900,22 +902,22 @@ function iniciarGuiaPrincipal(forzar = false) {
                     }
                     setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 300);
                 }
-            },
-            { 
+            }] : []),
+            ...(!esModoSimple ? [{ 
                 element: '#btn-abrir-geo-menu',
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnOrigen.titulo'), 
                     description: t('guiaPrincipal.pasos.btnOrigen.descripcion')
                 }
-            },
-            { 
+            }] : []),
+            ...(!esModoSimple ? [{ 
                 element: '#btn-incluir-no-favs-distancia',
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnIncNoFavs.titulo'), 
                     description: t('guiaPrincipal.pasos.btnIncNoFavs.descripcion')
                 }
-            },
-            { 
+            }] : []),
+            ...(!esModoSimple ? [{ 
                 element: '#distancia-slider',
                 popover: { 
                     title: t('guiaPrincipal.pasos.sliderDistancia.titulo'), 
@@ -927,14 +929,14 @@ function iniciarGuiaPrincipal(forzar = false) {
                         panel.classList.remove('activo');
                     }
                 }
-            },
-            { 
+            }] : []),
+            ...(!esModoSimple ? [{ 
                 element: '#btn-filtro-seguimiento-toggle',
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnFiltroSeguimiento.titulo'), 
                     description: t('guiaPrincipal.pasos.btnFiltroSeguimiento.descripcion')
                 }
-            },
+            }] : []),
             { 
                 element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
                 popover: { 
@@ -994,13 +996,13 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.btnFavorito.descripcion') 
                 } 
             },
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '.btn-ojo-tabla', 
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnSeguimiento.titulo'), 
                     description: t('guiaPrincipal.pasos.btnSeguimiento.descripcion') 
                 } 
-            },
+            }] : []),
             { 
                 element: '#nav-home',
                 popover: { 
@@ -1110,6 +1112,8 @@ function iniciarGuiaFavoritos(forzar = false) {
         return; 
     }
 
+    const esModoSimple = document.body.classList.contains('modo-simple');
+
     // 1. Limpiamos solo el buscador y la lógica visual de los filtros
     if (typeof limpiarBuscador === 'function') limpiarBuscador();
     if (typeof aplicarFiltrosVisuales === 'function') ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
@@ -1161,13 +1165,13 @@ function iniciarGuiaFavoritos(forzar = false) {
                 } 
             },
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#tabla thead tr:first-child th:first-child', 
                 popover: { 
                     title: t('guiaFavoritos.pasos.cabeceraFavorito.titulo'), 
                     description: t('guiaFavoritos.pasos.cabeceraFavorito.descripcion') 
                 } 
-            },
+            }] : []),
 
             { 
                 element: '.columna-despegue .btn-info', 
@@ -1193,29 +1197,29 @@ function iniciarGuiaFavoritos(forzar = false) {
                 } 
             },
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#div-filtro-distancia-interno',
                 popover: { 
                     title: t('guiaFavoritos.pasos.filtroDistancia.titulo'), 
                     description: t('guiaFavoritos.pasos.filtroDistancia.descripcion')
                 } 
-            },
+            }] : []),
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#btn-abrir-geo-menu',
                 popover: { 
                     title: t('guiaFavoritos.pasos.btnOrigen.titulo'), 
                     description: t('guiaFavoritos.pasos.btnOrigen.descripcion')
                 } 
-            },
+            }] : []),
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#distancia-slider',
                 popover: { 
                     title: t('guiaFavoritos.pasos.sliderDistancia.titulo'), 
                     description: t('guiaFavoritos.pasos.sliderDistancia.descripcion')
                 } 
-            },
+            }] : []),
 
             { 
                 element: '#btn-filtro-favoritos-toggle',
@@ -1225,29 +1229,29 @@ function iniciarGuiaFavoritos(forzar = false) {
                 } 
             },
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#btn-desmarcar-favoritos',
                 popover: { 
                     title: t('guiaFavoritos.pasos.btnDesmarcarTodos.titulo'), 
                     description: t('guiaFavoritos.pasos.btnDesmarcarTodos.descripcion')
                 } 
-            },
+            }] : []),
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#btn-abrir-favoritos',
                 popover: { 
                     title: t('guiaFavoritos.pasos.btnImportar.titulo'), 
                     description: t('guiaFavoritos.pasos.btnImportar.descripcion') 
                 } 
-            },
+            }] : []),
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#btn-guardar-favoritos',
                 popover: { 
                     title: t('guiaFavoritos.pasos.btnExportar.titulo'), 
                     description: t('guiaFavoritos.pasos.btnExportar.descripcion') 
                 } 
-            },
+            }] : []),
 
             { 
                 element: '#btn-guia-edicion-favoritos',
