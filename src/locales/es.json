@@ -1,6 +1,6 @@
 {
   "avisoResponsabilidad": {
-    "titulo": "Nota",
+    "titulo": "Aviso",
     "texto": "Los pronósticos y datos pueden contener errores.<br><br>La decisión de volar es responsabilidad de quien pilota.",
     "btnContinuar": "Continuar"
   },
@@ -390,6 +390,14 @@
       "btnSelecMapa": "Seleccionar con el mapa",
       "btnSelecLista": "Seleccionar con la lista"    
     },
+    "pasoModo": {
+      "titulo": "¿Cómo quieres usar la aplicación?",
+      "subtitulo": "Podrás cambiarlo luego en <i>Ajustes</i>",
+      "btnSimpleTitulo": "Modo simple",
+      "btnSimpleDesc": "Solo lo esencial (recomendado para empezar)",
+      "btnAvanzadoTitulo": "Modo avanzado",
+      "btnAvanzadoDesc": "Todas las opciones y filtros disponibles"
+    },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Análisis automático del pronóstico meteorológico para vuelo en parapente.</p><p>🙄 <b>¿Para qué sirve?:</b> para ayudarte a decidir dónde ir a volar. Muestra una tabla con tus despegues favoritos, sus pronósticos y hace un análisis automático de esas <b>condiciones meteorológicas</b>.</p><p>🧮 <b>¿Qué análisis hace?:</b> compara el pronóstico con los límites de viento medio y racha máxima configurados y con la orientación de cada despegue; también analiza el viento a alturas cercanas al despegue (80, 120 y 180 m), lo que da idea del gradiente y de la fiabilidad del pronóstico de viento medio. Muestra datos meteo de interés para XC (techo, CAPE y CIN).</p><p>Con toda la información, puntúa de 0 a 10 cada despegue y colorea 🟩&nbsp;🟨&nbsp;🟥 los datos para el rango horario o días que elijas. Puedes personalizar todos esos límites para que el análisis se adapte a tus preferencias.</p>"
     },
@@ -446,6 +454,11 @@
   },
 
   "ajustes": {
+    "modoApp": {
+      "titulo": "Modo de la aplicación",
+      "simple": "Simple",
+      "avanzado": "Avanzado"
+    },
     "probPrecipitacion": "Probabilidad de Precipitación",
     "vientoAlturas": "Viento a 80, 120 y 180 m",
     "cizalladura_fiabilidad": "Cizalladura / Fiabilidad",
@@ -678,7 +691,8 @@
     "tooltipHorasDiurnas": "<b>Solo horas diurnas</b><br><br>Muestra solo las horas diurnas. Si se desactiva, se muestran las 24 horas del día.<br><br>Se incluye un margen de ±1h al amanecer y atardecer.<br><br>Cambia automáticamente cada mes. En los meses de cambios horarios, además, estas horas se ajustarán automáticamente al cambio de hora oficial (DST).",
     "tooltipOrdenarXC": "<b>Ordenar por Condiciones XC:</b><br><br>Por defecto, los despegues se ordenan de mejor a peor según la puntuación de <i>Condiciones del despegue</i> (viabilidad para despegar según el viento).<br><br>Si activas esta opción, la tabla pasará a ordenarse de mejor a peor puntuación de <b>Condiciones XC</b> (potencial térmico de la masa de aire), sin importar si el viento en ese despegue es ideal o no.",
     "tooltipDiasSeguimiento": "<b>Días de seguimiento:</b><br><br>Cuando marcas un despegue con el ojo <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>, queda en <i>seguimiento</i> durante el número de días que configures aquí.<br><br>Por ejemplo, con 2 días: si marcas un despegue el lunes, aparecerá activo el lunes y el martes. El miércoles se eliminará automáticamente al arrancar la aplicación.<br><br>Marcar despegues con seguimiento te permite filtrarlos fácilmente con el botón <i>Ver solo despegues en seguimiento</i>.<br><br>Puedes configurar entre <b>1 y 4 días</b>. El valor por defecto es <b>3 días</b>.",
-    "tooltipModelosMeteo": "<b>Modelos meteorológicos:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: para datos de viento en las primeras 0-48h. Cubre casi toda Europa, incluyendo península ibérica, salvo el sur de Andalucía (en esa zona se usa Arpege Europe 7km de 0-96h).</li><li><b>Météo-France Arpege Europe 7km</b>: para datos de viento en las siguientes 48-96h. Cubre Europa y norte de África.</li><li><b>ECMWF IFS HRES 9km</b>: para resto de datos meteorológicos de 0-96h. Cubre todo el mundo.</li></ul><b>Frecuencia de actualización automática:</b> Météo-France cada 3 horas aproximadamente (8 veces al día) y ECMWF cada 6 horas aproximadamente (4 veces al día).<br><br><b>Pasarela de datos meteorológicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>El valor <i>(DDtHH)</i> (ejemplo: 12t03) indica el día y la hora UTC±0 (Z) correspondiente al último ciclo de ejecución del modelo en el servidor meteorológico de origen. A partir de ese momento, hay varias horas de cálculo computacional antes de la distribución final y su disponibilidad pública."
+    "tooltipModelosMeteo": "<b>Modelos meteorológicos:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: para datos de viento en las primeras 0-48h. Cubre casi toda Europa, incluyendo península ibérica, salvo el sur de Andalucía (en esa zona se usa Arpege Europe 7km de 0-96h).</li><li><b>Météo-France Arpege Europe 7km</b>: para datos de viento en las siguientes 48-96h. Cubre Europa y norte de África.</li><li><b>ECMWF IFS HRES 9km</b>: para resto de datos meteorológicos de 0-96h. Cubre todo el mundo.</li></ul><b>Frecuencia de actualización automática:</b> Météo-France cada 3 horas aproximadamente (8 veces al día) y ECMWF cada 6 horas aproximadamente (4 veces al día).<br><br><b>Pasarela de datos meteorológicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>El valor <i>(DDtHH)</i> (ejemplo: 12t03) indica el día y la hora UTC±0 (Z) correspondiente al último ciclo de ejecución del modelo en el servidor meteorológico de origen. A partir de ese momento, hay varias horas de cálculo computacional antes de la distribución final y su disponibilidad pública.",
+    "tooltipModoApp": "<b>Modo de la aplicación:</b><br><br><b>Modo simple</b>: Solo lo esencial. Recomendado para empezar y familiarizarte con la aplicación antes de pasar al <i>Modo avanzado</i>.<br><br><b>Modo avanzado</b>: Control total. Da acceso a todas las opciones, filtros y datos detallados."
   },
   "paises": {
     "España": "España",

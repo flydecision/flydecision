@@ -1,6 +1,6 @@
 {
   "avisoResponsabilidad": {
-    "titulo": "Oharra",
+    "titulo": "Abisua",
     "texto": "Iragarpenek eta datuek akatsak izan ditzakete.<br><br>Hegan egiteko erabakia pilotuaren erantzukizuna da.",
     "btnContinuar": "Jarraitu"
   },
@@ -390,6 +390,14 @@
       "btnSelecMapa": "Maparekin hautatu",
       "btnSelecLista": "Zerrendarekin hautatu"
     },
+    "pasoModo": {
+      "titulo": "Nola erabili nahi duzu aplikazioa?",
+      "subtitulo": "Geroago aldatu ahal izango duzu <i>Ezarpenak</i> atalean",
+      "btnSimpleTitulo": "Modu sinplea",
+      "btnSimpleDesc": "Funtsezkoa soilik (hasteko gomendatua)",
+      "btnAvanzadoTitulo": "Modu aurreratua",
+      "btnAvanzadoDesc": "Aukera eta iragazki guztiak eskuragarri"
+    },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Parapenterako eguraldi iragarpenaren analisi automatizatua.</p><p>🙄 <b>Zertarako balio du?:</b> non hegan egin erabakitzen laguntzeko. Zure aireratze gogokoen taula bat erakusten du, haien iragarpenekin, eta <b>eguraldi baldintza</b> horien analisi automatizatua egiten du.</p><p>🧮 <b>Zer analisi egiten du?:</b> iragarpena zuk konfiguratutako batez besteko haizearen eta gehienezko boladen mugekin eta aireratze bakoitzaren norabidearekin alderatzen du; aireratzetik gertu dauden altueretako haizea ere aztertzen du (80, 120 eta 180 m), haize-gradientearen eta iragarpenaren fidagarritasunaren ikuspegia emanez. XC datu gakoak erakusten ditu (sabaia, CAPE eta CIN).</p><p>Informazio honekin guztiarekin, aireratze bakoitza 0-tik 10-era puntuatzen du eta kolorez kodetzen ditu 🟩&nbsp;🟨&nbsp;🟥 datuak zuk aukeratutako ordu-tarterako. Muga guztiak pertsonaliza ditzakezu zure hobespenetara egokitzeko.</p>"
     },
@@ -446,6 +454,11 @@
   },
 
   "ajustes": {
+    "modoApp": {
+      "titulo": "Aplikazioaren modua",
+      "simple": "Sinplea",
+      "avanzado": "Aurreratua"
+    },
     "probPrecipitacion": "Prezipitazio probabilitatea",
     "vientoAlturas": "Haizea 80, 120 eta 180 m-tan",    
     "cizalladura_fiabilidad": "Haize-zizailadura / Fidagarritasuna",
@@ -678,7 +691,8 @@
     "tooltipHorasDiurnas": "<b>Eguneko orduak soilik</b><br><br>Eguneko orduak soilik erakusten ditu. Desaktibatuta badago, eguneko 24 orduak erakutsiko dira.<br><br>Egunsentian eta ilunabarrean ±1 orduko marjina sartzen da.<br><br>Hilabetero automatikoki aldatzen da. Horrez gain, ordu-aldaketak dauden hiletan, ordu horiek ordu-aldaketa ofizialera (DST) egokituko dira automatikoki.",
     "tooltipOrdenarXC": "<b>Ordenatu XC baldintzen arabera:</b><br><br>Lehenespenez, aireratzeak onenetik okerrenera ordenatzen dira <i>Aireratze-baldintzen</i> puntuazioaren arabera (aireratzeko bideragarritasuna haizearen arabera).<br><br>Aukera hau aktibatzen baduzu, taula <b>XC Baldintzen</b> puntuaziorik onenetik okerrenera ordenatuko da (aire-masaren potentzial termikoa), aireratze horretan haizea ideala den ala ez kontuan hartu gabe.",
     "tooltipDiasSeguimiento": "<b>Jarraipen-egunak:</b><br><br>Aireratze bat begiarekin <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg> markatzen duzunean, hemen konfiguratzen duzun egun kopuruan <i>jarraipenean</i> geratzen da.<br><br>Adibidez, 2 egunekin: astelehenean aireratze bat markatzen baduzu, astelehenean eta asteartean aktibo agertuko da. Asteazkenean automatikoki ezabatuko da aplikazioa abiaraztean.<br><br>Aireratzeak jarraipenarekin markatzeak horiek erraz iragazteko aukera ematen dizu <i>Ikusi soilik jarraipenean dauden aireratzeak</i> botoiarekin.<br><br><b>1 eta 4 egun</b> artean konfigura ditzakezu. Lehenetsitako balioa <b>3 egun</b>ekoa da.",
-    "tooltipModelosMeteo": "<b>Eredu meteorologikoak:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: haize-datuetarako lehenengo 0-48 orduetan. Europa ia osoa hartzen du, Iberiar penintsula barne, Andaluziako hegoaldea izan ezik (zona horretan Arpege Europe 7km erabiltzen da 0-96 ordurako).</li><li><b>Météo-France Arpege Europe 7km</b>: haize-datuetarako hurrengo 48-96 orduetan. Europa eta Afrikako iparraldea hartzen ditu.</li><li><b>ECMWF IFS HRES 9km</b>: gainerako datu meteorologikoetarako 0-96 ordurako. Mundu osoa hartzen du.</li></ul><b>Eguneratze automatikoaren maiztasuna:</b> Météo-France 3 orduro gutxi gorabehera (egunean 8 aldiz) eta ECMWF 6 orduro gutxi gorabehera (egunean 4 aldiz).<br><br><b>Datu meteorologikoen pasabidea:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br><i>(DDtHH)</i> balioak (adibidez: 12t03) jatorrizko zerbitzari meteorologikoan ereduaren azken exekuzio-zikloari dagokion UTC±0 (Z) eguna eta ordua adierazten ditu. Une horretatik aurrera, hainbat orduko kalkulu konputazionala behar da azken banaketa eta erabilgarritasun publikoa lortu aurretik."
+    "tooltipModelosMeteo": "<b>Eredu meteorologikoak:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: haize-datuetarako lehenengo 0-48 orduetan. Europa ia osoa hartzen du, Iberiar penintsula barne, Andaluziako hegoaldea izan ezik (zona horretan Arpege Europe 7km erabiltzen da 0-96 ordurako).</li><li><b>Météo-France Arpege Europe 7km</b>: haize-datuetarako hurrengo 48-96 orduetan. Europa eta Afrikako iparraldea hartzen ditu.</li><li><b>ECMWF IFS HRES 9km</b>: gainerako datu meteorologikoetarako 0-96 ordurako. Mundu osoa hartzen du.</li></ul><b>Eguneratze automatikoaren maiztasuna:</b> Météo-France 3 orduro gutxi gorabehera (egunean 8 aldiz) eta ECMWF 6 orduro gutxi gorabehera (egunean 4 aldiz).<br><br><b>Datu meteorologikoen pasabidea:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br><i>(DDtHH)</i> balioak (adibidez: 12t03) jatorrizko zerbitzari meteorologikoan ereduaren azken exekuzio-zikloari dagokion UTC±0 (Z) eguna eta ordua adierazten ditu. Une horretatik aurrera, hainbat orduko kalkulu konputazionala behar da azken banaketa eta erabilgarritasun publikoa lortu aurretik.",
+    "tooltipModoApp": "<b>Aplikazioaren modua:</b><br><br><b>Modu sinplea</b>: Funtsezkoa soilik. Hasteko eta aplikazioarekin ohitzeko gomendatua, <i>Modu aurreratura</i> igaro aurretik.<br><br><b>Modu aurreratua</b>: Erabateko kontrola. Aukera, iragazki eta datu xehatu guztietarako sarbidea ematen du."
   },
   "paises": {
     "España": "Espainia",

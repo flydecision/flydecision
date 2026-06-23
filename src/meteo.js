@@ -70,6 +70,44 @@ let chkMostrarVientoEcmwf = (ecmwfMode === "permanente");
 let chkMostrarVientoEcmwfDesplegable = (ecmwfMode === "desplegable");
 window.sessionExpandedEcmwfTakeoffs = new Set();
 
+// Controlador dinámico de variables para el Modo Básico/Avanzado
+function aplicarReglasModoSimpleAVariables(esSimple) {
+    if (esSimple) {
+        // En modo básico: Forzamos a falso las variables para que la tabla no las dibuje
+        chkMostrarVientoAlturas = false;
+        chkMostrarCizalladura = false;
+        chkMostrarProbPrecipitacion = false;
+        chkMostrarXC = false;
+        chkMostrarVientoEcmwf = false;
+        chkMostrarVientoEcmwfDesplegable = false;
+    } else {
+        // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
+        chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
+        chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false";
+        chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION") !== "false";
+        chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false";
+        
+        const modoEcmwfGuardado = localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off";
+        chkMostrarVientoEcmwf = (modoEcmwfGuardado === "permanente");
+        chkMostrarVientoEcmwfDesplegable = (modoEcmwfGuardado === "desplegable");
+    }
+
+    // Sincronizar los checkboxes ocultos del menú Ajustes
+    if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = chkMostrarVientoAlturas;
+    if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
+    if (document.getElementById("chkMostrarProbPrecipitacion")) document.getElementById("chkMostrarProbPrecipitacion").checked = chkMostrarProbPrecipitacion;
+    if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
+
+    const modoEcmwfFijar = esSimple ? "off" : (localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off");
+    if (modoEcmwfFijar === "off" && document.getElementById("radEcmwfOff")) document.getElementById("radEcmwfOff").checked = true;
+    if (modoEcmwfFijar === "desplegable" && document.getElementById("radEcmwfDesplegable")) document.getElementById("radEcmwfDesplegable").checked = true;
+    if (modoEcmwfFijar === "permanente" && document.getElementById("radEcmwfPermanente")) document.getElementById("radEcmwfPermanente").checked = true;
+}
+
+// Ejecutamos la función una vez en el arranque de la app
+const modoSimpleInicial = localStorage.getItem("METEO_MODO_SIMPLE") === "true";
+aplicarReglasModoSimpleAVariables(modoSimpleInicial);
+
 // Si entra por url mapa con coordenadas y no hay configuración se marca este flag
 const paramsArranque = new URLSearchParams(window.location.search);
 if (paramsArranque.has('lat') && paramsArranque.has('lon')) {
@@ -815,6 +853,8 @@ function iniciarGuiaPrincipal(forzar = false) {
         return; 
     }
 
+    const esModoSimple = document.body.classList.contains('modo-simple');
+
     // Esto cierra buscadores, resetea filtros de distancia y vuelve a la tabla
     if (typeof clicBotonInicio === 'function') {
         clicBotonInicio();
@@ -865,13 +905,13 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.selectorHorario.descripcion')
                 } 
             },
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#btn-ver-todos-dias',
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnVerTodosLosDias.titulo'), 
                     description: t('guiaPrincipal.pasos.btnVerTodosLosDias.descripcion')
                 } 
-            },
+            }] : []),
             { 
                 element: '#buscador-despegues-provincias',
                 popover: { 
@@ -879,14 +919,14 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.navSearch.descripcion')
                 } 
             },
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#nav-distance',
                 popover: { 
                     title: t('guiaPrincipal.pasos.navDistance.titulo'), 
                     description: t('guiaPrincipal.pasos.navDistance.descripcion')
                 }
-            },
-            { 
+            }] : []),
+            ...(!esModoSimple ? [{ 
                 element: '#div-filtro-distancia-interno',
                 popover: { 
                     title: t('guiaPrincipal.pasos.filtroDistancia.titulo'), 
@@ -900,22 +940,22 @@ function iniciarGuiaPrincipal(forzar = false) {
                     }
                     setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 300);
                 }
-            },
-            { 
+            }] : []),
+            ...(!esModoSimple ? [{ 
                 element: '#btn-abrir-geo-menu',
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnOrigen.titulo'), 
                     description: t('guiaPrincipal.pasos.btnOrigen.descripcion')
                 }
-            },
-            { 
+            }] : []),
+            ...(!esModoSimple ? [{ 
                 element: '#btn-incluir-no-favs-distancia',
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnIncNoFavs.titulo'), 
                     description: t('guiaPrincipal.pasos.btnIncNoFavs.descripcion')
                 }
-            },
-            { 
+            }] : []),
+            ...(!esModoSimple ? [{ 
                 element: '#distancia-slider',
                 popover: { 
                     title: t('guiaPrincipal.pasos.sliderDistancia.titulo'), 
@@ -927,14 +967,14 @@ function iniciarGuiaPrincipal(forzar = false) {
                         panel.classList.remove('activo');
                     }
                 }
-            },
-            { 
+            }] : []),
+            ...(!esModoSimple ? [{ 
                 element: '#btn-filtro-seguimiento-toggle',
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnFiltroSeguimiento.titulo'), 
                     description: t('guiaPrincipal.pasos.btnFiltroSeguimiento.descripcion')
                 }
-            },
+            }] : []),
             { 
                 element: '.columna-meteo.borde-grueso-abajo.borde-grueso-arriba.borde-grueso-izquierda', 
                 popover: { 
@@ -959,20 +999,20 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.columnaPuntuacion.descripcion') 
                 } 
             },
-            { 
+            ...(chkMostrarCizalladura ? [{ 
                 element: '.guia-rosa-vientos', 
                 popover: { 
                     title: t('guiaPrincipal.pasos.rosaVientos.titulo'), 
                     description: t('guiaPrincipal.pasos.rosaVientos.descripcion') 
                 } 
-            },
-            { 
+            }] : []),
+            ...(chkMostrarCizalladura ? [{ 
                 element: '.guia-nivel-actividad', 
                 popover: { 
                     title: t('guiaPrincipal.pasos.nivelActividad.titulo'), 
                     description: t('guiaPrincipal.pasos.nivelActividad.descripcion') 
                 } 
-            },
+            }] : []),
             { 
                 element: '.columna-despegue .btn-info', 
                 popover: { 
@@ -994,13 +1034,13 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.btnFavorito.descripcion') 
                 } 
             },
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '.btn-ojo-tabla', 
                 popover: { 
                     title: t('guiaPrincipal.pasos.btnSeguimiento.titulo'), 
                     description: t('guiaPrincipal.pasos.btnSeguimiento.descripcion') 
                 } 
-            },
+            }] : []),
             { 
                 element: '#nav-home',
                 popover: { 
@@ -1110,6 +1150,8 @@ function iniciarGuiaFavoritos(forzar = false) {
         return; 
     }
 
+    const esModoSimple = document.body.classList.contains('modo-simple');
+
     // 1. Limpiamos solo el buscador y la lógica visual de los filtros
     if (typeof limpiarBuscador === 'function') limpiarBuscador();
     if (typeof aplicarFiltrosVisuales === 'function') ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
@@ -1161,11 +1203,26 @@ function iniciarGuiaFavoritos(forzar = false) {
                 } 
             },
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#tabla thead tr:first-child th:first-child', 
                 popover: { 
                     title: t('guiaFavoritos.pasos.cabeceraFavorito.titulo'), 
                     description: t('guiaFavoritos.pasos.cabeceraFavorito.descripcion') 
+                } 
+            }] : []),
+
+            { 
+                element: '.guia-rosa-vientos', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.rosaVientos.titulo'), 
+                    description: t('guiaPrincipal.pasos.rosaVientos.descripcion') 
+                } 
+            },
+            { 
+                element: '.guia-nivel-actividad', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.nivelActividad.titulo'), 
+                    description: t('guiaPrincipal.pasos.nivelActividad.descripcion') 
                 } 
             },
 
@@ -1193,29 +1250,29 @@ function iniciarGuiaFavoritos(forzar = false) {
                 } 
             },
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#div-filtro-distancia-interno',
                 popover: { 
                     title: t('guiaFavoritos.pasos.filtroDistancia.titulo'), 
                     description: t('guiaFavoritos.pasos.filtroDistancia.descripcion')
                 } 
-            },
+            }] : []),
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#btn-abrir-geo-menu',
                 popover: { 
                     title: t('guiaFavoritos.pasos.btnOrigen.titulo'), 
                     description: t('guiaFavoritos.pasos.btnOrigen.descripcion')
                 } 
-            },
+            }] : []),
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#distancia-slider',
                 popover: { 
                     title: t('guiaFavoritos.pasos.sliderDistancia.titulo'), 
                     description: t('guiaFavoritos.pasos.sliderDistancia.descripcion')
                 } 
-            },
+            }] : []),
 
             { 
                 element: '#btn-filtro-favoritos-toggle',
@@ -1225,29 +1282,29 @@ function iniciarGuiaFavoritos(forzar = false) {
                 } 
             },
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#btn-desmarcar-favoritos',
                 popover: { 
                     title: t('guiaFavoritos.pasos.btnDesmarcarTodos.titulo'), 
                     description: t('guiaFavoritos.pasos.btnDesmarcarTodos.descripcion')
                 } 
-            },
+            }] : []),
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#btn-abrir-favoritos',
                 popover: { 
                     title: t('guiaFavoritos.pasos.btnImportar.titulo'), 
                     description: t('guiaFavoritos.pasos.btnImportar.descripcion') 
                 } 
-            },
+            }] : []),
 
-            { 
+            ...(!esModoSimple ? [{ 
                 element: '#btn-guardar-favoritos',
                 popover: { 
                     title: t('guiaFavoritos.pasos.btnExportar.titulo'), 
                     description: t('guiaFavoritos.pasos.btnExportar.descripcion') 
                 } 
-            },
+            }] : []),
 
             { 
                 element: '#btn-guia-edicion-favoritos',
@@ -3706,9 +3763,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 tipo: 'modal',
                 htmlContenido: `
                     <div style="text-align: center; padding: 5px;">
-                        <div style="font-size: 3rem; margin-bottom: 5px;">ℹ️</div>
+                        <div style="font-size: 3rem; margin-bottom: 5px;">⚠️</div>
                         <h3 style="margin-top: 0; margin-bottom: 15px; font-size: 1.3rem;">
-                            ${typeof t === 'function' ? t('avisoResponsabilidad.titulo') : 'Nota'}
+                            ${typeof t === 'function' ? t('avisoResponsabilidad.titulo') : 'Aviso'}
                         </h3>
                         <p style="margin-bottom: 12px; line-height: 1.5; font-size: 1.05rem;">
                             ${typeof t === 'function' ? t('avisoResponsabilidad.texto') : 'Los pronósticos y datos pueden contener errores. La decisión de volar es siempre responsabilidad de quien pilota.'}
@@ -3722,12 +3779,70 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             // Guardamos que el usuario ha aceptado
                             localStorage.setItem("METEO_AVISO_LEGAL_ACEPTADO", "true");
                             GestorMensajes.ocultar();
-                            // Saltamos a la pantalla del menú principal
-                            mostrarPaso1();
+                            // Saltamos al paso de elegir modo simple/avanzado
+                            if (!localStorage.getItem("METEO_MODO_ELEGIDO")) {
+                                mostrarPasoModo();
+                            } else {
+                                mostrarPaso1();
+                            }
                         }
                     }
                 ],
                 anchoBotones: '100%' // Ocupa todo el ancho para facilitar el toque
+            });
+        };
+
+        // Asistente de configuración inicial. Modo simple / avanzado
+        const mostrarPasoModo = function() {
+
+            window.elegirModoSimple = function(esSimple) {
+                window.cambiarModoApp(esSimple);
+                GestorMensajes.ocultar();
+                mostrarPaso1();
+            };
+
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: `
+                    <div style="text-align: center; padding: 5px 0 15px;">
+                        <h3 style="margin-top: 0; margin-bottom: 6px; font-size: 20px;">${t('asistente.pasoModo.titulo')}</h3>
+                        <p style="margin: 0; color: var(--color-text-secondary, #666);">${t('asistente.pasoModo.subtitulo')}</p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+
+                        <!-- Modo simple -->
+                        <button id="pasoModo-btn-simple" style="
+                            display: flex; align-items: flex-start; gap: 12px;
+                            padding: 14px 18px; border-radius: 12px; border: none;
+                            background: #378ADD; color: #fff;
+                            cursor: pointer; text-align: left; width: 100%;
+                        " onclick="window.elegirModoSimple(true)">
+                            <span style="font-size: 22px; line-height: 1; flex-shrink: 0;">🟢</span>
+                            <div>
+                                <div style="font-size:20px; font-weight:bold;">${t('asistente.pasoModo.btnSimpleTitulo')}</div>
+                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px; color: #bababa);">${t('asistente.pasoModo.btnSimpleDesc')}</div>
+                            </div>
+                        </button>
+
+                        <!-- Modo avanzado -->
+                        <button id="pasoModo-btn-avanzado" style="
+                            display: flex; align-items: flex-start; gap: 12px;
+                            padding: 14px 18px; border-radius: 12px; border: none;
+                            background: #378ADD; color: #fff;
+                            cursor: pointer; text-align: left; width: 100%;
+                        " onclick="window.elegirModoSimple(false)">
+                            <span style="font-size: 22px; line-height: 1; flex-shrink: 0;">🟣</span>
+                            <div>
+                                <div style="font-size:20px; font-weight:bold;">${t('asistente.pasoModo.btnAvanzadoTitulo')}</div>
+                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px; color: #bababa);">${t('asistente.pasoModo.btnAvanzadoDesc')}</div>
+                            </div>
+                        </button>
+
+                    </div>
+                `,
+                botones: [],
+                anchoBotones: '100%'
             });
         };
 
@@ -3986,6 +4101,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 } else if (!localStorage.getItem("METEO_AVISO_LEGAL_ACEPTADO")) {
                     // Si ya eligió idioma, pero aún no aceptó el aviso, se lo mostramos
                     mostrarAvisoResponsabilidad();
+                } else if (!localStorage.getItem("METEO_MODO_ELEGIDO")) {
+                    mostrarPasoModo();
                 } else {
                     mostrarPaso1();
                 }
@@ -5122,7 +5239,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             const esSeguimiento = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(d.ID));
             const botonOjoHTML = modoEdicionFavoritos ? "" : `
-                <button class="btn-info btn-ojo-tabla"
+                <button class="btn-info btn-ojo-tabla solo-modo-avanzado"
                     style="position: absolute; bottom: 2px; left: 56px;"
                     onclick="toggleSeguimientoDesdeTabla(${d.ID}, this); return false;"
                     title="${t('seguimiento.activar_desactivar')}">
@@ -6749,6 +6866,94 @@ async function comprobarVersionApp() {
 }
 
 // ---------------------------------------------------------------
+// 🟡 Modo Simple / Avanzado
+// ---------------------------------------------------------------
+
+function aplicarModoSimpleUI() {
+    const simple = localStorage.getItem("METEO_MODO_SIMPLE") === "true";
+    document.body.classList.toggle('modo-simple', simple);
+}
+window.aplicarModoSimpleUI = aplicarModoSimpleUI;
+
+window.cambiarModoApp = function(esSimple) {
+    localStorage.setItem("METEO_MODO_SIMPLE", esSimple ? "true" : "false");
+    localStorage.setItem("METEO_MODO_ELEGIDO", "true");
+    aplicarModoSimpleUI();
+
+    aplicarReglasModoSimpleAVariables(esSimple);
+
+    if (esSimple) {
+        // Al resetear opciones avanzadas, la función ya incluye construir_tabla() dentro al terminar
+        resetearOpcionesAvanzadas();
+    } else {
+        // Al volver al avanzado, no reseteamos nada pero forzamos repintar la tabla con las filas extra
+        if (typeof construir_tabla === 'function') {
+            construir_tabla();
+        }
+    }
+};
+
+function resetearOpcionesAvanzadas() {
+
+    // 1. "Ver todos los días" (botón calendario flotante)
+    if (typeof modoVerTodosLosDias !== 'undefined' && modoVerTodosLosDias && typeof window.toggleVerTodosLosDias === 'function') {
+        window.toggleVerTodosLosDias();
+    }
+
+    // 2. Filtro de distancia (incluye el botón "incluir no favoritos")
+    if (typeof resetFiltroDistancia === 'function') {
+        resetFiltroDistancia(false); // false = no reconstruir aún, lo hacemos una sola vez al final
+    }
+
+    // 3. Filtro "solo seguimiento"
+    if (typeof soloSeguimiento !== 'undefined' && soloSeguimiento && typeof filtroVerSoloSeguimiento === 'function') {
+        filtroVerSoloSeguimiento(); // ya reconstruye la tabla por dentro; es el único caso que no diferimos
+    }
+
+    // 4. Filtros del mapa: "Mínimo de vuelos" y "Año del último vuelo" -> volver a índice 0
+    const STORAGE_KEY_VUELOS = 'METEO_MAPA_MINIMOVUELOS';
+    const STORAGE_KEY_ULTIMO_VUELO = 'METEO_MINIMO_ANO_ULTIMO_VUELO';
+    localStorage.setItem(STORAGE_KEY_VUELOS, '0');
+    localStorage.setItem(STORAGE_KEY_ULTIMO_VUELO, '0');
+
+    const sliderVuelosConfig = document.getElementById('sliderValorInicialFiltroNumeroMinimoVuelos');
+    const textoVuelosConfig = document.getElementById('valorConfigFiltroNumeroMinimoVuelosTexto');
+    const contConfigVuelos = document.querySelector('.configuracion-control-vuelos-container');
+    if (sliderVuelosConfig) sliderVuelosConfig.value = '0';
+    if (textoVuelosConfig) textoVuelosConfig.innerText = ESCALA_VUELOS[0] || 0;
+    if (contConfigVuelos) contConfigVuelos.classList.remove('borde-rojo-externo');
+
+    const sliderUltimoVueloConfig = document.getElementById('sliderValorInicialFiltroUltimoVuelo');
+    const textoUltimoVueloConfig = document.getElementById('valorConfigFiltroUltimoVueloTexto');
+    const contConfigUltimoVuelo = document.querySelector('.configuracion-control-ultimovuelo-container');
+    if (sliderUltimoVueloConfig) sliderUltimoVueloConfig.value = '0';
+    if (textoUltimoVueloConfig) textoUltimoVueloConfig.innerText = (typeof t === 'function' ? t('mapa.todos') : 'Todos');
+    if (contConfigUltimoVuelo) contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
+
+    // Sincronizamos también los sliders "en vivo" del panel de filtros del mapa, si existen
+    const sliderVuelosFiltro = document.getElementById('sliderVuelos');
+    const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
+    if (sliderVuelosFiltro) sliderVuelosFiltro.value = '0';
+    if (textoVuelosFiltro) textoVuelosFiltro.innerText = ESCALA_VUELOS[0] || 0;
+
+    const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
+    const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
+    if (sliderUltimoVueloFiltro) sliderUltimoVueloFiltro.value = '0';
+    if (textoUltimoVueloFiltro) textoUltimoVueloFiltro.innerText = (typeof t === 'function' ? t('mapa.todos') : 'Todos');
+
+    if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
+        if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
+        if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
+    }
+
+    // 5. Un único refresco final, ahora que todos los estados están ya limpios
+    if (typeof construir_tabla === 'function') {
+        construir_tabla();
+    }
+}
+window.resetearOpcionesAvanzadas = resetearOpcionesAvanzadas;
+
+// ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------
 
@@ -7035,6 +7240,8 @@ function limpiarBuscador() {
  */
 // En lugar de DOMContentLoaded, esperamos a nuestro evento personalizado
 document.addEventListener('i18nReady', function() {
+
+    aplicarModoSimpleUI();
 
     // --- ASIGNACIÓN DE TRADUCCIONES DIFERIDAS ---
     //placeholderOriginal = t('buscador.placeholder');
@@ -8356,6 +8563,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
     document.getElementById("chkMostrarVientoAlturas").checked = chkMostrarVientoAlturas;
     document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
     document.getElementById("chkActivarVibracion").checked = (localStorage.getItem("METEO_VIBRACION_ACTIVA") !== "false");
+
+    // Modo simple / avanzado
+    const modoSimpleActivo = localStorage.getItem("METEO_MODO_SIMPLE") === "true";
+    const radSimple = document.getElementById('radModoSimple');
+    const radAvanzado = document.getElementById('radModoAvanzado');
+    if (radSimple) radSimple.checked = modoSimpleActivo;
+    if (radAvanzado) radAvanzado.checked = !modoSimpleActivo;
     
     // ECMWF Checks
     //if (document.getElementById("chkMostrarPrecipitacion")) document.getElementById("chkMostrarPrecipitacion").checked = chkMostrarPrecipitacion;
@@ -9498,6 +9712,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // Si estaba cerrado, lo abrimos
             alternardivConfiguracion(); 
             window.activarMenuInferior(document.getElementById('nav-settings'));
+
+            // Sincronizamos el radio de Modo Simple/Avanzado con el valor guardado, por si ha cambiado desde la última vez que se construyó el DOM (p. ej. justo después de elegirlo en el onboarding).
+            const modoSimpleActivo = localStorage.getItem("METEO_MODO_SIMPLE") === "true";
+            const radSimple = document.getElementById('radModoSimple');
+            const radAvanzado = document.getElementById('radModoAvanzado');
+            if (radSimple) radSimple.checked = modoSimpleActivo;
+            if (radAvanzado) radAvanzado.checked = !modoSimpleActivo;
         }
     };
 
@@ -11380,7 +11601,7 @@ function inicializarMapaLeaflet() {
                                     </button>
 
                                     <!-- Botón Seguimiento (Ojo) -->
-                                    <button class="btn-info btn-ojo-tabla"
+                                    <button class="btn-info btn-ojo-tabla solo-modo-avanzado"
                                         style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
                                         onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleSeguimientoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
                                         title="${esSeguimientoPopup ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar')}">

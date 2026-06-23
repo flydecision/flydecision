@@ -103,6 +103,10 @@ body, header, .offline-badge {
     background: #d9ebf9;
 }
 
+body.modo-simple .solo-modo-avanzado {
+    display: none !important;
+}
+
 /* 🔴 Mensaje "Esperando conexión..."  -------------------------------- */ 
 
 .offline-badge {

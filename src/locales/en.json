@@ -1,6 +1,6 @@
 {
   "avisoResponsabilidad": {
-    "titulo": "Note",
+    "titulo": "Warning",
     "texto": "Forecasts and data may contain errors.<br><br>The decision to fly is the responsibility of the pilot.",
     "btnContinuar": "Continue"
   },
@@ -390,6 +390,14 @@
       "btnSelecMapa": "Select with the map",
       "btnSelecLista": "Select with the list"
     },
+    "pasoModo": {
+      "titulo": "How do you want to use the app?",
+      "subtitulo": "You can change this later in <i>Settings</i>",
+      "btnSimpleTitulo": "Simple mode",
+      "btnSimpleDesc": "Only the essentials (recommended to start)",
+      "btnAvanzadoTitulo": "Advanced mode",
+      "btnAvanzadoDesc": "All available options and filters"
+    },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Automated weather forecast analysis for paragliding.</p><p>🙄 <b>What is it for?:</b> to help you decide where to fly. It shows a table with your favorite takeoffs, their forecasts, and performs an automated analysis of those <b>weather conditions</b>.</p><p>🧮 <b>What analysis does it perform?:</b> it compares the forecast against your configured mean wind and max gust limits and each takeoff's orientation; it also analyzes wind at altitudes near the takeoff (80, 120, and 180 m), providing insight into wind gradient and forecast reliability. It shows key XC data (ceiling, CAPE, and CIN).</p><p>With all this info, it scores each takeoff from 0 to 10 and color-codes 🟩&nbsp;🟨&nbsp;🟥 the data for your chosen time range. You can customize all limits to match your preferences.</p>"
     },
@@ -446,6 +454,11 @@
   },
 
   "ajustes": {
+    "modoApp": {
+      "titulo": "App mode",
+      "simple": "Simple",
+      "avanzado": "Advanced"
+    },
     "probPrecipitacion": "Precipitation probability",
     "vientoAlturas": "Wind at 80, 120 y 180 m",    
     "cizalladura_fiabilidad": "Wind Shear / Reliability",
@@ -678,7 +691,8 @@
     "tooltipHorasDiurnas": "<b>Daylight hours only</b><br><br>Shows only daylight hours. If disabled, 24 hours of the day are shown.<br><br>A ±1h margin is included at sunrise and sunset.<br><br>Changes automatically every month. Additionally, in months with time changes, these hours will automatically adjust to the official time change (DST).",
     "tooltipOrdenarXC": "<b>Sort by XC Conditions:</b><br><br>By default, takeoffs are sorted from best to worst based on the <i>Takeoff Conditions</i> score (feasibility of taking off according to the wind).<br><br>If you enable this option, the table will be sorted from best to worst <b>XC Conditions</b> score (thermal potential of the air mass), regardless of whether the wind at that takeoff is ideal or not.",
     "tooltipDiasSeguimiento": "<b>Tracking days:</b><br><br>When you mark a takeoff with the eye <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>, it remains <i>tracked</i> for the number of days you configure here.<br><br>For example, with 2 days: if you mark a takeoff on Monday, it will appear active on Monday and Tuesday. On Wednesday it will be automatically removed when starting the application.<br><br>Marking tracked takeoffs allows you to easily filter them with the <i>Show only tracked takeoffs</i> button.<br><br>You can configure between <b>1 and 4 days</b>. The default value is <b>3 days</b>.",
-    "tooltipModelosMeteo": "<b>Meteorological models:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: for wind data in the first 0-48h. It covers almost all of Europe, including the Iberian Peninsula, except for southern Andalusia (in that area, Arpege Europe 7km 0-96h is used).</li><li><b>Météo-France Arpege Europe 7km</b>: for wind data in the next 48-96h. It covers Europe and North Africa.</li><li><b>ECMWF IFS HRES 9km</b>: for the rest of meteorological data for 0-96h. It covers the whole world.</li></ul><b>Automatic update frequency:</b> Météo-France approximately every 3 hours (8 times a day) and ECMWF approximately every 6 hours (4 times a day).<br><br><b>Meteorological data gateway:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>The value <i>(DDtHH)</i> (example: 12t03) indicates the day and hour UTC±0 (Z) corresponding to the last execution cycle of the model on the original weather server. From that moment, there are several hours of computational calculation before final distribution and public availability."
+    "tooltipModelosMeteo": "<b>Meteorological models:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: for wind data in the first 0-48h. It covers almost all of Europe, including the Iberian Peninsula, except for southern Andalusia (in that area, Arpege Europe 7km 0-96h is used).</li><li><b>Météo-France Arpege Europe 7km</b>: for wind data in the next 48-96h. It covers Europe and North Africa.</li><li><b>ECMWF IFS HRES 9km</b>: for the rest of meteorological data for 0-96h. It covers the whole world.</li></ul><b>Automatic update frequency:</b> Météo-France approximately every 3 hours (8 times a day) and ECMWF approximately every 6 hours (4 times a day).<br><br><b>Meteorological data gateway:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>The value <i>(DDtHH)</i> (example: 12t03) indicates the day and hour UTC±0 (Z) corresponding to the last execution cycle of the model on the original weather server. From that moment, there are several hours of computational calculation before final distribution and public availability.",
+    "tooltipModoApp": "<b>App mode:</b><br><br><b>Simple mode</b>: Only the essentials. Recommended to start and familiarize yourself with the app before switching to <i>Advanced mode</i>.<br><br><b>Advanced mode</b>: Full control. Gives access to all options, filters and detailed data."
   },
   "paises": {
     "España": "Spain",

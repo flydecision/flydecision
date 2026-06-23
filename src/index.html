@@ -67,9 +67,9 @@
 <!-- API Keys map layers-->
 <script src="js/config.js" defer></script>
 
-<script>window.WEB_VERSION = "3.9.0";</script>
-<link rel="stylesheet" href="meteo.css?v=3.9.0">
-<script src="meteo.js?v=3.9.0" defer></script>
+<script>window.WEB_VERSION = "3.10.0b";</script>
+<link rel="stylesheet" href="meteo.css?v=3.10.0b">
+<script src="meteo.js?v=3.10.0b" defer></script>
 
 </head>
 
@@ -117,17 +117,17 @@
 		</button>
 
     	<!-- BOTÓN DESMARCAR TODO: Icono de acción destructiva -->
-		<button id="btn-desmarcar-favoritos" class="group-edit" data-i18n="[title]html.desmarcarFavoritosTitle" onclick="desmarcarFavoritos()">
+		<button id="btn-desmarcar-favoritos" class="group-edit solo-modo-avanzado" data-i18n="[title]html.desmarcarFavoritosTitle" onclick="desmarcarFavoritos()">
 			<div class="nav-icon-container action-remove">
 				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path><line x1="5" y1="5" x2="19" y2="19" stroke="red" stroke-width="3"></line></svg>
 			</div>
 		</button>
 
-		<button id="btn-abrir-favoritos" class="group-edit" data-i18n="[title]html.importarFavoritos" onclick="abrirFavoritos()" style="position: relative;">
+		<button id="btn-abrir-favoritos" class="group-edit solo-modo-avanzado" data-i18n="[title]html.importarFavoritos" onclick="abrirFavoritos()" style="position: relative;">
 			<span style="font-size: 20px;">📂</span>
 		</button>
 
-		<button id="btn-guardar-favoritos" class="group-edit" data-i18n="[title]html.exportarFavoritos" onclick="guardarFavoritos()" style="position: relative;">
+		<button id="btn-guardar-favoritos" class="group-edit solo-modo-avanzado" data-i18n="[title]html.exportarFavoritos" onclick="guardarFavoritos()" style="position: relative;">
 			<span style="font-size: 20px;">💾</span>
 		</button>
 
@@ -140,7 +140,7 @@
 	<!-- 🟦 FILTRO HORARIO (compartido tabla/mapa) -->
 	<div class="div-filtro-horario" id="div-filtro-horario">
 		<!-- Botón Calendario -->
-		<button id="btn-ver-todos-dias" class="btn-calendario-flotante" onclick="toggleVerTodosLosDias()" data-i18n="[title]html.verTodosDiasTitle">🗓️</button>
+		<button id="btn-ver-todos-dias" class="btn-calendario-flotante solo-modo-avanzado" onclick="toggleVerTodosLosDias()" data-i18n="[title]html.verTodosDiasTitle">🗓️</button>
 		
 		<button id="btn-cerrar-filtros-mapa" class="div-mapa-close-btn" style="display:none;" onclick="toggleFiltrosMapa()">❌</button>
 		<div class="div-paneles-controles-transparente">
@@ -168,11 +168,11 @@
 				autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 				<button id="limpiar-buscador" class="div-mapa-close-btn" type="button" style="display: none; box-shadow: none; background: none; backdrop-filter: none;">❌</button>
 			</div>
-			<button id="nav-distance" onclick="clicBotonDistancia()" class="btn-distancia-buscador" data-i18n="[title]menu.distancia">
+			<button id="nav-distance" onclick="clicBotonDistancia()" class="btn-distancia-buscador solo-modo-avanzado" data-i18n="[title]menu.distancia">
 				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
 				<span class="distancia-x">❌</span>
 			</button>
-			<button id="btn-filtro-seguimiento-toggle" class="btn-distancia-buscador" data-i18n="[title]seguimiento.filtroTitle" onclick="filtroVerSoloSeguimiento()">
+			<button id="btn-filtro-seguimiento-toggle" class="btn-distancia-buscador solo-modo-avanzado" data-i18n="[title]seguimiento.filtroTitle" onclick="filtroVerSoloSeguimiento()">
 				<svg viewBox="0 4 24 16" width="24" height="24" preserveAspectRatio="xMidYMid meet">
 					<path class="ojo-color ojo-exterior" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
 					<circle class="ojo-color ojo-iris" cx="12" cy="12" r="3.5" fill="#888" stroke="none"></circle>
@@ -183,7 +183,7 @@
 	</div>
 	
 	<!-- 🟦 FILTRO DISTANCIA  -->
-	<div id="div-filtro-distancia" class="div-filtro-distancia">
+	<div id="div-filtro-distancia" class="div-filtro-distancia solo-modo-avanzado">
 
 		<div id="div-filtro-distancia-interno" class="div-paneles-controles-transparente">
 		
@@ -301,6 +301,27 @@
         </details>
     </div>
 
+	<!-- MODO SIMPLE / AVANZADO -->
+	<div class="div-configuracion-subpanel" style="margin-bottom: 12px;">
+		<div style="display: flex; align-items: center; gap: 8px; padding-bottom: 4px;">
+			<span style="font-weight: bold;" data-i18n="ajustes.modoApp.titulo">Modo de la aplicación</span>
+			<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipModoApp">
+				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+			</button>
+		</div>
+
+		<div style="display: flex; gap: 8px; width: 100%; max-width: 330px;">
+			<label class="custom-checkbox" id="lbl-modo-simple" style="flex: 1; justify-content: center; text-align: center; font-weight: normal;">
+				<input type="radio" name="radioModoApp" id="radModoSimple" onclick="window.cambiarModoApp(true)">
+				<span data-i18n="ajustes.modoApp.simple">🟢 Simple</span>
+			</label>
+			<label class="custom-checkbox" id="lbl-modo-avanzado" style="flex: 1; justify-content: center; text-align: center; font-weight: normal;">
+				<input type="radio" name="radioModoApp" id="radModoAvanzado" onclick="window.cambiarModoApp(false)">
+				<span data-i18n="ajustes.modoApp.avanzado">🟣 Avanzado</span>
+			</label>
+		</div>
+	</div>
+
 	<!-- BOTONES DE EDITAR FAVORITOS, EXPORTAR,... RESETEAR -->
 	<div class="div-configuracion-subpanel">
 		<div style="display: flex; align-items: center; gap: 8px; width: 100%; max-width: 330px; min-width: 330px; margin-bottom: 8px !important;">
@@ -325,7 +346,7 @@
 		</div>
 	</div>
 
-    <!-- 2. NUEVO ACORDEÓN: Viento medio y Racha máxima -->
+    <!-- 2. ACORDEÓN: Viento medio y Racha máxima -->
 	<div class="div-configuracion-subpanel">
 		<details class="config-accordion" style="margin-bottom: 8px;">
 			<summary data-i18n="ajustes.acordeon.vientoRacha">Límites de Viento y Racha</summary>
@@ -362,8 +383,8 @@
 		</details>
 	</div>
 
-    <!-- 3. ACORDEÓN EXISTENTE: Datos meteorológicos opcionales -->
-	<div class="div-configuracion-subpanel">
+    <!-- 3. ACORDEÓN: Datos meteorológicos opcionales -->
+	<div class="div-configuracion-subpanel  solo-modo-avanzado">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.datosOpcionales">Datos meteorológicos opcionales</summary>
 			<div class="accordion-content">
@@ -443,13 +464,12 @@
 		</details>
 	</div>
 
-    <!-- 4. ACORDEÓN EXISTENTE: Otras opciones -->
+    <!-- 4. ACORDEÓN: Otras opciones -->
 	<div class="div-configuracion-subpanel">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.otrasOpciones">Otras opciones</summary>
 			<div class="accordion-content">
 				
-				<!-- Panel original de Horario movido aquí dentro -->
 				<div style="display: flex; justify-content: center; width: 100%; margin-bottom: 25px;">
 					<div class="div-paneles-controles" style="min-height: auto; padding-bottom: 12px; margin-bottom: 0;">
 						<div class="linea-con-bt-info">
@@ -465,7 +485,7 @@
 					</div>
 				</div>
 
-				<div class="linea-con-bt-info">
+				<div class="linea-con-bt-info solo-modo-avanzado">
 					<label for="chkMostrarSoloHorasDiurnas" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarSoloHorasDiurnas" onclick="alternarHorasNoche()"> <span data-i18n="ajustes.solo_horas_diurnas"> Solo horas diurnas</span>
 					</label>
@@ -474,7 +494,7 @@
 					</button>
 				</div>
 
-				<div class="linea-con-bt-info">
+				<div class="linea-con-bt-info solo-modo-avanzado">
 					<label for="chkOrdenarPorXC" class="custom-checkbox">
 						<input type="checkbox" id="chkOrdenarPorXC" onclick="alternarOrdenarPorXC()"> <span data-i18n="ajustes.ordenar_xc"> Ordenar por Condiciones XC</span>
 					</label>
@@ -483,13 +503,13 @@
 					</button>
 				</div>
 
-				<div class="linea-con-bt-info" style="margin-top: 5px;">
+				<div class="linea-con-bt-info solo-modo-avanzado">
 					<label for="chkActivarVibracion" class="custom-checkbox">
 						<input type="checkbox" id="chkActivarVibracion" onclick="alternarVibracion()"> <span data-i18n="ajustes.vibracion">Respuesta háptica (Vibración)</span>
 					</label>
 				</div>
 
-				<div class="linea-con-bt-info" style="margin-top: 10px; margin-left: 8px;">
+				<div class="linea-con-bt-info solo-modo-avanzado" style="margin-top: 10px; margin-left: 8px;">
 					<span data-i18n="ajustes.diasSeguimiento">Días de seguimiento</span>
 					<div class="stepper-dias-seguimiento">
 						<button id="stepper-seguimiento-menos" class="stepper-btn" onclick="cambiarDiasSeguimiento(-1)">−</button>
@@ -506,7 +526,7 @@
 	</div>
 
 	<!-- 5. NUEVO ACORDEÓN: Mapa -->
-	<div class="div-configuracion-subpanel">
+	<div class="div-configuracion-subpanel solo-modo-avanzado">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.mapa">Mapa</summary>
 			<div class="accordion-content">
