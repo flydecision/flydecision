@@ -999,20 +999,20 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.columnaPuntuacion.descripcion') 
                 } 
             },
-            { 
+            ...(chkMostrarCizalladura ? [{ 
                 element: '.guia-rosa-vientos', 
                 popover: { 
                     title: t('guiaPrincipal.pasos.rosaVientos.titulo'), 
                     description: t('guiaPrincipal.pasos.rosaVientos.descripcion') 
                 } 
-            },
-            { 
+            }] : []),
+            ...(chkMostrarCizalladura ? [{ 
                 element: '.guia-nivel-actividad', 
                 popover: { 
                     title: t('guiaPrincipal.pasos.nivelActividad.titulo'), 
                     description: t('guiaPrincipal.pasos.nivelActividad.descripcion') 
                 } 
-            },
+            }] : []),
             { 
                 element: '.columna-despegue .btn-info', 
                 popover: { 
