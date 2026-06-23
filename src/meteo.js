@@ -11536,7 +11536,7 @@ function inicializarMapaLeaflet() {
                                     </button>
 
                                     <!-- Botón Seguimiento (Ojo) -->
-                                    <button class="btn-info btn-ojo-tabla"
+                                    <button class="btn-info btn-ojo-tabla solo-modo-avanzado"
                                         style="width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin: 0;"
                                         onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleSeguimientoDesdeTabla('${escapeHtml(idDespegue)}', this); return false;"
                                         title="${esSeguimientoPopup ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar')}">
