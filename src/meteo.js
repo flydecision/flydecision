@@ -3748,12 +3748,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 tipo: 'modal',
                 htmlContenido: `
                     <div style="text-align: center; padding: 5px 0 15px;">
-                        <h3 style="margin-top: 0; margin-bottom: 6px; font-size: 20px;" data-i18n="asistente.pasoModo.titulo">
-                            ¿Cómo quieres usar la aplicación?
-                        </h3>
-                        <p style="margin: 0; color: var(--color-text-secondary, #666);" data-i18n="asistente.pasoModo.subtitulo">
-                            Podrás cambiarlo luego en <i>Ajustes</i>
-                        </p>
+                        <h3 style="margin-top: 0; margin-bottom: 6px; font-size: 20px;">${t('asistente.pasoModo.titulo')}</h3>
+                        <p style="margin: 0; color: var(--color-text-secondary, #666);">${t('asistente.pasoModo.subtitulo')}</p>
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -3767,8 +3763,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         " onclick="window.elegirModoSimple(true)">
                             <span style="font-size: 22px; line-height: 1; flex-shrink: 0;">🟢</span>
                             <div>
-                                <div style="font-size:20px; font-weight:500;" data-i18n="asistente.pasoModo.btnSimpleTitulo">Modo simple</div>
-                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px;" data-i18n="asistente.pasoModo.btnSimpleDesc">Solo lo esencial, sin opciones avanzadas</div>
+                                <div style="font-size:20px; font-weight:bold;">${t('asistente.pasoModo.btnSimpleTitulo')}</div>
+                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px; color: #bababa);">${t('asistente.pasoModo.btnSimpleDesc')}</div>
                             </div>
                         </button>
 
@@ -3781,8 +3777,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         " onclick="window.elegirModoSimple(false)">
                             <span style="font-size: 22px; line-height: 1; flex-shrink: 0;">🟣</span>
                             <div>
-                                <div style="font-size:20px; font-weight:500;" data-i18n="asistente.pasoModo.btnAvanzadoTitulo">Modo avanzado</div>
-                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px;" data-i18n="asistente.pasoModo.btnAvanzadoDesc">Todas las opciones y filtros disponibles</div>
+                                <div style="font-size:20px; font-weight:bold;">${t('asistente.pasoModo.btnAvanzadoTitulo')}</div>
+                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px; color: #bababa);">${t('asistente.pasoModo.btnAvanzadoDesc')}</div>
                             </div>
                         </button>
 

@@ -390,6 +390,14 @@
       "btnSelecMapa": "Sélectionner avec la carte",
       "btnSelecLista": "Sélectionner avec la liste"
     },
+    "pasoModo": {
+      "titulo": "Comment veux-tu utiliser l'application ?",
+      "subtitulo": "Tu pourras le changer plus tard dans <i>Paramètres</i>",
+      "btnSimpleTitulo": "Mode simple",
+      "btnSimpleDesc": "Uniquement l'essentiel (recommandé pour commencer)",
+      "btnAvanzadoTitulo": "Mode avancé",
+      "btnAvanzadoDesc": "Toutes les options et filtres disponibles"
+    },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Analyse automatisée des prévisions météorologiques pour le parapente.</p><p>🙄 <b>À quoi ça sert ? :</b> à vous aider à décider où voler. Il affiche un tableau avec vos décollages favoris, leurs prévisions, et effectue une analyse automatisée de ces <b>conditions météorologiques</b>.</p><p>🧮 <b>Quelle analyse effectue-t-il ? :</b> il compare les prévisions avec vos limites configurées de vent moyen et de rafales maximales et l'orientation de chaque décollage ; il analyse également le vent à des altitudes proches du décollage (80, 120 et 180 m), donnant un aperçu du gradient de vent et de la fiabilité des prévisions. Il affiche les données clés de XC (plafond, CAPE et CIN).</p><p>Avec toutes ces informations, il note chaque décollage de 0 à 10 et code en couleur 🟩&nbsp;🟨&nbsp;🟥 les données pour la plage horaire choisie. Vous pouvez personnaliser toutes les limites pour correspondre à vos préférences.</p>"
     },
@@ -446,6 +454,11 @@
   },
 
   "ajustes": {
+    "modoApp": {
+      "titulo": "Mode de l'application",
+      "simple": "Simple",
+      "avanzado": "Avancé"
+    },
     "probPrecipitacion": "Probabilité de précipitations",
     "vientoAlturas": "Vent à 80, 120 et 180 m",    
     "cizalladura_fiabilidad": "Cisaillement du vent / Fiabilité",
@@ -678,7 +691,8 @@
     "tooltipHorasDiurnas": "<b>Heures de jour uniquement</b><br><br>N'affiche que les heures de la journée. Si désactivée, les 24 heures de la journée sont affichées.<br><br>Une marge de ±1h est incluse au lever et au coucher du soleil.<br><br>Change automatiquement chaque mois. De plus, les mois avec changement d'heure, ces heures s'ajusteront automatiquement à l'heure officielle d'été/hiver.",
     "tooltipOrdenarXC": "<b>Trier par conditions XC :</b><br><br>Par défaut, les décollages sont triés du meilleur au pire en fonction de la note des <i>Conditions de décollage</i> (faisabilité du décollage en fonction du vent).<br><br>Si vous activez cette option, le tableau sera trié de la meilleure à la pire note des <b>Conditions XC</b> (potentiel thermique de la masse d'air), que le vent à ce décollage soit idéal ou non.",
     "tooltipDiasSeguimiento": "<b>Jours de suivi :</b><br><br>Lorsque tu marques un décollage avec l'œil <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>, il reste en <i>suivi</i> pendant le nombre de jours que tu configures ici.<br><br>Par exemple, avec 2 jours : si tu marques un décollage le lundi, il apparaîtra actif le lundi et le mardi. Le mercredi, il sera automatiquement supprimé au démarrage de l'application.<br><br>Marquer des décollages avec suivi te permet de les filtrer facilement avec le bouton <i>Voir uniquement les décollages suivis</i>.<br><br>Tu peux configurer entre <b>1 et 4 jours</b>. La valeur par défaut est <b>3 jours</b>.",
-    "tooltipModelosMeteo": "<b>Modèles météorologiques :</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b> : pour les données de vent dans les 0-48 premières heures. Il couvre la quasi-totalité de l'Europe, y compris la péninsule ibérique, à l'exception du sud de l'Andalousie (dans cette zone, Arpege Europe 7km 0-96h est utilisé).</li><li><b>Météo-France Arpege Europe 7km</b> : pour les données de vent dans les 48-96 heures suivantes. Il couvre l'Europe et l'Afrique du Nord.</li><li><b>ECMWF IFS HRES 9km</b> : pour le reste des données météorologiques de 0-96h. Il couvre le monde entier.</li></ul><b>Fréquence de mise à jour automatique :</b> Météo-France environ toutes les 3 heures (8 fois par jour) et ECMWF environ toutes les 6 heures (4 fois par jour).<br><br><b>Passerelle de données météorologiques :</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>La valeur <i>(DDtHH)</i> (exemple : 12t03) indique le jour et l'heure UTC±0 (Z) correspondant au dernier cycle d'exécution du modèle sur le serveur météo d'origine. À partir de ce moment, il y a plusieurs heures de calcul computationnel avant la distribution finale et la disponibilité publique."
+    "tooltipModelosMeteo": "<b>Modèles météorologiques :</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b> : pour les données de vent dans les 0-48 premières heures. Il couvre la quasi-totalité de l'Europe, y compris la péninsule ibérique, à l'exception du sud de l'Andalousie (dans cette zone, Arpege Europe 7km 0-96h est utilisé).</li><li><b>Météo-France Arpege Europe 7km</b> : pour les données de vent dans les 48-96 heures suivantes. Il couvre l'Europe et l'Afrique du Nord.</li><li><b>ECMWF IFS HRES 9km</b> : pour le reste des données météorologiques de 0-96h. Il couvre le monde entier.</li></ul><b>Fréquence de mise à jour automatique :</b> Météo-France environ toutes les 3 heures (8 fois par jour) et ECMWF environ toutes les 6 heures (4 fois par jour).<br><br><b>Passerelle de données météorologiques :</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>La valeur <i>(DDtHH)</i> (exemple : 12t03) indique le jour et l'heure UTC±0 (Z) correspondant au dernier cycle d'exécution du modèle sur le serveur météo d'origine. À partir de ce moment, il y a plusieurs heures de calcul computationnel avant la distribution finale et la disponibilité publique.",
+    "tooltipModoApp": "<b>Mode de l'application :</b><br><br><b>Mode simple</b> : Uniquement l'essentiel. Recommandé pour commencer et te familiariser avec l'application avant de passer au <i>Mode avancé</i>.<br><br><b>Mode avancé</b> : Contrôle total. Donne accès à toutes les options, filtres et données détaillées."
   },
   "paises": {
     "España": "Espagne",

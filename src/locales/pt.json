@@ -390,6 +390,14 @@
       "btnSelecMapa": "Selecionar com o mapa",
       "btnSelecLista": "Selecionar com a lista"
     },
+    "pasoModo": {
+      "titulo": "Como queres usar a aplicação?",
+      "subtitulo": "Poderás alterá-lo mais tarde nas <i>Definições</i>",
+      "btnSimpleTitulo": "Modo simples",
+      "btnSimpleDesc": "Apenas o essencial (recomendado para começar)",
+      "btnAvanzadoTitulo": "Modo avançado",
+      "btnAvanzadoDesc": "Todas as opções e filtros disponíveis"
+    },
     "paso2": {
       "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Análise automatizada da previsão meteorológica para parapente.</p><p>🙄 <b>Para que serve?:</b> para ajudá-lo a decidir onde voar. Mostra uma tabela com as suas descolagens favoritas, as respetivas previsões, e realiza uma análise automatizada destas <b>condições meteorológicas</b>.</p><p>🧮 <b>Que análise faz?:</b> compara a previsão com os seus limites configurados de vento médio e rajadas máximas, e a orientação de cada descolagem; também analisa o vento a altitudes próximas da descolagem (80, 120 e 180 m), fornecendo informações sobre o gradiente de vento e a fiabilidade da previsão. Mostra dados essenciais de XC (teto, CAPE e CIN).</p><p>Com toda esta informação, pontua cada descolagem de 0 a 10 e codifica com cores 🟩&nbsp;🟨&nbsp;🟥 os dados para a janela de tempo escolhida. Pode personalizar todos os limites para adaptá-los às suas preferências.</p>"
     },
@@ -446,6 +454,11 @@
   },
 
   "ajustes": {
+    "modoApp": {
+      "titulo": "Modo da aplicação",
+      "simple": "Simples",
+      "avanzado": "Avançado"
+    },
     "probPrecipitacion": "Probabilidade de precipitação",
     "vientoAlturas": "Vento a 80, 120 e 180 m",    
     "cizalladura_fiabilidad": "Cisalhamento do vento / Fiabilidade",
@@ -678,7 +691,8 @@
     "tooltipHorasDiurnas": "<b>Apenas horas diurnas</b><br><br>Mostra apenas as horas de luz. Se estiver desativado, são mostradas as 24 horas do dia.<br><br>Está incluída uma margem de ±1h ao nascer e ao pôr do sol.<br><br>Muda automaticamente todos os meses. Além disso, nos meses com mudança de hora, estas horas serão ajustadas automaticamente ao horário oficial de verão/inverno (DST).",
     "tooltipOrdenarXC": "<b>Ordenar por Condições de XC:</b><br><br>Por predefinição, as descolagens são ordenadas da melhor para a pior com base na pontuação de <i>Condições de Descolagem</i> (viabilidade de descolar de acordo com o vento).<br><br>Se ativar esta opção, a tabela será ordenada da melhor para a pior pontuação de <b>Condições de XC</b> (potencial térmico da massa de ar), independentemente de o vento nessa descolagem ser o ideal ou não.",
     "tooltipDiasSeguimiento": "<b>Dias de seguimento:</b><br><br>Quando marcas uma descolagem com o olho <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>, fica em <i>seguimento</i> durante o número de dias que configurares aqui.<br><br>Por exemplo, com 2 dias: se marcares uma descolagem na segunda-feira, aparecerá ativa na segunda-feira e na terça-feira. Na quarta-feira, será removida automaticamente ao iniciar a aplicação.<br><br>Marcar descolagens com seguimento permite-te filtrá-las facilmente com o botão <i>Ver apenas descolagens em seguimento</i>.<br><br>Podes configurar entre <b>1 e 4 dias</b>. O valor por defeito é <b>3 dias</b>.",
-    "tooltipModelosMeteo": "<b>Modelos meteorológicos:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: para dados de vento nas primeiras 0-48h. Cobre quase toda a Europa, incluindo a Península Ibérica, exceto o sul da Andaluzia (nessa zona utiliza-se o Arpege Europe 7km de 0-96h).</li><li><b>Météo-France Arpege Europe 7km</b>: para dados de vento nas seguintes 48-96h. Cobre a Europa e o norte de África.</li><li><b>ECMWF IFS HRES 9km</b>: para o resto dos dados meteorológicos de 0-96h. Cobre todo o mundo.</li></ul><b>Frequência de atualização automática:</b> Météo-France aproximadamente a cada 3 horas (8 vezes por dia) e ECMWF aproximadamente a cada 6 horas (4 vezes por dia).<br><br><b>Gateway de dados meteorológicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>O valor <i>(DDtHH)</i> (exemplo: 12t03) indica o dia e a hora UTC±0 (Z) correspondente ao último ciclo de execução do modelo no servidor meteorológico de origem. A partir desse momento, decorrem várias horas de cálculo computacional antes da distribuição final e disponibilidade pública."
+    "tooltipModelosMeteo": "<b>Modelos meteorológicos:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: para dados de vento nas primeiras 0-48h. Cobre quase toda a Europa, incluindo a Península Ibérica, exceto o sul da Andaluzia (nessa zona utiliza-se o Arpege Europe 7km de 0-96h).</li><li><b>Météo-France Arpege Europe 7km</b>: para dados de vento nas seguintes 48-96h. Cobre a Europa e o norte de África.</li><li><b>ECMWF IFS HRES 9km</b>: para o resto dos dados meteorológicos de 0-96h. Cobre todo o mundo.</li></ul><b>Frequência de atualização automática:</b> Météo-France aproximadamente a cada 3 horas (8 vezes por dia) e ECMWF aproximadamente a cada 6 horas (4 vezes por dia).<br><br><b>Gateway de dados meteorológicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>O valor <i>(DDtHH)</i> (exemplo: 12t03) indica o dia e a hora UTC±0 (Z) correspondente ao último ciclo de execução do modelo no servidor meteorológico de origem. A partir desse momento, decorrem várias horas de cálculo computacional antes da distribuição final e disponibilidade pública.",
+    "tooltipModoApp": "<b>Modo da aplicação:</b><br><br><b>Modo simples</b>: Apenas o essencial. Recomendado para começar e te familiarizares com a aplicação antes de passares para o <i>Modo avançado</i>.<br><br><b>Modo avançado</b>: Controlo total. Dá acesso a todas as opções, filtros e dados detalhados."
   },
   "paises": {
     "España": "Espanha",
