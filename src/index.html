@@ -67,9 +67,9 @@
 <!-- API Keys map layers-->
 <script src="js/config.js" defer></script>
 
-<script>window.WEB_VERSION = "3.9.0";</script>
-<link rel="stylesheet" href="meteo.css?v=3.9.0">
-<script src="meteo.js?v=3.9.0" defer></script>
+<script>window.WEB_VERSION = "3.10.0b";</script>
+<link rel="stylesheet" href="meteo.css?v=3.10.0b">
+<script src="meteo.js?v=3.10.0b" defer></script>
 
 </head>
 
@@ -346,7 +346,7 @@
 		</div>
 	</div>
 
-    <!-- 2. NUEVO ACORDEÓN: Viento medio y Racha máxima -->
+    <!-- 2. ACORDEÓN: Viento medio y Racha máxima -->
 	<div class="div-configuracion-subpanel">
 		<details class="config-accordion" style="margin-bottom: 8px;">
 			<summary data-i18n="ajustes.acordeon.vientoRacha">Límites de Viento y Racha</summary>
@@ -383,7 +383,7 @@
 		</details>
 	</div>
 
-    <!-- 3. ACORDEÓN EXISTENTE: Datos meteorológicos opcionales -->
+    <!-- 3. ACORDEÓN: Datos meteorológicos opcionales -->
 	<div class="div-configuracion-subpanel  solo-modo-avanzado">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.datosOpcionales">Datos meteorológicos opcionales</summary>
@@ -464,13 +464,12 @@
 		</details>
 	</div>
 
-    <!-- 4. ACORDEÓN EXISTENTE: Otras opciones -->
+    <!-- 4. ACORDEÓN: Otras opciones -->
 	<div class="div-configuracion-subpanel">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.otrasOpciones">Otras opciones</summary>
 			<div class="accordion-content">
 				
-				<!-- Panel original de Horario movido aquí dentro -->
 				<div style="display: flex; justify-content: center; width: 100%; margin-bottom: 25px;">
 					<div class="div-paneles-controles" style="min-height: auto; padding-bottom: 12px; margin-bottom: 0;">
 						<div class="linea-con-bt-info">
@@ -486,7 +485,7 @@
 					</div>
 				</div>
 
-				<div class="linea-con-bt-info">
+				<div class="linea-con-bt-info solo-modo-avanzado">
 					<label for="chkMostrarSoloHorasDiurnas" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarSoloHorasDiurnas" onclick="alternarHorasNoche()"> <span data-i18n="ajustes.solo_horas_diurnas"> Solo horas diurnas</span>
 					</label>
@@ -495,7 +494,7 @@
 					</button>
 				</div>
 
-				<div class="linea-con-bt-info">
+				<div class="linea-con-bt-info solo-modo-avanzado">
 					<label for="chkOrdenarPorXC" class="custom-checkbox">
 						<input type="checkbox" id="chkOrdenarPorXC" onclick="alternarOrdenarPorXC()"> <span data-i18n="ajustes.ordenar_xc"> Ordenar por Condiciones XC</span>
 					</label>
@@ -504,13 +503,13 @@
 					</button>
 				</div>
 
-				<div class="linea-con-bt-info">
+				<div class="linea-con-bt-info solo-modo-avanzado">
 					<label for="chkActivarVibracion" class="custom-checkbox">
 						<input type="checkbox" id="chkActivarVibracion" onclick="alternarVibracion()"> <span data-i18n="ajustes.vibracion">Respuesta háptica (Vibración)</span>
 					</label>
 				</div>
 
-				<div class="linea-con-bt-info" style="margin-top: 10px; margin-left: 8px;">
+				<div class="linea-con-bt-info solo-modo-avanzado" style="margin-top: 10px; margin-left: 8px;">
 					<span data-i18n="ajustes.diasSeguimiento">Días de seguimiento</span>
 					<div class="stepper-dias-seguimiento">
 						<button id="stepper-seguimiento-menos" class="stepper-btn" onclick="cambiarDiasSeguimiento(-1)">−</button>

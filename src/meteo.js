@@ -9583,6 +9583,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // Si estaba cerrado, lo abrimos
             alternardivConfiguracion(); 
             window.activarMenuInferior(document.getElementById('nav-settings'));
+
+            // Sincronizamos el radio de Modo Simple/Avanzado con el valor guardado, por si ha cambiado desde la última vez que se construyó el DOM (p. ej. justo después de elegirlo en el onboarding).
+            const modoSimpleActivo = localStorage.getItem("METEO_MODO_SIMPLE") === "true";
+            const radSimple = document.getElementById('radModoSimple');
+            const radAvanzado = document.getElementById('radModoAvanzado');
+            if (radSimple) radSimple.checked = modoSimpleActivo;
+            if (radAvanzado) radAvanzado.checked = !modoSimpleActivo;
         }
     };
 
