@@ -70,6 +70,44 @@ let chkMostrarVientoEcmwf = (ecmwfMode === "permanente");
 let chkMostrarVientoEcmwfDesplegable = (ecmwfMode === "desplegable");
 window.sessionExpandedEcmwfTakeoffs = new Set();
 
+// Controlador dinámico de variables para el Modo Básico/Avanzado
+function aplicarReglasModoSimpleAVariables(esSimple) {
+    if (esSimple) {
+        // En modo básico: Forzamos a falso las variables para que la tabla no las dibuje
+        chkMostrarVientoAlturas = false;
+        chkMostrarCizalladura = false;
+        chkMostrarProbPrecipitacion = false;
+        chkMostrarXC = false;
+        chkMostrarVientoEcmwf = false;
+        chkMostrarVientoEcmwfDesplegable = false;
+    } else {
+        // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
+        chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
+        chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false";
+        chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION") !== "false";
+        chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false";
+        
+        const modoEcmwfGuardado = localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off";
+        chkMostrarVientoEcmwf = (modoEcmwfGuardado === "permanente");
+        chkMostrarVientoEcmwfDesplegable = (modoEcmwfGuardado === "desplegable");
+    }
+
+    // Sincronizar los checkboxes ocultos del menú Ajustes
+    if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = chkMostrarVientoAlturas;
+    if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
+    if (document.getElementById("chkMostrarProbPrecipitacion")) document.getElementById("chkMostrarProbPrecipitacion").checked = chkMostrarProbPrecipitacion;
+    if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
+
+    const modoEcmwfFijar = esSimple ? "off" : (localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off");
+    if (modoEcmwfFijar === "off" && document.getElementById("radEcmwfOff")) document.getElementById("radEcmwfOff").checked = true;
+    if (modoEcmwfFijar === "desplegable" && document.getElementById("radEcmwfDesplegable")) document.getElementById("radEcmwfDesplegable").checked = true;
+    if (modoEcmwfFijar === "permanente" && document.getElementById("radEcmwfPermanente")) document.getElementById("radEcmwfPermanente").checked = true;
+}
+
+// Ejecutamos la función una vez en el arranque de la app
+const modoSimpleInicial = localStorage.getItem("METEO_MODO_SIMPLE") === "true";
+aplicarReglasModoSimpleAVariables(modoSimpleInicial);
+
 // Si entra por url mapa con coordenadas y no hay configuración se marca este flag
 const paramsArranque = new URLSearchParams(window.location.search);
 if (paramsArranque.has('lat') && paramsArranque.has('lon')) {
@@ -6827,8 +6865,16 @@ window.cambiarModoApp = function(esSimple) {
     localStorage.setItem("METEO_MODO_ELEGIDO", "true");
     aplicarModoSimpleUI();
 
+    aplicarReglasModoSimpleAVariables(esSimple);
+
     if (esSimple) {
+        // Al resetear opciones avanzadas, la función ya incluye construir_tabla() dentro al terminar
         resetearOpcionesAvanzadas();
+    } else {
+        // Al volver al avanzado, no reseteamos nada pero forzamos repintar la tabla con las filas extra
+        if (typeof construir_tabla === 'function') {
+            construir_tabla();
+        }
     }
 };
 
