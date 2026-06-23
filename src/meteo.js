@@ -6812,6 +6812,10 @@ async function comprobarVersionApp() {
     }
 }
 
+// ---------------------------------------------------------------
+// 🟡 Modo Simple / Avanzado
+// ---------------------------------------------------------------
+
 function aplicarModoSimpleUI() {
     const simple = localStorage.getItem("METEO_MODO_SIMPLE") === "true";
     document.body.classList.toggle('modo-simple', simple);
@@ -6822,7 +6826,71 @@ window.cambiarModoApp = function(esSimple) {
     localStorage.setItem("METEO_MODO_SIMPLE", esSimple ? "true" : "false");
     localStorage.setItem("METEO_MODO_ELEGIDO", "true");
     aplicarModoSimpleUI();
+
+    if (esSimple) {
+        resetearOpcionesAvanzadas();
+    }
 };
+
+function resetearOpcionesAvanzadas() {
+
+    // 1. "Ver todos los días" (botón calendario flotante)
+    if (typeof modoVerTodosLosDias !== 'undefined' && modoVerTodosLosDias && typeof window.toggleVerTodosLosDias === 'function') {
+        window.toggleVerTodosLosDias();
+    }
+
+    // 2. Filtro de distancia (incluye el botón "incluir no favoritos")
+    if (typeof resetFiltroDistancia === 'function') {
+        resetFiltroDistancia(false); // false = no reconstruir aún, lo hacemos una sola vez al final
+    }
+
+    // 3. Filtro "solo seguimiento"
+    if (typeof soloSeguimiento !== 'undefined' && soloSeguimiento && typeof filtroVerSoloSeguimiento === 'function') {
+        filtroVerSoloSeguimiento(); // ya reconstruye la tabla por dentro; es el único caso que no diferimos
+    }
+
+    // 4. Filtros del mapa: "Mínimo de vuelos" y "Año del último vuelo" -> volver a índice 0
+    const STORAGE_KEY_VUELOS = 'METEO_MAPA_MINIMOVUELOS';
+    const STORAGE_KEY_ULTIMO_VUELO = 'METEO_MINIMO_ANO_ULTIMO_VUELO';
+    localStorage.setItem(STORAGE_KEY_VUELOS, '0');
+    localStorage.setItem(STORAGE_KEY_ULTIMO_VUELO, '0');
+
+    const sliderVuelosConfig = document.getElementById('sliderValorInicialFiltroNumeroMinimoVuelos');
+    const textoVuelosConfig = document.getElementById('valorConfigFiltroNumeroMinimoVuelosTexto');
+    const contConfigVuelos = document.querySelector('.configuracion-control-vuelos-container');
+    if (sliderVuelosConfig) sliderVuelosConfig.value = '0';
+    if (textoVuelosConfig) textoVuelosConfig.innerText = ESCALA_VUELOS[0] || 0;
+    if (contConfigVuelos) contConfigVuelos.classList.remove('borde-rojo-externo');
+
+    const sliderUltimoVueloConfig = document.getElementById('sliderValorInicialFiltroUltimoVuelo');
+    const textoUltimoVueloConfig = document.getElementById('valorConfigFiltroUltimoVueloTexto');
+    const contConfigUltimoVuelo = document.querySelector('.configuracion-control-ultimovuelo-container');
+    if (sliderUltimoVueloConfig) sliderUltimoVueloConfig.value = '0';
+    if (textoUltimoVueloConfig) textoUltimoVueloConfig.innerText = (typeof t === 'function' ? t('mapa.todos') : 'Todos');
+    if (contConfigUltimoVuelo) contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
+
+    // Sincronizamos también los sliders "en vivo" del panel de filtros del mapa, si existen
+    const sliderVuelosFiltro = document.getElementById('sliderVuelos');
+    const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
+    if (sliderVuelosFiltro) sliderVuelosFiltro.value = '0';
+    if (textoVuelosFiltro) textoVuelosFiltro.innerText = ESCALA_VUELOS[0] || 0;
+
+    const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
+    const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
+    if (sliderUltimoVueloFiltro) sliderUltimoVueloFiltro.value = '0';
+    if (textoUltimoVueloFiltro) textoUltimoVueloFiltro.innerText = (typeof t === 'function' ? t('mapa.todos') : 'Todos');
+
+    if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
+        if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
+        if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
+    }
+
+    // 5. Un único refresco final, ahora que todos los estados están ya limpios
+    if (typeof construir_tabla === 'function') {
+        construir_tabla();
+    }
+}
+window.resetearOpcionesAvanzadas = resetearOpcionesAvanzadas;
 
 // ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
