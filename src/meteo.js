@@ -284,12 +284,57 @@ function construirTablaMinutely15Html(minutely15) {
         { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion10', { defaultValue: 'Dirección 10 m' }), datos: minutely15.wind_direction_10m, tipo: 'dir' },
     ];
 
-    let theadHtml = '<tr><th class="col-etiqueta-minutely15"></th>';
+    // --- 1. FILA DE HORAS (Agrupadas con colspan) ---
+    let theadHtml = '<tr><th class="col-etiqueta-minutely15" rowspan="2"></th>';
+    
+    let currentHour = -1;
+    let colspanCount = 0;
+    let hourLabel = '';
+    let isFirstGroup = true;
+
     for (let i = idxInicio; i < idxFin; i++) {
         const fecha = new Date(tiempos[i].endsWith('Z') ? tiempos[i] : tiempos[i] + 'Z');
-        const esNuevaHora = fecha.getMinutes() === 0;
+        const h = fecha.getHours();
+        
+        if (currentHour === -1) {
+            currentHour = h;
+            hourLabel = `${h}h`;
+            colspanCount = 1;
+        } else if (currentHour === h) {
+            colspanCount++;
+        } else {
+            // Cerramos el grupo anterior y lo añadimos al HTML
+            // Evitamos poner el borde gris en el primer grupo para que no pise el borde negro de la columna izquierda
+            const borderClass = isFirstGroup ? '' : 'borde-hora-minutely15';
+            theadHtml += `<th colspan="${colspanCount}" class="${borderClass}">${hourLabel}</th>`;
+            isFirstGroup = false;
+            
+            // Empezamos a contar el nuevo grupo
+            currentHour = h;
+            hourLabel = `${h}h`;
+            colspanCount = 1;
+        }
+    }
+    // Añadimos el último grupo que se quedó acumulado al terminar el bucle
+    if (colspanCount > 0) {
+        const borderClass = isFirstGroup ? '' : 'borde-hora-minutely15';
+        theadHtml += `<th colspan="${colspanCount}" class="${borderClass}">${hourLabel}</th>`;
+    }
+    theadHtml += '</tr>';
+
+    // --- 2. FILA DE MINUTOS (Individuales) ---
+    theadHtml += '<tr>';
+    for (let i = idxInicio; i < idxFin; i++) {
+        const fecha = new Date(tiempos[i].endsWith('Z') ? tiempos[i] : tiempos[i] + 'Z');
+        const m = fecha.getMinutes();
+        const minLabel = `:${String(m).padStart(2, '0')}`; // Formato :00, :15, :30, :45
+        
+        // Ponemos borde izquierdo si es :00, SALVO que sea la primera columna absoluta (para no pisar la línea negra)
+        const esNuevaHora = (m === 0 && i !== idxInicio); 
         const esAhora = (i === idxInicio);
-        theadHtml += `<th class="${esNuevaHora ? 'borde-hora-minutely15' : ''} ${esAhora ? 'col-ahora-minutely15' : ''}">${formatHoraMinutoLocal(fecha)}</th>`;
+        
+        // Le bajamos un poco el tamaño de fuente y le quitamos la negrita a los minutos para que destaquen menos que la hora principal
+        theadHtml += `<th class="${esNuevaHora ? 'borde-hora-minutely15' : ''} ${esAhora ? 'col-ahora-minutely15' : ''}" style="font-size: 0.85em; font-weight: normal;">${minLabel}</th>`;
     }
     theadHtml += '</tr>';
 
