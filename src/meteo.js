@@ -255,9 +255,17 @@ function svgFlechaVientoMinutely15(gradosDireccion) {
     </svg>`;
 }
 
-function construirTablaMinutely15Html(minutely15) {
+function construirTablaMinutely15Html(minutely15, idDespegue) {
     const tiempos = minutely15.time || [];
     const ahora = new Date();
+
+    // Buscamos el despegue en la caché ya cargada de la tabla principal para sacar sus orientaciones favorables
+    const despegueObj = (DATOS_METEO_CACHE && Array.isArray(DATOS_METEO_CACHE.despegues))
+        ? DATOS_METEO_CACHE.despegues.find(d => Number(d.ID) === Number(idDespegue))
+        : null;
+    const orientaciones = (despegueObj && despegueObj.Orientaciones_Grados)
+        ? despegueObj.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()))
+        : [];
 
     let idxInicio = tiempos.findIndex(tStr => {
         const fecha = new Date(tStr.endsWith('Z') ? tStr : tStr + 'Z');
@@ -284,7 +292,7 @@ function construirTablaMinutely15Html(minutely15) {
         { etiqueta: '100 m', tituloPlano: t('minutely15.viento100', { defaultValue: 'Viento 100 m' }), datos: minutely15.wind_speed_100m, tipo: 'vel' },
         { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion100', { defaultValue: 'Dirección 100 m' }), datos: minutely15.wind_direction_100m, tipo: 'dir', bordeAbajo: true },
         { etiqueta: '50 m', tituloPlano: t('minutely15.viento50', { defaultValue: 'Viento 50 m' }), datos: minutely15.wind_speed_50m, tipo: 'vel' },
-        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion50', { defaultValue: 'Dirección 50 m' }), datos: minutely15.wind_direction_50m, tipo: 'dir' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion50', { defaultValue: 'Dirección 50 m' }), datos: minutely15.wind_direction_50m, tipo: 'dir', bordeAbajo: true },
         { etiqueta: '20 m', tituloPlano: t('minutely15.viento20', { defaultValue: 'Viento 20 m' }), datos: minutely15.wind_speed_20m, tipo: 'vel' },
         { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion20', { defaultValue: 'Dirección 20 m' }), datos: minutely15.wind_direction_20m, tipo: 'dir', bordeAbajo: true },
         { etiqueta: '10 m', tituloPlano: t('minutely15.viento10', { defaultValue: 'Viento 10 m' }), datos: minutely15.wind_speed_10m, tipo: 'vel' },
@@ -374,9 +382,21 @@ function construirTablaMinutely15Html(minutely15) {
                     contenidoCelda = '';
                 }
             } else if (fila.tipo === 'vel') {
-                contenidoCelda = Math.round(Number(valor));
+                const velocidad = Math.round(Number(valor));
+                const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
+                if (velocidad < VelocidadMin) clases += ' fondo-naranja';
+                else if (velocidad <= velocidadTolerableSuperior) clases += ' fondo-verde';
+                else if (velocidad < VelocidadMax) clases += ' fondo-naranja';
+                else clases += ' fondo-rojo';
+                contenidoCelda = velocidad;
             } else {
-                contenidoCelda = svgFlechaVientoMinutely15(Math.round(Number(valor)));
+                const dirRedondeada = Math.round(Number(valor));
+                let minimoAnguloDiferencia = 180;
+                if (orientaciones.length > 0) {
+                    minimoAnguloDiferencia = Math.min(...orientaciones.map(o => diferenciaAngular(dirRedondeada, o)));
+                }
+                clases += ' ' + colorPorDiferencia(minimoAnguloDiferencia);
+                contenidoCelda = svgFlechaVientoMinutely15(dirRedondeada);
             }
             tbodyHtml += `<td class="${clases}" title="${fila.tituloPlano}">${contenidoCelda}</td>`;
         }
@@ -409,7 +429,7 @@ window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
 
         const htmlTabla = (!respuesta || !respuesta.minutely_15)
             ? `<p style="text-align:center; color:#777;">${t('minutely15.sinDatos', { defaultValue: 'No hay datos disponibles para este despegue.' })}</p>`
-            : construirTablaMinutely15Html(respuesta.minutely_15);
+            : construirTablaMinutely15Html(respuesta.minutely_15, idDespegue);
 
         GestorMensajes.mostrar({
             tipo: 'modal',

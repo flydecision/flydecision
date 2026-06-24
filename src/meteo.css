@@ -4317,7 +4317,7 @@ tr.ecmwf-oculto-temp {
 }
 
 .tabla-minutely15 th, .tabla-minutely15 td {
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd; */
     white-space: nowrap !important;
     min-width: 20px;
     padding: 0;
@@ -4342,9 +4342,9 @@ tr.ecmwf-oculto-temp {
     border-left: 2px solid #999 !important;
 }
 
-.col-ahora-minutely15 {
-    background-color: #fff3cd !important;
-}
+/* .col-ahora-minutely15 {
+    background-color: #ffcdcd !important;
+} */
 
 .celda-precip-positiva {
     background-color: #d6eaff;
@@ -4352,12 +4352,6 @@ tr.ecmwf-oculto-temp {
 }
 .celda-precip {
     font-size: 12px !important;
-}
-
-/* 1. EVITAR TRANSPARENCIAS: Forzamos a que todas las celdas tengan fondo blanco opaco */
-.tabla-minutely15 th, 
-.tabla-minutely15 td {
-    background-color: #ffffff; /* Evita que el fondo borroso transparente traspase */
 }
 
 /* 2. RECUADRO DE LA COLUMNA DE ICONOS (STICKY) */
