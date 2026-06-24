@@ -247,8 +247,11 @@ function formatHoraMinutoLocal(d) {
 }
 
 function svgFlechaVientoMinutely15(gradosDireccion) {
-    return `<svg width="14" height="14" viewBox="0 0 30 36" style="vertical-align:middle; transform: rotate(${gradosDireccion + 180}deg);">
-        <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#333"></polygon>
+    return `<svg viewBox="0 0 30 36" class="flecha-viento" style="
+        transform: rotate(${gradosDireccion + 180}deg);
+        display: inline-block;
+    ">
+        <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
     </svg>`;
 }
 
@@ -270,15 +273,15 @@ function construirTablaMinutely15Html(minutely15) {
     }
 
     const filas = [
-        { etiqueta: t('minutely15.precipitacion', { defaultValue: 'Precipitación' }), datos: minutely15.precipitation, tipo: 'precip' },
-        { etiqueta: t('minutely15.viento100', { defaultValue: 'Viento 100 m' }), datos: minutely15.wind_speed_100m, tipo: 'vel' },
-        { etiqueta: t('minutely15.direccion100', { defaultValue: 'Dirección 100 m' }), datos: minutely15.wind_direction_100m, tipo: 'dir' },
-        { etiqueta: t('minutely15.viento50', { defaultValue: 'Viento 50 m' }), datos: minutely15.wind_speed_50m, tipo: 'vel' },
-        { etiqueta: t('minutely15.direccion50', { defaultValue: 'Dirección 50 m' }), datos: minutely15.wind_direction_50m, tipo: 'dir' },
-        { etiqueta: t('minutely15.viento20', { defaultValue: 'Viento 20 m' }), datos: minutely15.wind_speed_20m, tipo: 'vel' },
-        { etiqueta: t('minutely15.direccion20', { defaultValue: 'Dirección 20 m' }), datos: minutely15.wind_direction_20m, tipo: 'dir' },
-        { etiqueta: t('minutely15.viento10', { defaultValue: 'Viento 10 m' }), datos: minutely15.wind_speed_10m, tipo: 'vel' },
-        { etiqueta: t('minutely15.direccion10', { defaultValue: 'Dirección 10 m' }), datos: minutely15.wind_direction_10m, tipo: 'dir' },
+        { etiqueta: '💦', tituloPlano: t('minutely15.precipitacion', { defaultValue: 'Precipitación' }), datos: minutely15.precipitation, tipo: 'precip' },
+        { etiqueta: '100 m', tituloPlano: t('minutely15.viento100', { defaultValue: 'Viento 100 m' }), datos: minutely15.wind_speed_100m, tipo: 'vel' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion100', { defaultValue: 'Dirección 100 m' }), datos: minutely15.wind_direction_100m, tipo: 'dir' },
+        { etiqueta: '50 m', tituloPlano: t('minutely15.viento50', { defaultValue: 'Viento 50 m' }), datos: minutely15.wind_speed_50m, tipo: 'vel' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion50', { defaultValue: 'Dirección 50 m' }), datos: minutely15.wind_direction_50m, tipo: 'dir' },
+        { etiqueta: '20 m', tituloPlano: t('minutely15.viento20', { defaultValue: 'Viento 20 m' }), datos: minutely15.wind_speed_20m, tipo: 'vel' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion20', { defaultValue: 'Dirección 20 m' }), datos: minutely15.wind_direction_20m, tipo: 'dir' },
+        { etiqueta: '10 m', tituloPlano: t('minutely15.viento10', { defaultValue: 'Viento 10 m' }), datos: minutely15.wind_speed_10m, tipo: 'vel' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion10', { defaultValue: 'Dirección 10 m' }), datos: minutely15.wind_direction_10m, tipo: 'dir' },
     ];
 
     let theadHtml = '<tr><th class="col-etiqueta-minutely15"></th>';
@@ -305,14 +308,19 @@ function construirTablaMinutely15Html(minutely15) {
                 contenidoCelda = '—';
             } else if (fila.tipo === 'precip') {
                 const v = Number(valor);
-                if (v > 0) clases += ' celda-precip-positiva';
-                contenidoCelda = v.toFixed(1);
+                clases += ' celda-precip';
+                if (v > 0) {
+                    clases += ' celda-precip-positiva';
+                    contenidoCelda = v.toFixed(1);
+                } else {
+                    contenidoCelda = '';
+                }
             } else if (fila.tipo === 'vel') {
                 contenidoCelda = Math.round(Number(valor));
             } else {
                 contenidoCelda = svgFlechaVientoMinutely15(Math.round(Number(valor)));
             }
-            tbodyHtml += `<td class="${clases}" title="${fila.etiqueta}">${contenidoCelda}</td>`;
+            tbodyHtml += `<td class="${clases}" title="${fila.tituloPlano}">${contenidoCelda}</td>`;
         }
         tbodyHtml += '</tr>';
     });
@@ -348,11 +356,16 @@ window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
         GestorMensajes.mostrar({
             tipo: 'modal',
             htmlContenido: `
-                <p style="font-size: 1.2em; font-weight: bold; text-align:center; margin-bottom: 10px;">${nombreDespegue}</p>
+                <p style="font-size: 1.2em; font-weight: bold; text-align:center; margin-bottom: 10px;">🪂 ${nombreDespegue}</p>
                 ${htmlTabla}
             `,
             botones: ['ACEPTAR']
         });
+        // Ensanchamos el modal a mano (no usamos :has() por compatibilidad con WebViews antiguos)
+        if (GestorMensajes.elementoActual) {
+            const contenidoModal = GestorMensajes.elementoActual.querySelector('.mensaje-modal-contenido');
+            if (contenidoModal) contenidoModal.classList.add('modal-minutely15-ancho');
+        }
     } catch (err) {
         console.error('Error cargando datos minutely_15:', err);
         GestorMensajes.mostrar({
@@ -5463,7 +5476,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     // Si están los dos activos, los apartamos del centro para que no se pisen.
                     // Al medir unos 30px (clase btn-info), los desplazamos un poco a izquierda y derecha.
                     posEcmwf = "left: 50%; transform: translateX(-104%);"; 
-                    pos15min = "left: 50%; transform: translateX(22%);";   
+                    pos15min = "left: 50%; transform: translateX(9%);";   
                 }
 
                 // --- BOTÓN ECMWF ---
@@ -5500,13 +5513,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (show15min) {
                     botonMinutely15HTML = `
                         <button onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
-                            style="width: 32px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; color:#4a6785; box-shadow:1px 1px 3px rgba(0,0,0,0.1);"
+                            style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0;"
                             title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Ver tabla de viento y direcciones según predicción inmediata del modelo Arome-HD 15 min' })}">
                             
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <polyline points="12 6 12 12 16 14"></polyline>
                             </svg>
+                            <span style="color: #e00; font-size: 9px; font-weight: bold; line-height: 1; margin-top: -1px;">15 min</span>
                         </button>
                     `;
                 }

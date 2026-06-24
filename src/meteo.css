@@ -4296,7 +4296,7 @@ tr.ecmwf-oculto-temp {
 
 /* 🟡 MODAL DETALLE 15 MIN (AROME HD) -------------------------------- */
 
-.mensaje-modal-contenido:has(.tabla-minutely15) {
+.modal-minutely15-ancho {
     max-width: 95vw !important;
 }
 
@@ -4308,14 +4308,24 @@ tr.ecmwf-oculto-temp {
 
 .tabla-minutely15 {
     border-collapse: collapse;
-    font-size: 0.78em;
     white-space: nowrap;
 }
 
 .tabla-minutely15 th, .tabla-minutely15 td {
-    padding: 4px 6px;
-    text-align: center;
     border: 1px solid #ddd;
+    white-space: nowrap !important;
+    min-width: 20px;
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+    box-sizing: border-box;
+    width: 25px;
+    min-width: 25px;
+    max-width: 25px;
+    overflow: hidden;
+    white-space: nowrap;
+    overflow: hidden;
+    -webkit-text-size-adjust: none !important;
 }
 
 .tabla-minutely15 th {
@@ -4327,10 +4337,14 @@ tr.ecmwf-oculto-temp {
     position: sticky;
     left: 0;
     background: #fff;
-    text-align: left !important;
+    text-align: center !important; 
     font-weight: 600;
     z-index: 2;
     border-right: 2px solid #333 !important;
+    
+    width: 45px !important;
+    min-width: 45px !important;
+    max-width: 45px !important;
 }
 
 .borde-hora-minutely15 {
@@ -4344,4 +4358,7 @@ tr.ecmwf-oculto-temp {
 .celda-precip-positiva {
     background-color: #d6eaff;
     font-weight: bold;
+}
+.celda-precip {
+    font-size: 12px !important;
 }
