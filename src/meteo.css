@@ -4293,3 +4293,55 @@ tr.fila-separador-gris th {
 tr.ecmwf-oculto-temp {
     display: none !important;
 }
+
+/* 🟡 MODAL DETALLE 15 MIN (AROME HD) -------------------------------- */
+
+.mensaje-modal-contenido:has(.tabla-minutely15) {
+    max-width: 95vw !important;
+}
+
+.minutely15-wrap {
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tabla-minutely15 {
+    border-collapse: collapse;
+    font-size: 0.78em;
+    white-space: nowrap;
+}
+
+.tabla-minutely15 th, .tabla-minutely15 td {
+    padding: 4px 6px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.tabla-minutely15 th {
+    background: #f5f5f5;
+    font-weight: bold;
+}
+
+.col-etiqueta-minutely15 {
+    position: sticky;
+    left: 0;
+    background: #fff;
+    text-align: left !important;
+    font-weight: 600;
+    z-index: 2;
+    border-right: 2px solid #333 !important;
+}
+
+.borde-hora-minutely15 {
+    border-left: 2px solid #999 !important;
+}
+
+.col-ahora-minutely15 {
+    background-color: #fff3cd !important;
+}
+
+.celda-precip-positiva {
+    background-color: #d6eaff;
+    font-weight: bold;
+}

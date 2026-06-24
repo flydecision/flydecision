@@ -70,6 +70,14 @@ let chkMostrarVientoEcmwf = (ecmwfMode === "permanente");
 let chkMostrarVientoEcmwfDesplegable = (ecmwfMode === "desplegable");
 window.sessionExpandedEcmwfTakeoffs = new Set();
 
+let chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true"; // false por defecto (beta)
+
+function alternarBotonMinutely15() {
+    chkMostrarBotonMinutely15 = document.getElementById("chkMostrarBotonMinutely15").checked;
+    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15", chkMostrarBotonMinutely15);
+    if (typeof construir_tabla === 'function') construir_tabla();
+}
+
 // Controlador dinámico de variables para el Modo Básico/Avanzado
 function aplicarReglasModoSimpleAVariables(esSimple) {
     if (esSimple) {
@@ -80,6 +88,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarXC = false;
         chkMostrarVientoEcmwf = false;
         chkMostrarVientoEcmwfDesplegable = false;
+        chkMostrarBotonMinutely15 = false;
     } else {
         // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
@@ -90,6 +99,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         const modoEcmwfGuardado = localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off";
         chkMostrarVientoEcmwf = (modoEcmwfGuardado === "permanente");
         chkMostrarVientoEcmwfDesplegable = (modoEcmwfGuardado === "desplegable");
+        chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true";
     }
 
     // Sincronizar los checkboxes ocultos del menú Ajustes
@@ -97,6 +107,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
     if (document.getElementById("chkMostrarProbPrecipitacion")) document.getElementById("chkMostrarProbPrecipitacion").checked = chkMostrarProbPrecipitacion;
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
+    if (document.getElementById("chkMostrarBotonMinutely15")) document.getElementById("chkMostrarBotonMinutely15").checked = chkMostrarBotonMinutely15;
 
     const modoEcmwfFijar = esSimple ? "off" : (localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off");
     if (modoEcmwfFijar === "off" && document.getElementById("radEcmwfOff")) document.getElementById("radEcmwfOff").checked = true;
@@ -208,6 +219,149 @@ function actualizarVistaOjo(btn, esActivo) {
     if (!btn) return;
     btn.innerHTML = svgOjoBoton(esActivo);
 }
+
+// ---------------------------------------------------------------
+// 🔴 MINUTELY_15 (AROME HD) — Detalle de viento cada 15 min
+// ---------------------------------------------------------------
+let DATOS_METEO_MINUTELY15_CACHE = null;
+
+async function obtenerDatosMinutely15() {
+    if (DATOS_METEO_MINUTELY15_CACHE) return DATOS_METEO_MINUTELY15_CACHE;
+    const res = await fetch(`https://flydecision.com/meteo-datos-15min.json?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const datos = await res.json();
+    DATOS_METEO_MINUTELY15_CACHE = datos;
+    return datos;
+}
+
+function buscarRespuestaMinutely15(idDespegue, datos) {
+    if (!datos || !Array.isArray(datos.despegues)) return null;
+    const idx = datos.despegues.findIndex(d => Number(d.ID) === Number(idDespegue));
+    return (idx >= 0 && datos.respuestas && datos.respuestas[idx]) ? datos.respuestas[idx] : null;
+}
+
+function formatHoraMinutoLocal(d) {
+    const hora = String(d.getHours()).padStart(2, '0');
+    const minutos = String(d.getMinutes()).padStart(2, '0');
+    return `${hora}:${minutos}`;
+}
+
+function svgFlechaVientoMinutely15(gradosDireccion) {
+    return `<svg width="14" height="14" viewBox="0 0 30 36" style="vertical-align:middle; transform: rotate(${gradosDireccion + 180}deg);">
+        <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#333"></polygon>
+    </svg>`;
+}
+
+function construirTablaMinutely15Html(minutely15) {
+    const tiempos = minutely15.time || [];
+    const ahora = new Date();
+
+    let idxInicio = tiempos.findIndex(tStr => {
+        const fecha = new Date(tStr.endsWith('Z') ? tStr : tStr + 'Z');
+        return fecha >= ahora;
+    });
+    if (idxInicio === -1) idxInicio = 0;
+
+    const NUM_PASOS = 24; // 6 horas x 4 pasos de 15 min
+    const idxFin = Math.min(idxInicio + NUM_PASOS, tiempos.length);
+
+    if (idxInicio >= tiempos.length) {
+        return `<p style="text-align:center; color:#777;">${t('minutely15.sinDatos', { defaultValue: 'No hay datos disponibles para este despegue en este momento.' })}</p>`;
+    }
+
+    const filas = [
+        { etiqueta: t('minutely15.precipitacion', { defaultValue: 'Precipitación' }), datos: minutely15.precipitation, tipo: 'precip' },
+        { etiqueta: t('minutely15.viento100', { defaultValue: 'Viento 100 m' }), datos: minutely15.wind_speed_100m, tipo: 'vel' },
+        { etiqueta: t('minutely15.direccion100', { defaultValue: 'Dirección 100 m' }), datos: minutely15.wind_direction_100m, tipo: 'dir' },
+        { etiqueta: t('minutely15.viento50', { defaultValue: 'Viento 50 m' }), datos: minutely15.wind_speed_50m, tipo: 'vel' },
+        { etiqueta: t('minutely15.direccion50', { defaultValue: 'Dirección 50 m' }), datos: minutely15.wind_direction_50m, tipo: 'dir' },
+        { etiqueta: t('minutely15.viento20', { defaultValue: 'Viento 20 m' }), datos: minutely15.wind_speed_20m, tipo: 'vel' },
+        { etiqueta: t('minutely15.direccion20', { defaultValue: 'Dirección 20 m' }), datos: minutely15.wind_direction_20m, tipo: 'dir' },
+        { etiqueta: t('minutely15.viento10', { defaultValue: 'Viento 10 m' }), datos: minutely15.wind_speed_10m, tipo: 'vel' },
+        { etiqueta: t('minutely15.direccion10', { defaultValue: 'Dirección 10 m' }), datos: minutely15.wind_direction_10m, tipo: 'dir' },
+    ];
+
+    let theadHtml = '<tr><th class="col-etiqueta-minutely15"></th>';
+    for (let i = idxInicio; i < idxFin; i++) {
+        const fecha = new Date(tiempos[i].endsWith('Z') ? tiempos[i] : tiempos[i] + 'Z');
+        const esNuevaHora = fecha.getMinutes() === 0;
+        const esAhora = (i === idxInicio);
+        theadHtml += `<th class="${esNuevaHora ? 'borde-hora-minutely15' : ''} ${esAhora ? 'col-ahora-minutely15' : ''}">${formatHoraMinutoLocal(fecha)}</th>`;
+    }
+    theadHtml += '</tr>';
+
+    let tbodyHtml = '';
+    filas.forEach(fila => {
+        tbodyHtml += `<tr><td class="col-etiqueta-minutely15">${fila.etiqueta}</td>`;
+        for (let i = idxInicio; i < idxFin; i++) {
+            const valor = (fila.datos && fila.datos[i] !== undefined && fila.datos[i] !== null) ? fila.datos[i] : null;
+            const fecha = new Date(tiempos[i].endsWith('Z') ? tiempos[i] : tiempos[i] + 'Z');
+            const esNuevaHora = fecha.getMinutes() === 0;
+            const esAhora = (i === idxInicio);
+            let clases = `${esNuevaHora ? 'borde-hora-minutely15' : ''} ${esAhora ? 'col-ahora-minutely15' : ''}`;
+
+            let contenidoCelda;
+            if (valor === null) {
+                contenidoCelda = '—';
+            } else if (fila.tipo === 'precip') {
+                const v = Number(valor);
+                if (v > 0) clases += ' celda-precip-positiva';
+                contenidoCelda = v.toFixed(1);
+            } else if (fila.tipo === 'vel') {
+                contenidoCelda = Math.round(Number(valor));
+            } else {
+                contenidoCelda = svgFlechaVientoMinutely15(Math.round(Number(valor)));
+            }
+            tbodyHtml += `<td class="${clases}" title="${fila.etiqueta}">${contenidoCelda}</td>`;
+        }
+        tbodyHtml += '</tr>';
+    });
+
+    return `
+        <div class="minutely15-wrap">
+            <table class="tabla-minutely15">
+                <thead>${theadHtml}</thead>
+                <tbody>${tbodyHtml}</tbody>
+            </table>
+        </div>
+        <p style="font-size:0.75em; color:#888; text-align:center; margin-top:8px;">
+            ${t('minutely15.notaModelo', { defaultValue: 'Modelo AROME France HD · Resolución 15 min' })}
+        </p>
+    `;
+}
+
+window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
+    GestorMensajes.mostrar({
+        tipo: 'modal',
+        htmlContenido: `<p style="text-align:center;">${t('minutely15.cargando', { defaultValue: 'Cargando datos...' })}</p>`,
+        botones: ['ACEPTAR']
+    });
+
+    try {
+        const datos = await obtenerDatosMinutely15();
+        const respuesta = buscarRespuestaMinutely15(idDespegue, datos);
+
+        const htmlTabla = (!respuesta || !respuesta.minutely_15)
+            ? `<p style="text-align:center; color:#777;">${t('minutely15.sinDatos', { defaultValue: 'No hay datos disponibles para este despegue.' })}</p>`
+            : construirTablaMinutely15Html(respuesta.minutely_15);
+
+        GestorMensajes.mostrar({
+            tipo: 'modal',
+            htmlContenido: `
+                <p style="font-size: 1.2em; font-weight: bold; text-align:center; margin-bottom: 10px;">${nombreDespegue}</p>
+                ${htmlTabla}
+            `,
+            botones: ['ACEPTAR']
+        });
+    } catch (err) {
+        console.error('Error cargando datos minutely_15:', err);
+        GestorMensajes.mostrar({
+            tipo: 'modal',
+            htmlContenido: `<p style="text-align:center; color:#c00;">${t('minutely15.errorCarga', { defaultValue: 'Error al cargar los datos.' })}</p>`,
+            botones: ['ACEPTAR']
+        });
+    }
+};
 
 // ===============================================================
 // 🔴 VIBRACIÓN GLOBAL (HAPTICS) PARA TODOS LOS BOTONES DE LA APP
@@ -5316,13 +5470,25 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 `;
             }
 
-            // Inyectamos el botón en tu innerHTML
+            const botonMinutely15HTML = (modoEdicionFavoritos || !chkMostrarBotonMinutely15) ? "" : `
+                <button class="btn-info btn-minutely15"
+                    style="position: absolute; bottom: 2px; right: 13px;"
+                    onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
+                    title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Detalle viento 15 min (AROME HD)' })}">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </button>
+            `;
+
             tdDespegue.innerHTML = `
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
                 ${botonFavoritoHTML}
                 ${botonOjoHTML}
                 ${botonToggleEcmwfHTML}
+                ${botonMinutely15HTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
                 ${htmlIconosCentrales}
