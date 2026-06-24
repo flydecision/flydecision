@@ -305,7 +305,7 @@ function construirTablaMinutely15Html(minutely15) {
         
         if (currentHour === -1) {
             currentHour = h;
-            hourLabel = `${h}h`;
+            hourLabel = `${h}`;
             colspanCount = 1;
         } else if (currentHour === h) {
             colspanCount++;
@@ -318,7 +318,7 @@ function construirTablaMinutely15Html(minutely15) {
             
             // Empezamos a contar el nuevo grupo
             currentHour = h;
-            hourLabel = `${h}h`;
+            hourLabel = `${h}`;
             colspanCount = 1;
         }
     }
@@ -390,8 +390,8 @@ function construirTablaMinutely15Html(minutely15) {
                 <tbody>${tbodyHtml}</tbody>
             </table>
         </div>
-        <p style="font-size:0.75em; color:#888; text-align:center; margin-top:8px;">
-            ${t('minutely15.notaModelo', { defaultValue: 'Modelo AROME France HD · Resolución 15 min' })}
+        <p style="color:#888; text-align:center; margin-top:8px;">
+            ${t('minutely15.notaModelo', { defaultValue: 'Modelo Arome-HD PI 15 min (nowcasting)' })}
         </p>
     `;
 }
@@ -5502,7 +5502,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             let botonToggleEcmwfHTML = '';
             let botonMinutely15HTML = '';
             let paddingExtraBoton = 0;
-            let bottomValue = 0; // 👈 Declarado fuera para que ambos puedan usarlo
+            let bottomValue = 0; 
 
             // Averiguamos qué botones hay que mostrar
             const showEcmwf = chkMostrarVientoEcmwfDesplegable && !modoEdicionFavoritos;
@@ -5533,8 +5533,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (showEcmwf && show15min) {
                     // Si están los dos activos, los apartamos del centro para que no se pisen.
                     // Al medir unos 30px (clase btn-info), los desplazamos un poco a izquierda y derecha.
-                    posEcmwf = "left: 50%; transform: translateX(-104%);"; 
-                    pos15min = "left: 50%; transform: translateX(9%);";   
+                    pos15min = "left: 50%; transform: translateX(-104%);"; 
+                    posEcmwf = "left: 50%; transform: translateX(9%);";   
                 }
 
                 // --- BOTÓN ECMWF ---
@@ -5571,8 +5571,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (show15min) {
                     botonMinutely15HTML = `
                         <button onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
-                            style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0;"
-                            title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Ver tabla de viento y direcciones según predicción inmediata del modelo Arome-HD 15 min' })}">
+                            style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; padding-bottom: 1px;"
+                            title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Ver tabla de previsión de viento y direcciones según predicción inmediata del modelo Arome-HD 15 min' })}">
                             
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
                                 <circle cx="12" cy="12" r="10"></circle>
