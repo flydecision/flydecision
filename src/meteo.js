@@ -5463,7 +5463,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     // Si están los dos activos, los apartamos del centro para que no se pisen.
                     // Al medir unos 30px (clase btn-info), los desplazamos un poco a izquierda y derecha.
                     posEcmwf = "left: 50%; transform: translateX(-104%);"; 
-                    pos15min = "left: 50%; transform: translateX(5%);";   
+                    pos15min = "left: 50%; transform: translateX(22%);";   
                 }
 
                 // --- BOTÓN ECMWF ---
@@ -5474,12 +5474,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     botonToggleEcmwfHTML = `
                         <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
                             style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${posEcmwf} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; color:#4a6785; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: inline-flex; align-items: center;"
-                            title="${t('tabla.tooltips.botonToggleEcmwfHTML', { defaultValue: 'Viento sinóptico ECMWF' })}">
+                            title="${t('tabla.tooltips.botonToggleEcmwfHTML', { defaultValue: 'Viento sinóptico ECMWF a varias altitudes' })}">
 
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; opacity:0.8; margin-right: -2px;">
-                                <path d="M9.59 4.59A2 2 0 1 1 11 8H2"/>
-                                <path d="M12.59 19.41A2 2 0 1 0 14 16H2"/>
-                                <path d="M6 12h14a2 2 0 1 1 0 4"/>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0; margin-right: 1px;">
+                                <!-- Flecha Vertical (Movida a la izquierda: Centro X=5) -->
+                                <g stroke="#e00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="4" y1="4" x2="4" y2="20"/>
+                                    <polyline points="1 7 4 4 7 7"/>
+                                    <polyline points="1 17 4 20 7 17"/>
+                                </g>
+
+                                <!-- Icono Viento (Movido a la derecha: Empieza en X=11) -->
+                                <g stroke="#555" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M15.59 4.59A2 2 0 1 1 17 8H11"/>
+                                    <path d="M17.59 19.41A2 2 0 1 0 19 16H11"/>
+                                    <path d="M13 12h9a2 2 0 1 1 0 4"/>
+                                </g>
                             </svg>
                             <span style="font-size: 12px; font-weight: bold;">${chevron}</span>
                         </button>
@@ -5490,8 +5500,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (show15min) {
                     botonMinutely15HTML = `
                         <button onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
-                            style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; color:#4a6785; box-shadow:1px 1px 3px rgba(0,0,0,0.1);"
-                            title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Detalle viento 15 min (AROME HD)' })}">
+                            style="width: 32px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; color:#4a6785; box-shadow:1px 1px 3px rgba(0,0,0,0.1);"
+                            title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Ver tabla de viento y direcciones según predicción inmediata del modelo Arome-HD 15 min' })}">
                             
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
                                 <circle cx="12" cy="12" r="10"></circle>
