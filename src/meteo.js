@@ -263,7 +263,14 @@ function construirTablaMinutely15Html(minutely15) {
         const fecha = new Date(tStr.endsWith('Z') ? tStr : tStr + 'Z');
         return fecha >= ahora;
     });
-    if (idxInicio === -1) idxInicio = 0;
+    
+    if (idxInicio === -1) {
+        idxInicio = 0;
+    } else {
+        // Retrocedemos 1 columna (15 minutos antes). 
+        // Usamos Math.max para asegurarnos de que si es 0, no baje a números negativos.
+        idxInicio = Math.max(0, idxInicio - 1);
+    }
 
     const NUM_PASOS = 24; // 6 horas x 4 pasos de 15 min
     const idxFin = Math.min(idxInicio + NUM_PASOS, tiempos.length);
@@ -273,13 +280,13 @@ function construirTablaMinutely15Html(minutely15) {
     }
 
     const filas = [
-        { etiqueta: '💦', tituloPlano: t('minutely15.precipitacion', { defaultValue: 'Precipitación' }), datos: minutely15.precipitation, tipo: 'precip' },
+        { etiqueta: '💦', tituloPlano: t('minutely15.precipitacion', { defaultValue: 'Precipitación' }), datos: minutely15.precipitation, tipo: 'precip', bordeAbajo: true },
         { etiqueta: '100 m', tituloPlano: t('minutely15.viento100', { defaultValue: 'Viento 100 m' }), datos: minutely15.wind_speed_100m, tipo: 'vel' },
-        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion100', { defaultValue: 'Dirección 100 m' }), datos: minutely15.wind_direction_100m, tipo: 'dir' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion100', { defaultValue: 'Dirección 100 m' }), datos: minutely15.wind_direction_100m, tipo: 'dir', bordeAbajo: true },
         { etiqueta: '50 m', tituloPlano: t('minutely15.viento50', { defaultValue: 'Viento 50 m' }), datos: minutely15.wind_speed_50m, tipo: 'vel' },
         { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion50', { defaultValue: 'Dirección 50 m' }), datos: minutely15.wind_direction_50m, tipo: 'dir' },
         { etiqueta: '20 m', tituloPlano: t('minutely15.viento20', { defaultValue: 'Viento 20 m' }), datos: minutely15.wind_speed_20m, tipo: 'vel' },
-        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion20', { defaultValue: 'Dirección 20 m' }), datos: minutely15.wind_direction_20m, tipo: 'dir' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion20', { defaultValue: 'Dirección 20 m' }), datos: minutely15.wind_direction_20m, tipo: 'dir', bordeAbajo: true },
         { etiqueta: '10 m', tituloPlano: t('minutely15.viento10', { defaultValue: 'Viento 10 m' }), datos: minutely15.wind_speed_10m, tipo: 'vel' },
         { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion10', { defaultValue: 'Dirección 10 m' }), datos: minutely15.wind_direction_10m, tipo: 'dir' },
     ];
@@ -340,13 +347,19 @@ function construirTablaMinutely15Html(minutely15) {
 
     let tbodyHtml = '';
     filas.forEach(fila => {
-        tbodyHtml += `<tr><td class="col-etiqueta-minutely15">${fila.etiqueta}</td>`;
+        // Detectamos si esta fila necesita borde inferior negro
+        const claseBorde = fila.bordeAbajo ? ' separador-horizontal-minutely15' : '';
+        
+        tbodyHtml += `<tr><td class="col-etiqueta-minutely15${claseBorde}">${fila.etiqueta}</td>`;
+        
         for (let i = idxInicio; i < idxFin; i++) {
             const valor = (fila.datos && fila.datos[i] !== undefined && fila.datos[i] !== null) ? fila.datos[i] : null;
             const fecha = new Date(tiempos[i].endsWith('Z') ? tiempos[i] : tiempos[i] + 'Z');
             const esNuevaHora = fecha.getMinutes() === 0;
             const esAhora = (i === idxInicio);
-            let clases = `${esNuevaHora ? 'borde-hora-minutely15' : ''} ${esAhora ? 'col-ahora-minutely15' : ''}`;
+            
+            // Añadimos la clase de borde a las celdas de datos también
+            let clases = `${esNuevaHora ? 'borde-hora-minutely15' : ''} ${esAhora ? 'col-ahora-minutely15' : ''}${claseBorde}`;
 
             let contenidoCelda;
             if (valor === null) {
@@ -3035,7 +3048,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 
     // Día inicial
     const ahora = new Date();
-    const diaAutoInicial = (!autoSeleccionInicialHecha && ahora.getHours() >= 16) ? 1 : 0;
+    const diaAutoInicial = 0; // Siempre arranca en hoy (día 0). Antes: (!autoSeleccionInicialHecha && ahora.getHours() >= 16) ? 1 : 0;
     const diaObjetivoInicial = (window.diaSeleccionadoSlider !== null) 
         ? Math.min(window.diaSeleccionadoSlider, sliderHoras.dayRanges.length - 1)
         : diaAutoInicial;
@@ -3099,9 +3112,9 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         let startIndices = [0, maxSteps]; // Por defecto todo
 
         if (!autoSeleccionInicialHecha) {
-            const ahora = new Date();
-            const horaActual = ahora.getHours();
-            let diaObjetivo = (horaActual >= 16) ? 1 : 0;
+            //const ahora = new Date();
+            //const horaActual = ahora.getHours();
+            let diaObjetivo = 0; // Siempre hoy (día 0). Antes: (horaActual >= 16) ? 1 : 0;
 
             if (pipIndices && pipIndices.length > diaObjetivo) {
                 const idxInicioDia = pipIndices[diaObjetivo];
@@ -3147,9 +3160,9 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         
         // --- Iluminar el botón inicial en el arranque ---
         if (autoSeleccionInicialHecha) {
-            const ahora = new Date();
-            const horaActual = ahora.getHours();
-            let diaObjetivo = (horaActual >= 16) ? 1 : 0;
+            //const ahora = new Date();
+            //const horaActual = ahora.getHours();
+            let diaObjetivo = 0; // Siempre hoy (día 0). Antes: (horaActual >= 16) ? 1 : 0;
             
             if (pipIndices && pipIndices.length > diaObjetivo) {
                 const valorBuscado = pipIndices[diaObjetivo];
