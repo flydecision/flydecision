@@ -5427,18 +5427,20 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 </span>
             ` : '';
 
-            // --- CONFIGURACIÓN DEL BOTÓN DE EXPANSIÓN ---
+            // --- CONFIGURACIÓN DE LOS BOTONES DE EXPANSIÓN ---
             let botonToggleEcmwfHTML = '';
+            let botonMinutely15HTML = '';
             let paddingExtraBoton = 0;
+            let bottomValue = 0; // 👈 Declarado fuera para que ambos puedan usarlo
 
-            // --- Solo creamos el botón si la opción permanente está apagada Y NO estamos en modo edición ---
-            if (chkMostrarVientoEcmwfDesplegable && !modoEdicionFavoritos) {
-                const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
-                const chevron = estaAmpliando ? '▲' : '▼';
+            // Averiguamos qué botones hay que mostrar
+            const showEcmwf = chkMostrarVientoEcmwfDesplegable && !modoEdicionFavoritos;
+            const show15min = !modoEdicionFavoritos && chkMostrarBotonMinutely15;
 
-                // --- AJUSTE DINÁMICO PARA FILAS ULTRA-CORTAS ---
-                let bottomValue = 0;
-                const bottomNum = parseInt(btnRowBottom) || 2; // Declaramos bottomNum una sola vez aquí arriba
+            // Si hay que mostrar al menos uno de los dos, calculamos la altura
+            if (showEcmwf || show15min) {
+                
+                const bottomNum = parseInt(btnRowBottom) || 2; 
 
                 if (initialRowSpan < 10) {
                     paddingExtraBoton = 0; 
@@ -5448,39 +5450,57 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     bottomValue = bottomNum + 32; 
                 }
 
-                // --- Si hay más de 12 filas, subimos el botón 10px más de forma dinámica ---
                 if (initialRowSpan > 12) {
                     bottomValue += 10;
                 }
 
-                botonToggleEcmwfHTML = `
-                    <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
-                        style="position:absolute; bottom: ${bottomValue}px; left:50%; transform:translateX(-50%); cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; font-size:12px; color:#4a6785; display:inline-flex; align-items:center; gap:3px; line-height:1.6; white-space:nowrap; box-shadow:1px 1px 3px rgba(0,0,0,0.1);">
+                // --- POSICIÓN ABSOLUTA INTELIGENTE ---
+                // Por defecto, se centran exactamente en el medio
+                let posEcmwf = "left: 50%; transform: translateX(-50%);";
+                let pos15min = "left: 50%; transform: translateX(-50%);";
 
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
-                            style="flex-shrink:0; opacity:0.8">
-                            <path d="M9.59 4.59A2 2 0 1 1 11 8H2"/>
-                            <path d="M12.59 19.41A2 2 0 1 0 14 16H2"/>
-                            <path d="M6 12h14a2 2 0 1 1 0 4"/>
-                        </svg>
-                        ECMWF
-                        <span style="font-size: 9px; opacity: 0.7">${chevron}</span>
-                    </button>
-                `;
+                if (showEcmwf && show15min) {
+                    // Si están los dos activos, los apartamos del centro para que no se pisen.
+                    // Al medir unos 30px (clase btn-info), los desplazamos un poco a izquierda y derecha.
+                    posEcmwf = "left: 50%; transform: translateX(-104%);"; 
+                    pos15min = "left: 50%; transform: translateX(5%);";   
+                }
+
+                // --- BOTÓN ECMWF ---
+                if (showEcmwf) {
+                    const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
+                    const chevron = estaAmpliando ? '▲' : '▼';
+
+                    botonToggleEcmwfHTML = `
+                        <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
+                            style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${posEcmwf} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; color:#4a6785; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: inline-flex; align-items: center;"
+                            title="${t('tabla.tooltips.botonToggleEcmwfHTML', { defaultValue: 'Viento sinóptico ECMWF' })}">
+
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; opacity:0.8; margin-right: -2px;">
+                                <path d="M9.59 4.59A2 2 0 1 1 11 8H2"/>
+                                <path d="M12.59 19.41A2 2 0 1 0 14 16H2"/>
+                                <path d="M6 12h14a2 2 0 1 1 0 4"/>
+                            </svg>
+                            <span style="font-size: 12px; font-weight: bold;">${chevron}</span>
+                        </button>
+                    `;
+                }
+
+                // --- BOTÓN 15 MIN ---
+                if (show15min) {
+                    botonMinutely15HTML = `
+                        <button onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
+                            style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; color:#4a6785; box-shadow:1px 1px 3px rgba(0,0,0,0.1);"
+                            title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Detalle viento 15 min (AROME HD)' })}">
+                            
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </button>
+                    `;
+                }
             }
-
-            const botonMinutely15HTML = (modoEdicionFavoritos || !chkMostrarBotonMinutely15) ? "" : `
-                <button class="btn-info btn-minutely15"
-                    style="position: absolute; bottom: 2px; right: 13px;"
-                    onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
-                    title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Detalle viento 15 min (AROME HD)' })}">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                </button>
-            `;
 
             tdDespegue.innerHTML = `
                 ${botonInfoHTML}
