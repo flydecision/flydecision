@@ -139,6 +139,7 @@ const HorariosMediosActualizacion = ["01:32", "03:02", "06:02", "11:22", "13:32"
 //claude
 //const HorariosMediosActualizacionEcmwf = ["01:40", "08:00", "13:00", "18:55"]; // en UTC-0
 const HorariosMediosActualizacionEcmwf = ["00:30", "07:10", "12:30", "19:10"]; // en UTC-0
+const HorariosMediosActualizacionMin15 = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0') + ":47"); // en UTC-0, cada hora a los :47
 
 // Nota: aplico 1 min de más. Buscar: const OFFSET_MS = 1 * 60 * 1000;
 
@@ -8232,10 +8233,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
     let lastStatusTimestamp = 0;
     let currentStatusText = t('actualizacion.cargando');
     let currentStatusTextEcmwf = t('actualizacion.cargando'); 
+    let currentStatusTextMin15 = t('actualizacion.cargando'); 
     let lastDataGenerationTimestamp = 0;
     let lastDataGenerationTimestampEcmwf = 0; 
+    let lastDataGenerationTimestampMin15 = 0; 
     let jsonModelInitTimestamp = 0; 
     let jsonModelInitTimestampEcmwf = 0; 
+    let jsonModelInitTimestampMin15 = 0; 
 
     // ===============================================================
     // 2. GESTOR CENTRAL DE CONEXIÓN (El Cerebro)
@@ -8340,6 +8344,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 // --- 1. TEXTOS DE PASADO ---
                 const timeAgoMF = typeof formatTimeAgo === 'function' ? formatTimeAgo(lastDataGenerationTimestamp, ahoraMs) : '';
                 const timeAgoEC = (typeof formatTimeAgo === 'function' && lastDataGenerationTimestampEcmwf > 0) ? formatTimeAgo(lastDataGenerationTimestampEcmwf, ahoraMs) : '...';
+                const timeAgoMin15 = (typeof formatTimeAgo === 'function' && lastDataGenerationTimestampMin15 > 0) ? formatTimeAgo(lastDataGenerationTimestampMin15, ahoraMs) : '...';
                 
                 let refMF = '';
                 if (jsonModelInitTimestamp > 0 && typeof formatHourUTC === 'function') {
@@ -8353,6 +8358,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     const dateEC = new Date(jsonModelInitTimestampEcmwf);
                     const dayEC = String(dateEC.getUTCDate()).padStart(2, '0');
                     refEC = `${dayEC}t${formatHourUTC(dateEC)}`;
+                }
+
+                let refMin15 = '';
+                if (jsonModelInitTimestampMin15 > 0 && typeof formatHourUTC === 'function') {
+                    const dateMin15 = new Date(jsonModelInitTimestampMin15);
+                    const dayMin15 = String(dateMin15.getUTCDate()).padStart(2, '0');
+                    refMin15 = `${dayMin15}t${formatHourUTC(dateMin15)}`;
                 }
 
                 // --- 2. TEXTOS DE FUTURO O ACTUALIZANDO ---
@@ -8472,12 +8484,68 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     }
                 }
 
+                // Futuro Modelo 15 min (AROME HD)
+                let textoFuturoMin15 = "";
+                if (currentStatusTextMin15 && !currentStatusTextMin15.toUpperCase().includes("OPERATIVO")) {
+                    textoFuturoMin15 = `<span style="color:#e39300; font-weight:bold;">🔄 ${formatearTextoStatus(currentStatusTextMin15)}</span>`;
+                } else {
+                    let proximaFechaMin15 = null;
+                    let esInminenteMin15 = false;
+
+                    for (let h of HorariosMediosActualizacionMin15) {
+                        const [hora, min] = h.split(':').map(Number);
+                        const intento = new Date(ahora);
+                        intento.setUTCHours(hora, min, 0, 0);
+                        
+                        let distancia = lastDataGenerationTimestampMin15 > 0 ? intento.getTime() - lastDataGenerationTimestampMin15 : Infinity;
+                        
+                        if (ahoraMs > intento.getTime() && distancia > MARGEN_TOLERANCIA_MS && (ahoraMs - intento.getTime()) < LIMITE_ATRASO_MS) {
+                            esInminenteMin15 = true;
+                            break;
+                        }
+                        
+                        if (intento.getTime() > ahoraMs && distancia > MARGEN_TOLERANCIA_MS) { 
+                            proximaFechaMin15 = intento; 
+                            break; 
+                        }
+                    }
+                    
+                    if (esInminenteMin15) {
+                        textoFuturoMin15 = t('actualizacion.esperando');
+                    } else {
+                        if (!proximaFechaMin15) {
+                            const [hora, min] = HorariosMediosActualizacionMin15[0].split(':').map(Number);
+                            proximaFechaMin15 = new Date(ahora);
+                            proximaFechaMin15.setUTCDate(proximaFechaMin15.getUTCDate() + 1); 
+                            proximaFechaMin15.setUTCHours(hora, min, 0, 0);
+                        }
+                        const diffMsMin15 = (proximaFechaMin15.getTime() - ahoraMs) + OFFSET_MS;
+                        
+                        if (diffMsMin15 <= 0) {
+                            textoFuturoMin15 = t('actualizacion.esperando');
+                        } else {
+                            const diffMinsMin15 = Math.floor(diffMsMin15 / 60000) % 60;
+                            const diffHorasMin15 = Math.floor(Math.floor(diffMsMin15 / 60000) / 60);
+                            
+                            let textoMin15 = diffHorasMin15 > 0 
+                                ? t('actualizacion.horas', { h: diffHorasMin15, m: diffMinsMin15 }) 
+                                : t('actualizacion.minutos', { m: diffMinsMin15 });
+
+                            textoFuturoMin15 = t('actualizacion.proximaEn', { tiempo: textoMin15 });
+                        }
+                    }
+                }
+
                 // --- 3. DIBUJAR LISTA UNIFICADA ---
                 dataGenElement.innerHTML = `
                     <ul style="margin: 5px 0 0 0; padding-left: 27px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
                         <li style="margin-bottom: 8px;">
                             <b>Météo-France:</b> ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
                             <span>${textoFuturoMF}</span>
+                        </li>
+                        <li style="margin-bottom: 8px;">
+                            <b>Arome-HD 15 min:</b> ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
+                            <span>${textoFuturoMin15}</span>
                         </li>
                         <li>
                             <b>ECMWF:</b> ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
@@ -8505,10 +8573,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
         if (!navigator.onLine) return; 
 
         try {
-            // Hacemos las dos peticiones a la vez (si una falla, no bloquea a la otra)
-            const [resMF, resECMWF] = await Promise.all([
+            // Hacemos las tres peticiones a la vez (si una falla, no bloquea a las otras)
+            const [resMF, resECMWF, resMin15] = await Promise.all([
                 fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
-                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time_ecmwf.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null)
+                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time_ecmwf.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
+                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time_15min.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null)
             ]);
             
             // Procesar Météo-France
@@ -8534,6 +8603,17 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 }
             }
 
+            // Procesar Modelo 15 min (AROME HD)
+            if (resMin15 && resMin15.ok) {
+                const textContentM = (await resMin15.text()).trim();
+                if (textContentM) {
+                    const partsM = textContentM.split('|');
+                    if (partsM[0]) lastDataGenerationTimestampMin15 = new Date(partsM[0]).getTime();
+                    if (partsM[1]) jsonModelInitTimestampMin15 = new Date(partsM[1]).getTime();
+                    else jsonModelInitTimestampMin15 = lastDataGenerationTimestampMin15;
+                }
+            }
+
         } catch (e) {
             console.warn("Error general timestamps:", e.message);
         }
@@ -8545,15 +8625,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
         let nuevoIntervalo = 60000;
         let redMF = false;
         let redECMWF = false;
+        let redMin15 = false;
 
         try {
-            const [resMF, resECMWF] = await Promise.all([
+            const [resMF, resECMWF, resMin15] = await Promise.all([
                 fetch('https://flydecision.com/meteo-status.txt?t=' + Date.now()).catch(() => null),
-                fetch('https://flydecision.com/meteo-status-ecmwf.txt?t=' + Date.now()).catch(() => null)
+                fetch('https://flydecision.com/meteo-status-ecmwf.txt?t=' + Date.now()).catch(() => null),
+                fetch('https://flydecision.com/meteo-status-15min.txt?t=' + Date.now()).catch(() => null)
             ]);
 
             let currentlyUpdatingMF = false;
             let currentlyUpdatingEC = false;
+            let currentlyUpdatingMin15 = false;
 
             // --- ESTADO MÉTÉO-FRANCE ---
             if (resMF && resMF.ok) {
@@ -8598,14 +8681,40 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 }
             }
 
+            // --- ESTADO MODELO 15 MIN (AROME HD) ---
+            if (resMin15 && resMin15.ok) {
+                redMin15 = true;
+                const rawTextM = (await resMin15.text()).trim();
+
+                // Solo traducimos si es exactamente la frase de "en curso"
+                currentStatusTextMin15 = (rawTextM === "Actualización en curso... ⏳") 
+                    ? t('cron.Actualización en curso... ⏳') 
+                    : rawTextM;
+
+                const upperTextM = rawTextM.toUpperCase();
+                if (upperTextM.includes("OPERATIVO")) {
+                    currentlyUpdatingMin15 = false;
+                } else if (!upperTextM.includes("ERROR") && !upperTextM.includes("FATAL") && !upperTextM.includes("FAILED")) {
+                    currentlyUpdatingMin15 = true;
+                    nuevoIntervalo = 5000;
+                }
+            } else {
+                // Texto de fallback en caso de error de red
+                if (currentStatusTextMin15 === 'Cargando...') {
+                    currentStatusTextMin15 = t('actualizacion.esperandoPrimerDato');
+                }
+            }
+
             // --- LÓGICA DE AVISO (MODAL) ---
             const mfTermino = (window.oldUpdatingMF && !currentlyUpdatingMF);
             const ecTermino = (window.oldUpdatingEC && !currentlyUpdatingEC);
+            const minTermino = (window.oldUpdatingMin15 && !currentlyUpdatingMin15);
 
             let modelosRecientes = [];
             // Traducimos también los nombres de los modelos para el aviso modal
             if (mfTermino) modelosRecientes.push(t('actualizacion.avisoModelos.viento'));
             if (ecTermino) modelosRecientes.push(t('actualizacion.avisoModelos.general'));
+            if (minTermino) modelosRecientes.push(t('actualizacion.avisoModelos.min15', { defaultValue: 'Arome-HD 15 min' }));
 
             if (modelosRecientes.length > 0) {
                 if (guiaActiva) {
@@ -8647,9 +8756,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
             window.oldUpdatingMF = currentlyUpdatingMF;
             window.oldUpdatingEC = currentlyUpdatingEC;
-            statusActualizaciónEnCurso = (currentlyUpdatingMF || currentlyUpdatingEC);
+            window.oldUpdatingMin15 = currentlyUpdatingMin15;
+            statusActualizaciónEnCurso = (currentlyUpdatingMF || currentlyUpdatingEC || currentlyUpdatingMin15);
 
-            if (!redMF && !redECMWF) {
+            if (!redMF && !redECMWF && !redMin15) {
                 gestionarCambioConexion('offline');
             } else {
                 gestionarCambioConexion('online');

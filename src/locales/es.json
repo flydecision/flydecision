@@ -436,6 +436,7 @@
     "esperandoPrimerDato": "Esperando primer dato...",
     "avisoModelos": {
       "viento": "Viento (Météo-France: Arome-HD y Arpege)",
+      "min15": "Arome-HD 15 min",
       "general": "Meteo general y condiciones térmicas XC (ECMWF)"
     },
     "avisoNuevoMeteo": "<p>ℹ️ Hay nuevos datos meteorológicos de:</p><p><b>{{modelos}}</b></p><p>¿Actualizar ahora?</p>"
