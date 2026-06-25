@@ -1156,7 +1156,7 @@ details.config-accordion .accordion-content {
     width: auto;
     box-sizing: border-box;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: calc(env(safe-area-inset-bottom) + 83px) !important;
+    padding-bottom: calc(var(--safe-area-inset-bottom, 0px) + 83px) !important;
     
     /* Evitamos "both-edges" para corregir definitivamente el bug del rebote */
     scrollbar-gutter: stable; 
@@ -2850,7 +2850,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 /* 1. Estilo General (La "pastilla" flotante) */
 .bottom-nav.compact-nav {
     position: fixed;
-    bottom: calc(10px + env(safe-area-inset-bottom, 0px)); /* Más separada del fondo */
+    bottom: calc(10px + var(--safe-area-inset-bottom, 0px)); /* Más separada del fondo */
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 20px); /* Un poco más ancha */
@@ -3288,7 +3288,7 @@ details.config-accordion .accordion-content {
    y de la barra de navegación Android */
 .leaflet-bottom {
     /* bottom: calc(env(safe-area-inset-bottom, 0px) + 63px); */
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 0px);
+    bottom: calc(var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) + 0px) !important;
 }
 
 @media (min-width: 587px) {
