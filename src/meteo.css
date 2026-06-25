@@ -69,7 +69,7 @@ button {
 body.modo-android-manual {
     /* 1. PARTE SUPERIOR: Usamos la variable inyectada por Capacitor */
     /* El valor 25px se queda como "seguro" por si el plugin tarda un milisegundo en cargar */
-    padding-top: calc(var(--safe-area-inset-top, 25px) + 8px) !important;
+    padding-top: calc(var(--safe-area-inset-top, 25px)) !important;
 
     /* 2. PARTE INFERIOR: ¡Vital para que los botones de Android no tapen tu menú! */
     /* Esto es lo que soluciona que la barra de abajo se vea integrada */
@@ -4143,7 +4143,7 @@ h3 {
 }
 
 body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
-    top: calc(var(--safe-area-inset-top, 25px) + 8px + 3px);
+    top: calc(var(--safe-area-inset-top, 25px) + 3px);
 }
 
 /* Botón cerrar del panel filtros flotante en mapa */
