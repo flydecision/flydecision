@@ -413,7 +413,7 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
             </table>
         </div>
         <p style="color:#888; text-align:center; margin-top:8px;">
-            ${t('minutely15.notaModelo', { defaultValue: 'Modelo Arome-HD PI 15 min (nowcasting)' })}
+            ${t('minutely15.notaModelo', { defaultValue: 'Modelo Arome-HD 15 min (nowcasting)' })}
         </p>
     `;
 }
