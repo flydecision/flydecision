@@ -70,7 +70,8 @@ let chkMostrarVientoEcmwf = (ecmwfMode === "permanente");
 let chkMostrarVientoEcmwfDesplegable = (ecmwfMode === "desplegable");
 window.sessionExpandedEcmwfTakeoffs = new Set();
 
-let chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true"; // false por defecto (beta)
+let chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true"; // false por defecto
+window.modalMinutely15Abierto = false; // true mientras el usuario tiene abierto el modal de detalle 15 min
 
 function alternarBotonMinutely15() {
     chkMostrarBotonMinutely15 = document.getElementById("chkMostrarBotonMinutely15").checked;
@@ -418,10 +419,14 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
 }
 
 window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
+    window.modalMinutely15Abierto = true;
+
+    const botonAceptarMin15 = { texto: t('botones.aceptar'), onclick: () => { window.modalMinutely15Abierto = false; GestorMensajes.ocultar(); } };
+
     GestorMensajes.mostrar({
         tipo: 'modal',
         htmlContenido: `<p style="text-align:center;">${t('minutely15.cargando', { defaultValue: 'Cargando datos...' })}</p>`,
-        botones: ['ACEPTAR']
+        botones: [botonAceptarMin15]
     });
 
     try {
@@ -438,7 +443,7 @@ window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
                 <p style="font-size: 1.2em; font-weight: bold; text-align:center; margin-bottom: 10px;">🪂 ${nombreDespegue}</p>
                 ${htmlTabla}
             `,
-            botones: ['ACEPTAR']
+            botones: [botonAceptarMin15]
         });
         // Ensanchamos el modal a mano (no usamos :has() por compatibilidad con WebViews antiguos)
         if (GestorMensajes.elementoActual) {
@@ -450,7 +455,7 @@ window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
         GestorMensajes.mostrar({
             tipo: 'modal',
             htmlContenido: `<p style="text-align:center; color:#c00;">${t('minutely15.errorCarga', { defaultValue: 'Error al cargar los datos.' })}</p>`,
-            botones: ['ACEPTAR']
+            botones: [botonAceptarMin15]
         });
     }
 };
@@ -5593,7 +5598,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     botonMinutely15HTML = `
                         <button onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
                             style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; padding-bottom: 1px;"
-                            title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Ver tabla de previsión de viento y direcciones según predicción inmediata del modelo Arome-HD 15 min' })}">
+                            title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Ver tabla de previsión de viento y direcciones según predicción inmediata del modelo Arome-HD 15min' })}">
                             
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
                                 <circle cx="12" cy="12" r="10"></circle>
@@ -8540,11 +8545,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 dataGenElement.innerHTML = `
                     <ul style="margin: 5px 0 0 0; padding-left: 27px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
                         <li style="margin-bottom: 8px;">
-                            <b>Météo-France:</b> ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
+                            <b>Arome-HD:</b> ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
                             <span>${textoFuturoMF}</span>
                         </li>
                         <li style="margin-bottom: 8px;">
-                            <b>Arome-HD 15 min:</b> ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
+                            <b>Arome-HD 15min:</b> ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
                             <span>${textoFuturoMin15}</span>
                         </li>
                         <li>
@@ -8714,7 +8719,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // Traducimos también los nombres de los modelos para el aviso modal
             if (mfTermino) modelosRecientes.push(t('actualizacion.avisoModelos.viento'));
             if (ecTermino) modelosRecientes.push(t('actualizacion.avisoModelos.general'));
-            if (minTermino) modelosRecientes.push(t('actualizacion.avisoModelos.min15', { defaultValue: 'Arome-HD 15 min' }));
 
             if (modelosRecientes.length > 0) {
                 if (guiaActiva) {
@@ -8723,6 +8727,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 } else {
                     mostrarAvisoActualizacionMeteo(modelosRecientes);
                 }
+            }
+
+            // El aviso de Min15 es silencioso salvo que el usuario tenga abierto justo el modal de detalle 15 min: al actualizarse cada hora, avisar siempre sería muy molesto.
+            if (minTermino && window.modalMinutely15Abierto) {
+                mostrarAvisoActualizacionMeteo([t('actualizacion.avisoModelos.min15', { defaultValue: 'Arome-HD 15min' })]);
             }
 
             // LÓGICA DE AVISO DE RETRASO INUSUAL
