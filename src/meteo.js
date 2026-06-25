@@ -70,6 +70,15 @@ let chkMostrarVientoEcmwf = (ecmwfMode === "permanente");
 let chkMostrarVientoEcmwfDesplegable = (ecmwfMode === "desplegable");
 window.sessionExpandedEcmwfTakeoffs = new Set();
 
+let chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true"; // false por defecto
+window.modalMinutely15Abierto = false; // true mientras el usuario tiene abierto el modal de detalle 15 min
+
+function alternarBotonMinutely15() {
+    chkMostrarBotonMinutely15 = document.getElementById("chkMostrarBotonMinutely15").checked;
+    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15", chkMostrarBotonMinutely15);
+    if (typeof construir_tabla === 'function') construir_tabla();
+}
+
 // Controlador dinámico de variables para el Modo Básico/Avanzado
 function aplicarReglasModoSimpleAVariables(esSimple) {
     if (esSimple) {
@@ -80,6 +89,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarXC = false;
         chkMostrarVientoEcmwf = false;
         chkMostrarVientoEcmwfDesplegable = false;
+        chkMostrarBotonMinutely15 = false;
     } else {
         // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
@@ -90,6 +100,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         const modoEcmwfGuardado = localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off";
         chkMostrarVientoEcmwf = (modoEcmwfGuardado === "permanente");
         chkMostrarVientoEcmwfDesplegable = (modoEcmwfGuardado === "desplegable");
+        chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true";
     }
 
     // Sincronizar los checkboxes ocultos del menú Ajustes
@@ -97,6 +108,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
     if (document.getElementById("chkMostrarProbPrecipitacion")) document.getElementById("chkMostrarProbPrecipitacion").checked = chkMostrarProbPrecipitacion;
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
+    if (document.getElementById("chkMostrarBotonMinutely15")) document.getElementById("chkMostrarBotonMinutely15").checked = chkMostrarBotonMinutely15;
 
     const modoEcmwfFijar = esSimple ? "off" : (localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off");
     if (modoEcmwfFijar === "off" && document.getElementById("radEcmwfOff")) document.getElementById("radEcmwfOff").checked = true;
@@ -128,6 +140,7 @@ const HorariosMediosActualizacion = ["01:32", "03:02", "06:02", "11:22", "13:32"
 //claude
 //const HorariosMediosActualizacionEcmwf = ["01:40", "08:00", "13:00", "18:55"]; // en UTC-0
 const HorariosMediosActualizacionEcmwf = ["00:30", "07:10", "12:30", "19:10"]; // en UTC-0
+const HorariosMediosActualizacionMin15 = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0') + ":47"); // en UTC-0, cada hora a los :47
 
 // Nota: aplico 1 min de más. Buscar: const OFFSET_MS = 1 * 60 * 1000;
 
@@ -208,6 +221,246 @@ function actualizarVistaOjo(btn, esActivo) {
     if (!btn) return;
     btn.innerHTML = svgOjoBoton(esActivo);
 }
+
+// ---------------------------------------------------------------
+// 🔴 MINUTELY_15 (AROME HD) — Detalle de viento cada 15 min
+// ---------------------------------------------------------------
+let DATOS_METEO_MINUTELY15_CACHE = null;
+
+async function obtenerDatosMinutely15() {
+    if (DATOS_METEO_MINUTELY15_CACHE) return DATOS_METEO_MINUTELY15_CACHE;
+    const res = await fetch(`https://flydecision.com/meteo-datos-15min.json?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const datos = await res.json();
+    DATOS_METEO_MINUTELY15_CACHE = datos;
+    return datos;
+}
+
+function buscarRespuestaMinutely15(idDespegue, datos) {
+    if (!datos || !Array.isArray(datos.despegues)) return null;
+    const idx = datos.despegues.findIndex(d => Number(d.ID) === Number(idDespegue));
+    return (idx >= 0 && datos.respuestas && datos.respuestas[idx]) ? datos.respuestas[idx] : null;
+}
+
+function formatHoraMinutoLocal(d) {
+    const hora = String(d.getHours()).padStart(2, '0');
+    const minutos = String(d.getMinutes()).padStart(2, '0');
+    return `${hora}:${minutos}`;
+}
+
+function svgFlechaVientoMinutely15(gradosDireccion) {
+    return `<svg viewBox="0 0 30 36" class="flecha-viento" style="
+        transform: rotate(${gradosDireccion + 180}deg);
+        display: inline-block;
+    ">
+        <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="black"/>
+    </svg>`;
+}
+
+function construirTablaMinutely15Html(minutely15, idDespegue) {
+    const tiempos = minutely15.time || [];
+    const ahora = new Date();
+
+    // Buscamos el despegue en la caché ya cargada de la tabla principal para sacar sus orientaciones favorables
+    const despegueObj = (DATOS_METEO_CACHE && Array.isArray(DATOS_METEO_CACHE.despegues))
+        ? DATOS_METEO_CACHE.despegues.find(d => Number(d.ID) === Number(idDespegue))
+        : null;
+    const orientaciones = (despegueObj && despegueObj.Orientaciones_Grados)
+        ? despegueObj.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()))
+        : [];
+
+    let idxInicio = tiempos.findIndex(tStr => {
+        const fecha = new Date(tStr.endsWith('Z') ? tStr : tStr + 'Z');
+        return fecha >= ahora;
+    });
+    
+    if (idxInicio === -1) {
+        idxInicio = 0;
+    } else {
+        // Retrocedemos 1 columna (15 minutos antes). 
+        // Usamos Math.max para asegurarnos de que si es 0, no baje a números negativos.
+        idxInicio = Math.max(0, idxInicio - 1);
+    }
+
+    const NUM_PASOS = 24; // 6 horas x 4 pasos de 15 min
+    const idxFin = Math.min(idxInicio + NUM_PASOS, tiempos.length);
+
+    if (idxInicio >= tiempos.length) {
+        return `<p style="text-align:center; color:#777;">${t('minutely15.sinDatos', { defaultValue: 'No hay datos disponibles para este despegue en este momento.' })}</p>`;
+    }
+
+    const filas = [
+        { etiqueta: '💦', tituloPlano: t('minutely15.precipitacion', { defaultValue: 'Precipitación' }), datos: minutely15.precipitation, tipo: 'precip', bordeAbajo: true },
+        { etiqueta: '100 m', tituloPlano: t('minutely15.viento100', { defaultValue: 'Viento 100 m' }), datos: minutely15.wind_speed_100m, tipo: 'vel' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion100', { defaultValue: 'Dirección 100 m' }), datos: minutely15.wind_direction_100m, tipo: 'dir', bordeAbajo: true },
+        { etiqueta: '50 m', tituloPlano: t('minutely15.viento50', { defaultValue: 'Viento 50 m' }), datos: minutely15.wind_speed_50m, tipo: 'vel' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion50', { defaultValue: 'Dirección 50 m' }), datos: minutely15.wind_direction_50m, tipo: 'dir', bordeAbajo: true },
+        { etiqueta: '20 m', tituloPlano: t('minutely15.viento20', { defaultValue: 'Viento 20 m' }), datos: minutely15.wind_speed_20m, tipo: 'vel' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion20', { defaultValue: 'Dirección 20 m' }), datos: minutely15.wind_direction_20m, tipo: 'dir', bordeAbajo: true },
+        { etiqueta: '10 m', tituloPlano: t('minutely15.viento10', { defaultValue: 'Viento 10 m' }), datos: minutely15.wind_speed_10m, tipo: 'vel' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion10', { defaultValue: 'Dirección 10 m' }), datos: minutely15.wind_direction_10m, tipo: 'dir' },
+    ];
+
+    // --- 1. FILA DE HORAS (Agrupadas con colspan) ---
+    let theadHtml = '<tr><th class="col-etiqueta-minutely15" rowspan="2"></th>';
+    
+    let currentHour = -1;
+    let colspanCount = 0;
+    let hourLabel = '';
+    let isFirstGroup = true;
+
+    for (let i = idxInicio; i < idxFin; i++) {
+        const fecha = new Date(tiempos[i].endsWith('Z') ? tiempos[i] : tiempos[i] + 'Z');
+        const h = fecha.getHours();
+        
+        if (currentHour === -1) {
+            currentHour = h;
+            hourLabel = `${h}`;
+            colspanCount = 1;
+        } else if (currentHour === h) {
+            colspanCount++;
+        } else {
+            // Cerramos el grupo anterior y lo añadimos al HTML
+            // Evitamos poner el borde gris en el primer grupo para que no pise el borde negro de la columna izquierda
+            const borderClass = isFirstGroup ? '' : 'borde-hora-minutely15';
+            theadHtml += `<th colspan="${colspanCount}" class="${borderClass}">${hourLabel}</th>`;
+            isFirstGroup = false;
+            
+            // Empezamos a contar el nuevo grupo
+            currentHour = h;
+            hourLabel = `${h}`;
+            colspanCount = 1;
+        }
+    }
+    // Añadimos el último grupo que se quedó acumulado al terminar el bucle
+    if (colspanCount > 0) {
+        const borderClass = isFirstGroup ? '' : 'borde-hora-minutely15';
+        theadHtml += `<th colspan="${colspanCount}" class="${borderClass}">${hourLabel}</th>`;
+    }
+    theadHtml += '</tr>';
+
+    // --- 2. FILA DE MINUTOS (Individuales) ---
+    theadHtml += '<tr>';
+    for (let i = idxInicio; i < idxFin; i++) {
+        const fecha = new Date(tiempos[i].endsWith('Z') ? tiempos[i] : tiempos[i] + 'Z');
+        const m = fecha.getMinutes();
+        const minLabel = `:${String(m).padStart(2, '0')}`; // Formato :00, :15, :30, :45
+        
+        // Ponemos borde izquierdo si es :00, SALVO que sea la primera columna absoluta (para no pisar la línea negra)
+        const esNuevaHora = (m === 0 && i !== idxInicio); 
+        const esAhora = (i === idxInicio);
+        
+        // Le bajamos un poco el tamaño de fuente y le quitamos la negrita a los minutos para que destaquen menos que la hora principal
+        theadHtml += `<th class="${esNuevaHora ? 'borde-hora-minutely15' : ''} ${esAhora ? 'col-ahora-minutely15' : ''}" style="font-size: 0.85em; font-weight: normal;">${minLabel}</th>`;
+    }
+    theadHtml += '</tr>';
+
+    let tbodyHtml = '';
+    filas.forEach(fila => {
+        // Detectamos si esta fila necesita borde inferior negro
+        const claseBorde = fila.bordeAbajo ? ' separador-horizontal-minutely15' : '';
+        
+        tbodyHtml += `<tr><td class="col-etiqueta-minutely15${claseBorde}">${fila.etiqueta}</td>`;
+        
+        for (let i = idxInicio; i < idxFin; i++) {
+            const valor = (fila.datos && fila.datos[i] !== undefined && fila.datos[i] !== null) ? fila.datos[i] : null;
+            const fecha = new Date(tiempos[i].endsWith('Z') ? tiempos[i] : tiempos[i] + 'Z');
+            const esNuevaHora = fecha.getMinutes() === 0;
+            const esAhora = (i === idxInicio);
+            
+            // Añadimos la clase de borde a las celdas de datos también
+            let clases = `${esNuevaHora ? 'borde-hora-minutely15' : ''} ${esAhora ? 'col-ahora-minutely15' : ''}${claseBorde}`;
+
+            let contenidoCelda;
+            if (valor === null) {
+                contenidoCelda = '—';
+            } else if (fila.tipo === 'precip') {
+                const v = Number(valor);
+                clases += ' celda-precip';
+                if (v > 0) {
+                    clases += ' celda-precip-positiva';
+                    contenidoCelda = v.toFixed(1);
+                } else {
+                    contenidoCelda = '';
+                }
+            } else if (fila.tipo === 'vel') {
+                const velocidad = Math.round(Number(valor));
+                const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
+                if (velocidad < VelocidadMin) clases += ' fondo-naranja';
+                else if (velocidad <= velocidadTolerableSuperior) clases += ' fondo-verde';
+                else if (velocidad < VelocidadMax) clases += ' fondo-naranja';
+                else clases += ' fondo-rojo';
+                contenidoCelda = velocidad;
+            } else {
+                const dirRedondeada = Math.round(Number(valor));
+                let minimoAnguloDiferencia = 180;
+                if (orientaciones.length > 0) {
+                    minimoAnguloDiferencia = Math.min(...orientaciones.map(o => diferenciaAngular(dirRedondeada, o)));
+                }
+                clases += ' ' + colorPorDiferencia(minimoAnguloDiferencia);
+                contenidoCelda = svgFlechaVientoMinutely15(dirRedondeada);
+            }
+            tbodyHtml += `<td class="${clases}" title="${fila.tituloPlano}">${contenidoCelda}</td>`;
+        }
+        tbodyHtml += '</tr>';
+    });
+
+    return `
+        <div class="minutely15-wrap">
+            <table class="tabla-minutely15">
+                <thead>${theadHtml}</thead>
+                <tbody>${tbodyHtml}</tbody>
+            </table>
+        </div>
+        <p style="color:#888; text-align:center; margin-top:8px;">
+            ${t('minutely15.notaModelo', { defaultValue: 'Modelo Arome-HD 15 min (nowcasting)' })}
+        </p>
+    `;
+}
+
+window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
+    window.modalMinutely15Abierto = true;
+    window.modalMinutely15IdActual = idDespegue;
+    window.modalMinutely15NombreActual = nombreDespegue;
+
+    const botonAceptarMin15 = { texto: t('botones.aceptar'), onclick: () => { window.modalMinutely15Abierto = false; GestorMensajes.ocultar(); } };
+
+    GestorMensajes.mostrar({
+        tipo: 'modal',
+        htmlContenido: `<p style="text-align:center;">${t('minutely15.cargando', { defaultValue: 'Cargando datos...' })}</p>`,
+        botones: [botonAceptarMin15]
+    });
+
+    try {
+        const datos = await obtenerDatosMinutely15();
+        const respuesta = buscarRespuestaMinutely15(idDespegue, datos);
+
+        const htmlTabla = (!respuesta || !respuesta.minutely_15)
+            ? `<p style="text-align:center; color:#777;">${t('minutely15.sinDatos', { defaultValue: 'No hay datos disponibles para este despegue.' })}</p>`
+            : construirTablaMinutely15Html(respuesta.minutely_15, idDespegue);
+
+        GestorMensajes.mostrar({
+            tipo: 'modal',
+            htmlContenido: `
+                <p style="font-size: 1.2em; font-weight: bold; text-align:center; margin-bottom: 10px;">🪂 ${nombreDespegue}</p>
+                ${htmlTabla}
+            `,
+            botones: [botonAceptarMin15]
+        });
+        // Ensanchamos el modal a mano (no usamos :has() por compatibilidad con WebViews antiguos)
+        if (GestorMensajes.elementoActual) {
+            const contenidoModal = GestorMensajes.elementoActual.querySelector('.mensaje-modal-contenido');
+            if (contenidoModal) contenidoModal.classList.add('modal-minutely15-ancho');
+        }
+    } catch (err) {
+        console.error('Error cargando datos minutely_15:', err);
+        GestorMensajes.mostrar({
+            tipo: 'modal',
+            htmlContenido: `<p style="text-align:center; color:#c00;">${t('minutely15.errorCarga', { defaultValue: 'Error al cargar los datos.' })}</p>`,
+            botones: [botonAceptarMin15]
+        });
+    }
+};
 
 // ===============================================================
 // 🔴 VIBRACIÓN GLOBAL (HAPTICS) PARA TODOS LOS BOTONES DE LA APP
@@ -2823,7 +3076,7 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
 
     // Día inicial
     const ahora = new Date();
-    const diaAutoInicial = (!autoSeleccionInicialHecha && ahora.getHours() >= 16) ? 1 : 0;
+    const diaAutoInicial = 0; // Siempre arranca en hoy (día 0). Antes: (!autoSeleccionInicialHecha && ahora.getHours() >= 16) ? 1 : 0;
     const diaObjetivoInicial = (window.diaSeleccionadoSlider !== null) 
         ? Math.min(window.diaSeleccionadoSlider, sliderHoras.dayRanges.length - 1)
         : diaAutoInicial;
@@ -2887,9 +3140,9 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         let startIndices = [0, maxSteps]; // Por defecto todo
 
         if (!autoSeleccionInicialHecha) {
-            const ahora = new Date();
-            const horaActual = ahora.getHours();
-            let diaObjetivo = (horaActual >= 16) ? 1 : 0;
+            //const ahora = new Date();
+            //const horaActual = ahora.getHours();
+            let diaObjetivo = 0; // Siempre hoy (día 0). Antes: (horaActual >= 16) ? 1 : 0;
 
             if (pipIndices && pipIndices.length > diaObjetivo) {
                 const idxInicioDia = pipIndices[diaObjetivo];
@@ -2935,9 +3188,9 @@ function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
         
         // --- Iluminar el botón inicial en el arranque ---
         if (autoSeleccionInicialHecha) {
-            const ahora = new Date();
-            const horaActual = ahora.getHours();
-            let diaObjetivo = (horaActual >= 16) ? 1 : 0;
+            //const ahora = new Date();
+            //const horaActual = ahora.getHours();
+            let diaObjetivo = 0; // Siempre hoy (día 0). Antes: (horaActual >= 16) ? 1 : 0;
             
             if (pipIndices && pipIndices.length > diaObjetivo) {
                 const valorBuscado = pipIndices[diaObjetivo];
@@ -3529,6 +3782,32 @@ function mostrarAvisoActualizacionMeteo(modelos) {
             'recargarPagina'
         );
     }
+}
+
+function avisarActualizacionMinutely15() {
+    if (!window.modalMinutely15Abierto) return;
+
+    const idActual = window.modalMinutely15IdActual;
+    const nombreActual = window.modalMinutely15NombreActual;
+
+    GestorMensajes.mostrar({
+        tipo: 'modal',
+        htmlContenido: `<p style="text-align:center;">${t('minutely15.avisoNuevosDatos', { defaultValue: 'Hay una actualización del modelo Arome-HD 15min' })}</p>`,
+        botones: [
+            {
+                texto: t('minutely15.actualizarAhora', { defaultValue: 'Actualizar' }),
+                onclick: () => {
+                    DATOS_METEO_MINUTELY15_CACHE = null; // fuerza a pedir el JSON fresco
+                    abrirModalMinutely15(idActual, nombreActual); // repinta el mismo modal
+                }
+            },
+            {
+                texto: t('botones.cancelar'),
+                estilo: 'secundario',
+                onclick: () => { window.modalMinutely15Abierto = false; GestorMensajes.ocultar(); }
+            }
+        ]
+    });
 }
 
 function traducirCadenaOrientacion(stringOri) {
@@ -5273,18 +5552,20 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 </span>
             ` : '';
 
-            // --- CONFIGURACIÓN DEL BOTÓN DE EXPANSIÓN ---
+            // --- CONFIGURACIÓN DE LOS BOTONES DE EXPANSIÓN ---
             let botonToggleEcmwfHTML = '';
+            let botonMinutely15HTML = '';
             let paddingExtraBoton = 0;
+            let bottomValue = 0; 
 
-            // --- Solo creamos el botón si la opción permanente está apagada Y NO estamos en modo edición ---
-            if (chkMostrarVientoEcmwfDesplegable && !modoEdicionFavoritos) {
-                const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
-                const chevron = estaAmpliando ? '▲' : '▼';
+            // Averiguamos qué botones hay que mostrar
+            const showEcmwf = chkMostrarVientoEcmwfDesplegable && !modoEdicionFavoritos;
+            const show15min = !modoEdicionFavoritos && chkMostrarBotonMinutely15;
 
-                // --- AJUSTE DINÁMICO PARA FILAS ULTRA-CORTAS ---
-                let bottomValue = 0;
-                const bottomNum = parseInt(btnRowBottom) || 2; // Declaramos bottomNum una sola vez aquí arriba
+            // Si hay que mostrar al menos uno de los dos, calculamos la altura
+            if (showEcmwf || show15min) {
+                
+                const bottomNum = parseInt(btnRowBottom) || 2; 
 
                 if (initialRowSpan < 10) {
                     paddingExtraBoton = 0; 
@@ -5294,35 +5575,76 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     bottomValue = bottomNum + 32; 
                 }
 
-                // --- Si hay más de 12 filas, subimos el botón 10px más de forma dinámica ---
                 if (initialRowSpan > 12) {
                     bottomValue += 10;
                 }
 
-                botonToggleEcmwfHTML = `
-                    <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
-                        style="position:absolute; bottom: ${bottomValue}px; left:50%; transform:translateX(-50%); cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; font-size:12px; color:#4a6785; display:inline-flex; align-items:center; gap:3px; line-height:1.6; white-space:nowrap; box-shadow:1px 1px 3px rgba(0,0,0,0.1);">
+                // --- POSICIÓN ABSOLUTA INTELIGENTE ---
+                // Por defecto, se centran exactamente en el medio
+                let posEcmwf = "left: 50%; transform: translateX(-50%);";
+                let pos15min = "left: 50%; transform: translateX(-50%);";
 
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
-                            style="flex-shrink:0; opacity:0.8">
-                            <path d="M9.59 4.59A2 2 0 1 1 11 8H2"/>
-                            <path d="M12.59 19.41A2 2 0 1 0 14 16H2"/>
-                            <path d="M6 12h14a2 2 0 1 1 0 4"/>
-                        </svg>
-                        ECMWF
-                        <span style="font-size: 9px; opacity: 0.7">${chevron}</span>
-                    </button>
-                `;
+                if (showEcmwf && show15min) {
+                    // Si están los dos activos, los apartamos del centro para que no se pisen.
+                    // Al medir unos 30px (clase btn-info), los desplazamos un poco a izquierda y derecha.
+                    pos15min = "left: 50%; transform: translateX(-104%);"; 
+                    posEcmwf = "left: 50%; transform: translateX(9%);";   
+                }
+
+                // --- BOTÓN ECMWF ---
+                if (showEcmwf) {
+                    const estaAmpliando = window.sessionExpandedEcmwfTakeoffs.has(idDespegue);
+                    const chevron = estaAmpliando ? '▲' : '▼';
+
+                    botonToggleEcmwfHTML = `
+                        <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
+                            style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${posEcmwf} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; color:#4a6785; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: inline-flex; align-items: center;"
+                            title="${t('tabla.tooltips.botonToggleEcmwfHTML', { defaultValue: 'Viento sinóptico ECMWF a varias altitudes' })}">
+
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0; margin-right: 1px;">
+                                <!-- Flecha Vertical (Movida a la izquierda: Centro X=5) -->
+                                <g stroke="#e00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="4" y1="4" x2="4" y2="20"/>
+                                    <polyline points="1 7 4 4 7 7"/>
+                                    <polyline points="1 17 4 20 7 17"/>
+                                </g>
+
+                                <!-- Icono Viento (Movido a la derecha: Empieza en X=11) -->
+                                <g stroke="#555" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M15.59 4.59A2 2 0 1 1 17 8H11"/>
+                                    <path d="M17.59 19.41A2 2 0 1 0 19 16H11"/>
+                                    <path d="M13 12h9a2 2 0 1 1 0 4"/>
+                                </g>
+                            </svg>
+                            <span style="font-size: 12px; font-weight: bold;">${chevron}</span>
+                        </button>
+                    `;
+                }
+
+                // --- BOTÓN 15 MIN ---
+                if (show15min) {
+                    botonMinutely15HTML = `
+                        <button onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
+                            style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; padding-bottom: 1px;"
+                            title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Ver tabla de previsión de viento y direcciones según predicción inmediata del modelo Arome-HD 15min' })}">
+                            
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            <span style="color: #e00; font-size: 9px; font-weight: bold; line-height: 1; margin-top: -1px;">15 min</span>
+                        </button>
+                    `;
+                }
             }
 
-            // Inyectamos el botón en tu innerHTML
             tdDespegue.innerHTML = `
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
                 ${botonFavoritoHTML}
                 ${botonOjoHTML}
                 ${botonToggleEcmwfHTML}
+                ${botonMinutely15HTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
                 ${provinciaHTML}
                 ${htmlIconosCentrales}
@@ -7944,10 +8266,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
     let lastStatusTimestamp = 0;
     let currentStatusText = t('actualizacion.cargando');
     let currentStatusTextEcmwf = t('actualizacion.cargando'); 
+    let currentStatusTextMin15 = t('actualizacion.cargando'); 
     let lastDataGenerationTimestamp = 0;
     let lastDataGenerationTimestampEcmwf = 0; 
+    let lastDataGenerationTimestampMin15 = 0; 
     let jsonModelInitTimestamp = 0; 
     let jsonModelInitTimestampEcmwf = 0; 
+    let jsonModelInitTimestampMin15 = 0; 
 
     // ===============================================================
     // 2. GESTOR CENTRAL DE CONEXIÓN (El Cerebro)
@@ -8052,6 +8377,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 // --- 1. TEXTOS DE PASADO ---
                 const timeAgoMF = typeof formatTimeAgo === 'function' ? formatTimeAgo(lastDataGenerationTimestamp, ahoraMs) : '';
                 const timeAgoEC = (typeof formatTimeAgo === 'function' && lastDataGenerationTimestampEcmwf > 0) ? formatTimeAgo(lastDataGenerationTimestampEcmwf, ahoraMs) : '...';
+                const timeAgoMin15 = (typeof formatTimeAgo === 'function' && lastDataGenerationTimestampMin15 > 0) ? formatTimeAgo(lastDataGenerationTimestampMin15, ahoraMs) : '...';
                 
                 let refMF = '';
                 if (jsonModelInitTimestamp > 0 && typeof formatHourUTC === 'function') {
@@ -8065,6 +8391,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     const dateEC = new Date(jsonModelInitTimestampEcmwf);
                     const dayEC = String(dateEC.getUTCDate()).padStart(2, '0');
                     refEC = `${dayEC}t${formatHourUTC(dateEC)}`;
+                }
+
+                let refMin15 = '';
+                if (jsonModelInitTimestampMin15 > 0 && typeof formatHourUTC === 'function') {
+                    const dateMin15 = new Date(jsonModelInitTimestampMin15);
+                    const dayMin15 = String(dateMin15.getUTCDate()).padStart(2, '0');
+                    refMin15 = `${dayMin15}t${formatHourUTC(dateMin15)}`;
                 }
 
                 // --- 2. TEXTOS DE FUTURO O ACTUALIZANDO ---
@@ -8184,15 +8517,71 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     }
                 }
 
+                // Futuro Modelo 15 min (AROME HD)
+                let textoFuturoMin15 = "";
+                if (currentStatusTextMin15 && !currentStatusTextMin15.toUpperCase().includes("OPERATIVO")) {
+                    textoFuturoMin15 = `<span style="color:#e39300; font-weight:bold;">🔄 ${formatearTextoStatus(currentStatusTextMin15)}</span>`;
+                } else {
+                    let proximaFechaMin15 = null;
+                    let esInminenteMin15 = false;
+
+                    for (let h of HorariosMediosActualizacionMin15) {
+                        const [hora, min] = h.split(':').map(Number);
+                        const intento = new Date(ahora);
+                        intento.setUTCHours(hora, min, 0, 0);
+                        
+                        let distancia = lastDataGenerationTimestampMin15 > 0 ? intento.getTime() - lastDataGenerationTimestampMin15 : Infinity;
+                        
+                        if (ahoraMs > intento.getTime() && distancia > MARGEN_TOLERANCIA_MS && (ahoraMs - intento.getTime()) < LIMITE_ATRASO_MS) {
+                            esInminenteMin15 = true;
+                            break;
+                        }
+                        
+                        if (intento.getTime() > ahoraMs && distancia > MARGEN_TOLERANCIA_MS) { 
+                            proximaFechaMin15 = intento; 
+                            break; 
+                        }
+                    }
+                    
+                    if (esInminenteMin15) {
+                        textoFuturoMin15 = t('actualizacion.esperando');
+                    } else {
+                        if (!proximaFechaMin15) {
+                            const [hora, min] = HorariosMediosActualizacionMin15[0].split(':').map(Number);
+                            proximaFechaMin15 = new Date(ahora);
+                            proximaFechaMin15.setUTCDate(proximaFechaMin15.getUTCDate() + 1); 
+                            proximaFechaMin15.setUTCHours(hora, min, 0, 0);
+                        }
+                        const diffMsMin15 = (proximaFechaMin15.getTime() - ahoraMs) + OFFSET_MS;
+                        
+                        if (diffMsMin15 <= 0) {
+                            textoFuturoMin15 = t('actualizacion.esperando');
+                        } else {
+                            const diffMinsMin15 = Math.floor(diffMsMin15 / 60000) % 60;
+                            const diffHorasMin15 = Math.floor(Math.floor(diffMsMin15 / 60000) / 60);
+                            
+                            let textoMin15 = diffHorasMin15 > 0 
+                                ? t('actualizacion.horas', { h: diffHorasMin15, m: diffMinsMin15 }) 
+                                : t('actualizacion.minutos', { m: diffMinsMin15 });
+
+                            textoFuturoMin15 = t('actualizacion.proximaEn', { tiempo: textoMin15 });
+                        }
+                    }
+                }
+
                 // --- 3. DIBUJAR LISTA UNIFICADA ---
                 dataGenElement.innerHTML = `
                     <ul style="margin: 5px 0 0 0; padding-left: 27px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
                         <li style="margin-bottom: 8px;">
-                            <b>Météo-France:</b> ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
+                            Arome-HD: ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
                             <span>${textoFuturoMF}</span>
                         </li>
+                        <li style="margin-bottom: 8px;">
+                            Arome-HD 15min: ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
+                            <span>${textoFuturoMin15}</span>
+                        </li>
                         <li>
-                            <b>ECMWF:</b> ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
+                            ECMWF: ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
                             <span>${textoFuturoEC}</span>
                         </li>
                     </ul>`;
@@ -8217,10 +8606,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
         if (!navigator.onLine) return; 
 
         try {
-            // Hacemos las dos peticiones a la vez (si una falla, no bloquea a la otra)
-            const [resMF, resECMWF] = await Promise.all([
+            // Hacemos las tres peticiones a la vez (si una falla, no bloquea a las otras)
+            const [resMF, resECMWF, resMin15] = await Promise.all([
                 fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
-                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time_ecmwf.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null)
+                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time_ecmwf.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
+                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time_15min.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null)
             ]);
             
             // Procesar Météo-France
@@ -8246,6 +8636,17 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 }
             }
 
+            // Procesar Modelo 15 min (AROME HD)
+            if (resMin15 && resMin15.ok) {
+                const textContentM = (await resMin15.text()).trim();
+                if (textContentM) {
+                    const partsM = textContentM.split('|');
+                    if (partsM[0]) lastDataGenerationTimestampMin15 = new Date(partsM[0]).getTime();
+                    if (partsM[1]) jsonModelInitTimestampMin15 = new Date(partsM[1]).getTime();
+                    else jsonModelInitTimestampMin15 = lastDataGenerationTimestampMin15;
+                }
+            }
+
         } catch (e) {
             console.warn("Error general timestamps:", e.message);
         }
@@ -8257,15 +8658,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
         let nuevoIntervalo = 60000;
         let redMF = false;
         let redECMWF = false;
+        let redMin15 = false;
 
         try {
-            const [resMF, resECMWF] = await Promise.all([
+            const [resMF, resECMWF, resMin15] = await Promise.all([
                 fetch('https://flydecision.com/meteo-status.txt?t=' + Date.now()).catch(() => null),
-                fetch('https://flydecision.com/meteo-status-ecmwf.txt?t=' + Date.now()).catch(() => null)
+                fetch('https://flydecision.com/meteo-status-ecmwf.txt?t=' + Date.now()).catch(() => null),
+                fetch('https://flydecision.com/meteo-status-15min.txt?t=' + Date.now()).catch(() => null)
             ]);
 
             let currentlyUpdatingMF = false;
             let currentlyUpdatingEC = false;
+            let currentlyUpdatingMin15 = false;
 
             // --- ESTADO MÉTÉO-FRANCE ---
             if (resMF && resMF.ok) {
@@ -8310,9 +8714,34 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 }
             }
 
+            // --- ESTADO MODELO 15 MIN (AROME HD) ---
+            if (resMin15 && resMin15.ok) {
+                redMin15 = true;
+                const rawTextM = (await resMin15.text()).trim();
+
+                // Solo traducimos si es exactamente la frase de "en curso"
+                currentStatusTextMin15 = (rawTextM === "Actualización en curso... ⏳") 
+                    ? t('cron.Actualización en curso... ⏳') 
+                    : rawTextM;
+
+                const upperTextM = rawTextM.toUpperCase();
+                if (upperTextM.includes("OPERATIVO")) {
+                    currentlyUpdatingMin15 = false;
+                } else if (!upperTextM.includes("ERROR") && !upperTextM.includes("FATAL") && !upperTextM.includes("FAILED")) {
+                    currentlyUpdatingMin15 = true;
+                    nuevoIntervalo = 5000;
+                }
+            } else {
+                // Texto de fallback en caso de error de red
+                if (currentStatusTextMin15 === 'Cargando...') {
+                    currentStatusTextMin15 = t('actualizacion.esperandoPrimerDato');
+                }
+            }
+
             // --- LÓGICA DE AVISO (MODAL) ---
             const mfTermino = (window.oldUpdatingMF && !currentlyUpdatingMF);
             const ecTermino = (window.oldUpdatingEC && !currentlyUpdatingEC);
+            const minTermino = (window.oldUpdatingMin15 && !currentlyUpdatingMin15);
 
             let modelosRecientes = [];
             // Traducimos también los nombres de los modelos para el aviso modal
@@ -8326,6 +8755,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 } else {
                     mostrarAvisoActualizacionMeteo(modelosRecientes);
                 }
+            }
+
+            // El aviso de Min15 es silencioso salvo que el usuario tenga abierto justo el modal de detalle 15 min: al actualizarse cada hora, avisar siempre sería muy molesto.
+            if (minTermino && window.modalMinutely15Abierto) {
+                avisarActualizacionMinutely15();
             }
 
             // LÓGICA DE AVISO DE RETRASO INUSUAL
@@ -8359,9 +8793,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
             window.oldUpdatingMF = currentlyUpdatingMF;
             window.oldUpdatingEC = currentlyUpdatingEC;
-            statusActualizaciónEnCurso = (currentlyUpdatingMF || currentlyUpdatingEC);
+            window.oldUpdatingMin15 = currentlyUpdatingMin15;
+            statusActualizaciónEnCurso = (currentlyUpdatingMF || currentlyUpdatingEC || currentlyUpdatingMin15);
 
-            if (!redMF && !redECMWF) {
+            if (!redMF && !redECMWF && !redMin15) {
                 gestionarCambioConexion('offline');
             } else {
                 gestionarCambioConexion('online');

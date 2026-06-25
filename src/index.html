@@ -302,23 +302,25 @@
     </div>
 
 	<!-- MODO SIMPLE / AVANZADO -->
-	<div class="div-configuracion-subpanel" style="margin-bottom: 12px;">
-		<div style="display: flex; align-items: center; gap: 8px; padding-bottom: 4px;">
-			<span style="font-weight: bold;" data-i18n="ajustes.modoApp.titulo">Modo de la aplicación</span>
-			<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipModoApp">
-				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-			</button>
-		</div>
+	<div class="div-configuracion-subpanel" style="position: relative; border: 1px solid rgb(51, 51, 51); border-radius: 10px; box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2); max-width: 330px; min-width: 330px; box-sizing: border-box; margin-left: auto !important; margin-right: auto !important; margin-bottom: 8px !important; padding-bottom: 4px;">
+		<div style="display: flex; align-items: center; gap: 38px;">
+			<div style="display: flex; align-items: center; gap: 8px;">
+				<span style="font-weight: bold;" data-i18n="ajustes.modoApp.titulo">Modo de la aplicación</span>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipModoApp">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
 
-		<div style="display: flex; gap: 8px; width: 100%; max-width: 330px;">
-			<label class="custom-checkbox" id="lbl-modo-simple" style="flex: 1; justify-content: center; text-align: center; font-weight: normal;">
-				<input type="radio" name="radioModoApp" id="radModoSimple" onclick="window.cambiarModoApp(true)">
-				<span data-i18n="ajustes.modoApp.simple">🟢 Simple</span>
-			</label>
-			<label class="custom-checkbox" id="lbl-modo-avanzado" style="flex: 1; justify-content: center; text-align: center; font-weight: normal;">
-				<input type="radio" name="radioModoApp" id="radModoAvanzado" onclick="window.cambiarModoApp(false)">
-				<span data-i18n="ajustes.modoApp.avanzado">🟣 Avanzado</span>
-			</label>
+			<div style="display: flex; flex-direction: column; gap: 6px;">
+				<label class="custom-checkbox" id="lbl-modo-simple" style="justify-content: flex-start; text-align: left; font-weight: normal; gap: 3px;">
+					<input type="radio" name="radioModoApp" id="radModoSimple" onclick="window.cambiarModoApp(true)">
+					<span data-i18n="ajustes.modoApp.simple">Simple</span>
+				</label>
+				<label class="custom-checkbox" id="lbl-modo-avanzado" style="justify-content: flex-start; text-align: left; font-weight: normal; gap: 3px;">
+					<input type="radio" name="radioModoApp" id="radModoAvanzado" onclick="window.cambiarModoApp(false)">
+					<span data-i18n="ajustes.modoApp.avanzado">Avanzado</span>
+				</label>
+			</div>
 		</div>
 	</div>
 
@@ -417,6 +419,15 @@
 						<input type="checkbox" id="chkMostrarXC" onclick="alternarMostrarXC()"> <span data-i18n="ajustes.XC">XC: Techo MSL, CAPE y CIN</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipXC">
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
+				</div>
+				<div class="linea-con-bt-info">
+					<label for="chkMostrarBotonMinutely15" class="custom-checkbox">
+						<input type="checkbox" id="chkMostrarBotonMinutely15" onclick="alternarBotonMinutely15()"> <span data-i18n="ajustes.detalle15min">Viento Arome-HD 15min</span>
+					</label>
+					<button class="btn-info btn-inline"
+						data-tippy-content-i18n="btn_info.tooltipdDetalle15min">
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
