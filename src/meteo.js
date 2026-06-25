@@ -63,7 +63,13 @@ let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_P
 //let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") !== "false";
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
 let chkOrdenarPorXC = localStorage.getItem("METEO_CHECKBOX_ORDENAR_POR_XC") === "true"; // false por defecto
-let diasSeguimiento = parseInt(localStorage.getItem('METEO_DIAS_SEGUIMIENTO') || '3');
+const PASOS_DIAS_SEGUIMIENTO = [1, 2, 3, 4, Infinity]; // el último paso = nunca se autoeliminan
+let diasSeguimiento = (() => {
+    const guardado = localStorage.getItem('METEO_DIAS_SEGUIMIENTO');
+    if (guardado === 'infinito') return Infinity;
+    const n = parseInt(guardado);
+    return PASOS_DIAS_SEGUIMIENTO.includes(n) ? n : 3;
+})();
 const ecmwfMode = localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off";
 
 let chkMostrarVientoEcmwf = (ecmwfMode === "permanente");
@@ -2702,15 +2708,21 @@ function alternarOrdenarPorXC() {
 }
 
 function cambiarDiasSeguimiento(delta) {
-    diasSeguimiento = Math.min(7, Math.max(1, diasSeguimiento + delta));
-    localStorage.setItem('METEO_DIAS_SEGUIMIENTO', String(diasSeguimiento));
+    let idx = PASOS_DIAS_SEGUIMIENTO.indexOf(diasSeguimiento);
+    if (idx === -1) idx = PASOS_DIAS_SEGUIMIENTO.indexOf(3); // fallback por si el valor guardado fuera raro
+    idx = Math.min(PASOS_DIAS_SEGUIMIENTO.length - 1, Math.max(0, idx + delta));
+    diasSeguimiento = PASOS_DIAS_SEGUIMIENTO[idx];
+
+    localStorage.setItem('METEO_DIAS_SEGUIMIENTO', diasSeguimiento === Infinity ? 'infinito' : String(diasSeguimiento));
+
     const el = document.getElementById('valor-dias-seguimiento');
-    if (el) el.textContent = diasSeguimiento;
+    if (el) el.textContent = (diasSeguimiento === Infinity) ? '∞' : diasSeguimiento;
+
     // Actualizar botones −/+ para reflejar límites
     const btnMenos = document.getElementById('stepper-seguimiento-menos');
     const btnMas   = document.getElementById('stepper-seguimiento-mas');
-    if (btnMenos) btnMenos.disabled = diasSeguimiento <= 1;
-    if (btnMas)   btnMas.disabled   = diasSeguimiento >= 4;
+    if (btnMenos) btnMenos.disabled = (idx <= 0);
+    if (btnMas)   btnMas.disabled   = (idx >= PASOS_DIAS_SEGUIMIENTO.length - 1);
 }
 
 // ---------------------------------------------------------------
@@ -9035,11 +9047,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     const elDias = document.getElementById('valor-dias-seguimiento');
     if (elDias) {
-        elDias.textContent = diasSeguimiento;
+        const idxDias = PASOS_DIAS_SEGUIMIENTO.indexOf(diasSeguimiento);
+        elDias.textContent = (diasSeguimiento === Infinity) ? '∞' : diasSeguimiento;
         const btnMenos = document.getElementById('stepper-seguimiento-menos');
         const btnMas   = document.getElementById('stepper-seguimiento-mas');
-        if (btnMenos) btnMenos.disabled = diasSeguimiento <= 1;
-        if (btnMas)   btnMas.disabled   = diasSeguimiento >= 4;
+        if (btnMenos) btnMenos.disabled = (idxDias <= 0);
+        if (btnMas)   btnMas.disabled   = (idxDias >= PASOS_DIAS_SEGUIMIENTO.length - 1);
     }
 
 	window.resetFiltroDistancia = function(reconstruir = true) { //flag para que, si le hemos llamado desde activarEdicionFavoritos(), que ya tiene construir_tabla, no se llame otra vez aquí, ya que ya se hace desde esa función (bloquearía navegador)
