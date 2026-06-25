@@ -837,7 +837,9 @@
     "sinDatos": "Aucune donnée du modèle Arome-HD 15min n'est disponible pour ce décollage.",
     "cargando": "Chargement des données...",
     "errorCarga": "Erreur lors du chargement des données.",
-    "notaModelo": "Modèle Arome-HD PI 15 min (nowcasting)"
+    "notaModelo": "Modèle Arome-HD PI 15min (nowcasting)",
+    "avisoNuevosDatos": "Il y a une mise à jour du modèle Arome-HD 15min",
+    "actualizarAhora": "Mettre à jour"
   }
 
 }

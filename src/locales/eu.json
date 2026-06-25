@@ -837,7 +837,9 @@
     "sinDatos": "Ez dago Arome-HD 15min ereduaren daturik eskuragarri aireratze honetarako.",
     "cargando": "Datuak kargatzen...",
     "errorCarga": "Errorea datuak kargatzean.",
-    "notaModelo": "Arome-HD PI 15 min eredua (nowcasting)"
+    "notaModelo": "Arome-HD PI 15min eredua (nowcasting)",
+    "avisoNuevosDatos": "Arome-HD 15min ereduaren eguneratze bat dago",
+    "actualizarAhora": "Eguneratu"
   }
 
 }

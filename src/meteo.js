@@ -420,6 +420,8 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
 
 window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
     window.modalMinutely15Abierto = true;
+    window.modalMinutely15IdActual = idDespegue;
+    window.modalMinutely15NombreActual = nombreDespegue;
 
     const botonAceptarMin15 = { texto: t('botones.aceptar'), onclick: () => { window.modalMinutely15Abierto = false; GestorMensajes.ocultar(); } };
 
@@ -3780,6 +3782,32 @@ function mostrarAvisoActualizacionMeteo(modelos) {
             'recargarPagina'
         );
     }
+}
+
+function avisarActualizacionMinutely15() {
+    if (!window.modalMinutely15Abierto) return;
+
+    const idActual = window.modalMinutely15IdActual;
+    const nombreActual = window.modalMinutely15NombreActual;
+
+    GestorMensajes.mostrar({
+        tipo: 'modal',
+        htmlContenido: `<p style="text-align:center;">${t('minutely15.avisoNuevosDatos', { defaultValue: 'Hay una actualización del modelo Arome-HD 15min' })}</p>`,
+        botones: [
+            {
+                texto: t('minutely15.actualizarAhora', { defaultValue: 'Actualizar' }),
+                onclick: () => {
+                    DATOS_METEO_MINUTELY15_CACHE = null; // fuerza a pedir el JSON fresco
+                    abrirModalMinutely15(idActual, nombreActual); // repinta el mismo modal
+                }
+            },
+            {
+                texto: t('botones.cancelar'),
+                estilo: 'secundario',
+                onclick: () => { window.modalMinutely15Abierto = false; GestorMensajes.ocultar(); }
+            }
+        ]
+    });
 }
 
 function traducirCadenaOrientacion(stringOri) {
@@ -8545,15 +8573,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 dataGenElement.innerHTML = `
                     <ul style="margin: 5px 0 0 0; padding-left: 27px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
                         <li style="margin-bottom: 8px;">
-                            <b>Arome-HD:</b> ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
+                            Arome-HD: ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
                             <span>${textoFuturoMF}</span>
                         </li>
                         <li style="margin-bottom: 8px;">
-                            <b>Arome-HD 15min:</b> ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
+                            Arome-HD 15min: ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
                             <span>${textoFuturoMin15}</span>
                         </li>
                         <li>
-                            <b>ECMWF:</b> ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
+                            ECMWF: ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
                             <span>${textoFuturoEC}</span>
                         </li>
                     </ul>`;
@@ -8731,7 +8759,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
             // El aviso de Min15 es silencioso salvo que el usuario tenga abierto justo el modal de detalle 15 min: al actualizarse cada hora, avisar siempre sería muy molesto.
             if (minTermino && window.modalMinutely15Abierto) {
-                mostrarAvisoActualizacionMeteo([t('actualizacion.avisoModelos.min15', { defaultValue: 'Arome-HD 15min' })]);
+                avisarActualizacionMinutely15();
             }
 
             // LÓGICA DE AVISO DE RETRASO INUSUAL

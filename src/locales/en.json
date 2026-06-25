@@ -837,7 +837,9 @@
     "sinDatos": "There is no Arome-HD 15min model data available for this takeoff.",
     "cargando": "Loading data...",
     "errorCarga": "Error loading data.",
-    "notaModelo": "Arome-HD PI 15 min model (nowcasting)"
+    "notaModelo": "Arome-HD PI 15min model (nowcasting)",
+    "avisoNuevosDatos": "There is an update for the Arome-HD 15min model",
+    "actualizarAhora": "Update"
   }
 
 }

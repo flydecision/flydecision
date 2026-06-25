@@ -837,7 +837,9 @@
     "sinDatos": "No hi ha dades del model Arome-HD 15min disponibles per a aquest enlairament.",
     "cargando": "Carregant dades...",
     "errorCarga": "Error en carregar les dades.",
-    "notaModelo": "Model Arome-HD PI 15 min (nowcasting)"
+    "notaModelo": "Model Arome-HD PI 15min (nowcasting)",
+    "avisoNuevosDatos": "Hi ha una actualització del model Arome-HD 15min",
+    "actualizarAhora": "Actualitzar"
   }
 
 }

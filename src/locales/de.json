@@ -837,7 +837,9 @@
     "sinDatos": "Für diesen Startplatz sind keine Daten des Arome-HD 15min Modells verfügbar.",
     "cargando": "Lade Daten...",
     "errorCarga": "Fehler beim Laden der Daten.",
-    "notaModelo": "Modell Arome-HD PI 15 min (Nowcasting)"
+    "notaModelo": "Modell Arome-HD PI 15min (Nowcasting)",
+    "avisoNuevosDatos": "Es gibt ein Update für das Arome-HD 15min Modell",
+    "actualizarAhora": "Aktualisieren"
   }
 
 }
