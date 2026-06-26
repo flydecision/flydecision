@@ -443,7 +443,7 @@
 
   "retrasoInusual": {
     "titulo": "ℹ️ Avis concernant les prévisions",
-    "mensaje": "<p>Le serveur de données météorologiques de <b>{{modelos}}</b> connaît un retard inhabituel dans la publication de ses données.</p><p>Garde à l'esprit que l'application t'affiche la dernière prévision disponible.</p><p>Elle se mettra à jour automatiquement dès qu'elle sera disponible. Tu peux suivre le statut dans <b>Paramètres > Mises à jour modèles météo</b>.</p>"
+    "mensaje": "<p>Il y a un retard dans les données de <b>{{modelos}}</b>. La dernière prévision disponible sera affichée.</p><p>Tu peux voir l'état dans <b>Paramètres > Mises à jour modèles météo</b>.</p>"
   },
 
   "actualizacionApp": {

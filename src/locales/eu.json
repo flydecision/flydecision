@@ -443,7 +443,7 @@
 
   "retrasoInusual": {
     "titulo": "ℹ️ Iragarpenari buruzko abisua",
-    "mensaje": "<p><b>{{modelos}}</b>-en datu meteorologikoen zerbitzaria atzerapen ezohikoa izaten ari da bere datuen argitalpenean.</p><p>Kontuan izan aplikazioak eskuragarri dagoen azken iragarpena erakusten dizula.</p><p>Automatikoki eguneratuko da eskuragarri dagoenean. Egoeraren jarraipena egin dezakezu <b>Ezarpenak > Meteo ereduen eguneraketak</b> atalean.</p>"
+    "mensaje": "<p>Atzerapen bat dago <b>{{modelos}}</b>-en datuetan. Eskuragarri dagoen azken iragarpena erakutsiko da.</p><p>Egoera <b>Ezarpenak > Meteo-ereduen eguneratzeak</b> atalean ikus dezakezu.</p>"
   },
 
   "actualizacionApp": {

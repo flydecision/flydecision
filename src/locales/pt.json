@@ -443,7 +443,7 @@
 
   "retrasoInusual": {
     "titulo": "ℹ️ Aviso sobre a previsão",
-    "mensaje": "<p>O servidor de dados meteorológicos de <b>{{modelos}}</b> está a registar um atraso inusual na publicação dos seus dados.</p><p>Tem em conta que a aplicação está a mostrar-te a última previsão disponível.</p><p>Irá atualizar-se automaticamente assim que estiver disponível. Podes seguir o estado em <b>Definições > Atualizações modelos meteo</b>.</p>"
+    "mensaje": "<p>Há um atraso nos dados de <b>{{modelos}}</b>. Será mostrada a última previsão disponível.</p><p>Podes ver o estado em <b>Definições > Atualizações modelos meteo</b>.</p>"
   },
 
   "actualizacionApp": {
