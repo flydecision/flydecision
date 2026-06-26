@@ -443,7 +443,7 @@
 
   "retrasoInusual": {
     "titulo": "ℹ️ Hinweis zur Vorhersage",
-    "mensaje": "<p>Der meteorologische Datenserver von <b>{{modelos}}</b> weist eine ungewöhnliche Verzögerung bei der Veröffentlichung seiner Daten auf.</p><p>Bitte beachte, dass dir die Anwendung die letzte verfügbare Vorhersage anzeigt.</p><p>Sie wird automatisch aktualisiert, sobald sie verfügbar ist. Den Status kannst du unter <b>Einstellungen > Wettermodell-Updates</b> verfolgen.</p>"
+    "mensaje": "<p>Es gibt eine Verzögerung bei den Daten von <b>{{modelos}}</b>. Die letzte verfügbare Vorhersage wird angezeigt.</p><p>Du kannst den Status unter <b>Einstellungen > Wettermodelle-Updates</b> sehen.</p>"
   },
 
   "actualizacionApp": {
