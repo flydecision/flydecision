@@ -69,11 +69,13 @@ button {
 body.modo-android-manual {
     /* 1. PARTE SUPERIOR: Usamos la variable inyectada por Capacitor */
     /* El valor 25px se queda como "seguro" por si el plugin tarda un milisegundo en cargar */
-    padding-top: calc(var(--safe-area-inset-top, 25px)) !important;
+    padding-top: calc(var(--safe-area-inset-top, 25px) - 5px) !important;
 
     /* 2. PARTE INFERIOR: ¡Vital para que los botones de Android no tapen tu menú! */
     /* Esto es lo que soluciona que la barra de abajo se vea integrada */
-    padding-bottom: var(--safe-area-inset-bottom, 0px) !important;
+    /* padding-bottom: var(--safe-area-inset-bottom, 0px) !important; */
+
+    padding-bottom: 0px !important; /* Cambiado a 0 para que la web llegue al borde físico del cristal */
 
     /* 3. LATERALES: Para móviles con "notches" laterales o pantallas curvas */
     padding-left: var(--safe-area-inset-left, 0px);
@@ -85,7 +87,7 @@ body.modo-android-manual {
 }
 
 /* Franja opaca en la zona del nav bar de Android */
-body.modo-android-manual::after {
+/* body.modo-android-manual::after {
     content: '';
     position: fixed;
     bottom: 0;
@@ -93,9 +95,9 @@ body.modo-android-manual::after {
     right: 0;
     height: var(--safe-area-inset-bottom, 0px);
     background-color: #d9ebf9;
-    z-index: 99998; /* debajo del bottom-nav (9999) pero encima de todo lo demás */
+    z-index: 99998; 
     pointer-events: none;
-}
+} */
 
 /* A veces Capacitor tarda unos milisegundos en cargar el plugin, y durante ese tiempo la app se ve mal. En tu CSS global, puedes añadir esto para que los elementos fixed (como tu cabecera) tengan una transición suave si cambian de altura: */
 body, header, .offline-badge {
@@ -709,7 +711,7 @@ input[type="search"]::-webkit-search-cancel-button {
     box-sizing: border-box;
     position: fixed; 
 
-    top: max(20px, env(safe-area-inset-top)) !important;
+    top: max(20px, var(--safe-area-inset-top, env(safe-area-inset-top, 20px))) !important;
     left: 50%;
     transform: translateX(-50%);
     z-index: 9999 !important; /* Asegura que quede encima de todo (filtros, tabla, etc.) */
@@ -755,7 +757,7 @@ input[type="search"]::-webkit-search-cancel-button {
     padding-right: 15px;
     padding-left: 15px;
     padding-bottom: 8px;
-    max-height: calc(100dvh - env(safe-area-inset-bottom) - 100px) !important; 
+    max-height: calc(100dvh - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 100px) !important; 
     -webkit-overflow-scrolling: touch;
 }
 
@@ -1146,17 +1148,17 @@ details.config-accordion .accordion-content {
 .tabla-wrapper {
     flex: 1;
     margin-left: 3px;
-    margin-bottom: 3px; 
+    /* margin-bottom: 3px;  */
     margin-right: 3px;
     padding-right: 1px;
-    margin-top: 10px;
+    margin-top: 6px;
     flex-grow: 1;       
     overflow: auto;     
     height: 100%;       
     width: auto;
     box-sizing: border-box;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: calc(var(--safe-area-inset-bottom, 0px) + 83px) !important;
+    padding-bottom: calc(var(--safe-area-inset-bottom, 0px) + 64px) !important;
     
     /* Evitamos "both-edges" para corregir definitivamente el bug del rebote */
     scrollbar-gutter: stable; 
@@ -2850,7 +2852,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 /* 1. Estilo General (La "pastilla" flotante) */
 .bottom-nav.compact-nav {
     position: fixed;
-    bottom: calc(10px + var(--safe-area-inset-bottom, 0px)); /* Más separada del fondo */
+    bottom: calc(0px + var(--safe-area-inset-bottom, 0px)); /* Más separada del fondo */
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 20px); /* Un poco más ancha */
@@ -4096,7 +4098,7 @@ h3 {
 
 .btn-filtros-mapa {
     position: absolute;
-    top: calc(3px + var(--safe-area-inset-top, 0px));
+    top: calc(var(--safe-area-inset-top, 0px) + 3px) !important;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1010;
@@ -4143,7 +4145,7 @@ h3 {
 }
 
 body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
-    top: calc(var(--safe-area-inset-top, 25px) + 3px);
+    top: calc(var(--safe-area-inset-top, 25px) - 2px);
 }
 
 /* Botón cerrar del panel filtros flotante en mapa */
@@ -4183,7 +4185,7 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
 @media (max-width: 635px) {
     #vista-mapa.filtros-abiertos .leaflet-top {
         transition: margin-top 0.2s ease;
-        margin-top: calc(148px + var(--safe-area-inset-top, 25px));
+        margin-top: calc(143px + var(--safe-area-inset-top, 25px));
     }
 }
 
