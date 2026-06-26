@@ -13639,9 +13639,280 @@ function inicializarMapaLeaflet() {
     }
 
     //___________________________________________________________________________________
-    // FIN filtro orientaciones
+    // 🔴 Balizas
     //___________________________________________________________________________________
 
+
+    // 1. BASE DE DATOS DE ESTACIONES (Pega aquí la lista de estaciones de tu archivo .ts)
+    const ESTACIONES_EUSKALMET = [
+        {"id":"B090","name":"Puerto de Bilbao","provider":"Euskalmet","latitude":43.3774903,"longitude":-3.08474,"hasWind":true},
+        {"id":"B091","name":"Puerto de Armintza","provider":"Euskalmet","latitude":43.4357871,"longitude":-2.89916,"hasWind":true},
+        {"id":"B092","name":"Puerto de Bermeo","provider":"Euskalmet","latitude":43.4223435,"longitude":-2.70981,"hasWind":true},
+        {"id":"B093","name":"Puerto de Ondarroa","provider":"Euskalmet","latitude":43.325,"longitude":-2.4157,"hasWind":true},
+        {"id":"B094","name":"Puerto de Getaria","provider":"Euskalmet","latitude":43.30559,"longitude":-2.1968,"hasWind":true},
+        {"id":"B096","name":"Puerto de Pasaia","provider":"Euskalmet","latitude":43.3370283,"longitude":-1.92752,"hasWind":true},
+        {"id":"B097","name":"Puerto de Hondarribia","provider":"Euskalmet","latitude":43.3882,"longitude":-1.78955,"hasWind":true},
+        {"id":"B098","name":"Mutriku","provider":"Euskalmet","latitude":43.31218,"longitude":-2.376872,"hasWind":true},
+        {"id":"C001","name":"Arkaute I","provider":"Euskalmet","latitude":42.8518,"longitude":-2.62701,"hasWind":true},
+        {"id":"C002","name":"Arteaga","provider":"Euskalmet","latitude":43.347,"longitude":-2.65714,"hasWind":true},
+        {"id":"C003","name":"Derio","provider":"Euskalmet","latitude":43.2911,"longitude":-2.87342,"hasWind":true},
+        {"id":"C004","name":"Bakio","provider":"Euskalmet","latitude":43.4168,"longitude":-2.8124,"hasWind":true},
+        {"id":"C005","name":"Gatika","provider":"Euskalmet","latitude":43.3723,"longitude":-2.90829,"hasWind":true},
+        {"id":"C006","name":"Markina","provider":"Euskalmet","latitude":43.2655,"longitude":-2.49565,"hasWind":true},
+        {"id":"C007","name":"Santa Clara","provider":"Euskalmet","latitude":43.3218,"longitude":-1.99834,"hasWind":true},
+        {"id":"C008","name":"Zeanuri","provider":"Euskalmet","latitude":43.09858,"longitude":-2.74988,"hasWind":true},
+        {"id":"C009","name":"Galdakao","provider":"Euskalmet","latitude":43.234234,"longitude":-2.870321,"hasWind":false},
+        {"id":"C00A","name":"Kanpezu","provider":"Euskalmet","latitude":42.6754,"longitude":-2.34148,"hasWind":true},
+        {"id":"C00B","name":"Tobillas","provider":"Euskalmet","latitude":42.8992,"longitude":-3.1828,"hasWind":true},
+        {"id":"C00C","name":"Goiain","provider":"Euskalmet","latitude":42.944472,"longitude":-2.6415097,"hasWind":true},
+        {"id":"C010","name":"Abetxuko-CHE","provider":"Euskalmet","latitude":42.8729023,"longitude":-2.6765434,"hasWind":true},
+        {"id":"C011","name":"Mungia-Lauaxeta","provider":"Euskalmet","latitude":43.3561131,"longitude":-2.8499509,"hasWind":true},
+        {"id":"C012","name":"Zurbano-Alegría-CHE","provider":"Euskalmet","latitude":42.8668213,"longitude":-2.6371255,"hasWind":true},
+        {"id":"C016","name":"Arkauti","provider":"Euskalmet","latitude":42.854275,"longitude":-2.621833,"hasWind":true},
+        {"id":"C017","name":"Miramon","provider":"Euskalmet","latitude":43.2868,"longitude":-1.97121,"hasWind":true},
+        {"id":"C018","name":"Higer","provider":"Euskalmet","latitude":43.3913,"longitude":-1.79615,"hasWind":true},
+        {"id":"C019","name":"Matxitxako","provider":"Euskalmet","latitude":43.4375,"longitude":-2.7636,"hasWind":true},
+        {"id":"C020","name":"Trebiño","provider":"Euskalmet","latitude":42.7180163,"longitude":-2.70141,"hasWind":true},
+        {"id":"C021","name":"Roitegi","provider":"Euskalmet","latitude":42.7817,"longitude":-2.371,"hasWind":true},
+        {"id":"C022","name":"Urkiola","provider":"Euskalmet","latitude":43.1,"longitude":-2.64658,"hasWind":true},
+        {"id":"C023","name":"Arrasate","provider":"Euskalmet","latitude":43.0695849,"longitude":-2.49308,"hasWind":true},
+        {"id":"C024","name":"Iturrieta","provider":"Euskalmet","latitude":42.7935945,"longitude":-2.34575,"hasWind":true},
+        {"id":"C025","name":"Beluntza","provider":"Euskalmet","latitude":42.9615782,"longitude":-2.89361,"hasWind":true},
+        {"id":"C026","name":"Berastegi","provider":"Euskalmet","latitude":43.1248,"longitude":-1.98168,"hasWind":true},
+        {"id":"C027","name":"Llodio","provider":"Euskalmet","latitude":43.1423,"longitude":-2.95079,"hasWind":true},
+        {"id":"C028","name":"Zegama","provider":"Euskalmet","latitude":42.9588,"longitude":-2.29852,"hasWind":true},
+        {"id":"C029","name":"Zizurkil","provider":"Euskalmet","latitude":43.1901,"longitude":-2.06181,"hasWind":true},
+        {"id":"C030","name":"Salvatierra","provider":"Euskalmet","latitude":42.8582,"longitude":-2.39538,"hasWind":true},
+        {"id":"C031","name":"Moreda","provider":"Euskalmet","latitude":42.5303,"longitude":-2.41023,"hasWind":true},
+        {"id":"C032","name":"Areta","provider":"Euskalmet","latitude":43.1394,"longitude":-2.93531,"hasWind":true},
+        {"id":"C033","name":"Igorre","provider":"Euskalmet","latitude":43.1686,"longitude":-2.7842,"hasWind":true},
+        {"id":"C034","name":"Espejo","provider":"Euskalmet","latitude":42.8078,"longitude":-3.04103,"hasWind":true},
+        {"id":"C035","name":"Altube","provider":"Euskalmet","latitude":42.9661,"longitude":-2.86795,"hasWind":true},
+        {"id":"C036","name":"Iurreta","provider":"Euskalmet","latitude":43.1769,"longitude":-2.622,"hasWind":true},
+        {"id":"C037","name":"Venta Alta","provider":"Euskalmet","latitude":43.2165,"longitude":-2.89976,"hasWind":true},
+        {"id":"C038","name":"Galindo","provider":"Euskalmet","latitude":43.3062,"longitude":-2.99878,"hasWind":true},
+        {"id":"C039","name":"Deusto","provider":"Euskalmet","latitude":43.2834,"longitude":-2.96791,"hasWind":true},
+        {"id":"C03A","name":"Zorrotza","provider":"Euskalmet","latitude":43.28498,"longitude":-2.968458,"hasWind":true},
+        {"id":"C040","name":"Gasteiz","provider":"Euskalmet","latitude":42.8604,"longitude":-2.68899,"hasWind":true},
+        {"id":"C041","name":"Navarrete","provider":"Euskalmet","latitude":42.638,"longitude":-2.52321,"hasWind":true},
+        {"id":"C042","name":"Punta Galea","provider":"Euskalmet","latitude":43.3752,"longitude":-3.03608,"hasWind":true},
+        {"id":"C043","name":"Ordizia","provider":"Euskalmet","latitude":43.0484,"longitude":-2.17755,"hasWind":true},
+        {"id":"C044","name":"Gorbea","provider":"Euskalmet","latitude":42.9995,"longitude":-2.73515,"hasWind":false},
+        {"id":"C045","name":"La Garbea","provider":"Euskalmet","latitude":43.217,"longitude":-3.19368,"hasWind":true},
+        {"id":"C046","name":"Oiz","provider":"Euskalmet","latitude":43.2304,"longitude":-2.5954,"hasWind":true},
+        {"id":"C047","name":"Kapildui","provider":"Euskalmet","latitude":42.768,"longitude":-2.53785,"hasWind":true},
+        {"id":"C048","name":"Herrera","provider":"Euskalmet","latitude":42.5978,"longitude":-2.67616,"hasWind":true},
+        {"id":"C049","name":"Subijana","provider":"Euskalmet","latitude":42.8196,"longitude":-2.89328,"hasWind":true},
+        {"id":"C050","name":"Zambrana","provider":"Euskalmet","latitude":42.6751,"longitude":-2.8869,"hasWind":true},
+        {"id":"C051","name":"Saratxo","provider":"Euskalmet","latitude":43.0342,"longitude":-3.00398,"hasWind":true},
+        {"id":"C052","name":"Ameraun","provider":"Euskalmet","latitude":43.1417,"longitude":-1.95085,"hasWind":false},
+        {"id":"C053","name":"Barazar","provider":"Euskalmet","latitude":43.0703,"longitude":-2.71048,"hasWind":true},
+        {"id":"C054","name":"Otxandio","provider":"Euskalmet","latitude":43.0423,"longitude":-2.65763,"hasWind":true},
+        {"id":"C055","name":"Ozaeta","provider":"Euskalmet","latitude":42.913,"longitude":-2.49313,"hasWind":false},
+        {"id":"C056","name":"Alegría","provider":"Euskalmet","latitude":42.8447,"longitude":-2.52402,"hasWind":true},
+        {"id":"C057","name":"Mungia","provider":"Euskalmet","latitude":43.363,"longitude":-2.84702,"hasWind":true},
+        {"id":"C058","name":"Bidania","provider":"Euskalmet","latitude":43.146,"longitude":-2.15502,"hasWind":true},
+        {"id":"C059","name":"Ordunte","provider":"Euskalmet","latitude":43.1623,"longitude":-3.28404,"hasWind":true},
+        {"id":"C060","name":"Páganos","provider":"Euskalmet","latitude":42.5605,"longitude":-2.60055,"hasWind":true},
+        {"id":"C061","name":"Arboleda","provider":"Euskalmet","latitude":43.2967,"longitude":-3.06747,"hasWind":true},
+        {"id":"C062","name":"Garai","provider":"Euskalmet","latitude":43.2125,"longitude":-2.6002777,"hasWind":false},
+        {"id":"C063","name":"Muxika","provider":"Euskalmet","latitude":43.2897,"longitude":-2.68914,"hasWind":false},
+        {"id":"C064","name":"Zarautz","provider":"Euskalmet","latitude":43.293,"longitude":-2.14542,"hasWind":true},
+        {"id":"C065","name":"Cerroja","provider":"Euskalmet","latitude":43.2112,"longitude":-3.40713,"hasWind":true},
+        {"id":"C066","name":"Untzueta","provider":"Euskalmet","latitude":43.1392,"longitude":-2.9071,"hasWind":true},
+        {"id":"C067","name":"Gardea","provider":"Euskalmet","latitude":43.1272,"longitude":-2.98025,"hasWind":true},
+        {"id":"C068","name":"Ilarduia","provider":"Euskalmet","latitude":42.87395,"longitude":-2.28623,"hasWind":true},
+        {"id":"C069","name":"Almike (Bermeo)","provider":"Euskalmet","latitude":43.4137,"longitude":-2.73229,"hasWind":true},
+        {"id":"C070","name":"Zaldiaran","provider":"Euskalmet","latitude":42.7966,"longitude":-2.73642,"hasWind":true},
+        {"id":"C071","name":"Jaizkibel","provider":"Euskalmet","latitude":43.3446,"longitude":-1.85972,"hasWind":true},
+        {"id":"C072","name":"Orduña","provider":"Euskalmet","latitude":42.9837,"longitude":-3.03726,"hasWind":true},
+        {"id":"C073","name":"Mallabia","provider":"Euskalmet","latitude":43.1926263,"longitude":-2.5295246,"hasWind":true},
+        {"id":"C074","name":"Elorrio","provider":"Euskalmet","latitude":43.1306,"longitude":-2.55853,"hasWind":false},
+        {"id":"C075","name":"Eitzaga","provider":"Euskalmet","latitude":43.1761,"longitude":-2.50096,"hasWind":true},
+        {"id":"C076","name":"Abetxuko","provider":"Euskalmet","latitude":42.8755,"longitude":-2.66879,"hasWind":false},
+        {"id":"C077","name":"Andoain","provider":"Euskalmet","latitude":43.2109,"longitude":-2.01559,"hasWind":false},
+        {"id":"C078","name":"Altzola","provider":"Euskalmet","latitude":43.2419,"longitude":-2.39784,"hasWind":false},
+        {"id":"C079","name":"Amorebieta","provider":"Euskalmet","latitude":43.2185,"longitude":-2.73304,"hasWind":false},
+        {"id":"C080","name":"Añarbe","provider":"Euskalmet","latitude":43.2276,"longitude":-1.84981,"hasWind":false},
+        {"id":"C081","name":"Martutene","provider":"Euskalmet","latitude":43.297,"longitude":-1.95634,"hasWind":true},
+        {"id":"C082","name":"Txomin Enea","provider":"Euskalmet","latitude":43.3076,"longitude":-1.96198,"hasWind":true},
+        {"id":"C083","name":"Jaizubia","provider":"Euskalmet","latitude":43.3402,"longitude":-1.82138,"hasWind":true},
+        {"id":"C084","name":"Behobia","provider":"Euskalmet","latitude":43.346,"longitude":-1.76117,"hasWind":false},
+        {"id":"C085","name":"Eibar","provider":"Euskalmet","latitude":43.1921,"longitude":-2.4542,"hasWind":true},
+        {"id":"C086","name":"Inurritza","provider":"Euskalmet","latitude":43.2779811,"longitude":-2.1693568,"hasWind":false},
+        {"id":"C087","name":"Urduliz","provider":"Euskalmet","latitude":43.3841289,"longitude":-2.9568635,"hasWind":false},
+        {"id":"C0A0","name":"Sarria","provider":"Euskalmet","latitude":42.9798,"longitude":-2.8302,"hasWind":false},
+        {"id":"C0A1","name":"Pagoeta","provider":"Euskalmet","latitude":42.64782,"longitude":-2.72441,"hasWind":false},
+        {"id":"C0A2","name":"Egino","provider":"Euskalmet","latitude":42.86831,"longitude":-2.25319,"hasWind":false},
+        {"id":"C0A3","name":"Antoñana","provider":"Euskalmet","latitude":42.67846,"longitude":-2.39017,"hasWind":false},
+        {"id":"C0A4","name":"Albaina","provider":"Euskalmet","latitude":42.692483,"longitude":-2.631363,"hasWind":false},
+        {"id":"C0AA","name":"Etura","provider":"Euskalmet","latitude":42.8878,"longitude":-2.50361,"hasWind":true},
+        {"id":"C0AB","name":"Nanclares","provider":"Euskalmet","latitude":42.7934862,"longitude":-2.8239093,"hasWind":true},
+        {"id":"C0B0","name":"La Merced","provider":"Euskalmet","latitude":43.2596,"longitude":-2.92679,"hasWind":true},
+        {"id":"C0B1","name":"Abusu","provider":"Euskalmet","latitude":43.2474,"longitude":-2.91364,"hasWind":false},
+        {"id":"C0B2","name":"Zaratamo","provider":"Euskalmet","latitude":43.22,"longitude":-2.87935,"hasWind":true},
+        {"id":"C0B3","name":"Urkizu","provider":"Euskalmet","latitude":43.1849,"longitude":-2.7721,"hasWind":false},
+        {"id":"C0B4","name":"Orozko","provider":"Euskalmet","latitude":43.0864,"longitude":-2.91543,"hasWind":true},
+        {"id":"C0B5","name":"Oromino","provider":"Euskalmet","latitude":43.1920372,"longitude":-2.6767982,"hasWind":true},
+        {"id":"C0B6","name":"Berna","provider":"Euskalmet","latitude":43.1871,"longitude":-2.67238,"hasWind":false},
+        {"id":"C0B7","name":"Mañaria","provider":"Euskalmet","latitude":43.1437,"longitude":-2.64657,"hasWind":false},
+        {"id":"C0B8","name":"Larrainazubi","provider":"Euskalmet","latitude":43.3463,"longitude":-2.99932,"hasWind":false},
+        {"id":"C0B9","name":"Sangroniz","provider":"Euskalmet","latitude":43.2893,"longitude":-2.9308,"hasWind":false},
+        {"id":"C0BA","name":"Oleta","provider":"Euskalmet","latitude":43.3448,"longitude":-2.5088,"hasWind":false},
+        {"id":"C0BD","name":"Iruzubieta","provider":"Euskalmet","latitude":43.2584,"longitude":-2.526,"hasWind":false},
+        {"id":"C0BE","name":"Berriatua","provider":"Euskalmet","latitude":43.3063,"longitude":-2.47616,"hasWind":false},
+        {"id":"C0C0","name":"Zalla","provider":"Euskalmet","latitude":43.214,"longitude":-3.13522,"hasWind":false},
+        {"id":"C0C1","name":"Aranguren","provider":"Euskalmet","latitude":43.2117,"longitude":-3.12755,"hasWind":true},
+        {"id":"C0C2","name":"Balmaseda","provider":"Euskalmet","latitude":43.1771,"longitude":-3.21913,"hasWind":false},
+        {"id":"C0C3","name":"Sodupe-Cadagua","provider":"Euskalmet","latitude":43.2025,"longitude":-3.0493,"hasWind":true},
+        {"id":"C0C4","name":"Sodupe-Herrerias","provider":"Euskalmet","latitude":43.2024,"longitude":-3.04461,"hasWind":true},
+        {"id":"C0C5","name":"Arenao","provider":"Euskalmet","latitude":43.2807248,"longitude":-3.1394712,"hasWind":true},
+        {"id":"C0C6","name":"Jarralta","provider":"Euskalmet","latitude":43.2792301,"longitude":-3.1687352,"hasWind":false},
+        {"id":"C0C7","name":"Cueto","provider":"Euskalmet","latitude":43.2776134,"longitude":-3.2742476,"hasWind":false},
+        {"id":"C0C8","name":"Aulesti","provider":"Euskalmet","latitude":43.2985761,"longitude":-2.5585943,"hasWind":true},
+        {"id":"C0C9","name":"Karrantza","provider":"Euskalmet","latitude":43.2526,"longitude":-3.39376,"hasWind":true},
+        {"id":"C0CA","name":"Arbina","provider":"Euskalmet","latitude":43.333341,"longitude":-2.497656,"hasWind":true},
+        {"id":"C0CB","name":"Pando","provider":"Euskalmet","latitude":43.275675,"longitude":-3.258372,"hasWind":true},
+        {"id":"C0D0","name":"Urkulu","provider":"Euskalmet","latitude":43.013,"longitude":-2.47239,"hasWind":false},
+        {"id":"C0D1","name":"Oñati","provider":"Euskalmet","latitude":43.0621,"longitude":-2.43755,"hasWind":false},
+        {"id":"C0D2","name":"San Prudentzio","provider":"Euskalmet","latitude":43.0835,"longitude":-2.44745,"hasWind":false},
+        {"id":"C0D3","name":"Aixola","provider":"Euskalmet","latitude":43.1547,"longitude":-2.50123,"hasWind":false},
+        {"id":"C0DB","name":"Aitzu","provider":"Euskalmet","latitude":43.1141,"longitude":-2.323,"hasWind":false},
+        {"id":"C0DC","name":"Ibai Eder","provider":"Euskalmet","latitude":43.1751,"longitude":-2.25601,"hasWind":false},
+        {"id":"C0DD","name":"Aizarnazabal","provider":"Euskalmet","latitude":43.2553,"longitude":-2.24219,"hasWind":false},
+        {"id":"C0DE","name":"Matxinbenta","provider":"Euskalmet","latitude":43.1135,"longitude":-2.23513,"hasWind":false},
+        {"id":"C0E1","name":"Amundarain","provider":"Euskalmet","latitude":43.0335,"longitude":-2.15086,"hasWind":false},
+        {"id":"C0E5","name":"Agauntza","provider":"Euskalmet","latitude":43.0179,"longitude":-2.17748,"hasWind":false},
+        {"id":"C0E7","name":"Estanda","provider":"Euskalmet","latitude":43.052,"longitude":-2.21877,"hasWind":false},
+        {"id":"C0E8","name":"Araxes","provider":"Euskalmet","latitude":43.1148,"longitude":-2.04772,"hasWind":false},
+        {"id":"C0E9","name":"Alegia","provider":"Euskalmet","latitude":43.1018,"longitude":-2.10488,"hasWind":false},
+        {"id":"C0EA","name":"Belauntza","provider":"Euskalmet","latitude":43.1424,"longitude":-2.04845,"hasWind":false},
+        {"id":"C0EC","name":"Lasarte","provider":"Euskalmet","latitude":43.2527,"longitude":-2.02109,"hasWind":true},
+        {"id":"C0F0","name":"Ereñozu","provider":"Euskalmet","latitude":43.242,"longitude":-1.93922,"hasWind":true},
+        {"id":"C0F1","name":"Eskas","provider":"Euskalmet","latitude":43.2423581,"longitude":-1.8007078,"hasWind":false},
+        {"id":"C0F4","name":"Oiartzun","provider":"Euskalmet","latitude":43.3087,"longitude":-1.88459,"hasWind":false},
+        {"id":"E000","name":"Olabarria","provider":"Euskalmet","latitude":43.0763,"longitude":-2.74107,"hasWind":true},
+        {"id":"E001","name":"Undurraga","provider":"Euskalmet","latitude":43.089022,"longitude":-2.747883,"hasWind":true},
+        {"id":"E04A","name":"Embalse de Urkulu","provider":"Euskalmet","latitude":43.0225361,"longitude":-2.470625,"hasWind":true},
+        {"id":"E04B","name":"Embalse de Ibai Eder","provider":"Euskalmet","latitude":43.127975,"longitude":-2.228272,"hasWind":true},
+        {"id":"E04C","name":"Embalse Barrendiola","provider":"Euskalmet","latitude":43.010722,"longitude":-2.3431916,"hasWind":true},
+        {"id":"M09A","name":"Mareógrafo Bermeo","provider":"Euskalmet","latitude":43.4189241,"longitude":-2.7184411,"hasWind":true},
+        {"id":"M09B","name":"Mareógrafo Erandio","provider":"Euskalmet","latitude":43.302611,"longitude":-2.977206,"hasWind":true}
+    ];
+
+    const layerGroupBalizas = L.layerGroup();
+    let balizasDibujadas = false;
+
+    // 2. DIBUJAR LAS ESTACIONES ESTÁTICAS AL ACTIVAR EL CHECKBOX
+    function dibujarEstacionesEuskalmet() {
+        if (balizasDibujadas) return;
+
+        ESTACIONES_EUSKALMET.forEach(estacion => {
+            // Icono sutil de baliza gris (cargando)
+            const iconoBaliza = L.divIcon({
+                html: `<span class='label-baliza'>🚩</span>`,
+                className: 'custom-div-icon',
+                iconAnchor: [10, 20]
+            });
+
+            const marker = L.marker([estacion.latitude, estacion.longitude], { icon: iconoBaliza });
+            
+            // Guardamos el ID de la estación dentro del marcador para poder consultarlo al clicar
+            marker.stationId = estacion.id;
+            marker.stationName = estacion.name;
+
+            // Al abrir el popup, cargamos el viento en vivo
+            marker.bindPopup(`
+                <div id="pop-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
+                    <h4 style="margin: 0 0 5px 0; color: #2980b9;">🚩 ${estacion.name}</h4>
+                    <p style="margin:0; color:#666;">⏳ Cargando viento en vivo...</p>
+                </div>
+            `, { className: 'popup-despegueindividual' });
+
+            layerGroupBalizas.addLayer(marker);
+        });
+
+        balizasDibujadas = true;
+    }
+
+    // 3. ESCUCHAR EL CLIC EN EL POPUP PARA TRAER EL VIENTO EN DIRECTO (CORREGIDO)
+    map.on('popupopen', async function (e) {
+        const marker = e.popup._source;
+        if (!marker || !marker.stationId) return;
+
+        const containerDiv = document.getElementById(`pop-${marker.stationId}`);
+        if (!containerDiv) return;
+
+        try {
+            // Pedimos los datos en vivo a tu proxy de PHP para este ID
+            const res = await fetch(`https://flydecision.com/balizas_euskalmet.php?stationId=${marker.stationId}`);
+            const data = await res.json();
+
+            // 🔴 DEPURACIÓN: Imprime el JSON en la consola de tu navegador para verificar los nombres de las variables
+            console.log("Euskalmet RAW JSON para " + marker.stationName, data);
+
+            const timestamps = Object.keys(data).sort();
+            if (timestamps.length === 0) throw new Error("No hay lecturas");
+            
+            const ultimoTimestamp = timestamps[timestamps.length - 1];
+            const ultimaLectura = data[ultimoTimestamp];
+
+            // Mapeo de variables según el formato del JSON de Euskalmet
+            const vel = Math.round(ultimaLectura.vientoMedio || 0);
+            const dir = Math.round(ultimaLectura.vientoDireccion || 0);
+            const racha = Math.round(ultimaLectura.rachaViento || 0);
+
+            // Generar la flechita de dirección
+            const svgFlecha = `<svg viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg); display: inline-block; width: 14px; height: 16px; margin-right: 4px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
+
+            // 🔴 SEGURO: Evita el crash de substring si el formato no contiene la letra "T"
+            let horaLecturaStr = ultimoTimestamp; 
+            if (ultimoTimestamp.includes('T')) {
+                const partes = ultimoTimestamp.split('T');
+                if (partes[1]) {
+                    horaLecturaStr = partes[1].substring(0, 5);
+                }
+            }
+
+            // Actualizar el contenido del Popup con los datos reales en vivo
+            containerDiv.innerHTML = `
+                <h4 style="margin: 0 0 6px 0; color: #2980b9;">🚩 ${marker.stationName}</h4>
+                Viento: <b>${svgFlecha} ${vel} km/h</b><br>
+                Racha: <b>🍃 ${racha} km/h</b><br>
+                Dirección: <b>${dir}º</b><br>
+                <small style="color:#888; font-size: 0.8em; display:block; margin-top:5px;">Lectura: ${horaLecturaStr} h</small>
+            `;
+
+            // Opcional: Actualizar el icono del mapa para que muestre la velocidad en vivo en azul
+            marker.setIcon(L.divIcon({
+                html: `<span class='label-baliza'>${svgFlecha}${vel}</span>`,
+                className: 'custom-div-icon',
+                iconAnchor: [15, 30]
+            }));
+
+        } catch (err) {
+            console.error("Error interpretando lectura:", err);
+            containerDiv.innerHTML = `
+                <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
+                <p style="color:#c0392b; margin:5px 0 0 0;">⚠️ Estación sin datos de viento.</p>
+            `;
+        }
+    });
+
+    // 4. CHECKBOX DE ACTIVACIÓN
+    const checkboxBalizas = document.getElementById('checkboxBalizas');
+    if (checkboxBalizas) {
+        checkboxBalizas.addEventListener('change', function () {
+            if (this.checked) {
+                dibujarEstacionesEuskalmet();
+                map.addLayer(layerGroupBalizas);
+            } else {
+                map.removeLayer(layerGroupBalizas);
+            }
+        });
+    }
+
+    // Fin balizas
 } // Fin inicializarMapaLeaflet()
 
 // --- DELEGADO GLOBAL PARA POPUPS DEL MAPA (MÁS INFO) ---
