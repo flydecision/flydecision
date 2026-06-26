@@ -1,5 +1,6 @@
 package com.flydecision;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -15,6 +16,20 @@ public class MainActivity extends BridgeActivity {
         EdgeToEdge.enable(this);
 
         super.onCreate(savedInstanceState);
+
+        // 2. Forzar explícitamente la barra de navegación (y de estado) a transparente.
+        // EdgeToEdge.enable() no siempre sobreescribe el color definido en el theme
+        // (styles.xml / themes.xml), así que lo fijamos aquí a mano.
+        getWindow().setNavigationBarColor(android.graphics.Color.TRANSPARENT);
+        getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
+
+        // 3. Evitar que el sistema añada su propia capa semitransparente de contraste
+        // encima de la barra de navegación (y de estado). Sin esto, cada fabricante
+        // decide su propio nivel de opacidad y por eso se ve distinto según el móvil.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // Android 10+
+            getWindow().setNavigationBarContrastEnforced(false);
+            getWindow().setStatusBarContrastEnforced(false);
+        }
     }
 
     @Override

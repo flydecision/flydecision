@@ -73,7 +73,9 @@ body.modo-android-manual {
 
     /* 2. PARTE INFERIOR: ¡Vital para que los botones de Android no tapen tu menú! */
     /* Esto es lo que soluciona que la barra de abajo se vea integrada */
-    padding-bottom: var(--safe-area-inset-bottom, 0px) !important;
+    /* padding-bottom: var(--safe-area-inset-bottom, 0px) !important; */
+
+    padding-bottom: 0px !important; /* Cambiado a 0 para que la web llegue al borde físico del cristal */
 
     /* 3. LATERALES: Para móviles con "notches" laterales o pantallas curvas */
     padding-left: var(--safe-area-inset-left, 0px);
@@ -85,7 +87,7 @@ body.modo-android-manual {
 }
 
 /* Franja opaca en la zona del nav bar de Android */
-body.modo-android-manual::after {
+/* body.modo-android-manual::after {
     content: '';
     position: fixed;
     bottom: 0;
@@ -93,9 +95,9 @@ body.modo-android-manual::after {
     right: 0;
     height: var(--safe-area-inset-bottom, 0px);
     background-color: #d9ebf9;
-    z-index: 99998; /* debajo del bottom-nav (9999) pero encima de todo lo demás */
+    z-index: 99998; 
     pointer-events: none;
-}
+} */
 
 /* A veces Capacitor tarda unos milisegundos en cargar el plugin, y durante ese tiempo la app se ve mal. En tu CSS global, puedes añadir esto para que los elementos fixed (como tu cabecera) tengan una transición suave si cambian de altura: */
 body, header, .offline-badge {
@@ -2850,7 +2852,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 /* 1. Estilo General (La "pastilla" flotante) */
 .bottom-nav.compact-nav {
     position: fixed;
-    bottom: calc(10px + var(--safe-area-inset-bottom, 0px)); /* Más separada del fondo */
+    bottom: calc(0px + var(--safe-area-inset-bottom, 0px)); /* Más separada del fondo */
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 20px); /* Un poco más ancha */
