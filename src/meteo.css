@@ -1146,10 +1146,10 @@ details.config-accordion .accordion-content {
 .tabla-wrapper {
     flex: 1;
     margin-left: 3px;
-    margin-bottom: 3px; 
+    /* margin-bottom: 3px;  */
     margin-right: 3px;
     padding-right: 1px;
-    margin-top: 10px;
+    margin-top: 6px;
     flex-grow: 1;       
     overflow: auto;     
     height: 100%;       
