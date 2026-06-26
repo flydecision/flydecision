@@ -13945,10 +13945,12 @@ function inicializarMapaLeaflet() {
             `;
 
             // Actualizar el icono del mapa para que muestre la velocidad en vivo en azul
+            const svgFlechaMapa = `<svg viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg); display: inline-block; width: 22px; height: 26px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
+
             marker.setIcon(L.divIcon({
-                html: `<span class='label-baliza'>${svgFlecha}${vel}</span>`,
+                html: `<span class='label-baliza'>${svgFlechaMapa}${vel}</span>`,
                 className: 'custom-div-icon',
-                iconAnchor: [15, 30]
+                iconAnchor: [15, 30] // Mantenemos el anclaje original de tu commit
             }));
 
         } catch (err) {
