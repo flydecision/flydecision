@@ -13835,7 +13835,54 @@ function inicializarMapaLeaflet() {
         balizasDibujadas = true;
     }
 
-    // 3. ESCUCHAR EL CLIC EN EL POPUP PARA TRAER EL VIENTO EN DIRECTO (CORREGIDO)
+    // =========================================================================
+    // 🔴 AUXILIAR: Buscador recursivo e inteligente de datos (Inmune a cambios)
+    // =========================================================================
+    function buscarNumeroRecursivo(obj) {
+        if (obj === null || obj === undefined) return 0;
+        if (typeof obj === 'number') return obj;
+        if (typeof obj === 'string') {
+            const parsed = parseFloat(obj);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+        if (typeof obj === 'object') {
+            for (const key in obj) {
+                // Evitamos propiedades heredadas del prototipo de JS
+                if (obj.hasOwnProperty(key)) {
+                    const resultado = buscarNumeroRecursivo(obj[key]);
+                    if (resultado !== 0) return resultado;
+                }
+            }
+        }
+        return 0;
+    }
+
+    function extraerValorEuskalmet(obj, stationId) {
+        if (obj === null || obj === undefined) return 0;
+        if (typeof obj === 'number') return obj;
+        if (typeof obj === 'string') return parseFloat(obj) || 0;
+        
+        // 1. Prioridad: Buscar por ID de estación (ej: "C042")
+        if (obj[stationId] !== undefined) {
+            const val = obj[stationId];
+            if (typeof val === 'number') return val;
+            if (typeof val === 'string') return parseFloat(val) || 0;
+            if (typeof val === 'object' && val !== null) {
+                if (val.value !== undefined) return parseFloat(val.value) || 0;
+                return buscarNumeroRecursivo(val);
+            }
+        }
+        
+        // 2. Prioridad: Buscar propiedad "value" directa en la lectura
+        if (obj.value !== undefined) return parseFloat(obj.value) || 0;
+        
+        // 3. Fallback: Rastrear recursivamente cualquier número dentro del bloque
+        return buscarNumeroRecursivo(obj);
+    }
+
+    // =========================================================================
+    // 3. ESCUCHAR EL CLIC EN EL POPUP PARA TRAER EL VIENTO EN DIRECTO
+    // =========================================================================
     map.on('popupopen', async function (e) {
         const marker = e.popup._source;
         if (!marker || !marker.stationId) return;
@@ -13844,34 +13891,48 @@ function inicializarMapaLeaflet() {
         if (!containerDiv) return;
 
         try {
-            // Pedimos los datos en vivo a tu proxy de PHP para este ID
+            // Pedimos los datos en vivo a tu proxy de PHP (Cambiado a balizas_euskalmet.php)
             const res = await fetch(`https://flydecision.com/balizas_euskalmet.php?stationId=${marker.stationId}`);
             const data = await res.json();
 
-            // 🔴 DEPURACIÓN: Imprime el JSON en la consola de tu navegador para verificar los nombres de las variables
             console.log("Euskalmet RAW JSON para " + marker.stationName, data);
 
-            const timestamps = Object.keys(data).sort();
+            // Extraemos los objetos de las variables por sus códigos oficiales:
+            const speedObj = data["11"] || data[11]; // 11 = mean_speed
+            const dirObj   = data["12"] || data[12]; // 12 = mean_direction
+            const rachaObj = data["14"] || data[14]; // 14 = max_speed
+
+            if (!speedObj || !speedObj.data) {
+                throw new Error("Esta estación no tiene datos de viento registrados.");
+            }
+
+            const speedDataBlock = speedObj.data; 
+            const dirDataBlock   = dirObj ? dirObj.data : null;
+            const rachaDataBlock = rachaObj ? rachaObj.data : null;
+
+            // Los timestamps reales de las lecturas son las claves del bloque de datos (ej: ["1200", "1210"...])
+            const timestamps = Object.keys(speedDataBlock).sort((a, b) => Number(a) - Number(b));
             if (timestamps.length === 0) throw new Error("No hay lecturas");
             
-            const ultimoTimestamp = timestamps[timestamps.length - 1];
-            const ultimaLectura = data[ultimoTimestamp];
+            const ultimoTimestamp = timestamps[timestamps.length - 1]; // Última lectura real (ej: "1200")
 
-            // Mapeo de variables según el formato del JSON de Euskalmet
-            const vel = Math.round(ultimaLectura.vientoMedio || 0);
-            const dir = Math.round(ultimaLectura.vientoDireccion || 0);
-            const racha = Math.round(ultimaLectura.rachaViento || 0);
+            // 🔴 CORREGIDO: Usamos nuestro rastreador inteligente para extraer el valor numérico
+            const velRaw   = extraerValorEuskalmet(speedDataBlock[ultimoTimestamp], marker.stationId);
+            const dirRaw   = extraerValorEuskalmet(dirDataBlock ? dirDataBlock[ultimoTimestamp] : null, marker.stationId);
+            const rachaRaw = extraerValorEuskalmet(rachaDataBlock ? rachaDataBlock[ultimoTimestamp] : null, marker.stationId);
+
+            // CONVERSIÓN: Multiplicamos por 3.6 para convertir m/s a km/h
+            const vel   = Math.round(velRaw * 3.6);
+            const dir   = Math.round(dirRaw);
+            const racha = Math.round(rachaRaw * 3.6);
 
             // Generar la flechita de dirección
             const svgFlecha = `<svg viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg); display: inline-block; width: 14px; height: 16px; margin-right: 4px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
 
-            // 🔴 SEGURO: Evita el crash de substring si el formato no contiene la letra "T"
+            // Formatear el timestamp "1200" a "12:00"
             let horaLecturaStr = ultimoTimestamp; 
-            if (ultimoTimestamp.includes('T')) {
-                const partes = ultimoTimestamp.split('T');
-                if (partes[1]) {
-                    horaLecturaStr = partes[1].substring(0, 5);
-                }
+            if (ultimoTimestamp && ultimoTimestamp.length === 4) {
+                horaLecturaStr = ultimoTimestamp.substring(0, 2) + ":" + ultimoTimestamp.substring(2, 4);
             }
 
             // Actualizar el contenido del Popup con los datos reales en vivo
@@ -13883,7 +13944,7 @@ function inicializarMapaLeaflet() {
                 <small style="color:#888; font-size: 0.8em; display:block; margin-top:5px;">Lectura: ${horaLecturaStr} h</small>
             `;
 
-            // Opcional: Actualizar el icono del mapa para que muestre la velocidad en vivo en azul
+            // Actualizar el icono del mapa para que muestre la velocidad en vivo en azul
             marker.setIcon(L.divIcon({
                 html: `<span class='label-baliza'>${svgFlecha}${vel}</span>`,
                 className: 'custom-div-icon',
