@@ -582,7 +582,7 @@ if (btnAbrirGeo) {
                 mapaLeaflet = L.map('mapa-selector').setView([latInicial, lonInicial], zoomInicial);
                 
                 L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                    attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://opentopomap.org/" target="_blank">Style OpenTopoMap</a>'
+                    //attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://opentopomap.org/" target="_blank">Style OpenTopoMap</a>'
                 }).addTo(mapaLeaflet);
 
                 mapaLeaflet.on('click', function(e) {
