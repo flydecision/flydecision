@@ -13980,7 +13980,68 @@ function inicializarMapaLeaflet() {
         if (balizasDebenVerse) {
             activarCapaBalizas();
         }
-    } // Fin balizas
+    } 
+    //___________________________________________________________________________________
+    // 🏁 Fin Balizas
+
+
+    // ==========================================================================
+    // 🚀 REACTIVAR CAPA DESPEGUES AUTOMÁTICAMENTE AL USAR FILTROS
+    // ==========================================================================
+    let avisoReactivacionDespeguesMostrado = false; // solo una vez por sesión
+
+    window.reactivarCapaDespeguesSiEstaOculta = function() {
+        const chk = document.getElementById('checkboxDespegues');
+
+        // Si existe el checkbox y está desmarcado
+        if (chk && !chk.checked) {
+            chk.checked = true; // Lo volvemos a marcar visualmente
+
+            // Añadimos la capa al mapa si existe y no está ya añadida
+            if (typeof map !== 'undefined' && map && typeof clustergroupDespegues !== 'undefined') {
+                if (!map.hasLayer(clustergroupDespegues)) {
+                    map.addLayer(clustergroupDespegues);
+                }
+            }
+
+            // Repoblamos el cluster con los marcadores reales (si no, queda vacío hasta tocar un filtro)
+            if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+
+            // Guardamos la preferencia, para que siga visible también tras recargar la página
+            localStorage.setItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE', true);
+
+            // Aviso flotante, solo la primera vez en esta sesión
+            if (!avisoReactivacionDespeguesMostrado) {
+                avisoReactivacionDespeguesMostrado = true;
+                GestorMensajes.mostrar({
+                    tipo: 'no-modal',
+                    htmlContenido: `
+                        <style>.mensaje-no-modal { max-width: 340px; width: max-content; top: 23%; left: 50% !important; right: auto !important; transform: translateX(-50%) !important; border: none; padding: 10px; font-size: 20px;}</style>
+                        <p style="margin:0; padding:10px;line-height:1.3;">${t('mapa.despeguesReactivados', { defaultValue: 'Capa <i>🪂 Despegues</i> reactivada' })}</p>
+                    `,
+                    botones: []
+                });
+                setTimeout(() => GestorMensajes.ocultar(), 2500);
+            }
+        }
+    };
+
+    // Escuchamos cualquier clic, toque de pantalla o arrastre de ratón a nivel global
+    ['mousedown', 'touchstart', 'click'].forEach(evtType => {
+        document.addEventListener(evtType, function(e) {
+
+            // Comprobamos si el elemento tocado está DENTRO de alguno de los contenedores de filtros
+            const tocandoFiltros = e.target.closest('#infoPanel2') ||                    // Panel derecho de filtros
+                               e.target.closest('#div-filtro-horario') ||             // Barra inferior de horas
+                               e.target.closest('#wrapper-filtro-puntuacion-mapa') || // Barra de estrellas
+                               e.target.closest('.leaflet-text-search-input');        // Buscador de despegues
+
+            if (tocandoFiltros) {
+                window.reactivarCapaDespeguesSiEstaOculta();
+            }
+
+        }, { capture: true, passive: true }); // "capture" asegura que lo detectamos antes de que otros scripts frenen el evento
+    });
     
 } // Fin inicializarMapaLeaflet()
 
