@@ -13782,7 +13782,7 @@ function inicializarMapaLeaflet() {
                     <h4 style="margin: 0 0 5px 0; color: #2980b9;">🚩 ${estacion.name}</h4>
                     <p style="margin:0; color:#666;">⏳ Cargando viento en vivo...</p>
                 </div>
-            `, { className: 'popup-despegueindividual' });
+            `, { className: 'popup-despegueindividual popup-baliza' });
 
             layerGroupBalizas.addLayer(marker);
         });
@@ -13875,11 +13875,18 @@ function inicializarMapaLeaflet() {
     }
 
     // 5. PINTAR EL CONTENIDO DEL POPUP CON LOS DATOS YA CARGADOS
+    function formatearFechaHoraBaliza(fechaStr, horaStr) {
+    if (!fechaStr || !horaStr) return '–';
+    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const [anio, mes, dia] = fechaStr.split('-');
+    return `${dia}-${meses[parseInt(mes, 10) - 1]}-${anio} ${horaStr}`;
+}
+
     function pintarPopupBaliza(marker) {
         const containerDiv = document.getElementById(`pop-${marker.stationId}`);
         if (!containerDiv) return;
-
         const d = datosBalizas[marker.stationId];
+        
         if (!d || d.windSpeed === null || d.windSpeed === undefined) {
             containerDiv.innerHTML = `
                 <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
@@ -13888,20 +13895,48 @@ function inicializarMapaLeaflet() {
             return;
         }
 
-        const svgFlecha = `<svg viewBox="0 0 30 36" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg); display: inline-block; width: 14px; height: 16px; margin-right: 4px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
+        // 1. viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
+        const svgFlecha = `
+            <svg viewBox="5 1 20 20"
+                style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7);
+                        transform-origin: center center;
+                        width: 28px;
+                        height: 28px;
+                        flex-shrink: 0;">
+                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/>
+            </svg>
+        `;
 
-        const svgFlechaMapa = `
-                <svg viewBox="0 0 30 36" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg); transform-origin: 50% 30%; width: 40px; height: 40px; display: block;">
-                    <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/>
-                </svg>
-            `;
-
+        // 2. Aplicamos la misma estructura Flexbox a las 3 filas para que tengan idéntica altura (30px)
         containerDiv.innerHTML = `
-            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 6px 0;">🚩 <span style="color: #2980b9; font-weight: bold;"> ${marker.stationName}</span></p><br>
-            <span>Viento: <b>${d.windSpeed}</b> km/h</span><br>
-            <span>Racha: <b><span style="color: #c0392b;">${d.windGusts ?? '–'}</span></b> km/h</span><br>
-            <span>Dirección: <b>${svgFlechaMapa} (${d.windDirection ?? '–'}º)</b></span><br>
-            <span><small style="color:#888; display:block; margin-top:5px; margin-bottom:5px;">Actualizada: ${d.time ?? '–'} h</small></span>
+            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
+                🚩 <span style="color: #2980b9; font-weight: bold;"> ${marker.stationName}</span>
+            </p>
+            
+            <!-- Fila 1: Viento -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 75px;">Viento:</span> 
+                <b>${d.windSpeed}</b> <span style="margin-left: 4px;">km/h</span>
+            </div>
+            
+            <!-- Fila 2: Racha -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 75px;">Racha:</span> 
+                <b style="color: #c0392b;">${d.windGusts ?? '–'}</b> <span style="margin-left: 4px;">km/h</span>
+            </div>
+            
+            <!-- Fila 3: Dirección -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 75px;">Dirección:</span> 
+                ${svgFlecha} 
+                <span style="margin-left: 4px; color:#888;">(${d.windDirection ?? '–'}º)</span>
+            </div>
+
+            <span style="display: block; margin-top: 10px; margin-bottom:7px;">
+                <small style="color:#888;">
+                    ${t('balizas.actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
+                </small>
+            </span>
         `;
     }
 
