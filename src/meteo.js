@@ -3789,7 +3789,12 @@ function mostrarAvisoActualizacionMeteo(modelos) {
 
     GestorMensajes.mostrar({
         tipo: 'modal',
-        htmlContenido: `<p style="text-align:center;">${t('actualizacion.avisoNuevoMeteo', { modelos: textoModelos })}</p>`,
+        htmlContenido: `
+            <style>.aviso-meteo-centrado, .aviso-meteo-centrado * { text-align: center !important; }</style>
+            <div class="aviso-meteo-centrado">
+                <p>${t('actualizacion.avisoNuevoMeteo', { modelos: textoModelos })}</p>
+            </div>
+        `,
         botones: [
             {
                 texto: t('botones.aceptar'),
