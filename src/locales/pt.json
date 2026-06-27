@@ -539,6 +539,7 @@
     "fijarPanel": "Fixar Painel (não ocultar ao mover o mapa)",
     "masInformacion": "Mais informações ▼",
     "volverEdicion": "Voltar a Editar Favoritos",
+    "despeguesReactivados": "Camada <i>🪂 Descolagens</i> reativada",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Você está aqui&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "capasCheckbox": {
       "despegues": "🪂 Descolagens",
