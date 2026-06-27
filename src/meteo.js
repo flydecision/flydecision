@@ -13701,7 +13701,7 @@ function inicializarMapaLeaflet() {
         {"id":"C03A","name":"Zorrotza","provider":"Euskalmet","latitude":43.28498,"longitude":-2.968458,"hasWind":true},
         {"id":"C040","name":"Gasteiz","provider":"Euskalmet","latitude":42.8604,"longitude":-2.68899,"hasWind":true},
         {"id":"C041","name":"Navarrete","provider":"Euskalmet","latitude":42.638,"longitude":-2.52321,"hasWind":true},
-        {"id":"C042","name":"Punta Galea","provider":"Euskalmet","latitude":43.3752,"longitude":-3.03608,"hasWind":true},
+        {"id":"C042","name":"Punta Galea","provider":"Euskalmet","latitude":43.37326,"longitude":-3.03604,"hasWind":true},
         {"id":"C043","name":"Ordizia","provider":"Euskalmet","latitude":43.0484,"longitude":-2.17755,"hasWind":true},
         {"id":"C045","name":"La Garbea","provider":"Euskalmet","latitude":43.217,"longitude":-3.19368,"hasWind":true},
         {"id":"C046","name":"Oiz","provider":"Euskalmet","latitude":43.2304,"longitude":-2.5954,"hasWind":true},
@@ -13931,7 +13931,7 @@ function inicializarMapaLeaflet() {
                 <span style="color:#888;">(${d.windDirection ?? '–'}º)</span>
             </div>
 
-            <span style="display: block; margin-top: 10px; margin-bottom:7px;">
+            <span style="display: block; margin-top: 7px; margin-bottom:7px;">
                 <small style="color:#888;">
                     ${t('balizas.actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
                 </small>
