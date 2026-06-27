@@ -12177,7 +12177,17 @@ function inicializarMapaLeaflet() {
                     clustergroupDespegues.addLayer(marker);
                 });
 
-                map.addLayer(clustergroupDespegues);
+                // Restaurar el estado de visibilidad de la última sesión (por defecto: visible)
+                const chkDespeguesPersist = document.getElementById('checkboxDespegues');
+                const despeguesDebenVerse = localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false';
+
+                if (chkDespeguesPersist) chkDespeguesPersist.checked = despeguesDebenVerse;
+                if (despeguesDebenVerse) {
+                    map.addLayer(clustergroupDespegues);
+                } else {
+                    map.removeLayer(clustergroupDespegues);
+                }
+                if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
             
                 // Comprobar si hay petición de apertura externa en la URL (?q=...) (link desde Meteo)
                 // --- LÓGICA DE APERTURA AUTOMÁTICA (NOMBRE -> COORDENADAS) ---
@@ -13350,6 +13360,7 @@ function inicializarMapaLeaflet() {
     
     //Checkbox para ocultar/mostrar Despegues
     document.getElementById('checkboxDespegues').addEventListener('change', function () {
+        localStorage.setItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE', this.checked);
         if (this.checked) {
             map.addLayer(clustergroupDespegues);
         } else {
@@ -13638,10 +13649,238 @@ function inicializarMapaLeaflet() {
         return svg;
     }
 
-    //___________________________________________________________________________________
-    // FIN filtro orientaciones
+    // 🔴 Balizas
     //___________________________________________________________________________________
 
+    // 1. BASE DE DATOS DE ESTACIONES
+        const ESTACIONES_EUSKALMET = [
+        {"id":"B090","name":"Puerto de Bilbao","provider":"Euskalmet","latitude":43.3774903,"longitude":-3.08474,"hasWind":true},
+        {"id":"B096","name":"Puerto de Pasaia","provider":"Euskalmet","latitude":43.3370283,"longitude":-1.92752,"hasWind":true},
+        {"id":"C002","name":"Arteaga","provider":"Euskalmet","latitude":43.347,"longitude":-2.65714,"hasWind":true},
+        {"id":"C007","name":"Santa Clara","provider":"Euskalmet","latitude":43.3218,"longitude":-1.99834,"hasWind":true},
+        {"id":"C00A","name":"Kanpezu","provider":"Euskalmet","latitude":42.6754,"longitude":-2.34148,"hasWind":true},
+        {"id":"C00B","name":"Tobillas","provider":"Euskalmet","latitude":42.8992,"longitude":-3.1828,"hasWind":true},
+        {"id":"C00C","name":"Goiain","provider":"Euskalmet","latitude":42.944472,"longitude":-2.6415097,"hasWind":true},
+        {"id":"C016","name":"Arkauti","provider":"Euskalmet","latitude":42.854275,"longitude":-2.621833,"hasWind":true},
+        {"id":"C017","name":"Miramon","provider":"Euskalmet","latitude":43.2868,"longitude":-1.97121,"hasWind":true},
+        {"id":"C018","name":"Higer","provider":"Euskalmet","latitude":43.3913,"longitude":-1.79615,"hasWind":true},
+        {"id":"C019","name":"Matxitxako","provider":"Euskalmet","latitude":43.4375,"longitude":-2.7636,"hasWind":true},
+        {"id":"C020","name":"Trebiño","provider":"Euskalmet","latitude":42.7180163,"longitude":-2.70141,"hasWind":true},
+        {"id":"C021","name":"Roitegi","provider":"Euskalmet","latitude":42.7817,"longitude":-2.371,"hasWind":true},
+        {"id":"C022","name":"Urkiola","provider":"Euskalmet","latitude":43.1,"longitude":-2.64658,"hasWind":true},
+        {"id":"C023","name":"Arrasate","provider":"Euskalmet","latitude":43.0695849,"longitude":-2.49308,"hasWind":true},
+        {"id":"C024","name":"Iturrieta","provider":"Euskalmet","latitude":42.7935945,"longitude":-2.34575,"hasWind":true},
+        {"id":"C025","name":"Beluntza","provider":"Euskalmet","latitude":42.9615782,"longitude":-2.89361,"hasWind":true},
+        {"id":"C026","name":"Berastegi","provider":"Euskalmet","latitude":43.1248,"longitude":-1.98168,"hasWind":true},
+        {"id":"C028","name":"Zegama","provider":"Euskalmet","latitude":42.9588,"longitude":-2.29852,"hasWind":true},
+        {"id":"C029","name":"Zizurkil","provider":"Euskalmet","latitude":43.1901,"longitude":-2.06181,"hasWind":true},
+        {"id":"C030","name":"Salvatierra","provider":"Euskalmet","latitude":42.8582,"longitude":-2.39538,"hasWind":true},
+        {"id":"C031","name":"Moreda","provider":"Euskalmet","latitude":42.5303,"longitude":-2.41023,"hasWind":true},
+        {"id":"C032","name":"Areta","provider":"Euskalmet","latitude":43.1394,"longitude":-2.93531,"hasWind":true},
+        {"id":"C033","name":"Igorre","provider":"Euskalmet","latitude":43.1686,"longitude":-2.7842,"hasWind":true},
+        {"id":"C034","name":"Espejo","provider":"Euskalmet","latitude":42.8078,"longitude":-3.04103,"hasWind":true},
+        {"id":"C035","name":"Altube","provider":"Euskalmet","latitude":42.9661,"longitude":-2.86795,"hasWind":true},
+        {"id":"C036","name":"Iurreta","provider":"Euskalmet","latitude":43.1769,"longitude":-2.622,"hasWind":true},
+        {"id":"C037","name":"Venta Alta","provider":"Euskalmet","latitude":43.2165,"longitude":-2.89976,"hasWind":true},
+        {"id":"C038","name":"Galindo","provider":"Euskalmet","latitude":43.3062,"longitude":-2.99878,"hasWind":true},
+        {"id":"C03A","name":"Zorrotza","provider":"Euskalmet","latitude":43.28498,"longitude":-2.968458,"hasWind":true},
+        {"id":"C040","name":"Gasteiz","provider":"Euskalmet","latitude":42.8604,"longitude":-2.68899,"hasWind":true},
+        {"id":"C041","name":"Navarrete","provider":"Euskalmet","latitude":42.638,"longitude":-2.52321,"hasWind":true},
+        {"id":"C042","name":"Punta Galea","provider":"Euskalmet","latitude":43.3752,"longitude":-3.03608,"hasWind":true},
+        {"id":"C043","name":"Ordizia","provider":"Euskalmet","latitude":43.0484,"longitude":-2.17755,"hasWind":true},
+        {"id":"C045","name":"La Garbea","provider":"Euskalmet","latitude":43.217,"longitude":-3.19368,"hasWind":true},
+        {"id":"C046","name":"Oiz","provider":"Euskalmet","latitude":43.2304,"longitude":-2.5954,"hasWind":true},
+        {"id":"C047","name":"Kapildui","provider":"Euskalmet","latitude":42.768,"longitude":-2.53785,"hasWind":true},
+        {"id":"C048","name":"Herrera","provider":"Euskalmet","latitude":42.5978,"longitude":-2.67616,"hasWind":true},
+        {"id":"C049","name":"Subijana","provider":"Euskalmet","latitude":42.8196,"longitude":-2.89328,"hasWind":true},
+        {"id":"C050","name":"Zambrana","provider":"Euskalmet","latitude":42.6751,"longitude":-2.8869,"hasWind":true},
+        {"id":"C051","name":"Saratxo","provider":"Euskalmet","latitude":43.0342,"longitude":-3.00398,"hasWind":true},
+        {"id":"C054","name":"Otxandio","provider":"Euskalmet","latitude":43.0423,"longitude":-2.65763,"hasWind":true},
+        {"id":"C056","name":"Alegría","provider":"Euskalmet","latitude":42.8447,"longitude":-2.52402,"hasWind":true},
+        {"id":"C057","name":"Mungia","provider":"Euskalmet","latitude":43.363,"longitude":-2.84702,"hasWind":true},
+        {"id":"C058","name":"Bidania","provider":"Euskalmet","latitude":43.146,"longitude":-2.15502,"hasWind":true},
+        {"id":"C059","name":"Ordunte","provider":"Euskalmet","latitude":43.1623,"longitude":-3.28404,"hasWind":true},
+        {"id":"C060","name":"Páganos","provider":"Euskalmet","latitude":42.5605,"longitude":-2.60055,"hasWind":true},
+        {"id":"C061","name":"Arboleda","provider":"Euskalmet","latitude":43.2967,"longitude":-3.06747,"hasWind":true},
+        {"id":"C064","name":"Zarautz","provider":"Euskalmet","latitude":43.293,"longitude":-2.14542,"hasWind":true},
+        {"id":"C065","name":"Cerroja","provider":"Euskalmet","latitude":43.2112,"longitude":-3.40713,"hasWind":true},
+        {"id":"C066","name":"Untzueta","provider":"Euskalmet","latitude":43.1392,"longitude":-2.9071,"hasWind":true},
+        {"id":"C067","name":"Gardea","provider":"Euskalmet","latitude":43.1272,"longitude":-2.98025,"hasWind":true},
+        {"id":"C068","name":"Ilarduia","provider":"Euskalmet","latitude":42.87395,"longitude":-2.28623,"hasWind":true},
+        {"id":"C069","name":"Almike (Bermeo)","provider":"Euskalmet","latitude":43.4137,"longitude":-2.73229,"hasWind":true},
+        {"id":"C070","name":"Zaldiaran","provider":"Euskalmet","latitude":42.7966,"longitude":-2.73642,"hasWind":true},
+        {"id":"C071","name":"Jaizkibel","provider":"Euskalmet","latitude":43.3446,"longitude":-1.85972,"hasWind":true},
+        {"id":"C072","name":"Orduña","provider":"Euskalmet","latitude":42.9837,"longitude":-3.03726,"hasWind":true},
+        {"id":"C073","name":"Mallabia","provider":"Euskalmet","latitude":43.1926263,"longitude":-2.5295246,"hasWind":true},
+        {"id":"C0AA","name":"Etura","provider":"Euskalmet","latitude":42.8878,"longitude":-2.50361,"hasWind":true},
+        {"id":"C0AB","name":"Nanclares","provider":"Euskalmet","latitude":42.7934862,"longitude":-2.8239093,"hasWind":true},
+        {"id":"C0B4","name":"Orozko","provider":"Euskalmet","latitude":43.0864,"longitude":-2.91543,"hasWind":true},
+        {"id":"C0C3","name":"Sodupe-Cadagua","provider":"Euskalmet","latitude":43.2025,"longitude":-3.0493,"hasWind":true},
+        {"id":"C0EC","name":"Lasarte","provider":"Euskalmet","latitude":43.2527,"longitude":-2.02109,"hasWind":true},
+        {"id":"C0F0","name":"Ereñozu","provider":"Euskalmet","latitude":43.242,"longitude":-1.93922,"hasWind":true}
+    ];
+
+    const layerGroupBalizas = L.layerGroup();
+    let balizasDibujadas = false;
+    let datosBalizas = {};
+    let intervaloBalizas = null;
+    let ultimoJsonBalizasRaw = null; // para detectar si hay datos nuevos antes de repintar
+
+    // 2. DIBUJAR LAS ESTACIONES ESTÁTICAS AL ACTIVAR EL CHECKBOX
+    function dibujarEstacionesEuskalmet() {
+        if (balizasDibujadas) return;
+
+        ESTACIONES_EUSKALMET.forEach(estacion => {
+            // Flecha gris neutra de 44px x 52px (el doble de grande) como marcador de posición inicial
+            const svgFlechaPlaceholder = `<svg viewBox="0 0 30 36" style="display: inline-block; width: 44px; height: 52px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#95a5a6"/></svg>`;
+            
+            const iconoBaliza = L.divIcon({
+                html: `<span class='label-baliza'>${svgFlechaPlaceholder}</span>`,
+                className: 'custom-div-icon',
+                iconAnchor: [22, 26] // Ajustado para centrar el nuevo tamaño de 44x52
+            });
+
+            const marker = L.marker([estacion.latitude, estacion.longitude], { icon: iconoBaliza });
+            marker.stationId = estacion.id;
+            marker.stationName = estacion.name;
+
+            marker.bindPopup(`
+                <div id="pop-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
+                    <h4 style="margin: 0 0 5px 0; color: #2980b9;">🚩 ${estacion.name}</h4>
+                    <p style="margin:0; color:#666;">⏳ Cargando viento en vivo...</p>
+                </div>
+            `, { className: 'popup-despegueindividual' });
+
+            layerGroupBalizas.addLayer(marker);
+        });
+
+        balizasDibujadas = true;
+    }
+
+    // 3. CARGAR EL JSON CONSOLIDADO (lo genera el cron cada 10 min)
+    async function cargarDatosBalizas() {
+        try {
+            const res = await fetch(`https://flydecision.com/balizas_euskalmet_cache.json?_=${Date.now()}`);
+            const textoCrudo = await res.text();
+
+            // Si el contenido es idéntico al de la última vez, no hay nada nuevo: no repintamos
+            if (textoCrudo === ultimoJsonBalizasRaw) return;
+
+            ultimoJsonBalizasRaw = textoCrudo;
+            datosBalizas = JSON.parse(textoCrudo);
+            actualizarIconosBalizas();
+        } catch (e) {
+            console.error('No se pudo cargar el caché de balizas Euskalmet', e);
+        }
+    }
+
+    // 4. ACTUALIZAR ICONOS DEL MAPA CON LA VELOCIDAD EN VIVO
+    function actualizarIconosBalizas() {
+        layerGroupBalizas.eachLayer(marker => {
+            const d = datosBalizas[marker.stationId];
+            
+            // 1. SI LA ESTACIÓN NO TIENE DATOS ACTIVOS
+            if (!d || d.windSpeed === null || d.windSpeed === undefined) {
+                // Se dibuja un punto rojo de 22px (exactamente la mitad del ancho de la flecha de 44px)
+                const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: inline-block; width: 22px; height: 22px; vertical-align: middle;"><circle cx="11" cy="11" r="8" fill="#e74c3c" stroke="#c0392b" stroke-width="1.5"/></svg>`;
+                
+                marker.setIcon(L.divIcon({
+                    html: `<span class='label-baliza' title="${marker.stationName}: Sin datos recientes">${svgPuntoRojo}</span>`,
+                    className: 'custom-div-icon',
+                    iconAnchor: [11, 11] // Punto de anclaje centrado para el círculo de 22x22
+                }));
+                return;
+            }
+
+            // 2. SI LA ESTACIÓN TIENE DATOS CORRECTOS
+            const svgFlechaMapa = `<svg viewBox="0 0 30 36" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg); display: inline-block; width: 44px; height: 52px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
+
+            // Construcción de la cifra de velocidad de viento medio
+            let cifrasHtml = `<strong style="font-size: 15px; color: #2980b9; vertical-align: middle; margin-left: 2px;">${d.windSpeed}</strong>`;
+            
+            // Si la estación reporta racha máxima, la añadimos a la derecha con la barra divisora
+            if (d.windGusts !== null && d.windGusts !== undefined) {
+                cifrasHtml += `<span style="font-size: 15px; color: #7f8c8d; vertical-align: middle; margin: 0 3px;">/</span><strong style="font-size: 15px; color: #e74c3c; vertical-align: middle;" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
+            }
+
+            marker.setIcon(L.divIcon({
+                html: `<span class='label-baliza'>${svgFlechaMapa}${cifrasHtml}</span>`,
+                className: 'custom-div-icon',
+                iconAnchor: [22, 26] // Anclaje centrado para la flecha de 44x52 (el texto desborda limpiamente a la derecha)
+            }));
+
+            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+        });
+    }
+
+    // 5. PINTAR EL CONTENIDO DEL POPUP CON LOS DATOS YA CARGADOS
+    function pintarPopupBaliza(marker) {
+        const containerDiv = document.getElementById(`pop-${marker.stationId}`);
+        if (!containerDiv) return;
+
+        const d = datosBalizas[marker.stationId];
+        if (!d || d.windSpeed === null || d.windSpeed === undefined) {
+            containerDiv.innerHTML = `
+                <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
+                <p style="color:#c0392b; margin:5px 0 0 0;">⚠️ Estación sin datos de viento.</p>
+            `;
+            return;
+        }
+
+        const svgFlecha = `<svg viewBox="0 0 30 36" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg); display: inline-block; width: 14px; height: 16px; margin-right: 4px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
+
+        containerDiv.innerHTML = `
+            <h4 style="margin: 0 0 6px 0; color: #2980b9;">🚩 ${marker.stationName}</h4>
+            Viento: <b>${svgFlecha} ${d.windSpeed} km/h</b><br>
+            Racha: <b>🍃 ${d.windGusts ?? '–'} km/h</b><br>
+            Dirección: <b>${d.windDirection ?? '–'}º</b><br>
+            <small style="color:#888; font-size: 0.8em; display:block; margin-top:5px;">Lectura: ${d.time ?? '–'} h</small>
+        `;
+    }
+
+    // 6. AL ABRIR UN POPUP, LO PINTAMOS CON LOS DATOS YA CARGADOS (sin fetch individual)
+    map.on('popupopen', function (e) {
+        const marker = e.popup._source;
+        if (!marker || !marker.stationId) return;
+        pintarPopupBaliza(marker);
+    });
+
+    // 7. CHECKBOX DE ACTIVACIÓN
+    const checkboxBalizas = document.getElementById('checkboxBalizas');
+
+    function activarCapaBalizas() {
+        dibujarEstacionesEuskalmet();
+        map.addLayer(layerGroupBalizas);
+        cargarDatosBalizas();
+        intervaloBalizas = setInterval(cargarDatosBalizas, 60 * 1000); // cada 1 min, silencioso
+    }
+
+    function desactivarCapaBalizas() {
+        map.removeLayer(layerGroupBalizas);
+        if (intervaloBalizas) {
+            clearInterval(intervaloBalizas);
+            intervaloBalizas = null;
+        }
+    }
+
+    if (checkboxBalizas) {
+        checkboxBalizas.addEventListener('change', function () {
+            localStorage.setItem('METEO_MAPA_CAPA_BALIZAS_VISIBLE', this.checked);
+            if (this.checked) {
+                activarCapaBalizas();
+            } else {
+                desactivarCapaBalizas();
+            }
+        });
+
+        // Restaurar el estado de la última sesión (por defecto: oculta si no hay nada guardado)
+        const balizasDebenVerse = localStorage.getItem('METEO_MAPA_CAPA_BALIZAS_VISIBLE') === 'true';
+        checkboxBalizas.checked = balizasDebenVerse;
+        if (balizasDebenVerse) {
+            activarCapaBalizas();
+        }
+    } // Fin balizas
+    
 } // Fin inicializarMapaLeaflet()
 
 // --- DELEGADO GLOBAL PARA POPUPS DEL MAPA (MÁS INFO) ---

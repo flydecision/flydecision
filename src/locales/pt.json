@@ -542,6 +542,7 @@
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Você está aqui&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "capasCheckbox": {
       "despegues": "🪂 Descolagens",
+      "balizas": "🚩 Balizas de vento",
       "mapaCalorPeninsula": "🔥 Mapa de Calor Ibérico",
       "mapaCalorAlpes": "🔥 Mapa de Calor Alpes",
       "mapaCalorMarruecos": "🔥 Mapa de Calor Marrocos",

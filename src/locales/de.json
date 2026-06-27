@@ -542,6 +542,7 @@
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Du bist hier&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "capasCheckbox": {
       "despegues": "🪂 Startplätze",
+      "balizas": "🚩 Windstationen",
       "mapaCalorPeninsula": "🔥 Iberische Heatmap",
       "mapaCalorAlpes": "🔥 Alpen Heatmap",
       "mapaCalorMarruecos": "🔥 Marokko Heatmap",
