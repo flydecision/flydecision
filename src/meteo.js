@@ -13638,12 +13638,10 @@ function inicializarMapaLeaflet() {
         return svg;
     }
 
-    //___________________________________________________________________________________
     // 🔴 Balizas
     //___________________________________________________________________________________
 
-
-    // 1. BASE DE DATOS DE ESTACIONES (Pega aquí la lista de estaciones de tu archivo .ts)
+    // 1. BASE DE DATOS DE ESTACIONES
     const ESTACIONES_EUSKALMET = [
         {"id":"B090","name":"Puerto de Bilbao","provider":"Euskalmet","latitude":43.3774903,"longitude":-3.08474,"hasWind":true},
         {"id":"B091","name":"Puerto de Armintza","provider":"Euskalmet","latitude":43.4357871,"longitude":-2.89916,"hasWind":true},
@@ -13797,31 +13795,32 @@ function inicializarMapaLeaflet() {
         {"id":"E04B","name":"Embalse de Ibai Eder","provider":"Euskalmet","latitude":43.127975,"longitude":-2.228272,"hasWind":true},
         {"id":"E04C","name":"Embalse Barrendiola","provider":"Euskalmet","latitude":43.010722,"longitude":-2.3431916,"hasWind":true},
         {"id":"M09A","name":"Mareógrafo Bermeo","provider":"Euskalmet","latitude":43.4189241,"longitude":-2.7184411,"hasWind":true},
-        {"id":"M09B","name":"Mareógrafo Erandio","provider":"Euskalmet","latitude":43.302611,"longitude":-2.977206,"hasWind":true}
+        {"id":"M09B","name":"Mareógrafo Erandio","provider":"Euskalmet","latitude":43.302611,"longitude":-2.977206,"hasWind":true},
     ];
 
     const layerGroupBalizas = L.layerGroup();
     let balizasDibujadas = false;
+    let datosBalizas = {};
+    let intervaloBalizas = null;
 
     // 2. DIBUJAR LAS ESTACIONES ESTÁTICAS AL ACTIVAR EL CHECKBOX
     function dibujarEstacionesEuskalmet() {
         if (balizasDibujadas) return;
 
         ESTACIONES_EUSKALMET.forEach(estacion => {
-            // Icono sutil de baliza gris (cargando)
+            // Flecha gris neutra de 44px x 52px (el doble de grande) como marcador de posición inicial
+            const svgFlechaPlaceholder = `<svg viewBox="0 0 30 36" style="display: inline-block; width: 44px; height: 52px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#95a5a6"/></svg>`;
+            
             const iconoBaliza = L.divIcon({
-                html: `<span class='label-baliza'>🚩</span>`,
+                html: `<span class='label-baliza'>${svgFlechaPlaceholder}</span>`,
                 className: 'custom-div-icon',
-                iconAnchor: [10, 20]
+                iconAnchor: [22, 26] // Ajustado para centrar el nuevo tamaño de 44x52
             });
 
             const marker = L.marker([estacion.latitude, estacion.longitude], { icon: iconoBaliza });
-            
-            // Guardamos el ID de la estación dentro del marcador para poder consultarlo al clicar
             marker.stationId = estacion.id;
             marker.stationName = estacion.name;
 
-            // Al abrir el popup, cargamos el viento en vivo
             marker.bindPopup(`
                 <div id="pop-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
                     <h4 style="margin: 0 0 5px 0; color: #2980b9;">🚩 ${estacion.name}</h4>
@@ -13835,147 +13834,88 @@ function inicializarMapaLeaflet() {
         balizasDibujadas = true;
     }
 
-    // =========================================================================
-    // 🔴 AUXILIAR: Buscador recursivo e inteligente de datos (Inmune a cambios)
-    // =========================================================================
-    function buscarNumeroRecursivo(obj) {
-        if (obj === null || obj === undefined) return 0;
-        if (typeof obj === 'number') return obj;
-        if (typeof obj === 'string') {
-            const parsed = parseFloat(obj);
-            return isNaN(parsed) ? 0 : parsed;
+    // 3. CARGAR EL JSON CONSOLIDADO (lo genera el cron cada 10 min)
+    async function cargarDatosBalizas() {
+        try {
+            const res = await fetch(`https://flydecision.com/balizas_euskalmet_cache.json?_=${Date.now()}`);
+            datosBalizas = await res.json();
+            actualizarIconosBalizas();
+        } catch (e) {
+            console.error('No se pudo cargar el caché de balizas Euskalmet', e);
         }
-        if (typeof obj === 'object') {
-            for (const key in obj) {
-                // Evitamos propiedades heredadas del prototipo de JS
-                if (obj.hasOwnProperty(key)) {
-                    const resultado = buscarNumeroRecursivo(obj[key]);
-                    if (resultado !== 0) return resultado;
-                }
-            }
-        }
-        return 0;
     }
 
-    function extraerValorEuskalmet(obj, stationId) {
-        if (obj === null || obj === undefined) return 0;
-        if (typeof obj === 'number') return obj;
-        if (typeof obj === 'string') return parseFloat(obj) || 0;
-        
-        // 1. Prioridad: Buscar por ID de estación (ej: "C042")
-        if (obj[stationId] !== undefined) {
-            const val = obj[stationId];
-            if (typeof val === 'number') return val;
-            if (typeof val === 'string') return parseFloat(val) || 0;
-            if (typeof val === 'object' && val !== null) {
-                if (val.value !== undefined) return parseFloat(val.value) || 0;
-                return buscarNumeroRecursivo(val);
-            }
-        }
-        
-        // 2. Prioridad: Buscar propiedad "value" directa en la lectura
-        if (obj.value !== undefined) return parseFloat(obj.value) || 0;
-        
-        // 3. Fallback: Rastrear recursivamente cualquier número dentro del bloque
-        return buscarNumeroRecursivo(obj);
+    // 4. ACTUALIZAR ICONOS DEL MAPA CON LA VELOCIDAD EN VIVO
+    function actualizarIconosBalizas() {
+        layerGroupBalizas.eachLayer(marker => {
+            const d = datosBalizas[marker.stationId];
+            if (!d || d.windSpeed === null || d.windSpeed === undefined) return;
+
+            // Flecha duplicada a 44px de ancho por 52px de alto
+            const svgFlechaMapa = `<svg viewBox="0 0 30 36" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg); display: inline-block; width: 44px; height: 52px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
+
+            marker.setIcon(L.divIcon({
+                // Estructura limpia: solo la flecha azul y el número de velocidad estilizado al lado
+                html: `<span class='label-baliza'>${svgFlechaMapa}<strong style="font-size: 15px; color: #2980b9; vertical-align: middle; margin-left: 2px;">${d.windSpeed}</strong></span>`,
+                className: 'custom-div-icon',
+                iconAnchor: [22, 26] // Ajuste de anclaje [X, Y] a la mitad de las dimensiones para que gire sobre su propio eje central
+            }));
+
+            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+        });
     }
 
-    // =========================================================================
-    // 3. ESCUCHAR EL CLIC EN EL POPUP PARA TRAER EL VIENTO EN DIRECTO
-    // =========================================================================
-    map.on('popupopen', async function (e) {
-        const marker = e.popup._source;
-        if (!marker || !marker.stationId) return;
-
+    // 5. PINTAR EL CONTENIDO DEL POPUP CON LOS DATOS YA CARGADOS
+    function pintarPopupBaliza(marker) {
         const containerDiv = document.getElementById(`pop-${marker.stationId}`);
         if (!containerDiv) return;
 
-        try {
-            // Pedimos los datos en vivo a tu proxy de PHP (Cambiado a balizas_euskalmet.php)
-            const res = await fetch(`https://flydecision.com/balizas_euskalmet.php?stationId=${marker.stationId}`);
-            const data = await res.json();
-
-            console.log("Euskalmet RAW JSON para " + marker.stationName, data);
-
-            // Extraemos los objetos de las variables por sus códigos oficiales:
-            const speedObj = data["11"] || data[11]; // 11 = mean_speed
-            const dirObj   = data["12"] || data[12]; // 12 = mean_direction
-            const rachaObj = data["14"] || data[14]; // 14 = max_speed
-
-            if (!speedObj || !speedObj.data) {
-                throw new Error("Esta estación no tiene datos de viento registrados.");
-            }
-
-            const speedDataBlock = speedObj.data; 
-            const dirDataBlock   = dirObj ? dirObj.data : null;
-            const rachaDataBlock = rachaObj ? rachaObj.data : null;
-
-            // Los timestamps reales de las lecturas son las claves del bloque de datos (ej: ["1200", "1210"...])
-            const timestamps = Object.keys(speedDataBlock).sort((a, b) => Number(a) - Number(b));
-            if (timestamps.length === 0) throw new Error("No hay lecturas");
-            
-            const ultimoTimestamp = timestamps[timestamps.length - 1]; // Última lectura real (ej: "1200")
-
-            // 🔴 CORREGIDO: Usamos nuestro rastreador inteligente para extraer el valor numérico
-            const velRaw   = extraerValorEuskalmet(speedDataBlock[ultimoTimestamp], marker.stationId);
-            const dirRaw   = extraerValorEuskalmet(dirDataBlock ? dirDataBlock[ultimoTimestamp] : null, marker.stationId);
-            const rachaRaw = extraerValorEuskalmet(rachaDataBlock ? rachaDataBlock[ultimoTimestamp] : null, marker.stationId);
-
-            // CONVERSIÓN: Multiplicamos por 3.6 para convertir m/s a km/h
-            const vel   = Math.round(velRaw * 3.6);
-            const dir   = Math.round(dirRaw);
-            const racha = Math.round(rachaRaw * 3.6);
-
-            // Generar la flechita de dirección
-            const svgFlecha = `<svg viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg); display: inline-block; width: 14px; height: 16px; margin-right: 4px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
-
-            // Formatear el timestamp "1200" a "12:00"
-            let horaLecturaStr = ultimoTimestamp; 
-            if (ultimoTimestamp && ultimoTimestamp.length === 4) {
-                horaLecturaStr = ultimoTimestamp.substring(0, 2) + ":" + ultimoTimestamp.substring(2, 4);
-            }
-
-            // Actualizar el contenido del Popup con los datos reales en vivo
-            containerDiv.innerHTML = `
-                <h4 style="margin: 0 0 6px 0; color: #2980b9;">🚩 ${marker.stationName}</h4>
-                Viento: <b>${svgFlecha} ${vel} km/h</b><br>
-                Racha: <b>🍃 ${racha} km/h</b><br>
-                Dirección: <b>${dir}º</b><br>
-                <small style="color:#888; font-size: 0.8em; display:block; margin-top:5px;">Lectura: ${horaLecturaStr} h</small>
-            `;
-
-            // Actualizar el icono del mapa para que muestre la velocidad en vivo en azul
-            const svgFlechaMapa = `<svg viewBox="0 0 30 36" style="transform: rotate(${dir + 180}deg); display: inline-block; width: 22px; height: 26px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
-
-            marker.setIcon(L.divIcon({
-                html: `<span class='label-baliza'>${svgFlechaMapa}${vel}</span>`,
-                className: 'custom-div-icon',
-                iconAnchor: [15, 30] // Mantenemos el anclaje original de tu commit
-            }));
-
-        } catch (err) {
-            console.error("Error interpretando lectura:", err);
+        const d = datosBalizas[marker.stationId];
+        if (!d || d.windSpeed === null || d.windSpeed === undefined) {
             containerDiv.innerHTML = `
                 <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
                 <p style="color:#c0392b; margin:5px 0 0 0;">⚠️ Estación sin datos de viento.</p>
             `;
+            return;
         }
+
+        const svgFlecha = `<svg viewBox="0 0 30 36" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg); display: inline-block; width: 14px; height: 16px; margin-right: 4px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
+
+        containerDiv.innerHTML = `
+            <h4 style="margin: 0 0 6px 0; color: #2980b9;">🚩 ${marker.stationName}</h4>
+            Viento: <b>${svgFlecha} ${d.windSpeed} km/h</b><br>
+            Racha: <b>🍃 ${d.windGusts ?? '–'} km/h</b><br>
+            Dirección: <b>${d.windDirection ?? '–'}º</b><br>
+            <small style="color:#888; font-size: 0.8em; display:block; margin-top:5px;">Lectura: ${d.time ?? '–'} h</small>
+        `;
+    }
+
+    // 6. AL ABRIR UN POPUP, LO PINTAMOS CON LOS DATOS YA CARGADOS (sin fetch individual)
+    map.on('popupopen', function (e) {
+        const marker = e.popup._source;
+        if (!marker || !marker.stationId) return;
+        pintarPopupBaliza(marker);
     });
 
-    // 4. CHECKBOX DE ACTIVACIÓN
+    // 7. CHECKBOX DE ACTIVACIÓN
     const checkboxBalizas = document.getElementById('checkboxBalizas');
     if (checkboxBalizas) {
         checkboxBalizas.addEventListener('change', function () {
             if (this.checked) {
                 dibujarEstacionesEuskalmet();
                 map.addLayer(layerGroupBalizas);
+                cargarDatosBalizas();
+                intervaloBalizas = setInterval(cargarDatosBalizas, 10 * 60 * 1000);
             } else {
                 map.removeLayer(layerGroupBalizas);
+                if (intervaloBalizas) {
+                    clearInterval(intervaloBalizas);
+                    intervaloBalizas = null;
+                }
             }
         });
-    }
-
-    // Fin balizas
+    } // Fin balizas
+    
 } // Fin inicializarMapaLeaflet()
 
 // --- DELEGADO GLOBAL PARA POPUPS DEL MAPA (MÁS INFO) ---
