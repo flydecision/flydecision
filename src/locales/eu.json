@@ -438,7 +438,7 @@
       "viento": "Haizea (Météo-France: Arome-HD eta Arpege)",
       "general": "Eguraldi orokorra eta XC baldintza termikoak (ECMWF)"
     },
-    "avisoNuevoMeteo": "<p>ℹ️ Eguraldi datu berriak eskuragarri honetarako:</p><p><b>{{modelos}}</b></p><p>Orain eguneratu?</p>"
+    "avisoNuevoMeteo": "<p>ℹ️ Datu meteorologiko berriak daude hauetatik:</p><p><b>{{modelos}}</b></p><p>Jarraian aplikatuko dira.</p>"
   },
 
   "retrasoInusual": {

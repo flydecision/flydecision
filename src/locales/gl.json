@@ -438,7 +438,7 @@
       "viento": "Vento (Météo-France: Arome-HD e Arpege)",
       "general": "Meteo xeral e condicións térmicas de XC (ECMWF)"
     },
-    "avisoNuevoMeteo": "<p>ℹ️ Novos datos meteorolóxicos dispoñibles para:</p><p><b>{{modelos}}</b></p><p>Actualizar agora?</p>"
+    "avisoNuevoMeteo": "<p>ℹ️ Hai novos datos meteorolóxicos de:</p><p><b>{{modelos}}</b></p><p>Aplicaranse a continuación.</p>"
   },
 
   "retrasoInusual": {

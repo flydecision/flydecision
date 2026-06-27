@@ -438,7 +438,7 @@
       "viento": "Wind (Météo-France: Arome-HD and Arpege)",
       "general": "General weather and XC thermal conditions (ECMWF)"
     },
-    "avisoNuevoMeteo": "<p>ℹ️ New weather data available for:</p><p><b>{{modelos}}</b></p><p>Update now?</p>"
+    "avisoNuevoMeteo": "<p>ℹ️ There is new weather data from:</p><p><b>{{modelos}}</b></p><p>They will be applied next.</p>"
   },
 
   "retrasoInusual": {

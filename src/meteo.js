@@ -3787,13 +3787,24 @@ function mostrarAvisoActualizacionMeteo(modelos) {
     // Unimos los nombres de los modelos con "y" (Ej: "Météo-France" o "Météo-France y ECMWF")
     const textoModelos = modelos.join(' y ');
 
-    if (typeof mensajeModalAceptarCancelar === 'function') {
-        mensajeModalAceptarCancelar(
-            '', 
-            t('actualizacion.avisoNuevoMeteo', { modelos: textoModelos }), 
-            'recargarPagina'
-        );
-    }
+    GestorMensajes.mostrar({
+        tipo: 'modal',
+        htmlContenido: `
+            <style>.aviso-meteo-centrado, .aviso-meteo-centrado * { text-align: center !important; }</style>
+            <div class="aviso-meteo-centrado">
+                <p>${t('actualizacion.avisoNuevoMeteo', { modelos: textoModelos })}</p>
+            </div>
+        `,
+        botones: [
+            {
+                texto: t('botones.aceptar'),
+                onclick: function() {
+                    GestorMensajes.ocultar();
+                    construir_tabla(true, true); // forzarRecarga: pide datos frescos | silencioso: sin spinner, sin tocar filtros/vista
+                }
+            }
+        ]
+    });
 }
 
 function avisarActualizacionMinutely15() {
@@ -11476,6 +11487,11 @@ function inicializarMapaLeaflet() {
     // Escuchar cuando el usuario termina de hacer zoom
     map.on('zoomend', function() {
         updateURL(map);
+
+        // Si la capa de balizas está visible, las repintamos para que evalúen si deben ocultar o mostrar la racha según el nuevo zoom.
+        if (map.hasLayer(layerGroupBalizas)) {
+            actualizarIconosBalizas();
+        }
     });
 
     // Variables para acceder a los mensajes de carga
@@ -11909,8 +11925,8 @@ function inicializarMapaLeaflet() {
                         color: black;
                         border: 1.8px solid ${borderColor};
                         border-radius: 50%;
-                        width: 35px;
-                        height: 35px;
+                        width: 30px;
+                        height: 30px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -11940,25 +11956,24 @@ function inicializarMapaLeaflet() {
         const orientacionHTML = createOrientationSVG(orientacionesMetadata);
         
         // Unificamos: Cogemos la puntuación venga del parámetro nuevo o del antiguo
-        const valorActividad = actividadScore || actividadColor || '';
+        //const valorActividad = actividadScore || actividadColor || '';
         
-        let elementoActividad = '';
+        //let elementoActividad = '';
         
-        if (valorActividad !== '') {
-            // Si el valor es un número (ej: "4", "5"), pintamos las barritas grises
-            if (!isNaN(valorActividad) && Number(valorActividad) > 0) {
-                elementoActividad = crearIconoActividad(valorActividad);
-            } 
-            // Fallback de seguridad: si alguna vez lee "verde", "rojo", pintamos el círculo
-            else {
-                const color = actividadToColor(valorActividad);
-                elementoActividad = `<span class="dot" style="background:${color}"></span>`;
-            }
-        }
+        // if (valorActividad !== '') {
+        //     if (!isNaN(valorActividad) && Number(valorActividad) > 0) {
+        //         elementoActividad = crearIconoActividad(valorActividad);
+        //     } 
+        //     else {
+        //         const color = actividadToColor(valorActividad);
+        //         elementoActividad = `<span class="dot" style="background:${color}"></span>`;
+        //     }
+        // }
         
         const bgStyle = bgColor ? ` style="background-color:${bgColor}"` : '';
         
-        const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}${elementoActividad}<span class="nombre-despegue-label">${escapeHtml(despegue)}</span></span>`;
+        //const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}${elementoActividad}<span class="nombre-despegue-label">${escapeHtml(despegue)}</span></span>`;
+        const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}<span class="nombre-despegue-label">${escapeHtml(despegue)}</span></span>`;
 
         return L.divIcon({
             html: labelHTML,
@@ -12890,8 +12905,8 @@ function inicializarMapaLeaflet() {
                         color: black;
                         border: 1.8px solid #007aff;
                         border-radius: 50%;
-                        width: 35px;
-                        height: 35px;
+                        width: 30px;
+                        height: 30px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -13020,8 +13035,8 @@ function inicializarMapaLeaflet() {
                         color: black;
                         border: 1.8px solid #007aff;
                         border-radius: 50%;
-                        width: 35px;
-                        height: 35px;
+                        width: 30px;
+                        height: 30px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -13681,8 +13696,8 @@ function inicializarMapaLeaflet() {
         {"id":"C034","name":"Espejo","provider":"Euskalmet","latitude":42.8078,"longitude":-3.04103,"hasWind":true},
         {"id":"C035","name":"Altube","provider":"Euskalmet","latitude":42.9661,"longitude":-2.86795,"hasWind":true},
         {"id":"C036","name":"Iurreta","provider":"Euskalmet","latitude":43.1769,"longitude":-2.622,"hasWind":true},
-        {"id":"C037","name":"Venta Alta","provider":"Euskalmet","latitude":43.2165,"longitude":-2.89976,"hasWind":true},
-        {"id":"C038","name":"Galindo","provider":"Euskalmet","latitude":43.3062,"longitude":-2.99878,"hasWind":true},
+        {"id":"C037","name":"Venta Alta","provider":"Euskalmet","latitude":43.2145,"longitude":-2.89976,"hasWind":true},
+        {"id":"C038","name":"Galindo","provider":"Euskalmet","latitude":43.3042,"longitude":-2.99878,"hasWind":true},
         {"id":"C03A","name":"Zorrotza","provider":"Euskalmet","latitude":43.28498,"longitude":-2.968458,"hasWind":true},
         {"id":"C040","name":"Gasteiz","provider":"Euskalmet","latitude":42.8604,"longitude":-2.68899,"hasWind":true},
         {"id":"C041","name":"Navarrete","provider":"Euskalmet","latitude":42.638,"longitude":-2.52321,"hasWind":true},
@@ -13704,7 +13719,7 @@ function inicializarMapaLeaflet() {
         {"id":"C061","name":"Arboleda","provider":"Euskalmet","latitude":43.2967,"longitude":-3.06747,"hasWind":true},
         {"id":"C064","name":"Zarautz","provider":"Euskalmet","latitude":43.293,"longitude":-2.14542,"hasWind":true},
         {"id":"C065","name":"Cerroja","provider":"Euskalmet","latitude":43.2112,"longitude":-3.40713,"hasWind":true},
-        {"id":"C066","name":"Untzueta","provider":"Euskalmet","latitude":43.1392,"longitude":-2.9071,"hasWind":true},
+        {"id":"C066","name":"Untzueta","provider":"Euskalmet","latitude":43.1372,"longitude":-2.9071,"hasWind":true},
         {"id":"C067","name":"Gardea","provider":"Euskalmet","latitude":43.1272,"longitude":-2.98025,"hasWind":true},
         {"id":"C068","name":"Ilarduia","provider":"Euskalmet","latitude":42.87395,"longitude":-2.28623,"hasWind":true},
         {"id":"C069","name":"Almike (Bermeo)","provider":"Euskalmet","latitude":43.4137,"longitude":-2.73229,"hasWind":true},
@@ -13731,13 +13746,30 @@ function inicializarMapaLeaflet() {
         if (balizasDibujadas) return;
 
         ESTACIONES_EUSKALMET.forEach(estacion => {
-            // Flecha gris neutra de 44px x 52px (el doble de grande) como marcador de posición inicial
-            const svgFlechaPlaceholder = `<svg viewBox="0 0 30 36" style="display: inline-block; width: 44px; height: 52px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#95a5a6"/></svg>`;
+            // Flecha gris en su tamaño original (22x26)
+            const svgFlechaGris = `
+                <svg viewBox="0 0 30 36" style="width: 22px; height: 26px; display: block;">
+                    <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#95a5a6"/>
+                </svg>
+            `;
             
+            // Cuadrado virtual de 80x50 px (más ancho para los 16px de texto)
+            const htmlCargando = `
+                <div style="width: 80px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                    <div style="height: 28px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                        ${svgFlechaGris}
+                    </div>
+                    <div style="height: 22px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap;">
+                        <span style="font-weight: bold; font-size: 16px; color: #95a5a6;">...</span>
+                    </div>
+                </div>
+            `;
+
+            // Cambio de tamaños: 3º Coges el width total y el height total de la caja htmlBaliza, los divides entre 2, y los pones en el iconAnchor: [ancho/2, alto/2]. ¡Pura matemática para que no baile nada!
             const iconoBaliza = L.divIcon({
-                html: `<span class='label-baliza'>${svgFlechaPlaceholder}</span>`,
+                html: htmlCargando,
                 className: 'custom-div-icon',
-                iconAnchor: [22, 26] // Ajustado para centrar el nuevo tamaño de 44x52
+                iconAnchor: [40, 23] // Centro matemático exacto de 80x50 (style en htmlBaliza)
             });
 
             const marker = L.marker([estacion.latitude, estacion.longitude], { icon: iconoBaliza });
@@ -13749,7 +13781,7 @@ function inicializarMapaLeaflet() {
                     <h4 style="margin: 0 0 5px 0; color: #2980b9;">🚩 ${estacion.name}</h4>
                     <p style="margin:0; color:#666;">⏳ Cargando viento en vivo...</p>
                 </div>
-            `, { className: 'popup-despegueindividual' });
+            `, { className: 'popup-despegueindividual popup-baliza' });
 
             layerGroupBalizas.addLayer(marker);
         });
@@ -13776,37 +13808,65 @@ function inicializarMapaLeaflet() {
 
     // 4. ACTUALIZAR ICONOS DEL MAPA CON LA VELOCIDAD EN VIVO
     function actualizarIconosBalizas() {
+
+        const zoomActual = map.getZoom();
+
         layerGroupBalizas.eachLayer(marker => {
             const d = datosBalizas[marker.stationId];
             
-            // 1. SI LA ESTACIÓN NO TIENE DATOS ACTIVOS
+            // A) SI LA ESTACIÓN NO TIENE DATOS (Punto rojo)
             if (!d || d.windSpeed === null || d.windSpeed === undefined) {
-                // Se dibuja un punto rojo de 22px (exactamente la mitad del ancho de la flecha de 44px)
-                const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: inline-block; width: 22px; height: 22px; vertical-align: middle;"><circle cx="11" cy="11" r="8" fill="#e74c3c" stroke="#c0392b" stroke-width="1.5"/></svg>`;
+                const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
                 
+                const htmlSinDatos = `
+                    <div title="${marker.stationName}: Sin datos recientes" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        ${svgPuntoRojo}
+                    </div>
+                `;
+
                 marker.setIcon(L.divIcon({
-                    html: `<span class='label-baliza' title="${marker.stationName}: Sin datos recientes">${svgPuntoRojo}</span>`,
+                    html: htmlSinDatos,
                     className: 'custom-div-icon',
-                    iconAnchor: [11, 11] // Punto de anclaje centrado para el círculo de 22x22
+                    iconAnchor: [40, 23] 
                 }));
                 return;
             }
 
-            // 2. SI LA ESTACIÓN TIENE DATOS CORRECTOS
-            const svgFlechaMapa = `<svg viewBox="0 0 30 36" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg); display: inline-block; width: 44px; height: 52px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
-
-            // Construcción de la cifra de velocidad de viento medio
-            let cifrasHtml = `<strong style="font-size: 15px; color: #2980b9; vertical-align: middle; margin-left: 2px;">${d.windSpeed}</strong>`;
+            // B) SI LA ESTACIÓN TIENE DATOS
+            const rotacion = (d.windDirection ?? 0) + 180;
             
-            // Si la estación reporta racha máxima, la añadimos a la derecha con la barra divisora
-            if (d.windGusts !== null && d.windGusts !== undefined) {
-                cifrasHtml += `<span style="font-size: 15px; color: #7f8c8d; vertical-align: middle; margin: 0 3px;">/</span><strong style="font-size: 15px; color: #e74c3c; vertical-align: middle;" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
+            // Cambio de tamaños: 1º Modificas el tamaño del SVG en sí (width y height dentro del <svg>). El viewBox y el polygon nunca se tocan (deben ser 0 0 30 36).
+            const svgFlechaMapa = `
+                <svg viewBox="0 0 30 36" style="transform: rotate(${rotacion}deg); transform-origin: 50% 30%; width: 40px; height: 40px; display: block;">
+                    <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/>
+                </svg>
+            `;
+
+            // ¡Corregido! Todo a 16px exactos
+            let cifrasHtml = `<strong style="font-size: 16px; color: #2980b9;">${d.windSpeed}</strong>`;
+            
+            if (zoomActual >= 10 && d.windGusts !== null && d.windGusts !== undefined) {
+                cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: #e74c3c;" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
             }
 
+            // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal.
+            const htmlBaliza = `
+                <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer;">
+                    
+                    <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                        ${svgFlechaMapa}
+                    </div>
+
+                    <div style="height: 20px; margin-top: -14px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap; text-shadow: 1px 1px 2px rgba(255,255,255,1), -1px -1px 2px rgba(255,255,255,1), 1px -1px 2px rgba(255,255,255,1), -1px 1px 2px rgba(255,255,255,1);">
+                        ${cifrasHtml}
+                    </div>
+                </div>
+            `;
+
             marker.setIcon(L.divIcon({
-                html: `<span class='label-baliza'>${svgFlechaMapa}${cifrasHtml}</span>`,
+                html: htmlBaliza,
                 className: 'custom-div-icon',
-                iconAnchor: [22, 26] // Anclaje centrado para la flecha de 44x52 (el texto desborda limpiamente a la derecha)
+                iconAnchor: [40, 40] // Siempre la mitad exacta de width y height
             }));
 
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
@@ -13814,11 +13874,18 @@ function inicializarMapaLeaflet() {
     }
 
     // 5. PINTAR EL CONTENIDO DEL POPUP CON LOS DATOS YA CARGADOS
+    function formatearFechaHoraBaliza(fechaStr, horaStr) {
+    if (!fechaStr || !horaStr) return '–';
+    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const [anio, mes, dia] = fechaStr.split('-');
+    return `${dia}-${meses[parseInt(mes, 10) - 1]}-${anio} ${horaStr}`;
+}
+
     function pintarPopupBaliza(marker) {
         const containerDiv = document.getElementById(`pop-${marker.stationId}`);
         if (!containerDiv) return;
-
         const d = datosBalizas[marker.stationId];
+        
         if (!d || d.windSpeed === null || d.windSpeed === undefined) {
             containerDiv.innerHTML = `
                 <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
@@ -13827,14 +13894,48 @@ function inicializarMapaLeaflet() {
             return;
         }
 
-        const svgFlecha = `<svg viewBox="0 0 30 36" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg); display: inline-block; width: 14px; height: 16px; margin-right: 4px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
+        // 1. viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
+        const svgFlecha = `
+            <svg viewBox="5 1 20 20"
+                style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7);
+                        transform-origin: center center;
+                        width: 28px;
+                        height: 28px;
+                        flex-shrink: 0;">
+                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/>
+            </svg>
+        `;
 
+        // 2. Aplicamos la misma estructura Flexbox a las 3 filas para que tengan idéntica altura (30px)
         containerDiv.innerHTML = `
-            <h4 style="margin: 0 0 6px 0; color: #2980b9;">🚩 ${marker.stationName}</h4>
-            Viento: <b>${svgFlecha} ${d.windSpeed} km/h</b><br>
-            Racha: <b>🍃 ${d.windGusts ?? '–'} km/h</b><br>
-            Dirección: <b>${d.windDirection ?? '–'}º</b><br>
-            <small style="color:#888; font-size: 0.8em; display:block; margin-top:5px;">Lectura: ${d.time ?? '–'} h</small>
+            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
+                🚩 <span style="color: #2980b9; font-weight: bold;"> ${marker.stationName}</span>
+            </p>
+            
+            <!-- Fila 1: Viento -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 75px;">Viento:</span> 
+                <b>${d.windSpeed}</b> <span style="margin-left: 4px;">km/h</span>
+            </div>
+            
+            <!-- Fila 2: Racha -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 75px;">Racha:</span> 
+                <b style="color: #c0392b;">${d.windGusts ?? '–'}</b> <span style="margin-left: 4px;">km/h</span>
+            </div>
+            
+            <!-- Fila 3: Dirección -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 75px;">Dirección:</span> 
+                ${svgFlecha} 
+                <span style="color:#888;">(${d.windDirection ?? '–'}º)</span>
+            </div>
+
+            <span style="display: block; margin-top: 10px; margin-bottom:7px;">
+                <small style="color:#888;">
+                    ${t('balizas.actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
+                </small>
+            </span>
         `;
     }
 

@@ -439,7 +439,7 @@
       "min15": "Arome-HD 15min",
       "general": "Meteo general y condiciones térmicas XC (ECMWF)"
     },
-    "avisoNuevoMeteo": "<p>ℹ️ Hay nuevos datos meteorológicos de:</p><p><b>{{modelos}}</b></p><p>¿Actualizar ahora?</p>"
+    "avisoNuevoMeteo": "<p>ℹ️ Hay nuevos datos meteorológicos de:</p><p><b>{{modelos}}</b></p><p>Se aplicarán a continuación.</p>"
   },
 
   "retrasoInusual": {

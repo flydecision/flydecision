@@ -438,7 +438,7 @@
       "viento": "Wind (Météo-France: Arome-HD und Arpège)",
       "general": "Allgemeines Wetter und thermische XC-Bedingungen (ECMWF)"
     },
-    "avisoNuevoMeteo": "<p>ℹ️ Neue Wetterdaten verfügbar für:</p><p><b>{{modelos}}</b></p><p>Jetzt aktualisieren?</p>"
+    "avisoNuevoMeteo": "<p>ℹ️ Es gibt neue Wetterdaten von:</p><p><b>{{modelos}}</b></p><p>Sie werden im Anschluss angewendet.</p>"
   },
 
   "retrasoInusual": {
