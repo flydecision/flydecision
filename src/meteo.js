@@ -13697,8 +13697,8 @@ function inicializarMapaLeaflet() {
         {"id":"C034","name":"Espejo","provider":"Euskalmet","latitude":42.8078,"longitude":-3.04103,"hasWind":true},
         {"id":"C035","name":"Altube","provider":"Euskalmet","latitude":42.9661,"longitude":-2.86795,"hasWind":true},
         {"id":"C036","name":"Iurreta","provider":"Euskalmet","latitude":43.1769,"longitude":-2.622,"hasWind":true},
-        {"id":"C037","name":"Venta Alta","provider":"Euskalmet","latitude":43.2165,"longitude":-2.89976,"hasWind":true},
-        {"id":"C038","name":"Galindo","provider":"Euskalmet","latitude":43.3062,"longitude":-2.99878,"hasWind":true},
+        {"id":"C037","name":"Venta Alta","provider":"Euskalmet","latitude":43.2145,"longitude":-2.89976,"hasWind":true},
+        {"id":"C038","name":"Galindo","provider":"Euskalmet","latitude":43.3042,"longitude":-2.99878,"hasWind":true},
         {"id":"C03A","name":"Zorrotza","provider":"Euskalmet","latitude":43.28498,"longitude":-2.968458,"hasWind":true},
         {"id":"C040","name":"Gasteiz","provider":"Euskalmet","latitude":42.8604,"longitude":-2.68899,"hasWind":true},
         {"id":"C041","name":"Navarrete","provider":"Euskalmet","latitude":42.638,"longitude":-2.52321,"hasWind":true},
@@ -13890,12 +13890,18 @@ function inicializarMapaLeaflet() {
 
         const svgFlecha = `<svg viewBox="0 0 30 36" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg); display: inline-block; width: 14px; height: 16px; margin-right: 4px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
 
+        const svgFlechaMapa = `
+                <svg viewBox="0 0 30 36" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg); transform-origin: 50% 30%; width: 40px; height: 40px; display: block;">
+                    <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/>
+                </svg>
+            `;
+
         containerDiv.innerHTML = `
-            <h4 style="margin: 0 0 6px 0; color: #2980b9;">🚩 ${marker.stationName}</h4>
-            Viento: <b>${svgFlecha} ${d.windSpeed} km/h</b><br>
-            Racha: <b>🍃 ${d.windGusts ?? '–'} km/h</b><br>
-            Dirección: <b>${d.windDirection ?? '–'}º</b><br>
-            <small style="color:#888; font-size: 0.8em; display:block; margin-top:5px;">Lectura: ${d.time ?? '–'} h</small>
+            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 6px 0;">🚩 <span style="color: #2980b9; font-weight: bold;"> ${marker.stationName}</span></p><br>
+            <span>Viento: <b>${d.windSpeed}</b> km/h</span><br>
+            <span>Racha: <b><span style="color: #c0392b;">${d.windGusts ?? '–'}</span></b> km/h</span><br>
+            <span>Dirección: <b>${svgFlechaMapa} (${d.windDirection ?? '–'}º)</b></span><br>
+            <span><small style="color:#888; display:block; margin-top:5px; margin-bottom:5px;">Actualizada: ${d.time ?? '–'} h</small></span>
         `;
     }
 
