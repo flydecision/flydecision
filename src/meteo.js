@@ -13737,13 +13737,29 @@ function inicializarMapaLeaflet() {
         if (balizasDibujadas) return;
 
         ESTACIONES_EUSKALMET.forEach(estacion => {
-            // Flecha gris neutra de 44px x 52px (el doble de grande) como marcador de posición inicial
-            const svgFlechaPlaceholder = `<svg viewBox="0 0 30 36" style="display: inline-block; width: 44px; height: 52px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#95a5a6"/></svg>`;
+            // Flecha gris en posición neutra
+            const svgFlechaGris = `
+                <svg viewBox="0 0 30 36" style="width: 22px; height: 26px; display: block;">
+                    <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#95a5a6"/>
+                </svg>
+            `;
             
+            // Cuadrado virtual de 60x50 px dividido en dos mitades
+            const htmlCargando = `
+                <div style="width: 60px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                    <div style="height: 28px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                        ${svgFlechaGris}
+                    </div>
+                    <div style="height: 22px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap;">
+                        <span style="font-weight: bold; font-size: 14px; color: #95a5a6;">...</span>
+                    </div>
+                </div>
+            `;
+
             const iconoBaliza = L.divIcon({
-                html: `<span class='label-baliza'>${svgFlechaPlaceholder}</span>`,
+                html: htmlCargando,
                 className: 'custom-div-icon',
-                iconAnchor: [22, 26] // Ajustado para centrar el nuevo tamaño de 44x52
+                iconAnchor: [30, 25] // Centro matemático exacto del cuadrado
             });
 
             const marker = L.marker([estacion.latitude, estacion.longitude], { icon: iconoBaliza });
@@ -13781,38 +13797,67 @@ function inicializarMapaLeaflet() {
     }
 
     // 4. ACTUALIZAR ICONOS DEL MAPA CON LA VELOCIDAD EN VIVO
+    // 4. ACTUALIZAR ICONOS DEL MAPA CON LA VELOCIDAD EN VIVO
     function actualizarIconosBalizas() {
         layerGroupBalizas.eachLayer(marker => {
             const d = datosBalizas[marker.stationId];
             
-            // 1. SI LA ESTACIÓN NO TIENE DATOS ACTIVOS
+            // A) SI LA ESTACIÓN NO TIENE DATOS (Punto rojo)
             if (!d || d.windSpeed === null || d.windSpeed === undefined) {
-                // Se dibuja un punto rojo de 22px (exactamente la mitad del ancho de la flecha de 44px)
-                const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: inline-block; width: 22px; height: 22px; vertical-align: middle;"><circle cx="11" cy="11" r="8" fill="#e74c3c" stroke="#c0392b" stroke-width="1.5"/></svg>`;
+                // Punto rojo de 11px (mitad exacta de los 22px de la flecha)
+                const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
                 
+                const htmlSinDatos = `
+                    <div title="${marker.stationName}: Sin datos recientes" style="width: 60px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        ${svgPuntoRojo}
+                    </div>
+                `;
+
                 marker.setIcon(L.divIcon({
-                    html: `<span class='label-baliza' title="${marker.stationName}: Sin datos recientes">${svgPuntoRojo}</span>`,
+                    html: htmlSinDatos,
                     className: 'custom-div-icon',
-                    iconAnchor: [11, 11] // Punto de anclaje centrado para el círculo de 22x22
+                    iconAnchor: [30, 25] // Mismo anclaje para que no dé saltos
                 }));
                 return;
             }
 
-            // 2. SI LA ESTACIÓN TIENE DATOS CORRECTOS
-            const svgFlechaMapa = `<svg viewBox="0 0 30 36" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg); display: inline-block; width: 44px; height: 52px; vertical-align: middle;"><polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/></svg>`;
-
-            // Construcción de la cifra de velocidad de viento medio
-            let cifrasHtml = `<strong style="font-size: 15px; color: #2980b9; vertical-align: middle; margin-left: 2px;">${d.windSpeed}</strong>`;
+            // B) SI LA ESTACIÓN TIENE DATOS (Cuadrado Virtual con flecha rotatoria)
+            const rotacion = (d.windDirection ?? 0) + 180;
             
-            // Si la estación reporta racha máxima, la añadimos a la derecha con la barra divisora
+            // Flecha con "transform-origin: center center" para que gire como una brújula en su propio sitio
+            const svgFlechaMapa = `
+                <svg viewBox="0 0 30 36" style="transform: rotate(${rotacion}deg); transform-origin: center center; width: 22px; height: 26px; display: block;">
+                    <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/>
+                </svg>
+            `;
+
+            // Cifras de viento
+            let cifrasHtml = `<strong style="font-size: 14px; color: #2980b9;">${d.windSpeed}</strong>`;
+            
             if (d.windGusts !== null && d.windGusts !== undefined) {
-                cifrasHtml += `<span style="font-size: 15px; color: #7f8c8d; vertical-align: middle; margin: 0 3px;">/</span><strong style="font-size: 15px; color: #e74c3c; vertical-align: middle;" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
+                cifrasHtml += `<span style="font-size: 13px; color: #7f8c8d; margin: 0 3px;">/</span><strong style="font-size: 14px; color: #e74c3c;" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
             }
 
+            // Estructura del cuadrado virtual con halo blanco en el texto
+            const htmlBaliza = `
+                <div style="width: 60px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer;">
+                    
+                    <!-- Mitad superior: Flecha centrada -->
+                    <div style="height: 28px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                        ${svgFlechaMapa}
+                    </div>
+
+                    <!-- Mitad inferior: Números con halo blanco para leerse sobre el mapa -->
+                    <div style="height: 22px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap; text-shadow: 1px 1px 1px rgba(255,255,255,0.9), -1px -1px 1px rgba(255,255,255,0.9), 1px -1px 1px rgba(255,255,255,0.9), -1px 1px 1px rgba(255,255,255,0.9);">
+                        ${cifrasHtml}
+                    </div>
+                </div>
+            `;
+
             marker.setIcon(L.divIcon({
-                html: `<span class='label-baliza'>${svgFlechaMapa}${cifrasHtml}</span>`,
+                html: htmlBaliza,
                 className: 'custom-div-icon',
-                iconAnchor: [22, 26] // Anclaje centrado para la flecha de 44x52 (el texto desborda limpiamente a la derecha)
+                iconAnchor: [30, 25] // Centro exacto
             }));
 
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
