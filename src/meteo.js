@@ -11482,6 +11482,11 @@ function inicializarMapaLeaflet() {
     // Escuchar cuando el usuario termina de hacer zoom
     map.on('zoomend', function() {
         updateURL(map);
+
+        // Si la capa de balizas está visible, las repintamos para que evalúen si deben ocultar o mostrar la racha según el nuevo zoom.
+        if (map.hasLayer(layerGroupBalizas)) {
+            actualizarIconosBalizas();
+        }
     });
 
     // Variables para acceder a los mensajes de carga
@@ -13710,7 +13715,7 @@ function inicializarMapaLeaflet() {
         {"id":"C061","name":"Arboleda","provider":"Euskalmet","latitude":43.2967,"longitude":-3.06747,"hasWind":true},
         {"id":"C064","name":"Zarautz","provider":"Euskalmet","latitude":43.293,"longitude":-2.14542,"hasWind":true},
         {"id":"C065","name":"Cerroja","provider":"Euskalmet","latitude":43.2112,"longitude":-3.40713,"hasWind":true},
-        {"id":"C066","name":"Untzueta","provider":"Euskalmet","latitude":43.1392,"longitude":-2.9071,"hasWind":true},
+        {"id":"C066","name":"Untzueta","provider":"Euskalmet","latitude":43.1372,"longitude":-2.9071,"hasWind":true},
         {"id":"C067","name":"Gardea","provider":"Euskalmet","latitude":43.1272,"longitude":-2.98025,"hasWind":true},
         {"id":"C068","name":"Ilarduia","provider":"Euskalmet","latitude":42.87395,"longitude":-2.28623,"hasWind":true},
         {"id":"C069","name":"Almike (Bermeo)","provider":"Euskalmet","latitude":43.4137,"longitude":-2.73229,"hasWind":true},
@@ -13737,29 +13742,30 @@ function inicializarMapaLeaflet() {
         if (balizasDibujadas) return;
 
         ESTACIONES_EUSKALMET.forEach(estacion => {
-            // Flecha gris en posición neutra
+            // Flecha gris en su tamaño original (22x26)
             const svgFlechaGris = `
                 <svg viewBox="0 0 30 36" style="width: 22px; height: 26px; display: block;">
                     <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#95a5a6"/>
                 </svg>
             `;
             
-            // Cuadrado virtual de 60x50 px dividido en dos mitades
+            // Cuadrado virtual de 80x50 px (más ancho para los 16px de texto)
             const htmlCargando = `
-                <div style="width: 60px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <div style="width: 80px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
                     <div style="height: 28px; display: flex; align-items: center; justify-content: center; width: 100%;">
                         ${svgFlechaGris}
                     </div>
                     <div style="height: 22px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap;">
-                        <span style="font-weight: bold; font-size: 14px; color: #95a5a6;">...</span>
+                        <span style="font-weight: bold; font-size: 16px; color: #95a5a6;">...</span>
                     </div>
                 </div>
             `;
 
+            // Cambio de tamaños: 3º Coges el width total y el height total de la caja htmlBaliza, los divides entre 2, y los pones en el iconAnchor: [ancho/2, alto/2]. ¡Pura matemática para que no baile nada!
             const iconoBaliza = L.divIcon({
                 html: htmlCargando,
                 className: 'custom-div-icon',
-                iconAnchor: [30, 25] // Centro matemático exacto del cuadrado
+                iconAnchor: [40, 23] // Centro matemático exacto de 80x50 (style en htmlBaliza)
             });
 
             const marker = L.marker([estacion.latitude, estacion.longitude], { icon: iconoBaliza });
@@ -13797,18 +13803,19 @@ function inicializarMapaLeaflet() {
     }
 
     // 4. ACTUALIZAR ICONOS DEL MAPA CON LA VELOCIDAD EN VIVO
-    // 4. ACTUALIZAR ICONOS DEL MAPA CON LA VELOCIDAD EN VIVO
     function actualizarIconosBalizas() {
+
+        const zoomActual = map.getZoom();
+
         layerGroupBalizas.eachLayer(marker => {
             const d = datosBalizas[marker.stationId];
             
             // A) SI LA ESTACIÓN NO TIENE DATOS (Punto rojo)
             if (!d || d.windSpeed === null || d.windSpeed === undefined) {
-                // Punto rojo de 11px (mitad exacta de los 22px de la flecha)
                 const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
                 
                 const htmlSinDatos = `
-                    <div title="${marker.stationName}: Sin datos recientes" style="width: 60px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                    <div title="${marker.stationName}: Sin datos recientes" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
                         ${svgPuntoRojo}
                     </div>
                 `;
@@ -13816,39 +13823,37 @@ function inicializarMapaLeaflet() {
                 marker.setIcon(L.divIcon({
                     html: htmlSinDatos,
                     className: 'custom-div-icon',
-                    iconAnchor: [30, 25] // Mismo anclaje para que no dé saltos
+                    iconAnchor: [40, 23] 
                 }));
                 return;
             }
 
-            // B) SI LA ESTACIÓN TIENE DATOS (Cuadrado Virtual con flecha rotatoria)
+            // B) SI LA ESTACIÓN TIENE DATOS
             const rotacion = (d.windDirection ?? 0) + 180;
             
-            // Flecha con "transform-origin: center center" para que gire como una brújula en su propio sitio
+            // Cambio de tamaños: 1º Modificas el tamaño del SVG en sí (width y height dentro del <svg>). El viewBox y el polygon nunca se tocan (deben ser 0 0 30 36).
             const svgFlechaMapa = `
-                <svg viewBox="0 0 30 36" style="transform: rotate(${rotacion}deg); transform-origin: center center; width: 22px; height: 26px; display: block;">
+                <svg viewBox="0 0 30 36" style="transform: rotate(${rotacion}deg); transform-origin: 50% 30%; width: 40px; height: 40px; display: block;">
                     <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/>
                 </svg>
             `;
 
-            // Cifras de viento
-            let cifrasHtml = `<strong style="font-size: 14px; color: #2980b9;">${d.windSpeed}</strong>`;
+            // ¡Corregido! Todo a 16px exactos
+            let cifrasHtml = `<strong style="font-size: 16px; color: #2980b9;">${d.windSpeed}</strong>`;
             
-            if (d.windGusts !== null && d.windGusts !== undefined) {
-                cifrasHtml += `<span style="font-size: 13px; color: #7f8c8d; margin: 0 3px;">/</span><strong style="font-size: 14px; color: #e74c3c;" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
+            if (zoomActual >= 10 && d.windGusts !== null && d.windGusts !== undefined) {
+                cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: #e74c3c;" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
             }
 
-            // Estructura del cuadrado virtual con halo blanco en el texto
+            // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal.
             const htmlBaliza = `
-                <div style="width: 60px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer;">
+                <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer;">
                     
-                    <!-- Mitad superior: Flecha centrada -->
-                    <div style="height: 28px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                    <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
                         ${svgFlechaMapa}
                     </div>
 
-                    <!-- Mitad inferior: Números con halo blanco para leerse sobre el mapa -->
-                    <div style="height: 22px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap; text-shadow: 1px 1px 1px rgba(255,255,255,0.9), -1px -1px 1px rgba(255,255,255,0.9), 1px -1px 1px rgba(255,255,255,0.9), -1px 1px 1px rgba(255,255,255,0.9);">
+                    <div style="height: 20px; margin-top: -14px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap; text-shadow: 1px 1px 2px rgba(255,255,255,1), -1px -1px 2px rgba(255,255,255,1), 1px -1px 2px rgba(255,255,255,1), -1px 1px 2px rgba(255,255,255,1);">
                         ${cifrasHtml}
                     </div>
                 </div>
@@ -13857,7 +13862,7 @@ function inicializarMapaLeaflet() {
             marker.setIcon(L.divIcon({
                 html: htmlBaliza,
                 className: 'custom-div-icon',
-                iconAnchor: [30, 25] // Centro exacto
+                iconAnchor: [40, 40] // Siempre la mitad exacta de width y height
             }));
 
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
