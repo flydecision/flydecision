@@ -12177,14 +12177,17 @@ function inicializarMapaLeaflet() {
                     clustergroupDespegues.addLayer(marker);
                 });
 
-                map.addLayer(clustergroupDespegues);
+                // Restaurar el estado de visibilidad de la última sesión (por defecto: visible)
+                const chkDespeguesPersist = document.getElementById('checkboxDespegues');
+                const despeguesDebenVerse = localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false';
 
-                // Restaurar el estado de visibilidad de la última sesión
-                if (localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') === 'false') {
+                if (chkDespeguesPersist) chkDespeguesPersist.checked = despeguesDebenVerse;
+                if (despeguesDebenVerse) {
+                    map.addLayer(clustergroupDespegues);
+                } else {
                     map.removeLayer(clustergroupDespegues);
-                    const chkDespeguesPersist = document.getElementById('checkboxDespegues');
-                    if (chkDespeguesPersist) chkDespeguesPersist.checked = false;
                 }
+                if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
             
                 // Comprobar si hay petición de apertura externa en la URL (?q=...) (link desde Meteo)
                 // --- LÓGICA DE APERTURA AUTOMÁTICA (NOMBRE -> COORDENADAS) ---
@@ -13870,9 +13873,10 @@ function inicializarMapaLeaflet() {
             }
         });
 
-        // Restaurar el estado de la última sesión (si estaba activada, la encendemos solos)
-        if (localStorage.getItem('METEO_MAPA_CAPA_BALIZAS_VISIBLE') === 'true') {
-            checkboxBalizas.checked = true;
+        // Restaurar el estado de la última sesión (por defecto: oculta si no hay nada guardado)
+        const balizasDebenVerse = localStorage.getItem('METEO_MAPA_CAPA_BALIZAS_VISIBLE') === 'true';
+        checkboxBalizas.checked = balizasDebenVerse;
+        if (balizasDebenVerse) {
             activarCapaBalizas();
         }
     } // Fin balizas
