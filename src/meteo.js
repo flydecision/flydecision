@@ -3787,13 +3787,19 @@ function mostrarAvisoActualizacionMeteo(modelos) {
     // Unimos los nombres de los modelos con "y" (Ej: "Météo-France" o "Météo-France y ECMWF")
     const textoModelos = modelos.join(' y ');
 
-    if (typeof mensajeModalAceptarCancelar === 'function') {
-        mensajeModalAceptarCancelar(
-            '', 
-            t('actualizacion.avisoNuevoMeteo', { modelos: textoModelos }), 
-            'recargarPagina'
-        );
-    }
+    GestorMensajes.mostrar({
+        tipo: 'modal',
+        htmlContenido: `<p style="text-align:center;">${t('actualizacion.avisoNuevoMeteo', { modelos: textoModelos })}</p>`,
+        botones: [
+            {
+                texto: t('botones.aceptar'),
+                onclick: function() {
+                    GestorMensajes.ocultar();
+                    construir_tabla(true, true); // forzarRecarga: pide datos frescos | silencioso: sin spinner, sin tocar filtros/vista
+                }
+            }
+        ]
+    });
 }
 
 function avisarActualizacionMinutely15() {
