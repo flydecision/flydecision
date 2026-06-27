@@ -11925,8 +11925,8 @@ function inicializarMapaLeaflet() {
                         color: black;
                         border: 1.8px solid ${borderColor};
                         border-radius: 50%;
-                        width: 35px;
-                        height: 35px;
+                        width: 30px;
+                        height: 30px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -11956,25 +11956,24 @@ function inicializarMapaLeaflet() {
         const orientacionHTML = createOrientationSVG(orientacionesMetadata);
         
         // Unificamos: Cogemos la puntuación venga del parámetro nuevo o del antiguo
-        const valorActividad = actividadScore || actividadColor || '';
+        //const valorActividad = actividadScore || actividadColor || '';
         
-        let elementoActividad = '';
+        //let elementoActividad = '';
         
-        if (valorActividad !== '') {
-            // Si el valor es un número (ej: "4", "5"), pintamos las barritas grises
-            if (!isNaN(valorActividad) && Number(valorActividad) > 0) {
-                elementoActividad = crearIconoActividad(valorActividad);
-            } 
-            // Fallback de seguridad: si alguna vez lee "verde", "rojo", pintamos el círculo
-            else {
-                const color = actividadToColor(valorActividad);
-                elementoActividad = `<span class="dot" style="background:${color}"></span>`;
-            }
-        }
+        // if (valorActividad !== '') {
+        //     if (!isNaN(valorActividad) && Number(valorActividad) > 0) {
+        //         elementoActividad = crearIconoActividad(valorActividad);
+        //     } 
+        //     else {
+        //         const color = actividadToColor(valorActividad);
+        //         elementoActividad = `<span class="dot" style="background:${color}"></span>`;
+        //     }
+        // }
         
         const bgStyle = bgColor ? ` style="background-color:${bgColor}"` : '';
         
-        const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}${elementoActividad}<span class="nombre-despegue-label">${escapeHtml(despegue)}</span></span>`;
+        //const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}${elementoActividad}<span class="nombre-despegue-label">${escapeHtml(despegue)}</span></span>`;
+        const labelHTML = `<span class='label-large-despegues'${bgStyle}>${orientacionHTML}<span class="nombre-despegue-label">${escapeHtml(despegue)}</span></span>`;
 
         return L.divIcon({
             html: labelHTML,
@@ -12906,8 +12905,8 @@ function inicializarMapaLeaflet() {
                         color: black;
                         border: 1.8px solid #007aff;
                         border-radius: 50%;
-                        width: 35px;
-                        height: 35px;
+                        width: 30px;
+                        height: 30px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -13036,8 +13035,8 @@ function inicializarMapaLeaflet() {
                         color: black;
                         border: 1.8px solid #007aff;
                         border-radius: 50%;
-                        width: 35px;
-                        height: 35px;
+                        width: 30px;
+                        height: 30px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -13929,7 +13928,7 @@ function inicializarMapaLeaflet() {
             <div style="display: flex; align-items: center; height: 25px;">
                 <span style="width: 75px;">Dirección:</span> 
                 ${svgFlecha} 
-                <span style="margin-left: 4px; color:#888;">(${d.windDirection ?? '–'}º)</span>
+                <span style="color:#888;">(${d.windDirection ?? '–'}º)</span>
             </div>
 
             <span style="display: block; margin-top: 10px; margin-bottom:7px;">
