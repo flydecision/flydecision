@@ -13915,7 +13915,7 @@ function inicializarMapaLeaflet() {
                 🚩 <span style="color: #2980b9; font-weight: bold;"> ${marker.stationName}</span>
             </p>
             
-            <!-- Fila 1: Viento -->
+            <!-- Fila 1: Viento  -->
             <div style="display: flex; align-items: center; height: 25px;">
                 <span style="width: 75px;">Viento:</span> 
                 <b>${d.windSpeed}</b> <span style="margin-left: 4px;">km/h</span>
