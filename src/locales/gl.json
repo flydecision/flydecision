@@ -539,6 +539,7 @@
     "fijarPanel": "Fixar Panel (non ocultar ao mover o mapa)",
     "masInformacion": "Máis información ▼",
     "volverEdicion": "Volver a Editar Favoritos",
+    "despeguesReactivados": "Capa <i>🪂 Despegues</i> reactivada",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Estás aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "capasCheckbox": {
       "despegues": "🪂 Engalaxes",

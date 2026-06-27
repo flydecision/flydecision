@@ -13701,7 +13701,7 @@ function inicializarMapaLeaflet() {
         {"id":"C03A","name":"Zorrotza","provider":"Euskalmet","latitude":43.28498,"longitude":-2.968458,"hasWind":true},
         {"id":"C040","name":"Gasteiz","provider":"Euskalmet","latitude":42.8604,"longitude":-2.68899,"hasWind":true},
         {"id":"C041","name":"Navarrete","provider":"Euskalmet","latitude":42.638,"longitude":-2.52321,"hasWind":true},
-        {"id":"C042","name":"Punta Galea","provider":"Euskalmet","latitude":43.3752,"longitude":-3.03608,"hasWind":true},
+        {"id":"C042","name":"Punta Galea","provider":"Euskalmet","latitude":43.37326,"longitude":-3.03604,"hasWind":true},
         {"id":"C043","name":"Ordizia","provider":"Euskalmet","latitude":43.0484,"longitude":-2.17755,"hasWind":true},
         {"id":"C045","name":"La Garbea","provider":"Euskalmet","latitude":43.217,"longitude":-3.19368,"hasWind":true},
         {"id":"C046","name":"Oiz","provider":"Euskalmet","latitude":43.2304,"longitude":-2.5954,"hasWind":true},
@@ -13769,7 +13769,8 @@ function inicializarMapaLeaflet() {
             const iconoBaliza = L.divIcon({
                 html: htmlCargando,
                 className: 'custom-div-icon',
-                iconAnchor: [40, 23] // Centro matemático exacto de 80x50 (style en htmlBaliza)
+                iconAnchor: [40, 23], // Centro matemático exacto de 80x50 (style en htmlBaliza)
+                popupAnchor: [0, 25] // propiedad matemática nativa Leaflet diseñada exactamente para desplazar popup
             });
 
             const marker = L.marker([estacion.latitude, estacion.longitude], { icon: iconoBaliza });
@@ -13827,7 +13828,8 @@ function inicializarMapaLeaflet() {
                 marker.setIcon(L.divIcon({
                     html: htmlSinDatos,
                     className: 'custom-div-icon',
-                    iconAnchor: [40, 23] 
+                    iconAnchor: [40, 23],
+                    popupAnchor: [0, 25] 
                 }));
                 return;
             }
@@ -13849,9 +13851,9 @@ function inicializarMapaLeaflet() {
                 cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: #e74c3c;" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
             }
 
-            // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal.
+            // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal. Nota: margin-left: -26px; es para desplazarlo a la izquierda y saltar el .leaflet-marker-icon.custom-div-icon {
             const htmlBaliza = `
-                <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer;">
+                <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: 18px">
                     
                     <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
                         ${svgFlechaMapa}
@@ -13866,7 +13868,8 @@ function inicializarMapaLeaflet() {
             marker.setIcon(L.divIcon({
                 html: htmlBaliza,
                 className: 'custom-div-icon',
-                iconAnchor: [40, 40] // Siempre la mitad exacta de width y height
+                iconAnchor: [40, 40], // Siempre la mitad exacta de width y height
+                popupAnchor: [0, 25]
             }));
 
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
@@ -13931,7 +13934,7 @@ function inicializarMapaLeaflet() {
                 <span style="color:#888;">(${d.windDirection ?? '–'}º)</span>
             </div>
 
-            <span style="display: block; margin-top: 10px; margin-bottom:7px;">
+            <span style="display: block; margin-top: 7px; margin-bottom:7px;">
                 <small style="color:#888;">
                     ${t('balizas.actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
                 </small>
@@ -13980,7 +13983,68 @@ function inicializarMapaLeaflet() {
         if (balizasDebenVerse) {
             activarCapaBalizas();
         }
-    } // Fin balizas
+    } 
+    //___________________________________________________________________________________
+    // 🏁 Fin Balizas
+
+
+    // ==========================================================================
+    // 🚀 REACTIVAR CAPA DESPEGUES AUTOMÁTICAMENTE AL USAR FILTROS
+    // ==========================================================================
+    let avisoReactivacionDespeguesMostrado = false; // solo una vez por sesión
+
+    window.reactivarCapaDespeguesSiEstaOculta = function() {
+        const chk = document.getElementById('checkboxDespegues');
+
+        // Si existe el checkbox y está desmarcado
+        if (chk && !chk.checked) {
+            chk.checked = true; // Lo volvemos a marcar visualmente
+
+            // Añadimos la capa al mapa si existe y no está ya añadida
+            if (typeof map !== 'undefined' && map && typeof clustergroupDespegues !== 'undefined') {
+                if (!map.hasLayer(clustergroupDespegues)) {
+                    map.addLayer(clustergroupDespegues);
+                }
+            }
+
+            // Repoblamos el cluster con los marcadores reales (si no, queda vacío hasta tocar un filtro)
+            if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+
+            // Guardamos la preferencia, para que siga visible también tras recargar la página
+            localStorage.setItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE', true);
+
+            // Aviso flotante, solo la primera vez en esta sesión
+            if (!avisoReactivacionDespeguesMostrado) {
+                avisoReactivacionDespeguesMostrado = true;
+                GestorMensajes.mostrar({
+                    tipo: 'no-modal',
+                    htmlContenido: `
+                        <style>.mensaje-no-modal { max-width: 340px; width: max-content; top: 23%; left: 50% !important; right: auto !important; transform: translateX(-50%) !important; border: none; padding: 10px; font-size: 20px;}</style>
+                        <p style="margin:0; padding:10px;line-height:1.3;">${t('mapa.despeguesReactivados', { defaultValue: 'Capa <i>🪂 Despegues</i> reactivada' })}</p>
+                    `,
+                    botones: []
+                });
+                setTimeout(() => GestorMensajes.ocultar(), 2500);
+            }
+        }
+    };
+
+    // Escuchamos cualquier clic, toque de pantalla o arrastre de ratón a nivel global
+    ['mousedown', 'touchstart', 'click'].forEach(evtType => {
+        document.addEventListener(evtType, function(e) {
+
+            // Comprobamos si el elemento tocado está DENTRO de alguno de los contenedores de filtros
+            const tocandoFiltros = e.target.closest('#infoPanel2') ||                    // Panel derecho de filtros
+                               e.target.closest('#div-filtro-horario') ||             // Barra inferior de horas
+                               e.target.closest('#wrapper-filtro-puntuacion-mapa') || // Barra de estrellas
+                               e.target.closest('.leaflet-text-search-input');        // Buscador de despegues
+
+            if (tocandoFiltros) {
+                window.reactivarCapaDespeguesSiEstaOculta();
+            }
+
+        }, { capture: true, passive: true }); // "capture" asegura que lo detectamos antes de que otros scripts frenen el evento
+    });
     
 } // Fin inicializarMapaLeaflet()
 

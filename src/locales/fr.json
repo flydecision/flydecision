@@ -539,6 +539,7 @@
     "fijarPanel": "Épingler le panneau (ne pas cacher lors du déplacement de la carte)",
     "masInformacion": "Plus d'informations ▼",
     "volverEdicion": "Retour à l'édition des favoris",
+    "despeguesReactivados": "Couche <i>🪂 Décollages</i> réactivée",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Vous êtes ici&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "capasCheckbox": {
       "despegues": "🪂 Décollages",

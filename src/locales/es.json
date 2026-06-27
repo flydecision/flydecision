@@ -540,6 +540,7 @@
     "fijarPanel": "Fijar Panel (anula su ocultación al mover mapa)",
     "masInformacion": "Más información ▼",
     "volverEdicion": "Volver a Editar favoritos",
+    "despeguesReactivados": "Capa <i>🪂 Despegues</i> reactivada",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Estás aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "capasCheckbox": {
       "despegues": "🪂 Despegues",
