@@ -3693,11 +3693,6 @@ h3 {
     min-width: 260px !important; /* Al ser individual, es un poco más estrecho */
     max-width: 260px !important;
 }
-
-.leaflet-popup-content-wrapper.popup-baliza {
-    border: none !important;
-}
-
 .leaflet-popup-tip.popup-despegueindividual {
 	background-color: #007AFF !important;
 }

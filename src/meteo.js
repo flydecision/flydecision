@@ -13769,7 +13769,8 @@ function inicializarMapaLeaflet() {
             const iconoBaliza = L.divIcon({
                 html: htmlCargando,
                 className: 'custom-div-icon',
-                iconAnchor: [40, 23] // Centro matemático exacto de 80x50 (style en htmlBaliza)
+                iconAnchor: [40, 23], // Centro matemático exacto de 80x50 (style en htmlBaliza)
+                popupAnchor: [0, 25] // propiedad matemática nativa Leaflet diseñada exactamente para desplazar popup
             });
 
             const marker = L.marker([estacion.latitude, estacion.longitude], { icon: iconoBaliza });
@@ -13827,7 +13828,8 @@ function inicializarMapaLeaflet() {
                 marker.setIcon(L.divIcon({
                     html: htmlSinDatos,
                     className: 'custom-div-icon',
-                    iconAnchor: [40, 23] 
+                    iconAnchor: [40, 23],
+                    popupAnchor: [0, 25] 
                 }));
                 return;
             }
@@ -13851,7 +13853,7 @@ function inicializarMapaLeaflet() {
 
             // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal. Nota: margin-left: -26px; es para desplazarlo a la izquierda y saltar el .leaflet-marker-icon.custom-div-icon {
             const htmlBaliza = `
-                <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: -10px">
+                <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: 18px">
                     
                     <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
                         ${svgFlechaMapa}
@@ -13866,7 +13868,8 @@ function inicializarMapaLeaflet() {
             marker.setIcon(L.divIcon({
                 html: htmlBaliza,
                 className: 'custom-div-icon',
-                iconAnchor: [40, 40] // Siempre la mitad exacta de width y height
+                iconAnchor: [40, 40], // Siempre la mitad exacta de width y height
+                popupAnchor: [0, 25]
             }));
 
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
