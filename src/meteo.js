@@ -13849,9 +13849,9 @@ function inicializarMapaLeaflet() {
                 cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: #e74c3c;" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
             }
 
-            // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal.
+            // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal. Nota: margin-left: -26px; es para desplazarlo a la izquierda y saltar el .leaflet-marker-icon.custom-div-icon {
             const htmlBaliza = `
-                <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer;">
+                <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: -10px">
                     
                     <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
                         ${svgFlechaMapa}
