@@ -166,8 +166,8 @@ const MIN15_UMBRAL_AMARILLO_MIN = 90;
 const MIN15_UMBRAL_ROJO_MIN     = 150;  
 
 // ECMWF (ciclo medio ~6-7h, ver HorariosMediosActualizacionEcmwf más arriba)
-const ECMWF_UMBRAL_AMARILLO_MIN = 8 * 60;  
-const ECMWF_UMBRAL_ROJO_MIN     = 10 * 60; // php UMBRAL_RETRASO_INUSUAL
+const ECMWF_UMBRAL_AMARILLO_MIN = 10 * 60;  
+const ECMWF_UMBRAL_ROJO_MIN     = 12 * 60; // php UMBRAL_RETRASO_INUSUAL
 
 // Función genérica de semáforo: dado un timestamp en ms y los 2 umbrales (en minutos) de esa fuente, devuelve el emoji que toca
 function calcularSemaforoAntiguedad(timestampMs, umbralAmarilloMin, umbralRojoMin, ahoraMs = Date.now()) {
