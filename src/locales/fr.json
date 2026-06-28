@@ -600,6 +600,13 @@
       "KK7_Thermals": "Zones thermiques (Thermals KK7)",
       "ENAIRE": "Restrictions AESA / ENAIRE (Espagne)",
       "OpenAIP": "Restrictions OpenAIP (Monde)"
+    },
+    "balizas": {
+      "baliza_sin_datos": "Station sans données de vent.",
+      "balizas_viento": "Vent :",
+      "balizas_racha": "Rafale :",
+      "balizas_direccion": "Direction :",
+      "balizas_actualizada": "Actualisée :"
     }
   },
 

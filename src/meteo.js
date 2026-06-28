@@ -11953,7 +11953,7 @@ function inicializarMapaLeaflet() {
 
     // crea icono compuesto (dot + etiqueta) usando L.divIcon
     window.createIconDespegue = function(despegue, actividadColor, orientacionesMetadata, bgColor, actividadScore) {
-        const orientacionHTML = createOrientationSVG(orientacionesMetadata);
+        const orientacionHTML = createOrientationSVGMapa(orientacionesMetadata);
         
         // Unificamos: Cogemos la puntuación venga del parámetro nuevo o del antiguo
         //const valorActividad = actividadScore || actividadColor || '';
@@ -12015,7 +12015,7 @@ function inicializarMapaLeaflet() {
                     // Traducir al vuelo
                     const region = t('regiones.' + regionRaw, { defaultValue: regionRaw });
                     let despegue = row.Despegue || ''; 
-                    const SVGorientaciones = createOrientationSVG(row.Orientaciones);
+                    const SVGorientaciones = createOrientationSVGMapa(row.Orientaciones);
                     const orientacion = row.Orientación || '';
                     const orientaciones = row.Orientaciones || '';
                     const OrientacionesGrados = row.Orientaciones_Grados || '';
@@ -13064,7 +13064,7 @@ function inicializarMapaLeaflet() {
     // crea icono compuesto (dot + etiqueta) usando L.divIcon
     function createIconDespeguesMundo(despegue, actividad, orientacionesMetadata) {
         // 1. 🧭 Generar el círculo de orientación (NUEVO)
-        const orientacionHTML = createOrientationSVG(orientacionesMetadata);
+        const orientacionHTML = createOrientationSVGMapa(orientacionesMetadata);
 
         // 2. Círculo de Actividad (Existente)
         const color = actividadToColor(actividad);
@@ -13110,7 +13110,7 @@ function inicializarMapaLeaflet() {
             const region = row.Región || ''; //asigna el contenido de la columna “Nombre_clásico” si existe; si no existe, deja la variable como cadena vacía. || → operador lógico “o”: devuelve el primer valor existente y no vacío.
             const provincia = row.Provincia || '';
             const despegue = row.Despegue || '';
-            const SVGorientaciones = createOrientationSVG(row.Orientaciones);
+            const SVGorientaciones = createOrientationSVGMapa(row.Orientaciones);
             const orientacion = row.Orientación || '';
             const orientaciones = row.Orientaciones || '';
             const actividad = row.Actividad || '';
@@ -13599,7 +13599,7 @@ function inicializarMapaLeaflet() {
      * Cada segmento ocupa 45 grados y está centrado en su ángulo de orientación.
      * @param {string} orientacionesStr - El string de metadata (ej: "_N_NNE_S").
      */
-    function createOrientationSVG(orientacionesStr) {
+    function createOrientationSVGMapa(orientacionesStr) {
         // 1. Definir los 16 segmentos en orden
         const ALL_SEGMENTS = [
             'N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
@@ -13892,7 +13892,7 @@ function inicializarMapaLeaflet() {
         if (!d || d.windSpeed === null || d.windSpeed === undefined) {
             containerDiv.innerHTML = `
                 <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
-                <p style="color:#c0392b; margin:5px 0 0 0;">⚠️ Estación sin datos de viento.</p>
+                <p style="color:#c0392b; margin:5px 0 0 0;">⚠️ ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}</p>
             `;
             return;
         }
@@ -13909,34 +13909,34 @@ function inicializarMapaLeaflet() {
             </svg>
         `;
 
-        // 2. Aplicamos la misma estructura Flexbox a las 3 filas para que tengan idéntica altura (30px)
+        // 2. Aplicamos la misma estructura Flexbox a las 3 filas para que tengan idéntica altura (25px)
         containerDiv.innerHTML = `
             <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
                 🚩 <span style="color: #2980b9; font-weight: bold;"> ${marker.stationName}</span>
             </p>
             
-            <!-- Fila 1: Viento  -->
+            <!-- Fila 1: Viento -->
             <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 75px;">Viento:</span> 
+                <span style="width: 75px;">${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento:' })}</span> 
                 <b>${d.windSpeed}</b> <span style="margin-left: 4px;">km/h</span>
             </div>
             
             <!-- Fila 2: Racha -->
             <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 75px;">Racha:</span> 
-                <b style="color: #c0392b;">${d.windGusts ?? '–'}</b> <span style="margin-left: 4px;">km/h</span>
+                <span style="width: 75px;">${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha:' })}</span> 
+                <b style="color: #c0392b;">${d.windGusts ?? '-'}</b> <span style="margin-left: 4px;">km/h</span>
             </div>
             
             <!-- Fila 3: Dirección -->
             <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 75px;">Dirección:</span> 
+                <span style="width: 75px;">${t('mapa.balizas.balizas_direccion', { defaultValue: 'Dirección:' })}</span> 
                 ${svgFlecha} 
-                <span style="color:#888;">(${d.windDirection ?? '–'}º)</span>
+                <span style="color:#888;">(${d.windDirection ?? '-'}º)</span>
             </div>
 
             <span style="display: block; margin-top: 7px; margin-bottom:7px;">
                 <small style="color:#888;">
-                    ${t('balizas.actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
+                    ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
                 </small>
             </span>
         `;
