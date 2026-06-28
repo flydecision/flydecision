@@ -13821,7 +13821,12 @@ function inicializarMapaLeaflet() {
                     <h4 style="margin: 0 0 5px 0; color: #0078d4;">🚩 ${estacion.name}</h4>
                     <p style="margin:0; color:#666;">⏳ Cargando viento en vivo...</p>
                 </div>
-            `, { className: 'popup-despegueindividual popup-baliza' });
+            `, {
+                className: 'popup-despegueindividual popup-baliza',
+                maxWidth: 300,
+                maxHeight: 450,
+                autoPanPaddingTopLeft: L.point(50, 550)
+            });
 
             layerGroupBalizas.addLayer(marker);
         });
