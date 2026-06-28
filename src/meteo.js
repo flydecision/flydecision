@@ -3581,6 +3581,14 @@ function createOrientationSVG(orientacionesStr) {
     return svg;
 }
 
+// Convierte grados de dirección del viento (0-360) a su representación en texto (N, NNE, NE...)
+function obtenerTextoOrientacion(grados) {
+    if (grados === null || grados === undefined) return '';
+    const direcciones = Object.keys(METADATA_TO_ICON_MAP);
+    const index = Math.round((((grados % 360) + 360) % 360) / 22.5) % 16;
+    return direcciones[index] || '';
+}
+
 // FILTRO DISTANCIA. Fórmula de Haversine
 function obtenerDistanciaKm(lat1, lon1, lat2, lon2) {
     const R = 6371; // Radio de la Tierra en km
@@ -13723,7 +13731,7 @@ function inicializarMapaLeaflet() {
         {"id":"C067","name":"Gardea","provider":"Euskalmet","latitude":43.1272,"longitude":-2.98025,"hasWind":true},
         {"id":"C068","name":"Ilarduia","provider":"Euskalmet","latitude":42.87395,"longitude":-2.28623,"hasWind":true},
         {"id":"C069","name":"Almike (Bermeo)","provider":"Euskalmet","latitude":43.4137,"longitude":-2.73229,"hasWind":true},
-        {"id":"C070","name":"Zaldiaran","provider":"Euskalmet","latitude":42.7966,"longitude":-2.73642,"hasWind":true},
+        {"id":"C070","name":"Zaldiaran","provider":"Euskalmet","latitude":42.79476,"longitude":-2.73620,"hasWind":true},  
         {"id":"C071","name":"Jaizkibel","provider":"Euskalmet","latitude":43.3446,"longitude":-1.85972,"hasWind":true},
         {"id":"C072","name":"Orduña","provider":"Euskalmet","latitude":42.9837,"longitude":-3.03726,"hasWind":true},
         {"id":"C073","name":"Mallabia","provider":"Euskalmet","latitude":43.1926263,"longitude":-2.5295246,"hasWind":true},
@@ -13897,6 +13905,8 @@ function inicializarMapaLeaflet() {
             return;
         }
 
+        const orientacionTexto = obtenerTextoOrientacion(d.windDirection);
+
         // 1. viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
         const svgFlecha = `
             <svg viewBox="5 1 20 20"
@@ -13930,13 +13940,14 @@ function inicializarMapaLeaflet() {
             <!-- Fila 3: Dirección -->
             <div style="display: flex; align-items: center; height: 25px;">
                 <span style="width: 75px;">${t('mapa.balizas.balizas_direccion', { defaultValue: 'Dirección:' })}</span> 
+                <span style="font-weight: bold; margin-right: 5px;">${orientacionTexto}</span>
                 ${svgFlecha} 
                 <span style="color:#888;">(${d.windDirection ?? '-'}º)</span>
             </div>
 
             <span style="display: block; margin-top: 7px; margin-bottom:7px;">
                 <small style="color:#888;">
-                    ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
+                    ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada:' })} ${formatearFechaHoraBaliza(d.date, d.time)}
                 </small>
             </span>
         `;
