@@ -150,6 +150,36 @@ const HorariosMediosActualizacionMin15 = Array.from({ length: 24 }, (_, h) => St
 
 // Nota: aplico 1 min de más. Buscar: const OFFSET_MS = 1 * 60 * 1000;
 
+// SEMÁFORO 🟢🟡🔴 UMBRALES DE "DATO DESACTUALIZADO" ======================
+// 🟢 dentro de plazo | 🟡 aviso, algo retrasado | 🔴 alerta, muy retrasado (en balizas además pone gris el icono del mapa). Cifras en minutos. Los umbrales de Meteo-France y ECMWF se gestionan en el php del cron en la variable const UMBRAL_RETRASO_INUSUAL
+
+// Balizas Euskalmet (el cron las actualiza cada ~10 min)
+const BALIZAS_UMBRAL_AMARILLO_MIN = 30;
+const BALIZAS_UMBRAL_ROJO_MIN     = 45;
+
+// Arome-HD (ciclo medio ~3h, ver HorariosMediosActualizacion más arriba)
+const AROME_UMBRAL_AMARILLO_MIN = 5 * 60;  
+const AROME_UMBRAL_ROJO_MIN     = 6 * 60;  // php UMBRAL_RETRASO_INUSUAL
+
+// Arome-HD 15min (ciclo horario, ver HorariosMediosActualizacionMin15 más arriba)
+const MIN15_UMBRAL_AMARILLO_MIN = 90;   
+const MIN15_UMBRAL_ROJO_MIN     = 150;  
+
+// ECMWF (ciclo medio ~6-7h, ver HorariosMediosActualizacionEcmwf más arriba)
+const ECMWF_UMBRAL_AMARILLO_MIN = 8 * 60;  
+const ECMWF_UMBRAL_ROJO_MIN     = 10 * 60; // php UMBRAL_RETRASO_INUSUAL
+
+// Función genérica de semáforo: dado un timestamp en ms y los 2 umbrales (en minutos) de esa fuente, devuelve el emoji que toca
+function calcularSemaforoAntiguedad(timestampMs, umbralAmarilloMin, umbralRojoMin, ahoraMs = Date.now()) {
+    if (!timestampMs || timestampMs <= 0) return { minutos: null, emoji: '⚪', esAntiguo: false };
+    const minutos = (ahoraMs - timestampMs) / 60000;
+    let emoji = '🟢';
+    let esAntiguo = false;
+    if (minutos >= umbralRojoMin) { emoji = '🔴'; esAntiguo = true; }
+    else if (minutos >= umbralAmarilloMin) { emoji = '🟡'; }
+    return { minutos, emoji, esAntiguo };
+}
+
 let esModoOffline = false; // Nueva variable para controlar el estado de red
 
 const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
@@ -4555,7 +4585,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         
         // Si hay favoritos guardados, y comprobamos que no son números puros...
         if (favoritosActuales.length > 0 && isNaN(Number(favoritosActuales[0]))) {
-            console.log("🔄 Migrando favoritos de Nombres a IDs numéricos...");
             let nuevosFavs =[];
             favoritosActuales.forEach(nombreViejo => {
                 let match = despegues.find(d => d.Despegue === nombreViejo);
@@ -8601,21 +8630,25 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 }
 
                 // --- 3. DIBUJAR LISTA UNIFICADA ---
+                const semaforoMF    = calcularSemaforoAntiguedad(lastDataGenerationTimestamp, AROME_UMBRAL_AMARILLO_MIN, AROME_UMBRAL_ROJO_MIN, ahoraMs);
+                const semaforoMin15 = calcularSemaforoAntiguedad(lastDataGenerationTimestampMin15, MIN15_UMBRAL_AMARILLO_MIN, MIN15_UMBRAL_ROJO_MIN, ahoraMs);
+                const semaforoEC    = calcularSemaforoAntiguedad(lastDataGenerationTimestampEcmwf, ECMWF_UMBRAL_AMARILLO_MIN, ECMWF_UMBRAL_ROJO_MIN, ahoraMs);
+
                 dataGenElement.innerHTML = `
-                    <ul style="margin: 5px 0 0 0; padding-left: 27px; padding-right: 10px; list-style-type: disc; line-height: 1.4; text-align: left;">
-                        <li style="margin-bottom: 8px;">
-                            Arome-HD: ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
-                            <span>${textoFuturoMF}</span>
-                        </li>
-                        <li style="margin-bottom: 8px;">
-                            Arome-HD 15min: ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
-                            <span>${textoFuturoMin15}</span>
-                        </li>
-                        <li>
-                            ECMWF: ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
-                            <span>${textoFuturoEC}</span>
-                        </li>
-                    </ul>`;
+                    <div style="margin: 5px 0 0 0; padding-left: 23px; padding-right: 0px; list-style-type: disc; line-height: 1.3; text-align: left;">
+                        <p style="margin-bottom: -6px;">
+                            ${semaforoMF.emoji} Arome-HD: ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
+                            <span style="padding-left: 26px;">${textoFuturoMF}</span>
+                        </p>
+                        <p style="margin-bottom: -6px;">
+                            ${semaforoMin15.emoji} Arome-HD 15min: ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
+                            <span style="padding-left: 26px;">${textoFuturoMin15}</span>
+                        </p>
+                        <p>
+                            ${semaforoEC.emoji} ECMWF: ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
+                            <span style="padding-left: 26px;">${textoFuturoEC}</span>
+                        </p>
+                    </div>`;
                     
             } else if (!hayErrorData) {
                 dataGenElement.textContent = 'Cargando...';
@@ -9533,15 +9566,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
                         const parts = textContent.split('|');
                         const serverTimestamp = parts[0] ? new Date(parts[0]).getTime() : 0;
 
-                        // 2. COMPARAMOS
                         if (serverTimestamp > timestampDatosLocal) {
-                            //console.log("🔄 Datos nuevos en servidor. Descargando JSON completo...");
-                            // AHORA SÍ: Forzamos recarga total
                             await construir_tabla(true); 
                         } else {
-                            //console.log("✅ No hay datos nuevos en servidor. Manteniendo caché local.");
-                            // AHORA NO: Usamos false para tirar de caché RAM/LocalStorage
-                            // Esto solo repinta la tabla (muy rápido) sin descargar nada
                             construir_tabla(false); 
                         }
                     } else {
@@ -13921,6 +13948,14 @@ function inicializarMapaLeaflet() {
         return { minutos, emoji, esAntiguo: minutos >= 45 }; // esAntiguo = Retraso en min antes de mostrar cifras grises en el mapa
     }
 
+    function calcularEstadoActualizacionBaliza(d) {
+        if (!d || !d.date || !d.time) return { minutos: null, emoji: '⚪', esAntiguo: false };
+        const [anio, mes, dia] = d.date.split('-').map(Number);
+        const [h, m] = d.time.split(':').map(Number);
+        const fechaLectura = new Date(anio, mes - 1, dia, h, m);
+        return calcularSemaforoAntiguedad(fechaLectura.getTime(), BALIZAS_UMBRAL_AMARILLO_MIN, BALIZAS_UMBRAL_ROJO_MIN);
+    }
+    
     // 5. PINTAR EL CONTENIDO DEL POPUP CON LOS DATOS YA CARGADOS
     function formatearFechaHoraBaliza(fechaStr, horaStr) {
         if (!fechaStr || !horaStr) return '–';
@@ -14084,7 +14119,7 @@ function inicializarMapaLeaflet() {
 
             <span style="display: block; margin-top: 7px; margin-bottom:7px; text-align: right;">
                 <small style="color:#888;">
-                    ${estadoPopup.emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
+                    ${calcularEstadoActualizacionBaliza(d).emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
                 </small>
             </span>
         `;
