@@ -13748,6 +13748,8 @@ function inicializarMapaLeaflet() {
     let datosBalizas = {};
     let intervaloBalizas = null;
     let ultimoJsonBalizasRaw = null; // para detectar si hay datos nuevos antes de repintar
+    let datos6hBalizas = null;          // caché del histórico de 6h (todas las balizas)
+    let datos6hBalizasFetchedAt = 0;    // timestamp del último fetch, para no repetir si no toca
 
     // 2. DIBUJAR LAS ESTACIONES ESTÁTICAS AL ACTIVAR EL CHECKBOX
     function dibujarEstacionesEuskalmet() {
@@ -13812,6 +13814,19 @@ function inicializarMapaLeaflet() {
             actualizarIconosBalizas();
         } catch (e) {
             console.error('No se pudo cargar el caché de balizas Euskalmet', e);
+        }
+    }
+
+    // 3b. CARGAR EL HISTÓRICO DE 6H, SOLO CUANDO SE ABRE UN POPUP (lazy, caché 5 min)
+    async function cargarDatos6hBalizasSiNecesario() {
+        const ahora = Date.now();
+        if (datos6hBalizas && (ahora - datos6hBalizasFetchedAt) < 5 * 60 * 1000) return;
+        try {
+            const res = await fetch(`https://flydecision.com/balizas_euskalmet_6h.json?_=${ahora}`);
+            datos6hBalizas = await res.json();
+            datos6hBalizasFetchedAt = ahora;
+        } catch (e) {
+            console.error('No se pudo cargar el histórico 6h de balizas Euskalmet', e);
         }
     }
 
@@ -13886,11 +13901,84 @@ function inicializarMapaLeaflet() {
 
     // 5. PINTAR EL CONTENIDO DEL POPUP CON LOS DATOS YA CARGADOS
     function formatearFechaHoraBaliza(fechaStr, horaStr) {
-    if (!fechaStr || !horaStr) return '–';
-    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-    const [anio, mes, dia] = fechaStr.split('-');
-    return `${dia}-${meses[parseInt(mes, 10) - 1]}-${anio} ${horaStr}`;
-}
+        if (!fechaStr || !horaStr) return '–';
+        const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+        const [anio, mes, dia] = fechaStr.split('-');
+        return `${dia}-${meses[parseInt(mes, 10) - 1]}-${anio} ${horaStr}`;
+    }
+
+    // Genera un mini-gráfico SVG (viento + racha + flechas de dirección) de las últimas 6h
+    function generarSvgGraficaBaliza(lecturas) {
+        if (!Array.isArray(lecturas) || lecturas.length < 2) return null;
+
+        const W = 250, H = 110;
+        const padL = 28, padR = 6, padT = 16, padB = 18;
+        const plotW = W - padL - padR;
+        const plotH = H - padT - padB;
+
+        const ahora = Date.now() / 1000;
+        const desde = ahora - 6 * 3600;
+
+        const puntos = lecturas
+            .filter(p => p.ts >= desde && typeof p.windSpeed === 'number')
+            .sort((a, b) => a.ts - b.ts);
+        if (puntos.length < 2) return null;
+
+        const valores = [];
+        puntos.forEach(p => {
+            valores.push(p.windSpeed);
+            if (typeof p.windGusts === 'number') valores.push(p.windGusts);
+        });
+        const minV = 0;
+        let maxV = Math.max(...valores, 5);
+        maxV = Math.ceil(maxV / 5) * 5;
+
+        const x = (ts) => padL + ((ts - desde) / (ahora - desde)) * plotW;
+        const y = (v) => padT + plotH - ((v - minV) / (maxV - minV)) * plotH;
+
+        const lineaViento = puntos.map(p => `${x(p.ts).toFixed(1)},${y(p.windSpeed).toFixed(1)}`).join(' ');
+        const puntosRacha = puntos.filter(p => typeof p.windGusts === 'number');
+        const lineaRacha = puntosRacha.map(p => `${x(p.ts).toFixed(1)},${y(p.windGusts).toFixed(1)}`).join(' ');
+
+        // Líneas guía horizontales (0, mitad, máximo)
+        const gridY = [minV, (minV + maxV) / 2, maxV];
+        const gridLines = gridY.map(v => `
+            <line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W - padR}" y2="${y(v).toFixed(1)}" stroke="#eee" stroke-width="1"/>
+            <text x="${padL - 4}" y="${(y(v) + 3).toFixed(1)}" text-anchor="end" font-size="9" fill="#999">${Math.round(v)}</text>
+        `).join('');
+
+        // Etiquetas eje X cada 2h
+        const etiquetasX = [];
+        for (let h = 0; h <= 6; h += 2) {
+            const ts = desde + h * 3600;
+            etiquetasX.push(`<text x="${x(ts).toFixed(1)}" y="${H - 3}" text-anchor="middle" font-size="9" fill="#999">-${6 - h}h</text>`);
+        }
+
+        // Flechas de dirección repartidas uniformemente (máx. 6)
+        const numFlechas = Math.min(6, puntos.length);
+        const paso = Math.max(1, Math.floor(puntos.length / numFlechas));
+        const flechas = [];
+        for (let i = 0; i < puntos.length; i += paso) {
+            const p = puntos[i];
+            if (typeof p.windDirection !== 'number') continue;
+            const px = x(p.ts).toFixed(1);
+            flechas.push(`
+                <g transform="translate(${px}, ${padT - 6}) rotate(${p.windDirection + 180})">
+                    <polygon points="0,-5 3,4 0,2 -3,4" fill="#7f8c8d"/>
+                </g>
+            `);
+        }
+
+        return `
+            <svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="display:block; margin: 0 auto;">
+                ${gridLines}
+                <polyline points="${lineaViento}" fill="none" stroke="#2980b9" stroke-width="2"/>
+                ${puntosRacha.length > 1 ? `<polyline points="${lineaRacha}" fill="none" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="4,2"/>` : ''}
+                ${flechas.join('')}
+                ${etiquetasX.join('')}
+            </svg>
+        `;
+    }
 
     function pintarPopupBaliza(marker) {
         const containerDiv = document.getElementById(`pop-${marker.stationId}`);
@@ -13950,6 +14038,37 @@ function inicializarMapaLeaflet() {
                     ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada:' })} ${formatearFechaHoraBaliza(d.date, d.time)}
                 </small>
             </span>
+
+            <div id="pop-chart-${marker.stationId}" style="margin-top:4px; min-height: 90px; display:flex; align-items:center; justify-content:center;">
+                <small style="color:#aaa;">⏳ ${t('mapa.balizas.balizas_cargando_grafica', { defaultValue: 'Cargando gráfica 6h...' })}</small>
+            </div>
+        `;
+
+        pintarGraficaBaliza(marker);
+    }
+
+    // 5b. PINTAR LA GRÁFICA DE 6H DENTRO DEL POPUP (fetch lazy + caché 5 min)
+    async function pintarGraficaBaliza(marker) {
+        await cargarDatos6hBalizasSiNecesario();
+
+        const chartDiv = document.getElementById(`pop-chart-${marker.stationId}`);
+        if (!chartDiv) return; // el popup ya se cerró o cambió mientras cargaba
+
+        const lecturas = datos6hBalizas ? datos6hBalizas[marker.stationId] : null;
+        const svg = generarSvgGraficaBaliza(lecturas);
+
+        if (!svg) {
+            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Histórico no disponible todavía.' })}</small>`;
+            return;
+        }
+
+        chartDiv.innerHTML = `
+            ${svg}
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:2px;">
+                <small style="color:#2980b9;">▬ ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}</small>
+                <small style="color:#c0392b;">┄ ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}</small>
+                <small style="color:#7f8c8d;">➤ ${t('mapa.balizas.balizas_direccion', { defaultValue: 'Dirección' })}</small>
+            </div>
         `;
     }
 
