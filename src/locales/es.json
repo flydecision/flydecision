@@ -604,10 +604,11 @@
     },
     "balizas": {
       "baliza_sin_datos": "Estación sin datos de viento.",
-      "balizas_viento": "Viento:",
-      "balizas_racha": "Racha:",
-      "balizas_direccion": "Dirección:",
-      "balizas_actualizada": "Actualizada:"
+      "balizas_viento": "Viento",
+      "balizas_racha": "Racha",
+      "balizas_direccion": "Dirección",
+      "balizas_actualizada": "Actualizada",
+      "balizas_cargando_grafico": "Cargando gráfico..."
     }
   },
 

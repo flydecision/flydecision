@@ -603,10 +603,11 @@
     },
     "balizas": {
       "baliza_sin_datos": "Station ohne Winddaten.",
-      "balizas_viento": "Wind:",
-      "balizas_racha": "Böe:",
-      "balizas_direccion": "Richtung:",
-      "balizas_actualizada": "Aktualisiert:"
+      "balizas_viento": "Wind",
+      "balizas_racha": "Böe",
+      "balizas_direccion": "Richtung",
+      "balizas_actualizada": "Aktualisiert",
+      "balizas_cargando_grafico": "Lade Grafik..."
     }
   },
 

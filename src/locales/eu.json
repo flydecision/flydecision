@@ -603,10 +603,11 @@
     },
     "balizas": {
       "baliza_sin_datos": "Haize-daturik gabeko estazioa.",
-      "balizas_viento": "Haizea:",
-      "balizas_racha": "Bolada:",
-      "balizas_direccion": "Norabidea:",
-      "balizas_actualizada": "Eguneratua:"
+      "balizas_viento": "Haizea",
+      "balizas_racha": "Bolada",
+      "balizas_direccion": "Norabidea",
+      "balizas_actualizada": "Eguneratua",
+      "balizas_cargando_grafico": "Grafikoa kargatzen..."
     }
   },
 
