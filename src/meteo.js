@@ -10780,7 +10780,7 @@ function aplicarPuntuacionEnMapa(soloPuntuacion = false) {
         marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color, actividadScore));
     });
 
-    if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
+    if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues && clustergroupDespegues._map) {
         clustergroupDespegues.refreshClusters();
     }
     if (typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || (filtrosMapaAbiertos && !soloPuntuacion))) {
@@ -10871,7 +10871,7 @@ function limpiarColoresMapa() {
     });
 
     if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
-    if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
+    if (clustergroupDespegues && clustergroupDespegues._map) clustergroupDespegues.refreshClusters();
 
     // --- ESCUDO FIN (Síncrono e inmediato) ---
     if (marcadorAbierto) {
@@ -12205,9 +12205,11 @@ function inicializarMapaLeaflet() {
                 const despeguesDebenVerse = localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false';
 
                 if (chkDespeguesPersist) chkDespeguesPersist.checked = despeguesDebenVerse;
-                if (despeguesDebenVerse) {
-                    map.addLayer(clustergroupDespegues);
-                } else {
+
+                // 🛠️ Añadimos SIEMPRE el grupo al mapa primero: es lo único que dispara el onAdd() de leaflet.markercluster, que inicializa internamente _topClusterLevel.
+                // Si debe arrancar oculto, lo quitamos justo después (visualmente no se nota nada, pero evita que refreshClusters() reviente más adelante porque _topClusterLevel sigue undefined).
+                map.addLayer(clustergroupDespegues);
+                if (!despeguesDebenVerse) {
                     map.removeLayer(clustergroupDespegues);
                 }
                 if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
