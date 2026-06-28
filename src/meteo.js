@@ -10780,7 +10780,7 @@ function aplicarPuntuacionEnMapa(soloPuntuacion = false) {
         marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color, actividadScore));
     });
 
-    if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues) {
+    if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues && clustergroupDespegues._map) {
         clustergroupDespegues.refreshClusters();
     }
     if (typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || (filtrosMapaAbiertos && !soloPuntuacion))) {
@@ -10871,7 +10871,7 @@ function limpiarColoresMapa() {
     });
 
     if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
-    if (clustergroupDespegues) clustergroupDespegues.refreshClusters();
+    if (clustergroupDespegues && clustergroupDespegues._map) clustergroupDespegues.refreshClusters();
 
     // --- ESCUDO FIN (Síncrono e inmediato) ---
     if (marcadorAbierto) {
@@ -12205,9 +12205,11 @@ function inicializarMapaLeaflet() {
                 const despeguesDebenVerse = localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false';
 
                 if (chkDespeguesPersist) chkDespeguesPersist.checked = despeguesDebenVerse;
-                if (despeguesDebenVerse) {
-                    map.addLayer(clustergroupDespegues);
-                } else {
+
+                // 🛠️ Añadimos SIEMPRE el grupo al mapa primero: es lo único que dispara el onAdd() de leaflet.markercluster, que inicializa internamente _topClusterLevel.
+                // Si debe arrancar oculto, lo quitamos justo después (visualmente no se nota nada, pero evita que refreshClusters() reviente más adelante porque _topClusterLevel sigue undefined).
+                map.addLayer(clustergroupDespegues);
+                if (!despeguesDebenVerse) {
                     map.removeLayer(clustergroupDespegues);
                 }
                 if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
@@ -13748,6 +13750,8 @@ function inicializarMapaLeaflet() {
     let datosBalizas = {};
     let intervaloBalizas = null;
     let ultimoJsonBalizasRaw = null; // para detectar si hay datos nuevos antes de repintar
+    let datos6hBalizas = null;          // caché del histórico de 6h (todas las balizas)
+    let datos6hBalizasFetchedAt = 0;    // timestamp del último fetch, para no repetir si no toca
 
     // 2. DIBUJAR LAS ESTACIONES ESTÁTICAS AL ACTIVAR EL CHECKBOX
     function dibujarEstacionesEuskalmet() {
@@ -13787,7 +13791,7 @@ function inicializarMapaLeaflet() {
 
             marker.bindPopup(`
                 <div id="pop-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
-                    <h4 style="margin: 0 0 5px 0; color: #2980b9;">🚩 ${estacion.name}</h4>
+                    <h4 style="margin: 0 0 5px 0; color: #0078d4;">🚩 ${estacion.name}</h4>
                     <p style="margin:0; color:#666;">⏳ Cargando viento en vivo...</p>
                 </div>
             `, { className: 'popup-despegueindividual popup-baliza' });
@@ -13812,6 +13816,19 @@ function inicializarMapaLeaflet() {
             actualizarIconosBalizas();
         } catch (e) {
             console.error('No se pudo cargar el caché de balizas Euskalmet', e);
+        }
+    }
+
+    // 3b. CARGAR EL HISTÓRICO DE 6H, SOLO CUANDO SE ABRE UN POPUP (lazy, caché 5 min)
+    async function cargarDatos6hBalizasSiNecesario() {
+        const ahora = Date.now();
+        if (datos6hBalizas && (ahora - datos6hBalizasFetchedAt) < 5 * 60 * 1000) return;
+        try {
+            const res = await fetch(`https://flydecision.com/balizas_euskalmet_6h.json?_=${ahora}`);
+            datos6hBalizas = await res.json();
+            datos6hBalizasFetchedAt = ahora;
+        } catch (e) {
+            console.error('No se pudo cargar el histórico 6h de balizas Euskalmet', e);
         }
     }
 
@@ -13846,17 +13863,21 @@ function inicializarMapaLeaflet() {
             const rotacion = (d.windDirection ?? 0) + 180;
             
             // Cambio de tamaños: 1º Modificas el tamaño del SVG en sí (width y height dentro del <svg>). El viewBox y el polygon nunca se tocan (deben ser 0 0 30 36).
+            const estadoMapa = calcularEstadoActualizacionBaliza(d);
+            const colorFlechaMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
             const svgFlechaMapa = `
                 <svg viewBox="0 0 30 36" style="transform: rotate(${rotacion}deg); transform-origin: 50% 30%; width: 40px; height: 40px; display: block;">
-                    <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/>
+                    <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="${colorFlechaMapa}"/>
                 </svg>
             `;
 
-            // ¡Corregido! Todo a 16px exactos
-            let cifrasHtml = `<strong style="font-size: 16px; color: #2980b9;">${d.windSpeed}</strong>`;
+            const colorVientoMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
+            const colorRachaMapa  = estadoMapa.esAntiguo ? '#95a5a6' : '#e74c3c';
+
+            let cifrasHtml = `<strong style="font-size: 16px; color: ${colorVientoMapa};">${d.windSpeed}</strong>`;
             
             if (zoomActual >= 10 && d.windGusts !== null && d.windGusts !== undefined) {
-                cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: #e74c3c;" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
+                cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: ${colorRachaMapa};" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
             }
 
             // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal. Nota: margin-left: -26px; es para desplazarlo a la izquierda y saltar el .leaflet-marker-icon.custom-div-icon {
@@ -13884,13 +13905,124 @@ function inicializarMapaLeaflet() {
         });
     }
 
+    // Calcula cuántos minutos de retraso tiene una lectura y qué semáforo le corresponde. <30 min: 🟢 | 30-45 min: 🟡 | ≥45 min: 🔴 (y las cifras del mapa pasan a gris)
+    function calcularEstadoActualizacionBaliza(d) {
+        if (!d || !d.date || !d.time) return { minutos: null, emoji: '⚪', esAntiguo: false };
+
+        const [anio, mes, dia] = d.date.split('-').map(Number);
+        const [h, m] = d.time.split(':').map(Number);
+        const fechaLectura = new Date(anio, mes - 1, dia, h, m);
+        const minutos = (Date.now() - fechaLectura.getTime()) / 60000;
+
+        let emoji = '🟢';
+        if (minutos >= 45) emoji = '🔴';
+        else if (minutos >= 30) emoji = '🟡';
+
+        return { minutos, emoji, esAntiguo: minutos >= 45 }; // esAntiguo = Retraso en min antes de mostrar cifras grises en el mapa
+    }
+
     // 5. PINTAR EL CONTENIDO DEL POPUP CON LOS DATOS YA CARGADOS
     function formatearFechaHoraBaliza(fechaStr, horaStr) {
-    if (!fechaStr || !horaStr) return '–';
-    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-    const [anio, mes, dia] = fechaStr.split('-');
-    return `${dia}-${meses[parseInt(mes, 10) - 1]}-${anio} ${horaStr}`;
-}
+        if (!fechaStr || !horaStr) return '–';
+        const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+        const [anio, mes, dia] = fechaStr.split('-');
+        return `${dia}-${meses[parseInt(mes, 10) - 1]}-${anio} ${horaStr}`;
+    }
+
+    function generarSvgGraficaBaliza(lecturas) {
+        if (!Array.isArray(lecturas) || lecturas.length < 2) return null;
+
+        const W = 250, H = 112; // Ancho (W) y Alto (H) del lienzo en píxeles virtuales.
+        const padL = 20, padR = 10, padT = 26, padB = 20; // Márgenes: Izquierda (L), Derecha (R), Arriba (T), Abajo (B).
+        const plotW = W - padL - padR; // Ancho real de la zona donde se dibujan las líneas.
+        const plotH = H - padT - padB; // Alto real de la zona donde se dibujan las líneas.
+
+        const lecturasValidas = lecturas
+            .filter(p => typeof p.windSpeed === 'number')
+            .sort((a, b) => a.ts - b.ts);
+        if (lecturasValidas.length < 2) return null;
+
+        const ahora = lecturasValidas[lecturasValidas.length - 1].ts;
+        const desde = ahora - 4 * 3600; // últimas X horas
+
+        const puntos = lecturasValidas.filter(p => p.ts >= desde);
+        if (puntos.length < 2) return null;
+
+        // Escala de Velocidad (Eje Y)
+        const valores = [];
+        puntos.forEach(p => {
+            valores.push(p.windSpeed);
+            if (typeof p.windGusts === 'number') valores.push(p.windGusts);
+        });
+        const minV = 0; // El viento mínimo siempre empieza en 0.
+
+        // Escala vertical variable según máximo
+        let maxV = Math.max(...valores, 25); // Busca el valor más alto (viento o racha), con un mínimo de 25 km/h.
+        maxV = Math.ceil(maxV / 5) * 5; // Redondea hacia arriba al múltiplo de 5 más cercano (ej: 12 se convierte en 15).
+        // const maxV = 60; // Si quisiera máximo fijo
+        
+        const x = (ts) => padL + ((ts - desde) / (ahora - desde)) * plotW;
+        const y = (v) => padT + plotH - ((v - minV) / (maxV - minV)) * plotH;
+
+        const lineaViento = puntos.map(p => `${x(p.ts).toFixed(1)},${y(p.windSpeed).toFixed(1)}`).join(' ');
+        const puntosRacha = puntos.filter(p => typeof p.windGusts === 'number');
+        const lineaRacha = puntosRacha.map(p => `${x(p.ts).toFixed(1)},${y(p.windGusts).toFixed(1)}`).join(' ');
+
+        // Puntitos sobre cada dato real (mismo color que su línea)
+        const puntosVientoSvg = puntos.map(p =>
+            `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.windSpeed).toFixed(1)}" r="2.2" fill="#0078d4"/>`
+        ).join('');
+        const puntosRachaSvg = puntosRacha.map(p =>
+            `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.windGusts).toFixed(1)}" r="2.2" fill="#c0392b"/>`
+        ).join('');
+
+        // Líneas guía horizontales (0, mitad, máximo)
+        // const gridY = [minV, (minV + maxV) / 3, maxV]; // grid dinámico
+        // Líneas guía horizontales fijas (0, 10, 20) y el máximo dinámico
+        const gridY = [0, 10, 20, maxV];
+
+        // Líneas de Guía Horizontales (Líneas grises de fondo)
+        const gridLines = gridY.map(v => `
+            <line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W - padR}" y2="${y(v).toFixed(1)}" stroke="#a4a4a4" stroke-width="0.5"/>
+            <text x="${padL - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" font-size="12" fill="#000000">${Math.round(v)}</text>
+        `).join('');
+
+        // Etiquetas eje X. Cambia el h <= por las horas totales del rango y el paso de h += por las divisiones en horas
+        const etiquetasX = [];
+        for (let h = 0; h <= 4; h += 1) {
+            const ts = desde + h * 3600;
+            const horasRestantes = 4 - h;
+            const textoHora = horasRestantes === 0 ? '0' : `-${horasRestantes}`;
+            etiquetasX.push(`<text x="${x(ts).toFixed(1)}" y="${H - 1}" text-anchor="middle" font-size="12" fill="#888">${textoHora}&thinsp;h</text>`);
+        }
+
+        // Flechas de dirección repartidas uniformemente (cambiar la cifra de Math.min(X...), que es el máximo "aproximado".. 1 o 2 más serán por el redondeo
+        const numFlechas = Math.min(8, puntos.length);
+        const paso = Math.max(1, Math.floor(puntos.length / numFlechas));
+        const flechas = [];
+        for (let i = 0; i < puntos.length; i += paso) {
+            const p = puntos[i];
+            if (typeof p.windDirection !== 'number') continue;
+            const px = x(p.ts).toFixed(1);
+            flechas.push(`
+                <g transform="translate(${px}, ${padT - 16}) rotate(${p.windDirection + 180})">
+                    <polygon points="0,-6.5 3.9,5.2 0,2.6 -3.9,5.2" fill="#5a9be4"/>
+                </g>
+            `);
+        }
+
+        return `
+            <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:280px; margin: 0 auto;">
+                ${gridLines}
+                <polyline points="${lineaViento}" fill="none" stroke="#0078d4" stroke-width="2"/>
+                ${puntosRacha.length > 1 ? `<polyline points="${lineaRacha}" fill="none" stroke="#c0392b" stroke-width="2"/>` : ''}
+                ${puntosVientoSvg}
+                ${puntosRachaSvg}
+                ${flechas.join('')}
+                ${etiquetasX.join('')}
+            </svg>
+        `;
+    }
 
     function pintarPopupBaliza(marker) {
         const containerDiv = document.getElementById(`pop-${marker.stationId}`);
@@ -13906,6 +14038,7 @@ function inicializarMapaLeaflet() {
         }
 
         const orientacionTexto = obtenerTextoOrientacion(d.windDirection);
+        const estadoPopup = calcularEstadoActualizacionBaliza(d);
 
         // 1. viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
         const svgFlecha = `
@@ -13915,41 +14048,81 @@ function inicializarMapaLeaflet() {
                         width: 28px;
                         height: 28px;
                         flex-shrink: 0;">
-                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#2980b9"/>
+                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
             </svg>
         `;
 
         // 2. Aplicamos la misma estructura Flexbox a las 3 filas para que tengan idéntica altura (25px)
         containerDiv.innerHTML = `
             <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
-                🚩 <span style="color: #2980b9; font-weight: bold;"> ${marker.stationName}</span>
+                🚩 <span style="font-weight: bold;"> ${marker.stationName}</span>
             </p>
             
             <!-- Fila 1: Viento -->
             <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 75px;">${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento:' })}</span> 
-                <b>${d.windSpeed}</b> <span style="margin-left: 4px;">km/h</span>
+                <span style="width: 80px;">${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento:' })}:</span> 
+                <b style="color: #0078d4;">${d.windSpeed}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
             </div>
             
             <!-- Fila 2: Racha -->
             <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 75px;">${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha:' })}</span> 
-                <b style="color: #c0392b;">${d.windGusts ?? '-'}</b> <span style="margin-left: 4px;">km/h</span>
+                <span style="width: 80px;">${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha:' })}:</span> 
+                <b style="color: #c0392b;">${d.windGusts ?? '-'}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
             </div>
             
             <!-- Fila 3: Dirección -->
             <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 75px;">${t('mapa.balizas.balizas_direccion', { defaultValue: 'Dirección:' })}</span> 
-                <span style="font-weight: bold; margin-right: 5px;">${orientacionTexto}</span>
+                <span style="width: 80px;">${t('mapa.balizas.balizas_direccion', { defaultValue: 'Dirección:' })}:</span> 
+                <b style="color: #0078d4;">${orientacionTexto}</b>
                 ${svgFlecha} 
                 <span style="color:#888;">(${d.windDirection ?? '-'}º)</span>
             </div>
 
-            <span style="display: block; margin-top: 7px; margin-bottom:7px;">
+            <div id="pop-chart-${marker.stationId}" style="margin-top:10px; min-height: 90px; text-align:center;">
+                <small style="color:#aaa;">⏳ ${t('mapa.balizas.balizas_cargando_grafico', { defaultValue: 'Cargando gráfico...' })}</small>
+            </div>
+
+            <span style="display: block; margin-top: 7px; margin-bottom:7px; text-align: right;">
                 <small style="color:#888;">
-                    ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada:' })} ${formatearFechaHoraBaliza(d.date, d.time)}
+                    ${estadoPopup.emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
                 </small>
             </span>
+        `;
+
+        pintarGraficaBaliza(marker);
+    }
+
+    // 5b. PINTAR LA GRÁFICA DE 6H DENTRO DEL POPUP (fetch lazy + caché 5 min)
+    async function pintarGraficaBaliza(marker) {
+        await cargarDatos6hBalizasSiNecesario();
+
+        const chartDiv = document.getElementById(`pop-chart-${marker.stationId}`);
+        if (!chartDiv) return; // el popup ya se cerró o cambió mientras cargaba
+
+        const lecturas = datos6hBalizas ? datos6hBalizas[marker.stationId] : null;
+        const svg = generarSvgGraficaBaliza(lecturas);
+
+        if (!svg) {
+            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Histórico no disponible todavía.' })}</small>`;
+            return;
+        }
+
+        chartDiv.innerHTML = `
+            ${svg}
+            <div style="display:flex; justify-content:center; gap:14px; margin-top:2px;">
+                <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
+                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;">
+                        <line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" />
+                    </svg>
+                    ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
+                </small>
+                <small style="color:#c0392b; display: inline-flex; align-items: center;">
+                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;">
+                        <line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" />
+                    </svg>
+                    ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
+                </small>
+            </div>
         `;
     }
 
