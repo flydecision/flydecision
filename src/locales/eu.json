@@ -600,6 +600,13 @@
       "KK7_Thermals": "Eremu termikoak (Thermals KK7)",
       "ENAIRE": "AESA / ENAIRE murrizketak (Espainia)",
       "OpenAIP": "OpenAIP murrizketak (Mundua)"
+    },
+    "balizas": {
+      "baliza_sin_datos": "Haize-daturik gabeko estazioa.",
+      "balizas_viento": "Haizea:",
+      "balizas_racha": "Bolada:",
+      "balizas_direccion": "Norabidea:",
+      "balizas_actualizada": "Eguneratua:"
     }
   },
 
