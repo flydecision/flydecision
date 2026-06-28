@@ -13863,17 +13863,21 @@ function inicializarMapaLeaflet() {
             const rotacion = (d.windDirection ?? 0) + 180;
             
             // Cambio de tamaños: 1º Modificas el tamaño del SVG en sí (width y height dentro del <svg>). El viewBox y el polygon nunca se tocan (deben ser 0 0 30 36).
+            const estadoMapa = calcularEstadoActualizacionBaliza(d);
+            const colorFlechaMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
             const svgFlechaMapa = `
                 <svg viewBox="0 0 30 36" style="transform: rotate(${rotacion}deg); transform-origin: 50% 30%; width: 40px; height: 40px; display: block;">
-                    <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
+                    <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="${colorFlechaMapa}"/>
                 </svg>
             `;
 
-            // ¡Corregido! Todo a 16px exactos
-            let cifrasHtml = `<strong style="font-size: 16px; color: #0078d4;">${d.windSpeed}</strong>`;
+            const colorVientoMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
+            const colorRachaMapa  = estadoMapa.esAntiguo ? '#95a5a6' : '#e74c3c';
+
+            let cifrasHtml = `<strong style="font-size: 16px; color: ${colorVientoMapa};">${d.windSpeed}</strong>`;
             
             if (zoomActual >= 10 && d.windGusts !== null && d.windGusts !== undefined) {
-                cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: #e74c3c;" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
+                cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: ${colorRachaMapa};" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
             }
 
             // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal. Nota: margin-left: -26px; es para desplazarlo a la izquierda y saltar el .leaflet-marker-icon.custom-div-icon {
@@ -13899,6 +13903,22 @@ function inicializarMapaLeaflet() {
 
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
         });
+    }
+
+    // Calcula cuántos minutos de retraso tiene una lectura y qué semáforo le corresponde. <30 min: 🟢 | 30-45 min: 🟡 | ≥45 min: 🔴 (y las cifras del mapa pasan a gris)
+    function calcularEstadoActualizacionBaliza(d) {
+        if (!d || !d.date || !d.time) return { minutos: null, emoji: '⚪', esAntiguo: false };
+
+        const [anio, mes, dia] = d.date.split('-').map(Number);
+        const [h, m] = d.time.split(':').map(Number);
+        const fechaLectura = new Date(anio, mes - 1, dia, h, m);
+        const minutos = (Date.now() - fechaLectura.getTime()) / 60000;
+
+        let emoji = '🟢';
+        if (minutos >= 45) emoji = '🔴';
+        else if (minutos >= 30) emoji = '🟡';
+
+        return { minutos, emoji, esAntiguo: minutos >= 45 }; // esAntiguo = Retraso en min antes de mostrar cifras grises en el mapa
     }
 
     // 5. PINTAR EL CONTENIDO DEL POPUP CON LOS DATOS YA CARGADOS
@@ -13948,6 +13968,14 @@ function inicializarMapaLeaflet() {
         const puntosRacha = puntos.filter(p => typeof p.windGusts === 'number');
         const lineaRacha = puntosRacha.map(p => `${x(p.ts).toFixed(1)},${y(p.windGusts).toFixed(1)}`).join(' ');
 
+        // Puntitos sobre cada dato real (mismo color que su línea)
+        const puntosVientoSvg = puntos.map(p =>
+            `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.windSpeed).toFixed(1)}" r="2.2" fill="#0078d4"/>`
+        ).join('');
+        const puntosRachaSvg = puntosRacha.map(p =>
+            `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.windGusts).toFixed(1)}" r="2.2" fill="#c0392b"/>`
+        ).join('');
+
         // Líneas guía horizontales (0, mitad, máximo)
         // const gridY = [minV, (minV + maxV) / 3, maxV]; // grid dinámico
         // Líneas guía horizontales fijas (0, 10, 20) y el máximo dinámico
@@ -13955,8 +13983,8 @@ function inicializarMapaLeaflet() {
 
         // Líneas de Guía Horizontales (Líneas grises de fondo)
         const gridLines = gridY.map(v => `
-            <line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W - padR}" y2="${y(v).toFixed(1)}" stroke="#eee" stroke-width="1"/>
-            <text x="${padL - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" font-size="12" fill="#888">${Math.round(v)}</text>
+            <line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W - padR}" y2="${y(v).toFixed(1)}" stroke="#a4a4a4" stroke-width="0.5"/>
+            <text x="${padL - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" font-size="12" fill="#000000">${Math.round(v)}</text>
         `).join('');
 
         // Etiquetas eje X. Cambia el h <= por las horas totales del rango y el paso de h += por las divisiones en horas
@@ -13987,7 +14015,9 @@ function inicializarMapaLeaflet() {
             <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:280px; margin: 0 auto;">
                 ${gridLines}
                 <polyline points="${lineaViento}" fill="none" stroke="#0078d4" stroke-width="2"/>
-                ${puntosRacha.length > 1 ? `<polyline points="${lineaRacha}" fill="none" stroke="#c0392b" stroke-width="2" stroke-dasharray="4,2"/>` : ''}
+                ${puntosRacha.length > 1 ? `<polyline points="${lineaRacha}" fill="none" stroke="#c0392b" stroke-width="2"/>` : ''}
+                ${puntosVientoSvg}
+                ${puntosRachaSvg}
                 ${flechas.join('')}
                 ${etiquetasX.join('')}
             </svg>
@@ -14008,6 +14038,7 @@ function inicializarMapaLeaflet() {
         }
 
         const orientacionTexto = obtenerTextoOrientacion(d.windDirection);
+        const estadoPopup = calcularEstadoActualizacionBaliza(d);
 
         // 1. viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
         const svgFlecha = `
@@ -14053,7 +14084,7 @@ function inicializarMapaLeaflet() {
 
             <span style="display: block; margin-top: 7px; margin-bottom:7px; text-align: right;">
                 <small style="color:#888;">
-                    ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
+                    ${estadoPopup.emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
                 </small>
             </span>
         `;
@@ -14080,14 +14111,14 @@ function inicializarMapaLeaflet() {
             ${svg}
             <div style="display:flex; justify-content:center; gap:14px; margin-top:2px;">
                 <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
-                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible;">
+                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;">
                         <line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" />
                     </svg>
                     ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
                 </small>
                 <small style="color:#c0392b; display: inline-flex; align-items: center;">
-                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible;">
-                        <line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" stroke-dasharray="4,2" />
+                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;">
+                        <line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" />
                     </svg>
                     ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
                 </small>
