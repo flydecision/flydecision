@@ -427,8 +427,8 @@
 
   "actualizacion": {
     "cargando": "Cargando...",
-    "esperando": "🔄 Seguinte: <span style='color:#e39300; font-weight:bold;'>Agardando...⌛</span>",
-    "proximaEn": "🔄 Seguinte: <b>{{tiempo}}</b>",
+    "esperando": "seguinte: <span style='color:#e39300; font-weight:bold;'>Agardando...⌛</span>",
+    "proximaEn": "seguinte: <b>{{tiempo}}</b>",
     "horas": "~{{h}} h {{m}} min",
     "minutos": "~{{m}} min",
     "sinConexion": "⚠️ Sen conexión a Internet. Antigüidade dos datos: {{tiempo}}.",

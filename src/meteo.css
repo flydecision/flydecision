@@ -4098,7 +4098,8 @@ h3 {
 
 .btn-filtros-mapa {
     position: absolute;
-    top: calc(var(--safe-area-inset-top, 0px) + 3px) !important;
+    /* top: calc(var(--safe-area-inset-top, 0px) + 3px) !important; */
+    margin-top: 3px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1010;
