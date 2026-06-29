@@ -607,7 +607,8 @@
       "balizas_racha": "Gust",
       "balizas_direccion": "Direction",
       "balizas_actualizada": "Updated",
-      "balizas_cargando_grafico": "Loading chart..."
+      "balizas_cargando_grafico": "Loading chart...",
+      "balizas_sin_historico": "Chart not available: no data for the last 4 hours."
     }
   },
 

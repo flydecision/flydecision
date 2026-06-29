@@ -3593,6 +3593,11 @@ h3 {
 	margin: 5px 10px 0px 10px;
 }
 
+/* .leaflet-popup-content,
+.leaflet-popup-content-wrapper {
+    touch-action: auto;
+} */
+
 /* =========================================================================
    🗺️ CONTROL DE ALTURA Y SCROLL GLOBAL PARA TODOS LOS POPUPS
    ========================================================================= */

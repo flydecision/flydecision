@@ -8629,15 +8629,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     <div style="margin: 5px 0 0 0; padding-left: 23px; padding-right: 0px; list-style-type: disc; line-height: 1.3; text-align: left;">
                         <p style="margin-bottom: -6px;">
                             <span style="font-size: 0.8rem;">${semaforoMF.emoji}</span> Arome-HD: ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
-                            <span style="padding-left: 26px;">${textoFuturoMF}</span>
+                            <span style="padding-left: 21px;">${textoFuturoMF}</span>
                         </p>
                         <p style="margin-bottom: -6px;">
                             <span style="font-size: 0.8rem;">${semaforoMin15.emoji}</span> Arome-HD 15min: ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
-                            <span style="padding-left: 26px;">${textoFuturoMin15}</span>
+                            <span style="padding-left: 21px;">${textoFuturoMin15}</span>
                         </p>
                         <p style="margin-bottom: 4px;">
                             <span style="font-size: 0.8rem;">${semaforoEC.emoji}</span> ECMWF: ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
-                            <span style="padding-left: 26px;">${textoFuturoEC}</span>
+                            <span style="padding-left: 21px;">${textoFuturoEC}</span>
                         </p>
                     </div>`;
                     
@@ -14457,6 +14457,24 @@ function inicializarMapaLeaflet() {
     // 🟡 2. OBJETO GESTOR CENTRAL (Configuración y Estado de cada red)
     //___________________________________________________________________________________
 
+    // CONFIGURACIÓN DE LOS CLÚSTERES DE BALIZAS
+    const opcionesClusterBalizas = {
+        maxClusterRadius: 15, // Si dos marcadores están separados menos de X px (aprox.), se agrupan.
+        disableClusteringAtZoom: 10, // A partir del zoom X, incluido, se separan siempre
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        iconCreateFunction: function(cluster) {
+            //const count = cluster.getChildCount(); // en el html iba el ${count} pero está quitado para no confundir con cifras de viento
+            return L.divIcon({
+                html: `<div style="background-color: #0078d463; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                        
+                    </div>`,
+                className: 'cluster-balizas-personalizado',
+                iconSize: L.point(36, 36)
+            });
+        }
+    };
+
     const REDES_BALIZAS = {
         'euskalmet': {
             id: 'euskalmet',
@@ -14467,7 +14485,8 @@ function inicializarMapaLeaflet() {
             checkboxId: 'checkboxBalizasEuskalmet',
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_EUSKALMET_VISIBLE',
             // --- Variables de estado de esta red ---
-            layerGroup: L.layerGroup(),
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
             dibujadas: false,
             datosCache: {},
             ultimoJsonRaw: null,
@@ -14486,7 +14505,8 @@ function inicializarMapaLeaflet() {
             checkboxId: 'checkboxBalizasAemet',
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_AEMET_VISIBLE',
             // --- Variables de estado de esta red ---
-            layerGroup: L.layerGroup(),
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
             dibujadas: false,
             datosCache: {},
             ultimoJsonRaw: null,
@@ -14550,6 +14570,7 @@ function inicializarMapaLeaflet() {
                 autoPanPaddingTopLeft: L.point(50, 550)
             });
 
+            red.marcadores[estacion.id] = marker;
             red.layerGroup.addLayer(marker);
         });
 
@@ -14595,26 +14616,68 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
     function actualizarIconosBalizas(redId) {
-        const red = REDES_BALIZAS[redId];
-        const zoomActual = map.getZoom();
+    const red = REDES_BALIZAS[redId];
+    const zoomActual = map.getZoom();
 
-        red.layerGroup.eachLayer(marker => {
-            const d = red.datosCache[marker.stationId];
-
-            // A) SI LA ESTACIÓN NO TIENE DATOS (Punto rojo)
-            if (!d || d.windSpeed === null || d.windSpeed === undefined) {
-                const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
-                const htmlSinDatos = `
-                    <div title="${marker.stationName}: Sin datos recientes" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
-                        ${svgPuntoRojo}
-                    </div>`;
-                marker.setIcon(L.divIcon({ html: htmlSinDatos, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
-                return;
+    Object.values(red.marcadores).forEach(marker => {
+        const d = red.datosCache[marker.stationId];
+        
+        // -----------------------------------------------------------
+        // A) COMPROBAR SI ESTÁ OBSOLETA (> X horas sin datos o sin JSON)
+        // -----------------------------------------------------------
+        let balizaConDatosObsoletos = false;
+        
+        if (!d || !d.date || !d.time) {
+            balizaConDatosObsoletos = true; // No viene en el JSON
+        } else {
+            const [anio, mes, dia] = d.date.split('-').map(Number);
+            const [h, m] = d.time.split(':').map(Number);
+            const fechaLectura = new Date(anio, mes - 1, dia, h, m);
+            const horasSinDatos = (Date.now() - fechaLectura.getTime()) / (1000 * 60 * 60);
+            
+            if (horasSinDatos > 3) { // <---- X Horas límite desde última actualización antes de ocultar baliza
+                balizaConDatosObsoletos = true;
             }
+        }
 
-            // B) SI LA ESTACIÓN TIENE DATOS
-            const rotacion = (d.windDirection ?? 0) + 180;
-            const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
+        // Nos aseguramos de que la baliza ESTÉ en el mapa siempre (agrupada en el clúster)
+        if (!red.layerGroup.hasLayer(marker)) {
+            red.layerGroup.addLayer(marker);
+        }
+
+        // 1. SI ESTÁ OBSOLETA (>X h): CÍRCULO GRIS
+        if (balizaConDatosObsoletos) {
+            const svgPuntoGris = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#95a5a6" stroke="#7f8c8d" stroke-width="2"/></svg>`;
+            const htmlObsoleto = `
+                <div title="${marker.stationName}: Datos obsoletos" style="width:80px;height:46px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;margin-left:-27px;margin-top:18px;">
+                    ${svgPuntoGris}
+                </div>`;
+            
+            marker.setIcon(L.divIcon({ html: htmlObsoleto, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
+            
+            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+            return; // Terminamos aquí, no pintamos flechas ni números
+        }
+
+        // 2. SI HA MANDADO SEÑAL RECIENTE, PERO EL SENSOR ESTÁ ROTO (null): CÍRCULO ROJO
+        if (d.windSpeed === null || d.windSpeed === undefined) {
+            const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
+            const htmlSinDatos = `
+                <div title="${marker.stationName}: Sensor de viento sin datos" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                    ${svgPuntoRojo}
+                </div>`;
+            
+            marker.setIcon(L.divIcon({ html: htmlSinDatos, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
+            
+            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+            return;
+        }
+
+        // -----------------------------------------------------------
+        // B) SI LLEGA AQUÍ, TIENE DATOS RECIENTES Y VÁLIDOS -> PINTAMOS FLECHA Y NÚMEROS
+        // -----------------------------------------------------------
+        const rotacion = (d.windDirection ?? 0) + 180;
+        const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
             const colorFlechaMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
             
             const svgFlechaMapa = `
@@ -14700,7 +14763,7 @@ function inicializarMapaLeaflet() {
                 <small style="color:#aaa;">⏳ ${t('mapa.balizas.balizas_cargando_grafico', { defaultValue: 'Cargando gráfico...' })}</small>
             </div>
 
-            <span style="display: block; margin-top: 7px; margin-bottom:7px; text-align: right;">
+            <span style="display: block; margin-top: 7px; margin-bottom:7px;">
                 <small style="color:#888;">
                     ${estadoPopup.emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
                 </small>
@@ -14724,7 +14787,7 @@ function inicializarMapaLeaflet() {
         const svg = generarSvgGraficaBaliza(lecturas); 
 
         if (!svg) {
-            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Histórico no disponible todavía.' })}</small>`;
+            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Gráfico no disponible: no hay datos de las últimas 4 horas.' })}</small>`;
             return;
         }
 
@@ -14750,7 +14813,28 @@ function inicializarMapaLeaflet() {
         const marker = e.popup._source;
         if (!marker || !marker.redId || !marker.stationId) return; // Filtrar si no es un marcador de baliza
         pintarPopupBaliza(marker);
+
+        // // 🔍 ACCESIBILIDAD: mientras el popup está abierto, cedemos el control de gestos táctiles
+        // // al navegador (pinch-zoom nativo de página) en vez de a Leaflet (que normalmente los usa
+        // // para mover/zumear el MAPA). Por eso no basta con stopPropagation: hay que desactivar
+        // // los propios handlers de Leaflet, porque desde la v1.8 escuchan Pointer Events, no Touch Events,
+        // // y además el bloqueo del gesto nativo viene de touch-action en CSS, no de la propagación del evento.
+        // if (map.tap) map.tap.disable();
+        // if (map.dragging) map.dragging.disable();
+        // if (map.touchZoom) map.touchZoom.disable();
+        // if (map.doubleClickZoom) map.doubleClickZoom.disable();
     });
+
+    // map.on('popupclose', function (e) {
+    //     const marker = e.popup._source;
+    //     if (!marker || !marker.redId || !marker.stationId) return; // Filtrar si no es un marcador de baliza
+
+    //     // Restauramos el comportamiento normal del mapa al cerrar el popup
+    //     if (map.tap) map.tap.enable();
+    //     if (map.dragging) map.dragging.enable();
+    //     if (map.touchZoom) map.touchZoom.enable();
+    //     if (map.doubleClickZoom) map.doubleClickZoom.enable();
+    // });
 
     // 🟡 9. LÓGICA DE ACTIVACIÓN/DESACTIVACIÓN GENÉRICA POR CHECKBOXES
     //___________________________________________________________________________________
@@ -14821,7 +14905,7 @@ function inicializarMapaLeaflet() {
     }
 
     function generarSvgGraficaBaliza(lecturas) {
-        if (!Array.isArray(lecturas) || lecturas.length < 2) return null;
+        if (!Array.isArray(lecturas) || lecturas.length === 0) return null;
 
         const W = 250, H = 112; // Ancho (W) y Alto (H) del lienzo en píxeles virtuales.
         const padL = 20, padR = 10, padT = 26, padB = 20; // Márgenes: Izquierda (L), Derecha (R), Arriba (T), Abajo (B).
@@ -14831,13 +14915,29 @@ function inicializarMapaLeaflet() {
         const lecturasValidas = lecturas
             .filter(p => typeof p.windSpeed === 'number')
             .sort((a, b) => a.ts - b.ts);
-        if (lecturasValidas.length < 2) return null;
+        if (lecturasValidas.length === 0) return null;
 
-        const ahora = lecturasValidas[lecturasValidas.length - 1].ts;
+        const ahora = Math.floor(Date.now() / 1000);
         const desde = ahora - 4 * 3600; // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
 
-        const puntos = lecturasValidas.filter(p => p.ts >= desde);
-        if (puntos.length < 2) return null;
+        const puntos = lecturasValidas.filter(p => p.ts >= desde && p.ts <= ahora);
+        if (puntos.length === 0) return null;
+
+        // Buscamos el punto de viento inmediatamente anterior para dar continuidad a la línea por el borde izquierdo
+        const firstVisibleIndex = lecturasValidas.findIndex(p => p.ts >= desde);
+        let puntosLinea = [...puntos];
+        if (firstVisibleIndex > 0) {
+            puntosLinea.unshift(lecturasValidas[firstVisibleIndex - 1]);
+        }
+
+        // Buscamos el punto de racha inmediatamente anterior para dar continuidad a la línea por el borde izquierdo
+        const lecturasRachaValidas = lecturasValidas.filter(p => typeof p.windGusts === 'number');
+        const puntosRacha = puntos.filter(p => typeof p.windGusts === 'number');
+        let puntosRachaLinea = [...puntosRacha];
+        const firstRachaVisibleIndex = lecturasRachaValidas.findIndex(p => p.ts >= desde);
+        if (firstRachaVisibleIndex > 0) {
+            puntosRachaLinea.unshift(lecturasRachaValidas[firstRachaVisibleIndex - 1]);
+        }
 
         // Escala de Velocidad (Eje Y)
         const valores = [];
@@ -14855,9 +14955,8 @@ function inicializarMapaLeaflet() {
         const x = (ts) => padL + ((ts - desde) / (ahora - desde)) * plotW;
         const y = (v) => padT + plotH - ((v - minV) / (maxV - minV)) * plotH;
 
-        const lineaViento = puntos.map(p => `${x(p.ts).toFixed(1)},${y(p.windSpeed).toFixed(1)}`).join(' ');
-        const puntosRacha = puntos.filter(p => typeof p.windGusts === 'number');
-        const lineaRacha = puntosRacha.map(p => `${x(p.ts).toFixed(1)},${y(p.windGusts).toFixed(1)}`).join(' ');
+        const lineaViento = puntosLinea.map(p => `${x(p.ts).toFixed(1)},${y(p.windSpeed).toFixed(1)}`).join(' ');
+        const lineaRacha = puntosRachaLinea.map(p => `${x(p.ts).toFixed(1)},${y(p.windGusts).toFixed(1)}`).join(' ');
 
         // Puntitos sobre cada dato real (mismo color que su línea)
         const puntosVientoSvg = puntos.map(p =>
@@ -14878,13 +14977,39 @@ function inicializarMapaLeaflet() {
             <text x="${padL - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" font-size="12" fill="#000000">${Math.round(v)}</text>
         `).join('');
 
-        // Etiquetas eje X. Cambia el h <= por las horas totales del rango y el paso de h += por las divisiones en horas
+        // Etiquetas eje X y Ejes de Guía Verticales
         const etiquetasX = [];
+        const lineasVerticales = [];
+
+        // Etiquetas eje X. Cambia el h <= por las horas totales del rango y el paso de h += por las divisiones en horas
         for (let h = 0; h <= 4; h += 1) { // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
             const ts = desde + h * 3600;
             const horasRestantes = 4 - h; // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
-            const textoHora = horasRestantes === 0 ? '0' : `-${horasRestantes}`;
-            etiquetasX.push(`<text x="${x(ts).toFixed(1)}" y="${H - 1}" text-anchor="middle" font-size="12" fill="#888">${textoHora}&thinsp;h</text>`);
+            
+            let textoHora;
+            if (horasRestantes === 0) {
+                // En el eje actual (derecha) colocamos el icono del cronómetro
+                textoHora = "⏱️";
+            } else {
+                // Para las marcas del pasado, calculamos la hora de ese instante redondeada a los 10 minutos anteriores
+                const dTick = new Date(ts * 1000);
+                const hrs = String(dTick.getHours()).padStart(2, '0');
+                const mins = String(Math.floor(dTick.getMinutes() / 10) * 10).padStart(2, '0');
+                textoHora = `${hrs}:${mins}`;
+            }
+
+            const px = x(ts).toFixed(1);
+
+            // Ajustamos la altura vertical (Y) de forma condicional: el emoji (0h) se eleva a H - 3 para evitar recortes inferiores
+            const py = horasRestantes === 0 ? (H - 2) : (H - 1);
+
+            const fontSize = horasRestantes === 0 ? 14 : 12; // Tamaño letra etiquetas eje X
+
+            // Pintamos todas las etiquetas centradas en su eje vertical (middle)
+            etiquetasX.push(`<text x="${px}" y="${py}" text-anchor="middle" font-size="${fontSize}" fill="#888">${textoHora}</text>`);
+            
+            // Trazamos el eje vertical sobre la misma coordenada X de la etiqueta
+            lineasVerticales.push(`<line x1="${px}" y1="${padT}" x2="${px}" y2="${(padT + plotH).toFixed(1)}" stroke="#a4a4a4" stroke-width="0.5"/>`);
         }
 
         // Flechas de dirección repartidas uniformemente (cambiar la cifra de Math.min(X...), que es el máximo "aproximado".. 1 o 2 más serán por el redondeo
@@ -14904,9 +15029,16 @@ function inicializarMapaLeaflet() {
 
         return `
             <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:280px; margin: 0 auto;">
+                <defs>
+                    <!-- Máscara de recorte que limita el dibujo exactamente al ancho útil de la gráfica (entre padL y plotW) -->
+                    <clipPath id="plot-clip">
+                        <rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" />
+                    </clipPath>
+                </defs>
                 ${gridLines}
-                <polyline points="${lineaViento}" fill="none" stroke="#0078d4" stroke-width="2"/>
-                ${puntosRacha.length > 1 ? `<polyline points="${lineaRacha}" fill="none" stroke="#c0392b" stroke-width="2"/>` : ''}
+                ${lineasVerticales.join('')}
+                ${puntosLinea.length >= 2 ? `<polyline points="${lineaViento}" fill="none" stroke="#0078d4" stroke-width="2" clip-path="url(#plot-clip)"/>` : ''}
+                ${puntosRachaLinea.length >= 2 ? `<polyline points="${lineaRacha}" fill="none" stroke="#c0392b" stroke-width="2" clip-path="url(#plot-clip)"/>` : ''}
                 ${puntosVientoSvg}
                 ${puntosRachaSvg}
                 ${flechas.join('')}
