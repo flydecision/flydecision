@@ -681,43 +681,57 @@
 			<button id="buttonCerrar" data-i18n="[title]mapa.cerrarPanel"><span>❌</span></button>			 
 			<button id="buttonFijar" data-i18n="[title]mapa.fijarPanel"><span id="iconoFijar">📌</span></button>			 
 				
-			<div class="legend-item" style="margin-top: 12px;" title="Despegues de parapente">
+			<div class="linea-con-bt-info" style="margin-top: 12px;" title="Despegues de parapente">
 				<label for="checkboxDespegues" class="custom-checkbox">
 				<input type="checkbox" id="checkboxDespegues" class="custom-checkbox" checked>
 				<span data-i18n="mapa.capasCheckbox.despegues">🪂 Despegues</span>
 				</label>
 			</div>
-			<div class="legend-item" title="Estaciones meteorológicas de viento en tiempo real">
-				<label for="checkboxBalizas" class="custom-checkbox">
-				<input type="checkbox" id="checkboxBalizas" class="custom-checkbox">
-				<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span>
+			<!-- 🚩 Balizas -->
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasEuskalmet" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasEuskalmet" class="custom-checkbox">
+					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;Euskalmet</span>
 				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasEuskalmet">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
 			</div>
-			<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+			<div class="legend-item linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasAemet" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasAemet" class="custom-checkbox">
+					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;AEMET</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasAemet">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+
+			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
 				<label for="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
 				<input type="checkbox" id="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
 				<span data-i18n="mapa.capasCheckbox.mapaCalorPeninsula">🔥 Mapa de calor Iberia</span>
 				</label>
 			</div>
-			<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
 				<label for="checkboxMapaDeCalorAlpes" class="custom-checkbox">
 				<input type="checkbox" id="checkboxMapaDeCalorAlpes" class="custom-checkbox">
 				<span data-i18n="mapa.capasCheckbox.mapaCalorAlpes">🔥 Mapa de calor Alpes</span>
 				</label>
 			</div>
-			<div class="legend-item" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
 				<label for="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
 				<input type="checkbox" id="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
 				<span data-i18n="mapa.capasCheckbox.mapaCalorMarruecos">🔥 Mapa de calor Marruecos</span>
 				</label>
 			</div>
-			<div class="legend-item" title="Notas personales tomadas sobre despegues y aterrizajes">
+			<div class="linea-con-bt-info" title="Notas personales tomadas sobre despegues y aterrizajes">
 				<label for="checkboxNotasPersonales" class="custom-checkbox">
 				<input type="checkbox" id="checkboxNotasPersonales" class="custom-checkbox">
 				<span data-i18n="mapa.capasCheckbox.notas">✏️ Notas</span>
 				</label>
 			</div>
-			<div class="legend-item" style="margin-bottom: 10px;" title="Despegues Paragliding.earth">
+			<div class="linea-con-bt-info" style="margin-bottom: 10px;" title="Despegues Paragliding.earth">
 				<label for="checkboxDespeguesMundo" class="custom-checkbox">
 				<input type="checkbox" id="checkboxDespeguesMundo" class="custom-checkbox">
 				<span data-i18n="mapa.capasCheckbox.despeguesMundo">🪂 Despegues Paraglidingearth</span>
@@ -800,7 +814,7 @@
 
 </div>
 
-<!-- 🟦🟦 MENÚ INFERIOR COMPACTO (5 BOTONES)  -->
+<!-- 🟦🟦 MENÚ INFERIOR COMPACTO (3 BOTONES)  -->
 <nav class="bottom-nav compact-nav" style="z-index: 1000;">
 	<!-- 1. TABLA (Antes Inicio) -->
 	<button class="nav-item active" id="nav-home" onclick="clicBotonInicio()">

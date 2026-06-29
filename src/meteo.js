@@ -140,22 +140,13 @@ const LIMITES_CIZALLADURA = {
 }
 
 const HorariosMediosActualizacion = ["01:32", "03:02", "06:02", "11:22", "13:32", "16:22", "19:12", "23:22"]; // en UTC-0
-//const HorariosMediosActualizacionEcmwf = ["00:45", "07:15", "13:05", "19:15"]; // en UTC-0
-//gemini 
-//const HorariosMediosActualizacionEcmwf = ["00:15", "06:50", "12:30", "18:50"]; // en UTC-0
-//claude
-//const HorariosMediosActualizacionEcmwf = ["01:40", "08:00", "13:00", "18:55"]; // en UTC-0
-const HorariosMediosActualizacionEcmwf = ["00:30", "07:10", "12:30", "19:10"]; // en UTC-0
+const HorariosMediosActualizacionEcmwf = ["00:30", "07:10", "12:30", "19:10"]; 
 const HorariosMediosActualizacionMin15 = Array.from({ length: 24 }, (_, h) => String(h).padStart(2, '0') + ":47"); // en UTC-0, cada hora a los :47
 
 // Nota: aplico 1 min de más. Buscar: const OFFSET_MS = 1 * 60 * 1000;
 
 // SEMÁFORO 🟢🟡🔴 UMBRALES DE "DATO DESACTUALIZADO" ======================
 // 🟢 dentro de plazo | 🟡 aviso, algo retrasado | 🔴 alerta, muy retrasado (en balizas además pone gris el icono del mapa). Cifras en minutos. Los umbrales de Meteo-France y ECMWF se gestionan en el php del cron en la variable const UMBRAL_RETRASO_INUSUAL
-
-// Balizas Euskalmet (el cron las actualiza cada ~10 min)
-const BALIZAS_UMBRAL_AMARILLO_MIN = 30;
-const BALIZAS_UMBRAL_ROJO_MIN     = 45;
 
 // Arome-HD (ciclo medio ~3h, ver HorariosMediosActualizacion más arriba)
 const AROME_UMBRAL_AMARILLO_MIN = 5 * 60;  
@@ -11519,17 +11510,18 @@ function inicializarMapaLeaflet() {
     map.on('moveend', function() {
         updateURL(map);
     });
-    // Escuchar cuando el usuario termina de hacer zoom
+
     map.on('zoomend', function() {
         updateURL(map);
 
-        // Si la capa de balizas está visible, las repintamos para que evalúen si deben ocultar o mostrar la racha según el nuevo zoom.
-        if (map.hasLayer(layerGroupBalizas)) {
-            actualizarIconosBalizas();
-        }
+        // Recorremos todas las redes de balizas. Si su capa está visible, las repintamos para que evalúen si deben ocultar o mostrar la racha según el nuevo zoom.
+        Object.values(REDES_BALIZAS).forEach(red => {
+            if (map.hasLayer(red.layerGroup)) {
+                actualizarIconosBalizas(red.id);
+            }
+        });
     });
 
-    // Variables para acceder a los mensajes de carga
     const mensajeCargaMapaDeCalorPeninsulaIberica = document.getElementById('mensajeCargaMapaDeCalorPeninsulaIberica');
     const mensajeCargaMapaDeCalorAlpes = document.getElementById('mensajeCargaMapaDeCalorAlpes');
     const mensajeCargaMapaDeCalorMarruecos = document.getElementById('mensajeCargaMapaDeCalorMarruecos');
@@ -13701,97 +13693,824 @@ function inicializarMapaLeaflet() {
         return svg;
     }
 
-    // 🔴 Balizas
+    // ==========================================================================
+    // 🔴 BALIZAS (GESTIÓN MULTI-RED)
+    // ==========================================================================
+
+    // 🟡 1. BASES DE DATOS DE ESTACIONES
     //___________________________________________________________________________________
 
-    // 1. BASE DE DATOS DE ESTACIONES
-        const ESTACIONES_EUSKALMET = [
-        {"id":"B090","name":"Puerto de Bilbao","provider":"Euskalmet","latitude":43.3774903,"longitude":-3.08474,"hasWind":true},
-        {"id":"B096","name":"Puerto de Pasaia","provider":"Euskalmet","latitude":43.3370283,"longitude":-1.92752,"hasWind":true},
-        {"id":"C002","name":"Arteaga","provider":"Euskalmet","latitude":43.347,"longitude":-2.65714,"hasWind":true},
-        {"id":"C007","name":"Santa Clara","provider":"Euskalmet","latitude":43.3218,"longitude":-1.99834,"hasWind":true},
-        {"id":"C00A","name":"Kanpezu","provider":"Euskalmet","latitude":42.6754,"longitude":-2.34148,"hasWind":true},
-        {"id":"C00B","name":"Tobillas","provider":"Euskalmet","latitude":42.8992,"longitude":-3.1828,"hasWind":true},
-        {"id":"C00C","name":"Goiain","provider":"Euskalmet","latitude":42.944472,"longitude":-2.6415097,"hasWind":true},
-        {"id":"C016","name":"Arkauti","provider":"Euskalmet","latitude":42.854275,"longitude":-2.621833,"hasWind":true},
-        {"id":"C017","name":"Miramon","provider":"Euskalmet","latitude":43.2868,"longitude":-1.97121,"hasWind":true},
-        {"id":"C018","name":"Higer","provider":"Euskalmet","latitude":43.3913,"longitude":-1.79615,"hasWind":true},
-        {"id":"C019","name":"Matxitxako","provider":"Euskalmet","latitude":43.4375,"longitude":-2.7636,"hasWind":true},
-        {"id":"C020","name":"Trebiño","provider":"Euskalmet","latitude":42.7180163,"longitude":-2.70141,"hasWind":true},
-        {"id":"C021","name":"Roitegi","provider":"Euskalmet","latitude":42.7817,"longitude":-2.371,"hasWind":true},
-        {"id":"C022","name":"Urkiola","provider":"Euskalmet","latitude":43.1,"longitude":-2.64658,"hasWind":true},
-        {"id":"C023","name":"Arrasate","provider":"Euskalmet","latitude":43.0695849,"longitude":-2.49308,"hasWind":true},
-        {"id":"C024","name":"Iturrieta","provider":"Euskalmet","latitude":42.7935945,"longitude":-2.34575,"hasWind":true},
-        {"id":"C025","name":"Beluntza","provider":"Euskalmet","latitude":42.9615782,"longitude":-2.89361,"hasWind":true},
-        {"id":"C026","name":"Berastegi","provider":"Euskalmet","latitude":43.1248,"longitude":-1.98168,"hasWind":true},
-        {"id":"C028","name":"Zegama","provider":"Euskalmet","latitude":42.9588,"longitude":-2.29852,"hasWind":true},
-        {"id":"C029","name":"Zizurkil","provider":"Euskalmet","latitude":43.1901,"longitude":-2.06181,"hasWind":true},
-        {"id":"C030","name":"Salvatierra","provider":"Euskalmet","latitude":42.8582,"longitude":-2.39538,"hasWind":true},
-        {"id":"C031","name":"Moreda","provider":"Euskalmet","latitude":42.5303,"longitude":-2.41023,"hasWind":true},
-        {"id":"C032","name":"Areta","provider":"Euskalmet","latitude":43.1394,"longitude":-2.93531,"hasWind":true},
-        {"id":"C033","name":"Igorre","provider":"Euskalmet","latitude":43.1686,"longitude":-2.7842,"hasWind":true},
-        {"id":"C034","name":"Espejo","provider":"Euskalmet","latitude":42.8078,"longitude":-3.04103,"hasWind":true},
-        {"id":"C035","name":"Altube","provider":"Euskalmet","latitude":42.9661,"longitude":-2.86795,"hasWind":true},
-        {"id":"C036","name":"Iurreta","provider":"Euskalmet","latitude":43.1769,"longitude":-2.622,"hasWind":true},
-        {"id":"C037","name":"Venta Alta","provider":"Euskalmet","latitude":43.2145,"longitude":-2.89976,"hasWind":true},
-        {"id":"C038","name":"Galindo","provider":"Euskalmet","latitude":43.3042,"longitude":-2.99878,"hasWind":true},
-        {"id":"C03A","name":"Zorrotza","provider":"Euskalmet","latitude":43.28498,"longitude":-2.968458,"hasWind":true},
-        {"id":"C040","name":"Gasteiz","provider":"Euskalmet","latitude":42.8604,"longitude":-2.68899,"hasWind":true},
-        {"id":"C041","name":"Navarrete","provider":"Euskalmet","latitude":42.638,"longitude":-2.52321,"hasWind":true},
-        {"id":"C042","name":"Punta Galea","provider":"Euskalmet","latitude":43.37326,"longitude":-3.03604,"hasWind":true},
-        {"id":"C043","name":"Ordizia","provider":"Euskalmet","latitude":43.0484,"longitude":-2.17755,"hasWind":true},
-        {"id":"C045","name":"La Garbea","provider":"Euskalmet","latitude":43.217,"longitude":-3.19368,"hasWind":true},
-        {"id":"C046","name":"Oiz","provider":"Euskalmet","latitude":43.2304,"longitude":-2.5954,"hasWind":true},
-        {"id":"C047","name":"Kapildui","provider":"Euskalmet","latitude":42.768,"longitude":-2.53785,"hasWind":true},
-        {"id":"C048","name":"Herrera","provider":"Euskalmet","latitude":42.5978,"longitude":-2.67616,"hasWind":true},
-        {"id":"C049","name":"Subijana","provider":"Euskalmet","latitude":42.8196,"longitude":-2.89328,"hasWind":true},
-        {"id":"C050","name":"Zambrana","provider":"Euskalmet","latitude":42.6751,"longitude":-2.8869,"hasWind":true},
-        {"id":"C051","name":"Saratxo","provider":"Euskalmet","latitude":43.0342,"longitude":-3.00398,"hasWind":true},
-        {"id":"C054","name":"Otxandio","provider":"Euskalmet","latitude":43.0423,"longitude":-2.65763,"hasWind":true},
-        {"id":"C056","name":"Alegría","provider":"Euskalmet","latitude":42.8447,"longitude":-2.52402,"hasWind":true},
-        {"id":"C057","name":"Mungia","provider":"Euskalmet","latitude":43.363,"longitude":-2.84702,"hasWind":true},
-        {"id":"C058","name":"Bidania","provider":"Euskalmet","latitude":43.146,"longitude":-2.15502,"hasWind":true},
-        {"id":"C059","name":"Ordunte","provider":"Euskalmet","latitude":43.1623,"longitude":-3.28404,"hasWind":true},
-        {"id":"C060","name":"Páganos","provider":"Euskalmet","latitude":42.5605,"longitude":-2.60055,"hasWind":true},
-        {"id":"C061","name":"Arboleda","provider":"Euskalmet","latitude":43.2967,"longitude":-3.06747,"hasWind":true},
-        {"id":"C064","name":"Zarautz","provider":"Euskalmet","latitude":43.293,"longitude":-2.14542,"hasWind":true},
-        {"id":"C065","name":"Cerroja","provider":"Euskalmet","latitude":43.2112,"longitude":-3.40713,"hasWind":true},
-        {"id":"C066","name":"Untzueta","provider":"Euskalmet","latitude":43.1372,"longitude":-2.9071,"hasWind":true},
-        {"id":"C067","name":"Gardea","provider":"Euskalmet","latitude":43.1272,"longitude":-2.98025,"hasWind":true},
-        {"id":"C068","name":"Ilarduia","provider":"Euskalmet","latitude":42.87395,"longitude":-2.28623,"hasWind":true},
-        {"id":"C069","name":"Almike (Bermeo)","provider":"Euskalmet","latitude":43.4137,"longitude":-2.73229,"hasWind":true},
-        {"id":"C070","name":"Zaldiaran","provider":"Euskalmet","latitude":42.79476,"longitude":-2.73620,"hasWind":true},  
-        {"id":"C071","name":"Jaizkibel","provider":"Euskalmet","latitude":43.3446,"longitude":-1.85972,"hasWind":true},
-        {"id":"C072","name":"Orduña","provider":"Euskalmet","latitude":42.9837,"longitude":-3.03726,"hasWind":true},
-        {"id":"C073","name":"Mallabia","provider":"Euskalmet","latitude":43.1926263,"longitude":-2.5295246,"hasWind":true},
-        {"id":"C0AA","name":"Etura","provider":"Euskalmet","latitude":42.8878,"longitude":-2.50361,"hasWind":true},
-        {"id":"C0AB","name":"Nanclares","provider":"Euskalmet","latitude":42.7934862,"longitude":-2.8239093,"hasWind":true},
-        {"id":"C0B4","name":"Orozko","provider":"Euskalmet","latitude":43.0864,"longitude":-2.91543,"hasWind":true},
-        {"id":"C0C3","name":"Sodupe-Cadagua","provider":"Euskalmet","latitude":43.2025,"longitude":-3.0493,"hasWind":true},
-        {"id":"C0EC","name":"Lasarte","provider":"Euskalmet","latitude":43.2527,"longitude":-2.02109,"hasWind":true},
-        {"id":"C0F0","name":"Ereñozu","provider":"Euskalmet","latitude":43.242,"longitude":-1.93922,"hasWind":true}
+    const ESTACIONES_EUSKALMET = 
+    [
+        {"id":"B090","name":"Puerto de Bilbao","provider":"Euskalmet","latitude":43.3774903,"longitude":-3.08474},
+        {"id":"B096","name":"Puerto de Pasaia","provider":"Euskalmet","latitude":43.3370283,"longitude":-1.92752},
+        {"id":"C002","name":"Arteaga","provider":"Euskalmet","latitude":43.347,"longitude":-2.65714},
+        {"id":"C007","name":"Santa Clara","provider":"Euskalmet","latitude":43.3218,"longitude":-1.99834},
+        {"id":"C00A","name":"Kanpezu","provider":"Euskalmet","latitude":42.6754,"longitude":-2.34148},
+        {"id":"C00B","name":"Tobillas","provider":"Euskalmet","latitude":42.8992,"longitude":-3.1828},
+        {"id":"C00C","name":"Goiain","provider":"Euskalmet","latitude":42.944472,"longitude":-2.6415097},
+        {"id":"C016","name":"Arkauti","provider":"Euskalmet","latitude":42.854275,"longitude":-2.621833},
+        {"id":"C017","name":"Miramon","provider":"Euskalmet","latitude":43.2868,"longitude":-1.97121},
+        {"id":"C018","name":"Higer","provider":"Euskalmet","latitude":43.3913,"longitude":-1.79615},
+        {"id":"C019","name":"Matxitxako","provider":"Euskalmet","latitude":43.4375,"longitude":-2.7636},
+        {"id":"C020","name":"Trebiño","provider":"Euskalmet","latitude":42.7180163,"longitude":-2.70141},
+        {"id":"C021","name":"Roitegi","provider":"Euskalmet","latitude":42.7817,"longitude":-2.371},
+        {"id":"C022","name":"Urkiola","provider":"Euskalmet","latitude":43.1,"longitude":-2.64658},
+        {"id":"C023","name":"Arrasate","provider":"Euskalmet","latitude":43.0695849,"longitude":-2.49308},
+        {"id":"C024","name":"Iturrieta","provider":"Euskalmet","latitude":42.7935945,"longitude":-2.34575},
+        {"id":"C025","name":"Beluntza","provider":"Euskalmet","latitude":42.9615782,"longitude":-2.89361},
+        {"id":"C026","name":"Berastegi","provider":"Euskalmet","latitude":43.1248,"longitude":-1.98168},
+        {"id":"C028","name":"Zegama","provider":"Euskalmet","latitude":42.9588,"longitude":-2.29852},
+        {"id":"C029","name":"Zizurkil","provider":"Euskalmet","latitude":43.1901,"longitude":-2.06181},
+        {"id":"C030","name":"Salvatierra","provider":"Euskalmet","latitude":42.8582,"longitude":-2.39538},
+        {"id":"C031","name":"Moreda","provider":"Euskalmet","latitude":42.5303,"longitude":-2.41023},
+        {"id":"C032","name":"Areta","provider":"Euskalmet","latitude":43.1394,"longitude":-2.93531},
+        {"id":"C033","name":"Igorre","provider":"Euskalmet","latitude":43.1686,"longitude":-2.7842},
+        {"id":"C034","name":"Espejo","provider":"Euskalmet","latitude":42.8078,"longitude":-3.04103},
+        {"id":"C035","name":"Altube","provider":"Euskalmet","latitude":42.9661,"longitude":-2.86795},
+        {"id":"C036","name":"Iurreta","provider":"Euskalmet","latitude":43.1769,"longitude":-2.622},
+        {"id":"C037","name":"Venta Alta","provider":"Euskalmet","latitude":43.2145,"longitude":-2.89976},
+        {"id":"C038","name":"Galindo","provider":"Euskalmet","latitude":43.3042,"longitude":-2.99878},
+        {"id":"C03A","name":"Zorrotza","provider":"Euskalmet","latitude":43.28498,"longitude":-2.968458},
+        {"id":"C040","name":"Gasteiz","provider":"Euskalmet","latitude":42.8604,"longitude":-2.68899},
+        {"id":"C041","name":"Navarrete","provider":"Euskalmet","latitude":42.638,"longitude":-2.52321},
+        {"id":"C042","name":"Punta Galea","provider":"Euskalmet","latitude":43.37326,"longitude":-3.03604},
+        {"id":"C043","name":"Ordizia","provider":"Euskalmet","latitude":43.0484,"longitude":-2.17755},
+        {"id":"C045","name":"La Garbea","provider":"Euskalmet","latitude":43.217,"longitude":-3.19368},
+        {"id":"C046","name":"Oiz","provider":"Euskalmet","latitude":43.2304,"longitude":-2.5954},
+        {"id":"C047","name":"Kapildui","provider":"Euskalmet","latitude":42.768,"longitude":-2.53785},
+        {"id":"C048","name":"Herrera","provider":"Euskalmet","latitude":42.5978,"longitude":-2.67616},
+        {"id":"C049","name":"Subijana","provider":"Euskalmet","latitude":42.8196,"longitude":-2.89328},
+        {"id":"C050","name":"Zambrana","provider":"Euskalmet","latitude":42.6751,"longitude":-2.8869},
+        {"id":"C051","name":"Saratxo","provider":"Euskalmet","latitude":43.0342,"longitude":-3.00398},
+        {"id":"C054","name":"Otxandio","provider":"Euskalmet","latitude":43.0423,"longitude":-2.65763},
+        {"id":"C056","name":"Alegría","provider":"Euskalmet","latitude":42.8447,"longitude":-2.52402},
+        {"id":"C057","name":"Mungia","provider":"Euskalmet","latitude":43.363,"longitude":-2.84702},
+        {"id":"C058","name":"Bidania","provider":"Euskalmet","latitude":43.146,"longitude":-2.15502},
+        {"id":"C059","name":"Ordunte","provider":"Euskalmet","latitude":43.1623,"longitude":-3.28404},
+        {"id":"C060","name":"Páganos","provider":"Euskalmet","latitude":42.5605,"longitude":-2.60055},
+        {"id":"C061","name":"Arboleda","provider":"Euskalmet","latitude":43.2967,"longitude":-3.06747},
+        {"id":"C064","name":"Zarautz","provider":"Euskalmet","latitude":43.293,"longitude":-2.14542},
+        {"id":"C065","name":"Cerroja","provider":"Euskalmet","latitude":43.2112,"longitude":-3.40713},
+        {"id":"C066","name":"Untzueta","provider":"Euskalmet","latitude":43.1372,"longitude":-2.9071},
+        {"id":"C067","name":"Gardea","provider":"Euskalmet","latitude":43.1272,"longitude":-2.98025},
+        {"id":"C068","name":"Ilarduia","provider":"Euskalmet","latitude":42.87395,"longitude":-2.28623},
+        {"id":"C069","name":"Almike (Bermeo)","provider":"Euskalmet","latitude":43.4137,"longitude":-2.73229},
+        {"id":"C070","name":"Zaldiaran","provider":"Euskalmet","latitude":42.79476,"longitude":-2.73620},  
+        {"id":"C071","name":"Jaizkibel","provider":"Euskalmet","latitude":43.3446,"longitude":-1.85972},
+        {"id":"C072","name":"Orduña","provider":"Euskalmet","latitude":42.9837,"longitude":-3.03726},
+        {"id":"C073","name":"Mallabia","provider":"Euskalmet","latitude":43.1926263,"longitude":-2.5295246},
+        {"id":"C0AA","name":"Etura","provider":"Euskalmet","latitude":42.8878,"longitude":-2.50361},
+        {"id":"C0AB","name":"Nanclares","provider":"Euskalmet","latitude":42.7934862,"longitude":-2.8239093},
+        {"id":"C0B4","name":"Orozko","provider":"Euskalmet","latitude":43.0864,"longitude":-2.91543},
+        {"id":"C0C3","name":"Sodupe-Cadagua","provider":"Euskalmet","latitude":43.2025,"longitude":-3.0493},
+        {"id":"C0EC","name":"Lasarte","provider":"Euskalmet","latitude":43.2527,"longitude":-2.02109},
+        {"id":"C0F0","name":"Ereñozu","provider":"Euskalmet","latitude":43.242,"longitude":-1.93922}
     ];
 
-    const layerGroupBalizas = L.layerGroup();
-    let balizasDibujadas = false;
-    let datosBalizas = {};
-    let intervaloBalizas = null;
-    let ultimoJsonBalizasRaw = null; // para detectar si hay datos nuevos antes de repintar
-    let datos6hBalizas = null;          // caché del histórico de 6h (todas las balizas)
-    let datos6hBalizasFetchedAt = 0;    // timestamp del último fetch, para no repetir si no toca
+    const ESTACIONES_AEMET = 
+    [
+        {"id":"B013X","name":"Escorca, Lluc","provider":"Aemet","latitude":39.823333,"longitude":2.885833},
+        {"id":"B051A","name":"Sóller, Puerto","provider":"Aemet","latitude":39.795556,"longitude":2.691389},
+        {"id":"B087X","name":"Banyalbufar","provider":"Aemet","latitude":39.689167,"longitude":2.512778},
+        {"id":"B103B","name":"Andratx - Sant Elm","provider":"Aemet","latitude":39.579444,"longitude":2.368889},
+        {"id":"B158X","name":"Calvià, Es Capdellà","provider":"Aemet","latitude":39.551389,"longitude":2.466389},
+        {"id":"B228","name":"Palma, Puerto","provider":"Aemet","latitude":39.554167,"longitude":2.625278},
+        {"id":"B236C","name":"Palma, Universitat","provider":"Aemet","latitude":39.642222,"longitude":2.643889},
+        {"id":"B275E","name":"Son Bonet, Aeropuerto","provider":"Aemet","latitude":39.605833,"longitude":2.706667},
+        {"id":"B278","name":"Palma De Mallorca, Aeropuerto","provider":"Aemet","latitude":39.560833,"longitude":2.736667},
+        {"id":"B301","name":"Llucmajor, Cap Blanc","provider":"Aemet","latitude":39.379722,"longitude":2.785},
+        {"id":"B341X","name":"Porreres","provider":"Aemet","latitude":39.506111,"longitude":3.005556},
+        {"id":"B362X","name":"Campos, Can Sion","provider":"Aemet","latitude":39.405833,"longitude":3.064167},
+        {"id":"B373X","name":"Campos, Salines Llevant","provider":"Aemet","latitude":39.351111,"longitude":3.011944},
+        {"id":"B398A","name":"Cabrera, Parque Nacional De Cabrera","provider":"Aemet","latitude":39.135556,"longitude":2.936667},
+        {"id":"B410B","name":"Santanyí","provider":"Aemet","latitude":39.34,"longitude":3.145833},
+        {"id":"B434X","name":"Portocolom","provider":"Aemet","latitude":39.414444,"longitude":3.271667},
+        {"id":"B496X","name":"Son Servera","provider":"Aemet","latitude":39.630278,"longitude":3.383611},
+        {"id":"B569X","name":"Capdepera","provider":"Aemet","latitude":39.716667,"longitude":3.478056},
+        {"id":"B605X","name":"Muro, S'Albufera","provider":"Aemet","latitude":39.796667,"longitude":3.104722},
+        {"id":"B614E","name":"Manacor","provider":"Aemet","latitude":39.556944,"longitude":3.217778},
+        {"id":"B640X","name":"Petra","provider":"Aemet","latitude":39.616389,"longitude":3.121111},
+        {"id":"B644B","name":"Sineu","provider":"Aemet","latitude":39.643333,"longitude":3.002222},
+        {"id":"B656A","name":"Santa María Del Camí","provider":"Aemet","latitude":39.6525,"longitude":2.800278},
+        {"id":"B662X","name":"Binissalem","provider":"Aemet","latitude":39.678056,"longitude":2.873889},
+        {"id":"B691Y","name":"Sa Pobla","provider":"Aemet","latitude":39.749167,"longitude":3.016667},
+        {"id":"B760X","name":"Pollença","provider":"Aemet","latitude":39.876944,"longitude":3.024167},
+        {"id":"B780X","name":"Port De Pollença","provider":"Aemet","latitude":39.909444,"longitude":3.100278},
+        {"id":"B800X","name":"La Mola, Maó","provider":"Aemet","latitude":39.876111,"longitude":4.323889},
+        {"id":"B825B","name":"Es Mercadal","provider":"Aemet","latitude":39.990556,"longitude":4.086389},
+        {"id":"B870C","name":"Ciutadella, Cala Galdana","provider":"Aemet","latitude":39.944722,"longitude":3.956667},
+        {"id":"B893","name":"Menorca, Aeropuerto","provider":"Aemet","latitude":39.854722,"longitude":4.215556},
+        {"id":"B925","name":"Sant Antoni De Portmany","provider":"Aemet","latitude":38.963056,"longitude":1.321389},
+        {"id":"B954","name":"Ibiza, Aeropuerto","provider":"Aemet","latitude":38.876389,"longitude":1.384444},
+        {"id":"B957","name":"Eivissa","provider":"Aemet","latitude":38.9225,"longitude":1.441389},
+        {"id":"B986","name":"Formentera","provider":"Aemet","latitude":38.693611,"longitude":1.463611},
+        {"id":"C018J","name":"Tías","provider":"Aemet","latitude":28.969722,"longitude":-13.690278},
+        {"id":"C019V","name":"Yaiza Playa Blanca","provider":"Aemet","latitude":28.858889,"longitude":-13.835},
+        {"id":"C029O","name":"Lanzarote Aeropuerto","provider":"Aemet","latitude":28.951944,"longitude":-13.600278},
+        {"id":"C038N","name":"Haría","provider":"Aemet","latitude":29.143611,"longitude":-13.489167},
+        {"id":"C048W","name":"Tinajo","provider":"Aemet","latitude":29.0425,"longitude":-13.680833},
+        {"id":"C101A","name":"Roque De Los Muchachos","provider":"Aemet","latitude":28.755833,"longitude":-17.895278},
+        {"id":"C117A","name":"Puntagorda","provider":"Aemet","latitude":28.760556,"longitude":-17.985556},
+        {"id":"C117Z","name":"Tijarafe","provider":"Aemet","latitude":28.674722,"longitude":-17.936667},
+        {"id":"C129V","name":"Fuencaliente","provider":"Aemet","latitude":28.455,"longitude":-17.841111},
+        {"id":"C139E","name":"La Palma Aeropuerto","provider":"Aemet","latitude":28.633056,"longitude":-17.755},
+        {"id":"C148F","name":"San Andrés Y Sauces","provider":"Aemet","latitude":28.804722,"longitude":-17.782222},
+        {"id":"C229J","name":"Pájara","provider":"Aemet","latitude":28.049167,"longitude":-14.358056},
+        {"id":"C239N","name":"Tuineje, Puerto Gran Tarajal","provider":"Aemet","latitude":28.208611,"longitude":-14.023056},
+        {"id":"C249I","name":"Fuerteventura Aeropuerto","provider":"Aemet","latitude":28.444722,"longitude":-13.863056},
+        {"id":"C258K","name":"La Oliva","provider":"Aemet","latitude":28.6125,"longitude":-13.931667},
+        {"id":"C314Z","name":"Vallehermoso, Alto Igualero","provider":"Aemet","latitude":28.106944,"longitude":-17.249167},
+        {"id":"C316I","name":"Arure","provider":"Aemet","latitude":28.128333,"longitude":-17.315},
+        {"id":"C317B","name":"Agulo","provider":"Aemet","latitude":28.178889,"longitude":-17.213056},
+        {"id":"C319W","name":"Vallehermoso, Dama","provider":"Aemet","latitude":28.054167,"longitude":-17.306389},
+        {"id":"C328W","name":"Hermigua","provider":"Aemet","latitude":28.163611,"longitude":-17.194167},
+        {"id":"C329Z","name":"San Sebastián De La Gomera","provider":"Aemet","latitude":28.089722,"longitude":-17.111389},
+        {"id":"C406G","name":"La Orotava, Cañadas Teide","provider":"Aemet","latitude":28.224167,"longitude":-16.626111},
+        {"id":"C419L","name":"Lomo Del Balo","provider":"Aemet","latitude":28.206944,"longitude":-16.791944},
+        {"id":"C428T","name":"Arico","provider":"Aemet","latitude":28.180833,"longitude":-16.483333},
+        {"id":"C429I","name":"Tenerife Sur Aeropuerto","provider":"Aemet","latitude":28.046944,"longitude":-16.561111},
+        {"id":"C430E","name":"Izaña","provider":"Aemet","latitude":28.308333,"longitude":-16.499722},
+        {"id":"C438N","name":"Candelaria","provider":"Aemet","latitude":28.359167,"longitude":-16.401667},
+        {"id":"C439J","name":"Güímar","provider":"Aemet","latitude":28.318333,"longitude":-16.382222},
+        {"id":"C446G","name":"San Cristóbal De La Laguna, Llano De Los Loros","provider":"Aemet","latitude":28.526389,"longitude":-16.280278},
+        {"id":"C447A","name":"Tenerife Norte Aeropuerto","provider":"Aemet","latitude":28.4775,"longitude":-16.329444},
+        {"id":"C449C","name":"Sta.cruz De Tenerife","provider":"Aemet","latitude":28.463333,"longitude":-16.255278},
+        {"id":"C449F","name":"Anaga","provider":"Aemet","latitude":28.508056,"longitude":-16.195556},
+        {"id":"C457I","name":"La Victoria De Acentejo","provider":"Aemet","latitude":28.434444,"longitude":-16.454444},
+        {"id":"C458A","name":"Tacoronte","provider":"Aemet","latitude":28.496389,"longitude":-16.42},
+        {"id":"C459Z","name":"Puerto De La Cruz","provider":"Aemet","latitude":28.418056,"longitude":-16.548333},
+        {"id":"C468X","name":"San Juan De La Rambla","provider":"Aemet","latitude":28.373056,"longitude":-16.625833},
+        {"id":"C612F","name":"Tejeda, Cruz De Tejeda","provider":"Aemet","latitude":28.006944,"longitude":-15.598889},
+        {"id":"C614H","name":"Tejeda","provider":"Aemet","latitude":27.995,"longitude":-15.615833},
+        {"id":"C619X","name":"Agaete","provider":"Aemet","latitude":28.101111,"longitude":-15.712778},
+        {"id":"C619Y","name":"La Aldea De San Nicolás","provider":"Aemet","latitude":28.001111,"longitude":-15.8075},
+        {"id":"C623I","name":"San Bartolome Tirajana, Cuevas Del Pinar","provider":"Aemet","latitude":27.926667,"longitude":-15.599722},
+        {"id":"C625O","name":"San Bartolome Tirajana, Lomo Pedro Alfonso","provider":"Aemet","latitude":27.856944,"longitude":-15.645},
+        {"id":"C628B","name":"La Aldea De San Nicolás, Tasarte","provider":"Aemet","latitude":27.908889,"longitude":-15.77},
+        {"id":"C629Q","name":"Mogán, Puerto Rico","provider":"Aemet","latitude":27.78,"longitude":-15.711111},
+        {"id":"C629X","name":"Mogán, Puerto","provider":"Aemet","latitude":27.816389,"longitude":-15.764167},
+        {"id":"C635B","name":"San Bartolome Tirajana, Las Tirajanas","provider":"Aemet","latitude":27.92,"longitude":-15.574167},
+        {"id":"C639M","name":"Maspalomas, C. Insular Turismo","provider":"Aemet","latitude":27.758056,"longitude":-15.575556},
+        {"id":"C639U","name":"San Bartolome Tirajana, El Matorral","provider":"Aemet","latitude":27.8125,"longitude":-15.453056},
+        {"id":"C648C","name":"Agüimes","provider":"Aemet","latitude":27.9025,"longitude":-15.453889},
+        {"id":"C648N","name":"Telde, Centro Forestal Doramas","provider":"Aemet","latitude":27.9875,"longitude":-15.457778},
+        {"id":"C649I","name":"Gran Canaria Aeropuerto","provider":"Aemet","latitude":27.917778,"longitude":-15.395278},
+        {"id":"C649R","name":"Telde, Melenara","provider":"Aemet","latitude":27.986667,"longitude":-15.377778},
+        {"id":"C656V","name":"Teror","provider":"Aemet","latitude":28.075278,"longitude":-15.547222},
+        {"id":"C658X","name":"Las Palmas De Gran Canaria, Tafira","provider":"Aemet","latitude":28.078056,"longitude":-15.453333},
+        {"id":"C659M","name":"Las Palmas De Gran Canaria, Pl. De La Feria","provider":"Aemet","latitude":28.113056,"longitude":-15.421389},
+        {"id":"C665T","name":"Valleseco","provider":"Aemet","latitude":28.065556,"longitude":-15.565556},
+        {"id":"C668V","name":"Agaete - Suerte Alta","provider":"Aemet","latitude":28.094444,"longitude":-15.675},
+        {"id":"C669B","name":"Arucas","provider":"Aemet","latitude":28.141667,"longitude":-15.506667},
+        {"id":"C689E","name":"Maspalomas","provider":"Aemet","latitude":27.735833,"longitude":-15.595833},
+        {"id":"C839X","name":"La Graciosa","provider":"Aemet","latitude":29.229722,"longitude":-13.510278},
+        {"id":"C916Q","name":"El Pinar, Depósito","provider":"Aemet","latitude":27.718889,"longitude":-17.978056},
+        {"id":"C917E","name":"El Pinar, La Dehesa","provider":"Aemet","latitude":27.725278,"longitude":-18.115},
+        {"id":"C919K","name":"Tacoron-lapillas-tortuga","provider":"Aemet","latitude":27.665278,"longitude":-18.018611},
+        {"id":"C925F","name":"San Andrés, Valverde","provider":"Aemet","latitude":27.768889,"longitude":-17.960278},
+        {"id":"C928I","name":"Valverde","provider":"Aemet","latitude":27.810833,"longitude":-17.919444},
+        {"id":"C929I","name":"Hierro Aeropuerto","provider":"Aemet","latitude":27.818889,"longitude":-17.888889},
+        {"id":"C939T","name":"Frontera, Sabinosa","provider":"Aemet","latitude":27.756389,"longitude":-18.1075},
+        {"id":"0002I","name":"Vandellòs","provider":"Aemet","latitude":40.958056,"longitude":0.871389},
+        {"id":"0009X","name":"Alforja","provider":"Aemet","latitude":41.213889,"longitude":0.963333},
+        {"id":"0016A","name":"Reus Aeropuerto","provider":"Aemet","latitude":41.145,"longitude":1.163611},
+        {"id":"0042Y","name":"Tarragona","provider":"Aemet","latitude":41.123889,"longitude":1.249167},
+        {"id":"0061X","name":"Pontons","provider":"Aemet","latitude":41.416944,"longitude":1.519167},
+        {"id":"0066X","name":"Vilafranca Del Penedès","provider":"Aemet","latitude":41.330278,"longitude":1.676944},
+        {"id":"0073X","name":"Sitges","provider":"Aemet","latitude":41.243889,"longitude":1.8525},
+        {"id":"0076","name":"Barcelona Aeropuerto","provider":"Aemet","latitude":41.292778,"longitude":2.07},
+        {"id":"0092X","name":"Berga","provider":"Aemet","latitude":42.101389,"longitude":1.8575},
+        {"id":"0106X","name":"Balsareny","provider":"Aemet","latitude":41.866389,"longitude":1.8725},
+        {"id":"0114X","name":"Prats De Lluçanès","provider":"Aemet","latitude":42.006944,"longitude":2.026667},
+        {"id":"0120X","name":"Moià","provider":"Aemet","latitude":41.813333,"longitude":2.095278},
+        {"id":"0149X","name":"Manresa","provider":"Aemet","latitude":41.72,"longitude":1.840278},
+        {"id":"0171X","name":"Igualada","provider":"Aemet","latitude":41.578889,"longitude":1.617778},
+        {"id":"0201D","name":"Barcelona, Port Olímpic","provider":"Aemet","latitude":41.390556,"longitude":2.2},
+        {"id":"0201X","name":"Barcelona, Drassanes","provider":"Aemet","latitude":41.375,"longitude":2.173889},
+        {"id":"0222X","name":"Caldes De Montbui","provider":"Aemet","latitude":41.612778,"longitude":2.168333},
+        {"id":"0244X","name":"Vilassar De Dalt","provider":"Aemet","latitude":41.505,"longitude":2.3625},
+        {"id":"0284X","name":"Castell D'aro","provider":"Aemet","latitude":41.807778,"longitude":3.030833},
+        {"id":"0312X","name":"Sant Pau De Segúries","provider":"Aemet","latitude":42.258333,"longitude":2.364444},
+        {"id":"0320I","name":"Planoles","provider":"Aemet","latitude":42.316944,"longitude":2.102778},
+        {"id":"0360X","name":"Les Planes D'hostoles","provider":"Aemet","latitude":42.052778,"longitude":2.551111},
+        {"id":"0363X","name":"Sant Hilari","provider":"Aemet","latitude":41.880833,"longitude":2.513333},
+        {"id":"0367","name":"Girona Aeropuerto","provider":"Aemet","latitude":41.911389,"longitude":2.763056},
+        {"id":"0370E","name":"Girona","provider":"Aemet","latitude":41.972222,"longitude":2.819444},
+        {"id":"0372C","name":"Porqueres","provider":"Aemet","latitude":42.104444,"longitude":2.763611},
+        {"id":"0385X","name":"L'estartit","provider":"Aemet","latitude":42.053889,"longitude":3.201389},
+        {"id":"0394X","name":"La Vall De Bianya","provider":"Aemet","latitude":42.210556,"longitude":2.471944},
+        {"id":"0411X","name":"Castelló D'empúries","provider":"Aemet","latitude":42.224722,"longitude":3.093056},
+        {"id":"0413A","name":"Maçanet De Cabrenys","provider":"Aemet","latitude":42.386944,"longitude":2.755556},
+        {"id":"0421X","name":"Espolla","provider":"Aemet","latitude":42.39,"longitude":3.006111},
+        {"id":"0429X","name":"Figueres","provider":"Aemet","latitude":42.259167,"longitude":2.960278},
+        {"id":"0433D","name":"Cabo De Creus","provider":"Aemet","latitude":42.319167,"longitude":3.315556},
+        {"id":"1002Y","name":"Baztan, Irurita","provider":"Aemet","latitude":43.135833,"longitude":-1.543056},
+        {"id":"1010X","name":"Bera","provider":"Aemet","latitude":43.278611,"longitude":-1.675833},
+        {"id":"1012P","name":"Irun","provider":"Aemet","latitude":43.326389,"longitude":-1.796667},
+        {"id":"1014A","name":"Donostia / San Sebastián Aeropuerto","provider":"Aemet","latitude":43.356944,"longitude":-1.792222},
+        {"id":"1021X","name":"Errenteria, Añarbe","provider":"Aemet","latitude":43.213889,"longitude":-1.878889},
+        {"id":"1025A","name":"Segura","provider":"Aemet","latitude":43.015556,"longitude":-2.256667},
+        {"id":"1025X","name":"Beasain, Arriaran","provider":"Aemet","latitude":43.054722,"longitude":-2.231944},
+        {"id":"1033X","name":"Areso","provider":"Aemet","latitude":43.085,"longitude":-1.950833},
+        {"id":"1037Y","name":"Zumarraga","provider":"Aemet","latitude":43.08,"longitude":-2.3175},
+        {"id":"1038X","name":"Azpeitia","provider":"Aemet","latitude":43.1725,"longitude":-2.267222},
+        {"id":"1041A","name":"Zumaia","provider":"Aemet","latitude":43.302222,"longitude":-2.251111},
+        {"id":"1049N","name":"Elgeta","provider":"Aemet","latitude":43.138333,"longitude":-2.495833},
+        {"id":"1050J","name":"Elgoibar","provider":"Aemet","latitude":43.209167,"longitude":-2.413333},
+        {"id":"1052A","name":"Mutriku","provider":"Aemet","latitude":43.317222,"longitude":-2.397222},
+        {"id":"1056K","name":"Forua","provider":"Aemet","latitude":43.3425,"longitude":-2.671111},
+        {"id":"1057B","name":"Matxitxako","provider":"Aemet","latitude":43.453889,"longitude":-2.752778},
+        {"id":"1059X","name":"Punta Galea","provider":"Aemet","latitude":43.375,"longitude":-3.021667},
+        {"id":"1060X","name":"Amurrio","provider":"Aemet","latitude":43.050278,"longitude":-3.005556},
+        {"id":"1064L","name":"Orozko, Ibarra","provider":"Aemet","latitude":43.096389,"longitude":-2.860278},
+        {"id":"1074C","name":"Amorebieta-etxano","provider":"Aemet","latitude":43.202778,"longitude":-2.706111},
+        {"id":"1082","name":"Bilbao Aeropuerto","provider":"Aemet","latitude":43.298056,"longitude":-2.906389},
+        {"id":"1083B","name":"Sopuerta","provider":"Aemet","latitude":43.279722,"longitude":-3.168611},
+        {"id":"1083L","name":"Castro Urdiales","provider":"Aemet","latitude":43.394722,"longitude":-3.233889},
+        {"id":"1089U","name":"Ramales De La Victoria","provider":"Aemet","latitude":43.255833,"longitude":-3.470833},
+        {"id":"1096X","name":"Barcena De Cicero, Treto","provider":"Aemet","latitude":43.396667,"longitude":-3.469722},
+        {"id":"1103X","name":"San Roque De Riomiera","provider":"Aemet","latitude":43.2275,"longitude":-3.721111},
+        {"id":"1109X","name":"Santander Aeropuerto","provider":"Aemet","latitude":43.428611,"longitude":-3.831389},
+        {"id":"1111X","name":"Santander","provider":"Aemet","latitude":43.491111,"longitude":-3.800556},
+        {"id":"1124E","name":"Villacarriedo","provider":"Aemet","latitude":43.245556,"longitude":-3.849444},
+        {"id":"1135C","name":"Los Tojos, Bárcena Mayor","provider":"Aemet","latitude":43.146944,"longitude":-4.214167},
+        {"id":"1152C","name":"San Felices De Buelna","provider":"Aemet","latitude":43.271944,"longitude":-4.048611},
+        {"id":"1154H","name":"Torrelavega, Sierrapando","provider":"Aemet","latitude":43.358611,"longitude":-4.0275},
+        {"id":"1159","name":"San Vicente De La Barquera","provider":"Aemet","latitude":43.393333,"longitude":-4.392222},
+        {"id":"1167B","name":"Camaleño, Fuente De","provider":"Aemet","latitude":43.143889,"longitude":-4.812778},
+        {"id":"1167G","name":"Mirador Del Cable, Parque Nacional Picos De Europa","provider":"Aemet","latitude":43.155,"longitude":-4.803056},
+        {"id":"1167J","name":"Coriscao, Parque Nacional Picos De Europa","provider":"Aemet","latitude":43.089167,"longitude":-4.773889},
+        {"id":"1174I","name":"Cillorigo De Liébana, Tama","provider":"Aemet","latitude":43.182778,"longitude":-4.601667},
+        {"id":"1176A","name":"Tresviso","provider":"Aemet","latitude":43.255833,"longitude":-4.668333},
+        {"id":"1178R","name":"Sotres, Parque Nacional Picos De Europa","provider":"Aemet","latitude":43.2375,"longitude":-4.736667},
+        {"id":"1179B","name":"Cabrales","provider":"Aemet","latitude":43.311111,"longitude":-4.852778},
+        {"id":"1183X","name":"Llanes","provider":"Aemet","latitude":43.420278,"longitude":-4.748056},
+        {"id":"1186P","name":"Amieva, Panizales","provider":"Aemet","latitude":43.266667,"longitude":-5.119167},
+        {"id":"1199X","name":"Piloña, Bargaéu","provider":"Aemet","latitude":43.377778,"longitude":-5.396667},
+        {"id":"1207U","name":"Gijón, Campus","provider":"Aemet","latitude":43.523056,"longitude":-5.621111},
+        {"id":"1208H","name":"Gijón, Puerto","provider":"Aemet","latitude":43.559722,"longitude":-5.700833},
+        {"id":"1212E","name":"Asturias Aeropuerto","provider":"Aemet","latitude":43.566944,"longitude":-6.044167},
+        {"id":"1221D","name":"Pajares-valgrande","provider":"Aemet","latitude":42.978611,"longitude":-5.776389},
+        {"id":"1223P","name":"Lena, Ronzón","provider":"Aemet","latitude":43.132778,"longitude":-5.822778},
+        {"id":"1226X","name":"Aller, Felechosa","provider":"Aemet","latitude":43.095278,"longitude":-5.476944},
+        {"id":"1234P","name":"Mieres, Baiña","provider":"Aemet","latitude":43.275,"longitude":-5.819167},
+        {"id":"1249X","name":"Oviedo","provider":"Aemet","latitude":43.353333,"longitude":-5.873889},
+        {"id":"1272B","name":"Tineo, Soutu","provider":"Aemet","latitude":43.290278,"longitude":-6.386667},
+        {"id":"1276F","name":"Pola De Somiedo","provider":"Aemet","latitude":43.1,"longitude":-6.256944},
+        {"id":"1279X","name":"Salas, Camuño","provider":"Aemet","latitude":43.425,"longitude":-6.230833},
+        {"id":"1283U","name":"Cabo Busto","provider":"Aemet","latitude":43.569167,"longitude":-6.47},
+        {"id":"1297E","name":"Cervantes","provider":"Aemet","latitude":42.768611,"longitude":-7.0175},
+        {"id":"1302F","name":"Degaña","provider":"Aemet","latitude":42.955278,"longitude":-6.4725},
+        {"id":"1309C","name":"Ibias, San Antolin","provider":"Aemet","latitude":43.0275,"longitude":-6.885},
+        {"id":"1327A","name":"Villayón, Oneta","provider":"Aemet","latitude":43.465556,"longitude":-6.673333},
+        {"id":"1331A","name":"Castropol","provider":"Aemet","latitude":43.524722,"longitude":-7.031389},
+        {"id":"1341B","name":"Taramundi, Ouria","provider":"Aemet","latitude":43.415556,"longitude":-7.061111},
+        {"id":"1342X","name":"Ribadeo","provider":"Aemet","latitude":43.540556,"longitude":-7.083056},
+        {"id":"1344X","name":"Mondoñedo","provider":"Aemet","latitude":43.431389,"longitude":-7.361667},
+        {"id":"1351","name":"Estaca De Bares","provider":"Aemet","latitude":43.786111,"longitude":-7.685},
+        {"id":"1387","name":"A Coruña","provider":"Aemet","latitude":43.365833,"longitude":-8.421389},
+        {"id":"1387D","name":"A Coruña Bens","provider":"Aemet","latitude":43.363333,"longitude":-8.441944},
+        {"id":"1387E","name":"A Coruña Aeropuerto","provider":"Aemet","latitude":43.306944,"longitude":-8.371944},
+        {"id":"1393","name":"Cabo Vilán","provider":"Aemet","latitude":43.160556,"longitude":-9.210833},
+        {"id":"1400","name":"Fisterra","provider":"Aemet","latitude":42.924722,"longitude":-9.291389},
+        {"id":"1428","name":"Santiago De Compostela Aeropuerto","provider":"Aemet","latitude":42.888056,"longitude":-8.410556},
+        {"id":"1435C","name":"Noia","provider":"Aemet","latitude":42.800278,"longitude":-8.876111},
+        {"id":"1466A","name":"Silleda","provider":"Aemet","latitude":42.700833,"longitude":-8.257778},
+        {"id":"1473A","name":"Padrón","provider":"Aemet","latitude":42.738333,"longitude":-8.627222},
+        {"id":"1475X","name":"Santiago De Compostela","provider":"Aemet","latitude":42.876111,"longitude":-8.555833},
+        {"id":"1477V","name":"Vilagarcía De Arousa","provider":"Aemet","latitude":42.584722,"longitude":-8.774722},
+        {"id":"1484C","name":"Pontevedra","provider":"Aemet","latitude":42.438333,"longitude":-8.615833},
+        {"id":"1486E","name":"Escuela Naval De Marín","provider":"Aemet","latitude":42.394722,"longitude":-8.706667},
+        {"id":"1489A","name":"A Lama","provider":"Aemet","latitude":42.406944,"longitude":-8.451111},
+        {"id":"1495","name":"Vigo Aeropuerto","provider":"Aemet","latitude":42.238611,"longitude":-8.623889},
+        {"id":"1496X","name":"Vigo","provider":"Aemet","latitude":42.230556,"longitude":-8.724167},
+        {"id":"1505","name":"Lugo Aeropuerto","provider":"Aemet","latitude":43.111111,"longitude":-7.4575},
+        {"id":"1518A","name":"Lugo","provider":"Aemet","latitude":42.998333,"longitude":-7.5525},
+        {"id":"1521X","name":"Becerreá","provider":"Aemet","latitude":42.863889,"longitude":-7.185278},
+        {"id":"1541B","name":"Villablino","provider":"Aemet","latitude":42.928889,"longitude":-6.333889},
+        {"id":"1542","name":"Puerto De Leitariegos","provider":"Aemet","latitude":42.994167,"longitude":-6.414167},
+        {"id":"1549","name":"Ponferrada","provider":"Aemet","latitude":42.563889,"longitude":-6.6},
+        {"id":"1631E","name":"A Pobra De Trives","provider":"Aemet","latitude":42.339444,"longitude":-7.2825},
+        {"id":"1639X","name":"Chandrexa De Queixa","provider":"Aemet","latitude":42.260278,"longitude":-7.383611},
+        {"id":"1679A","name":"Monforte De Lemos","provider":"Aemet","latitude":42.531667,"longitude":-7.510833},
+        {"id":"1690A","name":"Ourense","provider":"Aemet","latitude":42.325278,"longitude":-7.859722},
+        {"id":"1700X","name":"O Carballiño","provider":"Aemet","latitude":42.421389,"longitude":-8.0925},
+        {"id":"1701X","name":"Ribadavia","provider":"Aemet","latitude":42.3,"longitude":-8.129167},
+        {"id":"1735X","name":"Xinzo De Limia","provider":"Aemet","latitude":42.079167,"longitude":-7.733611},
+        {"id":"1740","name":"Santillana Del Mar, Altamira","provider":"Aemet","latitude":43.377222,"longitude":-4.124444},
+        {"id":"2030","name":"Soria","provider":"Aemet","latitude":41.775,"longitude":-2.483056},
+        {"id":"2044B","name":"Lubia","provider":"Aemet","latitude":41.600556,"longitude":-2.5075},
+        {"id":"2059B","name":"La Riba De Escalote","provider":"Aemet","latitude":41.349722,"longitude":-2.783333},
+        {"id":"2092","name":"Burgo De Osma","provider":"Aemet","latitude":41.589444,"longitude":-3.086944},
+        {"id":"2096B","name":"Liceras","provider":"Aemet","latitude":41.373611,"longitude":-3.251389},
+        {"id":"2106B","name":"Coruña Del Conde","provider":"Aemet","latitude":41.745833,"longitude":-3.381944},
+        {"id":"2117D","name":"Aranda De Duero","provider":"Aemet","latitude":41.665833,"longitude":-3.742778},
+        {"id":"2135A","name":"Fresno De Cantespino","provider":"Aemet","latitude":41.372778,"longitude":-3.507222},
+        {"id":"2140A","name":"Aldeanueva De Serrezuela","provider":"Aemet","latitude":41.464444,"longitude":-3.785833},
+        {"id":"2172Y","name":"Sardón De Duero","provider":"Aemet","latitude":41.611944,"longitude":-4.405556},
+        {"id":"2182C","name":"Pedraza","provider":"Aemet","latitude":41.133889,"longitude":-3.790278},
+        {"id":"2192C","name":"Cuéllar","provider":"Aemet","latitude":41.383611,"longitude":-4.265556},
+        {"id":"2235U","name":"Cervera De Pisuerga","provider":"Aemet","latitude":42.870556,"longitude":-4.52},
+        {"id":"2243A","name":"Aguilar De Campoo","provider":"Aemet","latitude":42.798056,"longitude":-4.277222},
+        {"id":"2276B","name":"Villaeles De Valdavia","provider":"Aemet","latitude":42.568889,"longitude":-4.575},
+        {"id":"2285B","name":"Villadiego","provider":"Aemet","latitude":42.523889,"longitude":-4.001111},
+        {"id":"2290Y","name":"Pedrosa Del Príncipe","provider":"Aemet","latitude":42.251111,"longitude":-4.198889},
+        {"id":"2296A","name":"Ólvega","provider":"Aemet","latitude":41.775556,"longitude":-1.976667},
+        {"id":"2298","name":"Palacios De La Sierra","provider":"Aemet","latitude":41.959722,"longitude":-3.131667},
+        {"id":"2302N","name":"Monterrubio De La Demanda","provider":"Aemet","latitude":42.146389,"longitude":-3.109722},
+        {"id":"2311Y","name":"Villamayor De Los Montes","provider":"Aemet","latitude":42.105278,"longitude":-3.767778},
+        {"id":"2331","name":"Burgos Aeropuerto","provider":"Aemet","latitude":42.356944,"longitude":-3.620278},
+        {"id":"2362C","name":"Velilla Del Río Carrión, Camporredondo De Alba","provider":"Aemet","latitude":42.893889,"longitude":-4.713611},
+        {"id":"2374X","name":"Carrión De Los Condes","provider":"Aemet","latitude":42.350833,"longitude":-4.617222},
+        {"id":"2400E","name":"Autilla Del Pino","provider":"Aemet","latitude":41.995556,"longitude":-4.602778},
+        {"id":"2401X","name":"Palencia","provider":"Aemet","latitude":42.009444,"longitude":-4.560556},
+        {"id":"2422","name":"Valladolid","provider":"Aemet","latitude":41.640556,"longitude":-4.754167},
+        {"id":"2430Y","name":"Muñotello","provider":"Aemet","latitude":40.543333,"longitude":-5.044167},
+        {"id":"2444","name":"Ávila","provider":"Aemet","latitude":40.659167,"longitude":-4.679722},
+        {"id":"2453E","name":"Gotarrendura","provider":"Aemet","latitude":40.828889,"longitude":-4.741944},
+        {"id":"2456B","name":"Arevalo","provider":"Aemet","latitude":41.071389,"longitude":-4.73},
+        {"id":"2462","name":"Puerto De Navacerrada","provider":"Aemet","latitude":40.793333,"longitude":-4.010833},
+        {"id":"2465","name":"Segovia","provider":"Aemet","latitude":40.945278,"longitude":-4.126389},
+        {"id":"2482B","name":"Miguelañez","provider":"Aemet","latitude":41.126389,"longitude":-4.375833},
+        {"id":"2491C","name":"La Covatilla, Estación De Esquí","provider":"Aemet","latitude":40.355,"longitude":-5.69},
+        {"id":"2503B","name":"Olmedo, Depósito De Agua","provider":"Aemet","latitude":41.28,"longitude":-4.691944},
+        {"id":"2507Y","name":"Rueda","provider":"Aemet","latitude":41.419444,"longitude":-4.963611},
+        {"id":"2512Y","name":"Rivilla De Barajas","provider":"Aemet","latitude":40.882222,"longitude":-5.018611},
+        {"id":"2517A","name":"Fuente El Sol","provider":"Aemet","latitude":41.172778,"longitude":-4.939722},
+        {"id":"2536D","name":"Morales Del Toro","provider":"Aemet","latitude":41.548333,"longitude":-5.271389},
+        {"id":"2555B","name":"Fuentesauco","provider":"Aemet","latitude":41.236667,"longitude":-5.481389},
+        {"id":"2565","name":"Coreses","provider":"Aemet","latitude":41.555278,"longitude":-5.630556},
+        {"id":"2568D","name":"Santervás De La Vega, Villapún","provider":"Aemet","latitude":42.523611,"longitude":-4.851111},
+        {"id":"2593D","name":"Villalón De Campos","provider":"Aemet","latitude":42.094167,"longitude":-5.041111},
+        {"id":"2611D","name":"Villafáfila","provider":"Aemet","latitude":41.856389,"longitude":-5.5925},
+        {"id":"2614","name":"Zamora","provider":"Aemet","latitude":41.515556,"longitude":-5.735278},
+        {"id":"2624C","name":"Riaño","provider":"Aemet","latitude":42.958333,"longitude":-5.0075},
+        {"id":"2626Y","name":"Cubillas De Rueda","provider":"Aemet","latitude":42.62,"longitude":-5.193333},
+        {"id":"2661","name":"León, Virgen Del Camino","provider":"Aemet","latitude":42.588333,"longitude":-5.651111},
+        {"id":"2664B","name":"Valencia De Don Juan","provider":"Aemet","latitude":42.295833,"longitude":-5.504722},
+        {"id":"2701D","name":"Barrios De Luna, Miñera","provider":"Aemet","latitude":42.885556,"longitude":-5.870833},
+        {"id":"2728B","name":"Quintana Del Castillo, Villameca","provider":"Aemet","latitude":42.648333,"longitude":-6.070833},
+        {"id":"2734D","name":"Astorga","provider":"Aemet","latitude":42.476667,"longitude":-6.074444},
+        {"id":"2737E","name":"Lagunas De Somoza","provider":"Aemet","latitude":42.3775,"longitude":-6.196667},
+        {"id":"2742R","name":"Bustillo Del Páramo","provider":"Aemet","latitude":42.466389,"longitude":-5.779722},
+        {"id":"2755X","name":"Benavente","provider":"Aemet","latitude":42.010833,"longitude":-5.666667},
+        {"id":"2766E","name":"Sanabria, Robleda-cervantes","provider":"Aemet","latitude":42.0825,"longitude":-6.639722},
+        {"id":"2775X","name":"Villardeciervos","provider":"Aemet","latitude":41.941389,"longitude":-6.279722},
+        {"id":"2777K","name":"Santibañez De Vidriales","provider":"Aemet","latitude":42.078056,"longitude":-6.007222},
+        {"id":"2789H","name":"Pozuelo De Tabara","provider":"Aemet","latitude":41.785556,"longitude":-5.908889},
+        {"id":"2804F","name":"Villadepera","provider":"Aemet","latitude":41.533889,"longitude":-6.141944},
+        {"id":"2828Y","name":"Barco De Avila","provider":"Aemet","latitude":40.355278,"longitude":-5.519167},
+        {"id":"2847X","name":"Pedrosillo De Los Aires","provider":"Aemet","latitude":40.675556,"longitude":-5.643333},
+        {"id":"2863C","name":"Pedraza De Alba","provider":"Aemet","latitude":40.732222,"longitude":-5.366111},
+        {"id":"2867","name":"Salamanca Aeropuerto","provider":"Aemet","latitude":40.959444,"longitude":-5.498333},
+        {"id":"2873X","name":"Barbadillo","provider":"Aemet","latitude":40.903611,"longitude":-5.779722},
+        {"id":"2882D","name":"Peñausende","provider":"Aemet","latitude":41.238889,"longitude":-5.8975},
+        {"id":"2885K","name":"Fresno De Sayago","provider":"Aemet","latitude":41.304444,"longitude":-6.022222},
+        {"id":"2891A","name":"Villarino De Los Aires","provider":"Aemet","latitude":41.262778,"longitude":-6.462222},
+        {"id":"2914C","name":"Boadilla Fuente San Esteban","provider":"Aemet","latitude":40.786111,"longitude":-6.202778},
+        {"id":"2916A","name":"Vitigudino","provider":"Aemet","latitude":41.011389,"longitude":-6.437778},
+        {"id":"2918Y","name":"El Maíllo","provider":"Aemet","latitude":40.569444,"longitude":-6.223611},
+        {"id":"2926B","name":"Bañobárez","provider":"Aemet","latitude":40.851389,"longitude":-6.608889},
+        {"id":"2930Y","name":"Navasfrías","provider":"Aemet","latitude":40.296667,"longitude":-6.812778},
+        {"id":"2945A","name":"El Bodón Base Aérea","provider":"Aemet","latitude":40.485,"longitude":-6.576944},
+        {"id":"2946X","name":"Saelices El Chico","provider":"Aemet","latitude":40.635,"longitude":-6.6},
+        {"id":"2966D","name":"Alcañices","provider":"Aemet","latitude":41.683333,"longitude":-6.301389},
+        {"id":"3013","name":"Molina De Aragón","provider":"Aemet","latitude":40.841667,"longitude":-1.878889},
+        {"id":"3094B","name":"Tarancón","provider":"Aemet","latitude":40.011944,"longitude":-3.021389},
+        {"id":"3099Y","name":"Ocaña","provider":"Aemet","latitude":39.935278,"longitude":-3.496111},
+        {"id":"3100B","name":"Aranjuez","provider":"Aemet","latitude":40.067222,"longitude":-3.546111},
+        {"id":"3103","name":"Pantano El Vado","provider":"Aemet","latitude":41.003611,"longitude":-3.301944},
+        {"id":"3104Y","name":"Rascafría","provider":"Aemet","latitude":40.889722,"longitude":-3.888333},
+        {"id":"3110C","name":"Buitrago Del Lozoya","provider":"Aemet","latitude":41.006944,"longitude":-3.613889},
+        {"id":"3126Y","name":"Madrid, El Goloso","provider":"Aemet","latitude":40.561389,"longitude":-3.711944},
+        {"id":"3129","name":"Madrid Aeropuerto","provider":"Aemet","latitude":40.466667,"longitude":-3.555556},
+        {"id":"3130C","name":"Sigüenza","provider":"Aemet","latitude":41.086389,"longitude":-2.618056},
+        {"id":"3168D","name":"Guadalajara","provider":"Aemet","latitude":40.630278,"longitude":-3.150278},
+        {"id":"3170Y","name":"Alcala De Henares","provider":"Aemet","latitude":40.528333,"longitude":-3.289722},
+        {"id":"3182Y","name":"Arganda Del Rey","provider":"Aemet","latitude":40.311667,"longitude":-3.497778},
+        {"id":"3191E","name":"Colmenar Viejo","provider":"Aemet","latitude":40.696111,"longitude":-3.765},
+        {"id":"3194U","name":"Madrid, Ciudad Universitaria","provider":"Aemet","latitude":40.451667,"longitude":-3.724167},
+        {"id":"3195","name":"Madrid, Retiro","provider":"Aemet","latitude":40.411389,"longitude":-3.677778},
+        {"id":"3254Y","name":"Mora","provider":"Aemet","latitude":39.686944,"longitude":-3.780556},
+        {"id":"3260B","name":"Toledo","provider":"Aemet","latitude":39.884722,"longitude":-4.045278},
+        {"id":"3268C","name":"Alpedrete","provider":"Aemet","latitude":40.659722,"longitude":-4.0175},
+        {"id":"3319D","name":"Puerto Del Pico","provider":"Aemet","latitude":40.339722,"longitude":-5.012778},
+        {"id":"3337U","name":"Cebreros","provider":"Aemet","latitude":40.4675,"longitude":-4.455833},
+        {"id":"3343Y","name":"Valdemorillo","provider":"Aemet","latitude":40.496667,"longitude":-4.061111},
+        {"id":"3365A","name":"Talavera De La Reina","provider":"Aemet","latitude":39.958611,"longitude":-4.863611},
+        {"id":"3386A","name":"Navalvillar De Ibor","provider":"Aemet","latitude":39.591667,"longitude":-5.391667},
+        {"id":"3422D","name":"Candeleda","provider":"Aemet","latitude":40.139167,"longitude":-5.311389},
+        {"id":"3423I","name":"Madrigal De La Vera","provider":"Aemet","latitude":40.153889,"longitude":-5.373333},
+        {"id":"3434X","name":"Navalmoral De La Mata","provider":"Aemet","latitude":39.945833,"longitude":-5.5825},
+        {"id":"3436D","name":"Garganta La Olla","provider":"Aemet","latitude":40.111111,"longitude":-5.784722},
+        {"id":"3448X","name":"Serradilla","provider":"Aemet","latitude":39.820833,"longitude":-6.1275},
+        {"id":"3455X","name":"Jaraicejo","provider":"Aemet","latitude":39.67,"longitude":-5.808333},
+        {"id":"3463Y","name":"Trujillo","provider":"Aemet","latitude":39.464167,"longitude":-5.874167},
+        {"id":"3469A","name":"Cáceres","provider":"Aemet","latitude":39.471389,"longitude":-6.338889},
+        {"id":"3475X","name":"Cañaveral","provider":"Aemet","latitude":39.790556,"longitude":-6.376389},
+        {"id":"3494U","name":"Nuñomoral","provider":"Aemet","latitude":40.408056,"longitude":-6.239722},
+        {"id":"3503","name":"Guijo De Granadilla","provider":"Aemet","latitude":40.189444,"longitude":-6.1675},
+        {"id":"3504X","name":"Hervás","provider":"Aemet","latitude":40.265,"longitude":-5.861111},
+        {"id":"3514B","name":"Tornavacas","provider":"Aemet","latitude":40.258611,"longitude":-5.678333},
+        {"id":"3516X","name":"Piornal","provider":"Aemet","latitude":40.120833,"longitude":-5.8325},
+        {"id":"3526X","name":"Coria","provider":"Aemet","latitude":40.003611,"longitude":-6.5575},
+        {"id":"3531X","name":"Torrecilla De Los Angeles","provider":"Aemet","latitude":40.255,"longitude":-6.411667},
+        {"id":"3536X","name":"Hoyos","provider":"Aemet","latitude":40.174722,"longitude":-6.724444},
+        {"id":"3540X","name":"Zarza La Mayor","provider":"Aemet","latitude":39.871389,"longitude":-6.86},
+        {"id":"3547X","name":"Valverde Del Fresno","provider":"Aemet","latitude":40.207222,"longitude":-6.896111},
+        {"id":"3562X","name":"Aliseda","provider":"Aemet","latitude":39.4275,"longitude":-6.736389},
+        {"id":"3565X","name":"Brozas","provider":"Aemet","latitude":39.618056,"longitude":-6.745},
+        {"id":"3576X","name":"Valencia De Alcántara","provider":"Aemet","latitude":39.414722,"longitude":-7.231111},
+        {"id":"4007Y","name":"Ossa De Montiel","provider":"Aemet","latitude":38.965833,"longitude":-2.745},
+        {"id":"4051Y","name":"Alcázar Del Rey","provider":"Aemet","latitude":40.061111,"longitude":-2.806944},
+        {"id":"4061X","name":"Quintanar De La Orden","provider":"Aemet","latitude":39.597222,"longitude":-3.048333},
+        {"id":"4064Y","name":"Alcazar De San Juan","provider":"Aemet","latitude":39.390833,"longitude":-3.215833},
+        {"id":"4067","name":"Madridejos","provider":"Aemet","latitude":39.491944,"longitude":-3.528333},
+        {"id":"4070Y","name":"Abia De Obispalia","provider":"Aemet","latitude":40.018889,"longitude":-2.395278},
+        {"id":"4089A","name":"Alberca De Zancara","provider":"Aemet","latitude":39.516944,"longitude":-2.495833},
+        {"id":"4090Y","name":"San Clemente","provider":"Aemet","latitude":39.416667,"longitude":-2.420556},
+        {"id":"4091Y","name":"Villarrobledo","provider":"Aemet","latitude":39.261944,"longitude":-2.5925},
+        {"id":"4093Y","name":"Osa De La Vega","provider":"Aemet","latitude":39.656111,"longitude":-2.76},
+        {"id":"4095Y","name":"Belmonte","provider":"Aemet","latitude":39.555278,"longitude":-2.705556},
+        {"id":"4096Y","name":"Munera","provider":"Aemet","latitude":39.016667,"longitude":-2.488889},
+        {"id":"4103X","name":"Tomelloso","provider":"Aemet","latitude":39.169167,"longitude":-3.0075},
+        {"id":"4121","name":"Ciudad Real","provider":"Aemet","latitude":38.989167,"longitude":-3.920278},
+        {"id":"4138Y","name":"Villanueva De Los Infantes","provider":"Aemet","latitude":38.7375,"longitude":-3.004444},
+        {"id":"4147X","name":"Valdepeñas","provider":"Aemet","latitude":38.750556,"longitude":-3.391389},
+        {"id":"4148","name":"Viso Del Marqués","provider":"Aemet","latitude":38.518056,"longitude":-3.566667},
+        {"id":"4195E","name":"Alcornoquera, Parque Nacional Cabañeros","provider":"Aemet","latitude":39.320833,"longitude":-4.395},
+        {"id":"4210Y","name":"Abenójar","provider":"Aemet","latitude":38.898056,"longitude":-4.291944},
+        {"id":"4220X","name":"Puebla De Don Rodrigo","provider":"Aemet","latitude":39.083611,"longitude":-4.621944},
+        {"id":"4236Y","name":"Puerto Rey","provider":"Aemet","latitude":39.450556,"longitude":-5.026389},
+        {"id":"4244X","name":"Herrera Del Duque","provider":"Aemet","latitude":39.169444,"longitude":-5.062222},
+        {"id":"4245X","name":"Guadalupe","provider":"Aemet","latitude":39.455278,"longitude":-5.333333},
+        {"id":"4260","name":"Peraleda Del Zaucejo","provider":"Aemet","latitude":38.479722,"longitude":-5.5775},
+        {"id":"4267X","name":"Hinojosa Del Duque","provider":"Aemet","latitude":38.498333,"longitude":-5.121389},
+        {"id":"4300Y","name":"Almadén","provider":"Aemet","latitude":38.775278,"longitude":-4.845278},
+        {"id":"4325Y","name":"Castuera","provider":"Aemet","latitude":38.741944,"longitude":-5.529167},
+        {"id":"4339X","name":"Cañamero","provider":"Aemet","latitude":39.314167,"longitude":-5.368889},
+        {"id":"4340","name":"Navalvillar De Pela","provider":"Aemet","latitude":39.103333,"longitude":-5.461389},
+        {"id":"4347X","name":"Zorita","provider":"Aemet","latitude":39.282778,"longitude":-5.710278},
+        {"id":"4358X","name":"Don Benito","provider":"Aemet","latitude":38.955556,"longitude":-5.880556},
+        {"id":"4362X","name":"Retamal De Llerena","provider":"Aemet","latitude":38.576389,"longitude":-5.845833},
+        {"id":"4386B","name":"Llerena","provider":"Aemet","latitude":38.231667,"longitude":-6.016944},
+        {"id":"4395X","name":"Villafranca De Los Barros","provider":"Aemet","latitude":38.551667,"longitude":-6.306667},
+        {"id":"4410X","name":"Mérida","provider":"Aemet","latitude":38.915833,"longitude":-6.385556},
+        {"id":"4411C","name":"Alcuescar","provider":"Aemet","latitude":39.1975,"longitude":-6.231111},
+        {"id":"4427X","name":"Zafra","provider":"Aemet","latitude":38.425833,"longitude":-6.436667},
+        {"id":"4436Y","name":"Almendralejo","provider":"Aemet","latitude":38.688889,"longitude":-6.361111},
+        {"id":"4452","name":"Badajoz Aeropuerto","provider":"Aemet","latitude":38.883333,"longitude":-6.813889},
+        {"id":"4464X","name":"Alburquerque","provider":"Aemet","latitude":39.181944,"longitude":-6.995278},
+        {"id":"4468X","name":"Puebla De Obando","provider":"Aemet","latitude":39.176667,"longitude":-6.600833},
+        {"id":"4478X","name":"Badajoz","provider":"Aemet","latitude":38.886111,"longitude":-7.009444},
+        {"id":"4486X","name":"Olivenza","provider":"Aemet","latitude":38.6975,"longitude":-7.084444},
+        {"id":"4489X","name":"Alconchel","provider":"Aemet","latitude":38.484722,"longitude":-7.281944},
+        {"id":"4492F","name":"Barcarrota","provider":"Aemet","latitude":38.472778,"longitude":-6.923333},
+        {"id":"4497X","name":"Villanueva Del Fresno","provider":"Aemet","latitude":38.372222,"longitude":-7.158056},
+        {"id":"4499X","name":"Monesterio","provider":"Aemet","latitude":38.081389,"longitude":-6.271944},
+        {"id":"4501X","name":"Fuente De Cantos","provider":"Aemet","latitude":38.208611,"longitude":-6.311389},
+        {"id":"4511C","name":"Jerez De Los Caballeros","provider":"Aemet","latitude":38.298611,"longitude":-6.765},
+        {"id":"4520X","name":"Fregenal De La Sierra","provider":"Aemet","latitude":38.178333,"longitude":-6.661667},
+        {"id":"4527X","name":"Aroche","provider":"Aemet","latitude":37.980278,"longitude":-6.975833},
+        {"id":"4549Y","name":"Ayamonte","provider":"Aemet","latitude":37.194722,"longitude":-7.395},
+        {"id":"4554X","name":"Cartaya","provider":"Aemet","latitude":37.218333,"longitude":-7.083611},
+        {"id":"4560Y","name":"Alajar","provider":"Aemet","latitude":37.868611,"longitude":-6.675},
+        {"id":"4575X","name":"Valverde Del Camino","provider":"Aemet","latitude":37.575278,"longitude":-6.767778},
+        {"id":"4589X","name":"Alosno, Tharsis","provider":"Aemet","latitude":37.597778,"longitude":-7.119444},
+        {"id":"4608X","name":"El Campillo","provider":"Aemet","latitude":37.677222,"longitude":-6.63},
+        {"id":"4622X","name":"Villarrasa","provider":"Aemet","latitude":37.450833,"longitude":-6.636667},
+        {"id":"4642E","name":"Huelva, Ronda Este","provider":"Aemet","latitude":37.278333,"longitude":-6.911667},
+        {"id":"5047E","name":"Baza","provider":"Aemet","latitude":37.505833,"longitude":-2.735},
+        {"id":"5051X","name":"Huéscar","provider":"Aemet","latitude":37.861389,"longitude":-2.652778},
+        {"id":"5103E","name":"Camarate 2, Parque Nacional Sierra Nevada","provider":"Aemet","latitude":37.158333,"longitude":-3.256944},
+        {"id":"5103F","name":"Camarate, Parque Nacional Sierra Nevada","provider":"Aemet","latitude":37.191111,"longitude":-3.253889},
+        {"id":"5107D","name":"Dólar","provider":"Aemet","latitude":37.18,"longitude":-2.986389},
+        {"id":"5164B","name":"Baeza","provider":"Aemet","latitude":37.996667,"longitude":-3.461944},
+        {"id":"5192","name":"Villarrodrigo","provider":"Aemet","latitude":38.489167,"longitude":-2.6375},
+        {"id":"5210X","name":"Villanueva Del Arzobispo","provider":"Aemet","latitude":38.175,"longitude":-2.998056},
+        {"id":"5270B","name":"Jaén","provider":"Aemet","latitude":37.7775,"longitude":-3.809167},
+        {"id":"5279X","name":"Linares","provider":"Aemet","latitude":38.151111,"longitude":-3.629444},
+        {"id":"5281X","name":"Bailén","provider":"Aemet","latitude":38.093056,"longitude":-3.7825},
+        {"id":"5298X","name":"Andújar","provider":"Aemet","latitude":38.023056,"longitude":-4.063333},
+        {"id":"5304Y","name":"Puertollano","provider":"Aemet","latitude":38.668889,"longitude":-4.059167},
+        {"id":"5341C","name":"Fuencaliente","provider":"Aemet","latitude":38.428889,"longitude":-4.301667},
+        {"id":"5361X","name":"Montoro","provider":"Aemet","latitude":38.013333,"longitude":-4.330278},
+        {"id":"5390Y","name":"Villanueva De Córdoba","provider":"Aemet","latitude":38.333056,"longitude":-4.608889},
+        {"id":"5394X","name":"Córdoba, Embalse De Guadanuño","provider":"Aemet","latitude":38.020833,"longitude":-4.796667},
+        {"id":"5402","name":"Córdoba Aeropuerto","provider":"Aemet","latitude":37.848889,"longitude":-4.846667},
+        {"id":"5406X","name":"Alcalá La Real","provider":"Aemet","latitude":37.4975,"longitude":-3.908056},
+        {"id":"5412X","name":"Priego De Córdoba","provider":"Aemet","latitude":37.484722,"longitude":-4.207778},
+        {"id":"5427X","name":"Doña Mencía","provider":"Aemet","latitude":37.556111,"longitude":-4.353889},
+        {"id":"5429X","name":"Córdoba, Prágdena","provider":"Aemet","latitude":37.810278,"longitude":-4.462222},
+        {"id":"5459X","name":"Espiel","provider":"Aemet","latitude":38.111111,"longitude":-4.928611},
+        {"id":"5470","name":"Fuente Palmera","provider":"Aemet","latitude":37.753056,"longitude":-5.100556},
+        {"id":"5473X","name":"Azuaga","provider":"Aemet","latitude":38.267778,"longitude":-5.686111},
+        {"id":"5514Z","name":"Granada Base Aérea","provider":"Aemet","latitude":37.136111,"longitude":-3.633333},
+        {"id":"5515D","name":"Víznar","provider":"Aemet","latitude":37.236944,"longitude":-3.550556},
+        {"id":"5515X","name":"Granada-cartuja","provider":"Aemet","latitude":37.189722,"longitude":-3.595556},
+        {"id":"5516D","name":"Sierra Nevada 'radiotelescopio'","provider":"Aemet","latitude":37.063056,"longitude":-3.386944},
+        {"id":"5530E","name":"Granada Aeropuerto","provider":"Aemet","latitude":37.190278,"longitude":-3.789722},
+        {"id":"5582A","name":"Loja","provider":"Aemet","latitude":37.161111,"longitude":-4.152778},
+        {"id":"5598X","name":"Benamejí","provider":"Aemet","latitude":37.230833,"longitude":-4.547778},
+        {"id":"5612B","name":"La Roda De Andalucía","provider":"Aemet","latitude":37.194444,"longitude":-4.77},
+        {"id":"5624X","name":"Aguilar De La Frontera","provider":"Aemet","latitude":37.481944,"longitude":-4.685833},
+        {"id":"5625X","name":"La Rambla","provider":"Aemet","latitude":37.638611,"longitude":-4.763889},
+        {"id":"5641X","name":"Écija","provider":"Aemet","latitude":37.516111,"longitude":-5.085},
+        {"id":"5654X","name":"La Puebla De Los Infantes","provider":"Aemet","latitude":37.786667,"longitude":-5.371111},
+        {"id":"5656","name":"Fuentes De Andalucía","provider":"Aemet","latitude":37.497222,"longitude":-5.433056},
+        {"id":"5702X","name":"Carmona","provider":"Aemet","latitude":37.565556,"longitude":-5.740556},
+        {"id":"5704B","name":"Cazalla De La Sierra","provider":"Aemet","latitude":37.926389,"longitude":-5.769722},
+        {"id":"5726X","name":"Guadalcanal","provider":"Aemet","latitude":38.099444,"longitude":-5.819167},
+        {"id":"5733X","name":"Almadén De La Plata","provider":"Aemet","latitude":37.791111,"longitude":-6.075},
+        {"id":"5769X","name":"Cala","provider":"Aemet","latitude":37.973611,"longitude":-6.322222},
+        {"id":"5783","name":"Sevilla Aeropuerto","provider":"Aemet","latitude":37.416667,"longitude":-5.879167},
+        {"id":"5788X","name":"Tomares, Zaudín","provider":"Aemet","latitude":37.361667,"longitude":-6.059722},
+        {"id":"5790Y","name":"Sevilla, Tablada","provider":"Aemet","latitude":37.364167,"longitude":-6.005833},
+        {"id":"5796","name":"Morón De La Frontera","provider":"Aemet","latitude":37.164444,"longitude":-5.611389},
+        {"id":"5835X","name":"Carrión De Los Céspedes","provider":"Aemet","latitude":37.36,"longitude":-6.334167},
+        {"id":"5858X","name":"Almonte","provider":"Aemet","latitude":36.988611,"longitude":-6.443056},
+        {"id":"5860E","name":"Moguer, El Arenosillo","provider":"Aemet","latitude":37.098056,"longitude":-6.738056},
+        {"id":"5891X","name":"Las Cabezas De San Juan","provider":"Aemet","latitude":36.953333,"longitude":-5.846667},
+        {"id":"5906X","name":"Chipiona","provider":"Aemet","latitude":36.75,"longitude":-6.400556},
+        {"id":"5911A","name":"Grazalema","provider":"Aemet","latitude":36.760556,"longitude":-5.374167},
+        {"id":"5919X","name":"Olvera","provider":"Aemet","latitude":36.931667,"longitude":-5.259444},
+        {"id":"5941X","name":"El Bosque","provider":"Aemet","latitude":36.729444,"longitude":-5.512222},
+        {"id":"5950X","name":"San José Del Valle","provider":"Aemet","latitude":36.663889,"longitude":-5.783333},
+        {"id":"5960","name":"Jerez De La Frontera Aeropuerto","provider":"Aemet","latitude":36.750556,"longitude":-6.055833},
+        {"id":"5972X","name":"San Fernando","provider":"Aemet","latitude":36.465556,"longitude":-6.205556},
+        {"id":"5973","name":"Cádiz","provider":"Aemet","latitude":36.499722,"longitude":-6.257778},
+        {"id":"5983X","name":"Medina Sidonia","provider":"Aemet","latitude":36.406111,"longitude":-5.920278},
+        {"id":"5995B","name":"Vejer De La Frontera","provider":"Aemet","latitude":36.245556,"longitude":-5.965},
+        {"id":"5996B","name":"Barbate","provider":"Aemet","latitude":36.184722,"longitude":-5.909444},
+        {"id":"5998X","name":"Osuna","provider":"Aemet","latitude":37.243333,"longitude":-5.1125},
+        {"id":"6000A","name":"Melilla","provider":"Aemet","latitude":35.276389,"longitude":-2.956389},
+        {"id":"6001","name":"Tarifa","provider":"Aemet","latitude":36.013889,"longitude":-5.598889},
+        {"id":"6032X","name":"Ronda Instituto","provider":"Aemet","latitude":36.75,"longitude":-5.168611},
+        {"id":"6040X","name":"Cortes De La Frontera","provider":"Aemet","latitude":36.544444,"longitude":-5.386389},
+        {"id":"6042I","name":"Jimena De La Frontera","provider":"Aemet","latitude":36.435556,"longitude":-5.395},
+        {"id":"6045X","name":"Alpandeire","provider":"Aemet","latitude":36.6325,"longitude":-5.203056},
+        {"id":"6050X","name":"Gaucín","provider":"Aemet","latitude":36.518611,"longitude":-5.318611},
+        {"id":"6056X","name":"San Roque","provider":"Aemet","latitude":36.273056,"longitude":-5.284444},
+        {"id":"6057X","name":"Manilva","provider":"Aemet","latitude":36.378333,"longitude":-5.26},
+        {"id":"6058I","name":"Estepona","provider":"Aemet","latitude":36.416944,"longitude":-5.155},
+        {"id":"6069X","name":"Benahavís","provider":"Aemet","latitude":36.543611,"longitude":-5.024722},
+        {"id":"6076X","name":"Marbella, Puerto","provider":"Aemet","latitude":36.484444,"longitude":-4.953056},
+        {"id":"6083X","name":"Marbella","provider":"Aemet","latitude":36.483333,"longitude":-4.740278},
+        {"id":"6088X","name":"Torremolinos","provider":"Aemet","latitude":36.620556,"longitude":-4.515},
+        {"id":"6127X","name":"Álora","provider":"Aemet","latitude":36.854722,"longitude":-4.696667},
+        {"id":"6155A","name":"Málaga Aeropuerto","provider":"Aemet","latitude":36.666111,"longitude":-4.482222},
+        {"id":"6156X","name":"Málaga, Centro Meteorológico","provider":"Aemet","latitude":36.717778,"longitude":-4.481667},
+        {"id":"6199X","name":"Vélez-málaga","provider":"Aemet","latitude":36.768611,"longitude":-4.093611},
+        {"id":"6201X","name":"Algarrobo","provider":"Aemet","latitude":36.755833,"longitude":-4.043889},
+        {"id":"6213X","name":"Nerja","provider":"Aemet","latitude":36.762778,"longitude":-3.845278},
+        {"id":"6248D","name":"Cañar, Parque Nacional Sierra Nevada","provider":"Aemet","latitude":36.952222,"longitude":-3.430278},
+        {"id":"6267X","name":"Salobreña","provider":"Aemet","latitude":36.748333,"longitude":-3.578611},
+        {"id":"6268Y","name":"Motril, Puerto","provider":"Aemet","latitude":36.723889,"longitude":-3.529167},
+        {"id":"6272X","name":"Castell De Ferro","provider":"Aemet","latitude":36.734167,"longitude":-3.38},
+        {"id":"6293X","name":"Roquetas De Mar","provider":"Aemet","latitude":36.686944,"longitude":-2.701667},
+        {"id":"6299I","name":"Laguna Seca, Parque Nacional Sierra Nevada","provider":"Aemet","latitude":37.095833,"longitude":-2.964444},
+        {"id":"6307C","name":"Laújar, Parque Nacional Sierra Nevada","provider":"Aemet","latitude":37.053056,"longitude":-2.897222},
+        {"id":"6307X","name":"Láujar De Andarax","provider":"Aemet","latitude":37.033333,"longitude":-2.9125},
+        {"id":"6312E","name":"Rágol, Parque Nacional Sierra Nevada","provider":"Aemet","latitude":37.020833,"longitude":-2.677222},
+        {"id":"6325O","name":"Almería Aeropuerto","provider":"Aemet","latitude":36.846389,"longitude":-2.356944},
+        {"id":"6329X","name":"Cabo De Gata","provider":"Aemet","latitude":36.721944,"longitude":-2.193056},
+        {"id":"6332Y","name":"Carboneras","provider":"Aemet","latitude":36.942222,"longitude":-1.906944},
+        {"id":"6335O","name":"Nacimiento, Parque Nacional Sierra Nevada","provider":"Aemet","latitude":37.11,"longitude":-2.699167},
+        {"id":"6340X","name":"Garrucha","provider":"Aemet","latitude":37.169167,"longitude":-1.828611},
+        {"id":"6364X","name":"Albox","provider":"Aemet","latitude":37.406667,"longitude":-2.151389},
+        {"id":"6375X","name":"Fuente De Piedra","provider":"Aemet","latitude":37.132222,"longitude":-4.741944},
+        {"id":"7002Y","name":"Águilas","provider":"Aemet","latitude":37.417222,"longitude":-1.586944},
+        {"id":"7007Y","name":"Mazarrón","provider":"Aemet","latitude":37.588056,"longitude":-1.230556},
+        {"id":"7012C","name":"Cartagena","provider":"Aemet","latitude":37.601111,"longitude":-0.987778},
+        {"id":"7012D","name":"Cartagena","provider":"Aemet","latitude":37.604444,"longitude":-1.023333},
+        {"id":"7019X","name":"Cartagena/salinas Cabo Palos","provider":"Aemet","latitude":37.635833,"longitude":-0.715556},
+        {"id":"7026X","name":"Torre-pacheco","provider":"Aemet","latitude":37.738889,"longitude":-0.9675},
+        {"id":"7031X","name":"San Javier Aeropuerto","provider":"Aemet","latitude":37.778333,"longitude":-0.805833},
+        {"id":"7096B","name":"Hellín","provider":"Aemet","latitude":38.541944,"longitude":-1.703056},
+        {"id":"7119B","name":"Caravaca De La Cruz","provider":"Aemet","latitude":38.103056,"longitude":-1.877222},
+        {"id":"7121A","name":"Calasparra","provider":"Aemet","latitude":38.234167,"longitude":-1.702222},
+        {"id":"7138B","name":"Jumilla","provider":"Aemet","latitude":38.458889,"longitude":-1.335278},
+        {"id":"7178I","name":"Murcia","provider":"Aemet","latitude":38.001944,"longitude":-1.170833},
+        {"id":"7203A","name":"Lorca, Zarcilla De Ramos","provider":"Aemet","latitude":37.844722,"longitude":-1.869722},
+        {"id":"7209","name":"Lorca","provider":"Aemet","latitude":37.656389,"longitude":-1.687222},
+        {"id":"7218Y","name":"Totana","provider":"Aemet","latitude":37.758611,"longitude":-1.512778},
+        {"id":"7227X","name":"Alhama De Murcia","provider":"Aemet","latitude":37.861667,"longitude":-1.334722},
+        {"id":"7237E","name":"Molina De Segura","provider":"Aemet","latitude":38.138889,"longitude":-1.158611},
+        {"id":"7244X","name":"Orihuela","provider":"Aemet","latitude":38.067778,"longitude":-0.981389},
+        {"id":"7247X","name":"El Pinós/pinoso","provider":"Aemet","latitude":38.399722,"longitude":-1.038056},
+        {"id":"7261X","name":"Rojales","provider":"Aemet","latitude":38.088056,"longitude":-0.715278},
+        {"id":"7275C","name":"Yecla","provider":"Aemet","latitude":38.601667,"longitude":-1.159722},
+        {"id":"8008Y","name":"Villena","provider":"Aemet","latitude":38.576944,"longitude":-0.865556},
+        {"id":"8019","name":"Alicante-elche Aeropuerto","provider":"Aemet","latitude":38.282778,"longitude":-0.570833},
+        {"id":"8025","name":"Alacant/alicante","provider":"Aemet","latitude":38.3725,"longitude":-0.494167},
+        {"id":"8036Y","name":"Benidorm","provider":"Aemet","latitude":38.543611,"longitude":-0.137778},
+        {"id":"8050X","name":"Jávea/ Xàbia","provider":"Aemet","latitude":38.784167,"longitude":0.166667},
+        {"id":"8057C","name":"Pego","provider":"Aemet","latitude":38.846667,"longitude":-0.118333},
+        {"id":"8058X","name":"Oliva","provider":"Aemet","latitude":38.904167,"longitude":-0.065},
+        {"id":"8058Y","name":"Miramar","provider":"Aemet","latitude":38.950278,"longitude":-0.137778},
+        {"id":"8059C","name":"Alcoi/alcoy","provider":"Aemet","latitude":38.710833,"longitude":-0.46},
+        {"id":"8072Y","name":"Barx","provider":"Aemet","latitude":39.016944,"longitude":-0.304722},
+        {"id":"8096","name":"Cuenca","provider":"Aemet","latitude":40.067222,"longitude":-2.131944},
+        {"id":"8155Y","name":"Motilla Del Palancar","provider":"Aemet","latitude":39.555278,"longitude":-1.915278},
+        {"id":"8175","name":"Albacete Base Aérea","provider":"Aemet","latitude":38.954167,"longitude":-1.856389},
+        {"id":"8177A","name":"Chinchilla","provider":"Aemet","latitude":38.9375,"longitude":-1.658889},
+        {"id":"8178D","name":"Albacete","provider":"Aemet","latitude":39.005556,"longitude":-1.862222},
+        {"id":"8193E","name":"Jalance","provider":"Aemet","latitude":39.208333,"longitude":-1.094444},
+        {"id":"8198Y","name":"Almansa","provider":"Aemet","latitude":38.850556,"longitude":-1.063056},
+        {"id":"8203O","name":"Zarra","provider":"Aemet","latitude":39.083056,"longitude":-1.101111},
+        {"id":"8210Y","name":"Salvacañete","provider":"Aemet","latitude":40.103056,"longitude":-1.503611},
+        {"id":"8270X","name":"Bicorp","provider":"Aemet","latitude":39.133611,"longitude":-0.79},
+        {"id":"8283X","name":"Ontinyent","provider":"Aemet","latitude":38.829444,"longitude":-0.607778},
+        {"id":"8293X","name":"Xàtiva","provider":"Aemet","latitude":39.001667,"longitude":-0.523056},
+        {"id":"8300X","name":"Carcaixent","provider":"Aemet","latitude":39.113333,"longitude":-0.445833},
+        {"id":"8309X","name":"Utiel","provider":"Aemet","latitude":39.575556,"longitude":-1.244722},
+        {"id":"8325X","name":"Polinyà De Xúquer","provider":"Aemet","latitude":39.183889,"longitude":-0.371389},
+        {"id":"8354X","name":"Albarracín","provider":"Aemet","latitude":40.419722,"longitude":-1.441389},
+        {"id":"8368U","name":"Teruel","provider":"Aemet","latitude":40.350833,"longitude":-1.124167},
+        {"id":"8376","name":"Jabaloyas","provider":"Aemet","latitude":40.236111,"longitude":-1.411667},
+        {"id":"8395X","name":"Chelva","provider":"Aemet","latitude":39.753333,"longitude":-0.993611},
+        {"id":"8409X","name":"Llíria","provider":"Aemet","latitude":39.663889,"longitude":-0.653889},
+        {"id":"8414A","name":"Valencia Aeropuerto","provider":"Aemet","latitude":39.485,"longitude":-0.474722},
+        {"id":"8416","name":"València","provider":"Aemet","latitude":39.480556,"longitude":-0.366389},
+        {"id":"8439X","name":"Segorbe","provider":"Aemet","latitude":39.795556,"longitude":-0.485278},
+        {"id":"8458X","name":"Cedrillas","provider":"Aemet","latitude":40.430556,"longitude":-0.849444},
+        {"id":"8472A","name":"Montanejos","provider":"Aemet","latitude":40.087778,"longitude":-0.546944},
+        {"id":"8486X","name":"Mosqueruela","provider":"Aemet","latitude":40.3625,"longitude":-0.454444},
+        {"id":"8489X","name":"Villafranca Del Cid/vilafranca","provider":"Aemet","latitude":40.433333,"longitude":-0.255556},
+        {"id":"8492X","name":"Atzeneta Del Maestrat","provider":"Aemet","latitude":40.227222,"longitude":-0.169722},
+        {"id":"8500A","name":"Castelló - Almassora","provider":"Aemet","latitude":39.957222,"longitude":-0.071944},
+        {"id":"8503Y","name":"Torreblanca","provider":"Aemet","latitude":40.211389,"longitude":0.183611},
+        {"id":"8520X","name":"La Pobla De Benifassà-fredes","provider":"Aemet","latitude":40.693611,"longitude":0.165278},
+        {"id":"9001D","name":"Reinosa","provider":"Aemet","latitude":42.991944,"longitude":-4.160556},
+        {"id":"9001S","name":"Alto Campoo","provider":"Aemet","latitude":43.036667,"longitude":-4.374444},
+        {"id":"9016X","name":"Valderredible, Cubillo De Ebro","provider":"Aemet","latitude":42.809722,"longitude":-4.032222},
+        {"id":"9031C","name":"Briviesca","provider":"Aemet","latitude":42.559444,"longitude":-3.308889},
+        {"id":"9051","name":"Medina De Pomar","provider":"Aemet","latitude":42.92,"longitude":-3.482778},
+        {"id":"9060X","name":"Lalastra","provider":"Aemet","latitude":42.875278,"longitude":-3.231667},
+        {"id":"9069C","name":"Miranda De Ebro","provider":"Aemet","latitude":42.687222,"longitude":-2.960556},
+        {"id":"9073X","name":"Agurain/salvatierra, Opakua","provider":"Aemet","latitude":42.829722,"longitude":-2.359722},
+        {"id":"9091R","name":"Vitoria-gasteiz Aeropuerto","provider":"Aemet","latitude":42.871944,"longitude":-2.732778},
+        {"id":"9111","name":"Belorado","provider":"Aemet","latitude":42.421111,"longitude":-3.170278},
+        {"id":"9115X","name":"Valdezcaray","provider":"Aemet","latitude":42.255,"longitude":-2.968056},
+        {"id":"9122I","name":"Labastida","provider":"Aemet","latitude":42.603889,"longitude":-2.776667},
+        {"id":"9141V","name":"Nájera","provider":"Aemet","latitude":42.414167,"longitude":-2.726667},
+        {"id":"9145Y","name":"Cenicero","provider":"Aemet","latitude":42.482778,"longitude":-2.639444},
+        {"id":"9170","name":"Logroño, Aeropuerto","provider":"Aemet","latitude":42.452222,"longitude":-2.331111},
+        {"id":"9171K","name":"Los Arcos","provider":"Aemet","latitude":42.570278,"longitude":-2.183889},
+        {"id":"9188","name":"Enciso","provider":"Aemet","latitude":42.149444,"longitude":-2.273333},
+        {"id":"9195C","name":"Astún- La Raca","provider":"Aemet","latitude":42.793056,"longitude":-0.505278},
+        {"id":"9198X","name":"Canfranc","provider":"Aemet","latitude":42.749444,"longitude":-0.516111},
+        {"id":"9201X","name":"Jaca","provider":"Aemet","latitude":42.579722,"longitude":-0.545},
+        {"id":"9207","name":"Valle De Hecho, Hecho","provider":"Aemet","latitude":42.740556,"longitude":-0.750556},
+        {"id":"9208E","name":"Aragüés Del Puerto","provider":"Aemet","latitude":42.708611,"longitude":-0.672778},
+        {"id":"9211F","name":"Bailo, Puyalto","provider":"Aemet","latitude":42.514167,"longitude":-0.817222},
+        {"id":"9218A","name":"Isaba/izaba","provider":"Aemet","latitude":42.8625,"longitude":-0.924722},
+        {"id":"9228J","name":"Oroz-betelu/orotz-betelu","provider":"Aemet","latitude":42.896111,"longitude":-1.300278},
+        {"id":"9228T","name":"Roncesvalles/orreaga","provider":"Aemet","latitude":43.007778,"longitude":-1.325556},
+        {"id":"9244X","name":"Sos Del Rey Católico","provider":"Aemet","latitude":42.490833,"longitude":-1.213333},
+        {"id":"9245X","name":"Cáseda","provider":"Aemet","latitude":42.521389,"longitude":-1.366389},
+        {"id":"9252X","name":"Olite/erriberri","provider":"Aemet","latitude":42.489167,"longitude":-1.655556},
+        {"id":"9262P","name":"Monreal/elo","provider":"Aemet","latitude":42.701111,"longitude":-1.495556},
+        {"id":"9263D","name":"Pamplona, Aeropuerto","provider":"Aemet","latitude":42.776944,"longitude":-1.65},
+        {"id":"9263X","name":"Aranguren, Ilundain","provider":"Aemet","latitude":42.776111,"longitude":-1.5325},
+        {"id":"9274X","name":"Irurtzun","provider":"Aemet","latitude":42.918889,"longitude":-1.835},
+        {"id":"9280B","name":"Larraga","provider":"Aemet","latitude":42.549444,"longitude":-1.8575},
+        {"id":"9287A","name":"San Pedro Manrique","provider":"Aemet","latitude":42.026389,"longitude":-2.230833},
+        {"id":"9293X","name":"Alfaro, La Plana","provider":"Aemet","latitude":42.176111,"longitude":-1.743889},
+        {"id":"9294E","name":"Bardenas Reales, Base Aérea","provider":"Aemet","latitude":42.198611,"longitude":-1.475278},
+        {"id":"9299X","name":"Tarazona","provider":"Aemet","latitude":41.915,"longitude":-1.723333},
+        {"id":"9302Y","name":"Tudela","provider":"Aemet","latitude":42.055556,"longitude":-1.609444},
+        {"id":"9336D","name":"Castejon De Valdejasa","provider":"Aemet","latitude":41.984167,"longitude":-0.995833},
+        {"id":"9344C","name":"Arcos De Jalón","provider":"Aemet","latitude":41.216389,"longitude":-2.293056},
+        {"id":"9352A","name":"Almazul","provider":"Aemet","latitude":41.574722,"longitude":-2.140278},
+        {"id":"9374X","name":"Santa Eulalia Del Campo","provider":"Aemet","latitude":40.566667,"longitude":-1.320833},
+        {"id":"9377Y","name":"El Pedregal","provider":"Aemet","latitude":40.778611,"longitude":-1.568333},
+        {"id":"9381I","name":"Calamocha","provider":"Aemet","latitude":40.926111,"longitude":-1.293333},
+        {"id":"9390","name":"Daroca","provider":"Aemet","latitude":41.114444,"longitude":-1.41},
+        {"id":"9394X","name":"Calatayud","provider":"Aemet","latitude":41.331111,"longitude":-1.645278},
+        {"id":"9427X","name":"La Almunia De Doña Godina","provider":"Aemet","latitude":41.481111,"longitude":-1.380833},
+        {"id":"9434","name":"Zaragoza, Aeropuerto","provider":"Aemet","latitude":41.660556,"longitude":-1.004167},
+        {"id":"9434P","name":"Zaragoza, Valdespartera","provider":"Aemet","latitude":41.621111,"longitude":-0.934722},
+        {"id":"9436X","name":"Fonfría","provider":"Aemet","latitude":40.995278,"longitude":-1.0875},
+        {"id":"9445L","name":"Formigal, Sarrios","provider":"Aemet","latitude":42.7625,"longitude":-0.392778},
+        {"id":"9451F","name":"Panticosa, Petrosos","provider":"Aemet","latitude":42.704444,"longitude":-0.275278},
+        {"id":"9453X","name":"Biescas, Embalse De Búbal","provider":"Aemet","latitude":42.699167,"longitude":-0.318889},
+        {"id":"9460X","name":"Sabiñánigo","provider":"Aemet","latitude":42.512778,"longitude":-0.355556},
+        {"id":"9491X","name":"Almudévar","provider":"Aemet","latitude":42.029444,"longitude":-0.585833},
+        {"id":"9495Y","name":"Leciñena","provider":"Aemet","latitude":41.796667,"longitude":-0.617222},
+        {"id":"9501X","name":"Valmadrid","provider":"Aemet","latitude":41.443056,"longitude":-0.885833},
+        {"id":"9510X","name":"Quinto","provider":"Aemet","latitude":41.429167,"longitude":-0.503889},
+        {"id":"9513X","name":"Muniesa","provider":"Aemet","latitude":41.031111,"longitude":-0.805556},
+        {"id":"9531Y","name":"Montalbán","provider":"Aemet","latitude":40.828611,"longitude":-0.792778},
+        {"id":"9546B","name":"Hijar","provider":"Aemet","latitude":41.171944,"longitude":-0.441944},
+        {"id":"9550C","name":"Andorra, Horcallana","provider":"Aemet","latitude":40.974444,"longitude":-0.407778},
+        {"id":"9561X","name":"Castellote","provider":"Aemet","latitude":40.798333,"longitude":-0.315278},
+        {"id":"9562X","name":"Morella","provider":"Aemet","latitude":40.621667,"longitude":-0.101944},
+        {"id":"9563X","name":"Castellfort","provider":"Aemet","latitude":40.498611,"longitude":-0.186667},
+        {"id":"9569A","name":"Calanda","provider":"Aemet","latitude":40.946667,"longitude":-0.237778},
+        {"id":"9573X","name":"Alcañiz","provider":"Aemet","latitude":41.058056,"longitude":-0.141667},
+        {"id":"9574B","name":"Caspe, Plana Del Pilón","provider":"Aemet","latitude":41.2425,"longitude":-0.068611},
+        {"id":"9585","name":"La Molina","provider":"Aemet","latitude":42.3325,"longitude":1.939444},
+        {"id":"9590","name":"Martinet","provider":"Aemet","latitude":42.362222,"longitude":1.693333},
+        {"id":"9590D","name":"Cap De Rec","provider":"Aemet","latitude":42.430278,"longitude":1.6675},
+        {"id":"9632X","name":"Tuixent","provider":"Aemet","latitude":42.230278,"longitude":1.569444},
+        {"id":"9638D","name":"Coll De Nargó","provider":"Aemet","latitude":42.154444,"longitude":1.311944},
+        {"id":"9657X","name":"Esterri D'àneu","provider":"Aemet","latitude":42.625,"longitude":1.126111},
+        {"id":"9677","name":"Port Ainé","provider":"Aemet","latitude":42.41,"longitude":1.214722},
+        {"id":"9707","name":"Llimiana","provider":"Aemet","latitude":42.066944,"longitude":0.907222},
+        {"id":"9718X","name":"Tordera - Granyanella","provider":"Aemet","latitude":41.681111,"longitude":1.223056},
+        {"id":"9724X","name":"Os De Balaguer","provider":"Aemet","latitude":41.873333,"longitude":0.756111},
+        {"id":"9726E","name":"Llorac","provider":"Aemet","latitude":41.557222,"longitude":1.309444},
+        {"id":"9729X","name":"Mollerussa","provider":"Aemet","latitude":41.616944,"longitude":0.866667},
+        {"id":"9744B","name":"Vall De Boí","provider":"Aemet","latitude":42.503333,"longitude":0.798889},
+        {"id":"9751","name":"Sopeira","provider":"Aemet","latitude":42.318611,"longitude":0.746944},
+        {"id":"9756X","name":"Benabarre","provider":"Aemet","latitude":42.1125,"longitude":0.48},
+        {"id":"9771C","name":"Lleida","provider":"Aemet","latitude":41.626111,"longitude":0.598056},
+        {"id":"9784P","name":"Bielsa","provider":"Aemet","latitude":42.63,"longitude":0.224722},
+        {"id":"9808X","name":"Aínsa-sobrarbe, La Serreta","provider":"Aemet","latitude":42.421667,"longitude":0.138056},
+        {"id":"9812M","name":"Parador De Ordesa, Parque Nacional Ordesa Y Monteperdido","provider":"Aemet","latitude":42.655278,"longitude":-0.099167},
+        {"id":"9814I","name":"Torla-ordesa, El Cebollar","provider":"Aemet","latitude":42.656111,"longitude":-0.124444},
+        {"id":"9814X","name":"Torla - Ordesa","provider":"Aemet","latitude":42.6375,"longitude":-0.111944},
+        {"id":"9838B","name":"Benasque","provider":"Aemet","latitude":42.599444,"longitude":0.520556},
+        {"id":"9839V","name":"Cerler, Cogulla","provider":"Aemet","latitude":42.555,"longitude":0.543056},
+        {"id":"9843A","name":"Seira","provider":"Aemet","latitude":42.476944,"longitude":0.434167},
+        {"id":"9855E","name":"Capella, Laguarres","provider":"Aemet","latitude":42.201389,"longitude":0.466111},
+        {"id":"9866C","name":"Barbastro","provider":"Aemet","latitude":42.021389,"longitude":0.140556},
+        {"id":"9894Y","name":"Sariñena","provider":"Aemet","latitude":41.799167,"longitude":-0.160833},
+        {"id":"9898","name":"Huesca, Aeropuerto","provider":"Aemet","latitude":42.084444,"longitude":-0.325556},
+        {"id":"9908X","name":"Lanaja","provider":"Aemet","latitude":41.773889,"longitude":-0.333056},
+        {"id":"9911X","name":"Ballobar","provider":"Aemet","latitude":41.619444,"longitude":0.187778},
+        {"id":"9918Y","name":"Tamarite De Litera, La Melusa","provider":"Aemet","latitude":41.780833,"longitude":0.376944},
+        {"id":"9924X","name":"Fraga","provider":"Aemet","latitude":41.524722,"longitude":0.355556},
+        {"id":"9935X","name":"Valderrobres","provider":"Aemet","latitude":40.873333,"longitude":0.146389},
+        {"id":"9947X","name":"La Pobla De Massaluca","provider":"Aemet","latitude":41.177222,"longitude":0.353333},
+        {"id":"9961X","name":"Cabacés","provider":"Aemet","latitude":41.249444,"longitude":0.735278},
+        {"id":"9975X","name":"Rasquera","provider":"Aemet","latitude":41.005,"longitude":0.613611},
+        {"id":"9981A","name":"Estación De Tortosa (roquetes)","provider":"Aemet","latitude":40.820278,"longitude":0.493333},
+        {"id":"9990X","name":"Naut Aran, Arties","provider":"Aemet","latitude":42.700278,"longitude":0.876944},
+        {"id":"9994X","name":"Bossòst","provider":"Aemet","latitude":42.776111,"longitude":0.689722},
+        {"id":"9995Y","name":"Valcarlos/luzaide","provider":"Aemet","latitude":43.091111,"longitude":-1.300833},
+        {"id":"9998X","name":"Bello","provider":"Aemet","latitude":40.921389,"longitude":-1.494444}
+    ];
 
-    // 2. DIBUJAR LAS ESTACIONES ESTÁTICAS AL ACTIVAR EL CHECKBOX
-    function dibujarEstacionesEuskalmet() {
-        if (balizasDibujadas) return;
+    // 🟡 2. OBJETO GESTOR CENTRAL (Configuración y Estado de cada red)
+    //___________________________________________________________________________________
 
-        ESTACIONES_EUSKALMET.forEach(estacion => {
-            // Flecha gris en su tamaño original (22x26)
+    const REDES_BALIZAS = {
+        'euskalmet': {
+            id: 'euskalmet',
+            nombre: 'Euskalmet',
+            estaciones: ESTACIONES_EUSKALMET,
+            urlCache: 'https://flydecision.com/balizas_euskalmet_cache.json',
+            url6h: 'https://flydecision.com/balizas_euskalmet_6h.json',
+            checkboxId: 'checkboxBalizasEuskalmet',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_EUSKALMET_VISIBLE',
+            // --- Variables de estado de esta red ---
+            layerGroup: L.layerGroup(),
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 30,
+            umbralRojoMin: 45 
+        },
+        'aemet': {
+            id: 'aemet',
+            nombre: 'AEMET',
+            estaciones: ESTACIONES_AEMET,
+            urlCache: 'https://flydecision.com/balizas_aemet_cache.json',
+            url6h: 'https://flydecision.com/balizas_aemet_6h.json',
+            checkboxId: 'checkboxBalizasAemet',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_AEMET_VISIBLE',
+            // --- Variables de estado de esta red ---
+            layerGroup: L.layerGroup(),
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 90,
+            umbralRojoMin: 120
+        }
+    };    
+    
+    // 🟡 3. DIBUJAR LAS ESTACIONES ESTÁTICAS DE UNA RED
+    //___________________________________________________________________________________
+
+    function dibujarEstacionesBalizas(redId) {
+        const red = REDES_BALIZAS[redId];
+        if (red.dibujadas) return;
+
+        red.estaciones.forEach(estacion => {
             const svgFlechaGris = `
                 <svg viewBox="0 0 30 36" style="width: 22px; height: 26px; display: block;">
                     <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#95a5a6"/>
-                </svg>
-            `;
-            
+                </svg>`;
+
             // Cuadrado virtual de 80x50 px (más ancho para los 16px de texto)
             const htmlCargando = `
                 <div style="width: 80px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
@@ -13801,8 +14520,7 @@ function inicializarMapaLeaflet() {
                     <div style="height: 22px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap;">
                         <span style="font-weight: bold; font-size: 16px; color: #95a5a6;">...</span>
                     </div>
-                </div>
-            `;
+                </div>`;
 
             // Cambio de tamaños: 3º Coges el width total y el height total de la caja htmlBaliza, los divides entre 2, y los pones en el iconAnchor: [ancho/2, alto/2]. ¡Pura matemática para que no baile nada!
             const iconoBaliza = L.divIcon({
@@ -13813,12 +14531,16 @@ function inicializarMapaLeaflet() {
             });
 
             const marker = L.marker([estacion.latitude, estacion.longitude], { icon: iconoBaliza });
+            
+            // CRUCIAL: Guardamos en el marcador a qué red pertenece para cuando se haga click
+            marker.redId = red.id;
             marker.stationId = estacion.id;
             marker.stationName = estacion.name;
 
+            // Añadimos red.id al ID del div del popup para evitar choques si 2 redes usan el mismo ID de estación
             marker.bindPopup(`
-                <div id="pop-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
-                    <h4 style="margin: 0 0 5px 0; color: #0078d4;">🚩 ${estacion.name}</h4>
+                <div id="pop-${red.id}-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
+                    <h4 style="margin: 0 0 5px 0; color: #0078d4;">🚩 ${estacion.name} (${red.nombre})</h4>
                     <p style="margin:0; color:#666;">⏳ Cargando viento en vivo...</p>
                 </div>
             `, {
@@ -13828,86 +14550,82 @@ function inicializarMapaLeaflet() {
                 autoPanPaddingTopLeft: L.point(50, 550)
             });
 
-            layerGroupBalizas.addLayer(marker);
+            red.layerGroup.addLayer(marker);
         });
 
-        balizasDibujadas = true;
+        red.dibujadas = true;
     }
 
-    // 3. CARGAR EL JSON CONSOLIDADO (lo genera el cron cada 10 min)
-    async function cargarDatosBalizas() {
+    // 🟡 4. CARGAR EL JSON CONSOLIDADO EN VIVO PARA UNA RED
+    //___________________________________________________________________________________
+
+    async function cargarDatosBalizas(redId) {
+        const red = REDES_BALIZAS[redId];
         try {
-            const res = await fetch(`https://flydecision.com/balizas_euskalmet_cache.json?_=${Date.now()}`);
+            const res = await fetch(`${red.urlCache}?_=${Date.now()}`);
             const textoCrudo = await res.text();
 
-            // Si el contenido es idéntico al de la última vez, no hay nada nuevo: no repintamos
-            if (textoCrudo === ultimoJsonBalizasRaw) return;
+            if (textoCrudo === red.ultimoJsonRaw) return; // Si el contenido es idéntico al de la última vez, no hay nada nuevo: no repintamos
 
-            ultimoJsonBalizasRaw = textoCrudo;
-            datosBalizas = JSON.parse(textoCrudo);
-            actualizarIconosBalizas();
+            red.ultimoJsonRaw = textoCrudo;
+            red.datosCache = JSON.parse(textoCrudo);
+            actualizarIconosBalizas(redId);
         } catch (e) {
-            console.error('No se pudo cargar el caché de balizas Euskalmet', e);
+            console.error(`No se pudo cargar el caché de balizas ${red.nombre}`, e);
         }
     }
 
-    // 3b. CARGAR EL HISTÓRICO DE 6H, SOLO CUANDO SE ABRE UN POPUP (lazy, caché 5 min)
-    async function cargarDatos6hBalizasSiNecesario() {
+    // 🟡 4b. CARGAR HISTÓRICO DE 4H PARA UNA RED (Lazy Load)
+    //___________________________________________________________________________________
+
+    async function cargarDatos6hBalizasSiNecesario(redId) {
+        const red = REDES_BALIZAS[redId];
         const ahora = Date.now();
-        if (datos6hBalizas && (ahora - datos6hBalizasFetchedAt) < 5 * 60 * 1000) return;
+        if (red.datos6h && (ahora - red.fetched6hAt) < 5 * 60 * 1000) return;
         try {
-            const res = await fetch(`https://flydecision.com/balizas_euskalmet_6h.json?_=${ahora}`);
-            datos6hBalizas = await res.json();
-            datos6hBalizasFetchedAt = ahora;
+            const res = await fetch(`${red.url6h}?_=${ahora}`);
+            red.datos6h = await res.json();
+            red.fetched6hAt = ahora;
         } catch (e) {
-            console.error('No se pudo cargar el histórico 6h de balizas Euskalmet', e);
+            console.error(`No se pudo cargar el histórico 6h de balizas ${red.nombre}`, e);
         }
     }
 
-    // 4. ACTUALIZAR ICONOS DEL MAPA CON LA VELOCIDAD EN VIVO
-    function actualizarIconosBalizas() {
+    // 🟡 5. ACTUALIZAR ICONOS DEL MAPA
+    //___________________________________________________________________________________
 
+    function actualizarIconosBalizas(redId) {
+        const red = REDES_BALIZAS[redId];
         const zoomActual = map.getZoom();
 
-        layerGroupBalizas.eachLayer(marker => {
-            const d = datosBalizas[marker.stationId];
-            
+        red.layerGroup.eachLayer(marker => {
+            const d = red.datosCache[marker.stationId];
+
             // A) SI LA ESTACIÓN NO TIENE DATOS (Punto rojo)
             if (!d || d.windSpeed === null || d.windSpeed === undefined) {
                 const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
-                
                 const htmlSinDatos = `
                     <div title="${marker.stationName}: Sin datos recientes" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
                         ${svgPuntoRojo}
-                    </div>
-                `;
-
-                marker.setIcon(L.divIcon({
-                    html: htmlSinDatos,
-                    className: 'custom-div-icon',
-                    iconAnchor: [40, 23],
-                    popupAnchor: [0, 25] 
-                }));
+                    </div>`;
+                marker.setIcon(L.divIcon({ html: htmlSinDatos, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
                 return;
             }
 
             // B) SI LA ESTACIÓN TIENE DATOS
             const rotacion = (d.windDirection ?? 0) + 180;
-            
-            // Cambio de tamaños: 1º Modificas el tamaño del SVG en sí (width y height dentro del <svg>). El viewBox y el polygon nunca se tocan (deben ser 0 0 30 36).
-            const estadoMapa = calcularEstadoActualizacionBaliza(d);
+            const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
             const colorFlechaMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
+            
             const svgFlechaMapa = `
                 <svg viewBox="0 0 30 36" style="transform: rotate(${rotacion}deg); transform-origin: 50% 30%; width: 40px; height: 40px; display: block;">
                     <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="${colorFlechaMapa}"/>
-                </svg>
-            `;
+                </svg>`;
 
             const colorVientoMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
             const colorRachaMapa  = estadoMapa.esAntiguo ? '#95a5a6' : '#e74c3c';
 
             let cifrasHtml = `<strong style="font-size: 16px; color: ${colorVientoMapa};">${d.windSpeed}</strong>`;
-            
             if (zoomActual >= 10 && d.windGusts !== null && d.windGusts !== undefined) {
                 cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: ${colorRachaMapa};" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
             }
@@ -13915,53 +14633,186 @@ function inicializarMapaLeaflet() {
             // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal. Nota: margin-left: -26px; es para desplazarlo a la izquierda y saltar el .leaflet-marker-icon.custom-div-icon {
             const htmlBaliza = `
                 <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: 18px">
-                    
                     <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
                         ${svgFlechaMapa}
                     </div>
-
                     <div style="height: 20px; margin-top: -14px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap; text-shadow: 1px 1px 2px rgba(255,255,255,1), -1px -1px 2px rgba(255,255,255,1), 1px -1px 2px rgba(255,255,255,1), -1px 1px 2px rgba(255,255,255,1);">
                         ${cifrasHtml}
                     </div>
-                </div>
-            `;
+                </div>`;
 
-            marker.setIcon(L.divIcon({
-                html: htmlBaliza,
-                className: 'custom-div-icon',
-                iconAnchor: [40, 40], // Siempre la mitad exacta de width y height
-                popupAnchor: [0, 25]
-            }));
+            marker.setIcon(L.divIcon({ html: htmlBaliza, className: 'custom-div-icon', iconAnchor: [40, 40], popupAnchor: [0, 25] }));
 
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
         });
     }
+    
+    // 🟡 6. PINTAR EL POPUP
+    //___________________________________________________________________________________
 
-    // Calcula cuántos minutos de retraso tiene una lectura y qué semáforo le corresponde. <30 min: 🟢 | 30-45 min: 🟡 | ≥45 min: 🔴 (y las cifras del mapa pasan a gris)
-    function calcularEstadoActualizacionBaliza(d) {
-        if (!d || !d.date || !d.time) return { minutos: null, emoji: '⚪', esAntiguo: false };
+    function pintarPopupBaliza(marker) {
+        const red = REDES_BALIZAS[marker.redId];
+        const containerDiv = document.getElementById(`pop-${red.id}-${marker.stationId}`);
+        if (!containerDiv) return;
+        
+        const d = red.datosCache[marker.stationId];
+        
+        if (!d || d.windSpeed === null || d.windSpeed === undefined) {
+            containerDiv.innerHTML = `
+                <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
+                <p style="color:#c0392b; margin:5px 0 0 0;">⚠️ ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}</p>
+            `;
+            return;
+        }
 
-        const [anio, mes, dia] = d.date.split('-').map(Number);
-        const [h, m] = d.time.split(':').map(Number);
-        const fechaLectura = new Date(anio, mes - 1, dia, h, m);
-        const minutos = (Date.now() - fechaLectura.getTime()) / 60000;
+        const orientacionTexto = obtenerTextoOrientacion(d.windDirection); // Función global que ya tienes
+        const estadoPopup = calcularEstadoActualizacionBaliza(d, marker.redId);
 
-        let emoji = '🟢';
-        if (minutos >= 45) emoji = '🔴';
-        else if (minutos >= 30) emoji = '🟡';
+        // 1. viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
+        const svgFlecha = `
+            <svg viewBox="5 1 20 20" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7); transform-origin: center center; width: 28px; height: 28px; flex-shrink: 0;">
+                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
+            </svg>`;
 
-        return { minutos, emoji, esAntiguo: minutos >= 45 }; // esAntiguo = Retraso en min antes de mostrar cifras grises en el mapa
+        containerDiv.innerHTML = `
+            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
+                🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
+            </p>
+            <!-- Fila 1: Viento -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 80px;">${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento:' })}:</span> 
+                <b style="color: #0078d4;">${d.windSpeed}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
+            </div>
+            <!-- Fila 2: Racha -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 80px;">${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha:' })}:</span> 
+                <b style="color: #c0392b;">${d.windGusts ?? '-'}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
+            </div>
+            <!-- Fila 3: Dirección -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 80px;">${t('mapa.balizas.balizas_direccion', { defaultValue: 'Dirección:' })}:</span> 
+                <b style="color: #0078d4;">${orientacionTexto}</b>
+                ${svgFlecha} 
+                <span style="color:#888;">(${d.windDirection ?? '-'}º)</span>
+            </div>
+
+            <div id="pop-chart-${red.id}-${marker.stationId}" style="margin-top:10px; min-height: 90px; text-align:center;">
+                <small style="color:#aaa;">⏳ ${t('mapa.balizas.balizas_cargando_grafico', { defaultValue: 'Cargando gráfico...' })}</small>
+            </div>
+
+            <span style="display: block; margin-top: 7px; margin-bottom:7px; text-align: right;">
+                <small style="color:#888;">
+                    ${estadoPopup.emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
+                </small>
+            </span>
+        `;
+
+        pintarGraficaBaliza(marker);
     }
 
-    function calcularEstadoActualizacionBaliza(d) {
+    // 🟡 7. PINTAR GRÁFICA DE 4H
+    //___________________________________________________________________________________
+
+    async function pintarGraficaBaliza(marker) {
+        const red = REDES_BALIZAS[marker.redId];
+        await cargarDatos6hBalizasSiNecesario(red.id);
+
+        const chartDiv = document.getElementById(`pop-chart-${red.id}-${marker.stationId}`);
+        if (!chartDiv) return;
+
+        const lecturas = red.datos6h ? red.datos6h[marker.stationId] : null;
+        const svg = generarSvgGraficaBaliza(lecturas); 
+
+        if (!svg) {
+            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Histórico no disponible todavía.' })}</small>`;
+            return;
+        }
+
+        chartDiv.innerHTML = `
+            ${svg}
+            <div style="display:flex; justify-content:center; gap:14px; margin-top:2px;">
+                <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
+                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" /></svg>
+                    ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
+                </small>
+                <small style="color:#c0392b; display: inline-flex; align-items: center;">
+                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" /></svg>
+                    ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
+                </small>
+            </div>
+        `;
+    }
+
+    // 🟡 8. EVENTO AL ABRIR UN POPUP EN EL MAPA
+    //___________________________________________________________________________________
+
+    map.on('popupopen', function (e) {
+        const marker = e.popup._source;
+        if (!marker || !marker.redId || !marker.stationId) return; // Filtrar si no es un marcador de baliza
+        pintarPopupBaliza(marker);
+    });
+
+    // 🟡 9. LÓGICA DE ACTIVACIÓN/DESACTIVACIÓN GENÉRICA POR CHECKBOXES
+    //___________________________________________________________________________________
+
+    function activarCapaBalizas(redId) {
+        const red = REDES_BALIZAS[redId];
+        dibujarEstacionesBalizas(redId);
+        map.addLayer(red.layerGroup);
+        cargarDatosBalizas(redId);
+        if (!red.intervalo) {
+            red.intervalo = setInterval(() => cargarDatosBalizas(redId), 60 * 1000); // 1 minuto
+        }
+    }
+
+    function desactivarCapaBalizas(redId) {
+        const red = REDES_BALIZAS[redId];
+        map.removeLayer(red.layerGroup);
+        if (red.intervalo) {
+            clearInterval(red.intervalo);
+            red.intervalo = null;
+        }
+    }
+
+    // Inicializar todos los checkboxes dinámicamente
+    Object.values(REDES_BALIZAS).forEach(red => {
+        const checkboxElement = document.getElementById(red.checkboxId);
+        if (checkboxElement) {
+            // Escuchar cambios de usuario
+            checkboxElement.addEventListener('change', function () {
+                localStorage.setItem(red.lsKey, this.checked);
+                if (this.checked) {
+                    activarCapaBalizas(red.id);
+                } else {
+                    desactivarCapaBalizas(red.id);
+                }
+            });
+
+            // Restaurar estado guardado en el navegador (si existe)
+            const capaVisibleGuardada = localStorage.getItem(red.lsKey) === 'true';
+            checkboxElement.checked = capaVisibleGuardada;
+            if (capaVisibleGuardada) {
+                activarCapaBalizas(red.id);
+            }
+        }
+    });
+
+    // 🟡 FUNCIONES AUXILIARES BALIZAS
+    //___________________________________________________________________________________
+
+    function calcularEstadoActualizacionBaliza(d, redId) {
         if (!d || !d.date || !d.time) return { minutos: null, emoji: '⚪', esAntiguo: false };
+        
         const [anio, mes, dia] = d.date.split('-').map(Number);
         const [h, m] = d.time.split(':').map(Number);
         const fechaLectura = new Date(anio, mes - 1, dia, h, m);
-        return calcularSemaforoAntiguedad(fechaLectura.getTime(), BALIZAS_UMBRAL_AMARILLO_MIN, BALIZAS_UMBRAL_ROJO_MIN);
+        
+        const umbralAmarillo = REDES_BALIZAS[redId].umbralAmarilloMin;
+        const umbralRojo = REDES_BALIZAS[redId].umbralRojoMin;
+
+        return calcularSemaforoAntiguedad(fechaLectura.getTime(), umbralAmarillo, umbralRojo);
     }
     
-    // 5. PINTAR EL CONTENIDO DEL POPUP CON LOS DATOS YA CARGADOS
     function formatearFechaHoraBaliza(fechaStr, horaStr) {
         if (!fechaStr || !horaStr) return '–';
         const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
@@ -13983,7 +14834,7 @@ function inicializarMapaLeaflet() {
         if (lecturasValidas.length < 2) return null;
 
         const ahora = lecturasValidas[lecturasValidas.length - 1].ts;
-        const desde = ahora - 4 * 3600; // últimas X horas
+        const desde = ahora - 4 * 3600; // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
 
         const puntos = lecturasValidas.filter(p => p.ts >= desde);
         if (puntos.length < 2) return null;
@@ -14029,9 +14880,9 @@ function inicializarMapaLeaflet() {
 
         // Etiquetas eje X. Cambia el h <= por las horas totales del rango y el paso de h += por las divisiones en horas
         const etiquetasX = [];
-        for (let h = 0; h <= 4; h += 1) {
+        for (let h = 0; h <= 4; h += 1) { // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
             const ts = desde + h * 3600;
-            const horasRestantes = 4 - h;
+            const horasRestantes = 4 - h; // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
             const textoHora = horasRestantes === 0 ? '0' : `-${horasRestantes}`;
             etiquetasX.push(`<text x="${x(ts).toFixed(1)}" y="${H - 1}" text-anchor="middle" font-size="12" fill="#888">${textoHora}&thinsp;h</text>`);
         }
@@ -14063,151 +14914,6 @@ function inicializarMapaLeaflet() {
             </svg>
         `;
     }
-
-    function pintarPopupBaliza(marker) {
-        const containerDiv = document.getElementById(`pop-${marker.stationId}`);
-        if (!containerDiv) return;
-        const d = datosBalizas[marker.stationId];
-        
-        if (!d || d.windSpeed === null || d.windSpeed === undefined) {
-            containerDiv.innerHTML = `
-                <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
-                <p style="color:#c0392b; margin:5px 0 0 0;">⚠️ ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}</p>
-            `;
-            return;
-        }
-
-        const orientacionTexto = obtenerTextoOrientacion(d.windDirection);
-        const estadoPopup = calcularEstadoActualizacionBaliza(d);
-
-        // 1. viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
-        const svgFlecha = `
-            <svg viewBox="5 1 20 20"
-                style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7);
-                        transform-origin: center center;
-                        width: 28px;
-                        height: 28px;
-                        flex-shrink: 0;">
-                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
-            </svg>
-        `;
-
-        // 2. Aplicamos la misma estructura Flexbox a las 3 filas para que tengan idéntica altura (25px)
-        containerDiv.innerHTML = `
-            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
-                🚩 <span style="font-weight: bold;"> ${marker.stationName}</span>
-            </p>
-            
-            <!-- Fila 1: Viento -->
-            <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 80px;">${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento:' })}:</span> 
-                <b style="color: #0078d4;">${d.windSpeed}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
-            </div>
-            
-            <!-- Fila 2: Racha -->
-            <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 80px;">${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha:' })}:</span> 
-                <b style="color: #c0392b;">${d.windGusts ?? '-'}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
-            </div>
-            
-            <!-- Fila 3: Dirección -->
-            <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 80px;">${t('mapa.balizas.balizas_direccion', { defaultValue: 'Dirección:' })}:</span> 
-                <b style="color: #0078d4;">${orientacionTexto}</b>
-                ${svgFlecha} 
-                <span style="color:#888;">(${d.windDirection ?? '-'}º)</span>
-            </div>
-
-            <div id="pop-chart-${marker.stationId}" style="margin-top:10px; min-height: 90px; text-align:center;">
-                <small style="color:#aaa;">⏳ ${t('mapa.balizas.balizas_cargando_grafico', { defaultValue: 'Cargando gráfico...' })}</small>
-            </div>
-
-            <span style="display: block; margin-top: 7px; margin-bottom:7px; text-align: right;">
-                <small style="color:#888;">
-                    ${calcularEstadoActualizacionBaliza(d).emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
-                </small>
-            </span>
-        `;
-
-        pintarGraficaBaliza(marker);
-    }
-
-    // 5b. PINTAR LA GRÁFICA DE 6H DENTRO DEL POPUP (fetch lazy + caché 5 min)
-    async function pintarGraficaBaliza(marker) {
-        await cargarDatos6hBalizasSiNecesario();
-
-        const chartDiv = document.getElementById(`pop-chart-${marker.stationId}`);
-        if (!chartDiv) return; // el popup ya se cerró o cambió mientras cargaba
-
-        const lecturas = datos6hBalizas ? datos6hBalizas[marker.stationId] : null;
-        const svg = generarSvgGraficaBaliza(lecturas);
-
-        if (!svg) {
-            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Histórico no disponible todavía.' })}</small>`;
-            return;
-        }
-
-        chartDiv.innerHTML = `
-            ${svg}
-            <div style="display:flex; justify-content:center; gap:14px; margin-top:2px;">
-                <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
-                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;">
-                        <line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" />
-                    </svg>
-                    ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
-                </small>
-                <small style="color:#c0392b; display: inline-flex; align-items: center;">
-                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;">
-                        <line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" />
-                    </svg>
-                    ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
-                </small>
-            </div>
-        `;
-    }
-
-    // 6. AL ABRIR UN POPUP, LO PINTAMOS CON LOS DATOS YA CARGADOS (sin fetch individual)
-    map.on('popupopen', function (e) {
-        const marker = e.popup._source;
-        if (!marker || !marker.stationId) return;
-        pintarPopupBaliza(marker);
-    });
-
-    // 7. CHECKBOX DE ACTIVACIÓN
-    const checkboxBalizas = document.getElementById('checkboxBalizas');
-
-    function activarCapaBalizas() {
-        dibujarEstacionesEuskalmet();
-        map.addLayer(layerGroupBalizas);
-        cargarDatosBalizas();
-        intervaloBalizas = setInterval(cargarDatosBalizas, 60 * 1000); // cada 1 min, silencioso
-    }
-
-    function desactivarCapaBalizas() {
-        map.removeLayer(layerGroupBalizas);
-        if (intervaloBalizas) {
-            clearInterval(intervaloBalizas);
-            intervaloBalizas = null;
-        }
-    }
-
-    if (checkboxBalizas) {
-        checkboxBalizas.addEventListener('change', function () {
-            localStorage.setItem('METEO_MAPA_CAPA_BALIZAS_VISIBLE', this.checked);
-            if (this.checked) {
-                activarCapaBalizas();
-            } else {
-                desactivarCapaBalizas();
-            }
-        });
-
-        // Restaurar el estado de la última sesión (por defecto: oculta si no hay nada guardado)
-        const balizasDebenVerse = localStorage.getItem('METEO_MAPA_CAPA_BALIZAS_VISIBLE') === 'true';
-        checkboxBalizas.checked = balizasDebenVerse;
-        if (balizasDebenVerse) {
-            activarCapaBalizas();
-        }
-    } 
     //___________________________________________________________________________________
     // 🏁 Fin Balizas
 
