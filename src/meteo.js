@@ -14466,7 +14466,7 @@ function inicializarMapaLeaflet() {
         iconCreateFunction: function(cluster) {
             //const count = cluster.getChildCount(); // en el html iba el ${count} pero está quitado para no confundir con cifras de viento
             return L.divIcon({
-                html: `<div style="background-color: #0078d4; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                html: `<div style="background-color: #0078d463; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
                         
                     </div>`,
                 className: 'cluster-balizas-personalizado',
