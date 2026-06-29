@@ -14763,7 +14763,7 @@ function inicializarMapaLeaflet() {
                 <small style="color:#aaa;">⏳ ${t('mapa.balizas.balizas_cargando_grafico', { defaultValue: 'Cargando gráfico...' })}</small>
             </div>
 
-            <span style="display: block; margin-top: 7px; margin-bottom:7px; text-align: right;">
+            <span style="display: block; margin-top: 7px; margin-bottom:7px;">
                 <small style="color:#888;">
                     ${estadoPopup.emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
                 </small>
@@ -14945,22 +14945,32 @@ function inicializarMapaLeaflet() {
         const etiquetasX = [];
         const lineasVerticales = [];
 
-        // Cálculo de la hora actual en base al tiempo de anclaje (redondeada a los 10 minutos anteriores)
-        const dNow = new Date(ahora * 1000);
-        const hrs = String(dNow.getHours()).padStart(2, '0');
-        const mins = String(Math.floor(dNow.getMinutes() / 10) * 10).padStart(2, '0');
-        const horaActualRedondeada = `${hrs}:${mins}`;
-
         // Etiquetas eje X. Cambia el h <= por las horas totales del rango y el paso de h += por las divisiones en horas
         for (let h = 0; h <= 4; h += 1) { // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
             const ts = desde + h * 3600;
             const horasRestantes = 4 - h; // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
             
-            // El último marcador de la derecha (actual) muestra la hora redondeada; los demás conservan el desplazamiento "-X h"
-            const textoHora = horasRestantes === 0 ? horaActualRedondeada : `-${horasRestantes}&thinsp;h`;
+            let textoHora;
+            if (horasRestantes === 0) {
+                // En el eje actual (derecha) colocamos el icono del cronómetro
+                textoHora = "⏱️";
+            } else {
+                // Para las marcas del pasado, calculamos la hora de ese instante redondeada a los 10 minutos anteriores
+                const dTick = new Date(ts * 1000);
+                const hrs = String(dTick.getHours()).padStart(2, '0');
+                const mins = String(Math.floor(dTick.getMinutes() / 10) * 10).padStart(2, '0');
+                textoHora = `${hrs}:${mins}`;
+            }
+
             const px = x(ts).toFixed(1);
 
-            etiquetasX.push(`<text x="${px}" y="${H - 1}" text-anchor="middle" font-size="12" fill="#888">${textoHora}</text>`);
+            // Ajustamos la altura vertical (Y) de forma condicional: el emoji (0h) se eleva a H - 3 para evitar recortes inferiores
+            const py = horasRestantes === 0 ? (H - 2) : (H - 1);
+
+            const fontSize = horasRestantes === 0 ? 14 : 12; // Tamaño letra etiquetas eje X
+
+            // Pintamos todas las etiquetas centradas en su eje vertical (middle)
+            etiquetasX.push(`<text x="${px}" y="${py}" text-anchor="middle" font-size="${fontSize}" fill="#888">${textoHora}</text>`);
             
             // Trazamos el eje vertical sobre la misma coordenada X de la etiqueta
             lineasVerticales.push(`<line x1="${px}" y1="${padT}" x2="${px}" y2="${(padT + plotH).toFixed(1)}" stroke="#a4a4a4" stroke-width="0.5"/>`);
