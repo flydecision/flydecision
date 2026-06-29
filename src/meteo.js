@@ -14941,13 +14941,29 @@ function inicializarMapaLeaflet() {
             <text x="${padL - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" font-size="12" fill="#000000">${Math.round(v)}</text>
         `).join('');
 
-        // Etiquetas eje X. Cambia el h <= por las horas totales del rango y el paso de h += por las divisiones en horas
+        // Etiquetas eje X y Ejes de Guía Verticales
         const etiquetasX = [];
+        const lineasVerticales = [];
+
+        // Cálculo de la hora actual en base al tiempo de anclaje (redondeada a los 10 minutos anteriores)
+        const dNow = new Date(ahora * 1000);
+        const hrs = String(dNow.getHours()).padStart(2, '0');
+        const mins = String(Math.floor(dNow.getMinutes() / 10) * 10).padStart(2, '0');
+        const horaActualRedondeada = `${hrs}:${mins}`;
+
+        // Etiquetas eje X. Cambia el h <= por las horas totales del rango y el paso de h += por las divisiones en horas
         for (let h = 0; h <= 4; h += 1) { // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
             const ts = desde + h * 3600;
             const horasRestantes = 4 - h; // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
-            const textoHora = horasRestantes === 0 ? '0' : `-${horasRestantes}`;
-            etiquetasX.push(`<text x="${x(ts).toFixed(1)}" y="${H - 1}" text-anchor="middle" font-size="12" fill="#888">${textoHora}&thinsp;h</text>`);
+            
+            // El último marcador de la derecha (actual) muestra la hora redondeada; los demás conservan el desplazamiento "-X h"
+            const textoHora = horasRestantes === 0 ? horaActualRedondeada : `-${horasRestantes}&thinsp;h`;
+            const px = x(ts).toFixed(1);
+
+            etiquetasX.push(`<text x="${px}" y="${H - 1}" text-anchor="middle" font-size="12" fill="#888">${textoHora}</text>`);
+            
+            // Trazamos el eje vertical sobre la misma coordenada X de la etiqueta
+            lineasVerticales.push(`<line x1="${px}" y1="${padT}" x2="${px}" y2="${(padT + plotH).toFixed(1)}" stroke="#a4a4a4" stroke-width="0.5"/>`);
         }
 
         // Flechas de dirección repartidas uniformemente (cambiar la cifra de Math.min(X...), que es el máximo "aproximado".. 1 o 2 más serán por el redondeo
@@ -14968,6 +14984,7 @@ function inicializarMapaLeaflet() {
         return `
             <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:280px; margin: 0 auto;">
                 ${gridLines}
+                ${lineasVerticales.join('')}
                 ${puntos.length >= 2 ? `<polyline points="${lineaViento}" fill="none" stroke="#0078d4" stroke-width="2"/>` : ''}
                 ${puntosRacha.length >= 2 ? `<polyline points="${lineaRacha}" fill="none" stroke="#c0392b" stroke-width="2"/>` : ''}
                 ${puntosVientoSvg}
