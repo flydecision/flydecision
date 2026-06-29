@@ -607,7 +607,8 @@
       "balizas_racha": "Rafale",
       "balizas_direccion": "Direction",
       "balizas_actualizada": "Actualisée",
-      "balizas_cargando_grafico": "Chargement du graphique..."
+      "balizas_cargando_grafico": "Chargement du graphique...",
+      "balizas_sin_historico": "Graphique non disponible : aucune donnée pour les 4 dernières heures."
     }
   },
 

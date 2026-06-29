@@ -607,7 +607,8 @@
       "balizas_racha": "Rajada",
       "balizas_direccion": "Direção",
       "balizas_actualizada": "Atualizada",
-      "balizas_cargando_grafico": "A carregar gráfico..."
+      "balizas_cargando_grafico": "A carregar gráfico...",
+      "balizas_sin_historico": "Gráfico não disponível: não há dados das últimas 4 horas."
     }
   },
 

@@ -608,7 +608,8 @@
       "balizas_racha": "Racha",
       "balizas_direccion": "Dirección",
       "balizas_actualizada": "Actualizada",
-      "balizas_cargando_grafico": "Cargando gráfico..."
+      "balizas_cargando_grafico": "Cargando gráfico...",
+      "balizas_sin_historico": "Gráfico no disponible: no hay datos de las últimas 4 horas."
     }
   },
 

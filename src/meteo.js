@@ -14787,7 +14787,7 @@ function inicializarMapaLeaflet() {
         const svg = generarSvgGraficaBaliza(lecturas); 
 
         if (!svg) {
-            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Histórico no disponible.' })}</small>`;
+            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Gráfico no disponible: no hay datos de las últimas 4 horas.' })}</small>`;
             return;
         }
 
