@@ -14884,7 +14884,7 @@ function inicializarMapaLeaflet() {
     }
 
     function generarSvgGraficaBaliza(lecturas) {
-        if (!Array.isArray(lecturas) || lecturas.length < 2) return null;
+        if (!Array.isArray(lecturas) || lecturas.length === 0) return null;
 
         const W = 250, H = 112; // Ancho (W) y Alto (H) del lienzo en píxeles virtuales.
         const padL = 20, padR = 10, padT = 26, padB = 20; // Márgenes: Izquierda (L), Derecha (R), Arriba (T), Abajo (B).
@@ -14894,13 +14894,18 @@ function inicializarMapaLeaflet() {
         const lecturasValidas = lecturas
             .filter(p => typeof p.windSpeed === 'number')
             .sort((a, b) => a.ts - b.ts);
-        if (lecturasValidas.length < 2) return null;
+            
+        if (lecturasValidas.length === 0) return null;
 
-        const ahora = lecturasValidas[lecturasValidas.length - 1].ts;
-        const desde = ahora - 4 * 3600; // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
+        // Anclamos la gráfica al momento actual real
+        const ahora = Math.floor(Date.now() / 1000); 
+        const desde = ahora - 6 * 3600; // últimas 6 horas reales
 
-        const puntos = lecturasValidas.filter(p => p.ts >= desde);
-        if (puntos.length < 2) return null;
+        // Solo cogemos los puntos que entren en esas 6 horas reales
+        const puntos = lecturasValidas.filter(p => p.ts >= desde && p.ts <= ahora);
+        
+        // Si no queda NINGÚN punto en las últimas 6 horas, no dibujamos gráfico
+        if (puntos.length === 0) return null;
 
         // Escala de Velocidad (Eje Y)
         const valores = [];
@@ -14910,7 +14915,6 @@ function inicializarMapaLeaflet() {
         });
         const minV = 0; // El viento mínimo siempre empieza en 0.
 
-        // Escala vertical variable según máximo
         let maxV = Math.max(...valores, 25); // Busca el valor más alto (viento o racha), con un mínimo de 25 km/h.
         maxV = Math.ceil(maxV / 5) * 5; // Redondea hacia arriba al múltiplo de 5 más cercano (ej: 12 se convierte en 15).
         // const maxV = 60; // Si quisiera máximo fijo
@@ -14918,24 +14922,30 @@ function inicializarMapaLeaflet() {
         const x = (ts) => padL + ((ts - desde) / (ahora - desde)) * plotW;
         const y = (v) => padT + plotH - ((v - minV) / (maxV - minV)) * plotH;
 
-        const lineaViento = puntos.map(p => `${x(p.ts).toFixed(1)},${y(p.windSpeed).toFixed(1)}`).join(' ');
+        // Variables para las líneas (SVG requiere 2 puntos para hacer una línea)
+        let lineaViento = '';
+        let lineaRacha = '';
         const puntosRacha = puntos.filter(p => typeof p.windGusts === 'number');
-        const lineaRacha = puntosRacha.map(p => `${x(p.ts).toFixed(1)},${y(p.windGusts).toFixed(1)}`).join(' ');
+
+        // Solo creamos líneas si hay 2 o más puntos en el rango visible
+        if (puntos.length >= 2) {
+            lineaViento = `<polyline points="${puntos.map(p => `${x(p.ts).toFixed(1)},${y(p.windSpeed).toFixed(1)}`).join(' ')}" fill="none" stroke="#0078d4" stroke-width="2"/>`;
+        }
+        if (puntosRacha.length >= 2) {
+            lineaRacha = `<polyline points="${puntosRacha.map(p => `${x(p.ts).toFixed(1)},${y(p.windGusts).toFixed(1)}`).join(' ')}" fill="none" stroke="#c0392b" stroke-width="2"/>`;
+        }
 
         // Puntitos sobre cada dato real (mismo color que su línea)
         const puntosVientoSvg = puntos.map(p =>
             `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.windSpeed).toFixed(1)}" r="2.2" fill="#0078d4"/>`
         ).join('');
+        
         const puntosRachaSvg = puntosRacha.map(p =>
             `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.windGusts).toFixed(1)}" r="2.2" fill="#c0392b"/>`
         ).join('');
 
-        // Líneas guía horizontales (0, mitad, máximo)
-        // const gridY = [minV, (minV + maxV) / 3, maxV]; // grid dinámico
-        // Líneas guía horizontales fijas (0, 10, 20) y el máximo dinámico
-        const gridY = [0, 10, 20, maxV];
-
         // Líneas de Guía Horizontales (Líneas grises de fondo)
+        const gridY = [0, 10, 20, maxV];
         const gridLines = gridY.map(v => `
             <line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W - padR}" y2="${y(v).toFixed(1)}" stroke="#a4a4a4" stroke-width="0.5"/>
             <text x="${padL - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" font-size="12" fill="#000000">${Math.round(v)}</text>
@@ -14943,9 +14953,9 @@ function inicializarMapaLeaflet() {
 
         // Etiquetas eje X. Cambia el h <= por las horas totales del rango y el paso de h += por las divisiones en horas
         const etiquetasX = [];
-        for (let h = 0; h <= 4; h += 1) { // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
+        for (let h = 0; h <= 6; h += 2) {
             const ts = desde + h * 3600;
-            const horasRestantes = 4 - h; // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
+            const horasRestantes = 6 - h;
             const textoHora = horasRestantes === 0 ? '0' : `-${horasRestantes}`;
             etiquetasX.push(`<text x="${x(ts).toFixed(1)}" y="${H - 1}" text-anchor="middle" font-size="12" fill="#888">${textoHora}&thinsp;h</text>`);
         }
@@ -14968,8 +14978,8 @@ function inicializarMapaLeaflet() {
         return `
             <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:280px; margin: 0 auto;">
                 ${gridLines}
-                <polyline points="${lineaViento}" fill="none" stroke="#0078d4" stroke-width="2"/>
-                ${puntosRacha.length > 1 ? `<polyline points="${lineaRacha}" fill="none" stroke="#c0392b" stroke-width="2"/>` : ''}
+                ${lineaViento}
+                ${lineaRacha}
                 ${puntosVientoSvg}
                 ${puntosRachaSvg}
                 ${flechas.join('')}
