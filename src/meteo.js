@@ -13701,11 +13701,14 @@ function inicializarMapaLeaflet() {
         return svg;
     }
 
-    // 🔴 Balizas
+    // ==========================================================================
+    // 🔴 BALIZAS (GESTIÓN MULTI-RED)
+    // ==========================================================================
+
+    // 🟡 1. BASES DE DATOS DE ESTACIONES
     //___________________________________________________________________________________
 
-    // 1. BASE DE DATOS DE ESTACIONES
-        const ESTACIONES_EUSKALMET = [
+    const ESTACIONES_EUSKALMET = [
         {"id":"B090","name":"Puerto de Bilbao","provider":"Euskalmet","latitude":43.3774903,"longitude":-3.08474,"hasWind":true},
         {"id":"B096","name":"Puerto de Pasaia","provider":"Euskalmet","latitude":43.3370283,"longitude":-1.92752,"hasWind":true},
         {"id":"C002","name":"Arteaga","provider":"Euskalmet","latitude":43.347,"longitude":-2.65714,"hasWind":true},
@@ -13772,26 +13775,67 @@ function inicializarMapaLeaflet() {
         {"id":"C0F0","name":"Ereñozu","provider":"Euskalmet","latitude":43.242,"longitude":-1.93922,"hasWind":true}
     ];
 
-    const layerGroupBalizas = L.layerGroup();
-    let balizasDibujadas = false;
-    let datosBalizas = {};
-    let intervaloBalizas = null;
-    let ultimoJsonBalizasRaw = null; // para detectar si hay datos nuevos antes de repintar
-    let datos6hBalizas = null;          // caché del histórico de 6h (todas las balizas)
-    let datos6hBalizasFetchedAt = 0;    // timestamp del último fetch, para no repetir si no toca
+    const ESTACIONES_AEMET = [
+        {"id":"0002I","name":"Vigo / Peinador","provider":"AEMET","latitude":42.231,"longitude":-8.626,"hasWind":true},
+        {"id":"0016A","name":"Reus / Aeropuerto","provider":"AEMET","latitude":41.147,"longitude":-1.167,"hasWind":true},
+        {"id":"0076","name":"Barcelona / Aeropuerto","provider":"AEMET","latitude":41.292,"longitude":2.080,"hasWind":true}
+        // ... AÑADIR TODAS LAS ESTACIONES DE AEMET CON SUS COORDENADAS ...
+    ];
 
-    // 2. DIBUJAR LAS ESTACIONES ESTÁTICAS AL ACTIVAR EL CHECKBOX
-    function dibujarEstacionesEuskalmet() {
-        if (balizasDibujadas) return;
+    // 🟡 2. OBJETO GESTOR CENTRAL (Configuración y Estado de cada red)
+    //___________________________________________________________________________________
 
-        ESTACIONES_EUSKALMET.forEach(estacion => {
-            // Flecha gris en su tamaño original (22x26)
+    const REDES_BALIZAS = {
+        'euskalmet': {
+            id: 'euskalmet',
+            nombre: 'Euskalmet',
+            estaciones: ESTACIONES_EUSKALMET,
+            urlCache: 'https://flydecision.com/balizas_euskalmet_cache.json',
+            url6h: 'https://flydecision.com/balizas_euskalmet_6h.json',
+            checkboxId: 'checkboxBalizasEuskalmet',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_EUSKALMET_VISIBLE',
+            // --- Variables de estado de esta red ---
+            layerGroup: L.layerGroup(),
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null
+        },
+        'aemet': {
+            id: 'aemet',
+            nombre: 'AEMET',
+            estaciones: ESTACIONES_AEMET,
+            urlCache: 'https://flydecision.com/balizas_aemet_cache.json',
+            url6h: 'https://flydecision.com/balizas_aemet_6h.json',
+            checkboxId: 'checkboxBalizasAemet',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_AEMET_VISIBLE',
+            // --- Variables de estado de esta red ---
+            layerGroup: L.layerGroup(),
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null
+        }
+        // Añadir Meteocat, MeteoGalicia...
+    };    
+    
+    // 🟡 3. DIBUJAR LAS ESTACIONES ESTÁTICAS DE UNA RED
+    //___________________________________________________________________________________
+
+    function dibujarEstacionesBalizas(redId) {
+        const red = REDES_BALIZAS[redId];
+        if (red.dibujadas) return;
+
+        red.estaciones.forEach(estacion => {
             const svgFlechaGris = `
                 <svg viewBox="0 0 30 36" style="width: 22px; height: 26px; display: block;">
                     <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#95a5a6"/>
-                </svg>
-            `;
-            
+                </svg>`;
+
             // Cuadrado virtual de 80x50 px (más ancho para los 16px de texto)
             const htmlCargando = `
                 <div style="width: 80px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
@@ -13801,8 +13845,7 @@ function inicializarMapaLeaflet() {
                     <div style="height: 22px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap;">
                         <span style="font-weight: bold; font-size: 16px; color: #95a5a6;">...</span>
                     </div>
-                </div>
-            `;
+                </div>`;
 
             // Cambio de tamaños: 3º Coges el width total y el height total de la caja htmlBaliza, los divides entre 2, y los pones en el iconAnchor: [ancho/2, alto/2]. ¡Pura matemática para que no baile nada!
             const iconoBaliza = L.divIcon({
@@ -13813,12 +13856,16 @@ function inicializarMapaLeaflet() {
             });
 
             const marker = L.marker([estacion.latitude, estacion.longitude], { icon: iconoBaliza });
+            
+            // CRUCIAL: Guardamos en el marcador a qué red pertenece para cuando se haga click
+            marker.redId = red.id;
             marker.stationId = estacion.id;
             marker.stationName = estacion.name;
 
+            // Añadimos red.id al ID del div del popup para evitar choques si 2 redes usan el mismo ID de estación
             marker.bindPopup(`
-                <div id="pop-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
-                    <h4 style="margin: 0 0 5px 0; color: #0078d4;">🚩 ${estacion.name}</h4>
+                <div id="pop-${red.id}-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
+                    <h4 style="margin: 0 0 5px 0; color: #0078d4;">🚩 ${estacion.name} (${red.nombre})</h4>
                     <p style="margin:0; color:#666;">⏳ Cargando viento en vivo...</p>
                 </div>
             `, {
@@ -13828,86 +13875,82 @@ function inicializarMapaLeaflet() {
                 autoPanPaddingTopLeft: L.point(50, 550)
             });
 
-            layerGroupBalizas.addLayer(marker);
+            red.layerGroup.addLayer(marker);
         });
 
-        balizasDibujadas = true;
+        red.dibujadas = true;
     }
 
-    // 3. CARGAR EL JSON CONSOLIDADO (lo genera el cron cada 10 min)
-    async function cargarDatosBalizas() {
+    // 🟡 4. CARGAR EL JSON CONSOLIDADO EN VIVO PARA UNA RED
+    //___________________________________________________________________________________
+
+    async function cargarDatosBalizas(redId) {
+        const red = REDES_BALIZAS[redId];
         try {
-            const res = await fetch(`https://flydecision.com/balizas_euskalmet_cache.json?_=${Date.now()}`);
+            const res = await fetch(`${red.urlCache}?_=${Date.now()}`);
             const textoCrudo = await res.text();
 
-            // Si el contenido es idéntico al de la última vez, no hay nada nuevo: no repintamos
-            if (textoCrudo === ultimoJsonBalizasRaw) return;
+            if (textoCrudo === red.ultimoJsonRaw) return; // Si el contenido es idéntico al de la última vez, no hay nada nuevo: no repintamos
 
-            ultimoJsonBalizasRaw = textoCrudo;
-            datosBalizas = JSON.parse(textoCrudo);
-            actualizarIconosBalizas();
+            red.ultimoJsonRaw = textoCrudo;
+            red.datosCache = JSON.parse(textoCrudo);
+            actualizarIconosBalizas(redId);
         } catch (e) {
-            console.error('No se pudo cargar el caché de balizas Euskalmet', e);
+            console.error(`No se pudo cargar el caché de balizas ${red.nombre}`, e);
         }
     }
 
-    // 3b. CARGAR EL HISTÓRICO DE 6H, SOLO CUANDO SE ABRE UN POPUP (lazy, caché 5 min)
-    async function cargarDatos6hBalizasSiNecesario() {
+    // 🟡 4b. CARGAR HISTÓRICO DE 6H PARA UNA RED (Lazy Load)
+    //___________________________________________________________________________________
+
+    async function cargarDatos6hBalizasSiNecesario(redId) {
+        const red = REDES_BALIZAS[redId];
         const ahora = Date.now();
-        if (datos6hBalizas && (ahora - datos6hBalizasFetchedAt) < 5 * 60 * 1000) return;
+        if (red.datos6h && (ahora - red.fetched6hAt) < 5 * 60 * 1000) return;
         try {
-            const res = await fetch(`https://flydecision.com/balizas_euskalmet_6h.json?_=${ahora}`);
-            datos6hBalizas = await res.json();
-            datos6hBalizasFetchedAt = ahora;
+            const res = await fetch(`${red.url6h}?_=${ahora}`);
+            red.datos6h = await res.json();
+            red.fetched6hAt = ahora;
         } catch (e) {
-            console.error('No se pudo cargar el histórico 6h de balizas Euskalmet', e);
+            console.error(`No se pudo cargar el histórico 6h de balizas ${red.nombre}`, e);
         }
     }
 
-    // 4. ACTUALIZAR ICONOS DEL MAPA CON LA VELOCIDAD EN VIVO
-    function actualizarIconosBalizas() {
+    // 🟡 5. ACTUALIZAR ICONOS DEL MAPA
+    //___________________________________________________________________________________
 
+    function actualizarIconosBalizas(redId) {
+        const red = REDES_BALIZAS[redId];
         const zoomActual = map.getZoom();
 
-        layerGroupBalizas.eachLayer(marker => {
-            const d = datosBalizas[marker.stationId];
-            
+        red.layerGroup.eachLayer(marker => {
+            const d = red.datosCache[marker.stationId];
+
             // A) SI LA ESTACIÓN NO TIENE DATOS (Punto rojo)
             if (!d || d.windSpeed === null || d.windSpeed === undefined) {
                 const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
-                
                 const htmlSinDatos = `
                     <div title="${marker.stationName}: Sin datos recientes" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
                         ${svgPuntoRojo}
-                    </div>
-                `;
-
-                marker.setIcon(L.divIcon({
-                    html: htmlSinDatos,
-                    className: 'custom-div-icon',
-                    iconAnchor: [40, 23],
-                    popupAnchor: [0, 25] 
-                }));
+                    </div>`;
+                marker.setIcon(L.divIcon({ html: htmlSinDatos, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
                 return;
             }
 
             // B) SI LA ESTACIÓN TIENE DATOS
             const rotacion = (d.windDirection ?? 0) + 180;
-            
-            // Cambio de tamaños: 1º Modificas el tamaño del SVG en sí (width y height dentro del <svg>). El viewBox y el polygon nunca se tocan (deben ser 0 0 30 36).
-            const estadoMapa = calcularEstadoActualizacionBaliza(d);
+            const estadoMapa = calcularEstadoActualizacionBaliza(d); // Usa tu función existente global
             const colorFlechaMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
+            
             const svgFlechaMapa = `
                 <svg viewBox="0 0 30 36" style="transform: rotate(${rotacion}deg); transform-origin: 50% 30%; width: 40px; height: 40px; display: block;">
                     <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="${colorFlechaMapa}"/>
-                </svg>
-            `;
+                </svg>`;
 
             const colorVientoMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
             const colorRachaMapa  = estadoMapa.esAntiguo ? '#95a5a6' : '#e74c3c';
 
             let cifrasHtml = `<strong style="font-size: 16px; color: ${colorVientoMapa};">${d.windSpeed}</strong>`;
-            
             if (zoomActual >= 10 && d.windGusts !== null && d.windGusts !== undefined) {
                 cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: ${colorRachaMapa};" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
             }
@@ -13915,43 +13958,172 @@ function inicializarMapaLeaflet() {
             // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal. Nota: margin-left: -26px; es para desplazarlo a la izquierda y saltar el .leaflet-marker-icon.custom-div-icon {
             const htmlBaliza = `
                 <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: 18px">
-                    
                     <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
                         ${svgFlechaMapa}
                     </div>
-
                     <div style="height: 20px; margin-top: -14px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap; text-shadow: 1px 1px 2px rgba(255,255,255,1), -1px -1px 2px rgba(255,255,255,1), 1px -1px 2px rgba(255,255,255,1), -1px 1px 2px rgba(255,255,255,1);">
                         ${cifrasHtml}
                     </div>
-                </div>
-            `;
+                </div>`;
 
-            marker.setIcon(L.divIcon({
-                html: htmlBaliza,
-                className: 'custom-div-icon',
-                iconAnchor: [40, 40], // Siempre la mitad exacta de width y height
-                popupAnchor: [0, 25]
-            }));
+            marker.setIcon(L.divIcon({ html: htmlBaliza, className: 'custom-div-icon', iconAnchor: [40, 40], popupAnchor: [0, 25] }));
 
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
         });
     }
+    
+    // 🟡 6. PINTAR EL POPUP
+    //___________________________________________________________________________________
 
-    // Calcula cuántos minutos de retraso tiene una lectura y qué semáforo le corresponde. <30 min: 🟢 | 30-45 min: 🟡 | ≥45 min: 🔴 (y las cifras del mapa pasan a gris)
-    function calcularEstadoActualizacionBaliza(d) {
-        if (!d || !d.date || !d.time) return { minutos: null, emoji: '⚪', esAntiguo: false };
+    function pintarPopupBaliza(marker) {
+        const red = REDES_BALIZAS[marker.redId];
+        const containerDiv = document.getElementById(`pop-${red.id}-${marker.stationId}`);
+        if (!containerDiv) return;
+        
+        const d = red.datosCache[marker.stationId];
+        
+        if (!d || d.windSpeed === null || d.windSpeed === undefined) {
+            containerDiv.innerHTML = `
+                <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
+                <p style="color:#c0392b; margin:5px 0 0 0;">⚠️ ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}</p>
+            `;
+            return;
+        }
 
-        const [anio, mes, dia] = d.date.split('-').map(Number);
-        const [h, m] = d.time.split(':').map(Number);
-        const fechaLectura = new Date(anio, mes - 1, dia, h, m);
-        const minutos = (Date.now() - fechaLectura.getTime()) / 60000;
+        const orientacionTexto = obtenerTextoOrientacion(d.windDirection); // Función global que ya tienes
+        const estadoPopup = calcularEstadoActualizacionBaliza(d); // Función global que ya tienes
 
-        let emoji = '🟢';
-        if (minutos >= 45) emoji = '🔴';
-        else if (minutos >= 30) emoji = '🟡';
+        // 1. viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
+        const svgFlecha = `
+            <svg viewBox="5 1 20 20" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7); transform-origin: center center; width: 28px; height: 28px; flex-shrink: 0;">
+                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
+            </svg>`;
 
-        return { minutos, emoji, esAntiguo: minutos >= 45 }; // esAntiguo = Retraso en min antes de mostrar cifras grises en el mapa
+        containerDiv.innerHTML = `
+            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
+                🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
+            </p>
+            <!-- Fila 1: Viento -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 80px;">${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento:' })}:</span> 
+                <b style="color: #0078d4;">${d.windSpeed}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
+            </div>
+            <!-- Fila 2: Racha -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 80px;">${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha:' })}:</span> 
+                <b style="color: #c0392b;">${d.windGusts ?? '-'}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
+            </div>
+            <!-- Fila 3: Dirección -->
+            <div style="display: flex; align-items: center; height: 25px;">
+                <span style="width: 80px;">${t('mapa.balizas.balizas_direccion', { defaultValue: 'Dirección:' })}:</span> 
+                <b style="color: #0078d4;">${orientacionTexto}</b>
+                ${svgFlecha} 
+                <span style="color:#888;">(${d.windDirection ?? '-'}º)</span>
+            </div>
+
+            <div id="pop-chart-${red.id}-${marker.stationId}" style="margin-top:10px; min-height: 90px; text-align:center;">
+                <small style="color:#aaa;">⏳ ${t('mapa.balizas.balizas_cargando_grafico', { defaultValue: 'Cargando gráfico...' })}</small>
+            </div>
+
+            <span style="display: block; margin-top: 7px; margin-bottom:7px; text-align: right;">
+                <small style="color:#888;">
+                    ${estadoPopup.emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
+                </small>
+            </span>
+        `;
+
+        pintarGraficaBaliza(marker);
     }
+
+    // 🟡 7. PINTAR GRÁFICA DE 6H
+    //___________________________________________________________________________________
+
+    async function pintarGraficaBaliza(marker) {
+        const red = REDES_BALIZAS[marker.redId];
+        await cargarDatos6hBalizasSiNecesario(red.id);
+
+        const chartDiv = document.getElementById(`pop-chart-${red.id}-${marker.stationId}`);
+        if (!chartDiv) return;
+
+        const lecturas = red.datos6h ? red.datos6h[marker.stationId] : null;
+        const svg = generarSvgGraficaBaliza(lecturas); 
+
+        if (!svg) {
+            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Histórico no disponible todavía.' })}</small>`;
+            return;
+        }
+
+        chartDiv.innerHTML = `
+            ${svg}
+            <div style="display:flex; justify-content:center; gap:14px; margin-top:2px;">
+                <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
+                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" /></svg>
+                    ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
+                </small>
+                <small style="color:#c0392b; display: inline-flex; align-items: center;">
+                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" /></svg>
+                    ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
+                </small>
+            </div>
+        `;
+    }
+
+    // 🟡 8. EVENTO AL ABRIR UN POPUP EN EL MAPA
+    //___________________________________________________________________________________
+
+    map.on('popupopen', function (e) {
+        const marker = e.popup._source;
+        if (!marker || !marker.redId || !marker.stationId) return; // Filtrar si no es un marcador de baliza
+        pintarPopupBaliza(marker);
+    });
+
+    // 🟡 9. LÓGICA DE ACTIVACIÓN/DESACTIVACIÓN GENÉRICA POR CHECKBOXES
+    //___________________________________________________________________________________
+
+    function activarCapaBalizas(redId) {
+        const red = REDES_BALIZAS[redId];
+        dibujarEstacionesBalizas(redId);
+        map.addLayer(red.layerGroup);
+        cargarDatosBalizas(redId);
+        if (!red.intervalo) {
+            red.intervalo = setInterval(() => cargarDatosBalizas(redId), 60 * 1000); // 1 minuto
+        }
+    }
+
+    function desactivarCapaBalizas(redId) {
+        const red = REDES_BALIZAS[redId];
+        map.removeLayer(red.layerGroup);
+        if (red.intervalo) {
+            clearInterval(red.intervalo);
+            red.intervalo = null;
+        }
+    }
+
+    // Inicializar todos los checkboxes dinámicamente
+    Object.values(REDES_BALIZAS).forEach(red => {
+        const checkboxElement = document.getElementById(red.checkboxId);
+        if (checkboxElement) {
+            // Escuchar cambios de usuario
+            checkboxElement.addEventListener('change', function () {
+                localStorage.setItem(red.lsKey, this.checked);
+                if (this.checked) {
+                    activarCapaBalizas(red.id);
+                } else {
+                    desactivarCapaBalizas(red.id);
+                }
+            });
+
+            // Restaurar estado guardado en el navegador (si existe)
+            const capaVisibleGuardada = localStorage.getItem(red.lsKey) === 'true';
+            checkboxElement.checked = capaVisibleGuardada;
+            if (capaVisibleGuardada) {
+                activarCapaBalizas(red.id);
+            }
+        }
+    });
+
+    // 🟡 FUNCIONES AUXILIARES BALIZAS
+    //___________________________________________________________________________________
 
     function calcularEstadoActualizacionBaliza(d) {
         if (!d || !d.date || !d.time) return { minutos: null, emoji: '⚪', esAntiguo: false };
@@ -13961,7 +14133,6 @@ function inicializarMapaLeaflet() {
         return calcularSemaforoAntiguedad(fechaLectura.getTime(), BALIZAS_UMBRAL_AMARILLO_MIN, BALIZAS_UMBRAL_ROJO_MIN);
     }
     
-    // 5. PINTAR EL CONTENIDO DEL POPUP CON LOS DATOS YA CARGADOS
     function formatearFechaHoraBaliza(fechaStr, horaStr) {
         if (!fechaStr || !horaStr) return '–';
         const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
@@ -14063,151 +14234,6 @@ function inicializarMapaLeaflet() {
             </svg>
         `;
     }
-
-    function pintarPopupBaliza(marker) {
-        const containerDiv = document.getElementById(`pop-${marker.stationId}`);
-        if (!containerDiv) return;
-        const d = datosBalizas[marker.stationId];
-        
-        if (!d || d.windSpeed === null || d.windSpeed === undefined) {
-            containerDiv.innerHTML = `
-                <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
-                <p style="color:#c0392b; margin:5px 0 0 0;">⚠️ ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}</p>
-            `;
-            return;
-        }
-
-        const orientacionTexto = obtenerTextoOrientacion(d.windDirection);
-        const estadoPopup = calcularEstadoActualizacionBaliza(d);
-
-        // 1. viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
-        const svgFlecha = `
-            <svg viewBox="5 1 20 20"
-                style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7);
-                        transform-origin: center center;
-                        width: 28px;
-                        height: 28px;
-                        flex-shrink: 0;">
-                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
-            </svg>
-        `;
-
-        // 2. Aplicamos la misma estructura Flexbox a las 3 filas para que tengan idéntica altura (25px)
-        containerDiv.innerHTML = `
-            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
-                🚩 <span style="font-weight: bold;"> ${marker.stationName}</span>
-            </p>
-            
-            <!-- Fila 1: Viento -->
-            <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 80px;">${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento:' })}:</span> 
-                <b style="color: #0078d4;">${d.windSpeed}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
-            </div>
-            
-            <!-- Fila 2: Racha -->
-            <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 80px;">${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha:' })}:</span> 
-                <b style="color: #c0392b;">${d.windGusts ?? '-'}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
-            </div>
-            
-            <!-- Fila 3: Dirección -->
-            <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 80px;">${t('mapa.balizas.balizas_direccion', { defaultValue: 'Dirección:' })}:</span> 
-                <b style="color: #0078d4;">${orientacionTexto}</b>
-                ${svgFlecha} 
-                <span style="color:#888;">(${d.windDirection ?? '-'}º)</span>
-            </div>
-
-            <div id="pop-chart-${marker.stationId}" style="margin-top:10px; min-height: 90px; text-align:center;">
-                <small style="color:#aaa;">⏳ ${t('mapa.balizas.balizas_cargando_grafico', { defaultValue: 'Cargando gráfico...' })}</small>
-            </div>
-
-            <span style="display: block; margin-top: 7px; margin-bottom:7px; text-align: right;">
-                <small style="color:#888;">
-                    ${calcularEstadoActualizacionBaliza(d).emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
-                </small>
-            </span>
-        `;
-
-        pintarGraficaBaliza(marker);
-    }
-
-    // 5b. PINTAR LA GRÁFICA DE 6H DENTRO DEL POPUP (fetch lazy + caché 5 min)
-    async function pintarGraficaBaliza(marker) {
-        await cargarDatos6hBalizasSiNecesario();
-
-        const chartDiv = document.getElementById(`pop-chart-${marker.stationId}`);
-        if (!chartDiv) return; // el popup ya se cerró o cambió mientras cargaba
-
-        const lecturas = datos6hBalizas ? datos6hBalizas[marker.stationId] : null;
-        const svg = generarSvgGraficaBaliza(lecturas);
-
-        if (!svg) {
-            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Histórico no disponible todavía.' })}</small>`;
-            return;
-        }
-
-        chartDiv.innerHTML = `
-            ${svg}
-            <div style="display:flex; justify-content:center; gap:14px; margin-top:2px;">
-                <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
-                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;">
-                        <line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" />
-                    </svg>
-                    ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
-                </small>
-                <small style="color:#c0392b; display: inline-flex; align-items: center;">
-                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;">
-                        <line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" />
-                    </svg>
-                    ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
-                </small>
-            </div>
-        `;
-    }
-
-    // 6. AL ABRIR UN POPUP, LO PINTAMOS CON LOS DATOS YA CARGADOS (sin fetch individual)
-    map.on('popupopen', function (e) {
-        const marker = e.popup._source;
-        if (!marker || !marker.stationId) return;
-        pintarPopupBaliza(marker);
-    });
-
-    // 7. CHECKBOX DE ACTIVACIÓN
-    const checkboxBalizasEuskalmet = document.getElementById('checkboxBalizasEuskalmet');
-
-    function activarCapaBalizas() {
-        dibujarEstacionesEuskalmet();
-        map.addLayer(layerGroupBalizas);
-        cargarDatosBalizas();
-        intervaloBalizas = setInterval(cargarDatosBalizas, 60 * 1000); // cada 1 min, silencioso
-    }
-
-    function desactivarCapaBalizas() {
-        map.removeLayer(layerGroupBalizas);
-        if (intervaloBalizas) {
-            clearInterval(intervaloBalizas);
-            intervaloBalizas = null;
-        }
-    }
-
-    if (checkboxBalizasEuskalmet) {
-        checkboxBalizasEuskalmet.addEventListener('change', function () {
-            localStorage.setItem('METEO_MAPA_CAPA_BALIZAS_VISIBLE', this.checked);
-            if (this.checked) {
-                activarCapaBalizas();
-            } else {
-                desactivarCapaBalizas();
-            }
-        });
-
-        // Restaurar el estado de la última sesión (por defecto: oculta si no hay nada guardado)
-        const balizasDebenVerse = localStorage.getItem('METEO_MAPA_CAPA_BALIZAS_VISIBLE') === 'true';
-        checkboxBalizasEuskalmet.checked = balizasDebenVerse;
-        if (balizasDebenVerse) {
-            activarCapaBalizas();
-        }
-    } 
     //___________________________________________________________________________________
     // 🏁 Fin Balizas
 
