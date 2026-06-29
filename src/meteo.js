@@ -14902,6 +14902,22 @@ function inicializarMapaLeaflet() {
         const puntos = lecturasValidas.filter(p => p.ts >= desde && p.ts <= ahora);
         if (puntos.length === 0) return null;
 
+        // Buscamos el punto de viento inmediatamente anterior para dar continuidad a la línea por el borde izquierdo
+        const firstVisibleIndex = lecturasValidas.findIndex(p => p.ts >= desde);
+        let puntosLinea = [...puntos];
+        if (firstVisibleIndex > 0) {
+            puntosLinea.unshift(lecturasValidas[firstVisibleIndex - 1]);
+        }
+
+        // Buscamos el punto de racha inmediatamente anterior para dar continuidad a la línea por el borde izquierdo
+        const lecturasRachaValidas = lecturasValidas.filter(p => typeof p.windGusts === 'number');
+        const puntosRacha = puntos.filter(p => typeof p.windGusts === 'number');
+        let puntosRachaLinea = [...puntosRacha];
+        const firstRachaVisibleIndex = lecturasRachaValidas.findIndex(p => p.ts >= desde);
+        if (firstRachaVisibleIndex > 0) {
+            puntosRachaLinea.unshift(lecturasRachaValidas[firstRachaVisibleIndex - 1]);
+        }
+
         // Escala de Velocidad (Eje Y)
         const valores = [];
         puntos.forEach(p => {
@@ -14918,9 +14934,8 @@ function inicializarMapaLeaflet() {
         const x = (ts) => padL + ((ts - desde) / (ahora - desde)) * plotW;
         const y = (v) => padT + plotH - ((v - minV) / (maxV - minV)) * plotH;
 
-        const lineaViento = puntos.map(p => `${x(p.ts).toFixed(1)},${y(p.windSpeed).toFixed(1)}`).join(' ');
-        const puntosRacha = puntos.filter(p => typeof p.windGusts === 'number');
-        const lineaRacha = puntosRacha.map(p => `${x(p.ts).toFixed(1)},${y(p.windGusts).toFixed(1)}`).join(' ');
+        const lineaViento = puntosLinea.map(p => `${x(p.ts).toFixed(1)},${y(p.windSpeed).toFixed(1)}`).join(' ');
+        const lineaRacha = puntosRachaLinea.map(p => `${x(p.ts).toFixed(1)},${y(p.windGusts).toFixed(1)}`).join(' ');
 
         // Puntitos sobre cada dato real (mismo color que su línea)
         const puntosVientoSvg = puntos.map(p =>
@@ -14993,10 +15008,16 @@ function inicializarMapaLeaflet() {
 
         return `
             <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:280px; margin: 0 auto;">
+                <defs>
+                    <!-- Máscara de recorte que limita el dibujo exactamente al ancho útil de la gráfica (entre padL y plotW) -->
+                    <clipPath id="plot-clip">
+                        <rect x="${padL}" y="${padT}" width="${plotW}" height="${plotH}" />
+                    </clipPath>
+                </defs>
                 ${gridLines}
                 ${lineasVerticales.join('')}
-                ${puntos.length >= 2 ? `<polyline points="${lineaViento}" fill="none" stroke="#0078d4" stroke-width="2"/>` : ''}
-                ${puntosRacha.length >= 2 ? `<polyline points="${lineaRacha}" fill="none" stroke="#c0392b" stroke-width="2"/>` : ''}
+                ${puntosLinea.length >= 2 ? `<polyline points="${lineaViento}" fill="none" stroke="#0078d4" stroke-width="2" clip-path="url(#plot-clip)"/>` : ''}
+                ${puntosRachaLinea.length >= 2 ? `<polyline points="${lineaRacha}" fill="none" stroke="#c0392b" stroke-width="2" clip-path="url(#plot-clip)"/>` : ''}
                 ${puntosVientoSvg}
                 ${puntosRachaSvg}
                 ${flechas.join('')}
