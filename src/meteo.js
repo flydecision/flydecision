@@ -14174,7 +14174,7 @@ function inicializarMapaLeaflet() {
     });
 
     // 7. CHECKBOX DE ACTIVACIÓN
-    const checkboxBalizas = document.getElementById('checkboxBalizas');
+    const checkboxBalizasEuskalmet = document.getElementById('checkboxBalizasEuskalmet');
 
     function activarCapaBalizas() {
         dibujarEstacionesEuskalmet();
@@ -14191,8 +14191,8 @@ function inicializarMapaLeaflet() {
         }
     }
 
-    if (checkboxBalizas) {
-        checkboxBalizas.addEventListener('change', function () {
+    if (checkboxBalizasEuskalmet) {
+        checkboxBalizasEuskalmet.addEventListener('change', function () {
             localStorage.setItem('METEO_MAPA_CAPA_BALIZAS_VISIBLE', this.checked);
             if (this.checked) {
                 activarCapaBalizas();
@@ -14203,7 +14203,7 @@ function inicializarMapaLeaflet() {
 
         // Restaurar el estado de la última sesión (por defecto: oculta si no hay nada guardado)
         const balizasDebenVerse = localStorage.getItem('METEO_MAPA_CAPA_BALIZAS_VISIBLE') === 'true';
-        checkboxBalizas.checked = balizasDebenVerse;
+        checkboxBalizasEuskalmet.checked = balizasDebenVerse;
         if (balizasDebenVerse) {
             activarCapaBalizas();
         }
