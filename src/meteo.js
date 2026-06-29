@@ -14468,6 +14468,7 @@ function inicializarMapaLeaflet() {
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_EUSKALMET_VISIBLE',
             // --- Variables de estado de esta red ---
             layerGroup: L.layerGroup(),
+            marcadores: {},
             dibujadas: false,
             datosCache: {},
             ultimoJsonRaw: null,
@@ -14487,6 +14488,7 @@ function inicializarMapaLeaflet() {
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_AEMET_VISIBLE',
             // --- Variables de estado de esta red ---
             layerGroup: L.layerGroup(),
+            marcadores: {},
             dibujadas: false,
             datosCache: {},
             ultimoJsonRaw: null,
@@ -14550,6 +14552,7 @@ function inicializarMapaLeaflet() {
                 autoPanPaddingTopLeft: L.point(50, 550)
             });
 
+            red.marcadores[estacion.id] = marker;
             red.layerGroup.addLayer(marker);
         });
 
@@ -14595,26 +14598,68 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
     function actualizarIconosBalizas(redId) {
-        const red = REDES_BALIZAS[redId];
-        const zoomActual = map.getZoom();
+    const red = REDES_BALIZAS[redId];
+    const zoomActual = map.getZoom();
 
-        red.layerGroup.eachLayer(marker => {
-            const d = red.datosCache[marker.stationId];
-
-            // A) SI LA ESTACIÓN NO TIENE DATOS (Punto rojo)
-            if (!d || d.windSpeed === null || d.windSpeed === undefined) {
-                const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
-                const htmlSinDatos = `
-                    <div title="${marker.stationName}: Sin datos recientes" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
-                        ${svgPuntoRojo}
-                    </div>`;
-                marker.setIcon(L.divIcon({ html: htmlSinDatos, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
-                return;
+    Object.values(red.marcadores).forEach(marker => {
+        const d = red.datosCache[marker.stationId];
+        
+        // -----------------------------------------------------------
+        // A) COMPROBAR SI ESTÁ OBSOLETA (> X horas sin datos o sin JSON)
+        // -----------------------------------------------------------
+        let balizaConDatosObsoletos = false;
+        
+        if (!d || !d.date || !d.time) {
+            balizaConDatosObsoletos = true; // No viene en el JSON
+        } else {
+            const [anio, mes, dia] = d.date.split('-').map(Number);
+            const [h, m] = d.time.split(':').map(Number);
+            const fechaLectura = new Date(anio, mes - 1, dia, h, m);
+            const horasSinDatos = (Date.now() - fechaLectura.getTime()) / (1000 * 60 * 60);
+            
+            if (horasSinDatos > 3) { // <---- X Horas límite desde última actualización antes de ocultar baliza
+                balizaConDatosObsoletos = true;
             }
+        }
 
-            // B) SI LA ESTACIÓN TIENE DATOS
-            const rotacion = (d.windDirection ?? 0) + 180;
-            const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
+        // Nos aseguramos de que la baliza ESTÉ en el mapa siempre (agrupada en el clúster)
+        if (!red.layerGroup.hasLayer(marker)) {
+            red.layerGroup.addLayer(marker);
+        }
+
+        // 1. SI ESTÁ OBSOLETA (>X h): CÍRCULO GRIS
+        if (balizaConDatosObsoletos) {
+            const svgPuntoGris = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#95a5a6" stroke="#7f8c8d" stroke-width="2"/></svg>`;
+            const htmlObsoleto = `
+                <div title="${marker.stationName}: Datos obsoletos" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                    ${svgPuntoGris}
+                </div>`;
+            
+            marker.setIcon(L.divIcon({ html: htmlObsoleto, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
+            
+            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+            return; // Terminamos aquí, no pintamos flechas ni números
+        }
+
+        // 2. SI HA MANDADO SEÑAL RECIENTE, PERO EL SENSOR ESTÁ ROTO (null): CÍRCULO ROJO
+        if (d.windSpeed === null || d.windSpeed === undefined) {
+            const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
+            const htmlSinDatos = `
+                <div title="${marker.stationName}: Sensor de viento sin datos" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                    ${svgPuntoRojo}
+                </div>`;
+            
+            marker.setIcon(L.divIcon({ html: htmlSinDatos, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
+            
+            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+            return;
+        }
+
+        // -----------------------------------------------------------
+        // B) SI LLEGA AQUÍ, TIENE DATOS RECIENTES Y VÁLIDOS -> PINTAMOS FLECHA Y NÚMEROS
+        // -----------------------------------------------------------
+        const rotacion = (d.windDirection ?? 0) + 180;
+        const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
             const colorFlechaMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
             
             const svgFlechaMapa = `
