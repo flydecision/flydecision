@@ -8637,15 +8637,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 dataGenElement.innerHTML = `
                     <div style="margin: 5px 0 0 0; padding-left: 23px; padding-right: 0px; list-style-type: disc; line-height: 1.3; text-align: left;">
                         <p style="margin-bottom: -6px;">
-                            ${semaforoMF.emoji} Arome-HD: ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
+                            <span style="font-size: 0.8rem;">${semaforoMF.emoji}</span> Arome-HD: ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
                             <span style="padding-left: 26px;">${textoFuturoMF}</span>
                         </p>
                         <p style="margin-bottom: -6px;">
-                            ${semaforoMin15.emoji} Arome-HD 15min: ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
+                            <span style="font-size: 0.8rem;">${semaforoMin15.emoji}</span> Arome-HD 15min: ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
                             <span style="padding-left: 26px;">${textoFuturoMin15}</span>
                         </p>
-                        <p>
-                            ${semaforoEC.emoji} ECMWF: ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
+                        <p style="margin-bottom: 4px;">
+                            <span style="font-size: 0.8rem;">${semaforoEC.emoji}</span> ECMWF: ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
                             <span style="padding-left: 26px;">${textoFuturoEC}</span>
                         </p>
                     </div>`;
@@ -13821,7 +13821,12 @@ function inicializarMapaLeaflet() {
                     <h4 style="margin: 0 0 5px 0; color: #0078d4;">🚩 ${estacion.name}</h4>
                     <p style="margin:0; color:#666;">⏳ Cargando viento en vivo...</p>
                 </div>
-            `, { className: 'popup-despegueindividual popup-baliza' });
+            `, {
+                className: 'popup-despegueindividual popup-baliza',
+                maxWidth: 300,
+                maxHeight: 450,
+                autoPanPaddingTopLeft: L.point(50, 550)
+            });
 
             layerGroupBalizas.addLayer(marker);
         });
