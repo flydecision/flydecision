@@ -8629,15 +8629,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     <div style="margin: 5px 0 0 0; padding-left: 23px; padding-right: 0px; list-style-type: disc; line-height: 1.3; text-align: left;">
                         <p style="margin-bottom: -6px;">
                             <span style="font-size: 0.8rem;">${semaforoMF.emoji}</span> Arome-HD: ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
-                            <span style="padding-left: 26px;">${textoFuturoMF}</span>
+                            <span style="padding-left: 21px;">${textoFuturoMF}</span>
                         </p>
                         <p style="margin-bottom: -6px;">
                             <span style="font-size: 0.8rem;">${semaforoMin15.emoji}</span> Arome-HD 15min: ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
-                            <span style="padding-left: 26px;">${textoFuturoMin15}</span>
+                            <span style="padding-left: 21px;">${textoFuturoMin15}</span>
                         </p>
                         <p style="margin-bottom: 4px;">
                             <span style="font-size: 0.8rem;">${semaforoEC.emoji}</span> ECMWF: ${t('actualizacion.hace', { tiempo: timeAgoEC })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refEC})</span><br>
-                            <span style="padding-left: 26px;">${textoFuturoEC}</span>
+                            <span style="padding-left: 21px;">${textoFuturoEC}</span>
                         </p>
                     </div>`;
                     
@@ -14457,6 +14457,24 @@ function inicializarMapaLeaflet() {
     // 🟡 2. OBJETO GESTOR CENTRAL (Configuración y Estado de cada red)
     //___________________________________________________________________________________
 
+    // CONFIGURACIÓN DE LOS CLÚSTERES DE BALIZAS
+    const opcionesClusterBalizas = {
+        maxClusterRadius: 15, // Si dos marcadores están separados menos de X px (aprox.), se agrupan.
+        disableClusteringAtZoom: 10, // A partir del zoom X, incluido, se separan siempre
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        iconCreateFunction: function(cluster) {
+            //const count = cluster.getChildCount(); // en el html iba el ${count} pero está quitado para no confundir con cifras de viento
+            return L.divIcon({
+                html: `<div style="background-color: #0078d4; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                        
+                    </div>`,
+                className: 'cluster-balizas-personalizado',
+                iconSize: L.point(36, 36)
+            });
+        }
+    };
+
     const REDES_BALIZAS = {
         'euskalmet': {
             id: 'euskalmet',
@@ -14467,7 +14485,7 @@ function inicializarMapaLeaflet() {
             checkboxId: 'checkboxBalizasEuskalmet',
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_EUSKALMET_VISIBLE',
             // --- Variables de estado de esta red ---
-            layerGroup: L.layerGroup(),
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
             marcadores: {},
             dibujadas: false,
             datosCache: {},
@@ -14487,7 +14505,7 @@ function inicializarMapaLeaflet() {
             checkboxId: 'checkboxBalizasAemet',
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_AEMET_VISIBLE',
             // --- Variables de estado de esta red ---
-            layerGroup: L.layerGroup(),
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
             marcadores: {},
             dibujadas: false,
             datosCache: {},
@@ -14631,7 +14649,7 @@ function inicializarMapaLeaflet() {
         if (balizaConDatosObsoletos) {
             const svgPuntoGris = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#95a5a6" stroke="#7f8c8d" stroke-width="2"/></svg>`;
             const htmlObsoleto = `
-                <div title="${marker.stationName}: Datos obsoletos" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                <div title="${marker.stationName}: Datos obsoletos" style="width:80px;height:46px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;margin-left:-27px;margin-top:18px;">
                     ${svgPuntoGris}
                 </div>`;
             
