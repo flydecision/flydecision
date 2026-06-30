@@ -10251,20 +10251,14 @@ window.guardarPosicionMapaManualmente = function() {
         const center = map.getCenter();
         const zoom = map.getZoom();
         
-        const lat = center.lat.toFixed(4);
-        const lon = center.lng.toFixed(4);
-        
-        localStorage.setItem('METEO_MAPA_LAST_LAT', lat);
-        localStorage.setItem('METEO_MAPA_LAST_LON', lon);
+        localStorage.setItem('METEO_MAPA_LAST_LAT', center.lat.toFixed(4));
+        localStorage.setItem('METEO_MAPA_LAST_LON', center.lng.toFixed(4));
         localStorage.setItem('METEO_MAPA_LAST_ZOOM', zoom);
         
         const boton = document.getElementById('btn-guardar-vista-mapa');
         if (boton) {
             const textoOriginal = boton.innerHTML;
-            
             boton.innerHTML = '✅';
-            //boton.disabled = true; 
-            
             setTimeout(() => {
                 boton.innerHTML = textoOriginal;
                 boton.disabled = false;
@@ -11127,30 +11121,44 @@ function inicializarMapaLeaflet() {
 
     const params = new URLSearchParams(window.location.search);
 
-    // 🔍 1º Prioridad: Obtener los valores forzados de la URL (si te pasan un enlace directo)
+    // 1º Prioridad: Obtener los valores de la URL
     const urlLat = parseFloat(params.get('lat'));
     const urlLon = parseFloat(params.get('lon'));
     const urlZoom = parseFloat(params.get('zoom'));
 
-    // 💾 2º Prioridad: Leer de la memoria la última posición (SOLO si la usuaria activó la opción)
+    // 2º Prioridad: Leer de la memoria del navegador
     const recordarPosicion = localStorage.getItem('METEO_RECORDAR_POSICION_MAPA') === 'true';
-    const localLat = recordarPosicion ? parseFloat(localStorage.getItem('METEO_MAPA_LAST_LAT')) : NaN;
-    const localLon = recordarPosicion ? parseFloat(localStorage.getItem('METEO_MAPA_LAST_LON')) : NaN;
-    const localZoom = recordarPosicion ? parseFloat(localStorage.getItem('METEO_MAPA_LAST_ZOOM')) : NaN;
+    
+    let loadedLat = NaN;
+    let loadedLon = NaN;
+    let loadedZoom = NaN;
 
-    // 💡 3º Prioridad: Valores por defecto (Centro de España, primera vez que se abre la app)
+    if (recordarPosicion) {
+        // A) Intentamos cargar la última posición de sesión activa (auto-guardada en LIVE)
+        loadedLat = parseFloat(localStorage.getItem('METEO_MAPA_LIVE_LAT'));
+        loadedLon = parseFloat(localStorage.getItem('METEO_MAPA_LIVE_LON'));
+        loadedZoom = parseFloat(localStorage.getItem('METEO_MAPA_LIVE_ZOOM'));
+    }
+
+    // B) Si "Recordar" está apagado, o si la sesión en LIVE está vacía,
+    // cargamos la posición de inicio fija guardada manualmente por el usuario (en LAST)
+    if (isNaN(loadedLat)) {
+        loadedLat = parseFloat(localStorage.getItem('METEO_MAPA_LAST_LAT'));
+        loadedLon = parseFloat(localStorage.getItem('METEO_MAPA_LAST_LON'));
+        loadedZoom = parseFloat(localStorage.getItem('METEO_MAPA_LAST_ZOOM'));
+    }
+
+    // 3º Prioridad: Valores por defecto generales
     const defaultLat = 42.7340;
     const defaultLon = 1.9902;
     const isMobile = window.innerWidth < 768;
     const defaultZoom = isMobile ? 4.5 : 6;
 
-    // 🎯 Asignar los valores a usar de forma inteligente en cascada: URL -> Memoria -> Defecto
-    const useLat = !isNaN(urlLat) ? urlLat : (!isNaN(localLat) ? localLat : defaultLat);
-    const useLon = !isNaN(urlLon) ? urlLon : (!isNaN(localLon) ? localLon : defaultLon);
-    const useZoom = !isNaN(urlZoom) ? urlZoom : (!isNaN(localZoom) ? localZoom : defaultZoom);
+    const useLat = !isNaN(urlLat) ? urlLat : (!isNaN(loadedLat) ? loadedLat : defaultLat);
+    const useLon = !isNaN(urlLon) ? urlLon : (!isNaN(loadedLon) ? loadedLon : defaultLon);
+    const useZoom = !isNaN(urlZoom) ? urlZoom : (!isNaN(loadedZoom) ? loadedZoom : defaultZoom);
 
-    // 🚩 Bandera para saber si estamos en la vista predeterminada pura (ni URL ni LocalStorage)
-    const esVistaPredeterminada = isNaN(urlLat) && isNaN(localLat);
+    const esVistaPredeterminada = isNaN(urlLat) && isNaN(loadedLat);
 
     // 3. Inicialización del mapa
     map = L.map('map', {
@@ -11517,11 +11525,12 @@ function inicializarMapaLeaflet() {
     // Escuchar cuando el usuario termina de moverse/arrastrar el mapa
     map.on('moveend', function() {
         updateURL(map);
+        // Si recordar posición está ON, auto-guardamos la sesión activa en LIVE
         if (localStorage.getItem('METEO_RECORDAR_POSICION_MAPA') === 'true') {
             const center = map.getCenter();
-            localStorage.setItem('METEO_MAPA_LAST_LAT', center.lat.toFixed(4));
-            localStorage.setItem('METEO_MAPA_LAST_LON', center.lng.toFixed(4));
-            localStorage.setItem('METEO_MAPA_LAST_ZOOM', map.getZoom());
+            localStorage.setItem('METEO_MAPA_LIVE_LAT', center.lat.toFixed(4));
+            localStorage.setItem('METEO_MAPA_LIVE_LON', center.lng.toFixed(4));
+            localStorage.setItem('METEO_MAPA_LIVE_ZOOM', map.getZoom());
         }
     });
 

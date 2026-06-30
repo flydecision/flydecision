@@ -489,6 +489,12 @@
       "sobreActualizacion": "Actualizacións dos modelos meteorolóxicos",
       "mapa": "Mapa"
     },
+    "abrirMapaInicio": "Abrir mapa ao iniciar",
+    "recordarPosicionMapa": "Lembrar última vista do mapa",
+    "recordarEstadoFiltroHorario": "Lembrar estado do filtro horario (aberto/pechado)",
+    "recordarCapasActivas": "Lembrar capas activas",
+    "recordarTipoMapa": "Lembrar tipo de mapa",
+    "recordarFiltrosMapa": "Lembrar filtros",
     "guia": "Guía",
     "ayuda": "Axuda",
     "legal": "Legal",
@@ -518,7 +524,7 @@
   "mapa": {
     "verEnTabla": "Ver na táboa",
     "verEnTablaSubtitulo": "+❤️ Engádese a favoritos",
-    "btnGuardarVista": "💾 Memorizar a vista actual",
+    "btnGuardarVista": "💾 Lembrar vista actual",
     "btnGuardarVistaTitle": "Gardar o centro e o zoom actuais como a túa vista predeterminada",
     "seleccionarOrigen": "Seleccionar orixe",
     "miUbicacion": "A miña localización",

@@ -489,6 +489,12 @@
       "sobreActualizacion": "Weather model updates",
       "mapa": "Map"
     },
+    "abrirMapaInicio": "Open map on startup",
+    "recordarPosicionMapa": "Remember last map view",
+    "recordarEstadoFiltroHorario": "Remember time filter state (open/closed)",
+    "recordarCapasActivas": "Remember active layers",
+    "recordarTipoMapa": "Remember map type",
+    "recordarFiltrosMapa": "Remember filters",
     "guia": "Guide",
     "ayuda": "Help",
     "legal": "Legal",

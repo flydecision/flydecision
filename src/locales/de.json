@@ -489,6 +489,12 @@
       "sobreActualizacion": "Updates der Wettermodelle",
       "mapa": "Karte"
     },
+    "abrirMapaInicio": "Karte beim Start öffnen",
+    "recordarPosicionMapa": "Letzte Kartenansicht merken",
+    "recordarEstadoFiltroHorario": "Zeitfilter-Status merken (offen/geschlossen)",
+    "recordarCapasActivas": "Aktive Ebenen merken",
+    "recordarTipoMapa": "Kartentyp merken",
+    "recordarFiltrosMapa": "Filter merken",
     "guia": "Anleitung",
     "ayuda": "Hilfe",
     "legal": "Rechtliches",

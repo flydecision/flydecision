@@ -489,6 +489,12 @@
       "sobreActualizacion": "Mises à jour des modèles météo",
       "mapa": "Carte"
     },
+    "abrirMapaInicio": "Ouvrir la carte au démarrage",
+    "recordarPosicionMapa": "Mémoriser la dernière vue de la carte",
+    "recordarEstadoFiltroHorario": "Mémoriser l'état du filtre horaire (ouvert/fermé)",
+    "recordarCapasActivas": "Mémoriser les couches actives",
+    "recordarTipoMapa": "Mémoriser le type de carte",
+    "recordarFiltrosMapa": "Mémoriser les filtres",
     "guia": "Guide",
     "ayuda": "Aide",
     "legal": "Légal",
