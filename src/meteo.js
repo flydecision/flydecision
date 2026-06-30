@@ -15173,24 +15173,46 @@ function inicializarMapaLeaflet() {
         if (!containerDiv) return;
         
         const d = red.datosCache[marker.stationId];
-        
-        if (!d || d.windSpeed === null || d.windSpeed === undefined) {
+
+        // -----------------------------------------------------------
+        // EVALUAR SI ESTÁ CONGELADA (Para no mostrar un gráfico plano a 0)
+        // -----------------------------------------------------------
+        let balizaCongelada = false;
+        if (red.datos6h && red.datos6h[marker.stationId]) {
+            const lecturas = red.datos6h[marker.stationId];
+            const ahoraTs = Math.floor(Date.now() / 1000);
+            const desdeTs = ahoraTs - 4 * 3600; 
+            
+            const puntos4h = lecturas.filter(p => p.ts >= desdeTs && p.ts <= ahoraTs && typeof p.windSpeed === 'number');
+
+            if (puntos4h.length > 0) {
+                balizaCongelada = puntos4h.every(p => 
+                    p.windSpeed === 0 && 
+                    (p.windGusts === 0 || p.windGusts === null || p.windGusts === undefined)
+                );
+            }
+        }
+
+        // 1. Datos numéricos o Aviso de error (Si falla o está congelada, pintamos error y SALIMOS)
+        if (!d || d.windSpeed === null || d.windSpeed === undefined || balizaCongelada) {
             containerDiv.innerHTML = `
                 <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
                 <p style="color:#c0392b; margin:5px 0 0 0;">⚠️ ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}</p>
             `;
-            return;
-        }
+            return; // Retorno temprano. El código se detiene aquí.
+        } 
 
+        // 2. Si todo está bien, calculamos variables
         const orientacionTexto = obtenerTextoOrientacion(d.windDirection); // Función global que ya tienes
         const estadoPopup = calcularEstadoActualizacionBaliza(d, marker.redId);
 
-        // 1. viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
+        // viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
         const svgFlecha = `
             <svg viewBox="5 1 20 20" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7); transform-origin: center center; width: 28px; height: 28px; flex-shrink: 0;">
                 <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
             </svg>`;
 
+        // Inyectamos todo el HTML correcto
         containerDiv.innerHTML = `
             <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
                 🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
