@@ -3218,6 +3218,27 @@ details.config-accordion .accordion-content {
     font-size: 16px;
     margin-top: -2px;
 }
+
+/* Posicionamiento absoluto para el botón de reset del mapa */
+#buttonResetFiltros2 {
+    font-size: 1.2em;
+    float: right;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 77px; /* Colocado exactamente a la izquierda del fijar (42px + 30px de ancho + 5px de margen) */
+}
+
+#buttonResetFiltros2 #iconoResetFiltros2 {
+    display: inline-block;
+    font-size: 1em; 
+    line-height: 1;
+    cursor: pointer;
+}
+
 /* Ocultar los botones de cerrar cuando el panel está retraído */
 .info-panel.retraido #buttonCerrar, 
 .info-panel.retraido #buttonCerrar2 {
