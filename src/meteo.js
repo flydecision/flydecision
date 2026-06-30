@@ -14899,16 +14899,21 @@ function inicializarMapaLeaflet() {
     
     function formatearFechaHoraBaliza(fechaStr, horaStr) {
         if (!fechaStr || !horaStr) return '–';
-        const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+        const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
         const [anio, mes, dia] = fechaStr.split('-');
-        return `${dia}-${meses[parseInt(mes, 10) - 1]}-${anio} ${horaStr}`;
+
+        const [hora, minutos] = horaStr.split(':');
+        const horaFormateada = `${parseInt(hora, 10)}:${minutos}`;
+
+        return `${dia}-${meses[parseInt(mes, 10) - 1]}-${anio} ${horaFormateada}`;
     }
 
     function generarSvgGraficaBaliza(lecturas) {
         if (!Array.isArray(lecturas) || lecturas.length === 0) return null;
 
         const W = 250, H = 112; // Ancho (W) y Alto (H) del lienzo en píxeles virtuales.
-        const padL = 20, padR = 6, padT = 26, padB = 20; // Pad=Padding=Márgenes de separación interno: Izquierda (L), Derecha (R), Arriba (T), Abajo (B).
+        const padL = 20, padR = 6, padT = 26, padB = 18; // Pad=Padding=Márgenes de separación interno: Izquierda (L), Derecha (R), Arriba (T), Abajo (B).
         const plotW = W - padL - padR; // Ancho real de la zona donde se dibujan las líneas.
         const plotH = H - padT - padB; // Alto real de la zona donde se dibujan las líneas.
 
@@ -14976,7 +14981,7 @@ function inicializarMapaLeaflet() {
         // Líneas de Guía Horizontales (Líneas grises de fondo)
         const gridLines = gridY.map(v => `
             <line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W - padR}" y2="${y(v).toFixed(1)}" stroke="#a4a4a4" stroke-width="0.5"/>
-            <text x="${padL - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" font-size="12" fill="#000000">${Math.round(v)}</text>
+            <text x="${padL - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" font-size="14" fill="#000000">${Math.round(v)}</text>
         `).join('');
 
         // Etiquetas eje X y Ejes de Guía Verticales
@@ -14990,19 +14995,28 @@ function inicializarMapaLeaflet() {
 
         let tsHoraEnPunto = Math.floor(dLoop.getTime() / 1000);
 
+        // Obtenemos los minutos exactos actuales para gestionar los solapamientos con el cronómetro
+        const dAhora = new Date(ahora * 1000);
+        const minutosActuales = dAhora.getMinutes();
+
         // Bucle para dibujar las líneas y textos de las "horas en punto" que van desplazándose
         while (tsHoraEnPunto <= ahora) {
             const px = x(tsHoraEnPunto).toFixed(1);
-            const hrs = String(dLoop.getHours()).padStart(2, '0');
             
-            // Formato HH h con separación exacta de 4px usando la etiqueta tspan nativa de SVG
-            const textoHora = `${hrs}<tspan dx="4">h</tspan>`;
+            // Verificamos si esta hora en punto choca con el cronómetro actual. El cronómetro está en dAhora. Si la marca de la hora en punto actual es dLoop, comprobamos la diferencia en milisegundos para saber si están demasiado cerca (< 20 mins). Poniendo diferenciaMins < 20 no aparecería la hora hasta pasados 20 min de la hora actual. De momento lo dejo en 0 porque se solapa con 10 min de diferencia pero poco.
+            const diferenciaMins = (ahora - tsHoraEnPunto) / 60;
+            const muyCercaDelCronometro = diferenciaMins < 0 && diferenciaMins >= 0;  
 
-            // Pintamos la etiqueta centrada (elevada a H - 12 para dejar hueco debajo al cronómetro si coinciden)
-            etiquetasX.push(`<text x="${px}" y="${H - 12}" text-anchor="middle" font-size="11" fill="#888">${textoHora}</text>`);
-            
-            // Trazamos el eje vertical de la hora en punto
+            // Formateamos la hora sin ceros a la izquierda (ej: 7, 8, 14...)
+            const textoHora = String(dLoop.getHours());
+
+            // Trazamos el eje vertical de la hora en punto SIEMPRE (la raya gris sí se pinta aunque el número no)
             lineasVerticales.push(`<line x1="${px}" y1="${padT}" x2="${px}" y2="${(padT + plotH).toFixed(1)}" stroke="#a4a4a4" stroke-width="0.5"/>`);
+
+            // Pintamos el número SOLO si no se solapa con el cronómetro
+            if (!muyCercaDelCronometro) {
+                etiquetasX.push(`<text x="${px}" y="${H - 1}" text-anchor="middle" font-size="14" fill="#888">${textoHora}</text>`);
+            }
 
             // Avanzamos 1 hora exacta
             dLoop.setHours(dLoop.getHours() + 1);
@@ -15011,15 +15025,15 @@ function inicializarMapaLeaflet() {
 
         // 2. Dibujamos el borde derecho (la hora actual exacta al minuto)
         const pxAhora = x(ahora).toFixed(1);
-        const dAhora = new Date(ahora * 1000);
         
-        // Si la hora actual NO cae exactamente en una hora en punto (minutos > 0), le dibujamos su propia línea vertical
-        if (dAhora.getMinutes() !== 0) {
+        // Si la hora actual NO es exactamente en punto, le dibujamos su propia línea vertical
+        if (minutosActuales !== 0) {
             lineasVerticales.push(`<line x1="${pxAhora}" y1="${padT}" x2="${pxAhora}" y2="${(padT + plotH).toFixed(1)}" stroke="#a4a4a4" stroke-width="0.5"/>`);
         }
 
-        // Finalmente, el cronómetro siempre anclado a la hora actual (borde derecho), posicionado por debajo
-        etiquetasX.push(`<text x="${pxAhora}" y="${H - 1}" text-anchor="middle" font-size="14">⏱️</text>`);
+        // Finalmente, el cronómetro siempre anclado a la hora actual (borde derecho).
+        // Elevamos su coordenada Y a (H - 3) para evitar recortes inferiores del emoji.
+        etiquetasX.push(`<text x="${pxAhora}" y="${H - 2}" text-anchor="middle" font-size="14">⏱️</text>`);
 
 
         // Flechas de dirección repartidas uniformemente (cambiar la cifra de Math.min(X...), que es el máximo "aproximado".. 1 o 2 más serán por el redondeo
