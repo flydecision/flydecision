@@ -14454,6 +14454,416 @@ function inicializarMapaLeaflet() {
         {"id":"9998X","name":"Bello","provider":"Aemet","latitude":40.921389,"longitude":-1.494444}
     ];
 
+    const ESTACIONES_HOLFUY = 
+    [
+        {"id":"s869","name":"Braunwald Gumen","provider":"Holfuy","latitude":46.95624,"longitude":8.98506},
+        {"id":"s1625","name":"Blaser Swisslube AG","provider":"Holfuy","latitude":47.01941,"longitude":7.65471},
+        {"id":"s511","name":"Buchenberg Buching","provider":"Holfuy","latitude":47.60642,"longitude":10.81141},
+        {"id":"s1027","name":"La Nava (ACAMET)","provider":"Holfuy","latitude":36.66601,"longitude":-5.05317},
+        {"id":"s1936","name":"Rosnoën","provider":"Holfuy","latitude":48.26311,"longitude":-4.21388},
+        {"id":"s960","name":"Zugerberg","provider":"Holfuy","latitude":47.148,"longitude":8.53599},
+        {"id":"s1292","name":"Chalet du Chef","provider":"Holfuy","latitude":46.60039,"longitude":6.25965},
+        {"id":"s1291","name":"Bürchen Mällig","provider":"Holfuy","latitude":46.24645,"longitude":7.80201},
+        {"id":"s223","name":"Vuelo Libre León 1","provider":"Holfuy","latitude":42.874116,"longitude":-5.373977},
+        {"id":"s235","name":"Laubberg","provider":"Holfuy","latitude":47.54285,"longitude":8.149191},
+        {"id":"s236","name":"Grünberg FlyingSwans","provider":"Holfuy","latitude":47.898658,"longitude":13.818388},
+        {"id":"s245","name":"Kistleralp/Stofel","provider":"Holfuy","latitude":47.16114,"longitude":8.96138},
+        {"id":"s276","name":"Lorea Startplz","provider":"Holfuy","latitude":47.34653,"longitude":10.79092},
+        {"id":"s1322","name":"Ochsenberg","provider":"Holfuy","latitude":47.50688,"longitude":10.3995},
+        {"id":"s281","name":"Flugschule Jura Thal","provider":"Holfuy","latitude":47.298456,"longitude":7.568319},
+        {"id":"s289","name":"Brento Exit","provider":"Holfuy","latitude":45.997417,"longitude":10.905077},
+        {"id":"s292","name":"Ca del Monte Sud","provider":"Holfuy","latitude":44.81621,"longitude":9.07351},
+        {"id":"s1516","name":"Garl. Brauneck LGGF","provider":"Holfuy","latitude":47.66338,"longitude":11.52648},
+        {"id":"s310","name":"Aloña (Oñati) s310","provider":"Holfuy","latitude":43.004572,"longitude":-2.422076},
+        {"id":"s1343","name":"Berg Brauneck LGGF","provider":"Holfuy","latitude":47.66365,"longitude":11.52303},
+        {"id":"s324","name":"Ob Lucken","provider":"Holfuy","latitude":47.76292,"longitude":8.5559},
+        {"id":"s342","name":"Fürstenberg Süd","provider":"Holfuy","latitude":47.88948,"longitude":8.56284},
+        {"id":"s343","name":"Monte Carza","provider":"Holfuy","latitude":46.04221,"longitude":8.6736},
+        {"id":"s346","name":"Venetflieger LPZ","provider":"Holfuy","latitude":47.154376,"longitude":10.581614},
+        {"id":"s347","name":"Grubig West","provider":"Holfuy","latitude":47.385944,"longitude":10.847304},
+        {"id":"s348","name":"Grubig Zirbe","provider":"Holfuy","latitude":47.38758,"longitude":10.85389},
+        {"id":"s349","name":"Moos LP","provider":"Holfuy","latitude":47.39806,"longitude":10.89596},
+        {"id":"s356","name":"Borgo Priolo","provider":"Holfuy","latitude":44.96359,"longitude":9.12549},
+        {"id":"s367","name":"ElFerre","provider":"Holfuy","latitude":43.47317,"longitude":-5.75633},
+        {"id":"s368","name":"Grubig Landeplatz","provider":"Holfuy","latitude":47.400397,"longitude":10.880574},
+        {"id":"s376","name":"Gotschnagrat","provider":"Holfuy","latitude":46.858744,"longitude":9.845667},
+        {"id":"s423","name":"Kandel Süd DGFC","provider":"Holfuy","latitude":48.05863,"longitude":8.01588},
+        {"id":"s388","name":"Rofan - Startplatz ","provider":"Holfuy","latitude":47.444086,"longitude":11.763815},
+        {"id":"s392","name":"SCA Stoderzinken","provider":"Holfuy","latitude":47.459413,"longitude":13.828295},
+        {"id":"s396","name":"Fetzenflieger LPZ","provider":"Holfuy","latitude":47.30498,"longitude":10.85258},
+        {"id":"s413","name":"9erköpfle Landeplatz","provider":"Holfuy","latitude":47.4999,"longitude":10.52524},
+        {"id":"s424","name":"UnternbergRuhpolding","provider":"Holfuy","latitude":47.72844,"longitude":12.638374},
+        {"id":"s1591","name":"ChaletInter","provider":"Holfuy","latitude":45.4126,"longitude":6.6221},
+        {"id":"s1396","name":"Hochoetz","provider":"Holfuy","latitude":47.208301,"longitude":10.934734},
+        {"id":"s452","name":"Arlberg (Kapall)","provider":"Holfuy","latitude":47.14817,"longitude":10.24844},
+        {"id":"s454","name":"Gabersee","provider":"Holfuy","latitude":48.06182,"longitude":12.20318},
+        {"id":"s459","name":"Brento LZ","provider":"Holfuy","latitude":45.992821,"longitude":10.926321},
+        {"id":"s1812","name":"Rigi Scheidegg Arche","provider":"Holfuy","latitude":47.02748,"longitude":8.52025},
+        {"id":"s465","name":"Arlberg (Rendl)","provider":"Holfuy","latitude":47.11262,"longitude":10.27615},
+        {"id":"s1235","name":"1235 Fréterette","provider":"Holfuy","latitude":46.45487,"longitude":6.17989},
+        {"id":"s477","name":"Pobbio (basso)","provider":"Holfuy","latitude":44.69125,"longitude":9.11461},
+        {"id":"s1792","name":"ZFC: Schwarzsee ","provider":"Holfuy","latitude":45.99088,"longitude":7.71113},
+        {"id":"s482","name":"Micheldorf HW-Stein","provider":"Holfuy","latitude":47.88623,"longitude":14.16399},
+        {"id":"s484","name":"Metschstand","provider":"Holfuy","latitude":46.44435,"longitude":7.49567},
+        {"id":"s487","name":"ZFS-Bruggerstube","provider":"Holfuy","latitude":47.181185,"longitude":11.870915},
+        {"id":"s489","name":"Kandel West DGFC","provider":"Holfuy","latitude":48.06529,"longitude":8.01542},
+        {"id":"s493","name":"Bayrischzell Landepl","provider":"Holfuy","latitude":47.67021,"longitude":12.01704},
+        {"id":"s496","name":"Alp Scheidegg Top","provider":"Holfuy","latitude":47.30525,"longitude":8.94376},
+        {"id":"s507","name":"Schwengimatt DC-Falk","provider":"Holfuy","latitude":47.2888337,"longitude":7.674342},
+        {"id":"s516","name":"Spaichingen 3-er","provider":"Holfuy","latitude":48.08395,"longitude":8.76036},
+        {"id":"s517","name":"Schauinsland","provider":"Holfuy","latitude":47.90954,"longitude":7.88928},
+        {"id":"s533","name":"Wolfratshauserhütte ","provider":"Holfuy","latitude":47.39093,"longitude":10.84848},
+        {"id":"s536","name":"ZFS-Melchboden","provider":"Holfuy","latitude":47.21901,"longitude":11.82452},
+        {"id":"s538","name":"Culla L´Arcu","provider":"Holfuy","latitude":43.23374,"longitude":-5.46566},
+        {"id":"s549","name":"Charmey Vounetz","provider":"Holfuy","latitude":46.62605,"longitude":7.20775},
+        {"id":"s571","name":"Prodkamm","provider":"Holfuy","latitude":47.07321,"longitude":9.26763},
+        {"id":"s575","name":"Wank","provider":"Holfuy","latitude":47.50676,"longitude":11.14764},
+        {"id":"s578","name":"ENDOIA s578","provider":"Holfuy","latitude":43.24613,"longitude":-2.26877},
+        {"id":"s603","name":"AVLE NOEMÍ PEDRO B","provider":"Holfuy","latitude":40.25383,"longitude":-4.90154},
+        {"id":"s604","name":"Hochfelln Süd","provider":"Holfuy","latitude":47.76106,"longitude":12.55959},
+        {"id":"s610","name":"Opfertshofen","provider":"Holfuy","latitude":47.77429,"longitude":8.65656},
+        {"id":"s615","name":"Seegeier Kulm","provider":"Holfuy","latitude":47.22851,"longitude":15.76179},
+        {"id":"s1547","name":"Arosa Weisshorn","provider":"Holfuy","latitude":46.78927,"longitude":9.63907},
+        {"id":"s619","name":"Zeltenbach","provider":"Holfuy","latitude":47.78892,"longitude":9.49506},
+        {"id":"s623","name":"Alp Scheidegg Start","provider":"Holfuy","latitude":47.30376,"longitude":8.94319},
+        {"id":"s626","name":"Club RC De l´Ebre","provider":"Holfuy","latitude":40.75638,"longitude":0.436406},
+        {"id":"s627","name":"Münsingen PWA","provider":"Holfuy","latitude":48.41462,"longitude":9.52143},
+        {"id":"s644","name":"s644","provider":"Holfuy","latitude":46.73161,"longitude":2.79297},
+        {"id":"s645","name":"Marienberg","provider":"Holfuy","latitude":47.349266,"longitude":10.899699},
+        {"id":"s754","name":"Hintereck","provider":"Holfuy","latitude":48.04919,"longitude":8.12421},
+        {"id":"s665","name":"Schöneben SP","provider":"Holfuy","latitude":47.22779,"longitude":14.16074},
+        {"id":"s676","name":"Breitenberg Pfronten","provider":"Holfuy","latitude":47.54662,"longitude":10.56447},
+        {"id":"s656","name":"Base ULM Fréjus","provider":"Holfuy","latitude":43.42334,"longitude":6.69751},
+        {"id":"s666","name":"Spielberg","provider":"Holfuy","latitude":47.21544,"longitude":14.84706},
+        {"id":"s669","name":"Ca del Monte Ovest","provider":"Holfuy","latitude":44.81826,"longitude":9.07078},
+        {"id":"s672","name":"Vogelsang","provider":"Holfuy","latitude":47.66511,"longitude":12.03565},
+        {"id":"s683","name":"Huendle Landeplatz","provider":"Holfuy","latitude":47.55181,"longitude":10.05315},
+        {"id":"s690","name":"Sonchaux","provider":"Holfuy","latitude":46.41856,"longitude":6.95072},
+        {"id":"s692","name":"Cascajera/UGR-ACAMET","provider":"Holfuy","latitude":36.63849,"longitude":-5.08251},
+        {"id":"s695","name":"Sender Kleinerberg","provider":"Holfuy","latitude":47.73362,"longitude":14.36657},
+        {"id":"s708","name":"Schwanden","provider":"Holfuy","latitude":47.58911,"longitude":10.02877},
+        {"id":"s718","name":"VLS Deltaland","provider":"Holfuy","latitude":45.59739,"longitude":10.81862},
+        {"id":"s721","name":"FlugschuleArlberg SP","provider":"Holfuy","latitude":47.22856,"longitude":9.73894},
+        {"id":"s722","name":"Arlberg (Rüfikopf)","provider":"Holfuy","latitude":47.20225,"longitude":10.16728},
+        {"id":"s723","name":"Arlberg (Galzig)","provider":"Holfuy","latitude":47.13519,"longitude":10.22104},
+        {"id":"s738","name":"Hahnenkamm Grat","provider":"Holfuy","latitude":47.47236,"longitude":10.643},
+        {"id":"s741","name":"Jochdohlen  LP","provider":"Holfuy","latitude":47.14852,"longitude":11.34474},
+        {"id":"s742","name":"Jochdohlen SP","provider":"Holfuy","latitude":47.1459,"longitude":11.3072},
+        {"id":"s712","name":"Schnaithalde","provider":"Holfuy","latitude":48.29648,"longitude":9.05742},
+        {"id":"s751","name":"Haimburgerberg","provider":"Holfuy","latitude":46.71838,"longitude":14.67268},
+        {"id":"s753","name":"Fürstenberg Nord","provider":"Holfuy","latitude":47.8914,"longitude":8.56519},
+        {"id":"s755","name":"Villaceid (León)","provider":"Holfuy","latitude":42.77058,"longitude":-5.90388},
+        {"id":"s770","name":"SP Thurnhamberg","provider":"Holfuy","latitude":47.87268,"longitude":14.09257},
+        {"id":"s771","name":"Osterfelder","provider":"Holfuy","latitude":47.43917,"longitude":11.0502},
+        {"id":"s772","name":"LP Osterfelder","provider":"Holfuy","latitude":47.474436,"longitude":11.060652},
+        {"id":"s779","name":"Heue Bergalingen","provider":"Holfuy","latitude":47.6196,"longitude":7.93939},
+        {"id":"s776","name":"Muottas Muragl","provider":"Holfuy","latitude":46.52128,"longitude":9.90135},
+        {"id":"s788","name":"Hochfirst","provider":"Holfuy","latitude":47.90159,"longitude":8.18317},
+        {"id":"s789","name":"Navacillo/UGR-ACAMET","provider":"Holfuy","latitude":36.66626,"longitude":-5.10831},
+        {"id":"s803","name":"Ratholz","provider":"Holfuy","latitude":47.56947,"longitude":10.13435},
+        {"id":"s804","name":"Finkennest","provider":"Holfuy","latitude":47.58286,"longitude":10.01514},
+        {"id":"s816","name":"AKFM-Costa de Lavos","provider":"Holfuy","latitude":40.09059,"longitude":-8.87594},
+        {"id":"s824","name":"Ortenberg/Offenburg","provider":"Holfuy","latitude":48.43739,"longitude":7.97046},
+        {"id":"s828","name":"VLS M. Belpo Devid","provider":"Holfuy","latitude":45.61646,"longitude":10.76156},
+        {"id":"s937","name":"LA MOUETTE SINAGOTE","provider":"Holfuy","latitude":47.59972,"longitude":-2.73431},
+        {"id":"s1655","name":" Croix de Boutières ","provider":"Holfuy","latitude":44.89804,"longitude":4.18582},
+        {"id":"s839","name":"Eugendorf 1","provider":"Holfuy","latitude":47.86674,"longitude":13.12183},
+        {"id":"s813","name":"Bodenlos Neubiberg","provider":"Holfuy","latitude":48.05969,"longitude":11.62484},
+        {"id":"s855","name":"Piloti Bergeggi ","provider":"Holfuy","latitude":44.25133,"longitude":8.43983},
+        {"id":"s857","name":"Spieser Hindelang","provider":"Holfuy","latitude":47.52737,"longitude":10.3897},
+        {"id":"s871","name":"Pöllau (#871)","provider":"Holfuy","latitude":47.30218,"longitude":15.82989},
+        {"id":"s874","name":"Devoluy Altisurface","provider":"Holfuy","latitude":44.6672,"longitude":5.90407},
+        {"id":"s877","name":"Pöllauberg (#877)","provider":"Holfuy","latitude":47.31693,"longitude":15.85832},
+        {"id":"s882","name":"loge des gardes ","provider":"Holfuy","latitude":46.00461,"longitude":3.79423},
+        {"id":"s883","name":"Plaine Morte, CVLCMA","provider":"Holfuy","latitude":46.37107,"longitude":7.49259},
+        {"id":"s881","name":"Eugendorf 2","provider":"Holfuy","latitude":47.84053,"longitude":13.14157},
+        {"id":"s914","name":"MONT MINISTRE","provider":"Holfuy","latitude":45.469,"longitude":4.69359},
+        {"id":"s913","name":"SALVARIS","provider":"Holfuy","latitude":45.41644,"longitude":4.48313},
+        {"id":"s899","name":"Terra Botanica","provider":"Holfuy","latitude":47.50101,"longitude":-0.5687},
+        {"id":"s901","name":"AMCCO Messigny","provider":"Holfuy","latitude":47.39894,"longitude":4.99425},
+        {"id":"s905","name":"Tegelberg Startplatz","provider":"Holfuy","latitude":47.55974,"longitude":10.77982},
+        {"id":"s906","name":"Nebelhorn 1930m","provider":"Holfuy","latitude":47.41328,"longitude":10.3471},
+        {"id":"s1485","name":"Spieljoch","provider":"Holfuy","latitude":47.33237,"longitude":11.79462},
+        {"id":"s915","name":"Mont Semiol 42","provider":"Holfuy","latitude":45.63538,"longitude":3.96676},
+        {"id":"s917","name":"G2 Bouquetin","provider":"Holfuy","latitude":45.33889,"longitude":6.57319},
+        {"id":"s918","name":"G2 Cote Brune","provider":"Holfuy","latitude":45.3193,"longitude":6.57999},
+        {"id":"s919","name":"Lac Ariondaz","provider":"Holfuy","latitude":45.38573,"longitude":6.65558},
+        {"id":"s921","name":"G2 Roc de Tougne","provider":"Holfuy","latitude":45.35402,"longitude":6.56722},
+        {"id":"s922","name":"G4 Pas du Lac","provider":"Holfuy","latitude":45.38121,"longitude":6.60936},
+        {"id":"s925","name":"MG Huttwil ","provider":"Holfuy","latitude":47.11862,"longitude":7.8582},
+        {"id":"s927","name":"Crêt du Midi","provider":"Holfuy","latitude":46.22917,"longitude":7.52874},
+        {"id":"s928","name":"Grimer","provider":"Holfuy","latitude":46.55538,"longitude":7.68645},
+        {"id":"s929","name":"GMR Avenches","provider":"Holfuy","latitude":46.89662,"longitude":7.02349},
+        {"id":"s930","name":"Kite Club MarsalaRRD","provider":"Holfuy","latitude":37.8443,"longitude":12.46476},
+        {"id":"s931","name":"VLS Decollo Colonei","provider":"Holfuy","latitude":45.65295,"longitude":10.81001},
+        {"id":"s932","name":"môle Port-Vendres","provider":"Holfuy","latitude":42.5229,"longitude":3.11758},
+        {"id":"s942","name":"Acpm83","provider":"Holfuy","latitude":43.18503,"longitude":6.10647},
+        {"id":"s946","name":"Sinswang","provider":"Holfuy","latitude":47.56716,"longitude":9.99596},
+        {"id":"s957","name":"Auf der Wanne","provider":"Holfuy","latitude":48.44616,"longitude":9.22736},
+        {"id":"s947","name":"Planplatten","provider":"Holfuy","latitude":46.73623,"longitude":8.25459},
+        {"id":"s952","name":"Evolène La Vieille","provider":"Holfuy","latitude":46.11886,"longitude":7.52599},
+        {"id":"s961","name":"Ramenegg","provider":"Holfuy","latitude":47.10212,"longitude":8.61423},
+        {"id":"s1086","name":"Chalais","provider":"Holfuy","latitude":46.27358,"longitude":7.51213},
+        {"id":"s969","name":"Alpe Foppa","provider":"Holfuy","latitude":46.11701,"longitude":8.8935},
+        {"id":"s972","name":"Rofan Steilhang","provider":"Holfuy","latitude":47.44189,"longitude":11.75835},
+        {"id":"s973","name":"Hollersbach ","provider":"Holfuy","latitude":47.28024,"longitude":12.40873},
+        {"id":"s1000","name":"Decollo Malcesine","provider":"Holfuy","latitude":45.76923,"longitude":10.86437},
+        {"id":"s1019","name":"LFGB Mulhouse","provider":"Holfuy","latitude":47.7446,"longitude":7.43163},
+        {"id":"s1020","name":"CVN - Nid-du-Crô","provider":"Holfuy","latitude":46.99534,"longitude":6.95099},
+        {"id":"s1024","name":"Wetterkreuz GTO","provider":"Holfuy","latitude":47.20935,"longitude":14.25769},
+        {"id":"s1028","name":"Hörnerbahn Mitte","provider":"Holfuy","latitude":47.46165,"longitude":10.21457},
+        {"id":"s1029","name":"Grüner Weg","provider":"Holfuy","latitude":47.45425,"longitude":10.2551},
+        {"id":"s1036","name":"Garda Paragliding","provider":"Holfuy","latitude":45.63786,"longitude":10.61985},
+        {"id":"s1039","name":"Anglet","provider":"Holfuy","latitude":43.52406,"longitude":-1.5248},
+        {"id":"s1045","name":"AKFM-Cova-Gala","provider":"Holfuy","latitude":40.12548,"longitude":-8.86382},
+        {"id":"s1047","name":"Babia, Prado Veneiro","provider":"Holfuy","latitude":42.95908,"longitude":-6.03287},
+        {"id":"s1059","name":"Mülkerblatte","provider":"Holfuy","latitude":46.43485,"longitude":7.4135},
+        {"id":"s1061","name":"Predigtstuhl ","provider":"Holfuy","latitude":47.69155,"longitude":12.88368},
+        {"id":"s1062","name":"Pilotage BREST","provider":"Holfuy","latitude":48.36927,"longitude":-4.4868},
+        {"id":"s1053","name":"Ile de Ré (PSL LOIX)","provider":"Holfuy","latitude":46.22857,"longitude":-1.43007},
+        {"id":"s1063","name":"Spiesshorn ","provider":"Holfuy","latitude":47.82717,"longitude":8.03332},
+        {"id":"s1064","name":"Flugplatz Agathazell","provider":"Holfuy","latitude":47.55383,"longitude":10.27406},
+        {"id":"s1068","name":"Sanc'air Parapente","provider":"Holfuy","latitude":47.32208,"longitude":2.79646},
+        {"id":"s1071","name":"Haag","provider":"Holfuy","latitude":47.4568,"longitude":12.43474},
+        {"id":"s1085","name":"Huendle West","provider":"Holfuy","latitude":47.53687,"longitude":10.04916},
+        {"id":"s1411","name":"KITE BEACH MONTEROS ","provider":"Holfuy","latitude":36.50114,"longitude":-4.83844},
+        {"id":"s1100","name":"Terrain du CAMS","provider":"Holfuy","latitude":45.83031,"longitude":4.5778},
+        {"id":"s1102","name":"Nebelhorn Gipfel ","provider":"Holfuy","latitude":47.42134,"longitude":10.34241},
+        {"id":"s1976","name":"Tarrenz, Brenjursee","provider":"Holfuy","latitude":47.25456,"longitude":10.75846},
+        {"id":"s1104","name":"Monteagudo-Portero","provider":"Holfuy","latitude":40.41519,"longitude":-0.75647},
+        {"id":"s1108","name":"Port-Vendres Port","provider":"Holfuy","latitude":42.51786,"longitude":3.10919},
+        {"id":"s1119","name":"Saint Desirat","provider":"Holfuy","latitude":45.24857,"longitude":4.79409},
+        {"id":"s1125","name":"Schwyberg","provider":"Holfuy","latitude":46.67731,"longitude":7.26095},
+        {"id":"s1126","name":"Baiza Santa Marina","provider":"Holfuy","latitude":42.87108,"longitude":-2.11447},
+        {"id":"s1226","name":"Corgémont","provider":"Holfuy","latitude":47.17319,"longitude":7.13816},
+        {"id":"s1135","name":"GRUISSAN-VieilleNouv","provider":"Holfuy","latitude":43.08612,"longitude":3.0915},
+        {"id":"s1158","name":"Prabé","provider":"Holfuy","latitude":46.28328,"longitude":7.34929},
+        {"id":"s1138","name":"Oreganal /UGR-ACAMET","provider":"Holfuy","latitude":36.67023,"longitude":-5.17246},
+        {"id":"s1146","name":"Tréfuntec","provider":"Holfuy","latitude":48.12763,"longitude":-4.28072},
+        {"id":"s1147","name":"Bellalui CVLCMA","provider":"Holfuy","latitude":46.3441,"longitude":7.48619},
+        {"id":"s1152","name":"Dreibündenstein","provider":"Holfuy","latitude":46.80436,"longitude":9.49516},
+        {"id":"s1156","name":"MFV Alpin - Grins","provider":"Holfuy","latitude":47.14238,"longitude":10.53094},
+        {"id":"s1160","name":"Hubertushütte","provider":"Holfuy","latitude":47.9437,"longitude":8.6328},
+        {"id":"s1162","name":"Dome des Rousse","provider":"Holfuy","latitude":45.12846,"longitude":6.10481},
+        {"id":"s1163","name":"TMX clos giraud g2","provider":"Holfuy","latitude":45.13971,"longitude":6.09299},
+        {"id":"s1164","name":"ZFC: Landing ","provider":"Holfuy","latitude":46.02643,"longitude":7.74961},
+        {"id":"s1168","name":"décollage du puet","provider":"Holfuy","latitude":43.71,"longitude":6.82841},
+        {"id":"s1169","name":"Mijoux (Décollage)","provider":"Holfuy","latitude":46.366677,"longitude":6.010971},
+        {"id":"s1170","name":"Hauchenberg","provider":"Holfuy","latitude":47.62052,"longitude":10.1574},
+        {"id":"s1879","name":"Monte Toro Sur","provider":"Holfuy","latitude":39.98431,"longitude":4.11326},
+        {"id":"s1177","name":"DCC Altenberg","provider":"Holfuy","latitude":48.29538,"longitude":7.31279},
+        {"id":"s1172","name":"VIGNE DEL REY","provider":"Holfuy","latitude":42.635,"longitude":2.7858},
+        {"id":"s1176","name":"YCMC","provider":"Holfuy","latitude":43.54156,"longitude":3.97395},
+        {"id":"s1179","name":"St-Sandoux (Dpt 63)","provider":"Holfuy","latitude":45.6305,"longitude":3.11672},
+        {"id":"s1181","name":"Grotzenbüel","provider":"Holfuy","latitude":46.94912,"longitude":8.99429},
+        {"id":"s1185","name":"Flugplatz Vogtareuth","provider":"Holfuy","latitude":47.94626,"longitude":12.20312},
+        {"id":"s1186","name":"FS Wildschönau","provider":"Holfuy","latitude":47.43173,"longitude":12.09459},
+        {"id":"s1187","name":"La Gaillarderie","provider":"Holfuy","latitude":47.47985,"longitude":3.3551},
+        {"id":"s1191","name":"Marines de Cogolin","provider":"Holfuy","latitude":43.26531,"longitude":6.58811},
+        {"id":"s1192","name":"COLINA DEL CUERVO","provider":"Holfuy","latitude":43.55486,"longitude":-5.6128},
+        {"id":"s1196","name":"Creux-de-Genthod","provider":"Holfuy","latitude":46.26233,"longitude":6.16624},
+        {"id":"s1202","name":"Tal Brauneck LGGF","provider":"Holfuy","latitude":47.67826,"longitude":11.56183},
+        {"id":"s1204","name":"Selberdingerheim","provider":"Holfuy","latitude":47.90605,"longitude":12.59609},
+        {"id":"s1220","name":"WSCÜ","provider":"Holfuy","latitude":47.75013,"longitude":9.19349},
+        {"id":"s1221","name":"Stockberg","provider":"Holfuy","latitude":47.22443,"longitude":9.23846},
+        {"id":"s1228","name":"Im Langacher","provider":"Holfuy","latitude":47.20677,"longitude":8.69449},
+        {"id":"s1326","name":"Bélué","provider":"Holfuy","latitude":47.92253,"longitude":6.6861},
+        {"id":"s1325","name":"Tête de Roselette","provider":"Holfuy","latitude":45.77782,"longitude":6.68264},
+        {"id":"s1236","name":"1236 Meilleret new","provider":"Holfuy","latitude":46.33336,"longitude":7.12125},
+        {"id":"s1262","name":"Stettelberg","provider":"Holfuy","latitude":47.81343,"longitude":9.0759},
+        {"id":"s1248","name":"Schneiderberg","provider":"Holfuy","latitude":47.51361,"longitude":12.43212},
+        {"id":"s1263","name":"SPEED  FLY","provider":"Holfuy","latitude":43.94726,"longitude":4.58896},
+        {"id":"s1266","name":"Wildkogel Bramberg ","provider":"Holfuy","latitude":47.281708,"longitude":12.291483},
+        {"id":"s1271","name":"Loser/Hochanger","provider":"Holfuy","latitude":47.66459,"longitude":13.78027},
+        {"id":"s1335","name":"Alpe Giumello","provider":"Holfuy","latitude":46.04896,"longitude":9.36183},
+        {"id":"s1352","name":"AMS PR","provider":"Holfuy","latitude":43.2595,"longitude":5.8076},
+        {"id":"s1279","name":"Tête-de-Ran","provider":"Holfuy","latitude":47.05408,"longitude":6.8533},
+        {"id":"s1285","name":"Anzère, Chamossaire","provider":"Holfuy","latitude":46.317673,"longitude":7.384004},
+        {"id":"s1287","name":"ZFC: Kl. Matterhorn","provider":"Holfuy","latitude":45.93336,"longitude":7.7316},
+        {"id":"s1293","name":"Mauborget","provider":"Holfuy","latitude":46.85442,"longitude":6.61218},
+        {"id":"s1294","name":"Don Pablo station","provider":"Holfuy","latitude":40.95206,"longitude":14.00059},
+        {"id":"s1297","name":"1297 Marnex New","provider":"Holfuy","latitude":46.36815,"longitude":7.15426},
+        {"id":"s1298","name":"Moléson,Plan-Francey","provider":"Holfuy","latitude":46.55661,"longitude":7.02453},
+        {"id":"s1306","name":"Venet","provider":"Holfuy","latitude":47.14567,"longitude":10.62618},
+        {"id":"s1307","name":"Les Ruinettes","provider":"Holfuy","latitude":46.09049,"longitude":7.25181},
+        {"id":"s1309","name":"Cime Caron","provider":"Holfuy","latitude":45.26271,"longitude":6.56},
+        {"id":"s1311","name":"Corent (Dpt 63)","provider":"Holfuy","latitude":45.65918,"longitude":3.17944},
+        {"id":"s1320","name":"Moléson,Gros-Plané","provider":"Holfuy","latitude":46.55434,"longitude":7.00483},
+        {"id":"s1316","name":"Sommet TK Lanchettes","provider":"Holfuy","latitude":45.81014,"longitude":6.62809},
+        {"id":"s1330","name":"1330 Dirisolar","provider":"Holfuy","latitude":44.82258,"longitude":0.5095},
+        {"id":"s1340","name":"Tschenten","provider":"Holfuy","latitude":46.49783,"longitude":7.54069},
+        {"id":"s1353","name":"Picu el Sol","provider":"Holfuy","latitude":43.47149,"longitude":-5.6595},
+        {"id":"s1368","name":"Röti - DCW","provider":"Holfuy","latitude":47.25797,"longitude":7.5274},
+        {"id":"s1378","name":"Passadiços do Paiva","provider":"Holfuy","latitude":40.967092,"longitude":-8.175526},
+        {"id":"s1383","name":"Arcachon","provider":"Holfuy","latitude":44.64617,"longitude":-1.19999},
+        {"id":"s1385","name":"FNDA_Higa de Monreal","provider":"Holfuy","latitude":42.69657,"longitude":-1.53137},
+        {"id":"s1389","name":"Schnifis Ried","provider":"Holfuy","latitude":47.2097126,"longitude":9.725665},
+        {"id":"s1393","name":"Buñol","provider":"Holfuy","latitude":39.418804,"longitude":-0.754678},
+        {"id":"s1402","name":"1402 Vieux Chateau N","provider":"Holfuy","latitude":46.4427,"longitude":6.15906},
+        {"id":"s1412","name":"OKO-NW","provider":"Holfuy","latitude":37.64958,"longitude":7.49859},
+        {"id":"s1419","name":"Speiereck Peterbauer","provider":"Holfuy","latitude":47.12052,"longitude":13.6419},
+        {"id":"s1430","name":"Birnberg","provider":"Holfuy","latitude":47.62,"longitude":8.42044},
+        {"id":"s1442","name":"Vigo de Sanabria","provider":"Holfuy","latitude":42.14207,"longitude":-6.69919},
+        {"id":"s1447","name":"Palmitera/UGR-ACAMET","provider":"Holfuy","latitude":36.57518,"longitude":-5.04647},
+        {"id":"s1446","name":"Talwind Lähn-Bichlba","provider":"Holfuy","latitude":47.42133,"longitude":10.83248},
+        {"id":"s1448","name":"Fanas - Höreli","provider":"Holfuy","latitude":47.00022,"longitude":9.68466},
+        {"id":"s1455","name":"1455","provider":"Holfuy","latitude":44.81877,"longitude":13.9753},
+        {"id":"s1465","name":"Herndleck","provider":"Holfuy","latitude":47.92808,"longitude":14.32749},
+        {"id":"s1695","name":"Estey","provider":"Holfuy","latitude":44.48318,"longitude":-1.10148},
+        {"id":"s1472","name":"La Llambria 1753 m ","provider":"Holfuy","latitude":43.21256,"longitude":-5.25055},
+        {"id":"s1467","name":"1467TEST","provider":"Holfuy","latitude":45.34911,"longitude":12.52471},
+        {"id":"s1470","name":"Evolène","provider":"Holfuy","latitude":46.1067,"longitude":7.50154},
+        {"id":"s1471","name":"Puy de la Tâche (63)","provider":"Holfuy","latitude":45.59211,"longitude":2.84507},
+        {"id":"s1473","name":"Penken Kombibahn","provider":"Holfuy","latitude":47.17592,"longitude":11.81631},
+        {"id":"s1484","name":"VL 58","provider":"Holfuy","latitude":47.31526,"longitude":3.55122},
+        {"id":"s1600","name":"Seignosse","provider":"Holfuy","latitude":43.68699,"longitude":-1.44009},
+        {"id":"s1490","name":"Buttenhausen","provider":"Holfuy","latitude":48.36016,"longitude":9.48375},
+        {"id":"s1491","name":"La Hume","provider":"Holfuy","latitude":44.64542,"longitude":-1.11327},
+        {"id":"s1494","name":"OLERON CHAR A VOILE","provider":"Holfuy","latitude":45.8544,"longitude":-1.24762},
+        {"id":"s1495","name":"DCI HIHO 1495","provider":"Holfuy","latitude":47.33323,"longitude":11.5653},
+        {"id":"s1520","name":" CHASSENOUD","provider":"Holfuy","latitude":45.48946,"longitude":4.70595},
+        {"id":"s1540","name":"Wankdorf","provider":"Holfuy","latitude":46.963,"longitude":7.46346},
+        {"id":"s1545","name":"Hörnerbahn Gipfel","provider":"Holfuy","latitude":47.46523,"longitude":10.20116},
+        {"id":"s1551","name":"Urnäsch","provider":"Holfuy","latitude":47.31861,"longitude":9.28007},
+        {"id":"s1557","name":"T-1 Lokev","provider":"Holfuy","latitude":45.66201,"longitude":13.94499},
+        {"id":"s1558","name":"T-2 Črnotiče","provider":"Holfuy","latitude":45.56208,"longitude":13.8793},
+        {"id":"s1568","name":"Vercorin","provider":"Holfuy","latitude":46.25958,"longitude":7.52882},
+        {"id":"s1571","name":"Parpaner Rothorn","provider":"Holfuy","latitude":46.74282,"longitude":9.60307},
+        {"id":"s1572","name":"Brämabüel","provider":"Holfuy","latitude":46.7806,"longitude":9.84931},
+        {"id":"s1586","name":"Arrivee","provider":"Holfuy","latitude":45.415,"longitude":6.6287},
+        {"id":"s1588","name":"Eclipse","provider":"Holfuy","latitude":45.4109,"longitude":6.61442},
+        {"id":"s1593","name":"Zuflucht-Rossbühl SW","provider":"Holfuy","latitude":48.48696,"longitude":8.23964},
+        {"id":"s1594","name":"Oppenau Ost","provider":"Holfuy","latitude":48.43571,"longitude":8.15205},
+        {"id":"s1627","name":"Jägerwirt Landeplatz","provider":"Holfuy","latitude":47.12619,"longitude":15.01714},
+        {"id":"s1603","name":"Calonico","provider":"Holfuy","latitude":46.45103,"longitude":8.84072},
+        {"id":"s1604","name":"Cry d'Err CVLCMA","provider":"Holfuy","latitude":46.33628,"longitude":7.47846},
+        {"id":"s1867","name":"MedrigFlyzoneSEE/PAZ","provider":"Holfuy","latitude":47.06904,"longitude":10.49321},
+        {"id":"s1610","name":"Hintere Niedere ","provider":"Holfuy","latitude":47.39915,"longitude":9.94535},
+        {"id":"s1611","name":"Soltmannhuette","provider":"Holfuy","latitude":46.79486,"longitude":12.77937},
+        {"id":"s1614","name":"chariez","provider":"Holfuy","latitude":47.62181,"longitude":6.09004},
+        {"id":"s1616","name":"Schraba","provider":"Holfuy","latitude":47.84879,"longitude":10.29698},
+        {"id":"s1617","name":"Weissenstein - DCW","provider":"Holfuy","latitude":47.25241,"longitude":7.51048},
+        {"id":"s1619","name":"SPIRIT021","provider":"Holfuy","latitude":46.27002,"longitude":15.07623},
+        {"id":"s1621","name":"Monte Lema - CVLT","provider":"Holfuy","latitude":46.04015,"longitude":8.83098},
+        {"id":"s1638","name":"ZFC: Riffelberg","provider":"Holfuy","latitude":45.99124,"longitude":7.74715},
+        {"id":"s1639","name":"ZFC: Rothorn South","provider":"Holfuy","latitude":46.02067,"longitude":7.79973},
+        {"id":"s1642","name":"Duc d 'Albe - rade de","provider":"Holfuy","latitude":48.32221,"longitude":-4.45462},
+        {"id":"s1750","name":"Rota (UCA)","provider":"Holfuy","latitude":36.62726,"longitude":-6.38372},
+        {"id":"s1809","name":"Crap Sogn Gion","provider":"Holfuy","latitude":46.8335,"longitude":9.21457},
+        {"id":"s1745","name":"1745","provider":"Holfuy","latitude":41.762838,"longitude":-0.85055},
+        {"id":"s1811","name":"Hütte Brauneck LGGF ","provider":"Holfuy","latitude":47.67722,"longitude":11.55288},
+        {"id":"s1810","name":"Blomberg LGGF","provider":"Holfuy","latitude":47.73443,"longitude":11.50679},
+        {"id":"s1658","name":"COMADO CPFerrol","provider":"Holfuy","latitude":43.52738,"longitude":-7.17066},
+        {"id":"s1821","name":"Concorde Aventures","provider":"Holfuy","latitude":47.79323,"longitude":-3.85542},
+        {"id":"s1665","name":"Hohe Kugel","provider":"Holfuy","latitude":47.33513,"longitude":9.71573},
+        {"id":"s1668","name":"Madrisa Schaffürggli","provider":"Holfuy","latitude":46.9177,"longitude":9.87006},
+        {"id":"s1670","name":"Laber","provider":"Holfuy","latitude":47.5861,"longitude":11.10375},
+        {"id":"s1671","name":"Kammeregg SP","provider":"Holfuy","latitude":47.56586,"longitude":10.3085},
+        {"id":"s1674","name":"Callejo de Ordás","provider":"Holfuy","latitude":42.73065,"longitude":-5.83979},
+        {"id":"s1675","name":"Berghaupten ODGFe.V.","provider":"Holfuy","latitude":48.41362,"longitude":7.96626},
+        {"id":"s1676","name":"1676","provider":"Holfuy","latitude":43.07886,"longitude":5.89303},
+        {"id":"s1678","name":"Studnerberg","provider":"Holfuy","latitude":47.1661,"longitude":9.42391},
+        {"id":"s1679","name":"Hinhang","provider":"Holfuy","latitude":47.47073,"longitude":10.30275},
+        {"id":"s1681","name":"Brunni","provider":"Holfuy","latitude":46.84248,"longitude":8.41005},
+        {"id":"s1682","name":"GSV","provider":"Holfuy","latitude":46.98207,"longitude":14.37401},
+        {"id":"s1684","name":"Frauenalpe Gipfel","provider":"Holfuy","latitude":47.06581,"longitude":14.13932},
+        {"id":"s1686","name":"SCA Michaelerberg","provider":"Holfuy","latitude":47.41131,"longitude":13.89338},
+        {"id":"s1687","name":"SCA Stoder Rosegger","provider":"Holfuy","latitude":47.45728,"longitude":13.81913},
+        {"id":"s1689","name":"Startplatz Hochimst","provider":"Holfuy","latitude":47.255888,"longitude":10.677035},
+        {"id":"s1808","name":"Amisbühl","provider":"Holfuy","latitude":46.70258,"longitude":7.82217},
+        {"id":"s1690","name":"Pfunds Startpl Kobl","provider":"Holfuy","latitude":46.97166,"longitude":10.49355},
+        {"id":"s1694","name":"ImbergerHorn Hindela","provider":"Holfuy","latitude":47.49212,"longitude":10.37085},
+        {"id":"s1698","name":"Grabs Landeplatz","provider":"Holfuy","latitude":47.17655,"longitude":9.45543},
+        {"id":"s1700","name":"Bargella","provider":"Holfuy","latitude":47.141226,"longitude":9.549284},
+        {"id":"s1701","name":"Alpe Quaggione","provider":"Holfuy","latitude":45.91378,"longitude":8.38147},
+        {"id":"s1705","name":"1705","provider":"Holfuy","latitude":47.40109,"longitude":-2.03553},
+        {"id":"s1769","name":"Lommiswil","provider":"Holfuy","latitude":47.22327,"longitude":7.46697},
+        {"id":"s1804","name":"Höhematte","provider":"Holfuy","latitude":46.68572,"longitude":7.85703},
+        {"id":"s1723","name":"Son Bou Menorca","provider":"Holfuy","latitude":39.89879,"longitude":4.07431},
+        {"id":"s1730","name":"TENA","provider":"Holfuy","latitude":37.252318,"longitude":-5.830279},
+        {"id":"s1733","name":"NIJARMAR","provider":"Holfuy","latitude":37.0065434159,"longitude":-2.12487724668},
+        {"id":"s1734","name":"ES MERCADAL","provider":"Holfuy","latitude":40.00177,"longitude":4.14792},
+        {"id":"s1738","name":"Montelabbate","provider":"Holfuy","latitude":43.86233,"longitude":12.80514},
+        {"id":"s1739","name":"ARA DE LOS OLMOS","provider":"Holfuy","latitude":39.9462305,"longitude":-1.13198888},
+        {"id":"s1742","name":"Montenero","provider":"Holfuy","latitude":42.044401,"longitude":14.765557},
+        {"id":"s1743","name":"AMOROS","provider":"Holfuy","latitude":38.22049,"longitude":-0.83963},
+        {"id":"s1748","name":"Cala Tirant Menorca","provider":"Holfuy","latitude":40.0464,"longitude":4.10215},
+        {"id":"s1749","name":"Punta Prima Menorca","provider":"Holfuy","latitude":39.81174,"longitude":4.2805},
+        {"id":"s1754","name":"Jenner","provider":"Holfuy","latitude":47.5791,"longitude":13.02509},
+        {"id":"s1759","name":"ALDEIA","provider":"Holfuy","latitude":38.808316,"longitude":-7.873077},
+        {"id":"s1761","name":"Madroño","provider":"Holfuy","latitude":39.933897,"longitude":-4.860555},
+        {"id":"s1764","name":"Tabernas III","provider":"Holfuy","latitude":37.092134,"longitude":-2.347897},
+        {"id":"s1766","name":"HORCAJO","provider":"Holfuy","latitude":39.542706,"longitude":-1.131891},
+        {"id":"s1771","name":"Stierenberg DC-Falk","provider":"Holfuy","latitude":47.33171,"longitude":7.64538},
+        {"id":"s1793","name":"La Jara (UCA)","provider":"Holfuy","latitude":36.76168,"longitude":-6.39737},
+        {"id":"s1795","name":"Club Nàutic Fornells","provider":"Holfuy","latitude":40.0402,"longitude":4.12575},
+        {"id":"s1796","name":"9erköpfle West","provider":"Holfuy","latitude":47.48258,"longitude":10.54225},
+        {"id":"s1797","name":"Herlisberg","provider":"Holfuy","latitude":47.19819,"longitude":8.23307},
+        {"id":"s1802","name":"Club nautique CNCP","provider":"Holfuy","latitude":42.7038,"longitude":3.0387},
+        {"id":"s1805","name":"BRWD1","provider":"Holfuy","latitude":46.94021,"longitude":8.99868},
+        {"id":"s1823","name":"Fulseck","provider":"Holfuy","latitude":47.23488,"longitude":13.14756},
+        {"id":"s1827","name":"ZFC: GGB North","provider":"Holfuy","latitude":45.98363,"longitude":7.78011},
+        {"id":"s1832","name":"Gaisberg SP Ost","provider":"Holfuy","latitude":47.804829,"longitude":13.114223},
+        {"id":"s1833","name":"Gaisberg LP Guggen. ","provider":"Holfuy","latitude":47.819069,"longitude":13.104982},
+        {"id":"s1836","name":"Almeirin","provider":"Holfuy","latitude":39.149685,"longitude":-0.8608628},
+        {"id":"s1837","name":"Castel Volturno","provider":"Holfuy","latitude":41.07909,"longitude":13.96943},
+        {"id":"s1838","name":"Broni","provider":"Holfuy","latitude":45.077925,"longitude":9.255201},
+        {"id":"s1850","name":"Lehn","provider":"Holfuy","latitude":46.68084,"longitude":7.82554},
+        {"id":"s1862","name":"Bischling Startplatz","provider":"Holfuy","latitude":47.46394,"longitude":13.29872},
+        {"id":"s1863","name":"Bischling Landeplatz","provider":"Holfuy","latitude":47.45869,"longitude":13.27086},
+        {"id":"s1866","name":"PONZOS CPFerrol","provider":"Holfuy","latitude":43.5516,"longitude":-8.25423},
+        {"id":"s1870","name":"Nagens","provider":"Holfuy","latitude":46.86674,"longitude":9.2314},
+        {"id":"s1871","name":"Piz Scalottas","provider":"Holfuy","latitude":46.7214,"longitude":9.51158},
+        {"id":"s1872","name":"Parpan","provider":"Holfuy","latitude":46.76261,"longitude":9.5617},
+        {"id":"s1873","name":"Valbella","provider":"Holfuy","latitude":46.74418,"longitude":9.55185},
+        {"id":"s1970","name":"Saumur Air Club","provider":"Holfuy","latitude":47.25863,"longitude":-0.11548},
+        {"id":"s1875","name":"Arlberg (Stanton LP)","provider":"Holfuy","latitude":47.13307,"longitude":10.27004},
+        {"id":"s1880","name":"Paramotorclub RW","provider":"Holfuy","latitude":48.26683,"longitude":8.51446},
+        {"id":"s1881","name":"DCC_Fille Morte","provider":"Holfuy","latitude":48.21869,"longitude":7.1934},
+        {"id":"s1885","name":"Rigi Kulm Bahndepot","provider":"Holfuy","latitude":47.05505,"longitude":8.48605},
+        {"id":"s1886","name":"Rigi Rotstock","provider":"Holfuy","latitude":47.04826,"longitude":8.46835},
+        {"id":"s1887","name":"BRESTPORT","provider":"Holfuy","latitude":48.38207,"longitude":-4.45412},
+        {"id":"s1894","name":"1894 Crans","provider":"Holfuy","latitude":46.35647,"longitude":6.20697},
+        {"id":"s1895","name":"1895 CVLD Bosse","provider":"Holfuy","latitude":46.44456,"longitude":6.17598},
+        {"id":"s1926","name":"Sombernon","provider":"Holfuy","latitude":47.3226,"longitude":4.706496},
+        {"id":"s1897","name":"Aznalcollar","provider":"Holfuy","latitude":37.424483,"longitude":-6.246199},
+        {"id":"s1898","name":"Villanueva de Galleg","provider":"Holfuy","latitude":414548,"longitude":5143.6},
+        {"id":"s1899","name":"La Banditella","provider":"Holfuy","latitude":42.501163,"longitude":11.721609},
+        {"id":"s1900","name":"Crato","provider":"Holfuy","latitude":39.418205,"longitude":-7.67897},
+        {"id":"s1903","name":"Trevoes I","provider":"Holfuy","latitude":41.109035,"longitude":-7.434083},
+        {"id":"s1904","name":"Baruffino","provider":"Holfuy","latitude":44.694123,"longitude":11.877916},
+        {"id":"s1905","name":"Pozzolo","provider":"Holfuy","latitude":44.825214,"longitude":8.746064},
+        {"id":"s1907","name":"BIG FISH NORTE BF28","provider":"Holfuy","latitude":37.453193,"longitude":14.947614},
+        {"id":"s1908","name":"SARDELLA","provider":"Holfuy","latitude":37.42628,"longitude":14.90554},
+        {"id":"s1910","name":"BIG FISH SUR 07","provider":"Holfuy","latitude":37.399236,"longitude":15.004496},
+        {"id":"s1948","name":"Slano Blato","provider":"Holfuy","latitude":45.91306,"longitude":13.86478},
+        {"id":"s1986","name":"LSZM south","provider":"Holfuy","latitude":47.07738,"longitude":9.06272},
+        {"id":"s1931","name":"Villamañan","provider":"Holfuy","latitude":42.316722,"longitude":-5.589972},
+        {"id":"s1932","name":"Outarville","provider":"Holfuy","latitude":48.201639,"longitude":2.015872},
+        {"id":"s1933","name":"Latera","provider":"Holfuy","latitude":42.488247,"longitude":11.699835},
+        {"id":"s1935","name":"Fachina","provider":"Holfuy","latitude":41.504948,"longitude":-0.655171},
+        {"id":"s1952","name":"Salinas Doñana (UCA)","provider":"Holfuy","latitude":36.87797,"longitude":-6.31827},
+        {"id":"s1943","name":"Som la Proz","provider":"Holfuy","latitude":46.02082,"longitude":7.13642},
+        {"id":"s1949","name":"Macesnik","provider":"Holfuy","latitude":46.43391,"longitude":14.6885},
+        {"id":"s1953","name":"TSF Pointe O amont","provider":"Holfuy","latitude":46.19935,"longitude":6.84101},
+        {"id":"s1955","name":"TSD GP intermédiaire","provider":"Holfuy","latitude":46.16633,"longitude":6.84632},
+        {"id":"s1969","name":"Evolène Servacresse","provider":"Holfuy","latitude":46.12217,"longitude":7.44416},
+        {"id":"s1968","name":"CMV Barcelona","provider":"Holfuy","latitude":41.38736,"longitude":2.20298},
+        {"id":"s1971","name":"Obere Wengi","provider":"Holfuy","latitude":47.32593,"longitude":7.62696},
+        {"id":"s1975","name":"Hochzeiger Jerzens","provider":"Holfuy","latitude":47.1614,"longitude":10.78745},
+        {"id":"s1367","name":"El Hierro,M Colorada","provider":"Holfuy","latitude":27.73984,"longitude":-18.03089},
+        {"id":"s1569","name":"ElVallito, Tenerife","provider":"Holfuy","latitude":28.10354,"longitude":-16.50994},
+        {"id":"s1816","name":"Ladera Guimar","provider":"Holfuy","latitude":28.29167,"longitude":-16.42279},
+        {"id":"s1817","name":"Puerto. Aptos.Bahía.","provider":"Holfuy","latitude":28.41109,"longitude":-16.55811},
+        {"id":"s1818","name":"Puertito Güímar","provider":"Holfuy","latitude":28.28843,"longitude":-16.37892},
+        {"id":"s1819","name":"La Corona. Despegue","provider":"Holfuy","latitude":28.37844,"longitude":-16.60086},
+        {"id":"s1891","name":"El Tanque_Despegue","provider":"Holfuy","latitude":28.35976,"longitude":-16.7858},
+        {"id":"s1906","name":"Taucho_Parapente","provider":"Holfuy","latitude":28.14578,"longitude":-16.7365},
+        {"id":"s1046","name":"1046 Gava mar","provider":"Holfuy","latitude":41.26549,"longitude":2.01265},
+        {"id":"s1659","name":"MONDOÑEDO CPFerrol","provider":"Holfuy","latitude":43.43529,"longitude":-7.33206},
+        {"id":"s2014","name":"Espadan","provider":"Holfuy","latitude":39.83431,"longitude":-0.40495},
+        {"id":"s2015","name":"Tabernas 1 Campa","provider":"Holfuy","latitude":37.07652,"longitude":-2.20996}
+    ];
     // 🟡 2. OBJETO GESTOR CENTRAL (Configuración y Estado de cada red)
     //___________________________________________________________________________________
 
@@ -14515,6 +14925,26 @@ function inicializarMapaLeaflet() {
             intervalo: null,
             umbralAmarilloMin: 90,
             umbralRojoMin: 120
+        },
+        'holfuy': {
+            id: 'holfuy',
+            nombre: 'Holfuy',
+            estaciones: ESTACIONES_HOLFUY,
+            urlCache: 'https://flydecision.com/balizas_holfuy_cache.json',
+            url6h: 'https://flydecision.com/balizas_holfuy_6h.json',
+            checkboxId: 'checkboxBalizasHolfuy',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_HOLFUY_VISIBLE',
+            // --- Variables de estado de esta red ---
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 30,
+            umbralRojoMin: 45 
         }
     };    
     
@@ -14640,16 +15070,40 @@ function inicializarMapaLeaflet() {
             }
         }
 
+        // -----------------------------------------------------------
+        // A.2) COMPROBAR SI ESTÁ CONGELADA (Todo ceros en las últimas 4h)
+        // -----------------------------------------------------------
+        let balizaCongelada = false;
+        if (red.datos6h && red.datos6h[marker.stationId]) {
+            const lecturas = red.datos6h[marker.stationId];
+            const ahoraTs = Math.floor(Date.now() / 1000);
+            const desdeTs = ahoraTs - 4 * 3600; // Últimas 4 horas
+            
+            const puntos4h = lecturas.filter(p => p.ts >= desdeTs && p.ts <= ahoraTs && typeof p.windSpeed === 'number');
+
+            // Si hay datos en estas 4h, y ABSOLUTAMENTE TODOS son cero
+            if (puntos4h.length > 0) {
+                const todoCeros = puntos4h.every(p => 
+                    p.windSpeed === 0 && 
+                    (p.windGusts === 0 || p.windGusts === null || p.windGusts === undefined)
+                );
+                if (todoCeros) {
+                    balizaCongelada = true;
+                }
+            }
+        }
+
         // Nos aseguramos de que la baliza ESTÉ en el mapa siempre (agrupada en el clúster)
         if (!red.layerGroup.hasLayer(marker)) {
             red.layerGroup.addLayer(marker);
         }
 
-        // 1. SI ESTÁ OBSOLETA (>X h): CÍRCULO GRIS
-        if (balizaConDatosObsoletos) {
+        // 1. SI ESTÁ OBSOLETA (>X h) O CONGELADA A CERO (>4h): CÍRCULO GRIS
+        if (balizaConDatosObsoletos || balizaCongelada) {
+            const tituloGris = balizaConDatosObsoletos ? "Datos obsoletos" : "Sensor atascado (4h a cero)";
             const svgPuntoGris = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#95a5a6" stroke="#7f8c8d" stroke-width="2"/></svg>`;
             const htmlObsoleto = `
-                <div title="${marker.stationName}: Datos obsoletos" style="width:80px;height:46px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;margin-left:-27px;margin-top:18px;">
+                <div title="${marker.stationName}: ${tituloGris}" style="width:80px;height:46px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;margin-left:-27px;margin-top:18px;">
                     ${svgPuntoGris}
                 </div>`;
             
@@ -14719,24 +15173,46 @@ function inicializarMapaLeaflet() {
         if (!containerDiv) return;
         
         const d = red.datosCache[marker.stationId];
-        
-        if (!d || d.windSpeed === null || d.windSpeed === undefined) {
+
+        // -----------------------------------------------------------
+        // EVALUAR SI ESTÁ CONGELADA (Para no mostrar un gráfico plano a 0)
+        // -----------------------------------------------------------
+        let balizaCongelada = false;
+        if (red.datos6h && red.datos6h[marker.stationId]) {
+            const lecturas = red.datos6h[marker.stationId];
+            const ahoraTs = Math.floor(Date.now() / 1000);
+            const desdeTs = ahoraTs - 4 * 3600; 
+            
+            const puntos4h = lecturas.filter(p => p.ts >= desdeTs && p.ts <= ahoraTs && typeof p.windSpeed === 'number');
+
+            if (puntos4h.length > 0) {
+                balizaCongelada = puntos4h.every(p => 
+                    p.windSpeed === 0 && 
+                    (p.windGusts === 0 || p.windGusts === null || p.windGusts === undefined)
+                );
+            }
+        }
+
+        // 1. Datos numéricos o Aviso de error (Si falla o está congelada, pintamos error y SALIMOS)
+        if (!d || d.windSpeed === null || d.windSpeed === undefined || balizaCongelada) {
             containerDiv.innerHTML = `
                 <h4 style="margin: 0; color: #c0392b;">🚩 ${marker.stationName}</h4>
                 <p style="color:#c0392b; margin:5px 0 0 0;">⚠️ ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}</p>
             `;
-            return;
-        }
+            return; // Retorno temprano. El código se detiene aquí.
+        } 
 
+        // 2. Si todo está bien, calculamos variables
         const orientacionTexto = obtenerTextoOrientacion(d.windDirection); // Función global que ya tienes
         const estadoPopup = calcularEstadoActualizacionBaliza(d, marker.redId);
 
-        // 1. viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
+        // viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
         const svgFlecha = `
             <svg viewBox="5 1 20 20" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7); transform-origin: center center; width: 28px; height: 28px; flex-shrink: 0;">
                 <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
             </svg>`;
 
+        // Inyectamos todo el HTML correcto
         containerDiv.innerHTML = `
             <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
                 🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
@@ -14839,13 +15315,21 @@ function inicializarMapaLeaflet() {
     // 🟡 9. LÓGICA DE ACTIVACIÓN/DESACTIVACIÓN GENÉRICA POR CHECKBOXES
     //___________________________________________________________________________________
 
-    function activarCapaBalizas(redId) {
+    async function activarCapaBalizas(redId) {
         const red = REDES_BALIZAS[redId];
         dibujarEstacionesBalizas(redId);
         map.addLayer(red.layerGroup);
+        
+        // Descargamos el historial ANTES de pintar los iconos
+        await cargarDatos6hBalizasSiNecesario(redId); 
         cargarDatosBalizas(redId);
+
         if (!red.intervalo) {
-            red.intervalo = setInterval(() => cargarDatosBalizas(redId), 60 * 1000); // 1 minuto
+            red.intervalo = setInterval(async () => {
+                // Cada minuto, renovamos historial (si pasaron 5 min) y repintamos
+                await cargarDatos6hBalizasSiNecesario(redId); 
+                cargarDatosBalizas(redId);
+            }, 60 * 1000); 
         }
     }
 
