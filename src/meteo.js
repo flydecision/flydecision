@@ -85,6 +85,33 @@ function alternarBotonMinutely15() {
     if (typeof construir_tabla === 'function') construir_tabla();
 }
 
+// Función genérica para guardar los ajustes de memoria del mapa
+window.alternarAjusteMemoriaMapa = function(idCheckbox, lsKey) {
+    const checkbox = document.getElementById(idCheckbox);
+    if (checkbox) {
+        localStorage.setItem(lsKey, checkbox.checked);
+    }
+};
+
+// Cargar los estados de los nuevos checkboxes de memoria del mapa (Por defecto: false)
+window.addEventListener('DOMContentLoaded', () => {
+    const ajustesMemoriaMapa = [
+        { id: 'chkAbrirMapaInicio', key: 'METEO_ABRIR_MAPA_INICIO' },
+        { id: 'chkRecordarPosicionMapa', key: 'METEO_RECORDAR_POSICION_MAPA' },
+        { id: 'chkRecordarEstadoFiltroHorario', key: 'METEO_RECORDAR_ESTADO_FILTRO_HORARIO' },
+        { id: 'chkRecordarCapasActivas', key: 'METEO_RECORDAR_CAPAS_ACTIVAS' },
+        { id: 'chkRecordarTipoMapa', key: 'METEO_RECORDAR_TIPO_MAPA' },
+        { id: 'chkRecordarFiltrosMapa', key: 'METEO_RECORDAR_FILTROS_MAPA' }
+    ];
+
+    ajustesMemoriaMapa.forEach(ajuste => {
+        const checkbox = document.getElementById(ajuste.id);
+        if (checkbox) {
+            checkbox.checked = localStorage.getItem(ajuste.key) === 'true';
+        }
+    });
+});
+
 // Controlador dinámico de variables para el Modo Básico/Avanzado
 function aplicarReglasModoSimpleAVariables(esSimple) {
     if (esSimple) {
@@ -7267,43 +7294,24 @@ window.cambiarModoApp = function(esSimple) {
 };
 
 function resetearOpcionesAvanzadas() {
-
-    // 1. "Ver todos los días" (botón calendario flotante)
     if (typeof modoVerTodosLosDias !== 'undefined' && modoVerTodosLosDias && typeof window.toggleVerTodosLosDias === 'function') {
         window.toggleVerTodosLosDias();
     }
-
-    // 2. Filtro de distancia (incluye el botón "incluir no favoritos")
     if (typeof resetFiltroDistancia === 'function') {
-        resetFiltroDistancia(false); // false = no reconstruir aún, lo hacemos una sola vez al final
+        resetFiltroDistancia(false); 
     }
-
-    // 3. Filtro "solo seguimiento"
     if (typeof soloSeguimiento !== 'undefined' && soloSeguimiento && typeof filtroVerSoloSeguimiento === 'function') {
-        filtroVerSoloSeguimiento(); // ya reconstruye la tabla por dentro; es el único caso que no diferimos
+        filtroVerSoloSeguimiento(); 
     }
 
-    // 4. Filtros del mapa: "Mínimo de vuelos" y "Año del último vuelo" -> volver a índice 0
-    const STORAGE_KEY_VUELOS = 'METEO_MAPA_MINIMOVUELOS';
-    const STORAGE_KEY_ULTIMO_VUELO = 'METEO_MINIMO_ANO_ULTIMO_VUELO';
-    localStorage.setItem(STORAGE_KEY_VUELOS, '0');
-    localStorage.setItem(STORAGE_KEY_ULTIMO_VUELO, '0');
+    // Limpiamos los estados de filtros del mapa
+    localStorage.removeItem('METEO_MAPA_MINIMOVUELOS');
+    localStorage.removeItem('METEO_MINIMO_ANO_ULTIMO_VUELO');
+    localStorage.removeItem('METEO_MAPA_FILTRO_FAV');
+    localStorage.removeItem('METEO_MAPA_FILTRO_SEG');
+    localStorage.removeItem('METEO_MAPA_FILTRO_ACT');
 
-    const sliderVuelosConfig = document.getElementById('sliderValorInicialFiltroNumeroMinimoVuelos');
-    const textoVuelosConfig = document.getElementById('valorConfigFiltroNumeroMinimoVuelosTexto');
-    const contConfigVuelos = document.querySelector('.configuracion-control-vuelos-container');
-    if (sliderVuelosConfig) sliderVuelosConfig.value = '0';
-    if (textoVuelosConfig) textoVuelosConfig.innerText = ESCALA_VUELOS[0] || 0;
-    if (contConfigVuelos) contConfigVuelos.classList.remove('borde-rojo-externo');
-
-    const sliderUltimoVueloConfig = document.getElementById('sliderValorInicialFiltroUltimoVuelo');
-    const textoUltimoVueloConfig = document.getElementById('valorConfigFiltroUltimoVueloTexto');
-    const contConfigUltimoVuelo = document.querySelector('.configuracion-control-ultimovuelo-container');
-    if (sliderUltimoVueloConfig) sliderUltimoVueloConfig.value = '0';
-    if (textoUltimoVueloConfig) textoUltimoVueloConfig.innerText = (typeof t === 'function' ? t('mapa.todos') : 'Todos');
-    if (contConfigUltimoVuelo) contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
-
-    // Sincronizamos también los sliders "en vivo" del panel de filtros del mapa, si existen
+    // Sincronizamos los sliders del mapa a su origen
     const sliderVuelosFiltro = document.getElementById('sliderVuelos');
     const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
     if (sliderVuelosFiltro) sliderVuelosFiltro.value = '0';
@@ -7314,12 +7322,30 @@ function resetearOpcionesAvanzadas() {
     if (sliderUltimoVueloFiltro) sliderUltimoVueloFiltro.value = '0';
     if (textoUltimoVueloFiltro) textoUltimoVueloFiltro.innerText = (typeof t === 'function' ? t('mapa.todos') : 'Todos');
 
+    // Resetear las variables lógicas
+    if (typeof filtroFavoritosMapa !== 'undefined') filtroFavoritosMapa = 0;
+    if (typeof filtroSeguimientoMapa !== 'undefined') filtroSeguimientoMapa = 0;
+    if (typeof filtroActividadMapa !== 'undefined') filtroActividadMapa = 1;
+    
+    if (typeof actualizarBotonFavoritosMapa === 'function') actualizarBotonFavoritosMapa();
+    if (typeof actualizarBotonSeguimientoMapa === 'function') actualizarBotonSeguimientoMapa();
+
+    const sliderAct = document.getElementById('sliderActividad');
+    const txtAct = document.getElementById('valorActividadTexto');
+    if (sliderAct) sliderAct.value = 1;
+    if (txtAct) {
+        // Truco rápido para re-pintar el 1/5 sin necesitar la función renderizarTextoActividad
+        txtAct.innerHTML = `<span style="display:inline-flex; align-items:center; gap:5px; vertical-align:middle; margin-left: 6px; margin-top: -3px;"><span style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; vertical-align: -2px; outline: none;"><span style="display: inline-block; width: 3px; height: 4px; background-color: #5b5b5b; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 7px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 10px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 13px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 16px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span></span><span>1/5</span></span>`;
+    }
+
+    const orientaciones = document.querySelectorAll('.filtro-orientacion-checkbox');
+    orientaciones.forEach(c => c.checked = false);
+
     if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
         if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
         if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
     }
 
-    // 5. Un único refresco final, ahora que todos los estados están ya limpios
     if (typeof construir_tabla === 'function') {
         construir_tabla();
     }
@@ -7678,131 +7704,30 @@ document.addEventListener('i18nReady', function() {
 
         if (tieneCoords) {
             // --- 🚀 ARRANQUE POR COORDENADAS ---
-            
-            // 2. Cargamos la tabla en segundo plano (silencioso) y ESPERAMOS a que termine (.then)
             construir_tabla(false, true).then(() => {
-                
-                // 3. Ahora que los datos globales existen, dibujamos el mapa y sus popups
                 cambiarVista('mapa');
-
-                // 4. ILUMINAR EL BOTÓN
                 setTimeout(() => {
                     const btnMap = document.getElementById('nav-map');
-                    if (btnMap && typeof window.activarMenuInferior === 'function') {
-                        window.activarMenuInferior(btnMap);
-                    } else if (btnMap) {
-                        document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
-                        btnMap.classList.add('active');
-                    }
+                    if (btnMap && typeof window.activarMenuInferior === 'function') window.activarMenuInferior(btnMap);
+                    else if (btnMap) { document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active')); btnMap.classList.add('active'); }
                 }, 150);
             });
 
         } else {
             // --- ARRANQUE NORMAL ---
-            construir_tabla();
-        }
-    }
-
-	// ---------------------------------------------------------------
-	// 🔴 INICIALIZACIÓN GLOBAL DE SLIDERS DE AJUSTES DEL MAPA
-	// ---------------------------------------------------------------
-
-    function inicializarSlidersAjustesMapa() {
-        const STORAGE_KEY_VUELOS = 'METEO_MAPA_MINIMOVUELOS';
-        const STORAGE_KEY_ULTIMO_VUELO = 'METEO_MINIMO_ANO_ULTIMO_VUELO';
-
-        const sliderVuelosConfig = document.getElementById('sliderValorInicialFiltroNumeroMinimoVuelos');
-        const textoVuelosConfig = document.getElementById('valorConfigFiltroNumeroMinimoVuelosTexto'); 
-        const contConfigVuelos = document.querySelector('.configuracion-control-vuelos-container');
-
-        const sliderUltimoVueloConfig = document.getElementById('sliderValorInicialFiltroUltimoVuelo');
-        const textoUltimoVueloConfig = document.getElementById('valorConfigFiltroUltimoVueloTexto'); 
-        const contConfigUltimoVuelo = document.querySelector('.configuracion-control-ultimovuelo-container');
-
-        // 1. Cargar valores iniciales desde localStorage al arrancar la App
-        const indiceVuelosGuardado = localStorage.getItem(STORAGE_KEY_VUELOS) || '0';
-        const indiceUltimoVueloGuardado = localStorage.getItem(STORAGE_KEY_ULTIMO_VUELO) || '0';
-
-        if (sliderVuelosConfig && textoVuelosConfig) {
-            sliderVuelosConfig.value = indiceVuelosGuardado;
-            textoVuelosConfig.innerText = ESCALA_VUELOS[parseInt(indiceVuelosGuardado, 10)] || 0;
-            
-            if (contConfigVuelos) {
-                contConfigVuelos.style.backgroundColor = 'transparent';
-                if (parseInt(indiceVuelosGuardado, 10) > 0) contConfigVuelos.classList.add('borde-rojo-externo');
-                else contConfigVuelos.classList.remove('borde-rojo-externo');
+            if (localStorage.getItem('METEO_ABRIR_MAPA_INICIO') === 'true') {
+                construir_tabla(false, true).then(() => {
+                    cambiarVista('mapa');
+                    setTimeout(() => {
+                        const btnMap = document.getElementById('nav-map');
+                        if (btnMap && typeof window.activarMenuInferior === 'function') window.activarMenuInferior(btnMap);
+                    }, 150);
+                });
+            } else {
+                construir_tabla();
             }
         }
-
-        if (sliderUltimoVueloConfig && textoUltimoVueloConfig) {
-            sliderUltimoVueloConfig.value = indiceUltimoVueloGuardado;
-            let val = ESCALA_ULTIMO_VUELO[parseInt(indiceUltimoVueloGuardado, 10)] || ESCALA_ULTIMO_VUELO[0];
-            textoUltimoVueloConfig.innerText = val === 'Todos' ? t('mapa.todos') : val;
-
-            if (contConfigUltimoVuelo) {
-                contConfigUltimoVuelo.style.backgroundColor = 'transparent';
-                if (parseInt(indiceUltimoVueloGuardado, 10) > 0) contConfigUltimoVuelo.classList.add('borde-rojo-externo');
-                else contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
-            }
-        }
-
-        // 2. Listeners de interacción (Cuando el usuario mueve el dedo en los Ajustes)
-        if (sliderVuelosConfig) {
-            sliderVuelosConfig.addEventListener('input', function() {
-                const indiceActual = this.value;
-                const valorReal = ESCALA_VUELOS[parseInt(indiceActual, 10)] || 0;
-                
-                if (textoVuelosConfig) textoVuelosConfig.innerText = valorReal;
-                localStorage.setItem(STORAGE_KEY_VUELOS, indiceActual);
-                
-                if (contConfigVuelos) {
-                    if (parseInt(indiceActual, 10) > 0) contConfigVuelos.classList.add('borde-rojo-externo');
-                    else contConfigVuelos.classList.remove('borde-rojo-externo');
-                }
-
-                // Sincronizar con el mapa SOLO si ya se ha abierto y existe
-                if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
-                    const sliderVuelosFiltro = document.getElementById('sliderVuelos');
-                    const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
-                    if (sliderVuelosFiltro) sliderVuelosFiltro.value = indiceActual;
-                    if (textoVuelosFiltro) textoVuelosFiltro.innerText = valorReal;
-
-                    if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
-                    if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
-                }
-            });
-        }
-
-        if (sliderUltimoVueloConfig) {
-            sliderUltimoVueloConfig.addEventListener('input', function() {
-                const indiceActual = this.value;
-                let valorReal = ESCALA_ULTIMO_VUELO[parseInt(indiceActual, 10)] || ESCALA_ULTIMO_VUELO[0];
-                let valorMostrar = valorReal === 'Todos' ? t('mapa.todos') : valorReal;
-                
-                if (textoUltimoVueloConfig) textoUltimoVueloConfig.innerText = valorMostrar;
-                localStorage.setItem(STORAGE_KEY_ULTIMO_VUELO, indiceActual);
-
-                if (contConfigUltimoVuelo) {
-                    if (parseInt(indiceActual, 10) > 0) contConfigUltimoVuelo.classList.add('borde-rojo-externo');
-                    else contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
-                }
-
-                // Sincronizar con el mapa SOLO si ya se ha abierto y existe
-                if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
-                    const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
-                    const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
-                    if (sliderUltimoVueloFiltro) sliderUltimoVueloFiltro.value = indiceActual;
-                    if (textoUltimoVueloFiltro) textoUltimoVueloFiltro.innerText = valorMostrar;
-
-                    if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
-                    if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
-                }
-            });
-        }
     }
-
-    // Llamamos a la función recién creada
-    inicializarSlidersAjustesMapa();
 
 	// ---------------------------------------------------------------
 	// 🔴 BUSCADOR. Listeners, Funciones, Lógica para limpiar búsquedas
@@ -10296,7 +10221,11 @@ window.guardarPosicionMapaManualmente = function() {
 // ___________________________________________________________________________________
 
 let mapaInicializado = false;
-let filtrosMapaAbiertos = true;
+
+// Si el usuario configuró "recordar estado", leemos su última preferencia. Si no, por defecto abierto (true)
+let filtrosMapaAbiertos = localStorage.getItem('METEO_RECORDAR_ESTADO_FILTRO_HORARIO') === 'true' 
+    ? (localStorage.getItem('METEO_ESTADO_FILTRO_HORARIO_ABIERTO') !== 'false') 
+    : true;
 
 window.cambiarVista = function(vista) {
     const vistaTabla = document.querySelector('.contenedor-principal-tabla');
@@ -10538,9 +10467,11 @@ window.evaluarEstadoNuevosUsuarios = function() {
 // 🗺️ BOTONES FILTRO MAPA: FAVORITOS, SEGUIMIENTO, ACTIVIDAD
 // ---------------------------------------------------------------
 
-let filtroFavoritosMapa = 0;   // 0 = Todos, 1 = Solo Favoritos, 2 = Solo No Favoritos
-let filtroSeguimientoMapa = 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
-let filtroActividadMapa = 1;   // El valor inicial de actividad mínima es 1 (Todos)
+const recordarFiltros = localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true';
+
+filtroFavoritosMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_FAV') || '0') : 0; // 0 = Todos, 1 = Solo Favoritos, 2 = Solo No Favoritos
+filtroSeguimientoMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_SEG') || '0') : 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
+filtroActividadMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_ACT') || '1') : 1; // El valor inicial de actividad mínima es 1 (Todos)
 
 // SVGs del Botón Favorito (Todos / Solo Favs / Excluir Favs)
 const SVG_FAV_TODOS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
@@ -10552,6 +10483,12 @@ const SVG_FAV_NO = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" 
 
 window.ciclarFiltroFavoritosMapa = function() {
     filtroFavoritosMapa = (filtroFavoritosMapa + 1) % 3;
+    
+    // Si la opción de recordar filtros está activa, guardamos el estado (0, 1 o 2)
+    if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
+        localStorage.setItem('METEO_MAPA_FILTRO_FAV', filtroFavoritosMapa);
+    }
+
     actualizarBotonFavoritosMapa();
     actualizarFiltrosMapa();
     actualizarEstadoVisualFiltros();
@@ -10571,6 +10508,12 @@ window.actualizarBotonFavoritosMapa = function() {
 
 window.ciclarFiltroSeguimientoMapa = function() {
     filtroSeguimientoMapa = (filtroSeguimientoMapa + 1) % 2; 
+
+    // Si la opción de recordar filtros está activa, guardamos el estado (0 o 1)
+    if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
+        localStorage.setItem('METEO_MAPA_FILTRO_SEG', filtroSeguimientoMapa);
+    }
+
     actualizarBotonSeguimientoMapa();
     actualizarFiltrosMapa();
     actualizarEstadoVisualFiltros();
@@ -10633,6 +10576,10 @@ window.toggleFiltrosMapa = function() {
 
         limpiarColoresMapa();
 
+        if (localStorage.getItem('METEO_RECORDAR_ESTADO_FILTRO_HORARIO') === 'true') {
+            localStorage.setItem('METEO_ESTADO_FILTRO_HORARIO_ABIERTO', filtrosMapaAbiertos);
+        }
+
     } else { // Abrirlo
 
         divFH.style.display = '';
@@ -10650,6 +10597,10 @@ window.toggleFiltrosMapa = function() {
         setTimeout(() => inicializarSliderPuntuacionMapa(), 150);
 
         document.getElementById('vista-mapa')?.classList.add('filtros-abiertos');
+
+        if (localStorage.getItem('METEO_RECORDAR_ESTADO_FILTRO_HORARIO') === 'true') {
+            localStorage.setItem('METEO_ESTADO_FILTRO_HORARIO_ABIERTO', filtrosMapaAbiertos);
+        }
     }
 };
 
@@ -11081,7 +11032,8 @@ function inicializarMapaLeaflet() {
         [t('mapa.capasBase.OpenAIP')]: OpenAIP
     };
 
-    const ultimaCapaBase = localStorage.getItem('METEO_MAPA_CAPABASE_ULTIMA') || t('mapa.capasBase.ESRITopo');
+    const recordarTipo = localStorage.getItem('METEO_RECORDAR_TIPO_MAPA') === 'true';
+    const ultimaCapaBase = recordarTipo ? (localStorage.getItem('METEO_MAPA_CAPABASE_ULTIMA') || t('mapa.capasBase.ESRITopo')) : t('mapa.capasBase.ESRITopo');
     const capaInicial = baseMaps[ultimaCapaBase] || ESRITopo;
 
     function popupZona(feature, layer) {
@@ -11123,10 +11075,11 @@ function inicializarMapaLeaflet() {
     const urlLon = parseFloat(params.get('lon'));
     const urlZoom = parseFloat(params.get('zoom'));
 
-    // 💾 2º Prioridad: Leer de la memoria la última posición en la que estuviste
-    const localLat = parseFloat(localStorage.getItem('METEO_MAPA_LAST_LAT'));
-    const localLon = parseFloat(localStorage.getItem('METEO_MAPA_LAST_LON'));
-    const localZoom = parseFloat(localStorage.getItem('METEO_MAPA_LAST_ZOOM'));
+    // 💾 2º Prioridad: Leer de la memoria la última posición (SOLO si la usuaria activó la opción)
+    const recordarPosicion = localStorage.getItem('METEO_RECORDAR_POSICION_MAPA') === 'true';
+    const localLat = recordarPosicion ? parseFloat(localStorage.getItem('METEO_MAPA_LAST_LAT')) : NaN;
+    const localLon = recordarPosicion ? parseFloat(localStorage.getItem('METEO_MAPA_LAST_LON')) : NaN;
+    const localZoom = recordarPosicion ? parseFloat(localStorage.getItem('METEO_MAPA_LAST_ZOOM')) : NaN;
 
     // 💡 3º Prioridad: Valores por defecto (Centro de España, primera vez que se abre la app)
     const defaultLat = 42.7340;
@@ -11374,14 +11327,13 @@ function inicializarMapaLeaflet() {
     }
 
     // FUNCIÓN PARA GESTIONAR EL ESTADO VISUAL DE LOS CONTROLES
+    // FUNCIÓN PARA GESTIONAR EL ESTADO VISUAL DE LOS CONTROLES
     function actualizarEstadoVisualFiltros() {
 
         // 1. COMPROBAR ESTADO DE LOS FILTROS EN EL MAPA
 
-        // Actividad: Comprueba si el valor es mayor que 0
-        const sliderActividad = document.getElementById('sliderActividad');
-        const indiceActividad = sliderActividad ? parseInt(sliderActividad.value, 10) : 1;
-        const hayFiltroActividad = indiceActividad > 1; 
+        // 🔴 CORRECCIÓN: Leemos directamente la variable lógica de memoria (evita fallos por orden de carga de los sliders)
+        const hayFiltroActividad = (filtroActividadMapa > 1); 
 
         // Orientación: Comprueba si hay al menos uno marcado
         const hayFiltroOrientacion = obtenerOrientacionesSeleccionadas().length > 0;
@@ -11396,7 +11348,7 @@ function inicializarMapaLeaflet() {
         const indiceUltimoVuelo = sliderUltimoVuelo ? parseInt(sliderUltimoVuelo.value, 10) : 0;
         const hayFiltroAnio = indiceUltimoVuelo !== 0;
 
-        const hayFiltroRapidos = filtroFavoritosMapa !== 0 || filtroSeguimientoMapa !== 0 || filtroActividadMapa > 1;
+        const hayFiltroRapidos = filtroFavoritosMapa !== 0 || filtroSeguimientoMapa !== 0 || hayFiltroActividad;
 
         // 2. COMPROBAR CONFIGURACIÓN INICIAL (Ajustes Generales)
         const hayConfiguracionInicialFiltroVuelos = parseInt(localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0', 10) > 0;
@@ -11473,7 +11425,6 @@ function inicializarMapaLeaflet() {
 
         // 6. ACTUALIZAR PANEL GLOBAL (Borde rojo externo al estar retraído)
         const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos;
-        // Ahora el borde rojo indica filtros, así que lo aplicamos solo al infoPanel2
         const infoPanelFiltros = document.getElementById('infoPanel2'); 
         
         if (infoPanelFiltros) {
@@ -11509,6 +11460,12 @@ function inicializarMapaLeaflet() {
     // Escuchar cuando el usuario termina de moverse/arrastrar el mapa
     map.on('moveend', function() {
         updateURL(map);
+        if (localStorage.getItem('METEO_RECORDAR_POSICION_MAPA') === 'true') {
+            const center = map.getCenter();
+            localStorage.setItem('METEO_MAPA_LAST_LAT', center.lat.toFixed(4));
+            localStorage.setItem('METEO_MAPA_LAST_LON', center.lng.toFixed(4));
+            localStorage.setItem('METEO_MAPA_LAST_ZOOM', map.getZoom());
+        }
     });
 
     map.on('zoomend', function() {
@@ -11868,7 +11825,9 @@ function inicializarMapaLeaflet() {
     window.capasLeaflet = controlCapas; // exposición global para poder cerrarlo con Atrás Android
 
     map.on('baselayerchange', function(e) {
-        localStorage.setItem('METEO_MAPA_CAPABASE_ULTIMA', e.name);
+        if (localStorage.getItem('METEO_RECORDAR_TIPO_MAPA') === 'true') {
+            localStorage.setItem('METEO_MAPA_CAPABASE_ULTIMA', e.name);
+        }
     });
 
     // 2. Creamos NUESTRO propio botón físico "X"
@@ -12219,9 +12178,10 @@ function inicializarMapaLeaflet() {
                     clustergroupDespegues.addLayer(marker);
                 });
 
-                // Restaurar el estado de visibilidad de la última sesión (por defecto: visible)
+                // Restaurar el estado de visibilidad si el check de "Recordar capas activas" está ON
+                const recordarCapas = localStorage.getItem('METEO_RECORDAR_CAPAS_ACTIVAS') === 'true';
                 const chkDespeguesPersist = document.getElementById('checkboxDespegues');
-                const despeguesDebenVerse = localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false';
+                const despeguesDebenVerse = recordarCapas ? (localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false') : true; // True por defecto
 
                 if (chkDespeguesPersist) chkDespeguesPersist.checked = despeguesDebenVerse;
 
@@ -13372,19 +13332,20 @@ function inicializarMapaLeaflet() {
     }
 
     // --- SINCRONIZACIÓN INICIAL DEL PANEL INTERNO DEL MAPA ---
+    const recordarFiltrosMapa = localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true';
+
     const sliderVuelosFiltro = document.getElementById('sliderVuelos');
     const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
     const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
     const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
 
-    // Leemos valores del localStorage (que dictan los Ajustes Generales)
-    const indiceVuelos = localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0';
+    const indiceVuelos = recordarFiltrosMapa ? (localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0') : '0';
     if (sliderVuelosFiltro && textoVuelosFiltro) {
         sliderVuelosFiltro.value = indiceVuelos;
         textoVuelosFiltro.innerText = ESCALA_VUELOS[parseInt(indiceVuelos, 10)] || 0;
     }
 
-    const indiceUltimoVuelo = localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0';
+    const indiceUltimoVuelo = recordarFiltrosMapa ? (localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0') : '0';
     if (sliderUltimoVueloFiltro && textoUltimoVueloFiltro) {
         sliderUltimoVueloFiltro.value = indiceUltimoVuelo;
         let val = ESCALA_ULTIMO_VUELO[parseInt(indiceUltimoVuelo, 10)] || ESCALA_ULTIMO_VUELO[0];
@@ -13516,7 +13477,7 @@ function inicializarMapaLeaflet() {
     }
 
     function adjuntarListenersFiltros() {
-        // 1. Escucha los 8 botones de orientación (Igual que antes)
+        // 1. Escucha los 8 botones de orientación (Volvemos al original, sin guardar en LS)
         const botonesOrientacion = document.querySelectorAll('.filtro-orientacion-checkbox:not(#filtroMaestroOrientacion)');
         botonesOrientacion.forEach(checkbox => {
             checkbox.addEventListener('change', function() {
@@ -13528,12 +13489,11 @@ function inicializarMapaLeaflet() {
             });
         });
 
-        // 2. Escucha el botón central (Igual que antes)
+        // 2. Escucha el botón central (Volvemos al original, sin guardar en LS)
         const maestroBtn = document.getElementById('filtroMaestroOrientacion');
-        if(maestroBtn) { // Pequeña seguridad por si acaso
+        if(maestroBtn) { 
             maestroBtn.addEventListener('change', function() {
                 limpiarFiltrosOrientacion(); 
-                // Nota: limpiarFiltrosOrientacion ya llama a actualizarFiltrosMapa() al final
             });
         }
 
@@ -13543,6 +13503,10 @@ function inicializarMapaLeaflet() {
             // Usamos 'input' para que filtre en tiempo real mientras arrastras
             // Si va muy lento el mapa, cámbialo por 'change' (filtra al soltar el ratón)
             sliderVuelos.addEventListener('input', function() {
+                // Guardamos la posición del slider de vuelos si recordar filtros está activo
+                if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
+                    localStorage.setItem('METEO_MAPA_MINIMOVUELOS', this.value);
+                }
                 ejecutarOperacionPesada(() => {
                     actualizarFiltrosMapa();
                     actualizarEstadoVisualFiltros();
@@ -13554,6 +13518,10 @@ function inicializarMapaLeaflet() {
         const sliderUltimoVuelo = document.getElementById('sliderUltimoVuelo');
         if(sliderUltimoVuelo) {
             sliderUltimoVuelo.addEventListener('input', function() {
+                // Guardamos la posición del slider de último vuelo si recordar filtros está activo
+                if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
+                    localStorage.setItem('METEO_MINIMO_ANO_ULTIMO_VUELO', this.value);
+                }
                 // Se actualiza el texto y se llama al filtro principal
                 obtenerMinAnioUltimoVuelo(); 
                 actualizarFiltrosMapa();
@@ -13571,7 +13539,6 @@ function inicializarMapaLeaflet() {
                 actualizarEstadoVisualFiltros();
             });
         }
-        
     }
 
     adjuntarListenersFiltros();
@@ -13599,6 +13566,12 @@ function inicializarMapaLeaflet() {
         
         sliderAct.addEventListener('input', function() {
             filtroActividadMapa = parseInt(this.value, 10);
+
+            // Si la opción de recordar filtros está activa, guardamos el nivel seleccionado (1 a 5)
+            if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
+                localStorage.setItem('METEO_MAPA_FILTRO_ACT', filtroActividadMapa);
+            }
+
             // Inyectamos el HTML de las barras + el texto
             txtAct.innerHTML = renderizarTextoActividad(filtroActividadMapa);
             
@@ -15357,7 +15330,8 @@ function inicializarMapaLeaflet() {
             });
 
             // Restaurar estado guardado en el navegador (si existe)
-            const capaVisibleGuardada = localStorage.getItem(red.lsKey) === 'true';
+            const recordarCapas = localStorage.getItem('METEO_RECORDAR_CAPAS_ACTIVAS') === 'true';
+            const capaVisibleGuardada = recordarCapas ? (localStorage.getItem(red.lsKey) === 'true') : false; // False por defecto
             checkboxElement.checked = capaVisibleGuardada;
             if (capaVisibleGuardada) {
                 activarCapaBalizas(red.id);
@@ -15569,6 +15543,10 @@ function inicializarMapaLeaflet() {
     let avisoReactivacionDespeguesMostrado = false; // solo una vez por sesión
 
     window.reactivarCapaDespeguesSiEstaOculta = function() {
+        // Si el mapa no está visible en pantalla, abortamos al instante
+        const vistaMapa = document.getElementById('vista-mapa');
+        if (!vistaMapa || vistaMapa.style.display !== 'flex') return;
+
         const chk = document.getElementById('checkboxDespegues');
 
         // Si existe el checkbox y está desmarcado
