@@ -15070,16 +15070,40 @@ function inicializarMapaLeaflet() {
             }
         }
 
+        // -----------------------------------------------------------
+        // A.2) COMPROBAR SI ESTÁ CONGELADA (Todo ceros en las últimas 4h)
+        // -----------------------------------------------------------
+        let balizaCongelada = false;
+        if (red.datos6h && red.datos6h[marker.stationId]) {
+            const lecturas = red.datos6h[marker.stationId];
+            const ahoraTs = Math.floor(Date.now() / 1000);
+            const desdeTs = ahoraTs - 4 * 3600; // Últimas 4 horas
+            
+            const puntos4h = lecturas.filter(p => p.ts >= desdeTs && p.ts <= ahoraTs && typeof p.windSpeed === 'number');
+
+            // Si hay datos en estas 4h, y ABSOLUTAMENTE TODOS son cero
+            if (puntos4h.length > 0) {
+                const todoCeros = puntos4h.every(p => 
+                    p.windSpeed === 0 && 
+                    (p.windGusts === 0 || p.windGusts === null || p.windGusts === undefined)
+                );
+                if (todoCeros) {
+                    balizaCongelada = true;
+                }
+            }
+        }
+
         // Nos aseguramos de que la baliza ESTÉ en el mapa siempre (agrupada en el clúster)
         if (!red.layerGroup.hasLayer(marker)) {
             red.layerGroup.addLayer(marker);
         }
 
-        // 1. SI ESTÁ OBSOLETA (>X h): CÍRCULO GRIS
-        if (balizaConDatosObsoletos) {
+        // 1. SI ESTÁ OBSOLETA (>X h) O CONGELADA A CERO (>4h): CÍRCULO GRIS
+        if (balizaConDatosObsoletos || balizaCongelada) {
+            const tituloGris = balizaConDatosObsoletos ? "Datos obsoletos" : "Sensor atascado (4h a cero)";
             const svgPuntoGris = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#95a5a6" stroke="#7f8c8d" stroke-width="2"/></svg>`;
             const htmlObsoleto = `
-                <div title="${marker.stationName}: Datos obsoletos" style="width:80px;height:46px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;margin-left:-27px;margin-top:18px;">
+                <div title="${marker.stationName}: ${tituloGris}" style="width:80px;height:46px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;margin-left:-27px;margin-top:18px;">
                     ${svgPuntoGris}
                 </div>`;
             
@@ -15269,13 +15293,21 @@ function inicializarMapaLeaflet() {
     // 🟡 9. LÓGICA DE ACTIVACIÓN/DESACTIVACIÓN GENÉRICA POR CHECKBOXES
     //___________________________________________________________________________________
 
-    function activarCapaBalizas(redId) {
+    async function activarCapaBalizas(redId) {
         const red = REDES_BALIZAS[redId];
         dibujarEstacionesBalizas(redId);
         map.addLayer(red.layerGroup);
+        
+        // Descargamos el historial ANTES de pintar los iconos
+        await cargarDatos6hBalizasSiNecesario(redId); 
         cargarDatosBalizas(redId);
+
         if (!red.intervalo) {
-            red.intervalo = setInterval(() => cargarDatosBalizas(redId), 60 * 1000); // 1 minuto
+            red.intervalo = setInterval(async () => {
+                // Cada minuto, renovamos historial (si pasaron 5 min) y repintamos
+                await cargarDatos6hBalizasSiNecesario(redId); 
+                cargarDatosBalizas(redId);
+            }, 60 * 1000); 
         }
     }
 
