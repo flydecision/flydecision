@@ -14908,7 +14908,7 @@ function inicializarMapaLeaflet() {
         if (!Array.isArray(lecturas) || lecturas.length === 0) return null;
 
         const W = 250, H = 112; // Ancho (W) y Alto (H) del lienzo en píxeles virtuales.
-        const padL = 20, padR = 10, padT = 26, padB = 20; // Márgenes: Izquierda (L), Derecha (R), Arriba (T), Abajo (B).
+        const padL = 20, padR = 6, padT = 26, padB = 20; // Pad=Padding=Márgenes de separación interno: Izquierda (L), Derecha (R), Arriba (T), Abajo (B).
         const plotW = W - padL - padR; // Ancho real de la zona donde se dibujan las líneas.
         const plotH = H - padT - padB; // Alto real de la zona donde se dibujan las líneas.
 
@@ -14917,7 +14917,8 @@ function inicializarMapaLeaflet() {
             .sort((a, b) => a.ts - b.ts);
         if (lecturasValidas.length === 0) return null;
 
-        const ahora = Math.floor(Date.now() / 1000);
+        const ahoraTiempoReal = Math.floor(Date.now() / 1000);
+        const ahora = Math.floor(ahoraTiempoReal / 600) * 600; // Redondeamos al bloque de 10 minutos anterior para alinear la cuadrícula con los datos
         const desde = ahora - 4 * 3600; // Horas de historial mostradas: últimas X horas (hay más lugares, buscarlos con este comentario)
 
         const puntos = lecturasValidas.filter(p => p.ts >= desde && p.ts <= ahora);

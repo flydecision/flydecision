@@ -3593,6 +3593,10 @@ h3 {
 	margin: 5px 10px 0px 10px;
 }
 
+.popup-baliza .leaflet-popup-content {
+    padding-right: 0px !important;
+}
+
 /* .leaflet-popup-content,
 .leaflet-popup-content-wrapper {
     touch-action: auto;
