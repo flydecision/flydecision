@@ -807,7 +807,7 @@
 			</div>
 
 			<!-- Filtro Actividad -->
-			<div class="control-actividad-mapa-container" title="Mostrar solo los despegues con el nivel de Actividad seleccionado">
+			<div class="control-actividad-mapa-container" style="margin-bottom:9px;" title="Mostrar solo los despegues con el nivel de Actividad seleccionado">
 				<label for="sliderActividad" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.Actividad">Actividad >= </label><span id="valorActividadTexto">1</span>
 				<br>
 				<input type="range" id="sliderActividad" min="1" max="5" value="1" step="1" style="width:98%;">
@@ -819,11 +819,11 @@
 				<input type="range" id="sliderVuelos" min="0" max="9" value="0" step="1" style="width:98%;">
 			</div>
 
-			<div class="control-ultimovuelo-container" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
+			<div class="control-ultimovuelo-container" style="margin-bottom:9px;" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
 				<label for="sliderUltimoVuelo" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.anioUltimoVueloTexto">Año del último vuelo >= </label><span id="valorUltimoVueloTexto" data-i18n="mapa.todos">Todos</span>
 				<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width:98%;">
 			</div>
-			
+
 			<!-- Rosa de los vientos -->
 			<div class="control-orientacion-container" style="flex:1; padding:4px !important; border-radius:8px; border:1.5px solid transparent; box-sizing:border-box; transition:all 0.2s;">
 				<div style="font-weight:bold; margin-bottom:5px; text-align:center; width:100%;" data-i18n="mapa.orientacion">Orientación:</div>
