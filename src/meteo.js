@@ -7352,6 +7352,63 @@ function resetearOpcionesAvanzadas() {
 }
 window.resetearOpcionesAvanzadas = resetearOpcionesAvanzadas;
 
+// Función para resetear todos los filtros en vivo del mapa
+window.resetearFiltrosMapaEnVivo = function() {
+    // 1. Resetear las variables lógicas principales
+    filtroFavoritosMapa = 0;
+    filtroSeguimientoMapa = 0;
+    filtroActividadMapa = 1;
+
+    // Si recordar filtros está activo, vaciamos también la memoria de esta sesión
+    if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
+        localStorage.setItem('METEO_MAPA_MINIMOVUELOS', '0');
+        localStorage.setItem('METEO_MINIMO_ANO_ULTIMO_VUELO', '0');
+        localStorage.setItem('METEO_MAPA_FILTRO_FAV', '0');
+        localStorage.setItem('METEO_MAPA_FILTRO_SEG', '0');
+        localStorage.setItem('METEO_MAPA_FILTRO_ACT', '1');
+        localStorage.setItem('METEO_MAPA_FILTRO_ORI', '[]');
+    }
+
+    // 2. Resetear Sliders visuales del mapa
+    const sliderVuelosFiltro = document.getElementById('sliderVuelos');
+    const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
+    if (sliderVuelosFiltro) sliderVuelosFiltro.value = '0';
+    if (textoVuelosFiltro) textoVuelosFiltro.innerText = '0';
+
+    const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
+    const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
+    if (sliderUltimoVueloFiltro) sliderUltimoVueloFiltro.value = '0';
+    if (textoUltimoVueloFiltro) {
+        textoUltimoVueloFiltro.innerText = (typeof t === 'function' ? t('mapa.todos') : 'Todos');
+    }
+
+    const sliderAct = document.getElementById('sliderActividad');
+    const txtAct = document.getElementById('valorActividadTexto');
+    if (sliderAct) sliderAct.value = 1;
+    if (txtAct) {
+        txtAct.innerHTML = `<span style="display:inline-flex; align-items:center; gap:5px; vertical-align:middle; margin-left: 6px; margin-top: -3px;"><span style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; vertical-align: -2px; outline: none;"><span style="display: inline-block; width: 3px; height: 4px; background-color: #5b5b5b; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 7px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 10px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 13px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 16px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span></span><span>1/5</span></span>`;
+    }
+
+    // 3. Sincronizar botones de Favoritos y Seguimiento rápidos
+    if (typeof actualizarBotonFavoritosMapa === 'function') actualizarBotonFavoritosMapa();
+    if (typeof actualizarBotonSeguimientoMapa === 'function') actualizarBotonSeguimientoMapa();
+
+    // 4. Limpiar los botones de la rosa de los vientos (Orientaciones)
+    const orientaciones = document.querySelectorAll('.filtro-orientacion-checkbox');
+    orientaciones.forEach(chk => chk.checked = false);
+    if (typeof actualizarEstadoMaestro === 'function') actualizarEstadoMaestro();
+
+    // 5. Re-calcular el mapa al instante con los filtros limpios
+    if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
+    if (typeof actualizarEstadoVisualFiltros === 'function') actualizarEstadoVisualFiltros();
+
+    // 6. Bandera para que la tabla se regenere limpia cuando el usuario decida volver a ella
+    window.tablaRecrearAlVolver = true;
+
+    // Vibración haptics de confirmación
+    if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+};
+
 // ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------

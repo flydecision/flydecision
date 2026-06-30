@@ -537,6 +537,7 @@
     "Actividad": "Actividad >= ",
     "orientacion": "Orientación:",
     "cerrarPanel": "Cerrar Panel",
+    "resetearFiltrosMapa": "Resetear todos los filtros del mapa",
     "fijarPanel": "Fijar Panel (anula su ocultación al mover mapa)",
     "masInformacion": "Más información ▼",
     "volverEdicion": "Volver a Editar favoritos",

@@ -536,6 +536,7 @@
     "Actividad": "Activité >= ",
     "orientacion": "Orientation :",
     "cerrarPanel": "Fermer le panneau",
+    "resetearFiltrosMapa": "Réinitialiser tous les filtres de la carte",
     "fijarPanel": "Épingler le panneau (ne pas cacher lors du déplacement de la carte)",
     "masInformacion": "Plus d'informations ▼",
     "volverEdicion": "Retour à l'édition des favoris",

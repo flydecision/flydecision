@@ -536,6 +536,7 @@
     "Actividad": "Activitat >= ",
     "orientacion": "Orientació:",
     "cerrarPanel": "Tancar Panell",
+    "resetearFiltrosMapa": "Restablir tots els filtres del mapa",
     "fijarPanel": "Fixar Panell (no amagar en moure el mapa)",
     "masInformacion": "Més informació ▼",
     "volverEdicion": "Tornar a Editar Preferits",
