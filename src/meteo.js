@@ -15287,7 +15287,7 @@ function inicializarMapaLeaflet() {
 
             <span style="display: block; margin-top: 7px; margin-bottom:7px;">
                 <small style="color:#888;">
-                    ${estadoPopup.emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.date, d.time)}
+                    ${estadoPopup.emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.ts)}
                 </small>
             </span>
         `;
@@ -15428,16 +15428,16 @@ function inicializarMapaLeaflet() {
         return calcularSemaforoAntiguedad(fechaLectura.getTime(), umbralAmarillo, umbralRojo);
     }
     
-    function formatearFechaHoraBaliza(fechaStr, horaStr) {
-        if (!fechaStr || !horaStr) return '–';
-
-        const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
-        const [anio, mes, dia] = fechaStr.split('-');
-
-        const [hora, minutos] = horaStr.split(':');
-        const horaFormateada = `${parseInt(hora, 10)}:${minutos}`;
-
-        return `${dia}-${meses[parseInt(mes, 10) - 1]}-${anio} ${horaFormateada}`;
+    function formatearFechaHoraBaliza(ts) {
+        if (!ts) return '-';
+        const fecha = new Date(ts * 1000);
+        const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+        const dia  = fecha.getDate();
+        const mes  = meses[fecha.getMonth()];
+        const anio = fecha.getFullYear();
+        const hora = fecha.getHours();
+        const min  = String(fecha.getMinutes()).padStart(2, '0');
+        return `${dia}-${mes}-${anio} ${hora}:${min}`;
     }
 
     function generarSvgGraficaBaliza(lecturas) {
