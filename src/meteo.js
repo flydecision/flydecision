@@ -179,7 +179,7 @@ const HorariosMediosActualizacionMin15 = Array.from({ length: 24 }, (_, h) => St
 const AROME_UMBRAL_AMARILLO_MIN = 5 * 60;  
 const AROME_UMBRAL_ROJO_MIN     = 6 * 60;  // php UMBRAL_RETRASO_INUSUAL
 
-// Arome-HD 15min (ciclo horario, ver HorariosMediosActualizacionMin15 más arriba)
+// Arome 15min (ciclo horario, ver HorariosMediosActualizacionMin15 más arriba)
 const MIN15_UMBRAL_AMARILLO_MIN = 90;   
 const MIN15_UMBRAL_ROJO_MIN     = 150;  
 
@@ -467,7 +467,7 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
             </table>
         </div>
         <p style="color:#888; text-align:center; margin-top:8px;">
-            ${t('minutely15.notaModelo', { defaultValue: 'Modelo Arome-HD 15 min (nowcasting)' })}
+            ${t('minutely15.notaModelo', { defaultValue: 'Modelo Arome 2.5 15 min (nowcasting)' })}
         </p>
     `;
 }
@@ -3871,7 +3871,7 @@ function avisarActualizacionMinutely15() {
 
     GestorMensajes.mostrar({
         tipo: 'modal',
-        htmlContenido: `<p style="text-align:center;">${t('minutely15.avisoNuevosDatos', { defaultValue: 'Hay una actualización del modelo Arome-HD 15min' })}</p>`,
+        htmlContenido: `<p style="text-align:center;">${t('minutely15.avisoNuevosDatos', { defaultValue: 'Hay una actualización del modelo Arome 15min' })}</p>`,
         botones: [
             {
                 texto: t('minutely15.actualizarAhora', { defaultValue: 'Actualizar' }),
@@ -5704,7 +5704,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     botonMinutely15HTML = `
                         <button onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
                             style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; padding-bottom: 1px;"
-                            title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Ver tabla de previsión de viento y direcciones según predicción inmediata del modelo Arome-HD 15min' })}">
+                            title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Ver tabla de previsión de viento y direcciones según predicción inmediata del modelo Arome 15min' })}">
                             
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
                                 <circle cx="12" cy="12" r="10"></circle>
@@ -8621,7 +8621,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                             <span style="padding-left: 21px;">${textoFuturoMF}</span>
                         </p>
                         <p style="margin-bottom: -6px;">
-                            <span style="font-size: 0.8rem;">${semaforoMin15.emoji}</span> Arome-HD 15min: ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
+                            <span style="font-size: 0.8rem;">${semaforoMin15.emoji}</span> Arome 15min: ${t('actualizacion.hace', { tiempo: timeAgoMin15 })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMin15})</span><br>
                             <span style="padding-left: 21px;">${textoFuturoMin15}</span>
                         </p>
                         <p style="margin-bottom: 4px;">
@@ -15092,92 +15092,92 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
     function actualizarIconosBalizas(redId) {
-    const red = REDES_BALIZAS[redId];
-    const zoomActual = map.getZoom();
+        const red = REDES_BALIZAS[redId];
+        const zoomActual = map.getZoom();
 
-    Object.values(red.marcadores).forEach(marker => {
-        const d = red.datosCache[marker.stationId];
-        
-        // -----------------------------------------------------------
-        // A) COMPROBAR SI ESTÁ OBSOLETA (> X horas sin datos o sin JSON)
-        // -----------------------------------------------------------
-        let balizaConDatosObsoletos = false;
-        
-        if (!d || !d.date || !d.time) {
-            balizaConDatosObsoletos = true; // No viene en el JSON
-        } else {
-            const [anio, mes, dia] = d.date.split('-').map(Number);
-            const [h, m] = d.time.split(':').map(Number);
-            const fechaLectura = new Date(anio, mes - 1, dia, h, m);
-            const horasSinDatos = (Date.now() - fechaLectura.getTime()) / (1000 * 60 * 60);
+        Object.values(red.marcadores).forEach(marker => {
+            const d = red.datosCache[marker.stationId];
             
-            if (horasSinDatos > 3) { // <---- X Horas límite desde última actualización antes de ocultar baliza
-                balizaConDatosObsoletos = true;
-            }
-        }
-
-        // -----------------------------------------------------------
-        // A.2) COMPROBAR SI ESTÁ CONGELADA (Todo ceros en las últimas 4h)
-        // -----------------------------------------------------------
-        let balizaCongelada = false;
-        if (red.datos6h && red.datos6h[marker.stationId]) {
-            const lecturas = red.datos6h[marker.stationId];
-            const ahoraTs = Math.floor(Date.now() / 1000);
-            const desdeTs = ahoraTs - 4 * 3600; // Últimas 4 horas
+            // -----------------------------------------------------------
+            // A) COMPROBAR SI ESTÁ OBSOLETA (> X horas sin datos o sin JSON)
+            // -----------------------------------------------------------
+            let balizaConDatosObsoletos = false;
             
-            const puntos4h = lecturas.filter(p => p.ts >= desdeTs && p.ts <= ahoraTs && typeof p.windSpeed === 'number');
-
-            // Si hay datos en estas 4h, y ABSOLUTAMENTE TODOS son cero
-            if (puntos4h.length > 0) {
-                const todoCeros = puntos4h.every(p => 
-                    p.windSpeed === 0 && 
-                    (p.windGusts === 0 || p.windGusts === null || p.windGusts === undefined)
-                );
-                if (todoCeros) {
-                    balizaCongelada = true;
+            if (!d || !d.date || !d.time) {
+                balizaConDatosObsoletos = true; // No viene en el JSON
+            } else {
+                const [anio, mes, dia] = d.date.split('-').map(Number);
+                const [h, m] = d.time.split(':').map(Number);
+                const fechaLectura = new Date(anio, mes - 1, dia, h, m);
+                const horasSinDatos = (Date.now() - fechaLectura.getTime()) / (1000 * 60 * 60);
+                
+                if (horasSinDatos > 3) { // <---- X Horas límite desde última actualización antes de ocultar baliza
+                    balizaConDatosObsoletos = true;
                 }
             }
-        }
 
-        // Nos aseguramos de que la baliza ESTÉ en el mapa siempre (agrupada en el clúster)
-        if (!red.layerGroup.hasLayer(marker)) {
-            red.layerGroup.addLayer(marker);
-        }
+            // -----------------------------------------------------------
+            // A.2) COMPROBAR SI ESTÁ CONGELADA (Todo ceros en las últimas 4h)
+            // -----------------------------------------------------------
+            let balizaCongelada = false;
+            if (red.datos6h && red.datos6h[marker.stationId]) {
+                const lecturas = red.datos6h[marker.stationId];
+                const ahoraTs = Math.floor(Date.now() / 1000);
+                const desdeTs = ahoraTs - 4 * 3600; // Últimas 4 horas
+                
+                const puntos4h = lecturas.filter(p => p.ts >= desdeTs && p.ts <= ahoraTs && typeof p.windSpeed === 'number');
 
-        // 1. SI ESTÁ OBSOLETA (>X h) O CONGELADA A CERO (>4h): CÍRCULO GRIS
-        if (balizaConDatosObsoletos || balizaCongelada) {
-            const tituloGris = balizaConDatosObsoletos ? "Datos obsoletos" : "Sensor atascado (4h a cero)";
-            const svgPuntoGris = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#95a5a6" stroke="#7f8c8d" stroke-width="2"/></svg>`;
-            const htmlObsoleto = `
-                <div title="${marker.stationName}: ${tituloGris}" style="width:80px;height:46px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;margin-left:-27px;margin-top:18px;">
-                    ${svgPuntoGris}
-                </div>`;
-            
-            marker.setIcon(L.divIcon({ html: htmlObsoleto, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
-            
-            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
-            return; // Terminamos aquí, no pintamos flechas ni números
-        }
+                // Si hay datos en estas 4h, y ABSOLUTAMENTE TODOS son cero
+                if (puntos4h.length > 0) {
+                    const todoCeros = puntos4h.every(p => 
+                        p.windSpeed === 0 && 
+                        (p.windGusts === 0 || p.windGusts === null || p.windGusts === undefined)
+                    );
+                    if (todoCeros) {
+                        balizaCongelada = true;
+                    }
+                }
+            }
 
-        // 2. SI HA MANDADO SEÑAL RECIENTE, PERO EL SENSOR ESTÁ ROTO (null): CÍRCULO ROJO
-        if (d.windSpeed === null || d.windSpeed === undefined) {
-            const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
-            const htmlSinDatos = `
-                <div title="${marker.stationName}: Sensor de viento sin datos" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
-                    ${svgPuntoRojo}
-                </div>`;
-            
-            marker.setIcon(L.divIcon({ html: htmlSinDatos, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
-            
-            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
-            return;
-        }
+            // Nos aseguramos de que la baliza ESTÉ en el mapa siempre (agrupada en el clúster)
+            if (!red.layerGroup.hasLayer(marker)) {
+                red.layerGroup.addLayer(marker);
+            }
 
-        // -----------------------------------------------------------
-        // B) SI LLEGA AQUÍ, TIENE DATOS RECIENTES Y VÁLIDOS -> PINTAMOS FLECHA Y NÚMEROS
-        // -----------------------------------------------------------
-        const rotacion = (d.windDirection ?? 0) + 180;
-        const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
+            // 1. SI ESTÁ OBSOLETA (>X h) O CONGELADA A CERO (>4h): CÍRCULO GRIS
+            if (balizaConDatosObsoletos || balizaCongelada) {
+                const tituloGris = balizaConDatosObsoletos ? "Datos obsoletos" : "Sensor atascado (4h a cero)";
+                const svgPuntoGris = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#95a5a6" stroke="#7f8c8d" stroke-width="2"/></svg>`;
+                const htmlObsoleto = `
+                    <div title="${marker.stationName}: ${tituloGris}" style="width:80px;height:46px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;margin-left:-27px;margin-top:18px;">
+                        ${svgPuntoGris}
+                    </div>`;
+                
+                marker.setIcon(L.divIcon({ html: htmlObsoleto, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
+                
+                if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+                return; // Terminamos aquí, no pintamos flechas ni números
+            }
+
+            // 2. SI HA MANDADO SEÑAL RECIENTE, PERO EL SENSOR ESTÁ ROTO (null): CÍRCULO ROJO
+            if (d.windSpeed === null || d.windSpeed === undefined) {
+                const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
+                const htmlSinDatos = `
+                    <div title="${marker.stationName}: Sensor de viento sin datos" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        ${svgPuntoRojo}
+                    </div>`;
+                
+                marker.setIcon(L.divIcon({ html: htmlSinDatos, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
+                
+                if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+                return;
+            }
+
+            // -----------------------------------------------------------
+            // B) SI LLEGA AQUÍ, TIENE DATOS RECIENTES Y VÁLIDOS -> PINTAMOS FLECHA Y NÚMEROS
+            // -----------------------------------------------------------
+            const rotacion = (d.windDirection ?? 0) + 180;
+            const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
             const colorFlechaMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
             
             const svgFlechaMapa = `
