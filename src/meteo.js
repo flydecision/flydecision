@@ -15520,28 +15520,50 @@ function inicializarMapaLeaflet() {
 
         // Puntitos sobre cada dato real (mismo color que su línea)
         const puntosVientoSvg = puntos.map(p =>
-            `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.windSpeed).toFixed(1)}" r="2.2" fill="#0078d4"/>`
+            `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.windSpeed).toFixed(1)}" r="2" fill="#0078d4"/>`
         ).join('');
         const puntosRachaSvg = puntosRacha.map(p =>
-            `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.windGusts).toFixed(1)}" r="2.2" fill="#c0392b"/>`
+            `<circle cx="${x(p.ts).toFixed(1)}" cy="${y(p.windGusts).toFixed(1)}" r="2" fill="#c0392b"/>`
         ).join('');
 
         // LÓGICA DE LAS LÍNEAS HORIZONTALES (GRID). Partimos de la base de 0, 10, 20. 
         const gridYSet = new Set([0, 10, 20]);
         
-        // Si el máximo supera 20 (ej: 25, 30, 45...), añadimos ese techo dinámico para que no se corten los datos
         if (maxV > 20) {
             gridYSet.add(maxV);
         }
 
-        // Convertimos el Set (que elimina duplicados de forma nativa) de vuelta a Array
         const gridY = Array.from(gridYSet);
 
-        // Líneas de Guía Horizontales (Líneas grises de fondo)
-        const gridLines = gridY.map(v => `
-            <line x1="${padL}" y1="${y(v).toFixed(1)}" x2="${W - padR}" y2="${y(v).toFixed(1)}" stroke="#a4a4a4" stroke-width="0.5"/>
-            <text x="${padL - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" font-size="12" fill="#000000">${Math.round(v)}</text>
-        `).join('');
+        // Líneas de Guía Horizontales
+        const gridLines = gridY.map(v => {
+            const esUmbral20 = (v === 20);
+            
+            const colorLinea = esUmbral20 ? "#28a745" : "#a4a4a4";
+            const strokeWidth = esUmbral20 ? "1.2" : "0.5";
+            const dashArray = esUmbral20 ? "4,3" : "none";   // Línea discontinua para el 20
+
+            const colorTexto = esUmbral20 ? "#28a745" : "#000000";
+
+            return `
+                <line 
+                    x1="${padL}" 
+                    y1="${y(v).toFixed(1)}" 
+                    x2="${W - padR}" 
+                    y2="${y(v).toFixed(1)}" 
+                    stroke="${colorLinea}" 
+                    stroke-width="${strokeWidth}"
+                    stroke-dasharray="${dashArray}"/>
+                <text 
+                    x="${padL - 6}" 
+                    y="${(y(v) + 4).toFixed(1)}" 
+                    text-anchor="end" 
+                    font-size="12" 
+                    fill="${colorTexto}"
+                    font-weight="${esUmbral20 ? 'bold' : 'normal'}">
+                    ${Math.round(v)}
+                </text>`;
+        }).join('');
 
         // Etiquetas eje X y Ejes de Guía Verticales
         const etiquetasX = [];
