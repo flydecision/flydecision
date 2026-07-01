@@ -3081,7 +3081,7 @@ details.config-accordion .accordion-content {
     font-weight: bold;
     cursor: pointer;
     padding-top: 10px;
-    margin-top: 10px;
+    /* margin-top: 10px; */
     user-select: none;
     transition: color 0.2s ease;
 }

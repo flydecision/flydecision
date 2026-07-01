@@ -7773,16 +7773,23 @@ document.addEventListener('i18nReady', function() {
         } else {
             // --- ARRANQUE NORMAL ---
             if (localStorage.getItem('METEO_ABRIR_MAPA_INICIO') === 'true') {
-                construir_tabla(false, true).then(() => {
-                    cambiarVista('mapa');
-                    setTimeout(() => {
-                        const btnMap = document.getElementById('nav-map');
-                        if (btnMap && typeof window.activarMenuInferior === 'function') window.activarMenuInferior(btnMap);
-                    }, 150);
-                });
-            } else {
-                construir_tabla();
-            }
+            mostrarLoading(0); 
+
+            construir_tabla(false, true).then(() => {
+                cambiarVista('mapa');
+                setTimeout(() => {
+                    const btnMap = document.getElementById('nav-map');
+                    if (btnMap && typeof window.activarMenuInferior === 'function') {
+                        window.activarMenuInferior(btnMap);
+                    } else if (btnMap) {
+                        document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
+                        btnMap.classList.add('active');
+                    }
+                }, 150);
+            });
+        } else {
+            construir_tabla();
+        }
         }
     }
 
