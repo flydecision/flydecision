@@ -14873,7 +14873,7 @@ function inicializarMapaLeaflet() {
         {"id":"s1895","name":"1895 CVLD Bosse","provider":"Holfuy","latitude":46.44456,"longitude":6.17598},
         {"id":"s1926","name":"Sombernon","provider":"Holfuy","latitude":47.3226,"longitude":4.706496},
         {"id":"s1897","name":"Aznalcollar","provider":"Holfuy","latitude":37.424483,"longitude":-6.246199},
-        {"id":"s1898","name":"Villanueva de Galleg","provider":"Holfuy","latitude":414548,"longitude":5143.6},
+        {"id":"s1898","name":"Villanueva de Galleg","provider":"Holfuy","latitude":41.7715975,"longitude":-0.8274002},
         {"id":"s1899","name":"La Banditella","provider":"Holfuy","latitude":42.501163,"longitude":11.721609},
         {"id":"s1900","name":"Crato","provider":"Holfuy","latitude":39.418205,"longitude":-7.67897},
         {"id":"s1903","name":"Trevoes I","provider":"Holfuy","latitude":41.109035,"longitude":-7.434083},
