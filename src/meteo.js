@@ -15099,18 +15099,16 @@ function inicializarMapaLeaflet() {
             const d = red.datosCache[marker.stationId];
             
             // -----------------------------------------------------------
-            // A) COMPROBAR SI ESTÁ OBSOLETA (> X horas sin datos o sin JSON)
+            // A) COMPROBAR SI ESTÁ OBSOLETA (> 3 horas)
             // -----------------------------------------------------------
             let balizaConDatosObsoletos = false;
-            
-            if (!d || !d.date || !d.time) {
-                balizaConDatosObsoletos = true; // No viene en el JSON
+
+            if (!d || typeof d.ts !== 'number') {
+                balizaConDatosObsoletos = true; // No tiene datos o no tiene ts
             } else {
-                const [anio, mes, dia] = d.date.split('-').map(Number);
-                const [h, m] = d.time.split(':').map(Number);
-                const fechaLectura = new Date(anio, mes - 1, dia, h, m);
-                const horasSinDatos = (Date.now() - fechaLectura.getTime()) / (1000 * 60 * 60);
-                
+                const ahoraTs = Date.now() / 1000;
+                const horasSinDatos = (ahoraTs - d.ts) / 3600;
+
                 if (horasSinDatos > 3) { // <---- X Horas límite desde última actualización antes de ocultar baliza
                     balizaConDatosObsoletos = true;
                 }
@@ -15125,7 +15123,11 @@ function inicializarMapaLeaflet() {
                 const ahoraTs = Math.floor(Date.now() / 1000);
                 const desdeTs = ahoraTs - 4 * 3600; // Últimas 4 horas
                 
-                const puntos4h = lecturas.filter(p => p.ts >= desdeTs && p.ts <= ahoraTs && typeof p.windSpeed === 'number');
+                const puntos4h = lecturas.filter(p => 
+                    p.ts >= desdeTs && 
+                    p.ts <= ahoraTs && 
+                    typeof p.windSpeed === 'number'
+                );
 
                 // Si hay datos en estas 4h, y ABSOLUTAMENTE TODOS son cero
                 if (puntos4h.length > 0) {
@@ -15139,42 +15141,57 @@ function inicializarMapaLeaflet() {
                 }
             }
 
-            // Nos aseguramos de que la baliza ESTÉ en el mapa siempre (agrupada en el clúster)
+            // Nos aseguramos de que la baliza esté en el mapa
             if (!red.layerGroup.hasLayer(marker)) {
                 red.layerGroup.addLayer(marker);
             }
 
-            // 1. SI ESTÁ OBSOLETA (>X h) O CONGELADA A CERO (>4h): CÍRCULO GRIS
+            // 1. SI ESTÁ OBSOLETA (>3h) O CONGELADA A CERO: CÍRCULO GRIS
             if (balizaConDatosObsoletos || balizaCongelada) {
-                const tituloGris = balizaConDatosObsoletos ? "Datos obsoletos" : "Sensor atascado (4h a cero)";
+                const tituloGris = balizaConDatosObsoletos 
+                    ? "Datos obsoletos (>3h)" 
+                    : "Sensor atascado (4h a cero)";
+
                 const svgPuntoGris = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#95a5a6" stroke="#7f8c8d" stroke-width="2"/></svg>`;
+                
                 const htmlObsoleto = `
                     <div title="${marker.stationName}: ${tituloGris}" style="width:80px;height:46px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;margin-left:-27px;margin-top:18px;">
                         ${svgPuntoGris}
                     </div>`;
-                
-                marker.setIcon(L.divIcon({ html: htmlObsoleto, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
-                
+
+                marker.setIcon(L.divIcon({ 
+                    html: htmlObsoleto, 
+                    className: 'custom-div-icon', 
+                    iconAnchor: [40, 23], 
+                    popupAnchor: [0, 25] 
+                }));
+
                 if (marker.isPopupOpen()) pintarPopupBaliza(marker);
                 return; // Terminamos aquí, no pintamos flechas ni números
             }
 
-            // 2. SI HA MANDADO SEÑAL RECIENTE, PERO EL SENSOR ESTÁ ROTO (null): CÍRCULO ROJO
+            // 2. SI HA MANDADO SEÑAL RECIENTE, PERO EL SENSOR ESTÁ ROTO (null)
             if (d.windSpeed === null || d.windSpeed === undefined) {
                 const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
+                
                 const htmlSinDatos = `
                     <div title="${marker.stationName}: Sensor de viento sin datos" style="width: 80px; height: 50px; display: flex; align-items: center; justify-content: center;">
                         ${svgPuntoRojo}
                     </div>`;
-                
-                marker.setIcon(L.divIcon({ html: htmlSinDatos, className: 'custom-div-icon', iconAnchor: [40, 23], popupAnchor: [0, 25] }));
-                
+
+                marker.setIcon(L.divIcon({ 
+                    html: htmlSinDatos, 
+                    className: 'custom-div-icon', 
+                    iconAnchor: [40, 23], 
+                    popupAnchor: [0, 25] 
+                }));
+
                 if (marker.isPopupOpen()) pintarPopupBaliza(marker);
                 return;
             }
 
             // -----------------------------------------------------------
-            // B) SI LLEGA AQUÍ, TIENE DATOS RECIENTES Y VÁLIDOS -> PINTAMOS FLECHA Y NÚMEROS
+            // B) DATOS RECIENTES Y VÁLIDOS → PINTAMOS FLECHA Y NÚMEROS
             // -----------------------------------------------------------
             const rotacion = (d.windDirection ?? 0) + 180;
             const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
@@ -15204,7 +15221,12 @@ function inicializarMapaLeaflet() {
                     </div>
                 </div>`;
 
-            marker.setIcon(L.divIcon({ html: htmlBaliza, className: 'custom-div-icon', iconAnchor: [40, 40], popupAnchor: [0, 25] }));
+            marker.setIcon(L.divIcon({ 
+                html: htmlBaliza, 
+                className: 'custom-div-icon', 
+                iconAnchor: [40, 40], 
+                popupAnchor: [0, 25] 
+            }));
 
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
         });
@@ -15416,16 +15438,17 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
     function calcularEstadoActualizacionBaliza(d, redId) {
-        if (!d || !d.date || !d.time) return { minutos: null, emoji: '⚪', esAntiguo: false };
-        
-        const [anio, mes, dia] = d.date.split('-').map(Number);
-        const [h, m] = d.time.split(':').map(Number);
-        const fechaLectura = new Date(anio, mes - 1, dia, h, m);
-        
-        const umbralAmarillo = REDES_BALIZAS[redId].umbralAmarilloMin;
-        const umbralRojo = REDES_BALIZAS[redId].umbralRojoMin;
+        if (!d || typeof d.ts !== 'number') {
+            return { minutos: null, emoji: '⚪', esAntiguo: true };
+        }
 
-        return calcularSemaforoAntiguedad(fechaLectura.getTime(), umbralAmarillo, umbralRojo);
+        const ahoraMs = Date.now();
+        const timestampMs = d.ts * 1000;   // convertimos ts (segundos) a milisegundos
+
+        const umbralAmarillo = REDES_BALIZAS[redId].umbralAmarilloMin || 90;
+        const umbralRojo = REDES_BALIZAS[redId].umbralRojoMin || 180;
+
+        return calcularSemaforoAntiguedad(timestampMs, umbralAmarillo, umbralRojo, ahoraMs);
     }
     
     function formatearFechaHoraBaliza(ts) {
