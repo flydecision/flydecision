@@ -13803,7 +13803,7 @@ function inicializarMapaLeaflet() {
         {"id":"C059","name":"Ordunte","provider":"Euskalmet","latitude":43.1623,"longitude":-3.28404},
         {"id":"C060","name":"Páganos","provider":"Euskalmet","latitude":42.5605,"longitude":-2.60055},
         {"id":"C061","name":"Arboleda","provider":"Euskalmet","latitude":43.2967,"longitude":-3.06747},
-        {"id":"C064","name":"Zarautz","provider":"Euskalmet","latitude":43.293,"longitude":-2.14542},
+        {"id":"C064","name":"Zarautz","provider":"Euskalmet","latitude":43.28974,"longitude":-2.14399},
         {"id":"C065","name":"Cerroja","provider":"Euskalmet","latitude":43.2112,"longitude":-3.40713},
         {"id":"C066","name":"Untzueta","provider":"Euskalmet","latitude":43.1372,"longitude":-2.9071},
         {"id":"C067","name":"Gardea","provider":"Euskalmet","latitude":43.1272,"longitude":-2.98025},
