@@ -336,7 +336,7 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
         idxInicio = Math.max(0, idxInicio - 1);
     }
 
-    const NUM_PASOS = 24; // 6 horas x 4 pasos de 15 min
+    const NUM_PASOS = 21; // 6 horas x 4 pasos de 15 min
     const idxFin = Math.min(idxInicio + NUM_PASOS, tiempos.length);
 
     if (idxInicio >= tiempos.length) {
@@ -344,15 +344,19 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
     }
 
     const filas = [
-        { etiqueta: '💦', tituloPlano: t('minutely15.precipitacion', { defaultValue: 'Precipitación' }), datos: minutely15.precipitation, tipo: 'precip', bordeAbajo: true },
-        { etiqueta: '100 m', tituloPlano: t('minutely15.viento100', { defaultValue: 'Viento 100 m' }), datos: minutely15.wind_speed_100m, tipo: 'vel' },
-        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion100', { defaultValue: 'Dirección 100 m' }), datos: minutely15.wind_direction_100m, tipo: 'dir', bordeAbajo: true },
+        { etiqueta: '80 m', tituloPlano: t('minutely15.viento80', { defaultValue: 'Viento 80 m' }), datos: minutely15.wind_speed_80m, tipo: 'vel' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion80', { defaultValue: 'Dirección 80 m' }), datos: minutely15.wind_direction_80m, tipo: 'dir', bordeAbajo: true },
+        
         { etiqueta: '50 m', tituloPlano: t('minutely15.viento50', { defaultValue: 'Viento 50 m' }), datos: minutely15.wind_speed_50m, tipo: 'vel' },
         { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion50', { defaultValue: 'Dirección 50 m' }), datos: minutely15.wind_direction_50m, tipo: 'dir', bordeAbajo: true },
+        
         { etiqueta: '20 m', tituloPlano: t('minutely15.viento20', { defaultValue: 'Viento 20 m' }), datos: minutely15.wind_speed_20m, tipo: 'vel' },
         { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion20', { defaultValue: 'Dirección 20 m' }), datos: minutely15.wind_direction_20m, tipo: 'dir', bordeAbajo: true },
+        
         { etiqueta: '10 m', tituloPlano: t('minutely15.viento10', { defaultValue: 'Viento 10 m' }), datos: minutely15.wind_speed_10m, tipo: 'vel' },
-        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion10', { defaultValue: 'Dirección 10 m' }), datos: minutely15.wind_direction_10m, tipo: 'dir' },
+        { etiqueta: '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', tituloPlano: t('minutely15.racha10', { defaultValue: 'Racha 10 m' }), datos: minutely15.wind_gusts_10m, tipo: 'racha' },
+        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion10', { defaultValue: 'Dirección 10 m' }), datos: minutely15.wind_direction_10m, tipo: 'dir' }
+        
     ];
 
     // --- 1. FILA DE HORAS (Agrupadas con colspan) ---
@@ -428,16 +432,8 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
             let contenidoCelda;
             if (valor === null) {
                 contenidoCelda = '—';
-            } else if (fila.tipo === 'precip') {
-                const v = Number(valor);
-                clases += ' celda-precip';
-                if (v > 0) {
-                    clases += ' celda-precip-positiva';
-                    contenidoCelda = v.toFixed(1);
-                } else {
-                    contenidoCelda = '';
-                }
-            } else if (fila.tipo === 'vel') {
+            } 
+            else if (fila.tipo === 'vel') {
                 const velocidad = Math.round(Number(valor));
                 const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
                 if (velocidad < VelocidadMin) clases += ' fondo-naranja';
@@ -445,7 +441,17 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
                 else if (velocidad < VelocidadMax) clases += ' fondo-naranja';
                 else clases += ' fondo-rojo';
                 contenidoCelda = velocidad;
-            } else {
+            } 
+            // 🔴 NUEVA LÓGICA PARA GESTIONAR EL COLOR DE LA RACHA DE FORMA CORRECTA
+            else if (fila.tipo === 'racha') {
+                const racha = Math.round(Number(valor));
+                const rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3;
+                if (racha < rachaTolerable) clases += ' fondo-verde';
+                else if (racha < RachaMax) clases += ' fondo-naranja';
+                else clases += ' fondo-rojo';
+                contenidoCelda = racha;
+            } 
+            else if (fila.tipo === 'dir') {
                 const dirRedondeada = Math.round(Number(valor));
                 let minimoAnguloDiferencia = 180;
                 if (orientaciones.length > 0) {
@@ -454,6 +460,7 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
                 clases += ' ' + colorPorDiferencia(minimoAnguloDiferencia);
                 contenidoCelda = svgFlechaVientoMinutely15(dirRedondeada);
             }
+            
             tbodyHtml += `<td class="${clases}" title="${fila.tituloPlano}">${contenidoCelda}</td>`;
         }
         tbodyHtml += '</tr>';
