@@ -336,7 +336,7 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
         idxInicio = Math.max(0, idxInicio - 1);
     }
 
-    const NUM_PASOS = 21; // 6 horas x 4 pasos de 15 min
+    const NUM_PASOS = 22; // 6 horas x 4 pasos de 15 min
     const idxFin = Math.min(idxInicio + NUM_PASOS, tiempos.length);
 
     if (idxInicio >= tiempos.length) {
