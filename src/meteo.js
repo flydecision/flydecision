@@ -4310,9 +4310,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     <div style="padding-top: 1rem; display: flex; flex-direction: row; gap: 8px;">
 
                         <button id="paso1-btn-importar" style="
-                            flex: 2;
-                            display: flex; align-items: center; gap: 8px;
-                            padding: 10px 12px; border-radius: 8px;
+                            flex: 1;
+                            display: flex; align-items: center; justify-content: flex-start; gap: 8px;
+                            padding: 5px 10px; border-radius: 8px;
                             border: none; background: transparent;
                             color: var(--color-text-secondary, #666);
                             font-size: 16px; cursor: pointer; text-align: left;
@@ -4329,8 +4329,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         <button id="paso1-btn-guia" style="
                             flex: 1;
-                            display: flex; align-items: center; gap: 8px;
-                            padding: 10px 12px; border-radius: 8px;
+                            display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+                            padding: 5px 10px; border-radius: 8px;
                             border: none; background: transparent;
                             color: var(--color-text-secondary, #666);
                             font-size: 16px; cursor: pointer; text-align: left;
