@@ -550,7 +550,7 @@
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Vous êtes ici&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "capasCheckbox": {
       "despegues": "🪂 Décollages",
-      "balizas": "🚩 Balises de vent",
+      "balizas": "🚩 Balises",
       "mapaCalorPeninsula": "🔥 Carte thermique Ibérique",
       "mapaCalorAlpes": "🔥 Carte thermique Alpes",
       "mapaCalorMarruecos": "🔥 Carte thermique Maroc",
