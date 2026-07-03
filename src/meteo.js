@@ -16420,31 +16420,42 @@ function inicializarMapaLeaflet() {
             const res = await fetch(`${red.urlCache}?_=${Date.now()}`);
             const textoCrudo = await res.text();
 
-            if (textoCrudo === red.ultimoJsonRaw) return; // Si el contenido es idéntico al de la última vez, no hay nada nuevo: no repintamos
+            // Si el contenido es idéntico, retornamos FALSE (nada nuevo)
+            if (textoCrudo === red.ultimoJsonRaw) {
+                return false; 
+            }
 
             red.ultimoJsonRaw = textoCrudo;
             red.datosCache = JSON.parse(textoCrudo);
             actualizarIconosBalizas(redId);
+            
+            // Si todo va bien y hemos actualizado iconos, retornamos TRUE (datos nuevos)
+            return true; 
         } catch (e) {
             console.error(`No se pudo cargar el caché de balizas ${red.nombre}`, e);
+            // Si hay un error de red o servidor, retornamos FALSE
+            return false; 
         }
     }
 
     // 🟡 4b. CARGAR HISTÓRICO DE 4H PARA UNA RED (Lazy Load)
     //___________________________________________________________________________________
 
-    async function cargarDatos6hBalizasSiNecesario(redId) {
-        const red = REDES_BALIZAS[redId];
-        const ahora = Date.now();
-        if (red.datos6h && (ahora - red.fetched6hAt) < 5 * 60 * 1000) return;
-        try {
-            const res = await fetch(`${red.url6h}?_=${ahora}`);
-            red.datos6h = await res.json();
-            red.fetched6hAt = ahora;
-        } catch (e) {
-            console.error(`No se pudo cargar el histórico 6h de balizas ${red.nombre}`, e);
-        }
+    async function cargarDatos6hBalizasSiNecesario(redId, force = false) {
+    const red = REDES_BALIZAS[redId];
+    const ahora = Date.now();
+    
+    // Si no se está forzando (force = false), respetamos la caché local de 5 minutos
+    if (!force && red.datos6h && (ahora - red.fetched6hAt) < 5 * 60 * 1000) return;
+    
+    try {
+        const res = await fetch(`${red.url6h}?_=${ahora}`);
+        red.datos6h = await res.json();
+        red.fetched6hAt = ahora;
+    } catch (e) {
+        console.error(`No se pudo cargar el histórico 6h de balizas ${red.nombre}`, e);
     }
+}
 
     // 🟡 5. ACTUALIZAR ICONOS DEL MAPA
     //___________________________________________________________________________________
@@ -16716,9 +16727,13 @@ function inicializarMapaLeaflet() {
     // 🟡 8. EVENTO AL ABRIR UN POPUP EN EL MAPA
     //___________________________________________________________________________________
 
-    map.on('popupopen', function (e) {
+    map.on('popupopen', async function (e) { // <-- Añadido "async" aquí
         const marker = e.popup._source;
         if (!marker || !marker.redId || !marker.stationId) return; // Filtrar si no es un marcador de baliza
+        
+        // Forzamos la descarga del historial de 6h para que el gráfico esté al segundo
+        await cargarDatos6hBalizasSiNecesario(marker.redId, true);
+        
         pintarPopupBaliza(marker);
     });
 
@@ -16730,15 +16745,22 @@ function inicializarMapaLeaflet() {
         dibujarEstacionesBalizas(redId);
         map.addLayer(red.layerGroup);
         
-        // Descargamos el historial ANTES de pintar los iconos
-        await cargarDatos6hBalizasSiNecesario(redId); 
-        cargarDatosBalizas(redId);
+        // Carga inicial forzada al activar la capa para arrancar al día
+        await cargarDatos6hBalizasSiNecesario(redId, true); 
+        await cargarDatosBalizas(redId);
 
         if (!red.intervalo) {
             red.intervalo = setInterval(async () => {
-                // Cada minuto, renovamos historial (si pasaron 5 min) y repintamos
-                await cargarDatos6hBalizasSiNecesario(redId); 
-                cargarDatosBalizas(redId);
+                // 1. Consultamos el tiempo real cada minuto
+                const haCambiado = await cargarDatosBalizas(redId); 
+                
+                // 2. Si ha cambiado el viento, forzamos de inmediato la recarga del gráfico
+                if (haCambiado) {
+                    await cargarDatos6hBalizasSiNecesario(redId, true); 
+                } else {
+                    // Si sigue igual, dejamos la llamada normal (solo descargará si pasan 5 min)
+                    await cargarDatos6hBalizasSiNecesario(redId, false);
+                }
             }, 60 * 1000); 
         }
     }
