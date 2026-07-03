@@ -16958,7 +16958,7 @@ function inicializarMapaLeaflet() {
             
             // Verificamos si esta hora en punto choca con el cronómetro actual. El cronómetro está en dAhora. Si la marca de la hora en punto actual es dLoop, comprobamos la diferencia en milisegundos para saber si están demasiado cerca (< 20 mins). Poniendo diferenciaMins < 20 no aparecería la hora hasta pasados 20 min de la hora actual. De momento lo dejo en 0 porque se solapa con 10 min de diferencia pero poco.
             const diferenciaMins = (ahora - tsHoraEnPunto) / 60;
-            const muyCercaDelCronometro = diferenciaMins < 10 && diferenciaMins >= 0;  
+            const muyCercaDelCronometro = diferenciaMins < 0 && diferenciaMins >= 0;  
 
             // Formateamos la hora sin ceros a la izquierda (ej: 7, 8, 14...)
             const textoHora = String(dLoop.getHours());
@@ -16986,7 +16986,7 @@ function inicializarMapaLeaflet() {
 
         // Finalmente, el cronómetro siempre anclado a la hora actual (borde derecho).
         // Elevamos su coordenada Y a (H - 3) para evitar recortes inferiores del emoji.
-        etiquetasX.push(`<text x="${pxAhora}" y="${H - 2}" text-anchor="middle" font-size="14">⏱️</text>`);
+        etiquetasX.push(`<text x="${pxAhora}" y="${H - 2}" text-anchor="middle" font-size="14"></text>`);
 
 
         // Flechas de dirección repartidas uniformemente (cambiar la cifra de Math.min(X...), que es el máximo "aproximado".. 1 o 2 más serán por el redondeo
