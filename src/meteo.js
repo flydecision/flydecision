@@ -16427,13 +16427,11 @@ function inicializarMapaLeaflet() {
 
             red.ultimoJsonRaw = textoCrudo;
             red.datosCache = JSON.parse(textoCrudo);
-            actualizarIconosBalizas(redId);
             
-            // Si todo va bien y hemos actualizado iconos, retornamos TRUE (datos nuevos)
+            // Si todo va bien, retornamos TRUE (datos nuevos disponibles en memoria)
             return true; 
         } catch (e) {
             console.error(`No se pudo cargar el caché de balizas ${red.nombre}`, e);
-            // Si hay un error de red o servidor, retornamos FALSE
             return false; 
         }
     }
@@ -16745,21 +16743,31 @@ function inicializarMapaLeaflet() {
         dibujarEstacionesBalizas(redId);
         map.addLayer(red.layerGroup);
         
-        // Carga inicial forzada al activar la capa para arrancar al día
+        // Carga inicial forzada de ambos JSON antes de pintar por primera vez
         await cargarDatos6hBalizasSiNecesario(redId, true); 
         await cargarDatosBalizas(redId);
+        actualizarIconosBalizas(redId); // Pintamos ahora que ambos datos están en memoria
 
         if (!red.intervalo) {
             red.intervalo = setInterval(async () => {
-                // 1. Consultamos el tiempo real cada minuto
+                // 1. Consultamos si ha cambiado el tiempo real
                 const haCambiado = await cargarDatosBalizas(redId); 
                 
-                // 2. Si ha cambiado el viento, forzamos de inmediato la recarga del gráfico
+                // 2. Si ha cambiado el viento
                 if (haCambiado) {
+                    // Primero forzamos la descarga del historial de 6h
                     await cargarDatos6hBalizasSiNecesario(redId, true); 
+                    // Y una vez descargado, pintamos todo a la vez (iconos, popups y gráfico sincronizados)
+                    actualizarIconosBalizas(redId);
                 } else {
-                    // Si sigue igual, dejamos la llamada normal (solo descargará si pasan 5 min)
+                    // Si el viento sigue igual, dejamos la comprobación de 5 minutos para el historial
+                    const antesFetched = red.fetched6hAt;
                     await cargarDatos6hBalizasSiNecesario(redId, false);
+                    
+                    // Si efectivamente se ha cumplido el plazo de 5 minutos y se ha descargado un JSON nuevo de 6h, repintamos
+                    if (red.fetched6hAt !== antesFetched) {
+                        actualizarIconosBalizas(redId);
+                    }
                 }
             }, 60 * 1000); 
         }
