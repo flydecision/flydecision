@@ -16720,28 +16720,7 @@ function inicializarMapaLeaflet() {
         const marker = e.popup._source;
         if (!marker || !marker.redId || !marker.stationId) return; // Filtrar si no es un marcador de baliza
         pintarPopupBaliza(marker);
-
-        // // 🔍 ACCESIBILIDAD: mientras el popup está abierto, cedemos el control de gestos táctiles
-        // // al navegador (pinch-zoom nativo de página) en vez de a Leaflet (que normalmente los usa
-        // // para mover/zumear el MAPA). Por eso no basta con stopPropagation: hay que desactivar
-        // // los propios handlers de Leaflet, porque desde la v1.8 escuchan Pointer Events, no Touch Events,
-        // // y además el bloqueo del gesto nativo viene de touch-action en CSS, no de la propagación del evento.
-        // if (map.tap) map.tap.disable();
-        // if (map.dragging) map.dragging.disable();
-        // if (map.touchZoom) map.touchZoom.disable();
-        // if (map.doubleClickZoom) map.doubleClickZoom.disable();
     });
-
-    // map.on('popupclose', function (e) {
-    //     const marker = e.popup._source;
-    //     if (!marker || !marker.redId || !marker.stationId) return; // Filtrar si no es un marcador de baliza
-
-    //     // Restauramos el comportamiento normal del mapa al cerrar el popup
-    //     if (map.tap) map.tap.enable();
-    //     if (map.dragging) map.dragging.enable();
-    //     if (map.touchZoom) map.touchZoom.enable();
-    //     if (map.doubleClickZoom) map.doubleClickZoom.enable();
-    // });
 
     // 🟡 9. LÓGICA DE ACTIVACIÓN/DESACTIVACIÓN GENÉRICA POR CHECKBOXES
     //___________________________________________________________________________________
