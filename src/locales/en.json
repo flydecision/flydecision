@@ -609,7 +609,7 @@
       "OpenAIP": "OpenAIP Restrictions (World)"
     },
     "balizas": {
-      "baliza_sin_datos": "Station without wind data.",
+      "baliza_sin_datos": "This automatic beacon is not transmitting wind data.",
       "balizas_viento": "Wind",
       "balizas_racha": "Gust",
       "balizas_direccion": "Direction",
@@ -717,7 +717,10 @@
     "tooltipModoApp": "<b>App mode:</b><br><br><b>Simple mode</b>: Only the essentials. Recommended to start and familiarize yourself with the app before switching to <i>Advanced mode</i>.<br><br><b>Advanced mode</b>: Full control. Gives access to all options, filters and detailed data.",
     "tooltipcheckboxBalizasEuskalmet": "<b>🚩 EUSKALMET wind beacons:</b><br><br>Automatic weather stations with wind data from the Euskalmet network (Basque Government).<br><br>Approximate frequency of automatic data update: 10 minutes (plus a variable official release time).<br><br>Official website: <a href='https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#' target='_blank' style='color: #007bff; text-decoration: underline;'>Euskalmet</a>",
     "tooltipcheckboxBalizasAemet": "<b>🚩 AEMET wind beacons:</b><br><br>Automatic weather stations with wind data from the AEMET network (Government of Spain).<br><br>Approximate frequency of automatic data update: 60 minutes (plus a variable official release time).<br><br>Note: there are some beacons classified as 'Deferred' with a much lower frequency; they are displayed, but many times they will be grayed out because they are not up to date.<br><br>Official website: <a href='https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=esp&w=0&datos=img&x=h24&f=vel_viento' target='_blank' style='color: #007bff; text-decoration: underline;'>AEMET</a>",
-    "tooltipcheckboxBalizasHolfuy": "<b>🚩 Holfuy wind beacons:</b><br><br>Automatic weather stations with wind data from the Holfuy network.<br><br>Approximate frequency of automatic data update: 10 minutes (variable depending on the station).<br><br>Official website: <a href='https://holfuy.com/es/map/wind' target='_blank' style='color: #007bff; text-decoration: underline;'>Holfuy</a>"
+    "tooltipcheckboxBalizasHolfuy": "<b>🚩 Holfuy wind beacons:</b><br><br>Automatic weather stations with wind data from the Holfuy network.<br><br>Approximate frequency of automatic data update: 10 minutes (variable depending on the station).<br><br>Official website: <a href='https://holfuy.com/es/map/wind' target='_blank' style='color: #007bff; text-decoration: underline;'>Holfuy</a>",
+    "tooltipcheckboxBalizasMFPirineos": "<b>🚩 Météo-France wind beacons Pyrenees area:</b><br><br>Automatic weather stations with wind data from the Météo-France network.<br><br>Approximate frequency of automatic data update: 10 minutes (variable depending on the station).<br><br>Official website: <a href='https://meteofrance.fr/' target='_blank' style='color: #007bff; text-decoration: underline;'>Météo-France</a>",
+    "tooltipcheckboxBalizasMFAlpes": "<b>🚩 Météo-France wind beacons Alps area:</b><br><br>Automatic weather stations with wind data from the Météo-France network.<br><br>Approximate frequency of automatic data update: 10 minutes (variable depending on the station).<br><br>Official website: <a href='https://meteofrance.fr/' target='_blank' style='color: #007bff; text-decoration: underline;'>Météo-France</a>",
+    "tooltipcheckboxBalizasPioupiou": "<b>🚩 OpenWindMap wind beacons:</b><br><br>Automatic weather stations with wind data from the OpenWindMap network (Pioupiou).<br><br>Approximate frequency of automatic data update: 10 minutes (variable depending on the station).<br><br>Official website: <a href='https://openwindmap.org' target='_blank' style='color: #007bff; text-decoration: underline;'>OpenWindMap</a> (Wind data (c) contributors of the OpenWindMap wind network)"
   },
   "paises": {
     "España": "Spain",

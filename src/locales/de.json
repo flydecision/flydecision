@@ -609,7 +609,7 @@
       "OpenAIP": "OpenAIP Beschränkungen (Welt)"
     },
     "balizas": {
-      "baliza_sin_datos": "Station ohne Winddaten.",
+      "baliza_sin_datos": "Diese automatische Station überträgt keine Winddaten.",
       "balizas_viento": "Wind",
       "balizas_racha": "Böe",
       "balizas_direccion": "Richtung",
@@ -717,7 +717,10 @@
     "tooltipModoApp": "<b>App-Modus:</b><br><br><b>Einfacher Modus</b>: Nur das Wesentliche. Empfohlen für den Einstieg, um sich mit der App vertraut zu machen, bevor du in den <i>Erweiterten Modus</i> wechselst.<br><br><b>Erweiterter Modus</b>: Volle Kontrolle. Bietet Zugriff auf alle Optionen, Filter und detaillierten Daten.",
     "tooltipcheckboxBalizasEuskalmet": "<b>🚩 EUSKALMET Windstationen:</b><br><br>Automatische Wetterstationen mit Winddaten des Euskalmet-Netzwerks (Baskische Regierung).<br><br>Ungefähre Häufigkeit der automatischen Datenaktualisierung: 10 Minuten (zuzüglich einer variablen offiziellen Veröffentlichungszeit).<br><br>Offizielle Website: <a href='https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#' target='_blank' style='color: #007bff; text-decoration: underline;'>Euskalmet</a>",
     "tooltipcheckboxBalizasAemet": "<b>🚩 AEMET Windstationen:</b><br><br>Automatische Wetterstationen mit Winddaten des AEMET-Netzwerks (Regierung von Spanien).<br><br>Ungefähre Häufigkeit der automatischen Datenaktualisierung: 60 Minuten (zuzüglich einer variablen offiziellen Veröffentlichungszeit).<br><br>Hinweis: Es gibt einige als 'Verzögert' klassifizierte Stationen mit einer viel geringeren Häufigkeit; sie werden angezeigt, sind aber oft ausgegraut, da ihre Daten nicht sehr aktuell sind.<br><br>Offizielle Website: <a href='https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=esp&w=0&datos=img&x=h24&f=vel_viento' target='_blank' style='color: #007bff; text-decoration: underline;'>AEMET</a>",
-    "tooltipcheckboxBalizasHolfuy": "<b>🚩 Holfuy Windstationen:</b><br><br>Automatische Wetterstationen mit Winddaten des Holfuy-Netzwerks.<br><br>Ungefähre Häufigkeit der automatischen Datenaktualisierung: 10 Minuten (stationsabhängig).<br><br>Offizielle Website: <a href='https://holfuy.com/es/map/wind' target='_blank' style='color: #007bff; text-decoration: underline;'>Holfuy</a>"
+    "tooltipcheckboxBalizasHolfuy": "<b>🚩 Holfuy Windstationen:</b><br><br>Automatische Wetterstationen mit Winddaten des Holfuy-Netzwerks.<br><br>Ungefähre Häufigkeit der automatischen Datenaktualisierung: 10 Minuten (stationsabhängig).<br><br>Offizielle Website: <a href='https://holfuy.com/es/map/wind' target='_blank' style='color: #007bff; text-decoration: underline;'>Holfuy</a>",
+    "tooltipcheckboxBalizasMFPirineos": "<b>🚩 Météo-France Windstationen Region Pyrenäen:</b><br><br>Automatische Wetterstationen mit Winddaten des Météo-France-Netzwerks.<br><br>Ungefähre Häufigkeit der automatischen Datenaktualisierung: 10 Minuten (stationsabhängig).<br><br>Offizielle Website: <a href='https://meteofrance.fr/' target='_blank' style='color: #007bff; text-decoration: underline;'>Météo-France</a>",
+    "tooltipcheckboxBalizasMFAlpes": "<b>🚩 Météo-France Windstationen Region Alpen:</b><br><br>Automatische Wetterstationen mit Winddaten des Météo-France-Netzwerks.<br><br>Ungefähre Häufigkeit der automatischen Datenaktualisierung: 10 Minuten (stationsabhängig).<br><br>Offizielle Website: <a href='https://meteofrance.fr/' target='_blank' style='color: #007bff; text-decoration: underline;'>Météo-France</a>",
+    "tooltipcheckboxBalizasPioupiou": "<b>🚩 OpenWindMap Windstationen:</b><br><br>Automatische Wetterstationen mit Winddaten des OpenWindMap-Netzwerks (Pioupiou).<br><br>Ungefähre Häufigkeit der automatischen Datenaktualisierung: 10 Minuten (stationsabhängig).<br><br>Offizielle Website: <a href='https://openwindmap.org' target='_blank' style='color: #007bff; text-decoration: underline;'>OpenWindMap</a> (Wind data (c) contributors of the OpenWindMap wind network)"
   },
   "paises": {
     "España": "Spanien",
