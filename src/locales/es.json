@@ -492,7 +492,7 @@
     },
     "abrirMapaInicio": "Abrir mapa al iniciar",
     "recordarPosicionMapa": "Recordar última vista del mapa",
-    "recordarEstadoFiltroHorario": "Recordar estado del filtro horario (abierto/cerrado)",
+    "recordarEstadoFiltroHorario": "Recordar estado del filtro meteo (abierto/cerrado)",
     "recordarCapasActivas": "Recordar capas activas",
     "recordarTipoMapa": "Recordar tipo de mapa",
     "recordarFiltrosMapa": "Recordar filtros",
@@ -610,7 +610,7 @@
       "OpenAIP": "Restricciones OpenAIP (Mundo)"
     },
     "balizas": {
-      "baliza_sin_datos": "Esta baliza automática no está transmitiendo datos de viento.",
+      "baliza_sin_datos": "No hay datos de viento disponibles para esta baliza.",
       "balizas_viento": "Viento",
       "balizas_racha": "Racha",
       "balizas_direccion": "Dirección",

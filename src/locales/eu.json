@@ -491,7 +491,7 @@
     },
     "abrirMapaInicio": "Ireki mapa abiatzean",
     "recordarPosicionMapa": "Gogoratu maparen azken ikuspegia",
-    "recordarEstadoFiltroHorario": "Gogoratu ordu-iragazkiaren egoera (irekita/itxita)",
+    "recordarEstadoFiltroHorario": "Gogoratu meteo-iragazkiaren egoera (irekita/itxita)",
     "recordarCapasActivas": "Gogoratu geruza aktiboak",
     "recordarTipoMapa": "Gogoratu mapa mota",
     "recordarFiltrosMapa": "Gogoratu iragazkiak",
@@ -609,7 +609,7 @@
       "OpenAIP": "OpenAIP murrizketak (Mundua)"
     },
     "balizas": {
-      "baliza_sin_datos": "Baliza automatiko hau ez da haize-daturik transmititzen ari.",
+      "baliza_sin_datos": "Ez dago haize-daturik eskuragarri baliza honetarako.",
       "balizas_viento": "Haizea",
       "balizas_racha": "Bolada",
       "balizas_direccion": "Norabidea",

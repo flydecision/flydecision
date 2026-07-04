@@ -491,7 +491,7 @@
     },
     "abrirMapaInicio": "Open map on startup",
     "recordarPosicionMapa": "Remember last map view",
-    "recordarEstadoFiltroHorario": "Remember time filter state (open/closed)",
+    "recordarEstadoFiltroHorario": "Remember meteo filter state (open/closed)",
     "recordarCapasActivas": "Remember active layers",
     "recordarTipoMapa": "Remember map type",
     "recordarFiltrosMapa": "Remember filters",
@@ -609,7 +609,7 @@
       "OpenAIP": "OpenAIP Restrictions (World)"
     },
     "balizas": {
-      "baliza_sin_datos": "This automatic beacon is not transmitting wind data.",
+      "baliza_sin_datos": "No wind data available for this beacon.",
       "balizas_viento": "Wind",
       "balizas_racha": "Gust",
       "balizas_direccion": "Direction",

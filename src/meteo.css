@@ -2853,7 +2853,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 /* 1. Estilo General (La "pastilla" flotante) */
 .bottom-nav.compact-nav {
     position: fixed;
-    bottom: calc(18px + var(--safe-area-inset-bottom, 0px)); /* Más separada del fondo */
+    bottom: calc(10px + var(--safe-area-inset-bottom, 0px)); /* Más separada del fondo */
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 20px); /* Un poco más ancha */

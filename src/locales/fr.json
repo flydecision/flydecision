@@ -491,7 +491,7 @@
     },
     "abrirMapaInicio": "Ouvrir la carte au démarrage",
     "recordarPosicionMapa": "Mémoriser la dernière vue de la carte",
-    "recordarEstadoFiltroHorario": "Mémoriser l'état du filtre horaire (ouvert/fermé)",
+    "recordarEstadoFiltroHorario": "Mémoriser l'état du filtre météo (ouvert/fermé)",
     "recordarCapasActivas": "Mémoriser les couches actives",
     "recordarTipoMapa": "Mémoriser le type de carte",
     "recordarFiltrosMapa": "Mémoriser les filtres",
@@ -609,7 +609,7 @@
       "OpenAIP": "Restrictions OpenAIP (Monde)"
     },
     "balizas": {
-      "baliza_sin_datos": "Cette balise automatique ne transmet pas de données de vent.",
+      "baliza_sin_datos": "Aucune donnée de vent disponible pour cette balise.",
       "balizas_viento": "Vent",
       "balizas_racha": "Rafale",
       "balizas_direccion": "Direction",

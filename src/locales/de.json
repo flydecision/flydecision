@@ -491,7 +491,7 @@
     },
     "abrirMapaInicio": "Karte beim Start öffnen",
     "recordarPosicionMapa": "Letzte Kartenansicht merken",
-    "recordarEstadoFiltroHorario": "Zeitfilter-Status merken (offen/geschlossen)",
+    "recordarEstadoFiltroHorario": "Meteo-Filter-Status merken (offen/geschlossen)",
     "recordarCapasActivas": "Aktive Ebenen merken",
     "recordarTipoMapa": "Kartentyp merken",
     "recordarFiltrosMapa": "Filter merken",
@@ -609,7 +609,7 @@
       "OpenAIP": "OpenAIP Beschränkungen (Welt)"
     },
     "balizas": {
-      "baliza_sin_datos": "Diese automatische Station überträgt keine Winddaten.",
+      "baliza_sin_datos": "Für diese Station sind keine Winddaten verfügbar.",
       "balizas_viento": "Wind",
       "balizas_racha": "Böe",
       "balizas_direccion": "Richtung",

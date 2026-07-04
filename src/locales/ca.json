@@ -491,7 +491,7 @@
     },
     "abrirMapaInicio": "Obrir mapa en iniciar",
     "recordarPosicionMapa": "Recordar l'última vista del mapa",
-    "recordarEstadoFiltroHorario": "Recordar estat del filtre horari (obert/tancat)",
+    "recordarEstadoFiltroHorario": "Recordar estat del filtre meteo (obert/tancat)",
     "recordarCapasActivas": "Recordar capes actives",
     "recordarTipoMapa": "Recordar tipus de mapa",
     "recordarFiltrosMapa": "Recordar filtres",
@@ -609,7 +609,7 @@
       "OpenAIP": "Restriccions OpenAIP (Món)"
     },
     "balizas": {
-      "baliza_sin_datos": "Aquesta balisa automàtica no està transmetent dades de vent.",
+      "baliza_sin_datos": "No hi ha dades de vent disponibles per a aquesta balisa.",
       "balizas_viento": "Vent",
       "balizas_racha": "Ràfega",
       "balizas_direccion": "Direcció",

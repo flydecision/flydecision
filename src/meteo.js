@@ -336,7 +336,7 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
         idxInicio = Math.max(0, idxInicio - 1);
     }
 
-    const NUM_PASOS = 22; // 6 horas x 4 pasos de 15 min
+    const NUM_PASOS = 21; // 6 horas x 4 pasos de 15 min
     const idxFin = Math.min(idxInicio + NUM_PASOS, tiempos.length);
 
     if (idxInicio >= tiempos.length) {
@@ -442,7 +442,7 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
                 else clases += ' fondo-rojo';
                 contenidoCelda = velocidad;
             } 
-            // 🔴 NUEVA LÓGICA PARA GESTIONAR EL COLOR DE LA RACHA DE FORMA CORRECTA
+            // LÓGICA PARA GESTIONAR EL COLOR DE LA RACHA
             else if (fila.tipo === 'racha') {
                 const racha = Math.round(Number(valor));
                 const rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3;
@@ -14471,7 +14471,6 @@ function inicializarMapaLeaflet() {
         {"id":"9751","name":"Sopeira","provider":"Aemet","latitude":42.318611,"longitude":0.746944},
         {"id":"9756X","name":"Benabarre","provider":"Aemet","latitude":42.1125,"longitude":0.48},
         {"id":"9771C","name":"Lleida","provider":"Aemet","latitude":41.626111,"longitude":0.598056},
-        {"id":"9784P","name":"Bielsa","provider":"Aemet","latitude":42.63,"longitude":0.224722},
         {"id":"9808X","name":"Aínsa-sobrarbe, La Serreta","provider":"Aemet","latitude":42.421667,"longitude":0.138056},
         {"id":"9812M","name":"Parador De Ordesa, Parque Nacional Ordesa Y Monteperdido","provider":"Aemet","latitude":42.655278,"longitude":-0.099167},
         {"id":"9814I","name":"Torla-ordesa, El Cebollar","provider":"Aemet","latitude":42.656111,"longitude":-0.124444},
@@ -15592,7 +15591,7 @@ function inicializarMapaLeaflet() {
         {"id":"98821001","name":"La tontouta","provider":"Meteofrance","latitude":-22.017333,"longitude":166.222333}
     ];
 
-    const ESTACIONES_PIOUPIOU = 
+const ESTACIONES_PIOUPIOU = 
     [
         {"id":"41","name":"Sauveterre","provider":"Pioupiou","latitude":43.456835,"longitude":0.846405},
         {"id":"70","name":"Déco Téléphérique Salève 1086m","provider":"Pioupiou","latitude":46.152982,"longitude":6.19053},
@@ -15600,7 +15599,6 @@ function inicializarMapaLeaflet() {
         {"id":"74","name":"Aérodrome de Bagnères-de-Luchon","provider":"Pioupiou","latitude":42.799538,"longitude":0.599368},
         {"id":"84","name":"PP84 JokAir Parapente","provider":"Pioupiou","latitude":43.980543,"longitude":5.562144},
         {"id":"89","name":"Les Plaines du POËT-LAVAL","provider":"Pioupiou","latitude":44.557737,"longitude":5.021946},
-        {"id":"92","name":"Orcières Merlette - Le Cairn","provider":"Pioupiou","latitude":44.562609,"longitude":6.077985},
         {"id":"97","name":"Pioupiou YCR","provider":"Pioupiou","latitude":45.884836,"longitude":4.812041},
         {"id":"104","name":"Attéro Club CVLG Troinex","provider":"Pioupiou","latitude":46.160731,"longitude":6.156397},
         {"id":"106","name":"AGProcess","provider":"Pioupiou","latitude":45.36859,"longitude":5.969899},
@@ -15612,7 +15610,7 @@ function inicializarMapaLeaflet() {
         {"id":"127","name":"Pente Ecole de Châteaudouble","provider":"Pioupiou","latitude":44.887351,"longitude":5.067701},
         {"id":"131","name":"Ginoles","provider":"Pioupiou","latitude":42.87599,"longitude":2.151922},
         {"id":"134","name":"Site de Port","provider":"Pioupiou","latitude":46.159058,"longitude":5.574124},
-        {"id":"135","name":"Le Petit Aréa \/ Granon","provider":"Pioupiou","latitude":44.963963,"longitude":6.576204},
+        {"id":"135","name":"Le Petit Aréa / Granon","provider":"Pioupiou","latitude":44.963963,"longitude":6.576204},
         {"id":"139","name":"Atterrissage CAMPAN (65)","provider":"Pioupiou","latitude":43.021649,"longitude":0.172492},
         {"id":"143","name":"Balise Neuvic sur Isle","provider":"Pioupiou","latitude":45.091215,"longitude":0.480175},
         {"id":"151","name":"Monte Cecu Antennes","provider":"Pioupiou","latitude":42.328088,"longitude":9.157632},
@@ -15625,7 +15623,6 @@ function inicializarMapaLeaflet() {
         {"id":"170","name":"Allevard 1550m","provider":"Pioupiou","latitude":45.39231,"longitude":6.115008},
         {"id":"172","name":"Déco Poizat-Lalleyriat 1163m","provider":"Pioupiou","latitude":46.142311,"longitude":5.705249},
         {"id":"175","name":"Col de la Core","provider":"Pioupiou","latitude":42.973408,"longitude":1.152468},
-        {"id":"184","name":"Atterrissage de Mieussy - La Ferme","provider":"Pioupiou","latitude":46.131083,"longitude":6.525907},
         {"id":"192","name":"Aérodrome Issoire 378m","provider":"Pioupiou","latitude":45.51419,"longitude":3.268143},
         {"id":"195","name":"Décollage SO de Planoise","provider":"Pioupiou","latitude":47.204704,"longitude":5.977825},
         {"id":"199","name":"Pioupiou 199","provider":"Pioupiou","latitude":47.25007,"longitude":6.743459},
@@ -15683,12 +15680,11 @@ function inicializarMapaLeaflet() {
         {"id":"540","name":"Déco St Sorlin en Bugey","provider":"Pioupiou","latitude":45.880072,"longitude":5.398645},
         {"id":"544","name":"MCPB Aéromodélisme","provider":"Pioupiou","latitude":46.110948,"longitude":5.854388},
         {"id":"546","name":"Balise mobile Bel-Air","provider":"Pioupiou","latitude":47.05329,"longitude":4.732107},
-        {"id":"549","name":"BAC Castries 120\/300","provider":"Pioupiou","latitude":43.682448,"longitude":4.009658},
-        {"id":"551","name":"Deco de Charmoilles","provider":"Pioupiou","latitude":48.098003,"longitude":5.154209},
+        {"id":"549","name":"BAC Castries 120/300","provider":"Pioupiou","latitude":43.682448,"longitude":4.009658},
         {"id":"554","name":"Décollage de la batie neuve","provider":"Pioupiou","latitude":44.58334,"longitude":6.235335},
         {"id":"563","name":"Montcusel","provider":"Pioupiou","latitude":46.339297,"longitude":5.658982},
         {"id":"574","name":"St Laurent la Roche (N-NO) 470m","provider":"Pioupiou","latitude":46.589709,"longitude":5.509502},
-        {"id":"575","name":"Décollage POLIGNY Nord\/Nord-Ouest","provider":"Pioupiou","latitude":46.827215,"longitude":5.705215},
+        {"id":"575","name":"Décollage POLIGNY Nord/Nord-Ouest","provider":"Pioupiou","latitude":46.827215,"longitude":5.705215},
         {"id":"582","name":"Bande 825m","provider":"Pioupiou","latitude":45.470024,"longitude":5.771283},
         {"id":"591","name":"Besançon NE","provider":"Pioupiou","latitude":47.208322,"longitude":5.984104},
         {"id":"593","name":"LFMX","provider":"Pioupiou","latitude":44.061204,"longitude":5.995183},
@@ -15713,7 +15709,6 @@ function inicializarMapaLeaflet() {
         {"id":"818","name":"Déco de Soult","provider":"Pioupiou","latitude":44.89749,"longitude":1.65708},
         {"id":"819","name":"Chambran 1720 m","provider":"Pioupiou","latitude":44.903591,"longitude":6.492975},
         {"id":"820","name":"Décollage Boismint (plan de l'eau)","provider":"Pioupiou","latitude":45.293294,"longitude":6.550168},
-        {"id":"821","name":"Lozari Déco Haut","provider":"Pioupiou","latitude":42.649553,"longitude":9.028395},
         {"id":"822","name":"Tanargue Col de Meyrand Valgorge","provider":"Pioupiou","latitude":44.619713,"longitude":4.079893},
         {"id":"824","name":"Lac Sarget","provider":"Pioupiou","latitude":46.527698,"longitude":0.17162},
         {"id":"826","name":"Point de Vue - 1610m","provider":"Pioupiou","latitude":44.401798,"longitude":6.66707},
@@ -15723,10 +15718,9 @@ function inicializarMapaLeaflet() {
         {"id":"830","name":"La Normandelière","provider":"Pioupiou","latitude":46.613685,"longitude":-1.861318},
         {"id":"831","name":"Col de Tende","provider":"Pioupiou","latitude":44.151276,"longitude":7.570627},
         {"id":"832","name":"Décollage de Baulme-la-Roche","provider":"Pioupiou","latitude":47.35015,"longitude":4.800172},
-        {"id":"833","name":"MeteoWind 833","provider":"Pioupiou","latitude":45.104421,"longitude":2.661173},
         {"id":"834","name":"Décollage de Varan 1630m","provider":"Pioupiou","latitude":45.94472,"longitude":6.68227},
         {"id":"835","name":"Atterro Aussois 1506m","provider":"Pioupiou","latitude":45.234566,"longitude":6.742849},
-        {"id":"836","name":"LESCHES EN DIOIS \/ Montagne du Puy","provider":"Pioupiou","latitude":44.609147,"longitude":5.542828},
+        {"id":"836","name":"LESCHES EN DIOIS / Montagne du Puy","provider":"Pioupiou","latitude":44.609147,"longitude":5.542828},
         {"id":"839","name":"MeteoWind 839","provider":"Pioupiou","latitude":46.259055,"longitude":6.022933},
         {"id":"840","name":"Balise de la Roche de Minuit","provider":"Pioupiou","latitude":47.987917,"longitude":6.857449},
         {"id":"841","name":"PULSS Pouancay ULM","provider":"Pioupiou","latitude":47.096935,"longitude":-0.074815},
@@ -15735,7 +15729,6 @@ function inicializarMapaLeaflet() {
         {"id":"901","name":"Le Menil-Tête des Renards 875m","provider":"Pioupiou","latitude":47.902736,"longitude":6.80457},
         {"id":"903","name":"Cachette","provider":"Pioupiou","latitude":45.58256,"longitude":6.80524},
         {"id":"922","name":"Col du Pt St Bernard","provider":"Pioupiou","latitude":45.6715,"longitude":6.87545},
-        {"id":"923","name":"Hors service","provider":"Pioupiou","latitude":43.066,"longitude":0.898},
         {"id":"924","name":"AERO MODEL CLUB CEVENOL","provider":"Pioupiou","latitude":43.977968,"longitude":4.067024},
         {"id":"925","name":"Le Grizzly","provider":"Pioupiou","latitude":45.547967,"longitude":6.792031},
         {"id":"926","name":"Balise de Test","provider":"Pioupiou","latitude":43.066349,"longitude":0.897572},
@@ -15743,7 +15736,6 @@ function inicializarMapaLeaflet() {
         {"id":"928","name":"Dourgne St Stapin","provider":"Pioupiou","latitude":43.475653,"longitude":2.142996},
         {"id":"931","name":"Le Cheynet","provider":"Pioupiou","latitude":44.6908,"longitude":4.61028},
         {"id":"935","name":"Atterrissage d'Argeliers 50m Aude","provider":"Pioupiou","latitude":43.313294,"longitude":2.892609},
-        {"id":"938","name":"Reullée","provider":"Pioupiou","latitude":47.007834,"longitude":4.947867},
         {"id":"939","name":"Camurac déco La Serre de Montcamp","provider":"Pioupiou","latitude":42.7835,"longitude":1.94475},
         {"id":"940","name":"Pic de Pénédis 1808m","provider":"Pioupiou","latitude":42.770203,"longitude":1.913362},
         {"id":"942","name":"Base Ulm TREIGNY ","provider":"Pioupiou","latitude":47.55083,"longitude":3.19635},
@@ -15764,8 +15756,6 @@ function inicializarMapaLeaflet() {
         {"id":"986","name":"CAAP64","provider":"Pioupiou","latitude":43.23315,"longitude":-0.10456},
         {"id":"987","name":"Pic des Rives Belcaire","provider":"Pioupiou","latitude":42.816427,"longitude":1.924289},
         {"id":"991","name":"Parking du Meix Musy","provider":"Pioupiou","latitude":47.039137,"longitude":6.668816},
-        {"id":"994","name":"PUIVERT PENTE NORD","provider":"Pioupiou","latitude":42.881925,"longitude":2.066419},
-        {"id":"998","name":"Chabanet bis","provider":"Pioupiou","latitude":44.712282,"longitude":4.603682},
         {"id":"999","name":"Lautrec. Club Rev'aile","provider":"Pioupiou","latitude":43.711241,"longitude":2.141455},
         {"id":"1006","name":"Pioupiou 1006","provider":"Pioupiou","latitude":44.390413,"longitude":0.823},
         {"id":"1007","name":"Plaine d'Autrans","provider":"Pioupiou","latitude":45.17321,"longitude":5.533406},
@@ -15794,29 +15784,22 @@ function inicializarMapaLeaflet() {
         {"id":"1238","name":"Balise AIRMES 1238","provider":"Pioupiou","latitude":46.181595,"longitude":5.685393},
         {"id":"1240","name":"Balise de Test plage des Aresquiers - Etang d'Ingr…","provider":"Pioupiou","latitude":43.44023,"longitude":3.7936},
         {"id":"1301","name":"Finistère Bretagne","provider":"Pioupiou","latitude":47.973519,"longitude":-4.406202},
-        {"id":"1302","name":"Le Poyet","provider":"Pioupiou","latitude":46.559864,"longitude":7.052278},
         {"id":"1304","name":"Startplatz Kreuzjoch 1890 m","provider":"Pioupiou","latitude":47.452462,"longitude":11.079692},
         {"id":"1307","name":"AVC Coulet","provider":"Pioupiou","latitude":46.468856,"longitude":6.448071},
         {"id":"1308","name":"Cucugnan Château de QUERIBUS 575m","provider":"Pioupiou","latitude":42.84653,"longitude":2.624054},
-        {"id":"1309","name":"Plage des Saumonards","provider":"Pioupiou","latitude":45.980582,"longitude":-1.233367},
         {"id":"1311","name":"Soncourt sur Marne","provider":"Pioupiou","latitude":48.25564,"longitude":5.101554},
         {"id":"1312","name":"Pian Munè 1890m","provider":"Pioupiou","latitude":44.639215,"longitude":7.230763},
         {"id":"1314","name":"Zumholz","provider":"Pioupiou","latitude":46.754822,"longitude":7.288728},
-        {"id":"1315","name":"Windbird 1315","provider":"Pioupiou","latitude":46.799631,"longitude":9.061773},
         {"id":"1316","name":"Ballon d'Alsace 1150m","provider":"Pioupiou","latitude":47.816413,"longitude":6.842924},
-        {"id":"1317","name":"WindBird 1317","provider":"Pioupiou","latitude":43.231639,"longitude":-2.871139},
         {"id":"1319","name":"Decollo GAS","provider":"Pioupiou","latitude":47.57411,"longitude":10.637184},
         {"id":"1321","name":"Decollo GAS","provider":"Pioupiou","latitude":45.612159,"longitude":10.747557},
         {"id":"1322","name":"Decollo Santa Maria in Calanca 1218m","provider":"Pioupiou","latitude":46.26732,"longitude":9.137532},
         {"id":"1323","name":"Windbird 1323","provider":"Pioupiou","latitude":46.615154,"longitude":5.902481},
         {"id":"1325","name":"Landeplatz Oetz","provider":"Pioupiou","latitude":47.204005,"longitude":10.89077},
-        {"id":"1326","name":"Windbird 1326","provider":"Pioupiou","latitude":47.579556,"longitude":10.558387},
         {"id":"1327","name":"Decollo Macchialunga - Colfiorito","provider":"Pioupiou","latitude":43.045668,"longitude":12.946686},
         {"id":"1328","name":"Décollage Nord de Vieilley","provider":"Pioupiou","latitude":47.325272,"longitude":6.090385},
         {"id":"1330","name":"Windbird 1330","provider":"Pioupiou","latitude":45.787784,"longitude":11.635641},
-        {"id":"1331","name":"Tröglhang Nord 1620m","provider":"Pioupiou","latitude":47.455034,"longitude":11.080841},
         {"id":"1332","name":"Windbird 1332","provider":"Pioupiou","latitude":42.969416,"longitude":-0.002884},
-        {"id":"1334","name":"CVL JABALCON WEST 1462m","provider":"Pioupiou","latitude":45.823404,"longitude":6.154436},
         {"id":"1335","name":"L' Ormont Icare Club","provider":"Pioupiou","latitude":48.304251,"longitude":6.996026},
         {"id":"1337","name":"Aérodrome de Cessieu-La Tour du Pin","provider":"Pioupiou","latitude":45.558165,"longitude":5.386123},
         {"id":"1338","name":"Décollage de Balvay 600m","provider":"Pioupiou","latitude":46.182634,"longitude":5.464885},
@@ -15827,7 +15810,6 @@ function inicializarMapaLeaflet() {
         {"id":"1345","name":"Poupet La Côte NNE 2","provider":"Pioupiou","latitude":46.94253,"longitude":5.844324},
         {"id":"1346","name":"Mont Bouquet Face Sud","provider":"Pioupiou","latitude":44.122047,"longitude":4.278814},
         {"id":"1347","name":"Bourg St Maurice ","provider":"Pioupiou","latitude":45.614856,"longitude":6.788261},
-        {"id":"1348","name":"Winterlandeplatz Garmisch","provider":"Pioupiou","latitude":47.506353,"longitude":11.100863},
         {"id":"1349","name":"Port Bourgenay","provider":"Pioupiou","latitude":46.438951,"longitude":-1.679272},
         {"id":"1350","name":"Balise","provider":"Pioupiou","latitude":44.229966,"longitude":5.320627},
         {"id":"1351","name":"Decollo Rialto Ovest","provider":"Pioupiou","latitude":45.651091,"longitude":11.236953},
@@ -15844,17 +15826,14 @@ function inicializarMapaLeaflet() {
         {"id":"1364","name":"Déco Ouest d'Échevannes","provider":"Pioupiou","latitude":47.067406,"longitude":6.23461},
         {"id":"1365","name":"Deco Gr Rochette La Plagne 2500m","provider":"Pioupiou","latitude":45.491252,"longitude":6.684186},
         {"id":"1366","name":"Mont Poupet Nord","provider":"Pioupiou","latitude":46.971935,"longitude":5.878009},
-        {"id":"1369","name":"Windbird 1369","provider":"Pioupiou","latitude":43.279703,"longitude":5.418853},
         {"id":"1371","name":"LES AILES VOLANTES BESSAN","provider":"Pioupiou","latitude":43.341304,"longitude":3.408269},
         {"id":"1372","name":"Deco Saint-Guiraud 257m","provider":"Pioupiou","latitude":43.684499,"longitude":3.448733},
-        {"id":"1373","name":"RAGNOLO SPOT","provider":"Pioupiou","latitude":43.036184,"longitude":13.221292},
         {"id":"1374","name":"Le Relais","provider":"Pioupiou","latitude":42.961105,"longitude":0.914546},
         {"id":"1375","name":"Les Pétis 1502m","provider":"Pioupiou","latitude":46.193963,"longitude":6.869589},
         {"id":"1376","name":"St Lary - Pla d'Adet 1600m","provider":"Pioupiou","latitude":42.813679,"longitude":0.301114},
         {"id":"1377","name":"Windbird 1377","provider":"Pioupiou","latitude":45.505157,"longitude":6.989158},
         {"id":"1378","name":"Col de la Merquiere","provider":"Pioupiou","latitude":43.649625,"longitude":3.229257},
         {"id":"1380","name":"Nendaz Plan-du-Fou","provider":"Pioupiou","latitude":46.142306,"longitude":7.295577},
-        {"id":"1383","name":"DHV Musterprüfstelle Fürstenfeldbruck","provider":"Pioupiou","latitude":48.201955,"longitude":11.254544},
         {"id":"1385","name":"Décollage SUD-OUEST CUGES LES PINS","provider":"Pioupiou","latitude":43.284602,"longitude":5.690504},
         {"id":"1386","name":"Aviosuperficie Vall'Ornara","provider":"Pioupiou","latitude":42.040612,"longitude":12.537915},
         {"id":"1387","name":"Windbird 1387","provider":"Pioupiou","latitude":43.309622,"longitude":-3.033508},
@@ -15871,22 +15850,19 @@ function inicializarMapaLeaflet() {
         {"id":"1404","name":"Le Bété","provider":"Pioupiou","latitude":46.548422,"longitude":7.05828},
         {"id":"1406","name":"WindBird 1406","provider":"Pioupiou","latitude":44.003013,"longitude":2.143637},
         {"id":"1407","name":"Décollo Liretta Paradeltaclub Cuneo","provider":"Pioupiou","latitude":44.49916,"longitude":7.38197},
-        {"id":"1409","name":"WindBird 1409","provider":"Pioupiou","latitude":45.874557,"longitude":4.838749},
-        {"id":"1410","name":"Hautacam 1670m","provider":"Pioupiou","latitude":43.383434,"longitude":-0.416364},
         {"id":"1411","name":"Balise piou piou d'Aubas","provider":"Pioupiou","latitude":45.088483,"longitude":1.215161},
         {"id":"1412","name":"Windbird 1412","provider":"Pioupiou","latitude":43.491501,"longitude":5.581915},
-        {"id":"1413","name":"GlissEvolution - Port de Pornichet \/ La Baule","provider":"Pioupiou","latitude":47.255681,"longitude":-2.349868},
+        {"id":"1413","name":"GlissEvolution - Port de Pornichet / La Baule","provider":"Pioupiou","latitude":47.255681,"longitude":-2.349868},
         {"id":"1414","name":"Les Ailes d'Alairac","provider":"Pioupiou","latitude":43.200827,"longitude":2.246488},
         {"id":"1416","name":"DECOLLO NORMA","provider":"Pioupiou","latitude":41.591948,"longitude":12.957706},
         {"id":"1417","name":"Soubeyrand WB","provider":"Pioupiou","latitude":44.377424,"longitude":5.335587},
         {"id":"1418","name":"Windbird 1418","provider":"Pioupiou","latitude":47.313082,"longitude":7.278543},
         {"id":"1419","name":"DECO NOVIS CDVL12","provider":"Pioupiou","latitude":44.257737,"longitude":3.117723},
         {"id":"1421","name":"San Gallo 345m","provider":"Pioupiou","latitude":45.917226,"longitude":12.149161},
-        {"id":"1423","name":"Piste Shogun G1 Soleil Rouge","provider":"Pioupiou","latitude":45.413882,"longitude":6.378086},
         {"id":"1424","name":"G2 Sommet Lauzière","provider":"Pioupiou","latitude":45.444741,"longitude":6.363559},
         {"id":"1427","name":"Décollage Le Pré Bozel","provider":"Pioupiou","latitude":45.455993,"longitude":6.657357},
         {"id":"1428","name":"MALANOTTE 1740m","provider":"Pioupiou","latitude":44.259544,"longitude":7.79353},
-        {"id":"1430","name":"Décollage NEY Nord\/Nord-Est","provider":"Pioupiou","latitude":46.73226,"longitude":5.893564},
+        {"id":"1430","name":"Décollage NEY Nord/Nord-Est","provider":"Pioupiou","latitude":46.73226,"longitude":5.893564},
         {"id":"1432","name":"Kolbingen","provider":"Pioupiou","latitude":48.044082,"longitude":8.89385},
         {"id":"1433","name":"Takeoff Kanzelhöhe","provider":"Pioupiou","latitude":46.673881,"longitude":13.896225},
         {"id":"1435","name":"Les Carroz Dessus JBT","provider":"Pioupiou","latitude":45.69009,"longitude":6.558453},
@@ -15899,18 +15875,15 @@ function inicializarMapaLeaflet() {
         {"id":"1445","name":"LP Unterwasser","provider":"Pioupiou","latitude":47.194632,"longitude":9.306802},
         {"id":"1446","name":"Déco SAPENAY 901m","provider":"Pioupiou","latitude":45.822171,"longitude":5.866301},
         {"id":"1447","name":"Pélican","provider":"Pioupiou","latitude":43.398228,"longitude":3.033189},
-        {"id":"1448","name":"Plage des Ballastières Champagney","provider":"Pioupiou","latitude":47.704135,"longitude":6.662918},
         {"id":"1450","name":"Windbird 1450","provider":"Pioupiou","latitude":42.672592,"longitude":9.375838},
-        {"id":"1451","name":"Saint Vincent Les Forts","provider":"Pioupiou","latitude":44.442977,"longitude":6.371568},
         {"id":"1452","name":"La rose des vents","provider":"Pioupiou","latitude":48.168708,"longitude":2.59695},
         {"id":"1453","name":"Aviano, Antenne 1088m","provider":"Pioupiou","latitude":46.087496,"longitude":12.530323},
-        {"id":"1455","name":"Decollo della Magdeleine 1760m","provider":"Pioupiou","latitude":45.81448,"longitude":7.608402},
         {"id":"1457","name":"Decollo San Simeone 1150m","provider":"Pioupiou","latitude":46.328668,"longitude":13.10352},
         {"id":"1458","name":"Mont Péjus","provider":"Pioupiou","latitude":46.595641,"longitude":4.639473},
         {"id":"1459","name":"LF2468","provider":"Pioupiou","latitude":45.001844,"longitude":0.908534},
         {"id":"1460","name":"Bergiès Séderon 1364m","provider":"Pioupiou","latitude":44.193737,"longitude":5.515513},
         {"id":"1461","name":"Burst","provider":"Pioupiou","latitude":47.209045,"longitude":9.3015},
-        {"id":"1463","name":"Le Rissas\/Beaumont du Ventoux","provider":"Pioupiou","latitude":44.19634,"longitude":5.159595},
+        {"id":"1463","name":"Le Rissas/Beaumont du Ventoux","provider":"Pioupiou","latitude":44.19634,"longitude":5.159595},
         {"id":"1467","name":"Bruno's Airfield 8344","provider":"Pioupiou","latitude":47.328045,"longitude":8.865103},
         {"id":"1468","name":"Plomb du Cantal","provider":"Pioupiou","latitude":45.062489,"longitude":2.760683},
         {"id":"1469","name":"STARTPLATZ GREBER","provider":"Pioupiou","latitude":47.399243,"longitude":9.925831},
@@ -15920,7 +15893,6 @@ function inicializarMapaLeaflet() {
         {"id":"1477","name":"Loja - MCP Cerro Quemado","provider":"Pioupiou","latitude":37.132886,"longitude":-4.182785},
         {"id":"1478","name":"Windbird 1478","provider":"Pioupiou","latitude":43.28646,"longitude":3.451947},
         {"id":"1479","name":"Pointe de Pelluaz 1908m","provider":"Pioupiou","latitude":46.338522,"longitude":6.716846},
-        {"id":"1480","name":"Gâche","provider":"Pioupiou","latitude":44.225127,"longitude":5.979353},
         {"id":"1481","name":"Peña Escrita 1250m","provider":"Pioupiou","latitude":36.817646,"longitude":-3.770115},
         {"id":"1482","name":"Cordon - Tête du Planet 1838m","provider":"Pioupiou","latitude":45.91286,"longitude":6.570772},
         {"id":"1483","name":"Décollage de Torcieu","provider":"Pioupiou","latitude":45.910893,"longitude":5.397408},
@@ -15942,7 +15914,6 @@ function inicializarMapaLeaflet() {
         {"id":"1510","name":"Hüttstett","provider":"Pioupiou","latitude":46.787958,"longitude":8.194713},
         {"id":"1511","name":"Saint Amand","provider":"Pioupiou","latitude":44.186823,"longitude":5.06943},
         {"id":"1512","name":"Métabief - Décollage Nord","provider":"Pioupiou","latitude":46.760618,"longitude":6.356869},
-        {"id":"1513","name":"Murcia (EHMA)","provider":"Pioupiou","latitude":37.777968,"longitude":-1.055581},
         {"id":"1514","name":"Kampenwand Hirschenstein 1453 m","provider":"Pioupiou","latitude":47.756137,"longitude":12.352744},
         {"id":"1515","name":"Windbird 1515","provider":"Pioupiou","latitude":43.304122,"longitude":-3.023464},
         {"id":"1517","name":"DECOLLO FORCA DI PRESTA 1587m","provider":"Pioupiou","latitude":42.78806,"longitude":13.25282},
@@ -15951,8 +15922,6 @@ function inicializarMapaLeaflet() {
         {"id":"1525","name":"Sulit","provider":"Pioupiou","latitude":44.687047,"longitude":6.239927},
         {"id":"1526","name":"Garlaban 566m","provider":"Pioupiou","latitude":43.330951,"longitude":5.555333},
         {"id":"1527","name":"Chadenas Embrun","provider":"Pioupiou","latitude":44.545591,"longitude":6.458361},
-        {"id":"1528","name":"Windbird 1528","provider":"Pioupiou","latitude":44.571364,"longitude":6.220501},
-        {"id":"1529","name":"Windbird 1529","provider":"Pioupiou","latitude":42.864789,"longitude":-2.679629},
         {"id":"1531","name":"Windbird 1531","provider":"Pioupiou","latitude":43.313242,"longitude":2.892451},
         {"id":"1532","name":"CLUB RAPP","provider":"Pioupiou","latitude":45.439526,"longitude":4.85159},
         {"id":"1533","name":"Wangs Landeplatz 486m","provider":"Pioupiou","latitude":47.038348,"longitude":9.430935},
@@ -15960,7 +15929,6 @@ function inicializarMapaLeaflet() {
         {"id":"1536","name":"Atterro La Chambre Maurienne 466m","provider":"Pioupiou","latitude":45.365067,"longitude":6.29455},
         {"id":"1537","name":"Monte Pisciavino 596m","provider":"Pioupiou","latitude":44.027996,"longitude":8.162891},
         {"id":"1538","name":"Aéromodélisme Leucatois","provider":"Pioupiou","latitude":42.936385,"longitude":3.009321},
-        {"id":"1539","name":"Windbird 1539","provider":"Pioupiou","latitude":42.858471,"longitude":-2.689352},
         {"id":"1540","name":"Bligny","provider":"Pioupiou","latitude":47.11459,"longitude":4.675596},
         {"id":"1542","name":"Déco Tournemire Gréponac 750m","provider":"Pioupiou","latitude":43.966431,"longitude":3.029074},
         {"id":"1543","name":"Décollage de Ens 1350m","provider":"Pioupiou","latitude":42.805345,"longitude":0.332221},
@@ -16001,7 +15969,6 @@ function inicializarMapaLeaflet() {
         {"id":"1597","name":"Somosierra 1623","provider":"Pioupiou","latitude":41.149028,"longitude":-3.613834},
         {"id":"1600","name":"Paramotoristi Campolargo","provider":"Pioupiou","latitude":43.215763,"longitude":13.42572},
         {"id":"1601","name":"Chabottes 1070m","provider":"Pioupiou","latitude":44.641897,"longitude":6.171892},
-        {"id":"1602","name":"Windbird 1602","provider":"Pioupiou","latitude":46.113943,"longitude":7.078784},
         {"id":"1604","name":"Mas Rimbault Frontignan 220m","provider":"Pioupiou","latitude":43.47494,"longitude":3.736516},
         {"id":"1607","name":"LP Plenzengreith 968m","provider":"Pioupiou","latitude":47.213934,"longitude":15.480172},
         {"id":"1609","name":"Site de Vol Libre du Mt Myon 630m","provider":"Pioupiou","latitude":46.330263,"longitude":5.398217},
@@ -16010,9 +15977,8 @@ function inicializarMapaLeaflet() {
         {"id":"1613","name":"Brezons","provider":"Pioupiou","latitude":45.006691,"longitude":2.814448},
         {"id":"1617","name":"Chiemsee Feldwieser Bucht","provider":"Pioupiou","latitude":47.842803,"longitude":12.472433},
         {"id":"1618","name":"Déco Pas de Saint Martin","provider":"Pioupiou","latitude":45.022872,"longitude":5.464568},
-        {"id":"1622","name":"Sanetsch\/Sénin 2050m","provider":"Pioupiou","latitude":46.364947,"longitude":7.298866},
+        {"id":"1622","name":"Sanetsch/Sénin 2050m","provider":"Pioupiou","latitude":46.364947,"longitude":7.298866},
         {"id":"1623","name":"Chamonix Ensa","provider":"Pioupiou","latitude":45.925735,"longitude":6.872849},
-        {"id":"1625","name":"Balise","provider":"Pioupiou","latitude":46.169255,"longitude":7.36844},
         {"id":"1626","name":"Polopos 1160m","provider":"Pioupiou","latitude":36.806296,"longitude":-3.305346},
         {"id":"1628","name":"Aérodrome de VALRÉAS-VISAN","provider":"Pioupiou","latitude":44.336627,"longitude":4.905468},
         {"id":"1630","name":"Base ULM 3531 le haut bois","provider":"Pioupiou","latitude":48.001457,"longitude":-1.352004},
@@ -16024,7 +15990,6 @@ function inicializarMapaLeaflet() {
         {"id":"1639","name":"Atero KmVertifly","provider":"Pioupiou","latitude":46.158219,"longitude":7.150921},
         {"id":"1640","name":"\"The Beach\" Coursegoules","provider":"Pioupiou","latitude":43.801481,"longitude":7.045133},
         {"id":"1642","name":"Hirzer Startplatz 2100m","provider":"Pioupiou","latitude":46.734919,"longitude":11.252067},
-        {"id":"1643","name":"Windbird 1643","provider":"Pioupiou","latitude":43.761021,"longitude":2.235383},
         {"id":"1644","name":"Windbird 1644","provider":"Pioupiou","latitude":48.360459,"longitude":2.956517},
         {"id":"1645","name":"Aéro 2000 Le Verger","provider":"Pioupiou","latitude":48.055763,"longitude":-1.936408},
         {"id":"1648","name":"Windbird 1648","provider":"Pioupiou","latitude":46.206255,"longitude":-1.367463},
@@ -16032,7 +15997,7 @@ function inicializarMapaLeaflet() {
         {"id":"1652","name":"Windbird 1652","provider":"Pioupiou","latitude":46.539425,"longitude":6.652642},
         {"id":"1653","name":"Marnaves","provider":"Pioupiou","latitude":44.1068,"longitude":1.886285},
         {"id":"1655","name":"Vigie du Contras","provider":"Pioupiou","latitude":44.116605,"longitude":5.723844},
-        {"id":"1656","name":"Fürmannalm\/ Irlberg","provider":"Pioupiou","latitude":47.793294,"longitude":12.838607},
+        {"id":"1656","name":"Fürmannalm/ Irlberg","provider":"Pioupiou","latitude":47.793294,"longitude":12.838607},
         {"id":"1657","name":"Le Seigneur - Mont du Moustier","provider":"Pioupiou","latitude":44.087352,"longitude":5.36284},
         {"id":"1659","name":"Decollo alto S.Elisabetta 1565m","provider":"Pioupiou","latitude":45.440785,"longitude":7.643045},
         {"id":"1660","name":"Frutigen Helgisberg","provider":"Pioupiou","latitude":46.58666,"longitude":7.629529},
@@ -16055,7 +16020,6 @@ function inicializarMapaLeaflet() {
         {"id":"1689","name":"Linceuil","provider":"Pioupiou","latitude":44.313789,"longitude":5.240631},
         {"id":"1690","name":"Carchuna 120m","provider":"Pioupiou","latitude":36.697356,"longitude":-3.465343},
         {"id":"1691","name":"TSD BIOLLENE -Domaine Skiable Valmorel","provider":"Pioupiou","latitude":45.443921,"longitude":6.414772},
-        {"id":"1692","name":"Décollage 2700m","provider":"Pioupiou","latitude":45.119503,"longitude":6.102577},
         {"id":"1693","name":"Atterro Des Brocolis 275m","provider":"Pioupiou","latitude":45.618299,"longitude":5.928115},
         {"id":"1695","name":"La Chainade Marennes","provider":"Pioupiou","latitude":45.834021,"longitude":-1.124575},
         {"id":"1698","name":"Gréolières 300 - Le dahu","provider":"Pioupiou","latitude":43.800464,"longitude":6.954656},
@@ -16066,9 +16030,8 @@ function inicializarMapaLeaflet() {
         {"id":"1706","name":"Landgut Riegerbauer","provider":"Pioupiou","latitude":47.213727,"longitude":15.816163},
         {"id":"1707","name":"Frêtes","provider":"Pioupiou","latitude":45.855904,"longitude":6.247207},
         {"id":"1708","name":"Déco Anglettaz 1570m","provider":"Pioupiou","latitude":45.960293,"longitude":6.241011},
-        {"id":"1709","name":"Startplatz Eggberge (Nord\/Nordwest)","provider":"Pioupiou","latitude":46.903004,"longitude":8.652119},
+        {"id":"1709","name":"Startplatz Eggberge (Nord/Nordwest)","provider":"Pioupiou","latitude":46.903004,"longitude":8.652119},
         {"id":"1710","name":"Passy Plaine Batistock","provider":"Pioupiou","latitude":45.914844,"longitude":6.706056},
-        {"id":"1711","name":"Derio (YDER)","provider":"Pioupiou","latitude":43.330114,"longitude":-2.511283},
         {"id":"1715","name":"Windbird 1715","provider":"Pioupiou","latitude":43.309188,"longitude":-1.634508},
         {"id":"1716","name":"Engolneuf 1450m","provider":"Pioupiou","latitude":45.132393,"longitude":2.789692},
         {"id":"1717","name":"Mison","provider":"Pioupiou","latitude":44.277828,"longitude":5.83713},
@@ -16092,7 +16055,6 @@ function inicializarMapaLeaflet() {
         {"id":"1738","name":"Le Péguieou 2400m","provider":"Pioupiou","latitude":44.355449,"longitude":6.595116},
         {"id":"1739","name":"Mirabel","provider":"Pioupiou","latitude":44.606775,"longitude":4.500282},
         {"id":"1740","name":"Déco Sire-Sud 1505m","provider":"Pioupiou","latitude":45.630751,"longitude":5.966551},
-        {"id":"1743","name":"Val Louron-600","provider":"Pioupiou","latitude":46.098729,"longitude":5.849895},
         {"id":"1746","name":"Aéro-Club Icaria LFYS","provider":"Pioupiou","latitude":42.44752,"longitude":2.006189},
         {"id":"1749","name":"Les Carroz 1850m","provider":"Pioupiou","latitude":46.030279,"longitude":6.66978},
         {"id":"1751","name":"Windbird 1751","provider":"Pioupiou","latitude":47.978501,"longitude":8.62916},
@@ -16101,7 +16063,6 @@ function inicializarMapaLeaflet() {
         {"id":"1756","name":"Rabnitz 535m","provider":"Pioupiou","latitude":47.155397,"longitude":15.519865},
         {"id":"1758","name":"TSD MADELEINE -Domaine Skiable de Valmorel","provider":"Pioupiou","latitude":45.431503,"longitude":6.395309},
         {"id":"1760","name":"Ryser Groupe SA","provider":"Pioupiou","latitude":47.058166,"longitude":6.750767},
-        {"id":"1761","name":"Windbird 1761","provider":"Pioupiou","latitude":48.030012,"longitude":12.242141},
         {"id":"1763","name":"Val d'Isère Solaise 2558m","provider":"Pioupiou","latitude":45.431689,"longitude":6.993032},
         {"id":"1764","name":"Beauvoisin - Col de Milmandre","provider":"Pioupiou","latitude":44.302886,"longitude":5.236265},
         {"id":"1765","name":"LFNE Salon-Eyguières","provider":"Pioupiou","latitude":43.660249,"longitude":5.015662},
@@ -16109,7 +16070,6 @@ function inicializarMapaLeaflet() {
         {"id":"1767","name":"Aeriance","provider":"Pioupiou","latitude":48.350802,"longitude":2.349344},
         {"id":"1769","name":"Windbird 1769","provider":"Pioupiou","latitude":45.230823,"longitude":-0.821412},
         {"id":"1770","name":"Petit Som en Chartreuse 1721m","provider":"Pioupiou","latitude":45.377703,"longitude":5.8066},
-        {"id":"1771","name":"Aix en Provence","provider":"Pioupiou","latitude":43.530837,"longitude":5.449033},
         {"id":"1775","name":"Zundelberg Schneise","provider":"Pioupiou","latitude":48.065022,"longitude":8.756235},
         {"id":"1776","name":"Cuchon d'Ancelle et St Léger","provider":"Pioupiou","latitude":44.635881,"longitude":6.22353},
         {"id":"1777","name":"Windbird 1777","provider":"Pioupiou","latitude":43.255022,"longitude":6.576834},
@@ -16130,7 +16090,7 @@ function inicializarMapaLeaflet() {
         {"id":"2011","name":"VERNET VICHYPARAPENTE","provider":"Pioupiou","latitude":46.102392,"longitude":3.45541},
         {"id":"2013","name":"Déco de Velars sur Ouche, la Madone.","provider":"Pioupiou","latitude":47.301679,"longitude":4.90038},
         {"id":"2014","name":"Windbird 2014","provider":"Pioupiou","latitude":47.918168,"longitude":7.953955},
-        {"id":"2016","name":"La PLANE \/ MELVE","provider":"Pioupiou","latitude":44.37064,"longitude":5.986111},
+        {"id":"2016","name":"La PLANE / MELVE","provider":"Pioupiou","latitude":44.37064,"longitude":5.986111},
         {"id":"2017","name":"Chalvet 2577m","provider":"Pioupiou","latitude":44.949544,"longitude":6.707474},
         {"id":"2019","name":"Vältinschollensee SSCM e.V.","provider":"Pioupiou","latitude":48.4247,"longitude":7.766031},
         {"id":"2020","name":"Windbird 2020","provider":"Pioupiou","latitude":45.455726,"longitude":6.919768},
@@ -16163,7 +16123,6 @@ function inicializarMapaLeaflet() {
         {"id":"2065","name":"AVLE Islares","provider":"Pioupiou","latitude":43.397892,"longitude":-3.308416},
         {"id":"2066","name":"UCA-INMAR","provider":"Pioupiou","latitude":36.528759,"longitude":-6.213778},
         {"id":"2067","name":"Windbird 2067","provider":"Pioupiou","latitude":47.536769,"longitude":10.216171},
-        {"id":"2068","name":"Pioupiou 2068","provider":"Pioupiou","latitude":46.13662,"longitude":8.980305},
         {"id":"2071","name":"MAC17","provider":"Pioupiou","latitude":45.752784,"longitude":-1.1136},
         {"id":"2073","name":"Decollo Castiverio Corno d'Aquilio","provider":"Pioupiou","latitude":45.652775,"longitude":10.939223},
         {"id":"2074","name":"Següencu","provider":"Pioupiou","latitude":43.321667,"longitude":-5.11818},
@@ -16173,7 +16132,6 @@ function inicializarMapaLeaflet() {
         {"id":"2078","name":"El Salt de l'Equip.","provider":"Pioupiou","latitude":41.562424,"longitude":1.896444},
         {"id":"2079","name":" Resquilones","provider":"Pioupiou","latitude":43.394793,"longitude":-4.82712},
         {"id":"2081","name":"Décollage 2700m","provider":"Pioupiou","latitude":45.11955,"longitude":6.102574},
-        {"id":"2082","name":"Hochobir 2139m","provider":"Pioupiou","latitude":46.50606,"longitude":14.487041},
         {"id":"2084","name":"Windbird 2084","provider":"Pioupiou","latitude":44.668166,"longitude":6.628396},
         {"id":"2087","name":"Windbird 2087","provider":"Pioupiou","latitude":47.996895,"longitude":7.815323},
         {"id":"2089","name":"Accous Déco Nord","provider":"Pioupiou","latitude":42.981637,"longitude":-0.57111},
@@ -16221,7 +16179,6 @@ function inicializarMapaLeaflet() {
         {"id":"2155","name":"Windbird 2155","provider":"Pioupiou","latitude":44.17408,"longitude":5.263583},
         {"id":"2156","name":"Windbird 2156","provider":"Pioupiou","latitude":43.926495,"longitude":2.520655},
         {"id":"2158","name":"CNM Morges","provider":"Pioupiou","latitude":46.505476,"longitude":6.497344},
-        {"id":"2161","name":"Zebulon Régie","provider":"Pioupiou","latitude":47.464719,"longitude":-0.59009},
         {"id":"2162","name":"Faltschen","provider":"Pioupiou","latitude":46.630041,"longitude":7.6997},
         {"id":"2163","name":"Leiterspitz 2320m","provider":"Pioupiou","latitude":46.707008,"longitude":11.383325},
         {"id":"2168","name":"Le Grand Moiré","provider":"Pioupiou","latitude":46.866247,"longitude":-0.185885},
@@ -16248,6 +16205,12 @@ function inicializarMapaLeaflet() {
         {"id":"2340","name":"Decollo Monte Valinis Meduno 980 m","provider":"Pioupiou","latitude":46.231221,"longitude":12.805942},
         {"id":"2384","name":"Grubigstein Gamsbödele Süd-Ost-Nord 2040m","provider":"Pioupiou","latitude":47.381859,"longitude":10.846539},
         {"id":"2385","name":"Windbird 2385","provider":"Pioupiou","latitude":47.537256,"longitude":10.21832}
+    ];
+
+    const ESTACIONES_FFVL = 
+    [
+        {"id":"41","name":"Sauveterre","provider":"Pioupiou","latitude":43.456835,"longitude":0.846405},
+        {"id":"70","name":"Déco Téléphérique Salève 1086m","provider":"Pioupiou","latitude":46.152982,"longitude":6.19053},
     ];
 
     // 🟡 2. OBJETO GESTOR CENTRAL (Configuración y Estado de cada red)
@@ -16369,6 +16332,25 @@ function inicializarMapaLeaflet() {
             intervalo: null,
             umbralAmarilloMin: 30,
             umbralRojoMin: 45
+        },
+        'ffvl': {
+            id: 'ffvl',
+            nombre: 'FFVL',
+            estaciones: ESTACIONES_FFVL,
+            urlCache: 'https://flydecision.com/balizas_ffvl_cache.json',
+            url6h:    'https://flydecision.com/balizas_ffvl_6h.json',
+            checkboxId: 'checkboxBalizasFFVL',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_FFVL_VISIBLE',
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 30,
+            umbralRojoMin: 45
         }
     };    
     
@@ -16415,7 +16397,7 @@ function inicializarMapaLeaflet() {
             marker.bindPopup(`
                 <div id="pop-${red.id}-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
                     <h4 style="margin: 0 0 5px 0; color: #0078d4;">🚩 ${estacion.name} (${red.nombre})</h4>
-                    <p style="margin:0; color:#666;">⏳ Cargando viento en vivo...</p>
+                    <br><br><p style="margin:0; color:#666;">⏳...</p><br><br>
                 </div>
             `, {
                 className: 'popup-despegueindividual popup-baliza',
@@ -17100,9 +17082,13 @@ function inicializarMapaLeaflet() {
             const tocandoFiltros = e.target.closest('#infoPanel2') ||                    // Panel derecho de filtros
                                e.target.closest('#div-filtro-horario') ||             // Barra inferior de horas
                                e.target.closest('#wrapper-filtro-puntuacion-mapa') || // Barra de estrellas
-                               e.target.closest('.leaflet-text-search-input');        // Buscador de despegues
+                               e.target.closest('.leaflet-text-search-input') ||      // Buscador de despegues
+                               e.target.closest('#btn-filtros-mapa');                 // Botón de ABRIR la meteorología
 
-            if (tocandoFiltros) {
+            // EXCEPCIÓN: Si estamos tocando el botón de CERRAR el filtro horario/meteo (o el panel de filtros general), NO reactivamos la capa de despegues.
+            const tocandoBotonCerrar = e.target.closest('#btn-cerrar-filtros-mapa') || e.target.closest('#buttonCerrar2');
+
+            if (tocandoFiltros && !tocandoBotonCerrar) {
                 window.reactivarCapaDespeguesSiEstaOculta();
             }
 
