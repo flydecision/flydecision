@@ -16702,26 +16702,46 @@ const ESTACIONES_PIOUPIOU =
         if (!chartDiv) return;
 
         const lecturas = red.datos6h ? red.datos6h[marker.stationId] : null;
-        const svg = generarSvgGraficaBaliza(lecturas); 
+        
+        // Generamos ambos SVGs
+        const svgLineas = generarSvgGraficaBaliza(lecturas); 
+        const svgRosa = generarSvgRosaVientos(lecturas);
 
-        if (!svg) {
-            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Gráfico no disponible: no hay datos de las últimas 4 horas.' })}</small>`;
+        if (!svgLineas && !svgRosa) {
+            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Gráfico no disponible: no hay datos recientes.' })}</small>`;
             return;
         }
 
-        chartDiv.innerHTML = `
-            ${svg}
-            <div style="display:flex; justify-content:center; gap:14px; margin-top:2px;">
-                <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
-                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" /></svg>
-                    ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
-                </small>
-                <small style="color:#c0392b; display: inline-flex; align-items: center;">
-                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" /></svg>
-                    ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
-                </small>
-            </div>
-        `;
+        let htmlFinal = '';
+
+        if (svgLineas) {
+            htmlFinal += `
+                ${svgLineas}
+                <div style="display:flex; justify-content:center; gap:14px; margin-top:2px;">
+                    <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
+                        <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" /></svg>
+                        ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
+                    </small>
+                    <small style="color:#c0392b; display: inline-flex; align-items: center;">
+                        <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" /></svg>
+                        ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
+                    </small>
+                </div>
+            `;
+        }
+
+        if (svgRosa) {
+            htmlFinal += `
+                <div style="margin-top: 15px; padding-top: 12px; border-top: 1px solid #eee; display: flex; flex-direction: column; align-items: center;">
+                    <span style="font-size: 11px; color: #888; margin-bottom: 8px; font-weight: bold;">
+                        ${t('mapa.balizas.rosa_vientos_2h', { defaultValue: 'Tendencia del viento (últimas 2h)' })}
+                    </span>
+                    ${svgRosa}
+                </div>
+            `;
+        }
+
+        chartDiv.innerHTML = htmlFinal;
     }
 
     // 🟡 8. EVENTO AL ABRIR UN POPUP EN EL MAPA
@@ -16835,6 +16855,121 @@ const ESTACIONES_PIOUPIOU =
         const hora = fecha.getHours();
         const min  = String(fecha.getMinutes()).padStart(2, '0');
         return `${dia}-${mes}-${anio} ${hora}:${min}`;
+    }
+
+    function generarSvgRosaVientos(lecturas) {
+        if (!Array.isArray(lecturas) || lecturas.length === 0) return null;
+
+        const ahora = Math.floor(Date.now() / 1000);
+        const desde2h = ahora - 2 * 3600; // Últimas 2 horas
+
+        // Filtramos solo lecturas válidas de las últimas 2h que tengan velocidad y dirección
+        const puntos = lecturas.filter(p => 
+            p.ts >= desde2h && p.ts <= ahora && 
+            typeof p.windSpeed === 'number' && 
+            typeof p.windDirection === 'number'
+        );
+
+        if (puntos.length === 0) return null;
+
+        // 1. Escala dinámica (Mínimo 20km/h para mantener consistencia con los círculos 10 y 20)
+        let maxV = Math.max(...puntos.map(p => p.windSpeed), 20);
+        maxV = Math.ceil(maxV / 5) * 5; // Redondeamos a múltiplos de 5
+        if (maxV < 20) maxV = 20;
+
+        const W = 140, H = 140; // Lienzo SVG
+        const cx = W / 2, cy = H / 2;
+        const R = 52; // Radio máximo dibujable
+        const rScale = R / maxV;
+
+        const r10 = 10 * rScale;
+        const r20 = 20 * rScale;
+        const rMax = maxV * rScale;
+
+        // 2. Agrupar datos en 16 direcciones x 3 tramos de velocidad (0-10, 10-20, >20)
+        const bins = Array.from({length: 16}, () => [0, 0, 0]);
+        let maxCount = 0;
+
+        puntos.forEach(p => {
+            // Convertimos grados (0-360) a uno de los 16 "quesitos" (N, NNE, NE...)
+            let dirIdx = Math.floor(((p.windDirection + 11.25) % 360) / 22.5);
+            // Determinamos a qué anillo pertenece
+            let speedIdx = p.windSpeed <= 10 ? 0 : (p.windSpeed <= 20 ? 1 : 2);
+            
+            bins[dirIdx][speedIdx]++;
+            if (bins[dirIdx][speedIdx] > maxCount) maxCount = bins[dirIdx][speedIdx];
+        });
+
+        // 3. Funciones matemáticas auxiliares para dibujar arcos SVG
+        function polar2Cart(cx, cy, r, angleDeg) {
+            const rad = (angleDeg - 90) * Math.PI / 180.0; // -90 para que el 0º sea el Norte (arriba)
+            return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+        }
+
+        function arcPath(x, y, rIn, rOut, aStart, aEnd) {
+            const pStartOut = polar2Cart(x, y, rOut, aStart);
+            const pEndOut = polar2Cart(x, y, rOut, aEnd);
+            const pStartIn = polar2Cart(x, y, rIn, aStart);
+            const pEndIn = polar2Cart(x, y, rIn, aEnd);
+
+            const largeArc = aEnd - aStart <= 180 ? "0" : "1";
+
+            if (rIn === 0) { // Quesito central que toca el centro (sin agujero interior)
+                return `M ${x} ${y} L ${pStartOut.x} ${pStartOut.y} A ${rOut} ${rOut} 0 ${largeArc} 1 ${pEndOut.x} ${pEndOut.y} Z`;
+            }
+            // Tramo intermedio (quesito con agujero en el centro)
+            return `M ${pStartOut.x} ${pStartOut.y} A ${rOut} ${rOut} 0 ${largeArc} 1 ${pEndOut.x} ${pEndOut.y} L ${pEndIn.x} ${pEndIn.y} A ${rIn} ${rIn} 0 ${largeArc} 0 ${pStartIn.x} ${pStartIn.y} Z`;
+        }
+
+        // 4. Dibujar fondo de la rosa (Radios y Círculos concéntricos)
+        let bgSvg = '';
+        for(let i=0; i<16; i++) {
+            let angle = i * 22.5;
+            let p = polar2Cart(cx, cy, rMax, angle);
+            bgSvg += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="#e5e5e5" stroke-width="0.8"/>`;
+        }
+
+        bgSvg += `<circle cx="${cx}" cy="${cy}" r="${r10}" fill="none" stroke="#e5e5e5" stroke-width="1.2"/>`;
+        // Círculo de 20km/h (Verde discontinuo como en el gráfico lineal)
+        bgSvg += `<circle cx="${cx}" cy="${cy}" r="${r20}" fill="none" stroke="#28a745" stroke-width="1.5" stroke-dasharray="3,3"/>`;
+        bgSvg += `<circle cx="${cx}" cy="${cy}" r="${rMax}" fill="none" stroke="#e5e5e5" stroke-width="1.2"/>`;
+
+        // 5. Dibujar los "quesitos" con color térmico según la frecuencia (count)
+        let wedgesSvg = '';
+        for(let dirIdx=0; dirIdx<16; dirIdx++) {
+            let aStart = dirIdx * 22.5 - 11.25;
+            let aEnd = dirIdx * 22.5 + 11.25;
+
+            for(let speedIdx=0; speedIdx<3; speedIdx++) {
+                let count = bins[dirIdx][speedIdx];
+                if(count > 0) {
+                    let rIn = speedIdx === 0 ? 0 : (speedIdx === 1 ? r10 : r20);
+                    let rOut = speedIdx === 0 ? r10 : (speedIdx === 1 ? r20 : rMax);
+                    
+                    // Cálculo de opacidad: de 0.15 a 0.85 según el número de coincidencias
+                    let opacity = 0.15 + (count / maxCount) * 0.70; 
+                    
+                    let path = arcPath(cx, cy, rIn, rOut, aStart, aEnd);
+                    // Color rojizo tipo mapa de calor (#e74c3c) con bordes blancos separadores
+                    wedgesSvg += `<path d="${path}" fill="#e74c3c" fill-opacity="${opacity}" stroke="#ffffff" stroke-width="0.5"/>`;
+                }
+            }
+        }
+
+        // 6. Etiquetas de los puntos cardinales (N, S, E, W)
+        const lblStyle = 'font-size: 11px; fill: #999; font-weight: bold; font-family: sans-serif;';
+        const labels = `
+            <text x="${cx}" y="${cy - rMax - 6}" text-anchor="middle" style="${lblStyle}">N</text>
+            <text x="${cx}" y="${cy + rMax + 12}" text-anchor="middle" style="${lblStyle}">S</text>
+            <text x="${cx + rMax + 8}" y="${cy + 4}" text-anchor="middle" style="${lblStyle}">E</text>
+            <text x="${cx - rMax - 8}" y="${cy + 4}" text-anchor="middle" style="${lblStyle}">W</text>
+        `;
+
+        return `<svg viewBox="0 0 ${W} ${H}" style="width: 140px; height: 140px; display: block; margin: 0 auto; user-select: none;">
+            ${bgSvg}
+            ${wedgesSvg}
+            ${labels}
+        </svg>`;
     }
 
     function generarSvgGraficaBaliza(lecturas) {
