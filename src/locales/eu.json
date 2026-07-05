@@ -615,7 +615,8 @@
       "balizas_direccion": "Norabidea",
       "balizas_actualizada": "Eguneratua",
       "balizas_cargando_grafico": "Grafikoa kargatzen...",
-      "balizas_sin_historico": "Grafikoa ez dago eskuragarri: ez dago azken 4 orduetako daturik."
+      "balizas_sin_historico": "Grafikoa ez dago eskuragarri: ez dago azken 4 orduetako daturik.",
+      "leyenda_rosa_meteorologica": "Azken 2 h"
     }
   },
 

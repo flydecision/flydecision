@@ -16715,7 +16715,14 @@ const ESTACIONES_PIOUPIOU =
         const svgRosa = generarSvgRosaVientos(lecturas);
 
         if (rosaDiv) {
-            rosaDiv.innerHTML = svgRosa || '';
+            rosaDiv.innerHTML = svgRosa
+                ? `
+                    ${svgRosa}
+                    <div style="text-align:center; margin-top:-6px;">
+                        <small style="font-size:12px; color:#888;">${t('mapa.balizas.leyenda_rosa_meteorologica', { defaultValue: 'Últimas 2 h' })}</small>
+                    </div>
+                `
+                : '';
         }
 
         if (!svg) {
@@ -17056,7 +17063,7 @@ const ESTACIONES_PIOUPIOU =
             const esUmbral20 = (v === 20);
             
             const colorLinea = esUmbral20 ? "#28a745" : "#a4a4a4";
-            const strokeWidth = esUmbral20 ? "1.4" : "0.5";
+            const strokeWidth = esUmbral20 ? "1.6" : "0.5";
             const dashArray = esUmbral20 ? "4,3" : "none";   // Línea discontinua para el 20
 
             const colorTexto = esUmbral20 ? "#28a745" : "#000000";

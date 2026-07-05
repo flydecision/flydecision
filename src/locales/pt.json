@@ -615,7 +615,8 @@
       "balizas_direccion": "Direção",
       "balizas_actualizada": "Atualizada",
       "balizas_cargando_grafico": "A carregar gráfico...",
-      "balizas_sin_historico": "Gráfico não disponível: não há dados das últimas 4 horas."
+      "balizas_sin_historico": "Gráfico não disponível: não há dados das últimas 4 horas.",
+      "leyenda_rosa_meteorologica": "Últimas 2 h"
     }
   },
 
