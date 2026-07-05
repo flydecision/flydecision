@@ -8327,44 +8327,57 @@ function comprobarAvisoCambiosPuntuacionXC() {
     
     function gestionarCambioConexion(estadoDetectado) {
         if (estadoDetectado === 'offline') {
-            // Cancelamos cualquier intento de volver a online
             if (timerOnline) { clearTimeout(timerOnline); timerOnline = null; }
 
-            // Si ya estamos avisando de offline, no hacemos nada.
-            // Si NO estamos avisando, iniciamos la cuenta atrás de 1 minuto.
             if (!avisoOfflineActivo && !timerOffline) {
-                console.log(new Date().toLocaleString(), `⏳ Detectada desconexión. Esperando ${TIEMPO_CONFIRMACION_OFFLINE/1000}s...`); // 1 min
+                console.log(new Date().toLocaleString(), `⏳ Detectada desconexión. Esperando ${TIEMPO_CONFIRMACION_OFFLINE/1000}s...`);
                 timerOffline = setTimeout(() => {
                     console.log("❌ TIEMPO AGOTADO: Activando Modo Offline.");
-                    avisoOfflineActivo = true; // ¡Aquí activamos la alerta visual!
-                    cicloActualizacion();      // Refrescamos pantalla para que salga la nube
+                    avisoOfflineActivo = true;
+                    cicloActualizacion();
                     timerOffline = null;
                 }, TIEMPO_CONFIRMACION_OFFLINE);
             }
         } 
         else if (estadoDetectado === 'online') {
-            // Cancelamos cualquier cuenta atrás hacia offline (el túnel ha terminado)
             if (timerOffline) { 
                 clearTimeout(timerOffline); 
                 timerOffline = null; 
-                //console.log(new Date().toLocaleString(), "✅ Recuperado antes de 1 min");
             }
 
-            // Si estábamos en modo offline (aviso activo) O si arrancamos sin red (esModoOffline)
             if ((avisoOfflineActivo || esModoOffline) && !timerOnline) {
-                 console.log(new Date().toLocaleString(), `📶 Red detectada. Esperando ${TIEMPO_CONFIRMACION_ONLINE/1000}s de estabilidad...`);
-                 timerOnline = setTimeout(() => {
-                    // *** Doble check de seguridad por si acaso ***
-                    if (navigator.onLine === false) return;
+                console.log(new Date().toLocaleString(), `📶 Red detectada. Esperando ${TIEMPO_CONFIRMACION_ONLINE/1000}s de estabilidad...`);
+                timerOnline = setTimeout(async () => {
+                    // CAMBIO: sustituimos el chequeo de navigator.onLine (poco fiable)
+                    // por una comprobación real de conectividad contra el servidor.
+                    const hayConexionReal = await comprobarConectividadReal();
 
-                     console.log(new Date().toLocaleString(), "Conexión estable. Recargando datos...");
-                     avisoOfflineActivo = false; // Quitamos la alerta
-                     esModoOffline = false;      // Quitamos flag de caché inicial
-                     cicloActualizacion();       // Refrescamos y pedimos datos nuevos
-                     construir_tabla(true);
-                     timerOnline = null;
-                 }, TIEMPO_CONFIRMACION_ONLINE);
+                    timerOnline = null; // Se resetea SIEMPRE, haya éxito o no, evitando el bloqueo
+
+                    if (!hayConexionReal) {
+                        console.log(new Date().toLocaleString(), "⚠️ Doble check falló (sin conectividad real). Reintentando más tarde.");
+                        return;
+                    }
+
+                    console.log(new Date().toLocaleString(), "Conexión estable. Recargando datos...");
+                    avisoOfflineActivo = false;
+                    esModoOffline = false;
+                    cicloActualizacion();
+                    construir_tabla(true);
+                }, TIEMPO_CONFIRMACION_ONLINE);
             }
+        }
+    }
+
+    async function comprobarConectividadReal() {
+        try {
+            const res = await fetch("https://flydecision.com/meteo-status.txt?t=" + Date.now(), {
+                cache: "no-store",
+                signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined
+            });
+            return res && res.ok;
+        } catch (e) {
+            return false;
         }
     }
 
@@ -8867,7 +8880,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
     async function cicloActualizacion() {
         if (timerCiclo) clearTimeout(timerCiclo);
 
-        // Si el gestor dice que estamos Offline confirmado, no gastamos datos en fetch
         if (!avisoOfflineActivo) {
             const [_, intervaloSugerido] = await Promise.all([
                 PanelInfoActualizaciones_Web(),
@@ -8878,9 +8890,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
             } else {
                 intervaloActualizacion = 60000;
             }
+        } else {
+            // AÑADIDO: aunque estemos "offline", seguimos comprobando conectividad real
+            // de forma periódica, sin depender de eventos de interfaz (online/offline del
+            // navegador o del plugin Network), que pueden no dispararse nunca si la interfaz
+            // nunca cambia pero sí falla la conectividad real a internet.
+            const recuperado = await comprobarConectividadReal();
+            if (recuperado) {
+                gestionarCambioConexion('online');
+            }
+            intervaloActualizacion = 15000; // reintento cada 15s mientras estemos offline
         }
 
-        refrescoPanelInfoActualizaciones(); // Pintamos la pantalla
+        refrescoPanelInfoActualizaciones();
         timerCiclo = setTimeout(cicloActualizacion, intervaloActualizacion);
     }
 
