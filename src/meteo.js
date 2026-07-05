@@ -16868,7 +16868,7 @@ const ESTACIONES_PIOUPIOU =
 
         const W = 160, H = 160;
         const cx = W / 2, cy = H / 2;
-        const radioMax = 62; // Radio del círculo exterior en px (deja margen para etiquetas de dirección)
+        const radioMax = 58; // Radio del círculo exterior en px (deja margen para etiquetas de dirección)
 
         // El círculo exterior representa el máximo de las últimas 2h (viento o racha),
         // pero con suelo de 20 para que el círculo de umbral de 20 km/h siempre quepa dentro.
@@ -16920,7 +16920,7 @@ const ESTACIONES_PIOUPIOU =
         for (let s = 0; s < NUM_SECTORES; s++) {
             const ang = s * anguloSector - anguloSector / 2;
             const [x1, y1] = punto(ang, radioMax);
-            lineasSectores.push(`<line x1="${cx}" y1="${cy}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="#dddddd" stroke-width="0.3"/>`);
+            lineasSectores.push(`<line x1="${cx}" y1="${cy}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="#cccccc" stroke-width="1"/>`);
         }
 
         // Celdas coloreadas (sector x banda) según densidad de datos
@@ -16943,23 +16943,30 @@ const ESTACIONES_PIOUPIOU =
         const r10 = escalaR(10);
         const r20 = escalaR(20);
         const circulosGuia = `
-            <circle cx="${cx}" cy="${cy}" r="${r10.toFixed(1)}" fill="none" stroke="#a4a4a4" stroke-width="0.6"/>
-            <circle cx="${cx}" cy="${cy}" r="${r20.toFixed(1)}" fill="none" stroke="#28a745" stroke-width="1.2" stroke-dasharray="4,3"/>
-            <circle cx="${cx}" cy="${cy}" r="${radioMax}" fill="none" stroke="#888888" stroke-width="0.8"/>
+            <circle cx="${cx}" cy="${cy}" r="${r10.toFixed(1)}" fill="none" stroke="#a4a4a4" stroke-width="1.2"/>
+            <circle cx="${cx}" cy="${cy}" r="${r20.toFixed(1)}" fill="none" stroke="#28a745" stroke-width="2.5" stroke-dasharray="5,3.5"/>
+            <circle cx="${cx}" cy="${cy}" r="${radioMax}" fill="none" stroke="#888888" stroke-width="1.5"/>
         `;
 
+        // Solo mostramos la cifra del umbral de 20 km/h (10 y máximo quedan sin etiqueta, pero sus círculos se dibujan igual). El 3 del x="${cx + 3} es una decisión estética para que el número no quedara pegado a la línea vertical imaginaria N-S y se leyera mejor,
         const etiquetasEscala = `
-            <text x="${cx + 3}" y="${(cy - r10 - 2).toFixed(1)}" font-size="7" fill="#000">10</text>
-            <text x="${cx + 3}" y="${(cy - r20 - 2).toFixed(1)}" font-size="7" fill="#28a745" font-weight="bold">20</text>
-            <text x="${cx + 3}" y="${(cy - radioMax - 2).toFixed(1)}" font-size="7" fill="#555">${maxV}</text>
+            <text x="${cx}" y="${(cy - r20 - 4).toFixed(1)}" text-anchor="middle" font-size="12" fill="#28a745" font-weight="bold">20</text>
         `;
 
-        // Etiquetas de dirección solo en las 8 principales (N, NE, E, SE, S, SO, O, NO) para no saturar
+        // OBSOLETO: con etiqueta 10 km/h y máximo
+        // const etiquetasEscala = `
+        //     <text x="${cx + 3}" y="${(cy - r10 - 2).toFixed(1)}" font-size="7" fill="#000">10</text>
+        //     <text x="${cx + 3}" y="${(cy - r20 - 2).toFixed(1)}" font-size="7" fill="#28a745" font-weight="bold">20</text>
+        //     <text x="${cx + 3}" y="${(cy - radioMax - 2).toFixed(1)}" font-size="7" fill="#555">${maxV}</text>
+        // `;
+
+        // Etiquetas de dirección solo en las 8 principales (N, NE, E, SE, S, SO, O, NO) para no saturar. Separación del borde es: radioMax + X); y aumentar la X de y="${(yl + X)
+        // Ojo, el cambio de tamaño de letra va por cálculos de svg y depende del contenedor que ahora es: <div id="pop-rosa-${red.id}-${marker.stationId}" style="flex:0 0 auto; width:110px; text-align:center;">. Escala = 110 / 160 = 0.6875 ----> font-size necesario = 12 / 0.6875 ≈ 17.45
         const etiquetasDir = [];
         for (let s = 0; s < NUM_SECTORES; s += 2) {
             const ang = s * anguloSector;
-            const [xl, yl] = punto(ang, radioMax + 9);
-            etiquetasDir.push(`<text x="${xl.toFixed(1)}" y="${(yl + 3).toFixed(1)}" text-anchor="middle" font-size="8" fill="#666">${nombresDir[s]}</text>`);
+            const [xl, yl] = punto(ang, radioMax + 13);
+            etiquetasDir.push(`<text x="${xl.toFixed(1)}" y="${(yl + 4).toFixed(1)}" text-anchor="middle" font-size="14" font-weight="600" fill="#555">${nombresDir[s]}</text>`);
         }
 
         return `
@@ -17050,7 +17057,7 @@ const ESTACIONES_PIOUPIOU =
             const esUmbral20 = (v === 20);
             
             const colorLinea = esUmbral20 ? "#28a745" : "#a4a4a4";
-            const strokeWidth = esUmbral20 ? "1.2" : "0.5";
+            const strokeWidth = esUmbral20 ? "1.4" : "0.5";
             const dashArray = esUmbral20 ? "4,3" : "none";   // Línea discontinua para el 20
 
             const colorTexto = esUmbral20 ? "#28a745" : "#000000";
