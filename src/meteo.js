@@ -16659,22 +16659,29 @@ const ESTACIONES_PIOUPIOU =
             <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
                 🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
             </p>
-            <!-- Fila 1: Viento -->
-            <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 80px;">${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento:' })}:</span> 
-                <b style="color: #0078d4;">${d.windSpeed}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
-            </div>
-            <!-- Fila 2: Racha -->
-            <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 80px;">${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha:' })}:</span> 
-                <b style="color: #c0392b;">${d.windGusts ?? '-'}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
-            </div>
-            <!-- Fila 3: Dirección -->
-            <div style="display: flex; align-items: center; height: 25px;">
-                <span style="width: 80px;">${t('mapa.balizas.balizas_direccion', { defaultValue: 'Dirección:' })}:</span> 
-                <b style="color: #0078d4;">${orientacionTexto}</b>
-                ${svgFlecha} 
-                <span style="color:#888;">(${d.windDirection ?? '-'}º)</span>
+
+            <div style="display:flex; align-items:center;">
+                <div style="flex:1 1 auto; min-width:0;">
+                    <!-- Fila 1: Viento -->
+                    <div style="display: flex; align-items: center; height: 25px;">
+                        <img src="icons/icono_viento_48x42.webp" width="16" height="14" style="margin-right:14px;"> 
+                        <b style="color: #0078d4;">${d.windSpeed}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
+                    </div>
+                    <!-- Fila 2: Racha -->
+                    <div style="display: flex; align-items: center; height: 25px;">
+                        <img src="icons/icono_racha_48x42.webp" width="16" height="14" style="margin-right:14px;"> 
+                        <span style="color: #c0392b; font-weight: bold;">${d.windGusts ?? '-'}</span> <span style="margin-left: 4px; color:#888;">km/h</span>
+                    </div>
+                    <!-- Fila 3: Dirección -->
+                    <div style="display: flex; align-items: center; height: 25px;">
+                        <img src="icons/icono_direccion_45.webp" width="16" height="14" style="margin-right:14px;">
+                        <b style="color: #0078d4;">${orientacionTexto}</b>
+                        ${svgFlecha} 
+                        <span style="color:#888;">(${d.windDirection ?? '-'}º)</span>
+                    </div>
+                </div>
+                <div id="pop-rosa-${red.id}-${marker.stationId}" style="flex:0 0 auto; width:80px; text-align:center;">
+                </div>
             </div>
 
             <div id="pop-chart-${red.id}-${marker.stationId}" style="margin-top:10px; min-height: 90px; text-align:center;">
@@ -16701,48 +16708,36 @@ const ESTACIONES_PIOUPIOU =
         const chartDiv = document.getElementById(`pop-chart-${red.id}-${marker.stationId}`);
         if (!chartDiv) return;
 
+        const rosaDiv = document.getElementById(`pop-rosa-${red.id}-${marker.stationId}`);
+
         const lecturas = red.datos6h ? red.datos6h[marker.stationId] : null;
-        
-        // Generamos ambos SVGs
-        const svgLineas = generarSvgGraficaBaliza(lecturas); 
+        const svg = generarSvgGraficaBaliza(lecturas);
         const svgRosa = generarSvgRosaVientos(lecturas);
 
-        if (!svgLineas && !svgRosa) {
-            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Gráfico no disponible: no hay datos recientes.' })}</small>`;
+        if (rosaDiv) {
+            rosaDiv.innerHTML = svgRosa || '';
+        }
+
+        if (!svg) {
+            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Gráfico no disponible: no hay datos de las últimas 4 horas.' })}</small>`;
             return;
         }
 
-        let htmlFinal = '';
-
-        if (svgLineas) {
-            htmlFinal += `
-                ${svgLineas}
-                <div style="display:flex; justify-content:center; gap:14px; margin-top:2px;">
-                    <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
-                        <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" /></svg>
-                        ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
-                    </small>
-                    <small style="color:#c0392b; display: inline-flex; align-items: center;">
-                        <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" /></svg>
-                        ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
-                    </small>
-                </div>
-            `;
-        }
-
-        if (svgRosa) {
-            htmlFinal += `
-                <div style="margin-top: 15px; padding-top: 12px; border-top: 1px solid #eee; display: flex; flex-direction: column; align-items: center;">
-                    <span style="font-size: 11px; color: #888; margin-bottom: 8px; font-weight: bold;">
-                        ${t('mapa.balizas.rosa_vientos_2h', { defaultValue: 'Tendencia del viento (últimas 2h)' })}
-                    </span>
-                    ${svgRosa}
-                </div>
-            `;
-        }
-
-        chartDiv.innerHTML = htmlFinal;
+        chartDiv.innerHTML = `
+            ${svg}
+            <div style="display:flex; justify-content:center; gap:14px; margin-top:2px;">
+                <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
+                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" /></svg>
+                    ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
+                </small>
+                <small style="color:#c0392b; display: inline-flex; align-items: center;">
+                    <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" /></svg>
+                    ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
+                </small>
+            </div>
+        `;
     }
+
 
     // 🟡 8. EVENTO AL ABRIR UN POPUP EN EL MAPA
     //___________________________________________________________________________________
@@ -16861,115 +16856,121 @@ const ESTACIONES_PIOUPIOU =
         if (!Array.isArray(lecturas) || lecturas.length === 0) return null;
 
         const ahora = Math.floor(Date.now() / 1000);
-        const desde2h = ahora - 2 * 3600; // Últimas 2 horas
+        const desde = ahora - 2 * 3600; // Ventana de 2 horas para la rosa de los vientos
 
-        // Filtramos solo lecturas válidas de las últimas 2h que tengan velocidad y dirección
-        const puntos = lecturas.filter(p => 
-            p.ts >= desde2h && p.ts <= ahora && 
-            typeof p.windSpeed === 'number' && 
-            typeof p.windDirection === 'number'
+        // Necesitamos velocidad Y dirección para poder ubicar el dato en el "quesito"
+        const puntos = lecturas.filter(p =>
+            typeof p.windSpeed === 'number' &&
+            typeof p.windDirection === 'number' &&
+            p.ts >= desde && p.ts <= ahora
         );
-
         if (puntos.length === 0) return null;
 
-        // 1. Escala dinámica (Mínimo 20km/h para mantener consistencia con los círculos 10 y 20)
-        let maxV = Math.max(...puntos.map(p => p.windSpeed), 20);
-        maxV = Math.ceil(maxV / 5) * 5; // Redondeamos a múltiplos de 5
-        if (maxV < 20) maxV = 20;
-
-        const W = 140, H = 140; // Lienzo SVG
+        const W = 160, H = 160;
         const cx = W / 2, cy = H / 2;
-        const R = 52; // Radio máximo dibujable
-        const rScale = R / maxV;
+        const radioMax = 62; // Radio del círculo exterior en px (deja margen para etiquetas de dirección)
 
-        const r10 = 10 * rScale;
-        const r20 = 20 * rScale;
-        const rMax = maxV * rScale;
+        // El círculo exterior representa el máximo de las últimas 2h (viento o racha),
+        // pero con suelo de 20 para que el círculo de umbral de 20 km/h siempre quepa dentro.
+        let maxV = Math.max(
+            ...puntos.map(p => Math.max(p.windSpeed, typeof p.windGusts === 'number' ? p.windGusts : 0)),
+            20
+        );
+        maxV = Math.ceil(maxV / 5) * 5;
 
-        // 2. Agrupar datos en 16 direcciones x 3 tramos de velocidad (0-10, 10-20, >20)
-        const bins = Array.from({length: 16}, () => [0, 0, 0]);
-        let maxCount = 0;
+        const escalaR = (v) => (v / maxV) * radioMax;
+
+        const NUM_SECTORES = 16;
+        const anguloSector = 360 / NUM_SECTORES;
+        const nombresDir = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'];
+
+        const NUM_BANDAS = 5; // Bandas radiales de intensidad, repartidas uniformemente hasta maxV
+        const anchoBanda = maxV / NUM_BANDAS;
+
+        // Matriz de conteo [sector][banda] = nº de lecturas que caen en esa combinación dirección/intensidad
+        const conteo = Array.from({ length: NUM_SECTORES }, () => new Array(NUM_BANDAS).fill(0));
 
         puntos.forEach(p => {
-            // Convertimos grados (0-360) a uno de los 16 "quesitos" (N, NNE, NE...)
-            let dirIdx = Math.floor(((p.windDirection + 11.25) % 360) / 22.5);
-            // Determinamos a qué anillo pertenece
-            let speedIdx = p.windSpeed <= 10 ? 0 : (p.windSpeed <= 20 ? 1 : 2);
-            
-            bins[dirIdx][speedIdx]++;
-            if (bins[dirIdx][speedIdx] > maxCount) maxCount = bins[dirIdx][speedIdx];
+            const dir = ((p.windDirection % 360) + 360) % 360;
+            const sector = Math.round(dir / anguloSector) % NUM_SECTORES;
+            const banda = Math.min(NUM_BANDAS - 1, Math.floor(p.windSpeed / anchoBanda));
+            conteo[sector][banda]++;
         });
 
-        // 3. Funciones matemáticas auxiliares para dibujar arcos SVG
-        function polar2Cart(cx, cy, r, angleDeg) {
-            const rad = (angleDeg - 90) * Math.PI / 180.0; // -90 para que el 0º sea el Norte (arriba)
-            return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+        const maxConteo = Math.max(...conteo.flat(), 1);
+
+        // Polar -> cartesianas. Restamos 90º para que 0º (Norte) quede arriba, sentido horario (meteorológico)
+        const punto = (angGrados, r) => {
+            const rad = (angGrados - 90) * Math.PI / 180;
+            return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+        };
+
+        // "Trozo de tarta" anular entre dos radios y dos ángulos
+        const arcoAnular = (angIni, angFin, r0, r1) => {
+            const [x1, y1] = punto(angIni, r1);
+            const [x2, y2] = punto(angFin, r1);
+            const [x3, y3] = punto(angFin, r0);
+            const [x4, y4] = punto(angIni, r0);
+            const largeArc = (angFin - angIni) > 180 ? 1 : 0;
+            return `M${x1.toFixed(1)},${y1.toFixed(1)} A${r1.toFixed(1)},${r1.toFixed(1)} 0 ${largeArc} 1 ${x2.toFixed(1)},${y2.toFixed(1)} L${x3.toFixed(1)},${y3.toFixed(1)} A${r0.toFixed(1)},${r0.toFixed(1)} 0 ${largeArc} 0 ${x4.toFixed(1)},${y4.toFixed(1)} Z`;
+        };
+
+        // Líneas radiales sutiles marcando los límites de sector
+        const lineasSectores = [];
+        for (let s = 0; s < NUM_SECTORES; s++) {
+            const ang = s * anguloSector - anguloSector / 2;
+            const [x1, y1] = punto(ang, radioMax);
+            lineasSectores.push(`<line x1="${cx}" y1="${cy}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="#dddddd" stroke-width="0.3"/>`);
         }
 
-        function arcPath(x, y, rIn, rOut, aStart, aEnd) {
-            const pStartOut = polar2Cart(x, y, rOut, aStart);
-            const pEndOut = polar2Cart(x, y, rOut, aEnd);
-            const pStartIn = polar2Cart(x, y, rIn, aStart);
-            const pEndIn = polar2Cart(x, y, rIn, aEnd);
-
-            const largeArc = aEnd - aStart <= 180 ? "0" : "1";
-
-            if (rIn === 0) { // Quesito central que toca el centro (sin agujero interior)
-                return `M ${x} ${y} L ${pStartOut.x} ${pStartOut.y} A ${rOut} ${rOut} 0 ${largeArc} 1 ${pEndOut.x} ${pEndOut.y} Z`;
-            }
-            // Tramo intermedio (quesito con agujero en el centro)
-            return `M ${pStartOut.x} ${pStartOut.y} A ${rOut} ${rOut} 0 ${largeArc} 1 ${pEndOut.x} ${pEndOut.y} L ${pEndIn.x} ${pEndIn.y} A ${rIn} ${rIn} 0 ${largeArc} 0 ${pStartIn.x} ${pStartIn.y} Z`;
-        }
-
-        // 4. Dibujar fondo de la rosa (Radios y Círculos concéntricos)
-        let bgSvg = '';
-        for(let i=0; i<16; i++) {
-            let angle = i * 22.5;
-            let p = polar2Cart(cx, cy, rMax, angle);
-            bgSvg += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="#e5e5e5" stroke-width="0.8"/>`;
-        }
-
-        bgSvg += `<circle cx="${cx}" cy="${cy}" r="${r10}" fill="none" stroke="#e5e5e5" stroke-width="1.2"/>`;
-        // Círculo de 20km/h (Verde discontinuo como en el gráfico lineal)
-        bgSvg += `<circle cx="${cx}" cy="${cy}" r="${r20}" fill="none" stroke="#28a745" stroke-width="1.5" stroke-dasharray="3,3"/>`;
-        bgSvg += `<circle cx="${cx}" cy="${cy}" r="${rMax}" fill="none" stroke="#e5e5e5" stroke-width="1.2"/>`;
-
-        // 5. Dibujar los "quesitos" con color térmico según la frecuencia (count)
-        let wedgesSvg = '';
-        for(let dirIdx=0; dirIdx<16; dirIdx++) {
-            let aStart = dirIdx * 22.5 - 11.25;
-            let aEnd = dirIdx * 22.5 + 11.25;
-
-            for(let speedIdx=0; speedIdx<3; speedIdx++) {
-                let count = bins[dirIdx][speedIdx];
-                if(count > 0) {
-                    let rIn = speedIdx === 0 ? 0 : (speedIdx === 1 ? r10 : r20);
-                    let rOut = speedIdx === 0 ? r10 : (speedIdx === 1 ? r20 : rMax);
-                    
-                    // Cálculo de opacidad: de 0.15 a 0.85 según el número de coincidencias
-                    let opacity = 0.15 + (count / maxCount) * 0.70; 
-                    
-                    let path = arcPath(cx, cy, rIn, rOut, aStart, aEnd);
-                    // Color rojizo tipo mapa de calor (#e74c3c) con bordes blancos separadores
-                    wedgesSvg += `<path d="${path}" fill="#e74c3c" fill-opacity="${opacity}" stroke="#ffffff" stroke-width="0.5"/>`;
-                }
+        // Celdas coloreadas (sector x banda) según densidad de datos
+        const celdas = [];
+        for (let s = 0; s < NUM_SECTORES; s++) {
+            const angIni = s * anguloSector - anguloSector / 2;
+            const angFin = s * anguloSector + anguloSector / 2;
+            for (let b = 0; b < NUM_BANDAS; b++) {
+                const c = conteo[s][b];
+                if (c === 0) continue;
+                const r0 = escalaR(b * anchoBanda);
+                const r1 = escalaR((b + 1) * anchoBanda);
+                const intensidad = c / maxConteo;
+                const opacidad = (0.15 + intensidad * 0.85).toFixed(2);
+                celdas.push(`<path d="${arcoAnular(angIni, angFin, r0, r1)}" fill="#0078d4" fill-opacity="${opacidad}" stroke="#ffffff" stroke-width="0.4"/>`);
             }
         }
 
-        // 6. Etiquetas de los puntos cardinales (N, S, E, W)
-        const lblStyle = 'font-size: 11px; fill: #999; font-weight: bold; font-family: sans-serif;';
-        const labels = `
-            <text x="${cx}" y="${cy - rMax - 6}" text-anchor="middle" style="${lblStyle}">N</text>
-            <text x="${cx}" y="${cy + rMax + 12}" text-anchor="middle" style="${lblStyle}">S</text>
-            <text x="${cx + rMax + 8}" y="${cy + 4}" text-anchor="middle" style="${lblStyle}">E</text>
-            <text x="${cx - rMax - 8}" y="${cy + 4}" text-anchor="middle" style="${lblStyle}">W</text>
+        // Círculos guía DIBUJADOS ENCIMA de las celdas para que no queden tapados por el color
+        const r10 = escalaR(10);
+        const r20 = escalaR(20);
+        const circulosGuia = `
+            <circle cx="${cx}" cy="${cy}" r="${r10.toFixed(1)}" fill="none" stroke="#a4a4a4" stroke-width="0.6"/>
+            <circle cx="${cx}" cy="${cy}" r="${r20.toFixed(1)}" fill="none" stroke="#28a745" stroke-width="1.2" stroke-dasharray="4,3"/>
+            <circle cx="${cx}" cy="${cy}" r="${radioMax}" fill="none" stroke="#888888" stroke-width="0.8"/>
         `;
 
-        return `<svg viewBox="0 0 ${W} ${H}" style="width: 140px; height: 140px; display: block; margin: 0 auto; user-select: none;">
-            ${bgSvg}
-            ${wedgesSvg}
-            ${labels}
-        </svg>`;
+        const etiquetasEscala = `
+            <text x="${cx + 3}" y="${(cy - r10 - 2).toFixed(1)}" font-size="7" fill="#000">10</text>
+            <text x="${cx + 3}" y="${(cy - r20 - 2).toFixed(1)}" font-size="7" fill="#28a745" font-weight="bold">20</text>
+            <text x="${cx + 3}" y="${(cy - radioMax - 2).toFixed(1)}" font-size="7" fill="#555">${maxV}</text>
+        `;
+
+        // Etiquetas de dirección solo en las 8 principales (N, NE, E, SE, S, SO, O, NO) para no saturar
+        const etiquetasDir = [];
+        for (let s = 0; s < NUM_SECTORES; s += 2) {
+            const ang = s * anguloSector;
+            const [xl, yl] = punto(ang, radioMax + 9);
+            etiquetasDir.push(`<text x="${xl.toFixed(1)}" y="${(yl + 3).toFixed(1)}" text-anchor="middle" font-size="8" fill="#666">${nombresDir[s]}</text>`);
+        }
+
+        return `
+            <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:200px; margin: 0 auto;">
+                ${lineasSectores.join('')}
+                ${celdas.join('')}
+                ${circulosGuia}
+                ${etiquetasEscala}
+                ${etiquetasDir.join('')}
+            </svg>
+        `;
     }
 
     function generarSvgGraficaBaliza(lecturas) {
