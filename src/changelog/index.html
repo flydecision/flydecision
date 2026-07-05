@@ -150,6 +150,24 @@ footer { text-align: center; font-size: 0.8rem; color: #777; margin-top: 20px; m
 
 <!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
 <div class="release">
+<div class="v-header"><span class="v-number">v4.3.0</span><span class="v-date">5 Jul 2026</span></div>
+
+<div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
+<ul class="lista">
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Añadido dato de Racha 10m a la previsión Arome 15min.</b></span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Añadida Rosa de los vientos meteorológica al mensaje emergente de cada baliza</b>. Con este estándar meteorológico gráfico se puede ver fácilmente la tendencia del viento de las últimas 2 horas en intensidad y dirección.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">Las balizas de las redes Euskalmet, Holfuy y OpenWindMap (Pioupiou) se actualizan ahora cada 5 min en lugar de cada 10 (internamente muchas se actualizan en otros ciclos, pero eso no depende de la aplicación).</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">La línea guía horizontal de 20 km/h de la gráfica de historial de viento ahora es de color verde discontinua en lugar de gris, para servir de referencia visual rápida, ya que la escala vertical del gráfico cambia automáticamente según la velocidad máxima registrada en las 4 horas.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">Implementación de Cloudflare como servidor DNS para mejorar velocidad y seguridad del servicio.</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">Las balizas Holfuy ahora tienen tiempo normalizado al horario local del dispositivo donde se ejecute Fly Decision, independientemente de la configuración personalizada de cada baliza (Holfuy no emite un timestamp normalizado en el endpoint, sino la hora que configurada en la baliza; en Portugal algunas estaban CEST y otras WEST y en Canarias WEST).</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">Sincronización exacta entre la hora de última actualización de la baliza y el gráfico y otros ajustes de optimización y limpieza de balizas no operativas.</span></li>
+</ul>
+</div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
 <div class="v-header"><span class="v-number">v4.2.0</span><span class="v-date">1 Jul 2026</span></div>
 
 <div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
