@@ -484,7 +484,7 @@ window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
     window.modalMinutely15IdActual = idDespegue;
     window.modalMinutely15NombreActual = nombreDespegue;
 
-    const botonAceptarMin15 = { texto: t('botones.aceptar'), onclick: () => { window.modalMinutely15Abierto = false; GestorMensajes.ocultar(); } };
+    const botonAceptarMin15 = { texto: t('botones.cerrar'), onclick: () => { window.modalMinutely15Abierto = false; GestorMensajes.ocultar(); } };
 
     GestorMensajes.mostrar({
         tipo: 'modal',
@@ -8327,44 +8327,57 @@ function comprobarAvisoCambiosPuntuacionXC() {
     
     function gestionarCambioConexion(estadoDetectado) {
         if (estadoDetectado === 'offline') {
-            // Cancelamos cualquier intento de volver a online
             if (timerOnline) { clearTimeout(timerOnline); timerOnline = null; }
 
-            // Si ya estamos avisando de offline, no hacemos nada.
-            // Si NO estamos avisando, iniciamos la cuenta atrás de 1 minuto.
             if (!avisoOfflineActivo && !timerOffline) {
-                console.log(new Date().toLocaleString(), `⏳ Detectada desconexión. Esperando ${TIEMPO_CONFIRMACION_OFFLINE/1000}s...`); // 1 min
+                console.log(new Date().toLocaleString(), `⏳ Detectada desconexión. Esperando ${TIEMPO_CONFIRMACION_OFFLINE/1000}s...`);
                 timerOffline = setTimeout(() => {
                     console.log("❌ TIEMPO AGOTADO: Activando Modo Offline.");
-                    avisoOfflineActivo = true; // ¡Aquí activamos la alerta visual!
-                    cicloActualizacion();      // Refrescamos pantalla para que salga la nube
+                    avisoOfflineActivo = true;
+                    cicloActualizacion();
                     timerOffline = null;
                 }, TIEMPO_CONFIRMACION_OFFLINE);
             }
         } 
         else if (estadoDetectado === 'online') {
-            // Cancelamos cualquier cuenta atrás hacia offline (el túnel ha terminado)
             if (timerOffline) { 
                 clearTimeout(timerOffline); 
                 timerOffline = null; 
-                //console.log(new Date().toLocaleString(), "✅ Recuperado antes de 1 min");
             }
 
-            // Si estábamos en modo offline (aviso activo) O si arrancamos sin red (esModoOffline)
             if ((avisoOfflineActivo || esModoOffline) && !timerOnline) {
-                 console.log(new Date().toLocaleString(), `📶 Red detectada. Esperando ${TIEMPO_CONFIRMACION_ONLINE/1000}s de estabilidad...`);
-                 timerOnline = setTimeout(() => {
-                    // *** Doble check de seguridad por si acaso ***
-                    if (navigator.onLine === false) return;
+                console.log(new Date().toLocaleString(), `📶 Red detectada. Esperando ${TIEMPO_CONFIRMACION_ONLINE/1000}s de estabilidad...`);
+                timerOnline = setTimeout(async () => {
+                    // CAMBIO: sustituimos el chequeo de navigator.onLine (poco fiable)
+                    // por una comprobación real de conectividad contra el servidor.
+                    const hayConexionReal = await comprobarConectividadReal();
 
-                     console.log(new Date().toLocaleString(), "Conexión estable. Recargando datos...");
-                     avisoOfflineActivo = false; // Quitamos la alerta
-                     esModoOffline = false;      // Quitamos flag de caché inicial
-                     cicloActualizacion();       // Refrescamos y pedimos datos nuevos
-                     construir_tabla(true);
-                     timerOnline = null;
-                 }, TIEMPO_CONFIRMACION_ONLINE);
+                    timerOnline = null; // Se resetea SIEMPRE, haya éxito o no, evitando el bloqueo
+
+                    if (!hayConexionReal) {
+                        console.log(new Date().toLocaleString(), "⚠️ Doble check falló (sin conectividad real). Reintentando más tarde.");
+                        return;
+                    }
+
+                    console.log(new Date().toLocaleString(), "Conexión estable. Recargando datos...");
+                    avisoOfflineActivo = false;
+                    esModoOffline = false;
+                    cicloActualizacion();
+                    construir_tabla(true);
+                }, TIEMPO_CONFIRMACION_ONLINE);
             }
+        }
+    }
+
+    async function comprobarConectividadReal() {
+        try {
+            const res = await fetch("https://flydecision.com/meteo-status.txt?t=" + Date.now(), {
+                cache: "no-store",
+                signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined
+            });
+            return res && res.ok;
+        } catch (e) {
+            return false;
         }
     }
 
@@ -8867,7 +8880,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
     async function cicloActualizacion() {
         if (timerCiclo) clearTimeout(timerCiclo);
 
-        // Si el gestor dice que estamos Offline confirmado, no gastamos datos en fetch
         if (!avisoOfflineActivo) {
             const [_, intervaloSugerido] = await Promise.all([
                 PanelInfoActualizaciones_Web(),
@@ -8878,9 +8890,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
             } else {
                 intervaloActualizacion = 60000;
             }
+        } else {
+            // AÑADIDO: aunque estemos "offline", seguimos comprobando conectividad real
+            // de forma periódica, sin depender de eventos de interfaz (online/offline del
+            // navegador o del plugin Network), que pueden no dispararse nunca si la interfaz
+            // nunca cambia pero sí falla la conectividad real a internet.
+            const recuperado = await comprobarConectividadReal();
+            if (recuperado) {
+                gestionarCambioConexion('online');
+            }
+            intervaloActualizacion = 15000; // reintento cada 15s mientras estemos offline
         }
 
-        refrescoPanelInfoActualizaciones(); // Pintamos la pantalla
+        refrescoPanelInfoActualizaciones();
         timerCiclo = setTimeout(cicloActualizacion, intervaloActualizacion);
     }
 
@@ -12221,7 +12243,7 @@ function inicializarMapaLeaflet() {
                         className: 'popup-despegues', 
                         maxWidth: 300,
                         maxHeight: 450,
-                        autoPanPaddingTopLeft: L.point(10, 350) 
+                        autoPanPaddingTopLeft: L.point(10, 350) // el primer valor (80) es el margen a reservar por la izquierda, el segundo (170) por arriba. Con autoPanPaddingBottomRight: L.point(55, 150) // el primer valor (80) es el margen a reservar por la derecha, el segundo (150) por abajo.
                     });
 
                     // Regeneramos el popup por si venimos de consultarlo en la tabla o hemos cambiado estados.
@@ -16403,7 +16425,8 @@ const ESTACIONES_PIOUPIOU =
                 className: 'popup-despegueindividual popup-baliza',
                 maxWidth: 300,
                 maxHeight: 450,
-                autoPanPaddingTopLeft: L.point(50, 550)
+                autoPanPaddingTopLeft: L.point(50, 450), // el primer valor () es el margen a reservar por la izquierda, el segundo () por arriba.
+                autoPanPaddingBottomRight: L.point(55, 150)  // el primer valor () es el margen a reservar por la derecha, el segundo () por abajo.
             });
 
             red.marcadores[estacion.id] = marker;
@@ -16976,11 +16999,12 @@ const ESTACIONES_PIOUPIOU =
         for (let s = 0; s < NUM_SECTORES; s += 2) {
             const ang = s * anguloSector;
             const [xl, yl] = punto(ang, radioMax + 13);
-            etiquetasDir.push(`<text x="${xl.toFixed(1)}" y="${(yl + 4).toFixed(1)}" text-anchor="middle" font-size="14" font-weight="600" fill="#555">${nombresDir[s]}</text>`);
+            const textoDir = traducirCadenaOrientacion(nombresDir[s]);
+            etiquetasDir.push(`<text x="${xl.toFixed(1)}" y="${(yl + 4).toFixed(1)}" text-anchor="middle" font-size="14" font-weight="600" fill="#555">${textoDir}</text>`);
         }
 
         return `
-            <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:200px; margin: 0 auto;">
+            <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:200px; margin: 0 auto; margin-top: 2px;">
                 ${lineasSectores.join('')}
                 ${celdas.join('')}
                 ${circulosGuia}
