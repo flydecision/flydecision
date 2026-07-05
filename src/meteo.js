@@ -16718,7 +16718,7 @@ const ESTACIONES_PIOUPIOU =
             rosaDiv.innerHTML = svgRosa
                 ? `
                     ${svgRosa}
-                    <div style="text-align:center; margin-top:-6px;">
+                    <div style="text-align:right; margin-top:-6px;">
                         <small style="font-size:12px; color:#888;">${t('mapa.balizas.leyenda_rosa_meteorologica', { defaultValue: 'Últimas 2 h' })}</small>
                     </div>
                 `
@@ -16732,7 +16732,7 @@ const ESTACIONES_PIOUPIOU =
 
         chartDiv.innerHTML = `
             ${svg}
-            <div style="display:flex; justify-content:center; gap:14px; margin-top:2px;">
+            <div style="display:flex; justify-content:right; align-items:center; gap:14px; margin-top:2px;">
                 <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
                     <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" /></svg>
                     ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
@@ -16740,6 +16740,9 @@ const ESTACIONES_PIOUPIOU =
                 <small style="color:#c0392b; display: inline-flex; align-items: center;">
                     <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" /></svg>
                     ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
+                </small>
+                <small style="color:#888; margin-left: 6px;">
+                    ${t('mapa.balizas.leyenda_grafico_ultimas_4h', { defaultValue: 'Últimas 4h' })}
                 </small>
             </div>
         `;
