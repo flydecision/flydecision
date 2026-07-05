@@ -616,7 +616,8 @@
       "balizas_actualizada": "Eguneratua",
       "balizas_cargando_grafico": "Grafikoa kargatzen...",
       "balizas_sin_historico": "Grafikoa ez dago eskuragarri: ez dago azken 4 orduetako daturik.",
-      "leyenda_rosa_meteorologica": "Azken 2 h"
+      "leyenda_rosa_meteorologica": "Azken 2 h:",
+      "leyenda_grafico_ultimas_4h": "Azken 4 h:"
     }
   },
 

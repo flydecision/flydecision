@@ -16656,25 +16656,25 @@ const ESTACIONES_PIOUPIOU =
 
         // Inyectamos todo el HTML correcto
         containerDiv.innerHTML = `
-            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 0 0;">
+            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 0 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">
                 🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
             </p>
 
-            <div style="display:flex; align-items:center;">
+            <div style="display:flex; align-items:center; margin-top: 0px;">
                 <div style="flex:1 1 auto; min-width:0;">
                     <!-- Fila 1: Viento -->
                     <div style="display: flex; align-items: center; height: 25px;">
-                        <img src="icons/icono_viento_48x42.webp" width="16" height="14" style="margin-right:14px;"> 
+                        <img src="icons/icono_viento_48x42.webp" width="16" height="16" style="margin-right:14px;"> 
                         <b style="color: #0078d4;">${d.windSpeed}</b> <span style="font-size:13px; margin-left: 4px; color: #888;">km/h</span>
                     </div>
                     <!-- Fila 2: Racha -->
                     <div style="display: flex; align-items: center; height: 25px;">
-                        <img src="icons/icono_racha_48x42.webp" width="16" height="14" style="margin-right:14px;"> 
+                        <img src="icons/icono_racha_48x42.webp" width="16" height="16" style="margin-right:14px;"> 
                         <span style="color: #c0392b; font-weight: bold;">${d.windGusts ?? '-'}</span> <span style="font-size:13px; margin-left: 4px; color: #888;">km/h</span>
                     </div>
                     <!-- Fila 3: Dirección -->
                     <div style="display: flex; align-items: center; height: 25px;">
-                        <img src="icons/icono_direccion_45.webp" width="16" height="14" style="margin-right:14px;">
+                        <img src="icons/icono_direccion_45.webp" width="16" height="16" style="margin-right:14px;">
                         <b style="color: #0078d4;">${orientacionTexto}</b>
                         ${svgFlecha} 
                         <span style="font-size:13px; color: #888;">(${d.windDirection ?? '-'}º)</span>
@@ -16684,7 +16684,7 @@ const ESTACIONES_PIOUPIOU =
                 </div>
             </div>
 
-            <div id="pop-chart-${red.id}-${marker.stationId}" style="min-height: 90px; text-align:center;">
+            <div id="pop-chart-${red.id}-${marker.stationId}" style="min-height: 90px; text-align:center; margin-top: -14px;">
                 <small style="color:#aaa;">⏳ ${t('mapa.balizas.balizas_cargando_grafico', { defaultValue: 'Cargando gráfico...' })}</small>
             </div>
 
@@ -16717,22 +16717,25 @@ const ESTACIONES_PIOUPIOU =
         if (rosaDiv) {
             rosaDiv.innerHTML = svgRosa
                 ? `
+                    <div style="text-align:left; margin-bottom:-2px;">
+                        <small style="font-size:13px; color:#888;">${t('mapa.balizas.leyenda_rosa_meteorologica', { defaultValue: 'Últimas 2 h' })}</small>
+                    </div>    
                     ${svgRosa}
-                    <div style="text-align:right; margin-top:-6px;">
-                        <small style="font-size:12px; color:#888;">${t('mapa.balizas.leyenda_rosa_meteorologica', { defaultValue: 'Últimas 2 h' })}</small>
-                    </div>
                 `
                 : '';
         }
 
         if (!svg) {
-            chartDiv.innerHTML = `<small style="color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Gráfico no disponible: no hay datos de las últimas 4 horas.' })}</small>`;
+            chartDiv.innerHTML = `<small style="margin-top:10px; color:#aaa;">${t('mapa.balizas.balizas_sin_historico', { defaultValue: 'Gráfico no disponible: no hay datos de las últimas 4 horas.' })}</small>`;
             return;
         }
 
         chartDiv.innerHTML = `
+            <div style="text-align:left; margin-left:0px;">
+                <small style="font-size:13px; color:#888;">${t('mapa.balizas.leyenda_grafico_ultimas_4h', { defaultValue: 'Últimas 4 h' })}</small>
+            </div>
             ${svg}
-            <div style="display:flex; justify-content:right; align-items:center; gap:14px; margin-top:2px;">
+            <div style="display:flex; justify-content:center; align-items:center; gap:14px; margin-top:2px;">
                 <small style="color:#0078d4; display: inline-flex; align-items: center; margin-right: 10px;">
                     <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#0078d4" stroke-width="2" /></svg>
                     ${t('mapa.balizas.balizas_viento', { defaultValue: 'Viento' })}
@@ -16740,9 +16743,6 @@ const ESTACIONES_PIOUPIOU =
                 <small style="color:#c0392b; display: inline-flex; align-items: center;">
                     <svg width="15" height="2" style="margin-right: 5px; overflow: visible; vertical-align: middle;"><line x1="0" y1="1" x2="15" y2="1" stroke="#c0392b" stroke-width="2" /></svg>
                     ${t('mapa.balizas.balizas_racha', { defaultValue: 'Racha' })}
-                </small>
-                <small style="color:#888; margin-left: 6px;">
-                    ${t('mapa.balizas.leyenda_grafico_ultimas_4h', { defaultValue: 'Últimas 4h' })}
                 </small>
             </div>
         `;
