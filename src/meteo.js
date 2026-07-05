@@ -16868,7 +16868,7 @@ const ESTACIONES_PIOUPIOU =
 
         const W = 160, H = 160;
         const cx = W / 2, cy = H / 2;
-        const radioMax = 58; // Radio del círculo exterior en px (deja margen para etiquetas de dirección)
+        const radioMax = 60; // Radio del círculo exterior en px (deja margen para etiquetas de dirección)
 
         // El círculo exterior representa el máximo de las últimas 2h (viento o racha),
         // pero con suelo de 20 para que el círculo de umbral de 20 km/h siempre quepa dentro.
@@ -16943,15 +16943,15 @@ const ESTACIONES_PIOUPIOU =
         const r10 = escalaR(10);
         const r20 = escalaR(20);
         const circulosGuia = `
-            <circle cx="${cx}" cy="${cy}" r="${r10.toFixed(1)}" fill="none" stroke="#a4a4a4" stroke-width="1.2"/>
-            <circle cx="${cx}" cy="${cy}" r="${r20.toFixed(1)}" fill="none" stroke="#28a745" stroke-width="2.5" stroke-dasharray="5,3.5"/>
-            <circle cx="${cx}" cy="${cy}" r="${radioMax}" fill="none" stroke="#888888" stroke-width="1.5"/>
+            <circle cx="${cx}" cy="${cy}" r="${r10.toFixed(1)}" fill="none" stroke="#a4a4a4" stroke-width="1"/>
+            <circle cx="${cx}" cy="${cy}" r="${r20.toFixed(1)}" fill="none" stroke="#28a745" stroke-width="3" stroke-dasharray="5,3.5"/>
+            <circle cx="${cx}" cy="${cy}" r="${radioMax}" fill="none" stroke="#888888" stroke-width="0.4"/>
         `;
 
         // Solo mostramos la cifra del umbral de 20 km/h (10 y máximo quedan sin etiqueta, pero sus círculos se dibujan igual). El 3 del x="${cx + 3} es una decisión estética para que el número no quedara pegado a la línea vertical imaginaria N-S y se leyera mejor,
-        const etiquetasEscala = `
-            <text x="${cx}" y="${(cy - r20 - 4).toFixed(1)}" text-anchor="middle" font-size="12" fill="#28a745" font-weight="bold">20</text>
-        `;
+        // const etiquetasEscala = `
+        //     <text x="${cx+6}" y="${(cy - r20 - 4).toFixed(1)}" text-anchor="middle" font-size="12" fill="#28a745" font-weight="bold">20</text>
+        // `;
 
         // OBSOLETO: con etiqueta 10 km/h y máximo
         // const etiquetasEscala = `
@@ -16974,7 +16974,6 @@ const ESTACIONES_PIOUPIOU =
                 ${lineasSectores.join('')}
                 ${celdas.join('')}
                 ${circulosGuia}
-                ${etiquetasEscala}
                 ${etiquetasDir.join('')}
             </svg>
         `;
