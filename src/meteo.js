@@ -12220,8 +12220,8 @@ function inicializarMapaLeaflet() {
                     marker.bindPopup(popupHtml, { 
                         className: 'popup-despegues', 
                         maxWidth: 300,
-                        autoPanPaddingTopLeft: L.point(80, 170), // el primer valor (80) es el margen a reservar por la izquierda, el segundo (170) por arriba.
-                        autoPanPaddingBottomRight: L.point(80, 150) // el primer valor (80) es el margen a reservar por la derecha, el segundo (150) por abajo.
+                        maxHeight: 450,
+                        autoPanPaddingTopLeft: L.point(10, 350) // el primer valor (80) es el margen a reservar por la izquierda, el segundo (170) por arriba. Con autoPanPaddingBottomRight: L.point(55, 150) // el primer valor (80) es el margen a reservar por la derecha, el segundo (150) por abajo.
                     });
 
                     // Regeneramos el popup por si venimos de consultarlo en la tabla o hemos cambiado estados.
@@ -16403,7 +16403,8 @@ const ESTACIONES_PIOUPIOU =
                 className: 'popup-despegueindividual popup-baliza',
                 maxWidth: 300,
                 maxHeight: 450,
-                autoPanPaddingTopLeft: L.point(50, 550)
+                autoPanPaddingTopLeft: L.point(50, 450), // el primer valor () es el margen a reservar por la izquierda, el segundo () por arriba.
+                autoPanPaddingBottomRight: L.point(55, 150)  // el primer valor () es el margen a reservar por la derecha, el segundo () por abajo.
             });
 
             red.marcadores[estacion.id] = marker;
