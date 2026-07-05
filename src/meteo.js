@@ -16656,7 +16656,7 @@ const ESTACIONES_PIOUPIOU =
 
         // Inyectamos todo el HTML correcto
         containerDiv.innerHTML = `
-            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
+            <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 0 0;">
                 🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
             </p>
 
@@ -16665,26 +16665,26 @@ const ESTACIONES_PIOUPIOU =
                     <!-- Fila 1: Viento -->
                     <div style="display: flex; align-items: center; height: 25px;">
                         <img src="icons/icono_viento_48x42.webp" width="16" height="14" style="margin-right:14px;"> 
-                        <b style="color: #0078d4;">${d.windSpeed}</b> <span style="margin-left: 4px; color:#888;">km/h</span>
+                        <b style="color: #0078d4;">${d.windSpeed}</b> <span style="font-size:13px; margin-left: 4px; color: #888;">km/h</span>
                     </div>
                     <!-- Fila 2: Racha -->
                     <div style="display: flex; align-items: center; height: 25px;">
                         <img src="icons/icono_racha_48x42.webp" width="16" height="14" style="margin-right:14px;"> 
-                        <span style="color: #c0392b; font-weight: bold;">${d.windGusts ?? '-'}</span> <span style="margin-left: 4px; color:#888;">km/h</span>
+                        <span style="color: #c0392b; font-weight: bold;">${d.windGusts ?? '-'}</span> <span style="font-size:13px; margin-left: 4px; color: #888;">km/h</span>
                     </div>
                     <!-- Fila 3: Dirección -->
                     <div style="display: flex; align-items: center; height: 25px;">
                         <img src="icons/icono_direccion_45.webp" width="16" height="14" style="margin-right:14px;">
                         <b style="color: #0078d4;">${orientacionTexto}</b>
                         ${svgFlecha} 
-                        <span style="color:#888;">(${d.windDirection ?? '-'}º)</span>
+                        <span style="font-size:13px; color: #888;">(${d.windDirection ?? '-'}º)</span>
                     </div>
                 </div>
-                <div id="pop-rosa-${red.id}-${marker.stationId}" style="flex:0 0 auto; width:80px; text-align:center;">
+                <div id="pop-rosa-${red.id}-${marker.stationId}" style="flex:0 0 auto; width:110px; text-align:center;">
                 </div>
             </div>
 
-            <div id="pop-chart-${red.id}-${marker.stationId}" style="margin-top:10px; min-height: 90px; text-align:center;">
+            <div id="pop-chart-${red.id}-${marker.stationId}" style="min-height: 90px; text-align:center;">
                 <small style="color:#aaa;">⏳ ${t('mapa.balizas.balizas_cargando_grafico', { defaultValue: 'Cargando gráfico...' })}</small>
             </div>
 
