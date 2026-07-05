@@ -38,7 +38,8 @@
     "marcarFavoritosFlecha": "Marquer comme favoris →",
     "entendido": "Compris",
     "volverAlMenuInicial": "Retour au menu initial",
-    "mostrarTodos": "Tout afficher ({{n}})"
+    "mostrarTodos": "Tout afficher ({{n}})",
+    "cerrar": "Fermer"
   },
 
   "dias": {

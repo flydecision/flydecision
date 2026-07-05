@@ -484,7 +484,7 @@ window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
     window.modalMinutely15IdActual = idDespegue;
     window.modalMinutely15NombreActual = nombreDespegue;
 
-    const botonAceptarMin15 = { texto: t('botones.aceptar'), onclick: () => { window.modalMinutely15Abierto = false; GestorMensajes.ocultar(); } };
+    const botonAceptarMin15 = { texto: t('botones.cerrar'), onclick: () => { window.modalMinutely15Abierto = false; GestorMensajes.ocultar(); } };
 
     GestorMensajes.mostrar({
         tipo: 'modal',
@@ -12220,8 +12220,8 @@ function inicializarMapaLeaflet() {
                     marker.bindPopup(popupHtml, { 
                         className: 'popup-despegues', 
                         maxWidth: 300,
-                        maxHeight: 450,
-                        autoPanPaddingTopLeft: L.point(10, 350) 
+                        autoPanPaddingTopLeft: L.point(80, 170), // el primer valor (80) es el margen a reservar por la izquierda, el segundo (170) por arriba.
+                        autoPanPaddingBottomRight: L.point(80, 150) // el primer valor (80) es el margen a reservar por la derecha, el segundo (150) por abajo.
                     });
 
                     // Regeneramos el popup por si venimos de consultarlo en la tabla o hemos cambiado estados.
@@ -16976,11 +16976,12 @@ const ESTACIONES_PIOUPIOU =
         for (let s = 0; s < NUM_SECTORES; s += 2) {
             const ang = s * anguloSector;
             const [xl, yl] = punto(ang, radioMax + 13);
-            etiquetasDir.push(`<text x="${xl.toFixed(1)}" y="${(yl + 4).toFixed(1)}" text-anchor="middle" font-size="14" font-weight="600" fill="#555">${nombresDir[s]}</text>`);
+            const textoDir = traducirCadenaOrientacion(nombresDir[s]);
+            etiquetasDir.push(`<text x="${xl.toFixed(1)}" y="${(yl + 4).toFixed(1)}" text-anchor="middle" font-size="14" font-weight="600" fill="#555">${textoDir}</text>`);
         }
 
         return `
-            <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:200px; margin: 0 auto;">
+            <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:200px; margin: 0 auto; margin-top: 2px;">
                 ${lineasSectores.join('')}
                 ${celdas.join('')}
                 ${circulosGuia}
