@@ -491,7 +491,7 @@
     },
     "abrirMapaInicio": "Abrir mapa ao iniciar",
     "recordarPosicionMapa": "Lembrar última vista do mapa",
-    "recordarEstadoFiltroHorario": "Lembrar estado do filtro horario (aberto/pechado)",
+    "recordarEstadoFiltroHorario": "Lembrar estado do filtro meteo (aberto/pechado)",
     "recordarCapasActivas": "Lembrar capas activas",
     "recordarTipoMapa": "Lembrar tipo de mapa",
     "recordarFiltrosMapa": "Lembrar filtros",
@@ -579,7 +579,7 @@
     "minKmMediaTexto": "Distancia media percorrida mínima = ",
     "todos": "Todos",
     "titleBuscadorDespegue": "Buscar engalaxe por nome",
-    "buscadorDespegue": "🔍 Engalaxe",
+    "buscadorDespegue": "🔍 🪂",
     "labelOrientacion": "Orientación:",
     "labelCoordenadas": "Coordenadas:",
     "labelAltitud": "Altitude aprox.:",
@@ -609,13 +609,14 @@
       "OpenAIP": "Restricións OpenAIP (Mundo)"
     },
     "balizas": {
-      "baliza_sin_datos": "Estación sen datos de vento.",
+      "baliza_sin_datos": "Non hai datos de vento dispoñibles para esta baliza.",
       "balizas_viento": "Vento",
       "balizas_racha": "Refacho",
       "balizas_direccion": "Dirección",
       "balizas_actualizada": "Actualizada",
       "balizas_cargando_grafico": "Cargando gráfico...",
-      "balizas_sin_historico": "Gráfico non dispoñible: non hai datos das últimas 4 horas."
+      "balizas_sin_historico": "Gráfico non dispoñible: non hai datos das últimas 4 horas.",
+      "leyenda_rosa_meteorologica": "Últimas 2 h"
     }
   },
 
@@ -717,7 +718,9 @@
     "tooltipModoApp": "<b>Modo da aplicación:</b><br><br><b>Modo simple</b>: Só o esencial. Recomendado para comezar e familiarizarte coa aplicación antes de pasar ao <i>Modo avanzado</i>.<br><br><b>Modo avanzado</b>: Control total. Dá acceso a todas as opcións, filtros e datos detallados.",
     "tooltipcheckboxBalizasEuskalmet": "<b>🚩 Balizas de vento EUSKALMET:</b><br><br>Estacións meteorolóxicas automáticas con datos de vento da rede Euskalmet (Goberno Vasco).<br><br>Frecuencia aproximada de actualización automática dos datos: 10 minutos (máis un tempo de emisión oficial variable).<br><br>Web oficial: <a href='https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#' target='_blank' style='color: #007bff; text-decoration: underline;'>Euskalmet</a>",
     "tooltipcheckboxBalizasAemet": "<b>🚩 Balizas de vento AEMET:</b><br><br>Estacións meteorolóxicas automáticas con datos de vento da rede AEMET (Goberno de España).<br><br>Frecuencia aproximada de actualización automática dos datos: 60 minutos (máis un tempo de emisión oficial variable).<br><br>Nota: hai algunhas balizas clasificadas como 'Diferidas' con frecuencia moito menor; amósanse, pero moitas veces estarán en gris porque serán de tempos pouco actuais.<br><br>Web oficial: <a href='https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=esp&w=0&datos=img&x=h24&f=vel_viento' target='_blank' style='color: #007bff; text-decoration: underline;'>AEMET</a>",
-    "tooltipcheckboxBalizasHolfuy": "<b>🚩 Balizas de vento Holfuy:</b><br><br>Estacións meteorolóxicas automáticas con datos de vento da rede Holfuy.<br><br>Frecuencia aproximada de actualización automática dos datos: 10 minutos (variable segundo a estación).<br><br>Web oficial: <a href='https://holfuy.com/es/map/wind' target='_blank' style='color: #007bff; text-decoration: underline;'>Holfuy</a>"
+    "tooltipcheckboxBalizasHolfuy": "<b>🚩 Balizas de vento Holfuy:</b><br><br>Estacións meteorolóxicas automáticas con datos de vento da rede Holfuy.<br><br>Frecuencia aproximada de actualización automática dos datos: 10 minutos (variable segundo a estación).<br><br>Web oficial: <a href='https://holfuy.com/es/map/wind' target='_blank' style='color: #007bff; text-decoration: underline;'>Holfuy</a>",
+    "tooltipcheckboxBalizasMeteofrance": "<b>🚩 Balizas de vento Météo-France:</b><br><br>Estacións meteorolóxicas automáticas con datos de vento da rede Météo-France.<br><br>Frecuencia aproximada de actualización automática dos datos: 10 minutos (variable segundo a estación).<br><br>Web oficial: <a href='https://meteofrance.fr/' target='_blank' style='color: #007bff; text-decoration: underline;'>Météo-France</a>",
+    "tooltipcheckboxBalizasPioupiou": "<b>🚩 Balizas de vento OpenWindMap:</b><br><br>Estacións meteorolóxicas automáticas con datos de vento da rede OpenWindMap (Pioupiou).<br><br>Frecuencia aproximada de actualización automática dos datos: 10 minutos (variable segundo a estación).<br><br>Web oficial: <a href='https://openwindmap.org' target='_blank' style='color: #007bff; text-decoration: underline;'>OpenWindMap</a> (Wind data (c) contributors of the OpenWindMap wind network)"
   },
   "paises": {
     "España": "España",

@@ -491,7 +491,7 @@
     },
     "abrirMapaInicio": "Ireki mapa abiatzean",
     "recordarPosicionMapa": "Gogoratu maparen azken ikuspegia",
-    "recordarEstadoFiltroHorario": "Gogoratu ordu-iragazkiaren egoera (irekita/itxita)",
+    "recordarEstadoFiltroHorario": "Gogoratu meteo-iragazkiaren egoera (irekita/itxita)",
     "recordarCapasActivas": "Gogoratu geruza aktiboak",
     "recordarTipoMapa": "Gogoratu mapa mota",
     "recordarFiltrosMapa": "Gogoratu iragazkiak",
@@ -579,7 +579,7 @@
     "minKmMediaTexto": "Gutxienezko batez besteko distantzia egina = ",
     "todos": "Guztiak",
     "titleBuscadorDespegue": "Bilatu aireratzea izenaren arabera",
-    "buscadorDespegue": "🔍 Aireratzea",
+    "buscadorDespegue": "🔍 🪂",
     "labelOrientacion": "Norabidea:",
     "labelCoordenadas": "Koordenatuak:",
     "labelAltitud": "Gutxi gorabeherako altuera:",
@@ -609,13 +609,14 @@
       "OpenAIP": "OpenAIP murrizketak (Mundua)"
     },
     "balizas": {
-      "baliza_sin_datos": "Haize-daturik gabeko estazioa.",
+      "baliza_sin_datos": "Ez dago haize-daturik eskuragarri baliza honetarako.",
       "balizas_viento": "Haizea",
       "balizas_racha": "Bolada",
       "balizas_direccion": "Norabidea",
       "balizas_actualizada": "Eguneratua",
       "balizas_cargando_grafico": "Grafikoa kargatzen...",
-      "balizas_sin_historico": "Grafikoa ez dago eskuragarri: ez dago azken 4 orduetako daturik."
+      "balizas_sin_historico": "Grafikoa ez dago eskuragarri: ez dago azken 4 orduetako daturik.",
+      "leyenda_rosa_meteorologica": "Azken 2 h"
     }
   },
 
@@ -717,7 +718,9 @@
     "tooltipModoApp": "<b>Aplikazioaren modua:</b><br><br><b>Modu sinplea</b>: Funtsezkoa soilik. Hasteko eta aplikazioarekin ohitzeko gomendatua, <i>Modu aurreratura</i> igaro aurretik.<br><br><b>Modu aurreratua</b>: Erabateko kontrola. Aukera, iragazki eta datu xehatu guztietarako sarbidea ematen du.",
     "tooltipcheckboxBalizasEuskalmet": "<b>🚩 EUSKALMET haize-balizak:</b><br><br>Euskalmet sareko (Eusko Jaurlaritza) haize-datuak dituzten estazio meteorologiko automatikoak.<br><br>Datuen eguneratze automatikoaren gutxi gorabeherako maiztasuna: 10 minutu (gehi emisio-denbora ofizial aldakor bat).<br><br>Webgune ofiziala: <a href='https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#' target='_blank' style='color: #007bff; text-decoration: underline;'>Euskalmet</a>",
     "tooltipcheckboxBalizasAemet": "<b>🚩 AEMET haize-balizak:</b><br><br>AEMET sareko (Espainiako Gobernua) haize-datuak dituzten estazio meteorologiko automatikoak.<br><br>Datuen eguneratze automatikoaren gutxi gorabeherako maiztasuna: 60 minutu (gehi emisio-denbora ofizial aldakor bat).<br><br>Oharra: 'Geroratuak' gisa sailkatutako baliza batzuk daude, askoz maiztasun txikiagokoak; erakusten dira, baina askotan grisez egongo dira ez direlako oso gaurkoak izango.<br><br>Webgune ofiziala: <a href='https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=esp&w=0&datos=img&x=h24&f=vel_viento' target='_blank' style='color: #007bff; text-decoration: underline;'>AEMET</a>",
-    "tooltipcheckboxBalizasHolfuy": "<b>🚩 Holfuy haize-balizak:</b><br><br>Holfuy sareko haize-datuak dituzten estazio meteorologiko automatikoak.<br><br>Datuen eguneratze automatikoaren gutxi gorabeherako maiztasuna: 10 minutu (estazioaren arabera aldakorra).<br><br>Webgune ofiziala: <a href='https://holfuy.com/es/map/wind' target='_blank' style='color: #007bff; text-decoration: underline;'>Holfuy</a>"
+    "tooltipcheckboxBalizasHolfuy": "<b>🚩 Holfuy haize-balizak:</b><br><br>Holfuy sareko haize-datuak dituzten estazio meteorologiko automatikoak.<br><br>Datuen eguneratze automatikoaren gutxi gorabeherako maiztasuna: 10 minutu (estazioaren arabera aldakorra).<br><br>Webgune ofiziala: <a href='https://holfuy.com/es/map/wind' target='_blank' style='color: #007bff; text-decoration: underline;'>Holfuy</a>",
+    "tooltipcheckboxBalizasMeteofrance": "<b>🚩 Météo-France haize-balizak:</b><br><br>Météo-France sareko haize-datuak dituzten estazio meteorologiko automatikoak.<br><br>Datuen eguneratze automatikoaren gutxi gorabeherako maiztasuna: 10 minutu (estazioaren arabera aldakorra).<br><br>Webgune ofiziala: <a href='https://meteofrance.fr/' target='_blank' style='color: #007bff; text-decoration: underline;'>Météo-France</a>",
+    "tooltipcheckboxBalizasPioupiou": "<b>🚩 OpenWindMap haize-balizak:</b><br><br>OpenWindMap (Pioupiou) sareko haize-datuak dituzten estazio meteorologiko automatikoak.<br><br>Datuen eguneratze automatikoaren gutxi gorabeherako maiztasuna: 10 minutu (estazioaren arabera aldakorra).<br><br>Webgune ofiziala: <a href='https://openwindmap.org' target='_blank' style='color: #007bff; text-decoration: underline;'>OpenWindMap</a> (Wind data (c) contributors of the OpenWindMap wind network)"
   },
   "paises": {
     "España": "Espainia",

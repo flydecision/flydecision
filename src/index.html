@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes, maximum-scale=2.0"/>
-<title>Fly Decision | Análisis automático del pronóstico meteorológico para volar en parapente. Mapa de despegues.</title>
-<meta name="description" content="Análisis automático del pronóstico de tiempo y orientaciones para despegues de parapente. Tabla con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente. Mapa de despegues.">
+<title>Fly Decision | Análisis automático del pronóstico meteorológico para volar en parapente. Mapa de despegues. Balizas de viento</title>
+<meta name="description" content="Análisis automático del pronóstico de tiempo y orientaciones para despegues de parapente. Tabla con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente. Mapa de despegues y balizas de viento.">
 <meta property="og:description" content="Análisis automático del pronóstico y orientaciones para despegues de parapente. Tabla con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente.">
 <meta property="og:image" content="https://flydecision.com/icons/logo_192px.png">
 <meta property="og:type" content="website">
@@ -67,9 +67,9 @@
 <!-- API Keys map layers-->
 <script src="js/config.js" defer></script>
 
-<script>window.WEB_VERSION = "4.3.0b";</script>
-<link rel="stylesheet" href="meteo.css?v=4.3.0b">
-<script src="meteo.js?v=4.3.0b" defer></script>
+<script>window.WEB_VERSION = "4.2.3";</script>
+<link rel="stylesheet" href="meteo.css?v=4.2.3">
+<script src="meteo.js?v=4.2.3" defer></script>
 
 </head>
 
@@ -738,20 +738,29 @@
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasMFPirineos" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasMFPirineos" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;MF Pirineos</span>
+				<label for="checkboxBalizasMeteofrance" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasMeteofrance" class="custom-checkbox">
+					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;Météo-France</span>
 				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMFPirineos">
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteofrance">
 					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasMFAlpes" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasMFAlpes" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;MF Alpes</span>
+				<label for="checkboxBalizasPioupiou" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasPioupiou" class="custom-checkbox">
+					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;OpenWindMap</span>
 				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMFAlpes">
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasPioupiou">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasFFVL" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasFFVL" class="custom-checkbox">
+					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;FFVL</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasFFVL">
 					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
