@@ -595,6 +595,7 @@
       "ESRITopo": "Topográfico ESRI",
       "ESRIOrto": "Imágenes satélite ESRI",
       "OpenTopoMap": "Topográfico OpenTopoMap",
+      "Carto_light": "Topográfico claro Carto",
       "Tracestrack": "Topográfico Tracestrack",
       "IGNTopo": "Topográfico estándar IGN (España)",
       "IGNClaro": "Topográfico claro IGN (España)",

@@ -594,6 +594,7 @@
       "ESRITopo": "ESRI Topografisch",
       "ESRIOrto": "ESRI Satellitenbilder",
       "OpenTopoMap": "OpenTopoMap Topografisch",
+      "Carto_light": "Topografisch hell Carto",
       "Tracestrack": "Tracestrack Topografisch",
       "IGNTopo": "IGN Topografisch Standard (Spanien)",
       "IGNClaro": "IGN Topografisch Hell (Spanien)",
