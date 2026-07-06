@@ -16781,7 +16781,7 @@ const ESTACIONES_PIOUPIOU =
         if (rosaDiv) {
             rosaDiv.innerHTML = svgRosa
                 ? `
-                    <div style="text-align:left; margin-bottom:-2px;">
+                    <div style="text-align:left; margin-bottom:0px;">
                         <small style="font-size:13px; color:#888;">${t('mapa.balizas.leyenda_rosa_meteorologica', { defaultValue: 'Últimas 2 h' })}</small>
                     </div>    
                     ${svgRosa}
@@ -17045,7 +17045,7 @@ const ESTACIONES_PIOUPIOU =
         }
 
         return `
-            <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:200px; margin: 0 auto; margin-top: 2px;">
+            <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="display:block; width:100%; height:auto; max-width:200px; margin: 0 auto; margin-top: 2px; margin-bottom: -3px;">
                 ${lineasSectores.join('')}
                 ${celdas.join('')}
                 ${circulosGuia}
