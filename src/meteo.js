@@ -16284,6 +16284,12 @@ const ESTACIONES_PIOUPIOU =
         {"id":"70","name":"Déco Téléphérique Salève 1086m","provider":"Pioupiou","latitude":46.152982,"longitude":6.19053},
     ];
 
+    const ESTACIONES_METEOCAT = 
+    [
+        {"id":"41","name":"Sauveterre","provider":"Pioupiou","latitude":43.456835,"longitude":0.846405},
+        {"id":"70","name":"Déco Téléphérique Salève 1086m","provider":"Pioupiou","latitude":46.152982,"longitude":6.19053},
+    ];
+
     // 🟡 2. OBJETO GESTOR CENTRAL (Configuración y Estado de cada red)
     //___________________________________________________________________________________
 
@@ -16314,6 +16320,26 @@ const ESTACIONES_PIOUPIOU =
             url6h: 'https://flydecision.com/balizas_euskalmet_6h.json',
             checkboxId: 'checkboxBalizasEuskalmet',
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_EUSKALMET_VISIBLE',
+            // --- Variables de estado de esta red ---
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 30,
+            umbralRojoMin: 45 
+        },
+        'meteocat': {
+            id: 'meteocat',
+            nombre: 'Meteocat',
+            estaciones: ESTACIONES_METEOCAT,
+            urlCache: 'https://flydecision.com/balizas_meteocat_cache.json',
+            url6h: 'https://flydecision.com/balizas_meteocat_6h.json',
+            checkboxId: 'checkboxBalizasmeteocat',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_METEOCAT_VISIBLE',
             // --- Variables de estado de esta red ---
             layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
             marcadores: {},
@@ -16732,7 +16758,8 @@ const ESTACIONES_PIOUPIOU =
                 🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
             </p>
 
-            <div style="display:flex; align-items:center; margin-top: 0px;">
+            <!-- AÑADIDO: min-height: 130px; para reservar el hueco siempre -->
+            <div style="display:flex; align-items:center; margin-top: 0px; min-height: 130px;">
                 <div style="flex:1 1 auto; min-width:0;">
                     <!-- Fila 1: Viento -->
                     <div style="display: flex; align-items: center; height: 25px;">
@@ -16752,6 +16779,7 @@ const ESTACIONES_PIOUPIOU =
                         <span style="font-size:13px; color: #888;">(${d.windDirection ?? '-'}º)</span>
                     </div>
                 </div>
+                
                 <div id="pop-rosa-${red.id}-${marker.stationId}" style="flex:0 0 auto; width:110px; text-align:center;">
                 </div>
             </div>
