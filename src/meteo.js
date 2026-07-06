@@ -16758,7 +16758,7 @@ const ESTACIONES_PIOUPIOU =
                 🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
             </p>
 
-            <!-- AÑADIDO: min-height: 130px; para reservar el hueco siempre -->
+            <!-- min-height: 130px; para reservar el hueco siempre -->
             <div style="display:flex; align-items:center; margin-top: 0px; min-height: 130px;">
                 <div style="flex:1 1 auto; min-width:0;">
                     <!-- Fila 1: Viento -->
