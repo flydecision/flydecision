@@ -12383,12 +12383,39 @@ function inicializarMapaLeaflet() {
                 // 3. EJECUCIÓN: Si cualquiera de los dos métodos encontró un despegue, abrirlo
                 if (despegueEncontrado) {		
                     setTimeout(() => {
-                        // Usamos zoomToShowLayer por si el despegue está dentro de un grupo (cluster)
-                        clustergroupDespegues.zoomToShowLayer(despegueEncontrado, function() {
-                            // Dejamos que Leaflet haga el centrado automático con los 160px de margen que añadimos al popup
+                        
+                        // 1. Aseguramos que la capa de despegues esté visible. 
+                        // Si el usuario la tenía apagada en memoria, la encendemos forzosamente 
+                        // para poder mostrarle el despegue que ha pedido por URL.
+                        if (!map.hasLayer(clustergroupDespegues)) {
+                            map.addLayer(clustergroupDespegues);
+                            const chk = document.getElementById('checkboxDespegues');
+                            if (chk) chk.checked = true;
+                            localStorage.setItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE', true);
+                        }
+
+                        // 2. Intentamos usar la función del cluster
+                        try {
+                            clustergroupDespegues.zoomToShowLayer(despegueEncontrado, function() {
+                                // Dejamos que Leaflet haga el centrado automático
+                                despegueEncontrado.openPopup();
+                            });
+                        } catch (e) {
+                            // PLAN B (Anti-crash):
+                            // Si el plugin falla (porque el móvil es lento y el 'chunkedLoading' aún 
+                            // no ha terminado de procesar este marcador), usamos un centrado seguro directo.
+                            console.warn("Cluster aún procesando. Usando centrado de emergencia.");
+                            
+                            map.setView(despegueEncontrado.getLatLng(), 14);
+                            
+                            // Si por algún motivo el marcador no estuviera en el mapa, lo metemos a la fuerza
+                            if (!map.hasLayer(despegueEncontrado)) {
+                                despegueEncontrado.addTo(map);
+                            }
                             despegueEncontrado.openPopup();
-                        });
-                    }, 600); // Pequeña pausa para asegurar que los clusters están dibujados
+                        }
+
+                    }, 800); // Subimos ligeramente de 600 a 800ms para dar más respiro al procesador
                 }
             
                 // APLICAR COLORES A LOS MARCADORES RECIÉN CREADOS
