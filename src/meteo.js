@@ -10498,7 +10498,6 @@ window.evaluarEstadoNuevosUsuarios = function() {
     
     const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") === "true";
     const enEdicion = window.venirDeEdicionActiva === true; 
-    const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
 
     if (!configHecha) {
         if (enEdicion && window.onboardingMapaActivo) {
@@ -10506,8 +10505,6 @@ window.evaluarEstadoNuevosUsuarios = function() {
             if (navMenu) navMenu.style.display = 'none'; 
             if (btnConfigMapa) {
                 btnConfigMapa.style.display = 'flex'; 
-                //btnConfigMapa.style.backgroundColor = '#16a34a'; // Color Verde OK
-                //btnConfigMapa.style.borderColor = '#16a34a';
                 
                 // Le cambiamos el comportamiento para que finalice la edición de forma segura
                 btnConfigMapa.onclick = function() {
@@ -10520,7 +10517,52 @@ window.evaluarEstadoNuevosUsuarios = function() {
                     spanBtn.innerHTML = (typeof t === 'function' ? t('html.finalizarEdicion') : 'Finalizar edición de despegues favoritos');
                 }
             }
-        } else if (!enEdicion) {
+        } 
+        else if (!enEdicion && window.despegueTemporalParaTabla) {
+            // 🧭 CASO "Explorar Mapa" -> Clic en un despegue -> "Ver en tabla"
+            if (navMenu) navMenu.style.display = 'none'; 
+            if (btnConfigMapa) {
+                btnConfigMapa.style.display = 'flex'; 
+                btnConfigMapa.style.backgroundColor = '#0078d4'; // Color Azul original
+                btnConfigMapa.style.borderColor = 'white';
+                
+                // Comportamiento: Limpiar el despegue aislado y volver al mapa
+                btnConfigMapa.onclick = function(e) {
+                    e.preventDefault(); // Evitamos comportamientos indeseados
+                    
+                    const overlay = document.getElementById('msgActualizando...');
+                    if (overlay) overlay.classList.add('loader-activo');
+
+                    setTimeout(() => {
+                        window.despegueTemporalParaTabla = null;
+
+                        // 🔴 LA CLAVE: Restauramos la memoria de que el usuario ya estaba "Explorando" 
+                        // para que construir_tabla() no piense que es un reinicio y lance el onboarding.
+                        sessionStorage.setItem('METEO_ENTRO_POR_MAPA_YA_VISITADO', 'true');
+
+                        // Limpiamos el buscador de forma silenciosa
+                        const input = document.getElementById('buscador-despegues-provincias');
+                        if (input) {
+                            input.value = '';
+                            input.classList.remove('filtrado', 'buscador-despegues-sin-resultados');
+                        }
+                        const btnLimpiar = document.getElementById('limpiar-buscador');
+                        if (btnLimpiar) btnLimpiar.style.display = 'none';
+
+                        cambiarVista('mapa');
+
+                        window.saltarScrollTop = (window.saltarScrollTop || 0) + 1;
+                        construir_tabla(); // Reconstruye para quitar el despegue temporal y apaga el spinner
+                    }, 80);
+                };
+                
+                const spanBtn = btnConfigMapa.querySelector('span');
+                if (spanBtn) {
+                    spanBtn.innerHTML = (typeof t === 'function' ? t('botones.volverAMapa', {defaultValue: 'Volver al mapa'}) : 'Volver al mapa');
+                }
+            }
+        }
+        else if (!enEdicion) {
             // ⚙️ CASO 2: Acaba de abrir la app y aún no ha hecho nada
             if (navMenu) navMenu.style.display = 'none'; 
             if (btnConfigMapa) {
