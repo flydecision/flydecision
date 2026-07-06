@@ -9259,6 +9259,14 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 return;
             }
 
+            // --- PRIORIDAD 1.85: Panel Configuración (Ajustes) ---
+            // IMPORTANTE: Va antes que el mapa porque flota por encima de todo
+            const panelConfig = document.getElementById("div-configuracion");
+            if (panelConfig && panelConfig.classList.contains("activo")) {
+                alternardivConfiguracion(null, true); // Forzamos el cierre de acordeones
+                return;
+            }
+
             // --- PRIORIDAD 1.9: Si hay un popup de despegue abierto en el mapa, lo cerramos primero ---
             const vistaMapaParaPopup = document.getElementById('vista-mapa');
             if (vistaMapaParaPopup && vistaMapaParaPopup.style.display === 'flex') {
@@ -9342,14 +9350,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
             const mensajeFlotante = document.querySelector('.mensaje-no-modal.visible');
             if (mensajeFlotante) {
                 GestorMensajes.ocultar();
-                return;
-            }
-
-            // --- PRIORIDAD 4: Panel Configuración (Ajustes) ---
-            // IMPORTANTE: Va antes que el mapa porque flota por encima de todo
-            const panelConfig = document.getElementById("div-configuracion");
-            if (panelConfig && panelConfig.classList.contains("activo")) {
-                alternardivConfiguracion(null, true); // Forzamos el cierre de acordeones
                 return;
             }
 
