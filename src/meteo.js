@@ -11126,6 +11126,12 @@ function inicializarMapaLeaflet() {
         maxNativeZoom: 14,
         attribution: '© <a href="https://www.openaip.net" target="_blank">OpenAIP</a>'
     });
+    const Carto_light = crearCapaConLimiteZoom('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd',
+        maxNativeZoom: 19,
+        attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://carto.com/" target="_blank">Carto</a>'
+    });
+
 
     function crearCapaConLimiteZoom(url, opciones) {
         const maxNativo = opciones.maxNativeZoom ?? opciones.maxZoom ?? 19;
@@ -11149,7 +11155,8 @@ function inicializarMapaLeaflet() {
         [t('mapa.capasBase.Thunderforest')]: Thunderforest,
         [t('mapa.capasBase.OpenStreetMap')]: OpenStreetMap,  
         [t('mapa.capasBase.Hipsometrico')]: Hipsometrico,
-        [t('mapa.capasBase.HillShade')]: HillShade
+        [t('mapa.capasBase.HillShade')]: HillShade,
+        [t('mapa.capasBase.Carto_light')]: Carto_light
     };
 
     const overlayMaps = {
