@@ -2480,6 +2480,14 @@ function finalizarEdicionFavoritos(ignorarMenu = false) {
         return false; 
     }
 
+    // Comprobar si falta elegir el modo Simple/Avanzado antes de salir definitivamente
+    if (!localStorage.getItem("METEO_MODO_ELEGIDO")) {
+        if (typeof window.mostrarPasoModo === 'function') {
+            window.mostrarPasoModo(ignorarMenu);
+        }
+        return false; // Detenemos aquí, el modal de modos se encargará de continuar
+    }
+
     // Si todo está OK y vamos a salir del modo edición:
     // 1. Mostramos el spinner inmediatamente
     const overlay = document.getElementById('msgActualizando...');
@@ -4141,29 +4149,28 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     {
                         texto: typeof t === 'function' ? t('avisoResponsabilidad.btnContinuar', {defaultValue: 'Continuar'}) : 'Continuar',
                         onclick: function() {
-                            // Guardamos que el usuario ha aceptado
                             localStorage.setItem("METEO_AVISO_LEGAL_ACEPTADO", "true");
                             GestorMensajes.ocultar();
-                            // Saltamos al paso de elegir modo simple/avanzado
-                            if (!localStorage.getItem("METEO_MODO_ELEGIDO")) {
-                                mostrarPasoModo();
-                            } else {
-                                mostrarPaso1();
-                            }
+                            mostrarPaso1(); 
                         }
                     }
                 ],
-                anchoBotones: '100%' // Ocupa todo el ancho para facilitar el toque
+                anchoBotones: '100%' 
             });
         };
 
-        // Asistente de configuración inicial. Modo simple / avanzado
-        const mostrarPasoModo = function() {
+        // Asistente de configuración. Modo simple / avanzado (Reubicado al final del proceso)
+        window.mostrarPasoModo = function(ignorarMenuParaFinalizar) {
 
             window.elegirModoSimple = function(esSimple) {
-                window.cambiarModoApp(esSimple);
+                // Pasamos 'true' al final para evitar recargar la tabla dos veces
+                window.cambiarModoApp(esSimple, true); 
                 GestorMensajes.ocultar();
-                mostrarPaso1();
+                
+                // Retomamos el hilo natural de cierre de edición
+                if (typeof finalizarEdicionFavoritos === 'function') {
+                    finalizarEdicionFavoritos(ignorarMenuParaFinalizar);
+                }
             };
 
             GestorMensajes.mostrar({
@@ -4175,7 +4182,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 12px;">
-
                         <!-- Modo simple -->
                         <button id="pasoModo-btn-simple" style="
                             display: flex; align-items: flex-start; gap: 12px;
@@ -4186,10 +4192,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             <span style="font-size: 22px; line-height: 1; flex-shrink: 0;">🟢</span>
                             <div>
                                 <div style="font-size:20px; font-weight:bold;">${t('asistente.pasoModo.btnSimpleTitulo')}</div>
-                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px; color: #bababa);">${t('asistente.pasoModo.btnSimpleDesc')}</div>
+                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px; color: #bababa;">${t('asistente.pasoModo.btnSimpleDesc')}</div>
                             </div>
                         </button>
-
                         <!-- Modo avanzado -->
                         <button id="pasoModo-btn-avanzado" style="
                             display: flex; align-items: flex-start; gap: 12px;
@@ -4200,10 +4205,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             <span style="font-size: 22px; line-height: 1; flex-shrink: 0;">🟣</span>
                             <div>
                                 <div style="font-size:20px; font-weight:bold;">${t('asistente.pasoModo.btnAvanzadoTitulo')}</div>
-                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px; color: #bababa);">${t('asistente.pasoModo.btnAvanzadoDesc')}</div>
+                                <div style="font-size:16px; opacity: 0.9; margin-top: 2px; color: #bababa;">${t('asistente.pasoModo.btnAvanzadoDesc')}</div>
                             </div>
                         </button>
-
                     </div>
                 `,
                 botones: [],
@@ -4459,17 +4463,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (panelHorario) panelHorario.style.display = 'none';
             } 
                 
-            // NUEVA LÓGICA DE EJECUCIÓN (Solo salta el pop-up si NO vienes de URL directa
+            // NUEVA LÓGICA DE EJECUCIÓN (Solo salta el pop-up si NO vienes de URL directa)
             if (!enlaceDirectoMapa && !sessionStorage.getItem('METEO_ENTRO_POR_MAPA_YA_VISITADO')) {
                 if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) {
                     mostrarPaso0();
                 } else if (!localStorage.getItem("METEO_AVISO_LEGAL_ACEPTADO")) {
-                    // Si ya eligió idioma, pero aún no aceptó el aviso, se lo mostramos
                     mostrarAvisoResponsabilidad();
-                } else if (!localStorage.getItem("METEO_MODO_ELEGIDO")) {
-                    mostrarPasoModo();
                 } else {
-                    mostrarPaso1();
+                    mostrarPaso1(); // Saltamos al menú principal del onboarding
                 }
             }
 
@@ -7282,7 +7283,7 @@ function aplicarModoSimpleUI() {
 }
 window.aplicarModoSimpleUI = aplicarModoSimpleUI;
 
-window.cambiarModoApp = function(esSimple) {
+window.cambiarModoApp = function(esSimple, evitarRecarga = false) {
     localStorage.setItem("METEO_MODO_SIMPLE", esSimple ? "true" : "false");
     localStorage.setItem("METEO_MODO_ELEGIDO", "true");
     aplicarModoSimpleUI();
@@ -7290,17 +7291,15 @@ window.cambiarModoApp = function(esSimple) {
     aplicarReglasModoSimpleAVariables(esSimple);
 
     if (esSimple) {
-        // Al resetear opciones avanzadas, la función ya incluye construir_tabla() dentro al terminar
-        resetearOpcionesAvanzadas();
-    } else {
-        // Al volver al avanzado, no reseteamos nada pero forzamos repintar la tabla con las filas extra
+        resetearOpcionesAvanzadas(evitarRecarga);
+    } else if (!evitarRecarga) {
         if (typeof construir_tabla === 'function') {
             construir_tabla();
         }
     }
 };
 
-function resetearOpcionesAvanzadas() {
+function resetearOpcionesAvanzadas(evitarRecarga = false) {
     if (typeof modoVerTodosLosDias !== 'undefined' && modoVerTodosLosDias && typeof window.toggleVerTodosLosDias === 'function') {
         window.toggleVerTodosLosDias();
     }
@@ -7353,7 +7352,7 @@ function resetearOpcionesAvanzadas() {
         if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
     }
 
-    if (typeof construir_tabla === 'function') {
+    if (!evitarRecarga && typeof construir_tabla === 'function') {
         construir_tabla();
     }
 }
