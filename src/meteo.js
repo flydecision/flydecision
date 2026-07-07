@@ -16308,7 +16308,10 @@ const ESTACIONES_PIOUPIOU =
     const ESTACIONES_FFVL = 
     [
         {"id":"41","name":"Sauveterre","provider":"Pioupiou","latitude":43.456835,"longitude":0.846405},
+        {"id":"41","name":"Sauveterre","provider":"Pioupiou","latitude":43.456835,"longitude":0.846405,"altitud":273},
         {"id":"70","name":"Déco Téléphérique Salève 1086m","provider":"Pioupiou","latitude":46.152982,"longitude":6.19053},
+        {"id":"70","name":"Déco Téléphérique Salève 1086m","provider":"Pioupiou","latitude":46.152982,"longitude":6.19053,"altitud":955},
+        {"id":"41","name":"Sauveterre","provider":"Pioupiou","latitude":43.456835,"longitude":0.846405,"altitud":273},
     ];
 
     const ESTACIONES_METEOCAT = [
@@ -16869,6 +16872,40 @@ const ESTACIONES_PIOUPIOU =
 
         const estadoPopup = calcularEstadoActualizacionBaliza(d, marker.redId);
 
+        // CONSTRUCCIÓN DEL TOOLTIP DE INFORMACIÓN DINÁMICO
+        // 1. Buscamos la estación exacta en el array para leer sus nuevos campos
+        const estacionObj = red.estaciones.find(e => e.id === marker.stationId);
+        
+        // 2. Extraemos los datos dinámicos con "red de seguridad" por si no existen
+        const stName = marker.stationName || (estacionObj ? estacionObj.name : '—');
+        const stProvider = red.nombre || (estacionObj ? estacionObj.provider : '—');
+        const stLat = marker.getLatLng().lat.toFixed(4);
+        const stLon = marker.getLatLng().lng.toFixed(4);
+        
+        // Si no hay altitud en el array, ponemos "—"
+        const altitud = (estacionObj && estacionObj.altitude) ? `${estacionObj.altitude} m` : '—';
+        
+        // Si no hay web en el array, ponemos "—". Si la hay, pintamos el enlace
+        let webLink = '—';
+        if (estacionObj && estacionObj.url) {
+            webLink = `<a href="${estacionObj.url}" onclick="abrirLinkExterno(this.href); return false;" style="color: #5b9be4; text-decoration: underline; font-weight: bold;">${typeof t === 'function' ? t('mapa.enlaceOficial', { defaultValue: 'Web oficial' }) : 'Web oficial'}</a>`;
+        }
+
+        // 3. Construimos la estructura fija del Tooltip (Siempre se verá igual)
+        let tooltipHTML = `<div style="text-align: left; line-height: 1.4; padding: 2px;">`;
+        
+        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.baliza', { defaultValue: 'Baliza' }) : 'Baliza'}:</b> ${stName}<br>`;
+        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.proveedor', { defaultValue: 'Proveedor' }) : 'Proveedor'}:</b> ${stProvider}<br>`;
+        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.coordenadas', { defaultValue: 'Coordenadas' }) : 'Coordenadas'}:</b> ${stLat}, ${stLon}<br>`;
+        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.altitud', { defaultValue: 'Altitud' }) : 'Altitud'}:</b> ${altitud}<br>`;
+        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.web', { defaultValue: 'Web' }) : 'Web'}:</b> ${webLink}`;
+        
+        tooltipHTML += `</div>`;
+
+        // 4. Escapamos las comillas para no romper el atributo HTML del botón
+        const tooltipSeguro = tooltipHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        // FIN. CONSTRUCCIÓN DEL TOOLTIP DE INFORMACIÓN DINÁMICO
+
         // viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
         const svgFlecha = `
             <svg viewBox="5 1 20 20" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7); transform-origin: center center; width: 28px; height: 28px; flex-shrink: 0;">
@@ -16911,11 +16948,19 @@ const ESTACIONES_PIOUPIOU =
                 <small style="color:#aaa;">⏳ ${t('mapa.balizas.balizas_cargando_grafico', { defaultValue: 'Cargando gráfico...' })}</small>
             </div>
 
-            <span style="display: block; margin-top: 7px; margin-bottom:7px;">
-                <small style="color:#888;">
-                    ${estadoPopup.emoji} ${t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' })}: ${formatearFechaHoraBaliza(d.ts)}
+            <!-- FOOTER -->
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: auto; padding-top: 7px; padding-bottom: 7px;">
+                
+                <small style="color:#888; text-align: left;">
+                    ${estadoPopup.emoji} ${typeof t === 'function' ? t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' }) : 'Actualizada'}: ${formatearFechaHoraBaliza(d.ts)}
                 </small>
-            </span>
+                
+                <!-- Botón Info Dinámico con datos del array -->
+                <button class="btn-info btn-inline" data-tippy-content="${tooltipSeguro}" style="background: transparent; border: none; padding: 0; margin-left: 10px; cursor: pointer; display: flex; flex-shrink: 0; outline: none;">
+                    <img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+                </button>
+                
+            </div>
         `;
 
         pintarGraficaBaliza(marker);
