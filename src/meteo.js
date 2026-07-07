@@ -14394,7 +14394,6 @@ function inicializarMapaLeaflet() {
                         <img src="icons/icono_direccion_45.webp" width="16" height="16" style="margin-right:14px;">
                         <b style="color: #0078d4;">${orientacionTexto}</b>
                         ${svgFlecha} 
-                        <span style="font-size:13px; color: #888;">(${d.windDirection ?? '-'}º)</span>
                     </div>
                 </div>
                 
