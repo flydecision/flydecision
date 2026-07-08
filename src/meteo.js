@@ -13918,6 +13918,26 @@ function inicializarMapaLeaflet() {
             datos6h: null,
             fetched6hAt: 0,
             intervalo: null,
+            umbralAmarilloMin: 90,
+            umbralRojoMin: 120 
+        },
+        'meteogalicia': {
+            id: 'meteogalicia',
+            nombre: 'Meteogalicia',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_meteogalicia_cache.json',
+            url6h: 'https://flydecision.com/balizas_meteogalicia_6h.json',
+            checkboxId: 'checkboxBalizasMeteogalicia',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_METEOGALICIA_VISIBLE',
+            // --- Variables de estado de esta red ---
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
             umbralAmarilloMin: 30,
             umbralRojoMin: 45 
         },
@@ -14390,7 +14410,7 @@ function inicializarMapaLeaflet() {
                         <span style="color: #c0392b; font-weight: bold;">${d.windGusts ?? '-'}</span> <span style="font-size:13px; margin-left: 4px; color: #888;">km/h</span>
                     </div>
                     <!-- Fila 3: Dirección -->
-                    <div style="display: flex; align-items: center; height: 25px;">
+                    <div title="${d.windDirection ?? '-'}º" style="display: flex; align-items: center; height: 25px;">
                         <img src="icons/icono_direccion_45.webp" width="16" height="16" style="margin-right:14px;">
                         <b style="color: #0078d4;">${orientacionTexto}</b>
                         ${svgFlecha} 
