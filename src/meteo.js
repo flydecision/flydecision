@@ -11488,12 +11488,11 @@ function inicializarMapaLeaflet() {
     }
 
     // FUNCIÓN PARA GESTIONAR EL ESTADO VISUAL DE LOS CONTROLES
-    // FUNCIÓN PARA GESTIONAR EL ESTADO VISUAL DE LOS CONTROLES
     function actualizarEstadoVisualFiltros() {
 
         // 1. COMPROBAR ESTADO DE LOS FILTROS EN EL MAPA
 
-        // 🔴 CORRECCIÓN: Leemos directamente la variable lógica de memoria (evita fallos por orden de carga de los sliders)
+        // Leemos directamente la variable lógica de memoria (evita fallos por orden de carga de los sliders)
         const hayFiltroActividad = (filtroActividadMapa > 1); 
 
         // Orientación: Comprueba si hay al menos uno marcado
