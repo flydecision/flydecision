@@ -3816,18 +3816,26 @@ function importarConfiguracion() {
                     
                     let keysImportadas = 0;
                     for (const key in perfilImportado) {
-                        // MODIFICACIÓN: Ahora permitimos también i18nextLng
                         if (key.startsWith("METEO_") || key === "i18nextLng") {
                             localStorage.setItem(key, perfilImportado[key]);
                             
-                            // Solo contamos las de la app para la verificación de éxito
                             if (key.startsWith("METEO_")) {
                                 keysImportadas++;
                             }
                         }
                     }
 
+                    // -------------------------------------------------------------
+                    // 🚀 SILENT UPGRADE: Compatibilidad con perfiles antiguos
+                    // Si el perfil importado NO tenía la nueva configuración de Modo,
+                    // asumimos que es un usuario antiguo (Avanzado) y la parcheamos.
+                    // -------------------------------------------------------------
                     if (keysImportadas > 0) {
+                        if (!localStorage.getItem("METEO_MODO_ELEGIDO")) {
+                            localStorage.setItem("METEO_MODO_ELEGIDO", "true");
+                            localStorage.setItem("METEO_MODO_SIMPLE", "false"); // Por defecto, Avanzado
+                        }
+
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga(``, `<div style="text-align: center;">
                             <p>${t('ajustes.importadoConfigOk')}</p>
