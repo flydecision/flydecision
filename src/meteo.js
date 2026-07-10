@@ -13986,7 +13986,12 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 30,
-            umbralRojoMin: 45 
+            umbralRojoMin: 45,
+            urlWeb: (id) => {
+                // Si el ID empieza por 's' o 'S', se la quitamos para la URL
+                const idLimpio = id.toLowerCase().startsWith('s') ? id.substring(1) : id;
+                return `https://holfuy.com/es/weather/${idLimpio}`;
+            },
         },
         'meteofrance': {
             id: 'meteofrance',
@@ -14370,10 +14375,22 @@ function inicializarMapaLeaflet() {
         // Si no hay altitud en el array, ponemos "—"
         const altitud = (estacionObj && estacionObj.altitude) ? `${estacionObj.altitude} m` : '—';
         
-        // Si no hay web en el array, ponemos "—". Si la hay, pintamos el enlace
+        // Lógica para obtener la URL de la web oficial de la baliza
         let webLink = '—';
-        if (estacionObj && estacionObj.url) {
-            webLink = `<a href="${estacionObj.url}" onclick="abrirLinkExterno(this.href); return false;" style="color: #5b9be4; text-decoration: underline; font-weight: bold;">${typeof t === 'function' ? t('mapa.enlaceOficial', { defaultValue: 'Web oficial' }) : 'Web oficial'}</a>`;
+        let urlFinal = null;
+
+        // 1. Prioridad A: Usar el patrón configurado en REDES_BALIZAS
+        if (typeof red.urlWeb === 'function') {
+            urlFinal = red.urlWeb(marker.stationId);
+        }
+        // 2. Prioridad B (Fallback): Por si el JSON de estaciones ya traía una URL específica
+        else if (estacionObj && estacionObj.url) {
+            urlFinal = estacionObj.url;
+        }
+
+        // Si hemos conseguido una URL válida, construimos el enlace HTML
+        if (urlFinal) {
+            webLink = `<a href="${urlFinal}" onclick="abrirLinkExterno(this.href); return false;" style="color: #5b9be4; text-decoration: underline; font-weight: bold;">${typeof t === 'function' ? t('mapa.enlaceOficial', { defaultValue: 'Web oficial' }) : 'Web oficial'}</a>`;
         }
 
         // 3. Construimos la estructura fija del Tooltip (Siempre se verá igual)
