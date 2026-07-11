@@ -13906,7 +13906,8 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 30,
-            umbralRojoMin: 45 
+            umbralRojoMin: 45,
+            urlWeb: (id) => 'https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#',
         },
         'meteocat': {
             id: 'meteocat',
@@ -13926,7 +13927,8 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 90,
-            umbralRojoMin: 120 
+            umbralRojoMin: 120,
+            urlWeb: (id) => `https://www.meteo.cat/observacions/xema/dades?codi=${id}`
         },
         'meteogalicia': {
             id: 'meteogalicia',
@@ -13946,7 +13948,8 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 30,
-            umbralRojoMin: 45 
+            umbralRojoMin: 45,
+            urlWeb: (id) => `https://www.meteogalicia.gal/web/observacion/rede-meteoroloxica?idEstacion=${id}`
         },
         'aemet': {
             id: 'aemet',
@@ -14402,6 +14405,7 @@ function inicializarMapaLeaflet() {
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.coordenadas', { defaultValue: 'Coordenadas' }) : 'Coordenadas'}:</b> ${stLat}, ${stLon}<br>`;
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.altitud', { defaultValue: 'Altitud' }) : 'Altitud'}:</b> ${altitud}<br>`;
         //tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.web', { defaultValue: 'Web' }) : 'Web'}:</b> ${webLink}`;
+        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' }) : 'Actualizada'}:</b> ${formatearFechaHoraBaliza(d.ts)}<br>`;
         tooltipHTML += `${webLink}`;
         
         tooltipHTML += `</div>`;
@@ -14415,6 +14419,10 @@ function inicializarMapaLeaflet() {
             <svg viewBox="5 1 20 20" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7); transform-origin: center center; width: 28px; height: 28px; flex-shrink: 0;">
                 <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
             </svg>`;
+
+        // Sacamos solo la hora y los minutos directamente
+        const fechaBaliza = new Date(d.ts * 1000);
+        const horaStr = fechaBaliza.getHours() + ':' + String(fechaBaliza.getMinutes()).padStart(2, '0');
 
         // Inyectamos todo el HTML correcto
         containerDiv.innerHTML = `
@@ -14455,7 +14463,7 @@ function inicializarMapaLeaflet() {
             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: auto; padding-top: 7px; padding-bottom: 7px;">
                 
                 <small class="baliza-live-time" data-red="${red.id}" data-station="${marker.stationId}" style="color:#888; text-align: left;">
-                    ${estadoPopup.emoji} ${formatearFechaHoraBaliza(d.ts)}
+                    ${estadoPopup.emoji} ${horaStr}
                     <span style="margin-left: 2px;">
                         (${typeof t === 'function' ? t('actualizacion.hace', { tiempo: formatTimeAgo(d.ts * 1000, Date.now()), defaultValue: 'hace ' + formatTimeAgo(d.ts * 1000, Date.now()) }) : 'hace ' + formatTimeAgo(d.ts * 1000, Date.now())})
                     </span>
@@ -14489,12 +14497,13 @@ function inicializarMapaLeaflet() {
 
             // Recalculamos el tiempo y el semáforo exactos en este segundo
             const estadoPopup = calcularEstadoActualizacionBaliza(d, redId);
-            const fechaHoraTexto = formatearFechaHoraBaliza(d.ts);
+            const fechaBaliza = new Date(d.ts * 1000);
+            const horaStr = fechaBaliza.getHours() + ':' + String(fechaBaliza.getMinutes()).padStart(2, '0');
             const textoHace = typeof t === 'function' ? t('actualizacion.hace', { tiempo: formatTimeAgo(d.ts * 1000, Date.now()), defaultValue: 'hace ' + formatTimeAgo(d.ts * 1000, Date.now()) }) : 'hace ' + formatTimeAgo(d.ts * 1000, Date.now());
 
             // Actualizamos SOLO esa línea de texto (sin tocar la gráfica ni producir parpadeos)
             el.innerHTML = `
-                ${estadoPopup.emoji} ${fechaHoraTexto}
+                ${estadoPopup.emoji} ${horaStr}
                 <span style="margin-left: 2px;">
                     (${textoHace})
                 </span>
@@ -14666,8 +14675,7 @@ function inicializarMapaLeaflet() {
         const anio = fecha.getFullYear();
         const hora = fecha.getHours();
         const min  = String(fecha.getMinutes()).padStart(2, '0');
-        //return `${dia}-${mes}-${anio} ${hora}:${min}`;
-        return `${hora}:${min}`;
+        return `${dia}-${mes}-${anio} ${hora}:${min}`;
     }
 
     function generarSvgRosaVientos(lecturas) {
