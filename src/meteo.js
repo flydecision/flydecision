@@ -13909,6 +13909,28 @@ function inicializarMapaLeaflet() {
             umbralRojoMin: 45,
             urlWeb: (id) => 'https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#',
         },
+        'meteonavarra': {
+            id: 'meteonavarra',
+            nombre: 'Meteonavarra',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_meteonavarra_cache.json',
+            url6h: 'https://flydecision.com/balizas_meteonavarra_6h.json',
+            checkboxId: 'checkboxBalizasMeteonavarra',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_METEONAVARRA_VISIBLE',
+            // --- Variables de estado de esta red ---
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 90,
+            umbralRojoMin: 120,
+            urlWeb: (id) => `https://meteo.navarra.es/estaciones/estacion_datos_m.cfm?idestacion=${id}`
+            // https://meteo.navarra.es/estaciones/estacion_datos_m.cfm?idestacion=23&fecha_desde=11/07/2026&fecha_hasta=12/07/2026&p_10=1&p_10=2&p_10=3&p_10=4&p_10=11&p_10=6&p_10=7
+        },
         'meteocat': {
             id: 'meteocat',
             nombre: 'Meteocat',
@@ -13969,7 +13991,8 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 90,
-            umbralRojoMin: 120
+            umbralRojoMin: 120,
+            urlWeb: (id) => `https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=arn&l=${id}&w=0&datos=img&x=h24&f=vel_viento`
         },
         'holfuy': {
             id: 'holfuy',
@@ -14052,7 +14075,8 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 30,
-            umbralRojoMin: 45
+            umbralRojoMin: 45,
+            urlWeb: (id) => `https://www.balisemeteo.com/balise.php?idBalise=${id}`
         }
     };    
     

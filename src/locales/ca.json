@@ -620,7 +620,11 @@
       "balizas_cargando_grafico": "Carregant gràfic...",
       "balizas_sin_historico": "Gràfic no disponible: no hi ha dades de les últimes 4 hores.",
       "leyenda_rosa_meteorologica": "Últimes 2 h:",
-      "leyenda_grafico_ultimas_4h": "Últimes 4 h:"
+      "leyenda_grafico_ultimas_4h": "Últimes 4 h:",
+      "baliza": "Balisa",
+      "proveedor": "Proveïdor",
+      "coordenadas": "Coordenades",
+      "altitud": "Altitud"
     }
   },
 
@@ -728,7 +732,7 @@
     "tooltipcheckboxBalizasFFVL": "<b>🚩 Balises de vent FFVL:</b><br><br>Estacions meteorològiques automàtiques amb dades de vent de la xarxa FFVL (Fédération Française de Vol Libre).<br><br>Freqüència aproximada d'actualització automàtica de les dades: 10 minuts (variable segons l'estació).<br><br>Web oficial: <a href='https://balises.ffvl.fr/' target='_blank' style='color: #007bff; text-decoration: underline;'>FFVL</a>",
     "tooltipcheckboxBalizasMeteocat": "<b>🚩 Balises de vent Meteocat:</b><br><br>Estacions meteorològiques automàtiques amb dades de vent de la xarxa Meteocat (Generalitat de Catalunya).<br><br>Freqüència aproximada d'actualització automàtica de les dades: 30 minuts (variable segons l'estació).<br><br>Web oficial: <a href='https://www.meteo.cat/observacions/xema' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteocat</a>",
     "tooltipcheckboxBalizasMeteogalicia": "<b>🚩 Balises de vent Meteogalicia:</b><br><br>Estacions meteorològiques automàtiques amb dades de vent de la xarxa Meteogalicia (Xunta de Galicia).<br><br>Freqüència aproximada d'actualització automàtica de les dades: 10 minuts (variable segons l'estació).<br><br>Web oficial: <a href='https://www.meteogalicia.gal/web/observacion/rede' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteogalicia</a>",
-    "tooltipcheckboxBalizasMeteonavarra": "<b>🚩 Balises de vent Meteonavarra:</b><br><br>Estacions meteorològiques automàtiques amb dades de vent de la xarxa Meteonavarra (Govern de Navarra).<br><br>Freqüència aproximada d'actualització automàtica de les dades: 30 minuts (variable segons l'estació).<br><br>Web oficial: <a href='https://meteo.navarra.es/estaciones/mapadeestaciones.cfm' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteonavarra</a>"
+    "tooltipcheckboxBalizasMeteonavarra": "<b>🚩 Balises de vent Meteonavarra:</b><br><br>Estacions meteorològiques automàtiques amb dades de vent de la xarxa Meteonavarra (Govern de Navarra).<br><br>Freqüència aproximada d'actualització automàtica de les dades: 30 minuts (variable segons l'estació).<br><br>Web oficial: <a href='https://meteo.navarra.es/estaciones/mapasdatostiemporeal.cfm?IDParam_sel=6' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteonavarra</a>"
   },
   "paises": {
     "España": "Espanya",
