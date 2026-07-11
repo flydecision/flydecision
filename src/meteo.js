@@ -13990,7 +13990,7 @@ function inicializarMapaLeaflet() {
             urlWeb: (id) => {
                 // Si el ID empieza por 's' o 'S', se la quitamos para la URL
                 const idLimpio = id.toLowerCase().startsWith('s') ? id.substring(1) : id;
-                return `https://holfuy.com/es/weather/${idLimpio}`;
+                return `https://holfuy.com/en/weather/${idLimpio}`;
             },
         },
         'meteofrance': {
@@ -14029,7 +14029,8 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 30,
-            umbralRojoMin: 45
+            umbralRojoMin: 45,
+            urlWeb: (id) => `https://www.openwindmap.org/windbird-${id}`
         },
         'ffvl': {
             id: 'ffvl',
@@ -14390,7 +14391,7 @@ function inicializarMapaLeaflet() {
 
         // Si hemos conseguido una URL válida, construimos el enlace HTML
         if (urlFinal) {
-            webLink = `<a href="${urlFinal}" onclick="abrirLinkExterno(this.href); return false;" style="color: #5b9be4; text-decoration: underline; font-weight: bold;">${typeof t === 'function' ? t('mapa.enlaceOficial', { defaultValue: 'Web oficial' }) : 'Web oficial'}</a>`;
+            webLink = `<a href="${urlFinal}" onclick="abrirLinkExterno(this.href); return false;" style="color: #5b9be4; text-decoration: underline; font-weight: bold;">${typeof t === 'function' ? t('mapa.enlaceOficial', { defaultValue: 'Web' }) : 'Web'}</a>`;
         }
 
         // 3. Construimos la estructura fija del Tooltip (Siempre se verá igual)
@@ -14400,7 +14401,8 @@ function inicializarMapaLeaflet() {
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.proveedor', { defaultValue: 'Proveedor' }) : 'Proveedor'}:</b> ${stProvider}<br>`;
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.coordenadas', { defaultValue: 'Coordenadas' }) : 'Coordenadas'}:</b> ${stLat}, ${stLon}<br>`;
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.altitud', { defaultValue: 'Altitud' }) : 'Altitud'}:</b> ${altitud}<br>`;
-        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.web', { defaultValue: 'Web' }) : 'Web'}:</b> ${webLink}`;
+        //tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.web', { defaultValue: 'Web' }) : 'Web'}:</b> ${webLink}`;
+        tooltipHTML += `${webLink}`;
         
         tooltipHTML += `</div>`;
 
@@ -14452,8 +14454,11 @@ function inicializarMapaLeaflet() {
             <!-- FOOTER -->
             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: auto; padding-top: 7px; padding-bottom: 7px;">
                 
-                <small style="color:#888; text-align: left;">
-                    ${estadoPopup.emoji} ${typeof t === 'function' ? t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' }) : 'Actualizada'}: ${formatearFechaHoraBaliza(d.ts)}
+                <small class="baliza-live-time" data-red="${red.id}" data-station="${marker.stationId}" style="color:#888; text-align: left;">
+                    ${estadoPopup.emoji} ${formatearFechaHoraBaliza(d.ts)}
+                    <span style="margin-left: 2px;">
+                        (${typeof t === 'function' ? t('actualizacion.hace', { tiempo: formatTimeAgo(d.ts * 1000, Date.now()), defaultValue: 'hace ' + formatTimeAgo(d.ts * 1000, Date.now()) }) : 'hace ' + formatTimeAgo(d.ts * 1000, Date.now())})
+                    </span>
                 </small>
                 
                 <!-- Botón Info Dinámico con datos del array -->
@@ -14466,6 +14471,36 @@ function inicializarMapaLeaflet() {
 
         pintarGraficaBaliza(marker);
     }
+
+    // ----------------------------------------------------------------------------------
+    // ACTUALIZADOR SILENCIOSO: Mantiene vivo el tiempo ("hace X min") de los popups abiertos
+    // ----------------------------------------------------------------------------------
+    setInterval(() => {
+        // Busca si hay algún footer de baliza visible en la pantalla
+        document.querySelectorAll('.baliza-live-time').forEach(el => {
+            const redId = el.getAttribute('data-red');
+            const stationId = el.getAttribute('data-station');
+            const red = REDES_BALIZAS[redId];
+            
+            // Verificaciones de seguridad
+            if (!red || !red.datosCache) return;
+            const d = red.datosCache[stationId];
+            if (!d || !d.ts) return;
+
+            // Recalculamos el tiempo y el semáforo exactos en este segundo
+            const estadoPopup = calcularEstadoActualizacionBaliza(d, redId);
+            const fechaHoraTexto = formatearFechaHoraBaliza(d.ts);
+            const textoHace = typeof t === 'function' ? t('actualizacion.hace', { tiempo: formatTimeAgo(d.ts * 1000, Date.now()), defaultValue: 'hace ' + formatTimeAgo(d.ts * 1000, Date.now()) }) : 'hace ' + formatTimeAgo(d.ts * 1000, Date.now());
+
+            // Actualizamos SOLO esa línea de texto (sin tocar la gráfica ni producir parpadeos)
+            el.innerHTML = `
+                ${estadoPopup.emoji} ${fechaHoraTexto}
+                <span style="margin-left: 2px;">
+                    (${textoHace})
+                </span>
+            `;
+        });
+    }, 20000); // Se ejecuta en la sombra cada 20 segundos
 
     // 🟡 7. PINTAR GRÁFICA DE 4H
     //___________________________________________________________________________________
@@ -14631,7 +14666,8 @@ function inicializarMapaLeaflet() {
         const anio = fecha.getFullYear();
         const hora = fecha.getHours();
         const min  = String(fecha.getMinutes()).padStart(2, '0');
-        return `${dia}-${mes}-${anio} ${hora}:${min}`;
+        //return `${dia}-${mes}-${anio} ${hora}:${min}`;
+        return `${hora}:${min}`;
     }
 
     function generarSvgRosaVientos(lecturas) {
