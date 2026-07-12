@@ -2058,48 +2058,6 @@ function toggleFavorito(id) {
 // =========================================================================
 // 🛑 FUNCION AUXILIAR DE SINCRONIZACIÓN ESTÁTICA
 // =========================================================================
-function actualizarContenidoPopupGuardado(id, esFavorito, esSeguimiento) {
-    if (typeof markersDespegues === 'undefined' || markersDespegues.length === 0) return;
-
-    // Buscamos el marcador del despegue correspondiente
-    const marker = markersDespegues.find(m => m.metadata && Number(m.metadata.id) === Number(id));
-    if (!marker) return;
-
-    const popup = marker.getPopup();
-    if (!popup) return;
-
-    const content = popup.getContent();
-    if (!content) return;
-
-    // Creamos un div temporal para manipular el HTML estático de Leaflet
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = typeof content === 'string' ? content : content.innerHTML;
-
-    // 1. Sincronizar Favorito en la plantilla estática
-    if (esFavorito !== undefined) {
-        const btnFav = tempDiv.querySelector('.btn-favorito-tabla');
-        if (btnFav) {
-            btnFav.title = esFavorito ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
-            const svgFav = btnFav.querySelector('svg');
-            if (svgFav) {
-                svgFav.setAttribute('fill', esFavorito ? '#e00' : 'none');
-                svgFav.setAttribute('stroke', esFavorito ? '#e00' : '#555');
-            }
-        }
-    }
-
-    // 2. Sincronizar Seguimiento en la plantilla estática
-    if (esSeguimiento !== undefined) {
-        const btnSeg = tempDiv.querySelector('.btn-ojo-tabla');
-        if (btnSeg) {
-            btnSeg.title = esSeguimiento ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
-            actualizarVistaOjo(btnSeg, esSeguimiento);
-        }
-    }
-
-    // Volvemos a guardar la plantilla limpia dentro de Leaflet
-    popup.setContent(tempDiv.innerHTML);
-}
 
 window.toggleFavoritoDesdeTabla = function(id, btnElement) {
     const esFavoritoActual = obtenerFavoritos().map(Number).includes(Number(id));
@@ -2109,9 +2067,6 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
 
         window.vibrarDispositivo();
         
-        // Sincronizar la plantilla estática interna de Leaflet inmediatamente
-        actualizarContenidoPopupGuardado(id, esNuevoFavorito, undefined);
-
         // Helper interno para actualizar estados de botones y filas
         const aplicarCambiosVisualesABotonYFila = (btn) => {
             btn.title = esNuevoFavorito ? t('favoritos.despegueFavorito') : t('favoritos.anadirAFavoritos');
@@ -2622,9 +2577,6 @@ window.toggleSeguimientoDesdeTabla = function(id, btnElement) {
     const esNuevo = toggleSeguimiento(id);
 
     window.vibrarDispositivo(); 
-
-    // Sincronizar la plantilla estática interna de Leaflet inmediatamente
-    actualizarContenidoPopupGuardado(id, undefined, esNuevo);
 
     // 1. Actualizar el botón presionado directamente
     if (btnElement) {
@@ -10379,6 +10331,20 @@ window.cambiarVista = function(vista) {
             if (typeof map !== 'undefined' && map) {
                 map.invalidateSize(); 
                 updateURL(map); 
+                
+                // --- Forzar al popup abierto a redibujarse y actualizar botones ---
+                map.eachLayer(function(layer) {
+                    if (layer instanceof L.Popup && layer.isOpen()) {
+                        layer.update(); // Leaflet reconstruye el popup (soluciona el aplastamiento)
+                        
+                        // Hacemos que el marcador dispare su evento de apertura.
+                        // Esto ejecutará la lógica que ya tienes programada para leer 
+                        // obtenerFavoritos() y obtenerSeguimientos() y pintarlos bien.
+                        if (layer._source) {
+                            layer._source.fire('popupopen', { popup: layer });
+                        }
+                    }
+                });
             }
         }, 300);
 
@@ -10438,6 +10404,7 @@ window.cambiarVista = function(vista) {
     } 
     else if (vista === 'tabla') {
         sessionStorage.removeItem('METEO_ENTRO_POR_MAPA_YA_VISITADO');
+        
         if (vistaMapa) vistaMapa.style.display = 'none';
         if (vistaTabla) vistaTabla.style.display = 'flex'; 
         if (vistaControles) vistaControles.style.display = 'block';
