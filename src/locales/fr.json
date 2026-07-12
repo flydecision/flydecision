@@ -620,7 +620,11 @@
       "balizas_cargando_grafico": "Chargement du graphique...",
       "balizas_sin_historico": "Graphique non disponible : aucune donnée pour les 4 dernières heures.",
       "leyenda_rosa_meteorologica": "Dernières 2 h :",
-      "leyenda_grafico_ultimas_4h": "Dernières 4 h :"
+      "leyenda_grafico_ultimas_4h": "Dernières 4 h :",
+      "baliza": "Balise",
+      "proveedor": "Fournisseur",
+      "coordenadas": "Coordonnées",
+      "altitud": "Altitude"
     }
   },
 
@@ -727,8 +731,8 @@
     "tooltipcheckboxBalizasPioupiou": "<b>🚩 Balises de vent OpenWindMap :</b><br><br>Stations météorologiques automatiques avec données de vent du réseau OpenWindMap (Pioupiou).<br><br>Fréquence approximative de mise à jour automatique des données : 10 minutes (variable selon la station).<br><br>Site officiel : <a href='https://openwindmap.org' target='_blank' style='color: #007bff; text-decoration: underline;'>OpenWindMap</a> (Wind data (c) contributors of the OpenWindMap wind network)",
     "tooltipcheckboxBalizasFFVL": "<b>🚩 Balises de vent FFVL :</b><br><br>Stations météorologiques automatiques avec données de vent du réseau FFVL (Fédération Française de Vol Libre).<br><br>Fréquence approximative de mise à jour automatique des données : 10 minutes (variable selon la station).<br><br>Site officiel : <a href='https://balises.ffvl.fr/' target='_blank' style='color: #007bff; text-decoration: underline;'>FFVL</a>",
     "tooltipcheckboxBalizasMeteocat": "<b>🚩 Balises de vent Meteocat :</b><br><br>Stations météorologiques automatiques avec données de vent du réseau Meteocat (Generalitat de Catalunya).<br><br>Fréquence approximative de mise à jour automatique des données : 30 minutes (variable selon la station).<br><br>Site officiel : <a href='https://www.meteo.cat/observacions/xema' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteocat</a>",
-    "tooltipcheckboxBalizasMeteogalicia": "<b>🚩 Balises de vent Meteogalicia :</b><br><br>Stations météorologiques automatiques avec données de vent du réseau Meteogalicia (Xunta de Galicia).<br><br>Fréquence approximative de mise à jour automatique des données : 30 minutes (variable selon la station).<br><br>Site officiel : <a href='https://www.meteogalicia.gal/web/observacion/rede' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteogalicia</a>",
-    "tooltipcheckboxBalizasMeteonavarra": "<b>🚩 Balises de vent Meteonavarra :</b><br><br>Stations météorologiques automatiques avec données de vent du réseau Meteonavarra (Gouvernement de Navarre).<br><br>Fréquence approximative de mise à jour automatique des données : 30 minutes (variable selon la station).<br><br>Site officiel : <a href='https://meteo.navarra.es/estaciones/mapadeestaciones.cfm' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteonavarra</a>"
+    "tooltipcheckboxBalizasMeteogalicia": "<b>🚩 Balises de vent Meteogalicia :</b><br><br>Stations météorologiques automatiques avec données de vent du réseau Meteogalicia (Xunta de Galicia).<br><br>Fréquence approximative de mise à jour automatique des données : 10 minutes (variable selon la station).<br><br>Site officiel : <a href='https://www.meteogalicia.gal/web/observacion/rede' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteogalicia</a>",
+    "tooltipcheckboxBalizasMeteonavarra": "<b>🚩 Balises de vent Meteonavarra :</b><br><br>Stations météorologiques automatiques avec données de vent du réseau Meteonavarra (Gouvernement de Navarre).<br><br>Fréquence approximative de mise à jour automatique des données : 10 minutes (variable selon la station).<br><br>Site officiel : <a href='https://meteo.navarra.es/estaciones/mapasdatostiemporeal.cfm?IDParam_sel=6' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteonavarra</a>"
   },
   "paises": {
     "España": "Espagne",

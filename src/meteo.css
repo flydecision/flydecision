@@ -943,6 +943,7 @@ input[type="search"]::-webkit-search-cancel-button {
     margin-left: auto !important;
     margin-right: auto !important;
     box-sizing: border-box;
+    margin-bottom: -6px;
 }
 
 #div-filtro-distancia .div-paneles-controles-transparente {
@@ -1717,7 +1718,7 @@ span.grados {
 /* 🟡 SLIDERS. Modificación clases generales noUi -------------------------------- */
 
 .noUi-horizontal {
-    margin-top: 44px !important;
+    margin-top: 40px !important;
     height: 17px !important;
     margin-left: 18px !important;
     margin-right: 18px !important;
@@ -1756,6 +1757,7 @@ span.grados {
     display: flex;
     align-items: baseline; /* Alinea la base del número con la base de la "h" */
     justify-content: center;
+    bottom: 105% !important;
 }
 .noUi-touch-area {
     cursor: pointer !important;
@@ -1779,7 +1781,7 @@ span.grados {
 
 /* 🟡 SLIDERS. Personalizados. Horario -------------------------------- */
 #horario-slider.noUi-horizontal {
-    margin-top: 32px !important;
+    margin-top: 28px !important;
 }
 #horario-slider .noUi-tooltip {
 	background: transparent;
@@ -2869,7 +2871,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
     align-items: center;
     z-index: 9999;
     
-    height: 58px; /* Un pelín más alta para respirar */
+    height: 50px; /* Un pelín más alta para respirar */
     margin: 0;
     box-shadow: 0 1px 6px rgba(0,0,0,0.65);
 }
@@ -2897,7 +2899,7 @@ body.modo-edicion-tabla #btn-incluir-no-favs-distancia {
 
 .compact-nav .nav-icon-container {
     width: 48px; 
-    height: 28px; 
+    height: 20px; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4238,7 +4240,7 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     min-width: 365px;
     padding: 10px 0 10px 0;
     gap: 8px;
-    padding-bottom: 15px;
+    padding-bottom: 10px;
     border-radius: 10px;
     margin-top: 15px;
 

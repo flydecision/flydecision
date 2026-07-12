@@ -621,7 +621,12 @@
       "balizas_cargando_grafico": "Cargando gráfico...",
       "balizas_sin_historico": "Gráfico no disponible: no hay datos de las últimas 4 horas.",
       "leyenda_rosa_meteorologica": "Últimas 2 h:",
-      "leyenda_grafico_ultimas_4h": "Últimas 4 h:"
+      "leyenda_grafico_ultimas_4h": "Últimas 4 h:",
+      "baliza": "Baliza",
+      "proveedor": "Proveedor",
+      "coordenadas": "Coordenadas",
+      "altitud": "Altitud"
+
     }
   },
 
@@ -728,8 +733,8 @@
     "tooltipcheckboxBalizasPioupiou": "<b>🚩 Balizas de viento OpenWindMap:</b><br><br>Estaciones meteorológicas automáticas con datos viento de la red OpenbWindMap (Pioupiou).<br><br>Frecuencia aproximada de actualización automática de los datos: 10 minutos (variable según estación).<br><br>Web oficial: <a href='https://openwindmap.org' target='_blank' style='color: #007bff; text-decoration: underline;'>OpenWindMap</a> (Wind data (c) contributors of the OpenWindMap wind network)",
     "tooltipcheckboxBalizasFFVL": "<b>🚩 Balizas de viento FFVL:</b><br><br>Estaciones meteorológicas automáticas con datos viento de la red FFVL (Fédération Française de Vol Libre).<br><br>Frecuencia aproximada de actualización automática de los datos: 10 minutos (variable según estación).<br><br>Web oficial: <a href='https://balises.ffvl.fr/' target='_blank' style='color: #007bff; text-decoration: underline;'>FFVL</a>",
     "tooltipcheckboxBalizasMeteocat": "<b>🚩 Balizas de viento Meteocat:</b><br><br>Estaciones meteorológicas automáticas con datos viento de la red Meteocat (Generalitat de Catalunya).<br><br>Frecuencia aproximada de actualización automática de los datos: 30 minutos (variable según estación).<br><br>Web oficial: <a href='https://www.meteo.cat/observacions/xema' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteocat</a>",
-    "tooltipcheckboxBalizasMeteogalicia": "<b>🚩 Balizas de viento Meteogalicia:</b><br><br>Estaciones meteorológicas automáticas con datos viento de la red Meteogalicia (Xunta de Galicia).<br><br>Frecuencia aproximada de actualización automática de los datos: 30 minutos (variable según estación).<br><br>Web oficial: <a href='https://www.meteogalicia.gal/web/observacion/rede' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteogalicia</a>",
-    "tooltipcheckboxBalizasMeteonavarra": "<b>🚩 Balizas de viento Meteonavarra:</b><br><br>Estaciones meteorológicas automáticas con datos viento de la red Meteonavarra (Gobierno de Navarra).<br><br>Frecuencia aproximada de actualización automática de los datos: 30 minutos (variable según estación).<br><br>Web oficial: <a href='https://meteo.navarra.es/estaciones/mapadeestaciones.cfm' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteonavarra</a>"
+    "tooltipcheckboxBalizasMeteogalicia": "<b>🚩 Balizas de viento Meteogalicia:</b><br><br>Estaciones meteorológicas automáticas con datos viento de la red Meteogalicia (Xunta de Galicia).<br><br>Frecuencia aproximada de actualización automática de los datos: 10 minutos (variable según estación).<br><br>Web oficial: <a href='https://www.meteogalicia.gal/web/observacion/rede' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteogalicia</a>",
+    "tooltipcheckboxBalizasMeteonavarra": "<b>🚩 Balizas de viento Meteonavarra:</b><br><br>Estaciones meteorológicas automáticas con datos viento de la red Meteonavarra (Gobierno de Navarra).<br><br>Frecuencia aproximada de actualización automática de los datos: 10 minutos (variable según estación).<br><br>Web oficial: <a href='https://meteo.navarra.es/estaciones/mapasdatostiemporeal.cfm?IDParam_sel=6' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteonavarra</a>"
   },
   "paises": {
     "España": "España",

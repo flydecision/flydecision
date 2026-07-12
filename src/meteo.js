@@ -3816,18 +3816,26 @@ function importarConfiguracion() {
                     
                     let keysImportadas = 0;
                     for (const key in perfilImportado) {
-                        // MODIFICACIÓN: Ahora permitimos también i18nextLng
                         if (key.startsWith("METEO_") || key === "i18nextLng") {
                             localStorage.setItem(key, perfilImportado[key]);
                             
-                            // Solo contamos las de la app para la verificación de éxito
                             if (key.startsWith("METEO_")) {
                                 keysImportadas++;
                             }
                         }
                     }
 
+                    // -------------------------------------------------------------
+                    // 🚀 SILENT UPGRADE: Compatibilidad con perfiles antiguos
+                    // Si el perfil importado NO tenía la nueva configuración de Modo,
+                    // asumimos que es un usuario antiguo (Avanzado) y la parcheamos.
+                    // -------------------------------------------------------------
                     if (keysImportadas > 0) {
+                        if (!localStorage.getItem("METEO_MODO_ELEGIDO")) {
+                            localStorage.setItem("METEO_MODO_ELEGIDO", "true");
+                            localStorage.setItem("METEO_MODO_SIMPLE", "false"); // Por defecto, Avanzado
+                        }
+
                         if (typeof mensajeAvisoRecarga === 'function') {
                             mensajeAvisoRecarga(``, `<div style="text-align: center;">
                             <p>${t('ajustes.importadoConfigOk')}</p>
@@ -13898,11 +13906,55 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 30,
-            umbralRojoMin: 45 
+            umbralRojoMin: 45,
+            urlWeb: (id) => 'https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#',
+        },
+        'meteonavarra': {
+            id: 'meteonavarra',
+            nombre: 'MeteoNavarra',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_meteonavarra_cache.json',
+            url6h: 'https://flydecision.com/balizas_meteonavarra_6h.json',
+            checkboxId: 'checkboxBalizasMeteonavarra',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_METEONAVARRA_VISIBLE',
+            // --- Variables de estado de esta red ---
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 90,
+            umbralRojoMin: 120,
+            urlWeb: (id) => {
+                // 1. Limpiar el ID (quitamos todo lo que no sea un número, ej: "GN23" -> "23")
+                const idLimpio = id.replace(/\D/g, '');
+                
+                // 2. Calcular fecha de hoy y de mañana
+                const hoy = new Date();
+                const manana = new Date(hoy);
+                manana.setDate(manana.getDate() + 1); // Sumamos 1 día
+
+                // Función auxiliar para formatear a DD/MM/YYYY
+                const formateaFecha = (d) => {
+                    const dia = String(d.getDate()).padStart(2, '0');
+                    const mes = String(d.getMonth() + 1).padStart(2, '0');
+                    const anio = d.getFullYear();
+                    return `${dia}/${mes}/${anio}`;
+                };
+
+                const fechaDesde = formateaFecha(hoy);
+                const fechaHasta = formateaFecha(manana);
+
+                // 3. Montar y devolver la URL completa
+                return `https://meteo.navarra.es/estaciones/estacion_datos_m.cfm?idestacion=${idLimpio}&fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}&p_10=1&p_10=2&p_10=3&p_10=4&p_10=11&p_10=6&p_10=7`;
+            },
         },
         'meteocat': {
             id: 'meteocat',
-            nombre: 'Meteocat',
+            nombre: 'MeteoCat',
             estaciones: [],
             urlCache: 'https://flydecision.com/balizas_meteocat_cache.json',
             url6h: 'https://flydecision.com/balizas_meteocat_6h.json',
@@ -13918,11 +13970,12 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 90,
-            umbralRojoMin: 120 
+            umbralRojoMin: 120,
+            urlWeb: (id) => `https://www.meteo.cat/observacions/xema/dades?codi=${id}`
         },
         'meteogalicia': {
             id: 'meteogalicia',
-            nombre: 'Meteogalicia',
+            nombre: 'MeteoGalicia',
             estaciones: [],
             urlCache: 'https://flydecision.com/balizas_meteogalicia_cache.json',
             url6h: 'https://flydecision.com/balizas_meteogalicia_6h.json',
@@ -13938,7 +13991,8 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 30,
-            umbralRojoMin: 45 
+            umbralRojoMin: 45,
+            urlWeb: (id) => `https://www.meteogalicia.gal/web/observacion/rede-meteoroloxica?idEstacion=${id}`
         },
         'aemet': {
             id: 'aemet',
@@ -13958,7 +14012,8 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 90,
-            umbralRojoMin: 120
+            umbralRojoMin: 120,
+            urlWeb: (id) => `https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=arn&l=${id}&w=0&datos=img&x=h24&f=vel_viento`
         },
         'holfuy': {
             id: 'holfuy',
@@ -13978,7 +14033,12 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 30,
-            umbralRojoMin: 45 
+            umbralRojoMin: 45,
+            urlWeb: (id) => {
+                // Si el ID empieza por 's' o 'S', se la quitamos para la URL
+                const idLimpio = id.toLowerCase().startsWith('s') ? id.substring(1) : id;
+                return `https://holfuy.com/en/weather/${idLimpio}`;
+            },
         },
         'meteofrance': {
             id: 'meteofrance',
@@ -14001,7 +14061,7 @@ function inicializarMapaLeaflet() {
         },
         'pioupiou': {
             id: 'pioupiou',
-            nombre: 'OpenWind',
+            nombre: 'OpenWindMap',
             estaciones: [],
             urlCache: 'https://flydecision.com/balizas_pioupiou_cache.json',
             url6h:    'https://flydecision.com/balizas_pioupiou_6h.json',
@@ -14016,7 +14076,8 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 30,
-            umbralRojoMin: 45
+            umbralRojoMin: 45,
+            urlWeb: (id) => `https://www.openwindmap.org/windbird-${id}`
         },
         'ffvl': {
             id: 'ffvl',
@@ -14035,7 +14096,8 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 30,
-            umbralRojoMin: 45
+            umbralRojoMin: 45,
+            urlWeb: (id) => `https://www.balisemeteo.com/balise.php?idBalise=${id}`
         }
     };    
     
@@ -14362,10 +14424,22 @@ function inicializarMapaLeaflet() {
         // Si no hay altitud en el array, ponemos "—"
         const altitud = (estacionObj && estacionObj.altitude) ? `${estacionObj.altitude} m` : '—';
         
-        // Si no hay web en el array, ponemos "—". Si la hay, pintamos el enlace
+        // Lógica para obtener la URL de la web oficial de la baliza
         let webLink = '—';
-        if (estacionObj && estacionObj.url) {
-            webLink = `<a href="${estacionObj.url}" onclick="abrirLinkExterno(this.href); return false;" style="color: #5b9be4; text-decoration: underline; font-weight: bold;">${typeof t === 'function' ? t('mapa.enlaceOficial', { defaultValue: 'Web oficial' }) : 'Web oficial'}</a>`;
+        let urlFinal = null;
+
+        // 1. Prioridad A: Usar el patrón configurado en REDES_BALIZAS
+        if (typeof red.urlWeb === 'function') {
+            urlFinal = red.urlWeb(marker.stationId);
+        }
+        // 2. Prioridad B (Fallback): Por si el JSON de estaciones ya traía una URL específica
+        else if (estacionObj && estacionObj.url) {
+            urlFinal = estacionObj.url;
+        }
+
+        // Si hemos conseguido una URL válida, construimos el enlace HTML
+        if (urlFinal) {
+            webLink = `<a href="${urlFinal}" onclick="abrirLinkExterno(this.href); return false;" style="color: #5b9be4; text-decoration: underline; font-weight: bold;">${typeof t === 'function' ? t('mapa.enlaceOficial', { defaultValue: 'Web' }) : 'Web'}</a>`;
         }
 
         // 3. Construimos la estructura fija del Tooltip (Siempre se verá igual)
@@ -14375,7 +14449,9 @@ function inicializarMapaLeaflet() {
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.proveedor', { defaultValue: 'Proveedor' }) : 'Proveedor'}:</b> ${stProvider}<br>`;
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.coordenadas', { defaultValue: 'Coordenadas' }) : 'Coordenadas'}:</b> ${stLat}, ${stLon}<br>`;
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.altitud', { defaultValue: 'Altitud' }) : 'Altitud'}:</b> ${altitud}<br>`;
-        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.web', { defaultValue: 'Web' }) : 'Web'}:</b> ${webLink}`;
+        //tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.web', { defaultValue: 'Web' }) : 'Web'}:</b> ${webLink}`;
+        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' }) : 'Actualizada'}:</b> ${formatearFechaHoraBaliza(d.ts)}<br>`;
+        tooltipHTML += `${webLink}`;
         
         tooltipHTML += `</div>`;
 
@@ -14388,6 +14464,10 @@ function inicializarMapaLeaflet() {
             <svg viewBox="5 1 20 20" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7); transform-origin: center center; width: 28px; height: 28px; flex-shrink: 0;">
                 <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
             </svg>`;
+
+        // Sacamos solo la hora y los minutos directamente
+        const fechaBaliza = new Date(d.ts * 1000);
+        const horaStr = fechaBaliza.getHours() + ':' + String(fechaBaliza.getMinutes()).padStart(2, '0');
 
         // Inyectamos todo el HTML correcto
         containerDiv.innerHTML = `
@@ -14427,8 +14507,11 @@ function inicializarMapaLeaflet() {
             <!-- FOOTER -->
             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: auto; padding-top: 7px; padding-bottom: 7px;">
                 
-                <small style="color:#888; text-align: left;">
-                    ${estadoPopup.emoji} ${typeof t === 'function' ? t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' }) : 'Actualizada'}: ${formatearFechaHoraBaliza(d.ts)}
+                <small class="baliza-live-time" data-red="${red.id}" data-station="${marker.stationId}" style="color:#888; text-align: left;">
+                    ${estadoPopup.emoji} ${horaStr}
+                    <span style="margin-left: 2px;">
+                        (${typeof t === 'function' ? t('actualizacion.hace', { tiempo: formatTimeAgo(d.ts * 1000, Date.now()), defaultValue: 'hace ' + formatTimeAgo(d.ts * 1000, Date.now()) }) : 'hace ' + formatTimeAgo(d.ts * 1000, Date.now())})
+                    </span>
                 </small>
                 
                 <!-- Botón Info Dinámico con datos del array -->
@@ -14441,6 +14524,37 @@ function inicializarMapaLeaflet() {
 
         pintarGraficaBaliza(marker);
     }
+
+    // ----------------------------------------------------------------------------------
+    // ACTUALIZADOR SILENCIOSO: Mantiene vivo el tiempo ("hace X min") de los popups abiertos
+    // ----------------------------------------------------------------------------------
+    setInterval(() => {
+        // Busca si hay algún footer de baliza visible en la pantalla
+        document.querySelectorAll('.baliza-live-time').forEach(el => {
+            const redId = el.getAttribute('data-red');
+            const stationId = el.getAttribute('data-station');
+            const red = REDES_BALIZAS[redId];
+            
+            // Verificaciones de seguridad
+            if (!red || !red.datosCache) return;
+            const d = red.datosCache[stationId];
+            if (!d || !d.ts) return;
+
+            // Recalculamos el tiempo y el semáforo exactos en este segundo
+            const estadoPopup = calcularEstadoActualizacionBaliza(d, redId);
+            const fechaBaliza = new Date(d.ts * 1000);
+            const horaStr = fechaBaliza.getHours() + ':' + String(fechaBaliza.getMinutes()).padStart(2, '0');
+            const textoHace = typeof t === 'function' ? t('actualizacion.hace', { tiempo: formatTimeAgo(d.ts * 1000, Date.now()), defaultValue: 'hace ' + formatTimeAgo(d.ts * 1000, Date.now()) }) : 'hace ' + formatTimeAgo(d.ts * 1000, Date.now());
+
+            // Actualizamos SOLO esa línea de texto (sin tocar la gráfica ni producir parpadeos)
+            el.innerHTML = `
+                ${estadoPopup.emoji} ${horaStr}
+                <span style="margin-left: 2px;">
+                    (${textoHace})
+                </span>
+            `;
+        });
+    }, 20000); // Se ejecuta en la sombra cada 20 segundos
 
     // 🟡 7. PINTAR GRÁFICA DE 4H
     //___________________________________________________________________________________
