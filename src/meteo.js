@@ -13911,7 +13911,7 @@ function inicializarMapaLeaflet() {
         },
         'meteonavarra': {
             id: 'meteonavarra',
-            nombre: 'Meteonavarra',
+            nombre: 'MeteoNavarra',
             estaciones: [],
             urlCache: 'https://flydecision.com/balizas_meteonavarra_cache.json',
             url6h: 'https://flydecision.com/balizas_meteonavarra_6h.json',
@@ -13928,12 +13928,33 @@ function inicializarMapaLeaflet() {
             intervalo: null,
             umbralAmarilloMin: 90,
             umbralRojoMin: 120,
-            urlWeb: (id) => `https://meteo.navarra.es/estaciones/estacion_datos_m.cfm?idestacion=${id}`
-            // https://meteo.navarra.es/estaciones/estacion_datos_m.cfm?idestacion=23&fecha_desde=11/07/2026&fecha_hasta=12/07/2026&p_10=1&p_10=2&p_10=3&p_10=4&p_10=11&p_10=6&p_10=7
+            urlWeb: (id) => {
+                // 1. Limpiar el ID (quitamos todo lo que no sea un número, ej: "GN23" -> "23")
+                const idLimpio = id.replace(/\D/g, '');
+                
+                // 2. Calcular fecha de hoy y de mañana
+                const hoy = new Date();
+                const manana = new Date(hoy);
+                manana.setDate(manana.getDate() + 1); // Sumamos 1 día
+
+                // Función auxiliar para formatear a DD/MM/YYYY
+                const formateaFecha = (d) => {
+                    const dia = String(d.getDate()).padStart(2, '0');
+                    const mes = String(d.getMonth() + 1).padStart(2, '0');
+                    const anio = d.getFullYear();
+                    return `${dia}/${mes}/${anio}`;
+                };
+
+                const fechaDesde = formateaFecha(hoy);
+                const fechaHasta = formateaFecha(manana);
+
+                // 3. Montar y devolver la URL completa
+                return `https://meteo.navarra.es/estaciones/estacion_datos_m.cfm?idestacion=${idLimpio}&fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}&p_10=1&p_10=2&p_10=3&p_10=4&p_10=11&p_10=6&p_10=7`;
+            },
         },
         'meteocat': {
             id: 'meteocat',
-            nombre: 'Meteocat',
+            nombre: 'MeteoCat',
             estaciones: [],
             urlCache: 'https://flydecision.com/balizas_meteocat_cache.json',
             url6h: 'https://flydecision.com/balizas_meteocat_6h.json',
@@ -13954,7 +13975,7 @@ function inicializarMapaLeaflet() {
         },
         'meteogalicia': {
             id: 'meteogalicia',
-            nombre: 'Meteogalicia',
+            nombre: 'MeteoGalicia',
             estaciones: [],
             urlCache: 'https://flydecision.com/balizas_meteogalicia_cache.json',
             url6h: 'https://flydecision.com/balizas_meteogalicia_6h.json',
@@ -14040,7 +14061,7 @@ function inicializarMapaLeaflet() {
         },
         'pioupiou': {
             id: 'pioupiou',
-            nombre: 'OpenWind',
+            nombre: 'OpenWindMap',
             estaciones: [],
             urlCache: 'https://flydecision.com/balizas_pioupiou_cache.json',
             url6h:    'https://flydecision.com/balizas_pioupiou_6h.json',
