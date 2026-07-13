@@ -10343,6 +10343,14 @@ window.cambiarVista = function(vista) {
                         if (layer._source) {
                             layer._source.fire('popupopen', { popup: layer });
                         }
+
+                        // IMPORTANTE: el refresco de popups de BALIZA está enganchado a
+                        // map.on('popupopen', ...), no a marker.on('popupopen', ...).
+                        // Un evento disparado sobre el marcador no burbujea hasta el mapa,
+                        // así que ese listener nunca se ejecutaba al volver del mapa y el
+                        // popup se quedaba congelado con el placeholder "⏳..." inicial.
+                        // Lo disparamos también sobre el mapa para que sí se re-ejecute.
+                        map.fire('popupopen', { popup: layer });
                     }
                 });
             }
@@ -14152,7 +14160,7 @@ function inicializarMapaLeaflet() {
                 className: 'popup-despegueindividual popup-baliza',
                 maxWidth: 300,
                 maxHeight: 450,
-                autoPanPaddingTopLeft: L.point(50, 450), // el primer valor () es el margen a reservar por la izquierda, el segundo () por arriba.
+                autoPanPaddingTopLeft: L.point(80, 390), // el primer valor () es el margen a reservar por la izquierda, el segundo () por arriba.
                 autoPanPaddingBottomRight: L.point(55, 150)  // el primer valor () es el margen a reservar por la derecha, el segundo () por abajo.
             });
 
