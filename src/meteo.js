@@ -14185,7 +14185,7 @@ function inicializarMapaLeaflet() {
                 maxWidth: 300,
                 maxHeight: 450,
                 autoPanPaddingTopLeft: L.point(75, 270), // valor de respaldo; se recalcula en cada apertura, ver map.on('popupopen', ...)
-                autoPanPaddingBottomRight: L.point(55, 70)
+                autoPanPaddingBottomRight: L.point(55, 110)
             });
 
             red.marcadores[estacion.id] = marker;
