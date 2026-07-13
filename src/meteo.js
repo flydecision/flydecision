@@ -9523,10 +9523,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
             const UMBRAL_RECARGA = 7200000; 
 
             if (antiguedad > UMBRAL_RECARGA) { 
-                //console.log("⏳ Datos locales antiguos (>2h). Comprobando servidor...");
                 
                 statusActualizaciónEnCurso = false; 
-                mostrarLoading(); // Mostramos spinner por si acaso
+
+                // Comprobación puramente asíncrona contra el servidor: no hay ningún
+                // cálculo pesado que proteger, así que dejamos pasar los toques
+                // (mover el mapa, tocar la tabla...) mientras se resuelve en segundo plano.
+                const overlayResume = document.getElementById('msgActualizando...');
+                if (overlayResume) overlayResume.classList.add('spinner-transparente');
+                mostrarLoading(); // Mostramos spinner por si acaso, sin bloquear
                 
                 try {
                     // 1. PASO CLAVE: Consultamos SOLO el archivo ligero de texto (bytes)
@@ -10343,6 +10348,14 @@ window.cambiarVista = function(vista) {
                         if (layer._source) {
                             layer._source.fire('popupopen', { popup: layer });
                         }
+
+                        // IMPORTANTE: el refresco de popups de BALIZA está enganchado a
+                        // map.on('popupopen', ...), no a marker.on('popupopen', ...).
+                        // Un evento disparado sobre el marcador no burbujea hasta el mapa,
+                        // así que ese listener nunca se ejecutaba al volver del mapa y el
+                        // popup se quedaba congelado con el placeholder "⏳..." inicial.
+                        // Lo disparamos también sobre el mapa para que sí se re-ejecute.
+                        map.fire('popupopen', { popup: layer });
                     }
                 });
             }
@@ -12111,6 +12124,7 @@ function inicializarMapaLeaflet() {
     }
 
     window.marcadoresCSVCargados = false;
+    window._reintentosCargaDespeguesCSV = 0; // Cuántas veces hemos reintentado tras un fallo de red
 
     window.cargarMarcadoresCSV = function() {
         // Si ya los hemos cargado, o si el JSON de la meteo aún no está listo, no hacemos nada
@@ -12420,8 +12434,23 @@ function inicializarMapaLeaflet() {
             },
             error: function(error) {
                 console.error('Error cargando CSV:', error.message || error);
-                alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
-                // 🚀 NUEVO: Si la red falla y no carga el CSV, también apagamos el spinner
+
+                // Antes de rendirnos, reintentamos un par de veces: la mayoría de estos
+                // fallos son parpadeos de red momentáneos (móvil, wifi->datos, resume...),
+                // no un problema real del archivo.
+                const MAX_REINTENTOS = 2;
+                if (window._reintentosCargaDespeguesCSV < MAX_REINTENTOS) {
+                    window._reintentosCargaDespeguesCSV++;
+                    const espera = 1500 * window._reintentosCargaDespeguesCSV; // backoff simple: 1.5s, 3s
+                    console.warn(`Reintentando carga de despegues.csv (intento ${window._reintentosCargaDespeguesCSV}/${MAX_REINTENTOS}) en ${espera}ms...`);
+
+                    window.marcadoresCSVCargados = false; // Permitimos que se vuelva a intentar
+                    setTimeout(() => window.cargarMarcadoresCSV(), espera);
+                    return; // No apagamos el spinner ni mostramos alert todavía
+                }
+
+                // Se agotaron los reintentos: registramos el fallo real, sin alert() bloqueante.
+                console.error('No se pudo cargar despegues.csv tras varios reintentos.');
                 if (typeof ocultarLoading === 'function') ocultarLoading();
             }
         });
@@ -13155,7 +13184,7 @@ function inicializarMapaLeaflet() {
 
     error: function(error) {
     console.error('Error cargando CSV:', error.message || error);
-    alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
+    alert('Error al cargar el archivo CSV Notas personales. Consulta la consola para más información.');
     }
 
     });
@@ -13337,7 +13366,7 @@ function inicializarMapaLeaflet() {
 
         error: function(error) {
         console.error('Error cargando CSV:', error.message || error);
-        alert('Error al cargar el archivo CSV. Consulta la consola para más información.');
+        alert('Error al cargar el archivo CSV de Despegues Mundo. Consulta la consola para más información.');
         }
 
         });
@@ -14143,6 +14172,9 @@ function inicializarMapaLeaflet() {
             marker.stationName = estacion.name;
 
             // Añadimos red.id al ID del div del popup para evitar choques si 2 redes usan el mismo ID de estación
+            const panelFiltro = document.getElementById('div-filtro-horario');
+            const filtroFlotando = !!(panelFiltro && panelFiltro.classList.contains('flotando-en-mapa'));
+
             marker.bindPopup(`
                 <div id="pop-${red.id}-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
                     <h4 style="margin: 0 0 5px 0; color: #0078d4;">🚩 ${estacion.name} (${red.nombre})</h4>
@@ -14152,8 +14184,8 @@ function inicializarMapaLeaflet() {
                 className: 'popup-despegueindividual popup-baliza',
                 maxWidth: 300,
                 maxHeight: 450,
-                autoPanPaddingTopLeft: L.point(50, 450), // el primer valor () es el margen a reservar por la izquierda, el segundo () por arriba.
-                autoPanPaddingBottomRight: L.point(55, 150)  // el primer valor () es el margen a reservar por la derecha, el segundo () por abajo.
+                autoPanPaddingTopLeft: L.point(75, 270), // valor de respaldo; se recalcula en cada apertura, ver map.on('popupopen', ...)
+                autoPanPaddingBottomRight: L.point(55, 110)
             });
 
             red.marcadores[estacion.id] = marker;
@@ -14597,14 +14629,26 @@ function inicializarMapaLeaflet() {
     // 🟡 8. EVENTO AL ABRIR UN POPUP EN EL MAPA
     //___________________________________________________________________________________
 
-    map.on('popupopen', async function (e) { // <-- Añadido "async" aquí
+    map.on('popupopen', async function (e) {
         const marker = e.popup._source;
-        if (!marker || !marker.redId || !marker.stationId) return; // Filtrar si no es un marcador de baliza
-        
+        if (!marker || !marker.redId || !marker.stationId) return;
+
         // Forzamos la descarga del historial de 6h para que el gráfico esté al segundo
         await cargarDatos6hBalizasSiNecesario(marker.redId, true);
-        
+
         pintarPopupBaliza(marker);
+
+        // Recalculamos el padding SEGÚN EL ESTADO ACTUAL del panel de filtros
+        // (no el que había cuando se creó el marcador) y reajustamos el mapa.
+        // OJO: no llamar a e.popup.update() aquí, regenera el contenido desde
+        // el HTML original de bindPopup y pisaría lo que acaba de pintar pintarPopupBaliza().
+        const panelFiltro = document.getElementById('div-filtro-horario');
+        const filtroFlotando = !!(panelFiltro && panelFiltro.classList.contains('flotando-en-mapa'));
+        e.popup.options.autoPanPaddingTopLeft = filtroFlotando ? L.point(75, 260) : L.point(75, 170);
+
+        if (e.popup._map) {
+            e.popup._adjustPan();
+        }
     });
 
     // 🟡 9. LÓGICA DE ACTIVACIÓN/DESACTIVACIÓN GENÉRICA POR CHECKBOXES
