@@ -14065,6 +14065,26 @@ function inicializarMapaLeaflet() {
             umbralAmarilloMin: 30,
             umbralRojoMin: 45,
             urlWeb: (id) => `https://www.balisemeteo.com/balise.php?idBalise=${id}`
+        },
+        'metar': {
+            id: 'metar',
+            nombre: 'Metar',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_metar_cache.json',
+            url6h:    'https://flydecision.com/balizas_metar_6h.json',
+            checkboxId: 'checkboxBalizasMetar',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_METAR_VISIBLE',
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 90,
+            umbralRojoMin: 120,
+            urlWeb: (id) => `https://metar-taf.com/?c=439933.86792.5&hl=${id}`
         }
     };    
     
