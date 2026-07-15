@@ -12654,7 +12654,7 @@ function inicializarMapaLeaflet() {
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
                         <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue>${t('mapa.grupoXContest', { count: count })}</div>
-                        <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
+                        <div style="margin-bottom: 5px;">${t('mapa.coordenadasMedias')}<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
@@ -12855,7 +12855,7 @@ function inicializarMapaLeaflet() {
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
                         <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue>${t('mapa.grupoXContest', { count: count })}</div>
-                        <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
+                        <div style="margin-bottom: 5px;">${t('mapa.coordenadasMedias')}<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
@@ -13064,7 +13064,7 @@ function inicializarMapaLeaflet() {
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
                         <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue>${t('mapa.grupoXContest', { count: count })}</div>
-                        <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
+                        <div style="margin-bottom: 5px;">${t('mapa.coordenadasMedias')}<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
