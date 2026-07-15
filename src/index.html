@@ -691,7 +691,7 @@
 	<!-- 🟦 Control Despegues -->
     <div id="infoPanel" class="info-panel">
 		<!-- Cabecera retraída del Panel 1 (Capas) -->
-		 <span id="labelMostrarOpciones" class="labelMostrarOpciones" style="display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; color: #555; cursor: pointer; user-select: none;" data-i18n="[title]mapa.titleDespeguesDeParapente" title="Despegues de parapente">
+		 <span id="labelMostrarOpciones" class="labelMostrarOpciones" style="display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; color: #555; cursor: pointer; user-select: none; padding-bottom: 5px;" data-i18n="[title]mapa.titleDespeguesDeParapente" title="Despegues de parapente">
 			<icon-despegue></icon-despegue>
 			<span class="texto-menu-capa" data-i18n="mapa.titulo_infopanel" style="font-weight: bold; margin-left: 2px;">Despegues</span>
 		</span>
@@ -759,6 +759,12 @@
 			<button id="buttonCerrar3" data-i18n="[title]mapa.cerrarPanel"><span>❌</span></button>			 
 			<button id="buttonFijar3" data-i18n="[title]mapa.fijarPanel"><span id="iconoFijar3">📌</span></button>			 
 				
+			<!-- Checkbox Maestro (Marcar/Desmarcar todas de golpe) -->
+			<label class="custom-checkbox" style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; width: 100%; border-bottom: 2px solid #ddd; padding-bottom: 8px; font-weight: bold; color: #333; margin-top: 15px;">
+				<input type="checkbox" id="checkboxMasterBalizas" style="margin: 0; cursor: pointer;">
+				<span data-i18n="mapa.balizas.marcar_todas" style="margin-left: 2px;">Marcar todas</span>
+			</label>
+			
 			<!-- 🚩 Balizas -->
 			<div class="linea-con-bt-info" style="margin-top: 12px;" title="Estaciones meteorológicas de viento">
 				<label for="checkboxBalizasEuskalmet" class="custom-checkbox">
@@ -850,15 +856,15 @@
 					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+			<!-- <div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
 				<label for="checkboxBalizasFFVL" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasFFVL" class="custom-checkbox" disabled>
-					<span style="color:#6a6a6a98;">&nbsp;FFVL</span>
+					<input type="checkbox" id="checkboxBalizasFFVL" class="custom-checkbox">
+					<span>&nbsp;FFVL</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasFFVL">
 					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
-			</div>
+			</div> -->
 			<!-- 🚩 Fin Balizas -->
 		</div>
 	</div>

@@ -8971,7 +8971,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
     if (typeof iniciarMonitorRedNativo === 'function') {
         iniciarMonitorRedNativo();
     }
-    
+
     // Le damos 1 segundo de respiro para que la tabla se dibuje primero, y luego lanzamos el fetch de los txt
     setTimeout(() => {
         if (typeof cicloActualizacion === 'function') {
@@ -11313,6 +11313,21 @@ function inicializarMapaLeaflet() {
         layers: [capaInicial] 
     });
 
+    // Evita el bug del navegador que recuerda el "tick" del checkbox pero no carga los datos (CSV)
+    const capasPesadasAForzarApagado = [
+        'checkboxNotasPersonales',
+        'checkboxMapaDeCalorPeninsulaIberica',
+        'checkboxMapaDeCalorAlpes',
+        'checkboxMapaDeCalorMarruecos',
+        'checkboxDespeguesMundo'
+    ];
+    capasPesadasAForzarApagado.forEach(id => {
+        const chk = document.getElementById(id);
+        if (chk) {
+            chk.checked = false; // Desactivamos el checkbox visualmente
+        }
+    });
+
     // 🌍 ENCUADRE DINÁMICO PREDETERMINADO (Forzado por anchura con ajuste manual)
     if (esVistaPredeterminada) {
         
@@ -11765,17 +11780,7 @@ function inicializarMapaLeaflet() {
 
             searchIconWrapper.innerHTML = `
                 <span style="line-height: 1; user-select: none;">🔍</span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
-                    <!-- Pendiente de la montaña (Plana al principio y cae agresivamente hacia la derecha) -->
-                    <path d="M 0 16.5 Q 12 16.5 20 24" stroke-width="2" />
-                    <!-- Cordinos (5 líneas centradas en la nueva posición del piloto) -->
-                    <path d="M 5 5 L 12 13 L 9 3.5 M 13 3 L 12 13 L 17 3.5 M 21 5 L 12 13" stroke-width="0.8" />
-                    <!-- Vela del parapente (100% horizontal, desplazada arriba y a la derecha) -->
-                    <path d="M 5 5 Q 13 -1 21 5 Q 13 3 5 5 Z" stroke-width="2" />
-                    <!-- Piloto (Cabeza y cuerpo engrosados, desplazado arriba y a la derecha) -->
-                    <circle cx="12" cy="11.5" r="1.6" fill="currentColor" stroke="none" />
-                    <path d="M 12 13 L 13 15.5 L 15.5 15 M 13 15.5 L 11.5 18.5" stroke-width="2" />
-                </svg>
+                <icon-despegue></icon-despegue>
             `;
 
             // --- Lista de Autocompletado ---
@@ -15368,6 +15373,10 @@ function inicializarMapaLeaflet() {
 
         }, { capture: true, passive: true }); // "capture" asegura que lo detectamos antes de que otros scripts frenen el evento
     });
+
+    if (typeof inicializarMasterCheckboxBalizas === 'function') {
+        inicializarMasterCheckboxBalizas();
+    }
     
 } // Fin inicializarMapaLeaflet()
 
@@ -15392,3 +15401,51 @@ document.addEventListener('click', function(e) {
         }
     }
 });
+
+// ==========================================================================
+// 🎛️ CONTROLADOR MAESTRO DE CHECKBOXES (BALIZAS) — VERSIÓN DINÁMICA
+// ==========================================================================
+function inicializarMasterCheckboxBalizas() {
+    const masterChk = document.getElementById('checkboxMasterBalizas');
+    if (!masterChk) return;
+
+    // Buscamos dinámicamente todos los checkboxes dentro del panel 3 de balizas,
+    // exceptuando el propio botón maestro. ¡Inmune a fallos de IDs y mayúsculas!
+    const checkboxesHijos = document.querySelectorAll('#infoPanel3 input[type="checkbox"]:not(#checkboxMasterBalizas)');
+
+    if (checkboxesHijos.length === 0) return;
+
+    // 1. Sincronizar de MAESTRO a HIJOS (Al marcar/desmarcar el principal)
+    masterChk.addEventListener('change', function() {
+        const nuevoEstado = this.checked;
+        
+        checkboxesHijos.forEach(chk => {
+            if (chk.checked !== nuevoEstado) {
+                chk.checked = nuevoEstado;
+                // Forzamos el evento 'change' para que Leaflet cargue/borre la baliza en el mapa
+                chk.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+
+    // 2. Sincronizar de HIJOS a MAESTRO (Al tocar un checkbox individual, recalcula el estado del principal)
+    checkboxesHijos.forEach(chk => {
+        chk.addEventListener('change', () => {
+            const totalMarcados = Array.from(checkboxesHijos).filter(c => c.checked).length;
+
+            if (totalMarcados === 0) {
+                // Ninguno marcado -> Desmarcado
+                masterChk.checked = false;
+                masterChk.indeterminate = false;
+            } else if (totalMarcados === checkboxesHijos.length) {
+                // Todos marcados -> Marcado completo
+                masterChk.checked = true;
+                masterChk.indeterminate = false;
+            } else {
+                // Algunos marcados -> Estado indeterminado [-]
+                masterChk.checked = false;
+                masterChk.indeterminate = true;
+            }
+        });
+    });
+}

@@ -628,7 +628,8 @@
       "proveedor": "Hornitzailea",
       "coordenadas": "Koordenatuak",
       "altitud": "Altitudea",
-      "titleBalizas": "Haize-balizak"
+      "titleBalizas": "Haize-balizak",
+      "marcar_todas": "Guztiak markatu"
     }
   },
 

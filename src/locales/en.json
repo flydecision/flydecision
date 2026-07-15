@@ -628,7 +628,8 @@
       "proveedor": "Provider",
       "coordenadas": "Coordinates",
       "altitud": "Altitude",
-      "titleBalizas": "Wind beacons"
+      "titleBalizas": "Wind beacons",
+      "marcar_todas": "Select all"
     }
   },
 

@@ -627,7 +627,8 @@
       "proveedor": "Fornecedor",
       "coordenadas": "Coordenadas",
       "altitud": "Altitude",
-      "titleBalizas": "Balizas de vento"
+      "titleBalizas": "Balizas de vento",
+      "marcar_todas": "Marcar todas"
     }
   },
 

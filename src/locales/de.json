@@ -628,7 +628,8 @@
       "proveedor": "Anbieter",
       "coordenadas": "Koordinaten",
       "altitud": "Höhe",
-      "titleBalizas": "Windstationen"
+      "titleBalizas": "Windstationen",
+      "marcar_todas": "Alle markieren"
     }
   },
 
