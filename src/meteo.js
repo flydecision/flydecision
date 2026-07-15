@@ -14433,25 +14433,9 @@ function inicializarMapaLeaflet() {
             }
         }
 
-        // 1. Datos numéricos o Aviso de error (Si falla o está congelada, pintamos error y SALIMOS)
-        if (!d || d.windSpeed === null || d.windSpeed === undefined || balizaCongelada) {
-            containerDiv.innerHTML = `
-                <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
-                🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
-                </p>
-                <p style="line-height: 1.5; font-weight: bold; color: #c0392b; margin-bottom: 40px; margin-top: 20px; text-align: center;">❌📡 ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}</p>
-            `;
-            return; // Retorno temprano. El código se detiene aquí.
-        } 
-
-        // 2. Si todo está bien, calculamos variables
-        
-        const codigoOrientacion = obtenerTextoOrientacion(d.windDirection); // Obtenemos el código base de la orientación (ej: "SO", "O", "NNE")
-        const orientacionTexto = traducirCadenaOrientacion(codigoOrientacion); 
-
-        const estadoPopup = calcularEstadoActualizacionBaliza(d, marker.redId);
-
-        // CONSTRUCCIÓN DEL TOOLTIP DE INFORMACIÓN DINÁMICO
+        // =========================================================================
+        // CONSTRUCCIÓN DEL TOOLTIP DE INFORMACIÓN DINÁMICO (Movido aquí arriba)
+        // =========================================================================
         // 1. Buscamos la estación exacta en el array para leer sus nuevos campos
         const estacionObj = red.estaciones.find(e => e.id === marker.stationId);
         
@@ -14489,15 +14473,55 @@ function inicializarMapaLeaflet() {
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.proveedor', { defaultValue: 'Proveedor' }) : 'Proveedor'}:</b> ${stProvider}<br>`;
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.coordenadas', { defaultValue: 'Coordenadas' }) : 'Coordenadas'}:</b> ${stLat}, ${stLon}<br>`;
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.altitud', { defaultValue: 'Altitud' }) : 'Altitud'}:</b> ${altitud}<br>`;
-        //tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.web', { defaultValue: 'Web' }) : 'Web'}:</b> ${webLink}`;
-        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' }) : 'Actualizada'}:</b> ${formatearFechaHoraBaliza(d.ts)}<br>`;
-        tooltipHTML += `${webLink}`;
         
+        // Solo mostramos la hora de actualización si hay datos válidos (d.ts)
+        if (d && typeof d.ts === 'number') {
+            tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' }) : 'Actualizada'}:</b> ${formatearFechaHoraBaliza(d.ts)}<br>`;
+        }
+        
+        tooltipHTML += `${webLink}`;
         tooltipHTML += `</div>`;
 
         // 4. Escapamos las comillas para no romper el atributo HTML del botón
         const tooltipSeguro = tooltipHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-        // FIN. CONSTRUCCIÓN DEL TOOLTIP DE INFORMACIÓN DINÁMICO
+        // =========================================================================
+
+
+        // 1. Datos numéricos o Aviso de error (Si falla o está congelada, pintamos error y SALIMOS)
+        if (!d || d.windSpeed === null || d.windSpeed === undefined || balizaCongelada) {
+            // NUEVO HTML DE ERROR: Mantiene los 347px e incluye el botón Info abajo a la derecha
+            containerDiv.innerHTML = `
+                <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%;">
+                    <div>
+                        <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
+                            🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
+                        </p>
+                        <p style="line-height: 1.5; font-weight: bold; color: #c0392b; margin-bottom: 40px; margin-top: 50px; text-align: center;">
+                            ❌📡 ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}
+                        </p>
+                    </div>
+
+                    <!-- FOOTER DE ERROR -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: auto; padding-top: 7px; padding-bottom: 7px;">
+                        <small style="color:#888; text-align: left;">
+                            ⚪ ${t('mapa.balizas.sin_datos_recientes', { defaultValue: 'Sin datos recientes' })}
+                        </small>
+                        
+                        <button class="btn-info btn-inline" data-tippy-content="${tooltipSeguro}" style="background: transparent; border: none; padding: 0; margin-left: 10px; cursor: pointer; display: flex; flex-shrink: 0; outline: none;">
+                            <img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+                        </button>
+                    </div>
+                </div>
+            `;
+            return; // Retorno temprano. El código se detiene aquí.
+        } 
+
+        // 2. Si todo está bien, calculamos variables
+        
+        const codigoOrientacion = obtenerTextoOrientacion(d.windDirection); // Obtenemos el código base de la orientación (ej: "SO", "O", "NNE")
+        const orientacionTexto = traducirCadenaOrientacion(codigoOrientacion); 
+
+        const estadoPopup = calcularEstadoActualizacionBaliza(d, marker.redId);
 
         // viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
         const svgFlecha = `
