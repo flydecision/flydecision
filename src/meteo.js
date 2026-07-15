@@ -11661,6 +11661,40 @@ function inicializarMapaLeaflet() {
             container.style.zIndex = '1000'; 
             container.style.height = '30px';
 
+            // --- INYECCIÓN CSS REACTIVA (Para ocultar iconos y placeholder nativo al hacer CLIC o ESCRIBIR) ---
+            if (!document.getElementById('style-buscador-mapa')) {
+                const style = document.createElement('style');
+                style.id = 'style-buscador-mapa';
+                style.innerHTML = `
+                    /* Transiciones suaves */
+                    .leaflet-text-search-input {
+                        transition: padding-left 0.15s ease-in-out !important;
+                    }
+                    .leaflet-text-search-icons-wrapper {
+                        transition: opacity 0.15s ease-in-out !important;
+                    }
+                    
+                    /* 1. OCULTAR ICONOS al hacer CLIC (focus) o al ESCRIBIR (not empty) */
+                    .leaflet-text-search-input:focus ~ .leaflet-text-search-icons-wrapper,
+                    .leaflet-text-search-input:not(:placeholder-shown) ~ .leaflet-text-search-icons-wrapper {
+                        opacity: 0 !important;
+                        pointer-events: none !important;
+                    }
+                    
+                    /* 2. MOVER CURSOR A LA IZQUIERDA al hacer CLIC (focus) o al ESCRIBIR (not empty) */
+                    .leaflet-text-search-input:focus,
+                    .leaflet-text-search-input:not(:placeholder-shown) {
+                        padding-left: 10px !important;
+                    }
+                    
+                    /* 3. HACER INVISIBLE EL TEXTO DEL PLACEHOLDER al hacer CLIC (focus) */
+                    .leaflet-text-search-input:focus::placeholder {
+                        color: transparent !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
             // --- Campo de Búsqueda (Input) ---
             const input = L.DomUtil.create('input', 'leaflet-text-search-input', container);
             input.type = 'search';
@@ -11683,11 +11717,12 @@ function inicializarMapaLeaflet() {
                 align-items: center;
                 gap: 6px;
                 color: #555; /* Color del trazo del parapente */
+                opacity: 1;
             `;
 
             searchIconWrapper.innerHTML = `
                 <span style="line-height: 1; user-select: none;">🔍</span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
                     <!-- Pendiente de la montaña (Plana al principio y cae agresivamente hacia la derecha) -->
                     <path d="M 0 16.5 Q 12 16.5 20 24" stroke-width="2" />
                     <!-- Cordinos (5 líneas centradas en la nueva posición del piloto) -->
