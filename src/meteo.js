@@ -11717,14 +11717,16 @@ function inicializarMapaLeaflet() {
             }
 
             // --- Campo de Búsqueda (Input) ---
-            const input = L.DomUtil.create('input', 'leaflet-text-search-input', container);
+            const input = L.DomUtil.create('input', 'leaflet-text-search-input');
             input.type = 'search';
             
-            // Ponemos un placeholder de texto limpio (ya no hacen falta los emojis aquí)
+            input.placeholder = '';
             input.title = t('mapa.titleBuscadorDespegue');
 
             // Dejamos un margen de 50px a la izquierda del texto para no tapar los iconos flotantes
             input.style.paddingLeft = '5px';
+
+            container.appendChild(input);
 
             // --- NUEVO: Contenedor flotante para los iconos (Lupa + Parapente SVG) ---
             const searchIconWrapper = L.DomUtil.create('div', 'leaflet-text-search-icons-wrapper', container);
