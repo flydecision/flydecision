@@ -14011,6 +14011,27 @@ function inicializarMapaLeaflet() {
             umbralRojoMin: 120,
             urlWeb: (id) => `https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=arn&l=${id}&w=0&datos=img&x=h24&f=vel_viento`
         },
+        'meteoclimatic': {
+            id: 'meteoclimatic',
+            nombre: 'Meteoclimatic',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_meteoclimatic_cache.json',
+            url6h: 'https://flydecision.com/balizas_meteoclimatic_6h.json',
+            checkboxId: 'checkboxBalizasMeteoclimatic',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_METEOCLIMATIC_VISIBLE',
+            // --- Variables de estado de esta red ---
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 30,
+            umbralRojoMin: 45,
+            urlWeb: (id) => `https://www.meteoclimatic.net/perfil/${id}`
+        },
         'holfuy': {
             id: 'holfuy',
             nombre: 'Holfuy',
