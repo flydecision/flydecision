@@ -276,6 +276,47 @@ function actualizarVistaOjo(btn, esActivo) {
     btn.innerHTML = svgOjoBoton(esActivo);
 }
 
+// Registramos componente nativos <icon-****> en el navegador para reusarlos en cualquier HTML
+class IconBaliza extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+            <span style="display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; color: #555; width: 22px; height: 22px; margin-right: 3px; user-select: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="22" x2="12" y2="4" />
+                    <line x1="6" y1="8" x2="18" y2="8" />
+                    <circle cx="6" cy="8" r="2" />
+                    <circle cx="18" cy="8" r="2" />
+                    <circle cx="12" cy="4" r="2" />
+                    <line x1="4.5" y1="16" x2="19.5" y2="16"></line>
+                    <polyline points="16.5 13 19.5 16 16.5 19"></polyline>
+                </svg>
+            </span>
+        `;
+    }
+}
+customElements.define('icon-baliza', IconBaliza);
+
+class IconDespegue extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+            <span style="display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; color: #555; width: 22px; height: 22px; margin-right: 3px; user-select: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Pendiente de la montaña (Plana al principio y cae agresivamente hacia la derecha) -->
+                    <path d="M 0 16.5 Q 12 16.5 20 24" stroke-width="2" />
+                    <!-- Cordinos (5 líneas centradas en la nueva posición del piloto) -->
+                    <path d="M 5 5 L 12 13 L 9 3.5 M 13 3 L 12 13 L 17 3.5 M 21 5 L 12 13" stroke-width="0.8" />
+                    <!-- Vela del parapente (100% horizontal, desplazada arriba y a la derecha) -->
+                    <path d="M 5 5 Q 13 -1 21 5 Q 13 3 5 5 Z" stroke-width="2" />
+                    <!-- Piloto (Cabeza y cuerpo engrosados, desplazado arriba y a la derecha) -->
+                    <circle cx="12" cy="11.5" r="1.6" fill="currentColor" stroke="none" />
+                    <path d="M 12 13 L 13 15.5 L 15.5 15 M 13 15.5 L 11.5 18.5" stroke-width="2" />
+                </svg>
+            </span>
+        `;
+    }
+}
+customElements.define('icon-despegue', IconDespegue);
+
 // ---------------------------------------------------------------
 // 🔴 MINUTELY_15 (AROME HD) — Detalle de viento cada 15 min
 // ---------------------------------------------------------------
@@ -514,7 +555,7 @@ window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
         GestorMensajes.mostrar({
             tipo: 'modal',
             htmlContenido: `
-                <p style="font-size: 1.2em; font-weight: bold; text-align:center; margin-bottom: 10px;">🪂 ${nombreDespegue}</p>
+                <p style="font-size: 1.2em; font-weight: bold; text-align:center; margin-bottom: 10px;"><icon-despegue></icon-despegue>${nombreDespegue}</p>
                 ${htmlTabla}
             `,
             botones: [botonAceptarMin15]
@@ -4219,7 +4260,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 ">
                     <!-- Cabecera -->
                     <div style="text-align:center; margin-bottom: 1.75rem;">
-                        <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🪂</div>
+                        <div style="font-size: 2.2rem; margin-bottom: 0.5rem;"><icon-despegue></icon-despegue></div>
                         <div style="font-size: 35px; font-weight: 500; color: var(--color-text-primary, #111); margin-bottom: 8px;">Fly Decision</div>
                         <div style="font-size: 20px; color: var(--color-text-secondary, #666); line-height: 1.45;">${t('asistente.paso1.subtitulo')}</div><br><br>
                         <div style="font-size: 20px; color: var(--color-text-secondary, #666); line-height: 1.45;">${t('asistente.paso1.subtitulo2')}</div>
@@ -5479,7 +5520,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
                 <div style="line-height: 1.4; max-width: 232px;">
-                    <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'>🪂 ${d.Despegue}</b></span><br><br>   
+                    <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${d.Despegue}</b></span><br><br>   
                     
                     ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
 
@@ -8930,7 +8971,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
     if (typeof iniciarMonitorRedNativo === 'function') {
         iniciarMonitorRedNativo();
     }
-    
+
     // Le damos 1 segundo de respiro para que la tabla se dibuje primero, y luego lanzamos el fetch de los txt
     setTimeout(() => {
         if (typeof cicloActualizacion === 'function') {
@@ -9327,13 +9368,20 @@ function comprobarAvisoCambiosPuntuacionXC() {
             const vistaMapa = document.getElementById('vista-mapa');
             if (vistaMapa && vistaMapa.style.display === 'flex') {
 
-                // infoPanel (Capas) 
+                // infoPanel (Despegues) 
                 const infoPanelCerrar = document.getElementById('infoPanel');
                 if (infoPanelCerrar && !infoPanelCerrar.classList.contains('retraido')) {
                     document.getElementById('buttonCerrar')?.click();
                     return;
                 }
                 
+                // infoPanel3 (Balizas)
+                const infoPanel3Cerrar = document.getElementById('infoPanel3');
+                if (infoPanel3Cerrar && !infoPanel3Cerrar.classList.contains('retraido')) {
+                    document.getElementById('buttonCerrar3')?.click();
+                    return;
+                }
+
                 // infoPanel2 (Filtros)
                 const infoPanel2Cerrar = document.getElementById('infoPanel2');
                 if (infoPanel2Cerrar && !infoPanel2Cerrar.classList.contains('retraido')) {
@@ -11265,6 +11313,21 @@ function inicializarMapaLeaflet() {
         layers: [capaInicial] 
     });
 
+    // Evita el bug del navegador que recuerda el "tick" del checkbox pero no carga los datos (CSV)
+    const capasPesadasAForzarApagado = [
+        'checkboxNotasPersonales',
+        'checkboxMapaDeCalorPeninsulaIberica',
+        'checkboxMapaDeCalorAlpes',
+        'checkboxMapaDeCalorMarruecos',
+        'checkboxDespeguesMundo'
+    ];
+    capasPesadasAForzarApagado.forEach(id => {
+        const chk = document.getElementById(id);
+        if (chk) {
+            chk.checked = false; // Desactivamos el checkbox visualmente
+        }
+    });
+
     // 🌍 ENCUADRE DINÁMICO PREDETERMINADO (Forzado por anchura con ajuste manual)
     if (esVistaPredeterminada) {
         
@@ -11651,21 +11714,74 @@ function inicializarMapaLeaflet() {
                     
             // --- Contenedor Principal (para la búsqueda y la lista) ---
             const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-text-search-container');
-    /*         container.style.background = 'white';
-            container.style.padding = '0px';
-            container.style.minWidth = '107px';
-            container.style.position = 'relative'; // Necesario para posicionar la lista
-            height: '30px';
-    */
-            container.style.zIndex = '1000'; // Asegura que la lista esté por encima del mapa
+            container.style.zIndex = '1000'; 
             container.style.height = '30px';
 
+            // --- INYECCIÓN CSS REACTIVA (Para ocultar iconos y placeholder nativo al hacer CLIC o ESCRIBIR) ---
+            if (!document.getElementById('style-buscador-mapa')) {
+                const style = document.createElement('style');
+                style.id = 'style-buscador-mapa';
+                style.innerHTML = `
+                    /* Transiciones suaves */
+                    .leaflet-text-search-input {
+                        transition: padding-left 0.15s ease-in-out !important;
+                    }
+                    .leaflet-text-search-icons-wrapper {
+                        transition: opacity 0.15s ease-in-out !important;
+                    }
+                    
+                    /* 1. OCULTAR ICONOS al hacer CLIC (focus) o al ESCRIBIR (not empty) */
+                    .leaflet-text-search-input:focus ~ .leaflet-text-search-icons-wrapper,
+                    .leaflet-text-search-input:not(:placeholder-shown) ~ .leaflet-text-search-icons-wrapper {
+                        opacity: 0 !important;
+                        pointer-events: none !important;
+                    }
+                    
+                    /* 2. MOVER CURSOR A LA IZQUIERDA al hacer CLIC (focus) o al ESCRIBIR (not empty) */
+                    .leaflet-text-search-input:focus,
+                    .leaflet-text-search-input:not(:placeholder-shown) {
+                        padding-left: 10px !important;
+                    }
+                    
+                    /* 3. HACER INVISIBLE EL TEXTO DEL PLACEHOLDER al hacer CLIC (focus) */
+                    .leaflet-text-search-input:focus::placeholder {
+                        color: transparent !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
             // --- Campo de Búsqueda (Input) ---
-            const input = L.DomUtil.create('input', 'leaflet-text-search-input', container);
-            const originalPlaceholder = t('mapa.buscadorDespegue');
+            const input = L.DomUtil.create('input', 'leaflet-text-search-input');
             input.type = 'search';
-            input.placeholder = t('mapa.buscadorDespegue');
+            
+            input.placeholder = '';
             input.title = t('mapa.titleBuscadorDespegue');
+
+            // Dejamos un margen de 50px a la izquierda del texto para no tapar los iconos flotantes
+            input.style.paddingLeft = '5px';
+
+            container.appendChild(input);
+
+            // --- NUEVO: Contenedor flotante para los iconos (Lupa + Parapente SVG) ---
+            const searchIconWrapper = L.DomUtil.create('div', 'leaflet-text-search-icons-wrapper', container);
+            searchIconWrapper.style.cssText = `
+                position: absolute;
+                left: 6px;
+                top: 50%;
+                transform: translateY(-50%);
+                pointer-events: none; /* Los clics atraviesan los iconos y activan el input */
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                color: #555; /* Color del trazo del parapente */
+                opacity: 1;
+            `;
+
+            searchIconWrapper.innerHTML = `
+                <span style="line-height: 1; user-select: none;">🔍</span>
+                <icon-despegue></icon-despegue>
+            `;
 
             // --- Lista de Autocompletado ---
             const autocompleteList = L.DomUtil.create('div', 'autocomplete-list', container);
@@ -11861,7 +11977,7 @@ function inicializarMapaLeaflet() {
 
     map.addControl(new L.Control.textSearch({ position: 'topleft' }));
 
-    // 🟡 CONTROL "infoPanel" (Capas)
+    // 🟡 CONTROL "infoPanel" (Despegues)
     const infopanelControl = L.Control.extend({
         onAdd: function (map) {
             const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-infopanel1');
@@ -11873,6 +11989,19 @@ function inicializarMapaLeaflet() {
         }
     });
     map.addControl(new infopanelControl({ position: 'topleft' }));
+
+    // 🟡 CONTROL "infoPanel3" (Balizas)
+    const infopanelControl3 = L.Control.extend({
+        onAdd: function (map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-infopanel3');
+            const panelHTML = document.getElementById('infoPanel3');
+            if (panelHTML) container.appendChild(panelHTML);
+            L.DomEvent.disableClickPropagation(container);
+            L.DomEvent.disableScrollPropagation(container);
+            return container;
+        }
+    });
+    map.addControl(new infopanelControl3({ position: 'topleft' }));
 
     // 🟡 CONTROL "infoPanel2" (Filtros)
     const infopanelControl2 = L.Control.extend({
@@ -12238,7 +12367,7 @@ function inicializarMapaLeaflet() {
                             
                     const popupHtml = `
                         <div style="line-height: 1.4;">
-                            <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'>🪂 ${escapeHtml(despegue)}</b></span><br>
+                            <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${escapeHtml(despegue)}</b></span><br>
                             
                             ${botonesAccionPopupHTML}
 
@@ -12524,8 +12653,8 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
-                        <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue>${t('mapa.grupoXContest', { count: count })}</div>
+                        <div style="margin-bottom: 5px;">${t('mapa.coordenadasMedias')}<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
@@ -12545,7 +12674,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂<br>Despegue en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b><icon-despegue></icon-despegue><br>Despegue en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
                         <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
                         <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
@@ -12725,8 +12854,8 @@ function inicializarMapaLeaflet() {
                 // Popup del grupo (Tu lógica original sin hacer zoom)
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
-                        <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue>${t('mapa.grupoXContest', { count: count })}</div>
+                        <div style="margin-bottom: 5px;">${t('mapa.coordenadasMedias')}<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
@@ -12747,7 +12876,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂<br>Despegue en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b><icon-despegue></icon-despegue><br>Despegue en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
                         <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
                         <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
@@ -12934,8 +13063,8 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
-                        <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue>${t('mapa.grupoXContest', { count: count })}</div>
+                        <div style="margin-bottom: 5px;">${t('mapa.coordenadasMedias')}<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
@@ -12955,7 +13084,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂<br>Despegue en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b><icon-despegue></icon-despegue><br>Despegue en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
                         <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
                         <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
@@ -13308,7 +13437,7 @@ function inicializarMapaLeaflet() {
                     
             const popupHtml = `<div style="line-height: 1.2;">
             
-                    <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px; max-width: 212px; display: inline-block;"><b>🪂 ${escapeHtml(despegue)}</b></div>
+                    <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px; max-width: 212px; display: inline-block;"><b><icon-despegue></icon-despegue>${escapeHtml(despegue)}</b></div>
                     <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
                     <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
@@ -13382,10 +13511,13 @@ function inicializarMapaLeaflet() {
     let isFijado = false; 
     let buttonFijar, buttonCerrar, iconoFijar, infoPanel, divOpciones, labelMostrarOpciones;
 
+    let isFijado3 = false; 
+    let buttonFijar3, buttonCerrar3, iconoFijar3, infoPanel3, divOpciones3, labelMostrarOpciones3;
+
     let isFijado2 = false; 
     let buttonFijar2, buttonCerrar2, iconoFijar2, infoPanel2, divOpciones2, labelMostrarOpciones2;
 
-    //  1. Inicialización de variables locales PANEL 1 (Capas)
+    //  1. Inicialización de variables locales PANEL 1 (Despegues)
     infoPanel = document.getElementById('infoPanel');
     buttonFijar = document.getElementById('buttonFijar');
     buttonCerrar = document.getElementById('buttonCerrar');
@@ -13393,7 +13525,15 @@ function inicializarMapaLeaflet() {
     divOpciones = document.getElementById('divOpciones');
     labelMostrarOpciones = document.getElementById('labelMostrarOpciones'); 
 
-    //  1.1 Inicialización de variables locales PANEL 2 (Filtros)
+    //  1.1 Inicialización de variables locales PANEL 3 (Balizas)
+    infoPanel3 = document.getElementById('infoPanel3');
+    buttonFijar3 = document.getElementById('buttonFijar3');
+    buttonCerrar3 = document.getElementById('buttonCerrar3');
+    iconoFijar3 = document.getElementById('iconoFijar3');
+    divOpciones3 = document.getElementById('divOpciones3');
+    labelMostrarOpciones3 = document.getElementById('labelMostrarOpciones3'); 
+    
+    //  1.2 Inicialización de variables locales PANEL 2 (Filtros)
     infoPanel2 = document.getElementById('infoPanel2');
     buttonFijar2 = document.getElementById('buttonFijar2');
     buttonCerrar2 = document.getElementById('buttonCerrar2');
@@ -13432,7 +13572,38 @@ function inicializarMapaLeaflet() {
         }); 
     }
 
-    //  2.1 Lógica de Inicialización y Listeners DOM/LEAFLET (Panel 2)
+    //  2.1 Lógica de Inicialización y Listeners DOM/LEAFLET (Panel 3)
+    if (infoPanel3 && labelMostrarOpciones3 && buttonFijar3 && buttonCerrar3 && divOpciones3) {
+        infoPanel3.style.display = 'block'; 
+        retraerOpciones3();
+        
+        L.DomEvent.on(buttonFijar3, 'click', function (event) {
+            L.DomEvent.stopPropagation(event);
+            isFijado3 = !isFijado3;
+            
+            if (isFijado3) {
+                buttonFijar3.classList.add('activo-fijado');
+                iconoFijar3.textContent = '📍';
+                expandirOpciones3();
+            } else {
+                buttonFijar3.classList.remove('activo-fijado');
+                iconoFijar3.textContent = '📌';
+                retraerOpciones3(); 
+            }
+        }); 
+        
+        L.DomEvent.on(buttonCerrar3, 'click', function (event) {
+            L.DomEvent.stopPropagation(event);
+            if (isFijado3) {
+                isFijado3 = false;
+                buttonFijar3.classList.remove('activo-fijado');
+                iconoFijar3.textContent = '📌';
+            }
+            retraerOpciones3();
+        }); 
+    }
+
+    //  2.2 Lógica de Inicialización y Listeners DOM/LEAFLET (Panel 2)
     if (infoPanel2 && labelMostrarOpciones2 && buttonFijar2 && buttonCerrar2 && divOpciones2) {
         infoPanel2.style.display = 'block'; 
         retraerOpciones2();
@@ -13466,6 +13637,7 @@ function inicializarMapaLeaflet() {
     // --- LISTENERS GENERALES DEL MAPA ---
     map.on('click', function() {
         retraerOpciones();
+        retraerOpciones3();
         retraerOpciones2();
     });
     
@@ -13476,6 +13648,7 @@ function inicializarMapaLeaflet() {
         if (autocompleteList) autocompleteList.style.display = 'none';		
         
         retraerOpciones();
+        retraerOpciones3();
         retraerOpciones2();
     });
 
@@ -13490,15 +13663,33 @@ function inicializarMapaLeaflet() {
         if (isFijado || !infoPanel) return;
         divOpciones.classList.add('oculto');
         infoPanel.classList.add('retraido');
-        //labelMostrarOpciones.style.display = 'block';
         L.DomEvent.on(infoPanel, 'click', expandirAlClicar);
     }
     function expandirOpciones() {
         if (!infoPanel) return;
         divOpciones.classList.remove('oculto');
         infoPanel.classList.remove('retraido');
-        //labelMostrarOpciones.style.display = 'none';
         L.DomEvent.off(infoPanel, 'click', expandirAlClicar);	
+    }
+
+    // --- FUNCIONES EXPANSIÓN/RETRACCIÓN PANEL 3 ---
+    function expandirAlClicar3(event) {
+        if (infoPanel3.classList.contains('retraido') && !isFijado3) {
+            L.DomEvent.stopPropagation(event);
+            expandirOpciones3();
+        }
+    }
+    function retraerOpciones3() {
+        if (isFijado3 || !infoPanel3) return;
+        divOpciones3.classList.add('oculto');
+        infoPanel3.classList.add('retraido');
+        L.DomEvent.on(infoPanel3, 'click', expandirAlClicar3);
+    }
+    function expandirOpciones3() {
+        if (!infoPanel3) return;
+        divOpciones3.classList.remove('oculto');
+        infoPanel3.classList.remove('retraido');
+        L.DomEvent.off(infoPanel3, 'click', expandirAlClicar3);	
     }
 
     // --- FUNCIONES EXPANSIÓN/RETRACCIÓN PANEL 2 ---
@@ -13512,14 +13703,12 @@ function inicializarMapaLeaflet() {
         if (isFijado2 || !infoPanel2) return;
         divOpciones2.classList.add('oculto');
         infoPanel2.classList.add('retraido');
-        //labelMostrarOpciones2.style.display = 'block';
         L.DomEvent.on(infoPanel2, 'click', expandirAlClicar2);
     }
     function expandirOpciones2() {
         if (!infoPanel2) return;
         divOpciones2.classList.remove('oculto');
         infoPanel2.classList.remove('retraido');
-        //labelMostrarOpciones2.style.display = 'none';
         L.DomEvent.off(infoPanel2, 'click', expandirAlClicar2);	
     }
 
@@ -14198,7 +14387,7 @@ function inicializarMapaLeaflet() {
 
             marker.bindPopup(`
                 <div id="pop-${red.id}-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
-                    <h4 style="margin: 0 0 5px 0; color: #0078d4;">🚩 ${estacion.name} (${red.nombre})</h4>
+                    <h4 style="margin: 0 0 5px 0; color: #0078d4;"><icon-baliza></icon-baliza>${estacion.name} (${red.nombre})</h4>
                     <br><br><p style="margin:0; color:#666;">⏳...</p><br><br>
                 </div>
             `, {
@@ -14494,7 +14683,7 @@ function inicializarMapaLeaflet() {
                 <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%;">
                     <div>
                         <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
-                            🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
+                            <icon-baliza></icon-baliza><span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
                         </p>
                         <p style="line-height: 1.5; font-weight: bold; color: #c0392b; margin-bottom: 40px; margin-top: 50px; text-align: center;">
                             ❌📡 ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}
@@ -14536,7 +14725,7 @@ function inicializarMapaLeaflet() {
         // Inyectamos todo el HTML correcto
         containerDiv.innerHTML = `
             <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 0 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">
-                🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
+                <icon-baliza></icon-baliza><span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
             </p>
 
             <!-- min-height: 130px; para reservar el hueco siempre -->
@@ -15155,7 +15344,7 @@ function inicializarMapaLeaflet() {
                     tipo: 'no-modal',
                     htmlContenido: `
                         <style>.mensaje-no-modal { max-width: 340px; width: max-content; top: 23%; left: 50% !important; right: auto !important; transform: translateX(-50%) !important; border: none; padding: 10px; font-size: 20px;}</style>
-                        <p style="margin:0; padding:10px;line-height:1.3;">${t('mapa.despeguesReactivados', { defaultValue: 'Capa <i>🪂 Despegues</i> reactivada' })}</p>
+                        <p style="margin:0; padding:10px;line-height:1.3;">${t('mapa.despeguesReactivados', { defaultValue: 'Capa <i><icon-despegue></icon-despegue>Despegues</i> reactivada' })}</p>
                     `,
                     botones: []
                 });
@@ -15184,6 +15373,10 @@ function inicializarMapaLeaflet() {
 
         }, { capture: true, passive: true }); // "capture" asegura que lo detectamos antes de que otros scripts frenen el evento
     });
+
+    if (typeof inicializarMasterCheckboxBalizas === 'function') {
+        inicializarMasterCheckboxBalizas();
+    }
     
 } // Fin inicializarMapaLeaflet()
 
@@ -15208,3 +15401,51 @@ document.addEventListener('click', function(e) {
         }
     }
 });
+
+// ==========================================================================
+// 🎛️ CONTROLADOR MAESTRO DE CHECKBOXES (BALIZAS) — VERSIÓN DINÁMICA
+// ==========================================================================
+function inicializarMasterCheckboxBalizas() {
+    const masterChk = document.getElementById('checkboxMasterBalizas');
+    if (!masterChk) return;
+
+    // Buscamos dinámicamente todos los checkboxes dentro del panel 3 de balizas,
+    // exceptuando el propio botón maestro. ¡Inmune a fallos de IDs y mayúsculas!
+    const checkboxesHijos = document.querySelectorAll('#infoPanel3 input[type="checkbox"]:not(#checkboxMasterBalizas)');
+
+    if (checkboxesHijos.length === 0) return;
+
+    // 1. Sincronizar de MAESTRO a HIJOS (Al marcar/desmarcar el principal)
+    masterChk.addEventListener('change', function() {
+        const nuevoEstado = this.checked;
+        
+        checkboxesHijos.forEach(chk => {
+            if (chk.checked !== nuevoEstado) {
+                chk.checked = nuevoEstado;
+                // Forzamos el evento 'change' para que Leaflet cargue/borre la baliza en el mapa
+                chk.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+
+    // 2. Sincronizar de HIJOS a MAESTRO (Al tocar un checkbox individual, recalcula el estado del principal)
+    checkboxesHijos.forEach(chk => {
+        chk.addEventListener('change', () => {
+            const totalMarcados = Array.from(checkboxesHijos).filter(c => c.checked).length;
+
+            if (totalMarcados === 0) {
+                // Ninguno marcado -> Desmarcado
+                masterChk.checked = false;
+                masterChk.indeterminate = false;
+            } else if (totalMarcados === checkboxesHijos.length) {
+                // Todos marcados -> Marcado completo
+                masterChk.checked = true;
+                masterChk.indeterminate = false;
+            } else {
+                // Algunos marcados -> Estado indeterminado [-]
+                masterChk.checked = false;
+                masterChk.indeterminate = true;
+            }
+        });
+    });
+}

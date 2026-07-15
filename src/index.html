@@ -688,15 +688,12 @@
 
     <div id="map" style="height: 100%; width: 100%;"></div>
 
+	<!-- 🟦 Control Despegues -->
     <div id="infoPanel" class="info-panel">
 		<!-- Cabecera retraída del Panel 1 (Capas) -->
-		<span id="labelMostrarOpciones" class="labelMostrarOpciones" data-i18n="[title]mapa.capas" title="Capas">
-			<!-- Icono SVG de Capas (Cuadrados apilados) -->
-			<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-				<polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-				<polyline points="2 12 12 17 22 12"></polyline>
-				<polyline points="2 17 12 22 22 17"></polyline>
-			</svg>
+		 <span id="labelMostrarOpciones" class="labelMostrarOpciones" style="display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; color: #555; cursor: pointer; user-select: none; padding-bottom: 5px;" data-i18n="[title]mapa.titleDespeguesDeParapente" title="Despegues de parapente">
+			<icon-despegue></icon-despegue>
+			<span class="texto-menu-capa" data-i18n="mapa.titulo_infopanel" style="font-weight: bold; margin-left: 2px;">Despegues</span>
 		</span>
 
 		<div id="divOpciones">
@@ -706,110 +703,9 @@
 			<div class="linea-con-bt-info" style="margin-top: 12px;" title="Despegues de parapente">
 				<label for="checkboxDespegues" class="custom-checkbox">
 				<input type="checkbox" id="checkboxDespegues" class="custom-checkbox" checked>
-				<span data-i18n="mapa.capasCheckbox.despegues">🪂 Despegues</span>
+				<icon-despegue></icon-despegue><span data-i18n="mapa.capasCheckbox.despegues">Despegues</span>
 				</label>
 			</div>
-			<!-- 🚩 Balizas -->
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasEuskalmet" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasEuskalmet" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;Euskalmet</span>
-				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasEuskalmet">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasMeteonavarra" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasMeteonavarra" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;MeteoNavarra</span>
-				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteonavarra">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasMeteocat" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasMeteocat" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span">&nbsp;MeteoCat</span>
-				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteocat">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasMeteogalicia" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasMeteogalicia" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;MeteoGalicia</span>
-				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteogalicia">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
-			<div class="legend-item linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasAemet" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasAemet" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;AEMET</span>
-				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasAemet">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasMeteoclimatic" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasMeteoclimatic" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas"">🚩 Balizas de viento</span><span">&nbsp;Meteoclimatic</span>
-				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteoclimatic">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasHolfuy" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasHolfuy" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;Holfuy</span>
-				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasHolfuy">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasMeteofrance" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasMeteofrance" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;Météo-France</span>
-				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteofrance">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasPioupiou" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasPioupiou" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;OpenWindMap</span>
-				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasPioupiou">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasMetar" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasMetar" class="custom-checkbox">
-					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;Metar</span>
-				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMetar">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasFFVL" class="custom-checkbox">
-					<input type="checkbox" id="checkboxBalizasFFVL" class="custom-checkbox" disabled>
-					<span data-i18n="mapa.capasCheckbox.balizas" style="color:#6a6a6a98;">🚩 Balizas de viento</span><span style="color:#6a6a6a98;">&nbsp;FFVL</span>
-				</label>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasFFVL">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
-			<!-- 🚩 Fin Balizas -->
 			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
 				<label for="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
 				<input type="checkbox" id="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
@@ -837,21 +733,153 @@
 			<div class="linea-con-bt-info" style="margin-bottom: 10px;" title="Despegues Paragliding.earth">
 				<label for="checkboxDespeguesMundo" class="custom-checkbox">
 				<input type="checkbox" id="checkboxDespeguesMundo" class="custom-checkbox">
-				<span data-i18n="mapa.capasCheckbox.despeguesMundo">🪂 Despegues Paraglidingearth</span>
+				<icon-despegue></icon-despegue><span data-i18n="mapa.capasCheckbox.despeguesMundo">Despegues Paraglidingearth</span>
 				</label>
 			</div>
 		</div>
 	</div>
 
+	<!-- 🟦 Control Balizas -->
+    <div id="infoPanel3" class="info-panel">
+		<!-- Cabecera retraída del Panel 3 (Balizas) -->
+		<span id="labelMostrarOpciones3" class="labelMostrarOpciones" style="display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; color: #555; cursor: pointer; user-select: none;" data-i18n="[title]mapa.balizas.titleBalizas" title="Balizas de viento">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<line x1="12" y1="22" x2="12" y2="4" />
+				<line x1="6" y1="8" x2="18" y2="8" />
+				<circle cx="6" cy="8" r="2" />
+				<circle cx="18" cy="8" r="2" />
+				<circle cx="12" cy="4" r="2" />
+				<line x1="4.5" y1="16" x2="19.5" y2="16"></line>
+				<polyline points="16.5 13 19.5 16 16.5 19"></polyline>
+			</svg>
+			<span class="texto-menu-capa" data-i18n="mapa.balizas.balizas" style="font-weight: bold; margin-left: 2px;">Balizas</span>
+		</span>
+
+		<div id="divOpciones3">
+			<button id="buttonCerrar3" data-i18n="[title]mapa.cerrarPanel"><span>❌</span></button>			 
+			<button id="buttonFijar3" data-i18n="[title]mapa.fijarPanel"><span id="iconoFijar3">📌</span></button>			 
+				
+			<!-- Checkbox Maestro (Marcar/Desmarcar todas de golpe) -->
+			<label class="custom-checkbox" style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; width: 100%; border-bottom: 2px solid #ddd; padding-bottom: 8px; font-weight: bold; color: #333; margin-top: 15px;">
+				<input type="checkbox" id="checkboxMasterBalizas" style="margin: 0; cursor: pointer;">
+				<span data-i18n="mapa.balizas.marcar_todas" style="margin-left: 2px;">Marcar todas</span>
+			</label>
+			
+			<!-- 🚩 Balizas -->
+			<div class="linea-con-bt-info" style="margin-top: 12px;" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasEuskalmet" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasEuskalmet" class="custom-checkbox">
+					<span>&nbsp;Euskalmet</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasEuskalmet">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasMeteonavarra" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasMeteonavarra" class="custom-checkbox">
+					<span>&nbsp;MeteoNavarra</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteonavarra">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasMeteocat" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasMeteocat" class="custom-checkbox">
+					<span">&nbsp;MeteoCat</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteocat">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasMeteogalicia" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasMeteogalicia" class="custom-checkbox">
+					<span>&nbsp;MeteoGalicia</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteogalicia">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="legend-item linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasAemet" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasAemet" class="custom-checkbox">
+					<span>&nbsp;AEMET</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasAemet">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasMeteoclimatic" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasMeteoclimatic" class="custom-checkbox">
+					<span">&nbsp;Meteoclimatic</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteoclimatic">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasHolfuy" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasHolfuy" class="custom-checkbox">
+					<span>&nbsp;Holfuy</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasHolfuy">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasMeteofrance" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasMeteofrance" class="custom-checkbox">
+					<span>&nbsp;Météo-France</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteofrance">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasPioupiou" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasPioupiou" class="custom-checkbox">
+					<span>&nbsp;OpenWindMap</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasPioupiou">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasMetar" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasMetar" class="custom-checkbox">
+					<span>&nbsp;Metar</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMetar">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<!-- <div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasFFVL" class="custom-checkbox">
+					<input type="checkbox" id="checkboxBalizasFFVL" class="custom-checkbox">
+					<span>&nbsp;FFVL</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasFFVL">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div> -->
+			<!-- 🚩 Fin Balizas -->
+		</div>
+	</div>
+
+	<!-- 🟦 Control Filtros -->
     <div id="infoPanel2" class="info-panel">
 		<!-- Cabecera retraída del Panel 2 (Filtros) -->
-		<span id="labelMostrarOpciones2" class="labelMostrarOpciones" data-i18n="[title]mapa.filtros" title="Filtros">
+		<span id="labelMostrarOpciones2" class="labelMostrarOpciones" style="display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; color: #555; cursor: pointer; user-select: none; "data-i18n="[title]mapa.filtros" title="Filtros">
 			<!-- Icono SVG de Filtros (Pirámide de líneas, igual que el de tu botón Meteo) -->
-			<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 				<line x1="4" y1="6" x2="20" y2="6"></line>
 				<line x1="8" y1="12" x2="16" y2="12"></line>
 				<line x1="11" y1="18" x2="13" y2="18"></line>
 			</svg>
+			<span class="texto-menu-capa" data-i18n="mapa.filtros" style="font-weight: bold; margin-left: 2px;">Filtros</span>
 		</span>
 
 		<div id="divOpciones2">

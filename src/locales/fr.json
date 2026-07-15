@@ -214,7 +214,7 @@
     "podrasVerla": "Vous pouvez le consulter à tout moment en utilisant le bouton <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> sur cet écran.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Tableau des décollages avec prévision horaire",
+        "titulo": "<icon-despegue></icon-despegue>Tableau des décollages avec prévision horaire",
         "descripcion": "Affiche un tableau avec tous les décollages que vous avez sélectionnés comme favoris, leurs prévisions météorologiques horaires et leur score de conditions calculé, de 0 à 10 (pour décoller et commencer des itinéraires XC).<br><br>Les décollages sont toujours automatiquement triés par leur score de conditions de décollage (du plus élevé au plus bas)."
       },
       "selectorHorario": {
@@ -317,7 +317,7 @@
     "podrasVerla": "Vous pouvez le consulter à tout moment en utilisant le bouton <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> sur cet écran.",
     "pasos": {
       "intro": {
-        "titulo": "🪂 Écran d'édition des décollages favoris",
+        "titulo": "<icon-despegue></icon-despegue>Écran d'édition des décollages favoris",
         "descripcion": "Cet écran affiche tous les décollages disponibles. Sélectionnez ceux que vous utilisez régulièrement. La vue normale de l'application n'affichera que ces favoris.<br><br>Vous pourriez tous les sélectionner, mais selon votre appareil, cela pourrait ralentir les recherches et l'utilisation quotidienne.<br><br>Couvre actuellement l'Espagne, le Portugal, les Pyrénées et les principales zones alpines. C'est un projet en pleine croissance."
       },
       "celdaFavorito": {
@@ -381,7 +381,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Où voler ?</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Où voler ?</p>",
       "btnPrimario": "Sélectionner des favoris",
       "btnSecundario": "Voir le guide général",
       "btnImportar": "Importer les paramètres",
@@ -403,7 +403,7 @@
       "btnAvanzadoDesc": "Toutes les options et filtres disponibles"
     },
     "paso2": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Analyse automatisée des prévisions météorologiques pour le parapente.</p><p>🙄 <b>À quoi ça sert ? :</b> à vous aider à décider où voler. Il affiche un tableau avec vos décollages favoris, leurs prévisions, et effectue une analyse automatisée de ces <b>conditions météorologiques</b>.</p><p>🧮 <b>Quelle analyse effectue-t-il ? :</b> il compare les prévisions avec vos limites configurées de vent moyen et de rafales maximales et l'orientation de chaque décollage ; il analyse également le vent à des altitudes proches du décollage (80, 120 et 180 m), donnant un aperçu du gradient de vent et de la fiabilité des prévisions. Il affiche les données clés de XC (plafond, CAPE et CIN).</p><p>Avec toutes ces informations, il note chaque décollage de 0 à 10 et code en couleur 🟩&nbsp;🟨&nbsp;🟥 les données pour la plage horaire choisie. Vous pouvez personnaliser toutes les limites pour correspondre à vos préférences.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision. Analyse automatisée des prévisions météorologiques pour le parapente.</p><p>🙄 <b>À quoi ça sert ? :</b> à vous aider à décider où voler. Il affiche un tableau avec vos décollages favoris, leurs prévisions, et effectue une analyse automatisée de ces <b>conditions météorologiques</b>.</p><p>🧮 <b>Quelle analyse effectue-t-il ? :</b> il compare les prévisions avec vos limites configurées de vent moyen et de rafales maximales et l'orientation de chaque décollage ; il analyse également le vent à des altitudes proches du décollage (80, 120 et 180 m), donnant un aperçu du gradient de vent et de la fiabilité des prévisions. Il affiche les données clés de XC (plafond, CAPE et CIN).</p><p>Avec toutes ces informations, il note chaque décollage de 0 à 10 et code en couleur 🟩&nbsp;🟨&nbsp;🟥 les données pour la plage horaire choisie. Vous pouvez personnaliser toutes les limites pour correspondre à vos préférences.</p>"
     },
     "paso3": {
       "html": "<p>💨️ <b>Données météorologiques :</b> prévisions horaires sur 4 jours (96h). Mises à jour 8 fois par jour avec les données officielles de Météo-France issues des modèles Arome-HD 1,3 km (0-48h) et Arpège 7 km (48-96h), et 4 fois par jour avec les données du CEPMMT/ECMWF (0-96h).</p><p>🆓 <b>Coût et confidentialité :</b> 100 % gratuit, sans abonnement, sans publicité et sans suivi (cookies, télémétrie,...). Vos paramètres sont enregistrés en privé dans votre navigateur. C'est un projet libre et ouvert, opérationnel depuis 2026 et en évolution.</p>"
@@ -532,6 +532,7 @@
     "miUbicacion": "Ma position",
     "irMiUbicacion": "Aller à ma position",
     "titlebtnFiltrosMeteo": "Filtres par Conditions météorologiques",
+    "titleDespeguesDeParapente": "Décollages de parapente",
     "btnFiltros": "Filtres météo",
     "filtros": "Filtres",
     "buscadorPlaceholder": "Rechercher un lieu ou des coordonnées...",
@@ -548,24 +549,25 @@
     "fijarPanel": "Épingler le panneau (ne pas cacher lors du déplacement de la carte)",
     "masInformacion": "Plus d'informations ▼",
     "volverEdicion": "Retour à l'édition des favoris",
-    "despeguesReactivados": "Couche <i>🪂 Décollages</i> réactivée",
+    "despeguesReactivados": "Couche <i><icon-despegue></icon-despegue>Décollages</i> réactivée",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Vous êtes ici&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "titulo_infopanel": "Décollages",
     "capasCheckbox": {
-      "despegues": "🪂 Décollages",
+      "despegues": "Décollages",
       "balizas": "🚩 Balises",
       "mapaCalorPeninsula": "🔥 Carte thermique Ibérique",
       "mapaCalorAlpes": "🔥 Carte thermique Alpes",
       "mapaCalorMarruecos": "🔥 Carte thermique Maroc",
       "notas": "✏️ Notes",
-      "despeguesMundo": "🪂 Décollages Paraglidingearth"
+      "despeguesMundo": "Décollages Paraglidingearth"
     },
     "cargandoCalorPeninsula": "⏳ Chargement de la carte thermique Ibérique...<br><br>(309 157 décollages enregistrés)",
     "cargandoCalorAlpes": "⏳ Chargement de la carte thermique des Alpes...<br><br>(967 477 décollages enregistrés)",
     "cargandoCalorMarruecos": "⏳ Chargement de la carte thermique du Maroc...<br><br>(11 006 décollages enregistrés)",
     "errorCSV": "Erreur de chargement du CSV. Vérifiez la console pour plus de détails.",
     "errorCSVAlpes": "Erreur de chargement du fichier CSV des Alpes.",
-    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} Décollages XContest</b>",
-    "despegueXContest": "🪂<br>Décollage XContest",
+    "grupoXContest": "<b><br>{{count}} Décollages XContest</b>",
+    "despegueXContest": "<icon-despegue></icon-despegue><br>Décollage XContest",
     "coordenadasMedias": "Coordonnées moyennes :",
     "coordenadas": "Coordonnées :",
     "fecha": "Date :",
@@ -622,9 +624,12 @@
       "leyenda_rosa_meteorologica": "Dernières 2 h :",
       "leyenda_grafico_ultimas_4h": "Dernières 4 h :",
       "baliza": "Balise",
+      "balizas": "Balises",
       "proveedor": "Fournisseur",
       "coordenadas": "Coordonnées",
-      "altitud": "Altitude"
+      "altitud": "Altitude",
+      "titleBalizas": "Balises de vent",
+      "marcar_todas": "Tout sélectionner"
     }
   },
 
@@ -724,17 +729,17 @@
     "tooltipDiasSeguimiento": "<b>Jours de suivi :</b><br><br>Lorsque tu marques un décollage avec l'œil <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>, il reste en <i>suivi</i> pendant le nombre de jours que tu configures ici.<br><br>Par exemple, avec 2 jours : si tu marques un décollage le lundi, il apparaîtra actif le lundi et le mardi. Le mercredi, il sera automatiquement supprimé au démarrage de l'application.<br><br>Marquer des décollages avec un suivi te permet de les filtrer facilement avec le bouton <i>Voir uniquement les décollages en suivi</i>.<br><br>Tu peux configurer entre <b>1 et 4 jours ou infini (le suivi n'est jamais désactivé)</b>. La valeur par défaut est <b>3 jours</b>.",
     "tooltipModelosMeteo": "<b>Modèles météorologiques :</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b> : pour les données de vent dans les premières 0-48h. Couvre presque toute l'Europe, y compris la péninsule ibérique, à l'exception du sud de l'Andalousie (dans cette zone, Arpege Europe 7km de 0-96h est utilisé). Mise à jour toutes les 3 heures environ (8 fois par jour).</li><li><b>Météo-France Arpege Europe 7km</b> : pour les données de vent dans les 48-96h suivantes. Couvre l'Europe et l'Afrique du Nord.</li><li><b>Météo-France Arome 2.5km 15min</b> : pour les données de vent à plusieurs altitudes dans les 6 prochaines heures et par intervalles de 15 min. Même couverture qu'Arome-HD. Mise à jour automatique toutes les 1 heure (24 fois par jour).</li><li><b>ECMWF IFS HRES 9km</b> : pour le reste des données météorologiques de 0-96h. Couvre le monde entier. Mise à jour automatique toutes les 6 heures environ (4 fois par jour)</li></ul><b>Passerelle de données météorologiques :</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>La valeur <i>(DDtHH)</i> (exemple : 12t03) indique le jour et l'heure UTC±0 (Z) correspondant au dernier cycle d'exécution du modèle sur le serveur météorologique source. À partir de ce moment, il y a plusieurs heures de calcul informatique avant la distribution finale et sa disponibilité publique.",
     "tooltipModoApp": "<b>Mode de l'application :</b><br><br><b>Mode simple</b> : Uniquement l'essentiel. Recommandé pour commencer et te familiariser avec l'application avant de passer au <i>Mode avancé</i>.<br><br><b>Mode avancé</b> : Contrôle total. Donne accès à toutes les options, filtres et données détaillées.",
-    "tooltipcheckboxBalizasEuskalmet": "<b>🚩 Balises de vent Euskalmet</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Gouvernement Basque</li><li><b>Couverture géographique</b> : Pays Basque (Euskadi)</li><li><b>Nombre approximatif de balises affichées</b> : 64</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#' target='_blank' style='color: #007bff; text-decoration: underline;'>Euskalmet</a></li></ul>",
-    "tooltipcheckboxBalizasAemet": "<b>🚩 Balises de vent AEMET</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Gouvernement de l'Espagne</li><li><b>Couverture géographique</b> : Espagne</li><li><b>Nombre approximatif de balises affichées</b> : 653</li><li><b>Fréquence approximative de mise à jour des données</b> : 60 minutes (variable selon la station). Remarque : il y a quelques balises classées comme 'Différées' avec une fréquence beaucoup plus faible ; elles sont affichées, mais seront souvent en gris car elles dateront de temps moins récents</li><li><b>Site web</b> : <a href='https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=esp&w=0&datos=img&x=h24&f=vel_viento' target='_blank' style='color: #007bff; text-decoration: underline;'>AEMET</a></li></ul>",
-    "tooltipcheckboxBalizasHolfuy": "<b>🚩 Balises de vent Holfuy</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Holfuy (entreprise privée)</li><li><b>Couverture géographique</b> : Mondiale</li><li><b>Nombre approximatif de balises affichées</b> : 374</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://holfuy.com/es/map/wind' target='_blank' style='color: #007bff; text-decoration: underline;'>Holfuy</a></li></ul>",
-    "tooltipcheckboxBalizasMeteofrance": "<b>🚩 Balises de vent Météo-France</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Gouvernement de la France</li><li><b>Couverture géographique</b> : France</li><li><b>Nombre approximatif de balises affichées</b> : 279</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://meteofrance.fr/' target='_blank' style='color: #007bff; text-decoration: underline;'>Météo-France</a></li></ul>",
-    "tooltipcheckboxBalizasPioupiou": "<b>🚩 Balises de vent OpenWindMap</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : OpenWindMap (Windbird/Pioupiou)</li><li><b>Couverture géographique</b> : Mondiale</li><li><b>Nombre approximatif de balises affichées</b> : 560</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://openwindmap.org' target='_blank' style='color: #007bff; text-decoration: underline;'>OpenWindMap</a> (© contributors of OpenWindMap wind network)</li></ul>",
-    "tooltipcheckboxBalizasFFVL": "<b>🚩 Balises de vent FFVL</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Fédération Française de Vol Libre</li><li><b>Couverture géographique</b> : France</li><li><b>Nombre approximatif de balises affichées</b> : </li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://balises.ffvl.fr' target='_blank' style='color: #007bff; text-decoration: underline;'>FFVL</a></li></ul>",
-    "tooltipcheckboxBalizasMeteocat": "<b>🚩 Balises de vent MeteoCat</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Generalitat de Catalunya</li><li><b>Couverture géographique</b> : Catalogne</li><li><b>Nombre approximatif de balises affichées</b> : 100</li><li><b>Fréquence approximative de mise à jour des données</b> : 30 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://www.meteo.cat/observacions/xema' target='_blank' style='color: #007bff; text-decoration: underline;'>MeteoCat</a></li></ul>",
-    "tooltipcheckboxBalizasMeteogalicia": "<b>🚩 Balises de vent MeteoGalicia</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Xunta de Galicia</li><li><b>Couverture géographique</b> : Galice</li><li><b>Nombre approximatif de balises affichées</b> : 99</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://www.meteogalicia.gal/web/observacion/rede' target='_blank' style='color: #007bff; text-decoration: underline;'>MeteoGalicia</a></li></ul>",
-    "tooltipcheckboxBalizasMeteonavarra": "<b>🚩 Balises de vent MeteoNavarra</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Gouvernement de Navarre</li><li><b>Couverture géographique</b> : Navarre</li><li><b>Nombre approximatif de balises affichées</b> : 29</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://meteo.navarra.es/estaciones/mapasdatostiemporeal.cfm?IDParam_sel=6' target='_blank' style='color: #007bff; text-decoration: underline;'>MeteoNavarra</a></li></ul>",
-    "tooltipcheckboxBalizasMetar": "<b>🚩 Balises de vent Metar</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : aéroports</li><li><b>Couverture géographique</b> : Mondiale</li><li><b>Nombre approximatif de balises affichées</b> : 249</li><li><b>Fréquence approximative de mise à jour des données</b> : 30-60 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://metar-taf.com/?c=430822.42407.5' target='_blank' style='color: #007bff; text-decoration: underline;'>Metar</a></li></ul>",
-    "tooltipcheckboxBalizasMeteoclimatic": "<b>🚩 Balises de vent Meteoclimatic</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : particuliers non professionnels</li><li><b>Couverture géographique</b> : Espagne et Portugal</li><li><b>Nombre approximatif de balises affichées</b> : 1476</li><li><b>Fréquence approximative de mise à jour des données</b> : 15 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://www.meteoclimatic.net/' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteoclimatic</a></li></ul>"
+    "tooltipcheckboxBalizasEuskalmet": "<b>Balises de vent Euskalmet</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Gouvernement Basque</li><li><b>Couverture géographique</b> : Pays Basque (Euskadi)</li><li><b>Nombre approximatif de balises affichées</b> : 64</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#' target='_blank' style='color: #007bff; text-decoration: underline;'>Euskalmet</a></li></ul>",
+    "tooltipcheckboxBalizasAemet": "<b>Balises de vent AEMET</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Gouvernement de l'Espagne</li><li><b>Couverture géographique</b> : Espagne</li><li><b>Nombre approximatif de balises affichées</b> : 653</li><li><b>Fréquence approximative de mise à jour des données</b> : 60 minutes (variable selon la station). Remarque : il y a quelques balises classées comme 'Différées' avec une fréquence beaucoup plus faible ; elles sont affichées, mais seront souvent en gris car elles dateront de temps moins récents</li><li><b>Site web</b> : <a href='https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=esp&w=0&datos=img&x=h24&f=vel_viento' target='_blank' style='color: #007bff; text-decoration: underline;'>AEMET</a></li></ul>",
+    "tooltipcheckboxBalizasHolfuy": "<b>Balises de vent Holfuy</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Holfuy (entreprise privée)</li><li><b>Couverture géographique</b> : Mondiale</li><li><b>Nombre approximatif de balises affichées</b> : 374</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://holfuy.com/es/map/wind' target='_blank' style='color: #007bff; text-decoration: underline;'>Holfuy</a></li></ul>",
+    "tooltipcheckboxBalizasMeteofrance": "<b>Balises de vent Météo-France</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Gouvernement de la France</li><li><b>Couverture géographique</b> : France</li><li><b>Nombre approximatif de balises affichées</b> : 279</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://meteofrance.fr/' target='_blank' style='color: #007bff; text-decoration: underline;'>Météo-France</a></li></ul>",
+    "tooltipcheckboxBalizasPioupiou": "<b>Balises de vent OpenWindMap</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : OpenWindMap (Windbird/Pioupiou)</li><li><b>Couverture géographique</b> : Mondiale</li><li><b>Nombre approximatif de balises affichées</b> : 560</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://openwindmap.org' target='_blank' style='color: #007bff; text-decoration: underline;'>OpenWindMap</a> (© contributors of OpenWindMap wind network)</li></ul>",
+    "tooltipcheckboxBalizasFFVL": "<b>Balises de vent FFVL</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Fédération Française de Vol Libre</li><li><b>Couverture géographique</b> : France</li><li><b>Nombre approximatif de balises affichées</b> : </li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://balises.ffvl.fr' target='_blank' style='color: #007bff; text-decoration: underline;'>FFVL</a></li></ul>",
+    "tooltipcheckboxBalizasMeteocat": "<b>Balises de vent MeteoCat</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Generalitat de Catalunya</li><li><b>Couverture géographique</b> : Catalogne</li><li><b>Nombre approximatif de balises affichées</b> : 100</li><li><b>Fréquence approximative de mise à jour des données</b> : 30 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://www.meteo.cat/observacions/xema' target='_blank' style='color: #007bff; text-decoration: underline;'>MeteoCat</a></li></ul>",
+    "tooltipcheckboxBalizasMeteogalicia": "<b>Balises de vent MeteoGalicia</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Xunta de Galicia</li><li><b>Couverture géographique</b> : Galice</li><li><b>Nombre approximatif de balises affichées</b> : 99</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://www.meteogalicia.gal/web/observacion/rede' target='_blank' style='color: #007bff; text-decoration: underline;'>MeteoGalicia</a></li></ul>",
+    "tooltipcheckboxBalizasMeteonavarra": "<b>Balises de vent MeteoNavarra</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Gouvernement de Navarre</li><li><b>Couverture géographique</b> : Navarre</li><li><b>Nombre approximatif de balises affichées</b> : 29</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://meteo.navarra.es/estaciones/mapasdatostiemporeal.cfm?IDParam_sel=6' target='_blank' style='color: #007bff; text-decoration: underline;'>MeteoNavarra</a></li></ul>",
+    "tooltipcheckboxBalizasMetar": "<b>Balises de vent Metar</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : aéroports</li><li><b>Couverture géographique</b> : Mondiale</li><li><b>Nombre approximatif de balises affichées</b> : 249</li><li><b>Fréquence approximative de mise à jour des données</b> : 30-60 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://metar-taf.com/?c=430822.42407.5' target='_blank' style='color: #007bff; text-decoration: underline;'>Metar</a></li></ul>",
+    "tooltipcheckboxBalizasMeteoclimatic": "<b>Balises de vent Meteoclimatic</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : particuliers non professionnels</li><li><b>Couverture géographique</b> : Espagne et Portugal</li><li><b>Nombre approximatif de balises affichées</b> : 1476</li><li><b>Fréquence approximative de mise à jour des données</b> : 15 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://www.meteoclimatic.net/' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteoclimatic</a></li></ul>"
   },
   "paises": {
     "España": "Espagne",
