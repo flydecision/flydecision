@@ -551,6 +551,7 @@
     "volverEdicion": "Tornar a Editar Preferits",
     "despeguesReactivados": "Capa <i>🪂 Enlairaments</i> reactivada",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Ets aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "titulo_infopanel": "Enlairaments",
     "capasCheckbox": {
       "despegues": "🪂 Enlairaments",
       "balizas": "🚩 Balises",
@@ -623,6 +624,7 @@
       "leyenda_rosa_meteorologica": "Últimes 2 h:",
       "leyenda_grafico_ultimas_4h": "Últimes 4 h:",
       "baliza": "Balisa",
+      "balizas": "Balises",
       "proveedor": "Proveïdor",
       "coordenadas": "Coordenades",
       "altitud": "Altitud",

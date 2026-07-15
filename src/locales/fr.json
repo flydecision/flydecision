@@ -551,6 +551,7 @@
     "volverEdicion": "Retour à l'édition des favoris",
     "despeguesReactivados": "Couche <i>🪂 Décollages</i> réactivée",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Vous êtes ici&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "titulo_infopanel": "Décollages",
     "capasCheckbox": {
       "despegues": "🪂 Décollages",
       "balizas": "🚩 Balises",
@@ -623,6 +624,7 @@
       "leyenda_rosa_meteorologica": "Dernières 2 h :",
       "leyenda_grafico_ultimas_4h": "Dernières 4 h :",
       "baliza": "Balise",
+      "balizas": "Balises",
       "proveedor": "Fournisseur",
       "coordenadas": "Coordonnées",
       "altitud": "Altitude",

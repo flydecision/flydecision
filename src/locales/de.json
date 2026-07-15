@@ -551,6 +551,7 @@
     "volverEdicion": "Zurück zur Favoritenbearbeitung",
     "despeguesReactivados": "Ebene <i>🪂 Startplätze</i> reaktiviert",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Du bist hier&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "titulo_infopanel": "Startplätze",
     "capasCheckbox": {
       "despegues": "🪂 Startplätze",
       "balizas": "🚩 Stationen",
@@ -623,6 +624,7 @@
       "leyenda_rosa_meteorologica": "Letzte 2 h:",
       "leyenda_grafico_ultimas_4h": "Letzte 4 h:",
       "baliza": "Station",
+      "balizas": "Stationen",
       "proveedor": "Anbieter",
       "coordenadas": "Koordinaten",
       "altitud": "Höhe",

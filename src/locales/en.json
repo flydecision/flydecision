@@ -551,6 +551,7 @@
     "volverEdicion": "Back to Edit Favorites",
     "despeguesReactivados": "<i>🪂 Takeoffs</i> layer reactivated",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;You are here&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "titulo_infopanel": "Takeoffs",
     "capasCheckbox": {
       "despegues": "🪂 Takeoffs",
       "balizas": "🚩 Stations",
@@ -623,6 +624,7 @@
       "leyenda_rosa_meteorologica": "Last 2 h:",
       "leyenda_grafico_ultimas_4h": "Last 4 h:",
       "baliza": "Beacon",
+      "balizas": "Beacons",
       "proveedor": "Provider",
       "coordenadas": "Coordinates",
       "altitud": "Altitude",

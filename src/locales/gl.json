@@ -551,6 +551,7 @@
     "volverEdicion": "Volver a Editar Favoritos",
     "despeguesReactivados": "Capa <i>🪂 Despegues</i> reactivada",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Estás aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "titulo_infopanel": "Despegues",
     "capasCheckbox": {
       "despegues": "🪂 Engalaxes",
       "balizas": "🚩 Balizas",
@@ -623,6 +624,7 @@
       "leyenda_rosa_meteorologica": "Últimas 2 h:",
       "leyenda_grafico_ultimas_4h": "Últimas 4 h:",
       "baliza": "Baliza",
+      "balizas": "Balizas",
       "proveedor": "Provedor",
       "coordenadas": "Coordenadas",
       "altitud": "Altitude",

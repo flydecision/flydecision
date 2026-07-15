@@ -3129,6 +3129,12 @@ details.config-accordion .accordion-content {
     position: relative;
 }	
 
+#infoPanel.retraido .texto-menu-capa,
+#infoPanel2.retraido .texto-menu-capa,
+#infoPanel3.retraido .texto-menu-capa {
+    display: none !important;
+}
+
 /* Panel del mapa con filtros activos (Tanto abierto como retraído) */
 .info-panel.borde-rojo-externo {
     /* 1. Teñimos de rojo el borde de 2px que ya tiene el panel (no suma tamaño) */

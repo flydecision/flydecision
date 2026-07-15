@@ -551,6 +551,7 @@
     "volverEdicion": "Itzuli Gogokoen Ediziora",
     "despeguesReactivados": "<i>🪂 Aireratzeak</i> geruza berriro aktibatuta",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Hemen zaude&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
+    "titulo_infopanel": "Aireratzeak",
     "capasCheckbox": {
       "despegues": "🪂 Aireratzeak",
       "balizas": "🚩 Balizak",
@@ -623,6 +624,7 @@
       "leyenda_rosa_meteorologica": "Azken 2 h:",
       "leyenda_grafico_ultimas_4h": "Azken 4 h:",
       "baliza": "Baliza",
+      "balizas": "Balizak",
       "proveedor": "Hornitzailea",
       "coordenadas": "Koordenatuak",
       "altitud": "Altitudea",
