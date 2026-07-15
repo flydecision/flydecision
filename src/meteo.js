@@ -276,6 +276,27 @@ function actualizarVistaOjo(btn, esActivo) {
     btn.innerHTML = svgOjoBoton(esActivo);
 }
 
+// Registramos el componente nativo <icon-baliza> en el navegador
+class IconBaliza extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+            <span style="display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; color: #555; width: 22px; height: 22px; margin-right: 3px; user-select: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="22" x2="12" y2="4" />
+                    <line x1="6" y1="8" x2="18" y2="8" />
+                    <circle cx="6" cy="8" r="2" />
+                    <circle cx="18" cy="8" r="2" />
+                    <circle cx="12" cy="4" r="2" />
+                    <line x1="4.5" y1="16" x2="19.5" y2="16"></line>
+                    <polyline points="16.5 13 19.5 16 16.5 19"></polyline>
+                </svg>
+            </span>
+        `;
+    }
+}
+customElements.define('icon-baliza', IconBaliza);
+
+
 // ---------------------------------------------------------------
 // 🔴 MINUTELY_15 (AROME HD) — Detalle de viento cada 15 min
 // ---------------------------------------------------------------
@@ -14339,7 +14360,7 @@ function inicializarMapaLeaflet() {
 
             marker.bindPopup(`
                 <div id="pop-${red.id}-${estacion.id}" style="min-width: 140px; line-height: 1.3;">
-                    <h4 style="margin: 0 0 5px 0; color: #0078d4;">🚩 ${estacion.name} (${red.nombre})</h4>
+                    <h4 style="margin: 0 0 5px 0; color: #0078d4;"><icon-baliza></icon-baliza>${estacion.name} (${red.nombre})</h4>
                     <br><br><p style="margin:0; color:#666;">⏳...</p><br><br>
                 </div>
             `, {
@@ -14635,7 +14656,7 @@ function inicializarMapaLeaflet() {
                 <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%;">
                     <div>
                         <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
-                            🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
+                            <icon-baliza></icon-baliza><span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
                         </p>
                         <p style="line-height: 1.5; font-weight: bold; color: #c0392b; margin-bottom: 40px; margin-top: 50px; text-align: center;">
                             ❌📡 ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}
@@ -14677,7 +14698,7 @@ function inicializarMapaLeaflet() {
         // Inyectamos todo el HTML correcto
         containerDiv.innerHTML = `
             <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 0 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">
-                🚩 <span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
+                <icon-baliza></icon-baliza><span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
             </p>
 
             <!-- min-height: 130px; para reservar el hueco siempre -->

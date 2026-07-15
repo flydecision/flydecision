@@ -3135,6 +3135,11 @@ details.config-accordion .accordion-content {
     display: none !important;
 }
 
+/* Ajustar el ancho del panel de balizas SOLO cuando está EXPANDIDO (no retraído) */
+#infoPanel3.info-panel:not(.retraido) {
+    width: 180px !important;
+}
+
 /* Panel del mapa con filtros activos (Tanto abierto como retraído) */
 .info-panel.borde-rojo-externo {
     /* 1. Teñimos de rojo el borde de 2px que ya tiene el panel (no suma tamaño) */
