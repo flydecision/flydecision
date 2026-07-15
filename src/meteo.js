@@ -14028,8 +14028,8 @@ function inicializarMapaLeaflet() {
             datos6h: null,
             fetched6hAt: 0,
             intervalo: null,
-            umbralAmarilloMin: 30,
-            umbralRojoMin: 45,
+            umbralAmarilloMin: 40,
+            umbralRojoMin: 60,
             urlWeb: (id) => `https://www.meteoclimatic.net/perfil/${id}`
         },
         'holfuy': {
