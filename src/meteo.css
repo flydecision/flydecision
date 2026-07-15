@@ -3171,7 +3171,6 @@ details.config-accordion .accordion-content {
     margin-top: 3px !important;
 }
 
-/* Agrupación de selectores para compartir el estilo entre panel 1 y panel 2 */
 #divOpciones, #divOpciones3, #divOpciones2 {
 	overflow: hidden;
 }
