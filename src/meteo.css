@@ -2790,7 +2790,7 @@ label.custom-checkbox {
 .loader-container.loader-activo {
     opacity: 1;
     visibility: visible;
-    pointer-events: auto; 
+    pointer-events: none; /* en auto captura todos los eventos (bloquea el uso hasta que deja de mostrarse) */
 }
 
 .loader-container::before {
