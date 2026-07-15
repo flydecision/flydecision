@@ -688,14 +688,20 @@
 
     <div id="map" style="height: 100%; width: 100%;"></div>
 
+	<!-- 🟦 Control Despegues -->
     <div id="infoPanel" class="info-panel">
 		<!-- Cabecera retraída del Panel 1 (Capas) -->
-		<span id="labelMostrarOpciones" class="labelMostrarOpciones" data-i18n="[title]mapa.capas" title="Capas">
-			<!-- Icono SVG de Capas (Cuadrados apilados) -->
-			<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-				<polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-				<polyline points="2 12 12 17 22 12"></polyline>
-				<polyline points="2 17 12 22 22 17"></polyline>
+		<span id="labelMostrarOpciones" class="labelMostrarOpciones" style="color: #555;" data-i18n="[title]mapa.titleDespeguesDeParapente" title="Despegues de parapente">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+				<!-- Pendiente de la montaña (Plana al principio y cae agresivamente hacia la derecha) -->
+				<path d="M 0 16.5 Q 12 16.5 20 24" stroke-width="2" />
+				<!-- Cordinos (5 líneas centradas en la nueva posición del piloto) -->
+				<path d="M 5 5 L 12 13 L 9 3.5 M 13 3 L 12 13 L 17 3.5 M 21 5 L 12 13" stroke-width="0.8" />
+				<!-- Vela del parapente (100% horizontal, desplazada arriba y a la derecha) -->
+				<path d="M 5 5 Q 13 -1 21 5 Q 13 3 5 5 Z" stroke-width="2" />
+				<!-- Piloto (Cabeza y cuerpo engrosados, desplazado arriba y a la derecha) -->
+				<circle cx="12" cy="11.5" r="1.6" fill="currentColor" stroke="none" />
+				<path d="M 12 13 L 13 15.5 L 15.5 15 M 13 15.5 L 11.5 18.5" stroke-width="2" />
 			</svg>
 		</span>
 
@@ -709,8 +715,60 @@
 				<span data-i18n="mapa.capasCheckbox.despegues">🪂 Despegues</span>
 				</label>
 			</div>
+			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+				<label for="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
+				<input type="checkbox" id="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
+				<span data-i18n="mapa.capasCheckbox.mapaCalorPeninsula">🔥 Mapa de calor Iberia</span>
+				</label>
+			</div>
+			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+				<label for="checkboxMapaDeCalorAlpes" class="custom-checkbox">
+				<input type="checkbox" id="checkboxMapaDeCalorAlpes" class="custom-checkbox">
+				<span data-i18n="mapa.capasCheckbox.mapaCalorAlpes">🔥 Mapa de calor Alpes</span>
+				</label>
+			</div>
+			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+				<label for="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
+				<input type="checkbox" id="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
+				<span data-i18n="mapa.capasCheckbox.mapaCalorMarruecos">🔥 Mapa de calor Marruecos</span>
+				</label>
+			</div>
+			<div class="linea-con-bt-info" title="Notas personales tomadas sobre despegues y aterrizajes">
+				<label for="checkboxNotasPersonales" class="custom-checkbox">
+				<input type="checkbox" id="checkboxNotasPersonales" class="custom-checkbox">
+				<span data-i18n="mapa.capasCheckbox.notas">✏️ Notas</span>
+				</label>
+			</div>
+			<div class="linea-con-bt-info" style="margin-bottom: 10px;" title="Despegues Paragliding.earth">
+				<label for="checkboxDespeguesMundo" class="custom-checkbox">
+				<input type="checkbox" id="checkboxDespeguesMundo" class="custom-checkbox">
+				<span data-i18n="mapa.capasCheckbox.despeguesMundo">🪂 Despegues Paraglidingearth</span>
+				</label>
+			</div>
+		</div>
+	</div>
+
+	<!-- 🟦 Control Balizas -->
+    <div id="infoPanel3" class="info-panel">
+		<!-- Cabecera retraída del Panel 3 (Balizas) -->
+		<span id="labelMostrarOpciones3" class="labelMostrarOpciones" style="margin-left: 4px; color: #555;" data-i18n="[title]mapa.balizas.titleBalizas" title="Balizas de viento">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<line x1="12" y1="22" x2="12" y2="4" />
+				<line x1="6" y1="8" x2="18" y2="8" />
+				<circle cx="6" cy="8" r="2" />
+				<circle cx="18" cy="8" r="2" />
+				<circle cx="12" cy="4" r="2" />
+				<line x1="4.5" y1="16" x2="19.5" y2="16"></line>
+				<polyline points="16.5 13 19.5 16 16.5 19"></polyline>
+			</svg>
+		</span>
+
+		<div id="divOpciones3">
+			<button id="buttonCerrar3" data-i18n="[title]mapa.cerrarPanel"><span>❌</span></button>			 
+			<button id="buttonFijar3" data-i18n="[title]mapa.fijarPanel"><span id="iconoFijar3">📌</span></button>			 
+				
 			<!-- 🚩 Balizas -->
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+			<div class="linea-con-bt-info" style="margin-top: 12px;" title="Estaciones meteorológicas de viento">
 				<label for="checkboxBalizasEuskalmet" class="custom-checkbox">
 					<input type="checkbox" id="checkboxBalizasEuskalmet" class="custom-checkbox">
 					<span data-i18n="mapa.capasCheckbox.balizas">🚩 Balizas de viento</span><span>&nbsp;Euskalmet</span>
@@ -810,44 +868,15 @@
 				</button>
 			</div>
 			<!-- 🚩 Fin Balizas -->
-			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
-				<label for="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
-				<input type="checkbox" id="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
-				<span data-i18n="mapa.capasCheckbox.mapaCalorPeninsula">🔥 Mapa de calor Iberia</span>
-				</label>
-			</div>
-			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
-				<label for="checkboxMapaDeCalorAlpes" class="custom-checkbox">
-				<input type="checkbox" id="checkboxMapaDeCalorAlpes" class="custom-checkbox">
-				<span data-i18n="mapa.capasCheckbox.mapaCalorAlpes">🔥 Mapa de calor Alpes</span>
-				</label>
-			</div>
-			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
-				<label for="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
-				<input type="checkbox" id="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
-				<span data-i18n="mapa.capasCheckbox.mapaCalorMarruecos">🔥 Mapa de calor Marruecos</span>
-				</label>
-			</div>
-			<div class="linea-con-bt-info" title="Notas personales tomadas sobre despegues y aterrizajes">
-				<label for="checkboxNotasPersonales" class="custom-checkbox">
-				<input type="checkbox" id="checkboxNotasPersonales" class="custom-checkbox">
-				<span data-i18n="mapa.capasCheckbox.notas">✏️ Notas</span>
-				</label>
-			</div>
-			<div class="linea-con-bt-info" style="margin-bottom: 10px;" title="Despegues Paragliding.earth">
-				<label for="checkboxDespeguesMundo" class="custom-checkbox">
-				<input type="checkbox" id="checkboxDespeguesMundo" class="custom-checkbox">
-				<span data-i18n="mapa.capasCheckbox.despeguesMundo">🪂 Despegues Paraglidingearth</span>
-				</label>
-			</div>
 		</div>
 	</div>
 
+	<!-- 🟦 Control Filtros -->
     <div id="infoPanel2" class="info-panel">
 		<!-- Cabecera retraída del Panel 2 (Filtros) -->
 		<span id="labelMostrarOpciones2" class="labelMostrarOpciones" data-i18n="[title]mapa.filtros" title="Filtros">
 			<!-- Icono SVG de Filtros (Pirámide de líneas, igual que el de tu botón Meteo) -->
-			<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 				<line x1="4" y1="6" x2="20" y2="6"></line>
 				<line x1="8" y1="12" x2="16" y2="12"></line>
 				<line x1="11" y1="18" x2="13" y2="18"></line>

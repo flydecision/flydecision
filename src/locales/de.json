@@ -532,6 +532,7 @@
     "miUbicacion": "Mein Standort",
     "irMiUbicacion": "Zu meinem Standort gehen",
     "titlebtnFiltrosMeteo": "Filter nach Wetterbedingungen",
+    "titleDespeguesDeParapente": "Gleitschirm-Startplätze",
     "btnFiltros": "Wetterfilter",
     "filtros": "Filter",
     "buscadorPlaceholder": "Ort oder Koordinaten suchen...",
@@ -624,7 +625,8 @@
       "baliza": "Station",
       "proveedor": "Anbieter",
       "coordenadas": "Koordinaten",
-      "altitud": "Höhe"
+      "altitud": "Höhe",
+      "titleBalizas": "Windstationen"
     }
   },
 

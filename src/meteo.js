@@ -9327,13 +9327,20 @@ function comprobarAvisoCambiosPuntuacionXC() {
             const vistaMapa = document.getElementById('vista-mapa');
             if (vistaMapa && vistaMapa.style.display === 'flex') {
 
-                // infoPanel (Capas) 
+                // infoPanel (Despegues) 
                 const infoPanelCerrar = document.getElementById('infoPanel');
                 if (infoPanelCerrar && !infoPanelCerrar.classList.contains('retraido')) {
                     document.getElementById('buttonCerrar')?.click();
                     return;
                 }
                 
+                // infoPanel3 (Balizas)
+                const infoPanel3Cerrar = document.getElementById('infoPanel3');
+                if (infoPanel3Cerrar && !infoPanel3Cerrar.classList.contains('retraido')) {
+                    document.getElementById('buttonCerrar3')?.click();
+                    return;
+                }
+
                 // infoPanel2 (Filtros)
                 const infoPanel2Cerrar = document.getElementById('infoPanel2');
                 if (infoPanel2Cerrar && !infoPanel2Cerrar.classList.contains('retraido')) {
@@ -11651,21 +11658,47 @@ function inicializarMapaLeaflet() {
                     
             // --- Contenedor Principal (para la búsqueda y la lista) ---
             const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-text-search-container');
-    /*         container.style.background = 'white';
-            container.style.padding = '0px';
-            container.style.minWidth = '107px';
-            container.style.position = 'relative'; // Necesario para posicionar la lista
-            height: '30px';
-    */
-            container.style.zIndex = '1000'; // Asegura que la lista esté por encima del mapa
+            container.style.zIndex = '1000'; 
             container.style.height = '30px';
 
             // --- Campo de Búsqueda (Input) ---
             const input = L.DomUtil.create('input', 'leaflet-text-search-input', container);
-            const originalPlaceholder = t('mapa.buscadorDespegue');
             input.type = 'search';
-            input.placeholder = t('mapa.buscadorDespegue');
+            
+            // Ponemos un placeholder de texto limpio (ya no hacen falta los emojis aquí)
             input.title = t('mapa.titleBuscadorDespegue');
+
+            // Dejamos un margen de 50px a la izquierda del texto para no tapar los iconos flotantes
+            input.style.paddingLeft = '5px';
+
+            // --- NUEVO: Contenedor flotante para los iconos (Lupa + Parapente SVG) ---
+            const searchIconWrapper = L.DomUtil.create('div', 'leaflet-text-search-icons-wrapper', container);
+            searchIconWrapper.style.cssText = `
+                position: absolute;
+                left: 6px;
+                top: 50%;
+                transform: translateY(-50%);
+                pointer-events: none; /* Los clics atraviesan los iconos y activan el input */
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                color: #555; /* Color del trazo del parapente */
+            `;
+
+            searchIconWrapper.innerHTML = `
+                <span style="line-height: 1; user-select: none;">🔍</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Pendiente de la montaña (Plana al principio y cae agresivamente hacia la derecha) -->
+                    <path d="M 0 16.5 Q 12 16.5 20 24" stroke-width="2" />
+                    <!-- Cordinos (5 líneas centradas en la nueva posición del piloto) -->
+                    <path d="M 5 5 L 12 13 L 9 3.5 M 13 3 L 12 13 L 17 3.5 M 21 5 L 12 13" stroke-width="0.8" />
+                    <!-- Vela del parapente (100% horizontal, desplazada arriba y a la derecha) -->
+                    <path d="M 5 5 Q 13 -1 21 5 Q 13 3 5 5 Z" stroke-width="2" />
+                    <!-- Piloto (Cabeza y cuerpo engrosados, desplazado arriba y a la derecha) -->
+                    <circle cx="12" cy="11.5" r="1.6" fill="currentColor" stroke="none" />
+                    <path d="M 12 13 L 13 15.5 L 15.5 15 M 13 15.5 L 11.5 18.5" stroke-width="2" />
+                </svg>
+            `;
 
             // --- Lista de Autocompletado ---
             const autocompleteList = L.DomUtil.create('div', 'autocomplete-list', container);
@@ -11861,7 +11894,7 @@ function inicializarMapaLeaflet() {
 
     map.addControl(new L.Control.textSearch({ position: 'topleft' }));
 
-    // 🟡 CONTROL "infoPanel" (Capas)
+    // 🟡 CONTROL "infoPanel" (Despegues)
     const infopanelControl = L.Control.extend({
         onAdd: function (map) {
             const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-infopanel1');
@@ -11873,6 +11906,19 @@ function inicializarMapaLeaflet() {
         }
     });
     map.addControl(new infopanelControl({ position: 'topleft' }));
+
+    // 🟡 CONTROL "infoPanel3" (Balizas)
+    const infopanelControl3 = L.Control.extend({
+        onAdd: function (map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-infopanel3');
+            const panelHTML = document.getElementById('infoPanel3');
+            if (panelHTML) container.appendChild(panelHTML);
+            L.DomEvent.disableClickPropagation(container);
+            L.DomEvent.disableScrollPropagation(container);
+            return container;
+        }
+    });
+    map.addControl(new infopanelControl3({ position: 'topleft' }));
 
     // 🟡 CONTROL "infoPanel2" (Filtros)
     const infopanelControl2 = L.Control.extend({
@@ -13382,10 +13428,13 @@ function inicializarMapaLeaflet() {
     let isFijado = false; 
     let buttonFijar, buttonCerrar, iconoFijar, infoPanel, divOpciones, labelMostrarOpciones;
 
+    let isFijado3 = false; 
+    let buttonFijar3, buttonCerrar3, iconoFijar3, infoPanel3, divOpciones3, labelMostrarOpciones3;
+
     let isFijado2 = false; 
     let buttonFijar2, buttonCerrar2, iconoFijar2, infoPanel2, divOpciones2, labelMostrarOpciones2;
 
-    //  1. Inicialización de variables locales PANEL 1 (Capas)
+    //  1. Inicialización de variables locales PANEL 1 (Despegues)
     infoPanel = document.getElementById('infoPanel');
     buttonFijar = document.getElementById('buttonFijar');
     buttonCerrar = document.getElementById('buttonCerrar');
@@ -13393,7 +13442,15 @@ function inicializarMapaLeaflet() {
     divOpciones = document.getElementById('divOpciones');
     labelMostrarOpciones = document.getElementById('labelMostrarOpciones'); 
 
-    //  1.1 Inicialización de variables locales PANEL 2 (Filtros)
+    //  1.1 Inicialización de variables locales PANEL 3 (Balizas)
+    infoPanel3 = document.getElementById('infoPanel3');
+    buttonFijar3 = document.getElementById('buttonFijar3');
+    buttonCerrar3 = document.getElementById('buttonCerrar3');
+    iconoFijar3 = document.getElementById('iconoFijar3');
+    divOpciones3 = document.getElementById('divOpciones3');
+    labelMostrarOpciones3 = document.getElementById('labelMostrarOpciones3'); 
+    
+    //  1.2 Inicialización de variables locales PANEL 2 (Filtros)
     infoPanel2 = document.getElementById('infoPanel2');
     buttonFijar2 = document.getElementById('buttonFijar2');
     buttonCerrar2 = document.getElementById('buttonCerrar2');
@@ -13432,7 +13489,38 @@ function inicializarMapaLeaflet() {
         }); 
     }
 
-    //  2.1 Lógica de Inicialización y Listeners DOM/LEAFLET (Panel 2)
+    //  2.1 Lógica de Inicialización y Listeners DOM/LEAFLET (Panel 3)
+    if (infoPanel3 && labelMostrarOpciones3 && buttonFijar3 && buttonCerrar3 && divOpciones3) {
+        infoPanel3.style.display = 'block'; 
+        retraerOpciones3();
+        
+        L.DomEvent.on(buttonFijar3, 'click', function (event) {
+            L.DomEvent.stopPropagation(event);
+            isFijado3 = !isFijado3;
+            
+            if (isFijado3) {
+                buttonFijar3.classList.add('activo-fijado');
+                iconoFijar3.textContent = '📍';
+                expandirOpciones3();
+            } else {
+                buttonFijar3.classList.remove('activo-fijado');
+                iconoFijar3.textContent = '📌';
+                retraerOpciones3(); 
+            }
+        }); 
+        
+        L.DomEvent.on(buttonCerrar3, 'click', function (event) {
+            L.DomEvent.stopPropagation(event);
+            if (isFijado3) {
+                isFijado3 = false;
+                buttonFijar3.classList.remove('activo-fijado');
+                iconoFijar3.textContent = '📌';
+            }
+            retraerOpciones3();
+        }); 
+    }
+
+    //  2.2 Lógica de Inicialización y Listeners DOM/LEAFLET (Panel 2)
     if (infoPanel2 && labelMostrarOpciones2 && buttonFijar2 && buttonCerrar2 && divOpciones2) {
         infoPanel2.style.display = 'block'; 
         retraerOpciones2();
@@ -13466,6 +13554,7 @@ function inicializarMapaLeaflet() {
     // --- LISTENERS GENERALES DEL MAPA ---
     map.on('click', function() {
         retraerOpciones();
+        retraerOpciones3();
         retraerOpciones2();
     });
     
@@ -13476,6 +13565,7 @@ function inicializarMapaLeaflet() {
         if (autocompleteList) autocompleteList.style.display = 'none';		
         
         retraerOpciones();
+        retraerOpciones3();
         retraerOpciones2();
     });
 
@@ -13490,15 +13580,33 @@ function inicializarMapaLeaflet() {
         if (isFijado || !infoPanel) return;
         divOpciones.classList.add('oculto');
         infoPanel.classList.add('retraido');
-        //labelMostrarOpciones.style.display = 'block';
         L.DomEvent.on(infoPanel, 'click', expandirAlClicar);
     }
     function expandirOpciones() {
         if (!infoPanel) return;
         divOpciones.classList.remove('oculto');
         infoPanel.classList.remove('retraido');
-        //labelMostrarOpciones.style.display = 'none';
         L.DomEvent.off(infoPanel, 'click', expandirAlClicar);	
+    }
+
+    // --- FUNCIONES EXPANSIÓN/RETRACCIÓN PANEL 3 ---
+    function expandirAlClicar3(event) {
+        if (infoPanel3.classList.contains('retraido') && !isFijado3) {
+            L.DomEvent.stopPropagation(event);
+            expandirOpciones3();
+        }
+    }
+    function retraerOpciones3() {
+        if (isFijado3 || !infoPanel3) return;
+        divOpciones3.classList.add('oculto');
+        infoPanel3.classList.add('retraido');
+        L.DomEvent.on(infoPanel3, 'click', expandirAlClicar3);
+    }
+    function expandirOpciones3() {
+        if (!infoPanel3) return;
+        divOpciones3.classList.remove('oculto');
+        infoPanel3.classList.remove('retraido');
+        L.DomEvent.off(infoPanel3, 'click', expandirAlClicar3);	
     }
 
     // --- FUNCIONES EXPANSIÓN/RETRACCIÓN PANEL 2 ---
@@ -13512,14 +13620,12 @@ function inicializarMapaLeaflet() {
         if (isFijado2 || !infoPanel2) return;
         divOpciones2.classList.add('oculto');
         infoPanel2.classList.add('retraido');
-        //labelMostrarOpciones2.style.display = 'block';
         L.DomEvent.on(infoPanel2, 'click', expandirAlClicar2);
     }
     function expandirOpciones2() {
         if (!infoPanel2) return;
         divOpciones2.classList.remove('oculto');
         infoPanel2.classList.remove('retraido');
-        //labelMostrarOpciones2.style.display = 'none';
         L.DomEvent.off(infoPanel2, 'click', expandirAlClicar2);	
     }
 

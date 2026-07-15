@@ -532,6 +532,7 @@
     "miUbicacion": "Nire kokapena",
     "irMiUbicacion": "Joan nire kokapenera",
     "titlebtnFiltrosMeteo": "Baldintza meteorologikoen araberako iragazkiak",
+    "titleDespeguesDeParapente": "Parapente-aireratzeak",
     "btnFiltros": "Meteo iragazkiak",
     "filtros": "Iragazkiak",
     "buscadorPlaceholder": "Bilatu lekua edo koordenatuak...",
@@ -624,7 +625,8 @@
       "baliza": "Baliza",
       "proveedor": "Hornitzailea",
       "coordenadas": "Koordenatuak",
-      "altitud": "Altitudea"
+      "altitud": "Altitudea",
+      "titleBalizas": "Haize-balizak"
     }
   },
 

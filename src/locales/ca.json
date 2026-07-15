@@ -532,6 +532,7 @@
     "miUbicacion": "La meva ubicació",
     "irMiUbicacion": "Anar a la meva ubicació",
     "titlebtnFiltrosMeteo": "Filtres per Condicions meteorològiques",
+    "titleDespeguesDeParapente": "Enlairaments de parapent",
     "btnFiltros": "Filtres meteo",
     "filtros": "Filtres",
     "buscadorPlaceholder": "Cercar lloc o coordenades...",
@@ -624,7 +625,8 @@
       "baliza": "Balisa",
       "proveedor": "Proveïdor",
       "coordenadas": "Coordenades",
-      "altitud": "Altitud"
+      "altitud": "Altitud",
+      "titleBalizas": "Balises de vent"
     }
   },
 

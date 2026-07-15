@@ -3165,21 +3165,22 @@ details.config-accordion .accordion-content {
 
 /* Apilar paneles de la izquierda en vertical con separación */
 .leaflet-control-infopanel1,
-.leaflet-control-infopanel2 {
+.leaflet-control-infopanel2,
+.leaflet-control-infopanel3 {
     clear: both !important;
     margin-top: 3px !important;
 }
 
 /* Agrupación de selectores para compartir el estilo entre panel 1 y panel 2 */
-#divOpciones, #divOpciones2 {
+#divOpciones, #divOpciones3, #divOpciones2 {
 	overflow: hidden;
 }
-#divOpciones.oculto, #divOpciones2.oculto {
+#divOpciones.oculto, #divOpciones3.oculto, #divOpciones2.oculto {
   max-height: 0; /* se retrae hasta 0 */
 }
 
 /* Estilos de los botones del panel */
-#buttonFijar, #buttonFijar2 {
+#buttonFijar, #buttonFijar3, #buttonFijar2 {
 	font-size: 1.2em;
 	float: right;
 	width: 30px;
@@ -3190,19 +3191,19 @@ details.config-accordion .accordion-content {
     top: 5px;
     right: 42px;
 }
-#buttonFijar.activo-fijado, #buttonFijar2.activo-fijado {
+#buttonFijar.activo-fijado, #buttonFijar3.activo-fijado, #buttonFijar2.activo-fijado {
 	background-color: #f0f0f0; 
 	box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(0, 0, 0, 0.1); 	
 	border-color: #555;
 	transform: translateY(1px);
 }
-#buttonFijar #iconoFijar, #buttonFijar2 #iconoFijar2 {
+#buttonFijar #iconoFijar, #buttonFijar3 #iconoFijar3, #buttonFijar2 #iconoFijar2 {
 	display: inline-block;
 	font-size: 1em; 
 	line-height: 1;
 	cursor: pointer;
 }	
-#buttonCerrar, #buttonCerrar2 {
+#buttonCerrar, #buttonCerrar3, #buttonCerrar2 {
     float: right;
     margin-left: 10px;
     position: absolute;
@@ -3246,12 +3247,14 @@ details.config-accordion .accordion-content {
 
 /* Ocultar los botones de cerrar cuando el panel está retraído */
 .info-panel.retraido #buttonCerrar, 
+.info-panel.retraido #buttonCerrar3,
 .info-panel.retraido #buttonCerrar2 {
     display: none !important;
 }
 
 /* Mostrar los botones de cerrar (usando flex para centrar el icono) cuando el panel se expande */
 .info-panel:not(.retraido) #buttonCerrar, 
+.info-panel:not(.retraido) #buttonCerrar3,
 .info-panel:not(.retraido) #buttonCerrar2 {
     display: flex !important;
 }

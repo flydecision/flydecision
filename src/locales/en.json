@@ -532,6 +532,7 @@
     "miUbicacion": "My location",
     "irMiUbicacion": "Go to my location",
     "titlebtnFiltrosMeteo": "Filters by Weather conditions",
+    "titleDespeguesDeParapente": "Paragliding takeoffs",
     "btnFiltros": "Weather filters",
     "filtros": "Filters",
     "buscadorPlaceholder": "Search place or coordinates...",
@@ -624,7 +625,8 @@
       "baliza": "Beacon",
       "proveedor": "Provider",
       "coordenadas": "Coordinates",
-      "altitud": "Altitude"
+      "altitud": "Altitude",
+      "titleBalizas": "Wind beacons"
     }
   },
 

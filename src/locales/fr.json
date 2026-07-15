@@ -532,6 +532,7 @@
     "miUbicacion": "Ma position",
     "irMiUbicacion": "Aller à ma position",
     "titlebtnFiltrosMeteo": "Filtres par Conditions météorologiques",
+    "titleDespeguesDeParapente": "Décollages de parapente",
     "btnFiltros": "Filtres météo",
     "filtros": "Filtres",
     "buscadorPlaceholder": "Rechercher un lieu ou des coordonnées...",
@@ -624,7 +625,8 @@
       "baliza": "Balise",
       "proveedor": "Fournisseur",
       "coordenadas": "Coordonnées",
-      "altitud": "Altitude"
+      "altitud": "Altitude",
+      "titleBalizas": "Balises de vent"
     }
   },
 

@@ -532,6 +532,7 @@
     "miUbicacion": "A miña localización",
     "irMiUbicacion": "Ir á miña localización",
     "titlebtnFiltrosMeteo": "Filtros por Condicións meteorolóxicas",
+    "titleDespeguesDeParapente": "Despegues de parapente",
     "btnFiltros": "Filtros meteo",
     "filtros": "Filtros",
     "buscadorPlaceholder": "Buscar lugar ou coordenadas...",
@@ -620,7 +621,12 @@
       "balizas_cargando_grafico": "Cargando gráfico...",
       "balizas_sin_historico": "Gráfico non dispoñible: non hai datos das últimas 4 horas.",
       "leyenda_rosa_meteorologica": "Últimas 2 h:",
-      "leyenda_grafico_ultimas_4h": "Últimas 4 h:"
+      "leyenda_grafico_ultimas_4h": "Últimas 4 h:",
+      "baliza": "Baliza",
+      "proveedor": "Provedor",
+      "coordenadas": "Coordenadas",
+      "altitud": "Altitude",
+      "titleBalizas": "Balizas de vento"
     }
   },
 
