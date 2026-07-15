@@ -214,7 +214,7 @@
     "podrasVerla": "Vous pouvez le consulter à tout moment en utilisant le bouton <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> sur cet écran.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Tableau des décollages avec prévision horaire",
+        "titulo": "<icon-despegue></icon-despegue>Tableau des décollages avec prévision horaire",
         "descripcion": "Affiche un tableau avec tous les décollages que vous avez sélectionnés comme favoris, leurs prévisions météorologiques horaires et leur score de conditions calculé, de 0 à 10 (pour décoller et commencer des itinéraires XC).<br><br>Les décollages sont toujours automatiquement triés par leur score de conditions de décollage (du plus élevé au plus bas)."
       },
       "selectorHorario": {
@@ -317,7 +317,7 @@
     "podrasVerla": "Vous pouvez le consulter à tout moment en utilisant le bouton <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> sur cet écran.",
     "pasos": {
       "intro": {
-        "titulo": "🪂 Écran d'édition des décollages favoris",
+        "titulo": "<icon-despegue></icon-despegue>Écran d'édition des décollages favoris",
         "descripcion": "Cet écran affiche tous les décollages disponibles. Sélectionnez ceux que vous utilisez régulièrement. La vue normale de l'application n'affichera que ces favoris.<br><br>Vous pourriez tous les sélectionner, mais selon votre appareil, cela pourrait ralentir les recherches et l'utilisation quotidienne.<br><br>Couvre actuellement l'Espagne, le Portugal, les Pyrénées et les principales zones alpines. C'est un projet en pleine croissance."
       },
       "celdaFavorito": {
@@ -381,7 +381,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Où voler ?</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Où voler ?</p>",
       "btnPrimario": "Sélectionner des favoris",
       "btnSecundario": "Voir le guide général",
       "btnImportar": "Importer les paramètres",
@@ -403,7 +403,7 @@
       "btnAvanzadoDesc": "Toutes les options et filtres disponibles"
     },
     "paso2": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Analyse automatisée des prévisions météorologiques pour le parapente.</p><p>🙄 <b>À quoi ça sert ? :</b> à vous aider à décider où voler. Il affiche un tableau avec vos décollages favoris, leurs prévisions, et effectue une analyse automatisée de ces <b>conditions météorologiques</b>.</p><p>🧮 <b>Quelle analyse effectue-t-il ? :</b> il compare les prévisions avec vos limites configurées de vent moyen et de rafales maximales et l'orientation de chaque décollage ; il analyse également le vent à des altitudes proches du décollage (80, 120 et 180 m), donnant un aperçu du gradient de vent et de la fiabilité des prévisions. Il affiche les données clés de XC (plafond, CAPE et CIN).</p><p>Avec toutes ces informations, il note chaque décollage de 0 à 10 et code en couleur 🟩&nbsp;🟨&nbsp;🟥 les données pour la plage horaire choisie. Vous pouvez personnaliser toutes les limites pour correspondre à vos préférences.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision. Analyse automatisée des prévisions météorologiques pour le parapente.</p><p>🙄 <b>À quoi ça sert ? :</b> à vous aider à décider où voler. Il affiche un tableau avec vos décollages favoris, leurs prévisions, et effectue une analyse automatisée de ces <b>conditions météorologiques</b>.</p><p>🧮 <b>Quelle analyse effectue-t-il ? :</b> il compare les prévisions avec vos limites configurées de vent moyen et de rafales maximales et l'orientation de chaque décollage ; il analyse également le vent à des altitudes proches du décollage (80, 120 et 180 m), donnant un aperçu du gradient de vent et de la fiabilité des prévisions. Il affiche les données clés de XC (plafond, CAPE et CIN).</p><p>Avec toutes ces informations, il note chaque décollage de 0 à 10 et code en couleur 🟩&nbsp;🟨&nbsp;🟥 les données pour la plage horaire choisie. Vous pouvez personnaliser toutes les limites pour correspondre à vos préférences.</p>"
     },
     "paso3": {
       "html": "<p>💨️ <b>Données météorologiques :</b> prévisions horaires sur 4 jours (96h). Mises à jour 8 fois par jour avec les données officielles de Météo-France issues des modèles Arome-HD 1,3 km (0-48h) et Arpège 7 km (48-96h), et 4 fois par jour avec les données du CEPMMT/ECMWF (0-96h).</p><p>🆓 <b>Coût et confidentialité :</b> 100 % gratuit, sans abonnement, sans publicité et sans suivi (cookies, télémétrie,...). Vos paramètres sont enregistrés en privé dans votre navigateur. C'est un projet libre et ouvert, opérationnel depuis 2026 et en évolution.</p>"
@@ -549,25 +549,25 @@
     "fijarPanel": "Épingler le panneau (ne pas cacher lors du déplacement de la carte)",
     "masInformacion": "Plus d'informations ▼",
     "volverEdicion": "Retour à l'édition des favoris",
-    "despeguesReactivados": "Couche <i>🪂 Décollages</i> réactivée",
+    "despeguesReactivados": "Couche <i><icon-despegue></icon-despegue>Décollages</i> réactivée",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Vous êtes ici&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "titulo_infopanel": "Décollages",
     "capasCheckbox": {
-      "despegues": "🪂 Décollages",
+      "despegues": "Décollages",
       "balizas": "🚩 Balises",
       "mapaCalorPeninsula": "🔥 Carte thermique Ibérique",
       "mapaCalorAlpes": "🔥 Carte thermique Alpes",
       "mapaCalorMarruecos": "🔥 Carte thermique Maroc",
       "notas": "✏️ Notes",
-      "despeguesMundo": "🪂 Décollages Paraglidingearth"
+      "despeguesMundo": "Décollages Paraglidingearth"
     },
     "cargandoCalorPeninsula": "⏳ Chargement de la carte thermique Ibérique...<br><br>(309 157 décollages enregistrés)",
     "cargandoCalorAlpes": "⏳ Chargement de la carte thermique des Alpes...<br><br>(967 477 décollages enregistrés)",
     "cargandoCalorMarruecos": "⏳ Chargement de la carte thermique du Maroc...<br><br>(11 006 décollages enregistrés)",
     "errorCSV": "Erreur de chargement du CSV. Vérifiez la console pour plus de détails.",
     "errorCSVAlpes": "Erreur de chargement du fichier CSV des Alpes.",
-    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} Décollages XContest</b>",
-    "despegueXContest": "🪂<br>Décollage XContest",
+    "grupoXContest": "<b><br>{{count}} Décollages XContest</b>",
+    "despegueXContest": "<icon-despegue></icon-despegue><br>Décollage XContest",
     "coordenadasMedias": "Coordonnées moyennes :",
     "coordenadas": "Coordonnées :",
     "fecha": "Date :",

@@ -214,7 +214,7 @@
     "podrasVerla": "Pots consultar-la en qualsevol moment utilitzant el botó <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> d'aquesta pantalla.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Taula d'enlairaments amb predicció horària",
+        "titulo": "<icon-despegue></icon-despegue>Taula d'enlairaments amb predicció horària",
         "descripcion": "Mostra una taula amb tots els enlairaments que has seleccionat com a preferits, el seu pronòstic meteorològic per hores i la seva puntuació calculada de condicions, de 0 a 10 (per enlairar-se i per iniciar rutes XC).<br><br>Els enlairaments estan sempre ordenats automàticament per la seva puntuació de condicions per enlairar-se (de major a menor)."
       },
       "selectorHorario": {
@@ -317,7 +317,7 @@
     "podrasVerla": "Pots consultar-la en qualsevol moment utilitzant el botó <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> d'aquesta pantalla.",
     "pasos": {
       "intro": {
-        "titulo": "🪂 Pantalla d'edició d'enlairaments preferits",
+        "titulo": "<icon-despegue></icon-despegue>Pantalla d'edició d'enlairaments preferits",
         "descripcion": "Aquesta pantalla mostra tots els enlairaments disponibles. Selecciona els que utilitzes habitualment. La vista normal de l'aplicació només mostrarà aquests preferits.<br><br>Podries seleccionar-los tots, però depenent del teu dispositiu, podria alentir les cerques i l'ús diari.<br><br>Actualment cobreix Espanya, Portugal, els Pirineus i les principals zones alpines. És un projecte en creixement."
       },
       "celdaFavorito": {
@@ -381,7 +381,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>On volar?</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>On volar?</p>",
       "btnPrimario": "Seleccionar preferits",
       "btnSecundario": "Veure guia general",
       "btnImportar": "Importar ajustos",
@@ -403,7 +403,7 @@
       "btnAvanzadoDesc": "Totes les opcions i filtres disponibles"
     },
     "paso2": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Anàlisi automatitzada de la previsió meteorològica per a parapent.</p><p>🙄 <b>Per a què serveix?:</b> per ajudar-te a decidir on volar. Mostra una taula amb els teus enlairaments preferits, les seves previsions, i realitza una anàlisi automatitzada d'aquestes <b>condicions meteorològiques</b>.</p><p>🧮 <b>Quina anàlisi fa?:</b> compara la previsió amb els teus límits configurats de vent mitjà i ratxes màximes, i l'orientació de cada enlairament; també analitza el vent a altituds properes a l'enlairament (80, 120 i 180 m), proporcionant informació sobre el gradient de vent i la fiabilitat de la previsió. Mostra dades clau d'XC (sostre, CAPE i CIN).</p><p>Amb tota aquesta informació, puntua cada enlairament de 0 a 10 i codifica amb colors 🟩&nbsp;🟨&nbsp;🟥 les dades per a la franja horària triada. Pots personalitzar tots els límits per adaptar-los a les teves preferències.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision. Anàlisi automatitzada de la previsió meteorològica per a parapent.</p><p>🙄 <b>Per a què serveix?:</b> per ajudar-te a decidir on volar. Mostra una taula amb els teus enlairaments preferits, les seves previsions, i realitza una anàlisi automatitzada d'aquestes <b>condicions meteorològiques</b>.</p><p>🧮 <b>Quina anàlisi fa?:</b> compara la previsió amb els teus límits configurats de vent mitjà i ratxes màximes, i l'orientació de cada enlairament; també analitza el vent a altituds properes a l'enlairament (80, 120 i 180 m), proporcionant informació sobre el gradient de vent i la fiabilitat de la previsió. Mostra dades clau d'XC (sostre, CAPE i CIN).</p><p>Amb tota aquesta informació, puntua cada enlairament de 0 a 10 i codifica amb colors 🟩&nbsp;🟨&nbsp;🟥 les dades per a la franja horària triada. Pots personalitzar tots els límits per adaptar-los a les teves preferències.</p>"
     },
     "paso3": {
       "html": "<p>💨️ <b>Dades meteorològiques:</b> previsió horària per a 4 dies (96h). S'actualitza 8 vegades al dia amb dades oficials de Météo-France dels models Arome-HD 1.3km (0-48h) i Arpege 7km (48-96h), i 4 vegades al dia amb dades de l'ECMWF (0-96h).</p><p>🆓 <b>Cost i privacitat:</b> 100% gratuït, sense subscripcions, sense anuncis i sense seguiment (galetes, telemetria...). Els teus ajustos es desen de manera privada al teu navegador. És un projecte lliure i obert, operatiu des de 2026 i en evolució.</p>"
@@ -549,25 +549,25 @@
     "fijarPanel": "Fixar Panell (no amagar en moure el mapa)",
     "masInformacion": "Més informació ▼",
     "volverEdicion": "Tornar a Editar Preferits",
-    "despeguesReactivados": "Capa <i>🪂 Enlairaments</i> reactivada",
+    "despeguesReactivados": "Capa <i><icon-despegue></icon-despegue>Enlairaments</i> reactivada",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Ets aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "titulo_infopanel": "Enlairaments",
     "capasCheckbox": {
-      "despegues": "🪂 Enlairaments",
+      "despegues": "Enlairaments",
       "balizas": "🚩 Balises",
       "mapaCalorPeninsula": "🔥 Mapa de Calor Ibèric",
       "mapaCalorAlpes": "🔥 Mapa de Calor Alps",
       "mapaCalorMarruecos": "🔥 Mapa de Calor Marroc",
       "notas": "✏️ Notes",
-      "despeguesMundo": "🪂 Enlairaments Paraglidingearth"
+      "despeguesMundo": "Enlairaments Paraglidingearth"
     },
     "cargandoCalorPeninsula": "⏳ Carregant Mapa de Calor Ibèric...<br><br>(309.157 enlairaments registrats)",
     "cargandoCalorAlpes": "⏳ Carregant Mapa de Calor dels Alps...<br><br>(967.477 enlairaments registrats)",
     "cargandoCalorMarruecos": "⏳ Carregant Mapa de Calor del Marroc...<br><br>(11.006 enlairaments registrats)",
     "errorCSV": "Error en carregar el CSV. Revisa la consola per veure'n els detalls.",
     "errorCSVAlpes": "Error en carregar el fitxer CSV dels Alps.",
-    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} Enlairaments XContest</b>",
-    "despegueXContest": "🪂<br>Enlairament XContest",
+    "grupoXContest": "<b><br>{{count}} Enlairaments XContest</b>",
+    "despegueXContest": "<icon-despegue></icon-despegue><br>Enlairament XContest",
     "coordenadasMedias": "Coordenades mitjanes:",
     "coordenadas": "Coordenades:",
     "fecha": "Data:",

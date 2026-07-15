@@ -214,7 +214,7 @@
     "podrasVerla": "Podes consultala en calquera momento utilizando o botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> nesta pantalla.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Táboa de despegues con predición horaria",
+        "titulo": "<icon-despegue></icon-despegue>Táboa de despegues con predición horaria",
         "descripcion": "Mostra unha táboa con todos os despegues que seleccionaches como favoritos, o seu prognóstico meteorolóxico por horas e a súa puntuación calculada de condicións, de 0 a 10 (para despegar e para iniciar rutas XC).<br><br>Os despegues están sempre ordenados automaticamente pola súa puntuación de condicións para despegar (de maior a menor)."
       },
       "selectorHorario": {
@@ -317,7 +317,7 @@
     "podrasVerla": "Podes consultala en calquera momento utilizando o botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> nesta pantalla.",
     "pasos": {
       "intro": {
-        "titulo": "🪂 Pantalla de edición de engalaxes favoritas",
+        "titulo": "<icon-despegue></icon-despegue>Pantalla de edición de engalaxes favoritas",
         "descripcion": "Esta pantalla mostra todas as engalaxes dispoñibles. Selecciona as que utilizas habitualmente. A vista normal da aplicación só mostrará eses favoritos.<br><br>Poderías seleccionalas todas, pero dependendo do teu dispositivo, iso podería retardar as buscas e o uso diario.<br><br>Actualmente cobre España, Portugal, os Pireneos e as principais zonas alpinas. É un proxecto en crecemento."
       },
       "celdaFavorito": {
@@ -381,7 +381,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Onde voar?</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Onde voar?</p>",
       "btnPrimario": "Seleccionar favoritos",
       "btnSecundario": "Ver guía xeral",
       "btnImportar": "Importar axustes",
@@ -403,7 +403,7 @@
       "btnAvanzadoDesc": "Todas as opcións e filtros dispoñibles"
     },
     "paso2": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Análise automatizada da previsión meteorolóxica para parapente.</p><p>🙄 <b>Para que serve?:</b> para axudarche a decidir onde voar. Mostra unha táboa coas túas engalaxes favoritas, as súas previsións, e realiza unha análise automatizada destas <b>condicións meteorolóxicas</b>.</p><p>🧮 <b>Que análise fai?:</b> compara a previsión cos teus límites configurados de vento medio e refachos máximos, e a orientación de cada engalaxe; tamén analiza o vento a altitudes próximas á engalaxe (80, 120 e 180 m), proporcionando información sobre o gradiente de vento e a fiabilidade da previsión. Mostra datos clave de XC (teito, CAPE e CIN).</p><p>Con toda esta información, puntúa cada engalaxe de 0 a 10 e codifica con cores 🟩&nbsp;🟨&nbsp;🟥 os datos para a franxa horaria escollida. Podes personalizar todos os límites para adaptalos ás túas preferencias.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision. Análise automatizada da previsión meteorolóxica para parapente.</p><p>🙄 <b>Para que serve?:</b> para axudarche a decidir onde voar. Mostra unha táboa coas túas engalaxes favoritas, as súas previsións, e realiza unha análise automatizada destas <b>condicións meteorolóxicas</b>.</p><p>🧮 <b>Que análise fai?:</b> compara a previsión cos teus límites configurados de vento medio e refachos máximos, e a orientación de cada engalaxe; tamén analiza o vento a altitudes próximas á engalaxe (80, 120 e 180 m), proporcionando información sobre o gradiente de vento e a fiabilidade da previsión. Mostra datos clave de XC (teito, CAPE e CIN).</p><p>Con toda esta información, puntúa cada engalaxe de 0 a 10 e codifica con cores 🟩&nbsp;🟨&nbsp;🟥 os datos para a franxa horaria escollida. Podes personalizar todos os límites para adaptalos ás túas preferencias.</p>"
     },
     "paso3": {
       "html": "<p>💨️ <b>Datos meteorolóxicos:</b> previsión horaria para 4 días (96h). Actualízase 8 veces ao día con datos oficiais da Météo-France dos modelos Arome-HD 1.3km (0-48h) e Arpege 7km (48-96h), e 4 veces ao día con datos do ECMWF (0-96h).</p><p>🆓 <b>Custo e privacidade:</b> 100% gratuíto, sen subscricións, sen anuncios e sen rastrexo (cookies, telemetría...). Os teus axustes gárdanse de forma privada no teu navegador. É un proxecto libre e aberto, operativo desde 2026 e en evolución.</p>"
@@ -549,25 +549,25 @@
     "fijarPanel": "Fixar Panel (non ocultar ao mover o mapa)",
     "masInformacion": "Máis información ▼",
     "volverEdicion": "Volver a Editar Favoritos",
-    "despeguesReactivados": "Capa <i>🪂 Despegues</i> reactivada",
+    "despeguesReactivados": "Capa <i><icon-despegue></icon-despegue>Despegues</i> reactivada",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Estás aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "titulo_infopanel": "Despegues",
     "capasCheckbox": {
-      "despegues": "🪂 Engalaxes",
+      "despegues": "Engalaxes",
       "balizas": "🚩 Balizas",
       "mapaCalorPeninsula": "🔥 Mapa de Calor Ibérico",
       "mapaCalorAlpes": "🔥 Mapa de Calor Alpes",
       "mapaCalorMarruecos": "🔥 Mapa de Calor Marrocos",
       "notas": "✏️ Notas",
-      "despeguesMundo": "🪂 Engalaxes Paraglidingearth"
+      "despeguesMundo": "Engalaxes Paraglidingearth"
     },
     "cargandoCalorPeninsula": "⏳ Cargando Mapa de Calor Ibérico...<br><br>(309.157 engalaxes rexistradas)",
     "cargandoCalorAlpes": "⏳ Cargando Mapa de Calor dos Alpes...<br><br>(967.477 engalaxes rexistradas)",
     "cargandoCalorMarruecos": "⏳ Cargando Mapa de Calor de Marrocos...<br><br>(11.006 engalaxes rexistradas)",
     "errorCSV": "Erro ao cargar o CSV. Revisa a consola para máis detalles.",
     "errorCSVAlpes": "Erro ao cargar o ficheiro CSV dos Alpes.",
-    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} Engalaxes XContest</b>",
-    "despegueXContest": "🪂<br>Engalaxe XContest",
+    "grupoXContest": "<b><br>{{count}} Engalaxes XContest</b>",
+    "despegueXContest": "<icon-despegue></icon-despegue><br>Engalaxe XContest",
     "coordenadasMedias": "Coordenadas medias:",
     "coordenadas": "Coordenadas:",
     "fecha": "Data:",

@@ -214,7 +214,7 @@
     "podrasVerla": "You can see it anytime using the <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> button on this screen.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Takeoff table with hourly forecast",
+        "titulo": "<icon-despegue></icon-despegue>Takeoff table with hourly forecast",
         "descripcion": "Shows a table with all the takeoffs you have selected as favorites, their hourly weather forecast, and their calculated conditions score, from 0 to 10 (for taking off and starting XC routes).<br><br>The takeoffs are always automatically sorted by their takeoff conditions score (from highest to lowest)."
       },
       "selectorHorario": {
@@ -317,7 +317,7 @@
     "podrasVerla": "You can see it anytime using the <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> button on this screen.",
     "pasos": {
       "intro": {
-        "titulo": "🪂 Edit Favorite Takeoffs Screen",
+        "titulo": "<icon-despegue></icon-despegue>Edit Favorite Takeoffs Screen",
         "descripcion": "This screen shows all available takeoffs. Select the ones you use regularly. The normal app view will only show these favorites.<br><br>You could select them all, but depending on your device, it might slow down searches and daily usage.<br><br>Currently covers Spain, Portugal, Pyrenees, and major Alpine areas. This is a growing project."
       },
       "celdaFavorito": {
@@ -381,7 +381,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Where to fly?</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Where to fly?</p>",
       "btnPrimario": "Select favorites",
       "btnSecundario": "View general guide",
       "btnImportar": "Import settings",
@@ -403,7 +403,7 @@
       "btnAvanzadoDesc": "All available options and filters"
     },
     "paso2": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Automated weather forecast analysis for paragliding.</p><p>🙄 <b>What is it for?:</b> to help you decide where to fly. It shows a table with your favorite takeoffs, their forecasts, and performs an automated analysis of those <b>weather conditions</b>.</p><p>🧮 <b>What analysis does it perform?:</b> it compares the forecast against your configured mean wind and max gust limits and each takeoff's orientation; it also analyzes wind at altitudes near the takeoff (80, 120, and 180 m), providing insight into wind gradient and forecast reliability. It shows key XC data (ceiling, CAPE, and CIN).</p><p>With all this info, it scores each takeoff from 0 to 10 and color-codes 🟩&nbsp;🟨&nbsp;🟥 the data for your chosen time range. You can customize all limits to match your preferences.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision. Automated weather forecast analysis for paragliding.</p><p>🙄 <b>What is it for?:</b> to help you decide where to fly. It shows a table with your favorite takeoffs, their forecasts, and performs an automated analysis of those <b>weather conditions</b>.</p><p>🧮 <b>What analysis does it perform?:</b> it compares the forecast against your configured mean wind and max gust limits and each takeoff's orientation; it also analyzes wind at altitudes near the takeoff (80, 120, and 180 m), providing insight into wind gradient and forecast reliability. It shows key XC data (ceiling, CAPE, and CIN).</p><p>With all this info, it scores each takeoff from 0 to 10 and color-codes 🟩&nbsp;🟨&nbsp;🟥 the data for your chosen time range. You can customize all limits to match your preferences.</p>"
     },
     "paso3": {
       "html": "<p>💨️ <b>Weather data:</b> hourly forecast for 4 days (96h). Updated 8 times a day with official Météo-France data from Arome-HD 1.3km (0-48h) and Arpege 7km (48-96h) models, and 4 times a day with ECMWF data (0-96h).</p><p>🆓 <b>Cost and privacy:</b> 100% free, no subscriptions, no ads, and no tracking (cookies, telemetry,...). Your settings are saved privately in your browser. It is a free and open project, operational since 2026 and evolving.</p>"
@@ -549,25 +549,25 @@
     "fijarPanel": "Pin Panel (don't hide when moving map)",
     "masInformacion": "More information ▼",
     "volverEdicion": "Back to Edit Favorites",
-    "despeguesReactivados": "<i>🪂 Takeoffs</i> layer reactivated",
+    "despeguesReactivados": "<i><icon-despegue></icon-despegue>Takeoffs</i> layer reactivated",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;You are here&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "titulo_infopanel": "Takeoffs",
     "capasCheckbox": {
-      "despegues": "🪂 Takeoffs",
+      "despegues": "Takeoffs",
       "balizas": "🚩 Stations",
       "mapaCalorPeninsula": "🔥 Iberia Heatmap",
       "mapaCalorAlpes": "🔥 Alps Heatmap",
       "mapaCalorMarruecos": "🔥 Morocco Heatmap",
       "notas": "✏️ Notes",
-      "despeguesMundo": "🪂 Paraglidingearth Takeoffs"
+      "despeguesMundo": "Paraglidingearth Takeoffs"
     },
     "cargandoCalorPeninsula": "⏳ Loading Iberia Heatmap...<br><br>(309,157 takeoffs registered)",
     "cargandoCalorAlpes": "⏳ Loading Alps Heatmap...<br><br>(967,477 takeoffs registered)",
     "cargandoCalorMarruecos": "⏳ Loading Morocco Heatmap...<br><br>(11,006 takeoffs registered)",
     "errorCSV": "Error loading CSV. Check console for details.",
     "errorCSVAlpes": "Error loading Alps CSV file.",
-    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} XContest Takeoffs</b>",
-    "despegueXContest": "🪂<br>XContest Takeoff",
+    "grupoXContest": "<b><br>{{count}} XContest Takeoffs</b>",
+    "despegueXContest": "<icon-despegue></icon-despegue><br>XContest Takeoff",
     "coordenadasMedias": "Mean coordinates:",
     "coordenadas": "Coordinates:",
     "fecha": "Date:",

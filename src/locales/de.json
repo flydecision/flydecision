@@ -214,7 +214,7 @@
     "podrasVerla": "Du kannst sie jederzeit über die Schaltfläche <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> auf diesem Bildschirm aufrufen.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Startplatztabelle mit stündlicher Vorhersage",
+        "titulo": "<icon-despegue></icon-despegue>Startplatztabelle mit stündlicher Vorhersage",
         "descripcion": "Zeigt eine Tabelle mit allen als Favoriten ausgewählten Startplätzen, deren stündlicher Wettervorhersage und der berechneten Bedingungspunktzahl von 0 bis 10 (für den Start und den Beginn von XC-Routen).<br><br>Die Startplätze werden immer automatisch nach ihrer Bedingungspunktzahl für den Start sortiert (von der höchsten zur niedrigsten)."
       },
       "selectorHorario": {
@@ -317,7 +317,7 @@
     "podrasVerla": "Du kannst sie jederzeit über die Schaltfläche <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> auf diesem Bildschirm aufrufen.",
     "pasos": {
       "intro": {
-        "titulo": "🪂 Favoriten bearbeiten - Bildschirm",
+        "titulo": "<icon-despegue></icon-despegue>Favoriten bearbeiten - Bildschirm",
         "descripcion": "Dieser Bildschirm zeigt alle verfügbaren Startplätze. Wähle die aus, die du regelmäßig nutzt. Die normale App-Ansicht zeigt dann nur noch diese Favoriten an.<br><br>Du könntest alle auswählen, aber je nach Gerät könnte dies die Suche und die tägliche Nutzung verlangsamen.<br><br>Deckt derzeit Spanien, Portugal, die Pyrenäen und die wichtigsten Alpenregionen ab. Dies ist ein wachsendes Projekt."
       },
       "celdaFavorito": {
@@ -381,7 +381,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Wo fliegen?</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Wo fliegen?</p>",
       "btnPrimario": "Favoriten auswählen",
       "btnSecundario": "Allgemeine Anleitung ansehen",
       "btnImportar": "Optionen importieren",
@@ -403,7 +403,7 @@
       "btnAvanzadoDesc": "Alle verfügbaren Optionen und Filter"
     },
     "paso2": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Automatisierte Analyse der Wettervorhersage für Gleitschirmflieger.</p><p>🙄 <b>Wofür ist das?:</b> um dir zu helfen, zu entscheiden, wo du fliegen möchtest. Es zeigt eine Tabelle mit deinen favorisierten Startplätzen, deren Vorhersagen und führt eine automatisierte Analyse dieser <b>Wetterbedingungen</b> durch.</p><p>🧮 <b>Welche Analyse wird durchgeführt?:</b> Es vergleicht die Vorhersage mit deinen konfigurierten Grenzwerten für mittleren Wind und maximale Böen sowie der Ausrichtung jedes Startplatzes; es analysiert auch den Wind in Höhen nahe dem Startplatz (80, 120 und 180 m), was Einblicke in den Windgradienten und die Zuverlässigkeit der Vorhersage gibt. Es zeigt wichtige XC-Daten (Flughöhe, CAPE und CIN).</p><p>Mit all diesen Infos bewertet es jeden Startplatz von 0 bis 10 und farbcodiert 🟩&nbsp;🟨&nbsp;🟥 die Daten für deinen gewählten Zeitraum. Du kannst alle Grenzwerte an deine Vorlieben anpassen.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision. Automatisierte Analyse der Wettervorhersage für Gleitschirmflieger.</p><p>🙄 <b>Wofür ist das?:</b> um dir zu helfen, zu entscheiden, wo du fliegen möchtest. Es zeigt eine Tabelle mit deinen favorisierten Startplätzen, deren Vorhersagen und führt eine automatisierte Analyse dieser <b>Wetterbedingungen</b> durch.</p><p>🧮 <b>Welche Analyse wird durchgeführt?:</b> Es vergleicht die Vorhersage mit deinen konfigurierten Grenzwerten für mittleren Wind und maximale Böen sowie der Ausrichtung jedes Startplatzes; es analysiert auch den Wind in Höhen nahe dem Startplatz (80, 120 und 180 m), was Einblicke in den Windgradienten und die Zuverlässigkeit der Vorhersage gibt. Es zeigt wichtige XC-Daten (Flughöhe, CAPE und CIN).</p><p>Mit all diesen Infos bewertet es jeden Startplatz von 0 bis 10 und farbcodiert 🟩&nbsp;🟨&nbsp;🟥 die Daten für deinen gewählten Zeitraum. Du kannst alle Grenzwerte an deine Vorlieben anpassen.</p>"
     },
     "paso3": {
       "html": "<p>💨️ <b>Wetterdaten:</b> stündliche Vorhersage für 4 Tage (96h). Wird 8-mal täglich mit offiziellen Daten von Météo-France aus den Modellen Arome-HD 1,3km (0-48h) und Arpège 7km (48-96h) aktualisiert, und 4-mal täglich mit ECMWF-Daten (0-96h).</p><p>🆓 <b>Kosten und Datenschutz:</b> 100% kostenlos, keine Abos, keine Werbung und kein Tracking (Cookies, Telemetrie,...). Deine Optionen werden privat in deinem Browser gespeichert. Es ist ein freies und offenes Projekt, in Betrieb seit 2026 und in stetiger Weiterentwicklung.</p>"
@@ -549,25 +549,25 @@
     "fijarPanel": "Panel anheften (beim Bewegen der Karte nicht ausblenden)",
     "masInformacion": "Weitere Informationen ▼",
     "volverEdicion": "Zurück zur Favoritenbearbeitung",
-    "despeguesReactivados": "Ebene <i>🪂 Startplätze</i> reaktiviert",
+    "despeguesReactivados": "Ebene <i><icon-despegue></icon-despegue>Startplätze</i> reaktiviert",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Du bist hier&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "titulo_infopanel": "Startplätze",
     "capasCheckbox": {
-      "despegues": "🪂 Startplätze",
+      "despegues": "Startplätze",
       "balizas": "🚩 Stationen",
       "mapaCalorPeninsula": "🔥 Iberische Heatmap",
       "mapaCalorAlpes": "🔥 Alpen Heatmap",
       "mapaCalorMarruecos": "🔥 Marokko Heatmap",
       "notas": "✏️ Notizen",
-      "despeguesMundo": "🪂 Paraglidingearth Startplätze"
+      "despeguesMundo": "Paraglidingearth Startplätze"
     },
     "cargandoCalorPeninsula": "⏳ Lade Iberische Halbinsel Heatmap...<br><br>(309.157 Startplätze registriert)",
     "cargandoCalorAlpes": "⏳ Lade Alpen Heatmap...<br><br>(967.477 Startplätze registriert)",
     "cargandoCalorMarruecos": "⏳ Lade Marokko Heatmap...<br><br>(11.006 Startplätze registriert)",
     "errorCSV": "Fehler beim Laden der CSV. Details in der Konsole prüfen.",
     "errorCSVAlpes": "Fehler beim Laden der Alpen-CSV-Datei.",
-    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} XContest Startplätze</b>",
-    "despegueXContest": "🪂<br>XContest Startplatz",
+    "grupoXContest": "<b><br>{{count}} XContest Startplätze</b>",
+    "despegueXContest": "<icon-despegue></icon-despegue><br>XContest Startplatz",
     "coordenadasMedias": "Mittlere Koordinaten:",
     "coordenadas": "Koordinaten:",
     "fecha": "Datum:",

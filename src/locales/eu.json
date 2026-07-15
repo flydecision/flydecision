@@ -214,7 +214,7 @@
     "podrasVerla": "Edozein unetan kontsulta dezakezu pantaila honetako <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> botoia erabiliz.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Aireratzeen taula orduz orduko iragarpenarekin",
+        "titulo": "<icon-despegue></icon-despegue>Aireratzeen taula orduz orduko iragarpenarekin",
         "descripcion": "Gogoko gisa hautatu dituzun aireratze guztien taula bat erakusten du, haien orduz orduko iragarpen meteorologikoa eta kalkulatutako baldintzen puntuazioa, 0tik 10era (aireratzeko eta XC ibilbideak hasteko).<br><br>Aireratzeak beti automatikoki ordenatuta daude aireratzeko baldintzen puntuazioaren arabera (handienetik txikienera)."
       },
       "selectorHorario": {
@@ -317,7 +317,7 @@
     "podrasVerla": "Edozein unetan kontsulta dezakezu pantaila honetako <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> botoia erabiliz.",
     "pasos": {
       "intro": {
-        "titulo": "🪂 Aireratze gogokoen edizio pantaila",
+        "titulo": "<icon-despegue></icon-despegue>Aireratze gogokoen edizio pantaila",
         "descripcion": "Pantaila honek erabilgarri dauden aireratze guztiak erakusten ditu. Hautatu aldian-aldian erabiltzen dituzunak. Aplikazioaren ikuspegi normalak gogoko horiek soilik erakutsiko ditu.<br><br>Guztiak hauta ditzakezu, baina zure gailuaren arabera, bilaketak eta eguneroko erabilera motel ditzake.<br><br>Gaur egun Espainia, Portugal, Pirinioak eta Alpeetako eremu nagusiak hartzen ditu barne. Hau etengabe hazten ari den proiektu bat da."
       },
       "celdaFavorito": {
@@ -381,7 +381,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>Non hegan egin?</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Non hegan egin?</p>",
       "btnPrimario": "Hautatu gogokoak",
       "btnSecundario": "Ikusi gida orokorra",
       "btnImportar": "Inportatu ezarpenak",
@@ -403,7 +403,7 @@
       "btnAvanzadoDesc": "Aukera eta iragazki guztiak eskuragarri"
     },
     "paso2": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Parapenterako eguraldi iragarpenaren analisi automatizatua.</p><p>🙄 <b>Zertarako balio du?:</b> non hegan egin erabakitzen laguntzeko. Zure aireratze gogokoen taula bat erakusten du, haien iragarpenekin, eta <b>eguraldi baldintza</b> horien analisi automatizatua egiten du.</p><p>🧮 <b>Zer analisi egiten du?:</b> iragarpena zuk konfiguratutako batez besteko haizearen eta gehienezko boladen mugekin eta aireratze bakoitzaren norabidearekin alderatzen du; aireratzetik gertu dauden altueretako haizea ere aztertzen du (80, 120 eta 180 m), haize-gradientearen eta iragarpenaren fidagarritasunaren ikuspegia emanez. XC datu gakoak erakusten ditu (sabaia, CAPE eta CIN).</p><p>Informazio honekin guztiarekin, aireratze bakoitza 0-tik 10-era puntuatzen du eta kolorez kodetzen ditu 🟩&nbsp;🟨&nbsp;🟥 datuak zuk aukeratutako ordu-tarterako. Muga guztiak pertsonaliza ditzakezu zure hobespenetara egokitzeko.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision. Parapenterako eguraldi iragarpenaren analisi automatizatua.</p><p>🙄 <b>Zertarako balio du?:</b> non hegan egin erabakitzen laguntzeko. Zure aireratze gogokoen taula bat erakusten du, haien iragarpenekin, eta <b>eguraldi baldintza</b> horien analisi automatizatua egiten du.</p><p>🧮 <b>Zer analisi egiten du?:</b> iragarpena zuk konfiguratutako batez besteko haizearen eta gehienezko boladen mugekin eta aireratze bakoitzaren norabidearekin alderatzen du; aireratzetik gertu dauden altueretako haizea ere aztertzen du (80, 120 eta 180 m), haize-gradientearen eta iragarpenaren fidagarritasunaren ikuspegia emanez. XC datu gakoak erakusten ditu (sabaia, CAPE eta CIN).</p><p>Informazio honekin guztiarekin, aireratze bakoitza 0-tik 10-era puntuatzen du eta kolorez kodetzen ditu 🟩&nbsp;🟨&nbsp;🟥 datuak zuk aukeratutako ordu-tarterako. Muga guztiak pertsonaliza ditzakezu zure hobespenetara egokitzeko.</p>"
     },
     "paso3": {
       "html": "<p>💨️ <b>Eguraldi datuak:</b> orduko iragarpena 4 egunetarako (96 ordu). Egunean 8 aldiz eguneratzen da Météo-France-ren Arome-HD 1.3km (0-48 ordu) eta Arpege 7km (48-96 ordu) ereduen datu ofizialekin, eta egunean 4 aldiz ECMWF datuekin (0-96 ordu).</p><p>🆓 <b>Kostua eta pribatutasuna:</b> %100 doakoa, harpidetzarik gabe, iragarkirik gabe eta jarraipenik gabe (cookieak, telemetria...). Zure ezarpenak modu pribatuan gordetzen dira zure nabigatzailean. Proiektu libre eta irekia da, 2026tik martxan eta garatzen.</p>"
@@ -549,25 +549,25 @@
     "fijarPanel": "Finkatu panela (ez ezkutatu mapa mugitzean)",
     "masInformacion": "Informazio gehiago ▼",
     "volverEdicion": "Itzuli Gogokoen Ediziora",
-    "despeguesReactivados": "<i>🪂 Aireratzeak</i> geruza berriro aktibatuta",
+    "despeguesReactivados": "<i><icon-despegue></icon-despegue>Aireratzeak</i> geruza berriro aktibatuta",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Hemen zaude&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "titulo_infopanel": "Aireratzeak",
     "capasCheckbox": {
-      "despegues": "🪂 Aireratzeak",
+      "despegues": "Aireratzeak",
       "balizas": "🚩 Balizak",
       "mapaCalorPeninsula": "🔥 Iberia Bero Mapa",
       "mapaCalorAlpes": "🔥 Alpeetako Bero Mapa",
       "mapaCalorMarruecos": "🔥 Marokoko Bero Mapa",
       "notas": "✏️ Oharrak",
-      "despeguesMundo": "🪂 Paraglidingearth Aireratzeak"
+      "despeguesMundo": "Paraglidingearth Aireratzeak"
     },
     "cargandoCalorPeninsula": "⏳ Iberiar Penintsulako Bero Mapa kargatzen...<br><br>(309.157 aireratze erregistratuta)",
     "cargandoCalorAlpes": "⏳ Alpeetako Bero Mapa kargatzen...<br><br>(967.477 aireratze erregistratuta)",
     "cargandoCalorMarruecos": "⏳ Marokoko Bero Mapa kargatzen...<br><br>(11.006 aireratze erregistratuta)",
     "errorCSV": "Errorea CSV-a kargatzean. Egiaztatu kontsola xehetasunetarako.",
     "errorCSVAlpes": "Errorea Alpeetako CSV fitxategia kargatzean.",
-    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} XContest Aireratze</b>",
-    "despegueXContest": "🪂<br>XContest Aireratzea",
+    "grupoXContest": "<b><br>{{count}} XContest Aireratze</b>",
+    "despegueXContest": "<icon-despegue></icon-despegue><br>XContest Aireratzea",
     "coordenadasMedias": "Batez besteko koordenatuak:",
     "coordenadas": "Koordenatuak:",
     "fecha": "Data:",

@@ -214,7 +214,7 @@
     "podrasVerla": "Puedes verla cuando quieras con el botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> de esta pantalla.",
     "pasos": {
       "paso1": {
-        "titulo": "🪂 Tabla de despegues con predicción horaria",
+        "titulo": "<icon-despegue></icon-despegue>Tabla de despegues con predicción horaria",
         "descripcion": "Muestra una tabla con todos los despegues que has seleccionado como favoritos, su pronóstico meteorológico por horas y su puntuación calculada de condiciones, de 0 a 10 (para despegar y para iniciar rutas XC).<br><br>Los despegues están siempre ordenados automáticamente por su puntuación de condiciones para despegar (de mayor a menor)."
       },
       "selectorHorario": {
@@ -317,7 +317,7 @@
     "podrasVerla": "Puedes verla cuando quieras con el botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> de esta pantalla.",
     "pasos": {
       "intro": {
-        "titulo": "🪂 Pantalla de edición de despegues favoritos",
+        "titulo": "<icon-despegue></icon-despegue>Pantalla de edición de despegues favoritos",
         "descripcion": "En esta pantalla tienes todos los despegues disponibles actualmente. Aquí seleccionas los despegues que usas habitualmente. La pantalla de uso normal de la aplicación mostrará solo estos despegues favoritos.<br><br>Realmente podrías seleccionar todos pero, según dispositivo, ralentizará luego las búsquedas y su uso diario.<br><br>Por el momento están los despegues de España, Portugal, Pirineos y los principales de Alpes. Esta aplicación es un proyecto en crecimiento."
       },
       "celdaFavorito": {
@@ -381,7 +381,7 @@
 
   "asistente": {
     "paso1": {
-      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'>🪂 Fly Decision<br>¿Dónde ir a volar?</p>",
+      "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>¿Dónde ir a volar?</p>",
       "btnPrimario": "Marcar favoritos",
       "btnSecundario": "Ver la guía general",
       "btnImportar": "Importar configuración",
@@ -403,7 +403,7 @@
       "btnAvanzadoDesc": "Todas las opciones y filtros disponibles"
     },
     "paso2": {
-      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'>🪂 Fly Decision. Análisis automático del pronóstico meteorológico para vuelo en parapente.</p><p>🙄 <b>¿Para qué sirve?:</b> para ayudarte a decidir dónde ir a volar. Muestra una tabla con tus despegues favoritos, sus pronósticos y hace un análisis automático de esas <b>condiciones meteorológicas</b>.</p><p>🧮 <b>¿Qué análisis hace?:</b> compara el pronóstico con los límites de viento medio y racha máxima configurados y con la orientación de cada despegue; también analiza el viento a alturas cercanas al despegue (80, 120 y 180 m), lo que da idea del gradiente y de la fiabilidad del pronóstico de viento medio. Muestra datos meteo de interés para XC (techo, CAPE y CIN).</p><p>Con toda la información, puntúa de 0 a 10 cada despegue y colorea 🟩&nbsp;🟨&nbsp;🟥 los datos para el rango horario o días que elijas. Puedes personalizar todos esos límites para que el análisis se adapte a tus preferencias.</p>"
+      "html": "<p style='font-size: 1.2em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision. Análisis automático del pronóstico meteorológico para vuelo en parapente.</p><p>🙄 <b>¿Para qué sirve?:</b> para ayudarte a decidir dónde ir a volar. Muestra una tabla con tus despegues favoritos, sus pronósticos y hace un análisis automático de esas <b>condiciones meteorológicas</b>.</p><p>🧮 <b>¿Qué análisis hace?:</b> compara el pronóstico con los límites de viento medio y racha máxima configurados y con la orientación de cada despegue; también analiza el viento a alturas cercanas al despegue (80, 120 y 180 m), lo que da idea del gradiente y de la fiabilidad del pronóstico de viento medio. Muestra datos meteo de interés para XC (techo, CAPE y CIN).</p><p>Con toda la información, puntúa de 0 a 10 cada despegue y colorea 🟩&nbsp;🟨&nbsp;🟥 los datos para el rango horario o días que elijas. Puedes personalizar todos esos límites para que el análisis se adapte a tus preferencias.</p>"
     },
     "paso3": {
       "html": "<p>💨️ <b>Datos meteorológicos:</b> pronóstico por horas para 4 días (96h). Se actualiza 8 veces al día con los datos oficiales que emite Météo-France de los modelos Arome-HD 1.3km (0-48h) y Arpege 7km (48-96h) y 4 veces al día con los datos del ECMWF (0-96h).</p><p>🆓 <b>Coste y privacidad:</b> gratuita 100%, sin suscripciones, sin publicidad y sin rastreo (cookies, telemetría,...). Tus configuraciones se guardan en tu navegador de forma privada. Es un proyecto libre y abierto, operativo desde 2026 y en evolución.</p>"
@@ -550,25 +550,25 @@
     "fijarPanel": "Fijar Panel (anula su ocultación al mover mapa)",
     "masInformacion": "Más información ▼",
     "volverEdicion": "Volver a Editar favoritos",
-    "despeguesReactivados": "Capa <i>🪂 Despegues</i> reactivada",
+    "despeguesReactivados": "Capa <i><icon-despegue></icon-despegue>Despegues</i> reactivada",
     "estaAqui": "<div style='text-align:center;'><br><br><b style='font-size:16px;'>&nbsp;&nbsp;&nbsp;Estás aquí&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b><br></div>",
     "titulo_infopanel": "Despegues",
     "capasCheckbox": {
-      "despegues": "🪂 Despegues",
+      "despegues": "Despegues",
       "balizas": "🚩 Balizas",
       "mapaCalorPeninsula": "🔥 Mapa de calor Iberia",
       "mapaCalorAlpes": "🔥 Mapa de calor Alpes",
       "mapaCalorMarruecos": "🔥 Mapa de calor Marruecos",
       "notas": "✏️ Notas",
-      "despeguesMundo": "🪂 Despegues Paraglidingearth"
+      "despeguesMundo": "Despegues Paraglidingearth"
     },
     "cargandoCalorPeninsula": "⏳ Cargando mapa de calor Península Ibérica...<br><br>(309.157 despegues registrados)",
     "cargandoCalorAlpes": "⏳ Cargando mapa de calor Alpes...<br><br>(967.477 despegues registrados)",
     "cargandoCalorMarruecos": "⏳ Cargando mapa de calor Marruecos...<br><br>(11.006 despegues registrados)",
     "errorCSV": "Error al cargar el archivo CSV. Consulta la consola para más información.",
     "errorCSVAlpes": "Error al cargar el archivo CSV de Alpes.",
-    "grupoXContest": "<b>🪂🪂🪂🪂🪂<br>{{count}} Despegues en XContest</b>",
-    "despegueXContest": "🪂<br>Despegue en XContest",
+    "grupoXContest": "<b><br>{{count}} Despegues en XContest</b>",
+    "despegueXContest": "<icon-despegue></icon-despegue><br>Despegue en XContest",
     "coordenadasMedias": "Coordenadas medias:",
     "coordenadas": "Coordenadas:",
     "fecha": "Fecha:",

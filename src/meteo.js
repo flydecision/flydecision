@@ -276,7 +276,7 @@ function actualizarVistaOjo(btn, esActivo) {
     btn.innerHTML = svgOjoBoton(esActivo);
 }
 
-// Registramos el componente nativo <icon-baliza> en el navegador
+// Registramos componente nativos <icon-****> en el navegador para reusarlos en cualquier HTML
 class IconBaliza extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
@@ -296,6 +296,26 @@ class IconBaliza extends HTMLElement {
 }
 customElements.define('icon-baliza', IconBaliza);
 
+class IconDespegue extends HTMLElement {
+    connectedCallback() {
+        this.innerHTML = `
+            <span style="display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; color: #555; width: 22px; height: 22px; margin-right: 3px; user-select: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Pendiente de la montaña (Plana al principio y cae agresivamente hacia la derecha) -->
+                    <path d="M 0 16.5 Q 12 16.5 20 24" stroke-width="2" />
+                    <!-- Cordinos (5 líneas centradas en la nueva posición del piloto) -->
+                    <path d="M 5 5 L 12 13 L 9 3.5 M 13 3 L 12 13 L 17 3.5 M 21 5 L 12 13" stroke-width="0.8" />
+                    <!-- Vela del parapente (100% horizontal, desplazada arriba y a la derecha) -->
+                    <path d="M 5 5 Q 13 -1 21 5 Q 13 3 5 5 Z" stroke-width="2" />
+                    <!-- Piloto (Cabeza y cuerpo engrosados, desplazado arriba y a la derecha) -->
+                    <circle cx="12" cy="11.5" r="1.6" fill="currentColor" stroke="none" />
+                    <path d="M 12 13 L 13 15.5 L 15.5 15 M 13 15.5 L 11.5 18.5" stroke-width="2" />
+                </svg>
+            </span>
+        `;
+    }
+}
+customElements.define('icon-despegue', IconDespegue);
 
 // ---------------------------------------------------------------
 // 🔴 MINUTELY_15 (AROME HD) — Detalle de viento cada 15 min
@@ -535,7 +555,7 @@ window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
         GestorMensajes.mostrar({
             tipo: 'modal',
             htmlContenido: `
-                <p style="font-size: 1.2em; font-weight: bold; text-align:center; margin-bottom: 10px;">🪂 ${nombreDespegue}</p>
+                <p style="font-size: 1.2em; font-weight: bold; text-align:center; margin-bottom: 10px;"><icon-despegue></icon-despegue>${nombreDespegue}</p>
                 ${htmlTabla}
             `,
             botones: [botonAceptarMin15]
@@ -4240,7 +4260,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 ">
                     <!-- Cabecera -->
                     <div style="text-align:center; margin-bottom: 1.75rem;">
-                        <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🪂</div>
+                        <div style="font-size: 2.2rem; margin-bottom: 0.5rem;"><icon-despegue></icon-despegue></div>
                         <div style="font-size: 35px; font-weight: 500; color: var(--color-text-primary, #111); margin-bottom: 8px;">Fly Decision</div>
                         <div style="font-size: 20px; color: var(--color-text-secondary, #666); line-height: 1.45;">${t('asistente.paso1.subtitulo')}</div><br><br>
                         <div style="font-size: 20px; color: var(--color-text-secondary, #666); line-height: 1.45;">${t('asistente.paso1.subtitulo2')}</div>
@@ -5500,7 +5520,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
                 <div style="line-height: 1.4; max-width: 232px;">
-                    <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'>🪂 ${d.Despegue}</b></span><br><br>   
+                    <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${d.Despegue}</b></span><br><br>   
                     
                     ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
 
@@ -12342,7 +12362,7 @@ function inicializarMapaLeaflet() {
                             
                     const popupHtml = `
                         <div style="line-height: 1.4;">
-                            <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'>🪂 ${escapeHtml(despegue)}</b></span><br>
+                            <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${escapeHtml(despegue)}</b></span><br>
                             
                             ${botonesAccionPopupHTML}
 
@@ -12628,7 +12648,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue>${t('mapa.grupoXContest', { count: count })}</div>
                         <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
@@ -12649,7 +12669,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂<br>Despegue en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b><icon-despegue></icon-despegue><br>Despegue en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
                         <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
                         <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
@@ -12829,7 +12849,7 @@ function inicializarMapaLeaflet() {
                 // Popup del grupo (Tu lógica original sin hacer zoom)
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue>${t('mapa.grupoXContest', { count: count })}</div>
                         <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
@@ -12851,7 +12871,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂<br>Despegue en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b><icon-despegue></icon-despegue><br>Despegue en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
                         <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
                         <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
@@ -13038,7 +13058,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂🪂🪂🪂🪂<br>${count} Despegues en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue><icon-despegue></icon-despegue>${t('mapa.grupoXContest', { count: count })}</div>
                         <div style="margin-bottom: 5px;">Coordenadas medias:<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
@@ -13059,7 +13079,7 @@ function inicializarMapaLeaflet() {
 
                 marker.on('click', () => {
                     const popupHtml = `<div style="min-width:200px; line-height: 1.2;">
-                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b>🪂<br>Despegue en XContest</b></div>
+                        <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px;"><b><icon-despegue></icon-despegue><br>Despegue en XContest</b></div>
                         <div style="margin-bottom: 5px;">Coordenadas: <b>${escapeHtml(lat.toFixed(4))}, ${escapeHtml(lon.toFixed(4))}</b></div>  
                         <div style="margin-bottom: 5px;">Fecha: <b>${escapeHtml(p.fecha)}</b></div>
                         <div style="margin-bottom: 5px;">Hora: <b>${escapeHtml(p.hora)}</b></div>
@@ -13412,7 +13432,7 @@ function inicializarMapaLeaflet() {
                     
             const popupHtml = `<div style="line-height: 1.2;">
             
-                    <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px; max-width: 212px; display: inline-block;"><b>🪂 ${escapeHtml(despegue)}</b></div>
+                    <div style="font-size: 1.3em; margin-bottom: 5px; padding-right: 20px; max-width: 212px; display: inline-block;"><b><icon-despegue></icon-despegue>${escapeHtml(despegue)}</b></div>
                     <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
                     <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
@@ -15319,7 +15339,7 @@ function inicializarMapaLeaflet() {
                     tipo: 'no-modal',
                     htmlContenido: `
                         <style>.mensaje-no-modal { max-width: 340px; width: max-content; top: 23%; left: 50% !important; right: auto !important; transform: translateX(-50%) !important; border: none; padding: 10px; font-size: 20px;}</style>
-                        <p style="margin:0; padding:10px;line-height:1.3;">${t('mapa.despeguesReactivados', { defaultValue: 'Capa <i>🪂 Despegues</i> reactivada' })}</p>
+                        <p style="margin:0; padding:10px;line-height:1.3;">${t('mapa.despeguesReactivados', { defaultValue: 'Capa <i><icon-despegue></icon-despegue>Despegues</i> reactivada' })}</p>
                     `,
                     botones: []
                 });
