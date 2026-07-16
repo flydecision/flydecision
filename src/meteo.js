@@ -4554,6 +4554,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // Solo apagamos el cronómetro cuando la descarga completa ha finalizado con éxito
                 clearTimeout(timeoutId); 
 
+                // 🛡️ Re-comprobamos aquí: si otra llamada más reciente arrancó mientras esperábamos esta descarga, abortamos — sus datos ya están obsoletos.
+                if (miIdLlamada !== ultimoIdLlamadaTabla) return;
+
                 DATOS_METEO_CACHE = data; 
                 DATOS_METEO_ECMWF_CACHE = dataEcmwf;
                 esModoOffline = false;
@@ -4577,6 +4580,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const cachedDataEcmwf = await leerDeCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE');
 
                 if (cachedData && cachedDataEcmwf) {
+                    // 🛡️ Misma comprobación en la ruta offline: si hay una llamada más nueva, no pintamos con datos viejos.
+                    if (miIdLlamada !== ultimoIdLlamadaTabla) return;
+
                     data = cachedData; // En IndexedDB ya viene como objeto JS limpio, no hace falta JSON.parse
                     dataEcmwf = cachedDataEcmwf;
                     DATOS_METEO_CACHE = data; 
