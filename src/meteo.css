@@ -133,6 +133,7 @@ body.modo-simple .solo-modo-avanzado {
     font-size: 18px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     animation: latido-centrado 3s infinite;
+    pointer-events: none;
 }
 
 /* Ajuste para que el icono no se deforme */
