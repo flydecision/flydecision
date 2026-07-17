@@ -405,6 +405,14 @@
 					</button>
 				</div>
 				<div class="linea-con-bt-info">
+					<label for="chkMostrarBaseNube" class="custom-checkbox">
+						<input type="checkbox" id="chkMostrarBaseNube" onclick="alternarMostrarBaseNube()"> <span data-i18n="ajustes.baseNube"> Base de nube MSL</span>
+					</label>
+					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipBaseNube">
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
+				</div>
+				<div class="linea-con-bt-info">
 					<label for="chkMostrarVientoAlturas" class="custom-checkbox">
 						<input type="checkbox" id="chkMostrarVientoAlturas" onclick="alternarMostrarVientoAlturas()"> <span data-i18n="ajustes.vientoAlturas"> Viento a 80, 120 y 180 m</span>
 					</label>
@@ -787,7 +795,7 @@
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
 				<label for="checkboxBalizasMeteocat" class="custom-checkbox">
 					<input type="checkbox" id="checkboxBalizasMeteocat" class="custom-checkbox">
-					<span">&nbsp;MeteoCat</span>
+					<span>&nbsp;MeteoCat</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteocat">
 					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
@@ -814,7 +822,7 @@
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
 				<label for="checkboxBalizasMeteoclimatic" class="custom-checkbox">
 					<input type="checkbox" id="checkboxBalizasMeteoclimatic" class="custom-checkbox">
-					<span">&nbsp;Meteoclimatic</span>
+					<span>&nbsp;Meteoclimatic</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteoclimatic">
 					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">

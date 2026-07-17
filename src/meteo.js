@@ -57,10 +57,9 @@ let chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENT
 let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false"; // Por defecto true para que lo vean
 
 // ECMWF
-//let chkMostrarPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PRECIPITACION") !== "false";
 const chkMostrarPrecipitacion = true; // Siempre activo
 let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION") !== "false";
-//let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") !== "false";
+let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") !== "false"; // Base de nube inicializada
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
 let chkOrdenarPorXC = localStorage.getItem("METEO_CHECKBOX_ORDENAR_POR_XC") === "true"; // false por defecto
 const PASOS_DIAS_SEGUIMIENTO = [1, 2, 3, 4, Infinity]; // el último paso = nunca se autoeliminan
@@ -119,6 +118,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarVientoAlturas = false;
         chkMostrarCizalladura = false;
         chkMostrarProbPrecipitacion = false;
+        chkMostrarBaseNube = false; // Base de nube oculta en modo simple
         chkMostrarXC = false;
         chkMostrarVientoEcmwf = false;
         chkMostrarVientoEcmwfDesplegable = false;
@@ -128,6 +128,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
         chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false";
         chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION") !== "false";
+        chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") !== "false"; // Estado real recuperado
         chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false";
         
         const modoEcmwfGuardado = localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off";
@@ -140,6 +141,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = chkMostrarVientoAlturas;
     if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
     if (document.getElementById("chkMostrarProbPrecipitacion")) document.getElementById("chkMostrarProbPrecipitacion").checked = chkMostrarProbPrecipitacion;
+    if (document.getElementById("chkMostrarBaseNube")) document.getElementById("chkMostrarBaseNube").checked = chkMostrarBaseNube; // Sincroniza checkbox
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkMostrarBotonMinutely15")) document.getElementById("chkMostrarBotonMinutely15").checked = chkMostrarBotonMinutely15;
 
@@ -2223,6 +2225,7 @@ function gestionarClickMasivoFavoritos() {
     if (!modoEdicionFavoritos) {
         filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
         if (chkMostrarProbPrecipitacion) filasPorDespegue++;
+        if (chkMostrarBaseNube) filasPorDespegue++;
         if (chkMostrarVientoAlturas) filasPorDespegue += 3;
         if (chkMostrarXC) filasPorDespegue += 3;
         if (chkMostrarCizalladura) filasPorDespegue++;
@@ -2312,6 +2315,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     if (!modoEdicionFavoritos) {
         filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
         if (chkMostrarProbPrecipitacion) filasPorDespegue++;
+        if (chkMostrarBaseNube) filasPorDespegue++;
         if (chkMostrarVientoAlturas) filasPorDespegue += 3;
         if (chkMostrarXC) filasPorDespegue += 3;
         if (chkMostrarCizalladura) filasPorDespegue++;
@@ -2756,11 +2760,12 @@ function alternarMostrarProbPrecipitacion() {
     construir_tabla();
 }
 
-// function alternarMostrarBaseNube() {
-//     chkMostrarBaseNube = document.getElementById("chkMostrarBaseNube").checked;
-//     localStorage.setItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE", chkMostrarBaseNube);
-//     construir_tabla();
-// }
+function alternarMostrarBaseNube() {
+    chkMostrarBaseNube = document.getElementById("chkMostrarBaseNube").checked;
+    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE", chkMostrarBaseNube);
+    construir_tabla();
+}
+window.alternarMostrarBaseNube = alternarMostrarBaseNube;
 
 function alternarMostrarXC() {
     chkMostrarXC = document.getElementById("chkMostrarXC").checked;
@@ -5280,9 +5285,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // GRUPO 1: Meteo Base + Precipitaciones + Alturas
             const filaNubesTotal = document.createElement("tr");
 
-            let filaPreci, filaProbPreci;
+            let filaPreci, filaProbPreci, filaBaseNube;
             if (chkMostrarPrecipitacion) filaPreci = document.createElement("tr");
             if (chkMostrarProbPrecipitacion) filaProbPreci = document.createElement("tr");
+            if (chkMostrarBaseNube) filaBaseNube = document.createElement("tr");
 
             let fila180, fila120, fila80;
             
@@ -5343,7 +5349,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 });
             }
 
-            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, fila180, fila120, fila80, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
+            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, fila180, fila120, fila80, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                 filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
@@ -5796,6 +5802,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', tituloMeteoGeneral);
                 addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', tituloPrecipitacion);
                 addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', tituloProbPrecipitacion);
+                addIconCell(filaBaseNube, '<span style="font-size:15px; font-weight:bold;">☁️↕</span>', tituloBaseNube); // Icono para la Base de nube
 
                 // Velocidades alturas
                 if (chkMostrarVientoAlturas) {
@@ -5994,12 +6001,69 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 return decenas === 0 ? "fondo-verde" : (decenas <= 20 ? "fondo-naranja" : "fondo-rojo");
                             }
                         );
+
+                        // Base de nubes estimada MSL con Downscaling Activo en la API
+                        renderEcmwfData(filaBaseNube, hourlyEcmwf.temperature_2m, 
+                            (temp, i) => {
+                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
+                                
+                                let t_val = Number(temp);
+                                let roc = Number(hourlyEcmwf.dew_point_2m[i]);
+                                let altRealDespegue = Number(d.Altitud || 0); 
+                                
+                                // El espesor ya está calculado sobre la altitud del despegue debido al downscaling de la API
+                                let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
+                                let baseMslMts = altRealDespegue + espesorMts;
+                                let baseMslKm = (baseMslMts / 1000).toFixed(1);
+                                
+                                return baseMslKm === "0.0" ? "0" : baseMslKm;
+                            }, 
+                            "12px", 
+                            (temp, i) => {
+                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
+                                
+                                let t_val = Number(temp);
+                                let roc = Number(hourlyEcmwf.dew_point_2m[i]);
+                                
+                                // El espesor es directamente el margen libre sobre el despegue
+                                let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
+
+                                if (espesorMts < 100) return "fondo-rojo";     
+                                if (espesorMts <= 300) return "fondo-naranja"; 
+                                return "fondo-verde";                          
+                            },
+                            "0px",
+                            (temp, i) => { 
+                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
+
+                                const t_val = Number(temp);
+                                const roc = Number(hourlyEcmwf.dew_point_2m[i]);
+                                const altRealDespegue = Number(d.Altitud || 0);
+                                
+                                // Cálculo del espesor aproximado AGL
+                                const espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
+                                const baseMslMts = altRealDespegue + espesorMts;
+                                
+                                // Formateo del valor en kilómetros (evitando el paso intermedio "baseMslKm")
+                                const valorFinal = (baseMslMts / 1000).toFixed(1);
+                                const baseKm = valorFinal === "0.0" ? "0" : valorFinal;
+                                
+                                return t('tabla.tooltips.baseNubeValor', { 
+                                    base_km: baseKm, 
+                                    base_m: baseMslMts,
+                                    altitud_despegue: altRealDespegue,
+                                    espesor: espesorMts, 
+                                    defaultValue: 'Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)\nAltitud del despegue: {{altitud_despegue}} m\nAltura libre sobre despegue: {{espesor}} m' 
+                                });
+                            }
+                        );
                         
                     } else {
                         const emptyArr = new Array(horas.length).fill(null);
                         renderEcmwfData(filaNubesTotal, emptyArr, () => "", "9px", () => "");
                         renderEcmwfData(filaPreci, emptyArr, () => "", "9px", () => "");
                         renderEcmwfData(filaProbPreci, emptyArr, () => "", "9px", () => "");
+                        renderEcmwfData(filaBaseNube, emptyArr, () => "", "9px", () => ""); // Celdas vacías para Base de nube
                     }
 
 					// ⚪ Velocidades alturas 80, 120, 180 m *****************************
