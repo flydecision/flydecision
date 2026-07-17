@@ -77,6 +77,8 @@ let chkMostrarVientoEcmwfDesplegable = (ecmwfMode === "desplegable");
 window.sessionExpandedEcmwfTakeoffs = new Set();
 
 let chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true"; // false por defecto
+let chkColorearFlechasBalizas = localStorage.getItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS") === "true"; 
+
 window.modalMinutely15Abierto = false; // true mientras el usuario tiene abierto el modal de detalle 15 min
 
 function alternarBotonMinutely15() {
@@ -125,6 +127,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarVientoEcmwf = false;
         chkMostrarVientoEcmwfDesplegable = false;
         chkMostrarBotonMinutely15 = false;
+        chkColorearFlechasBalizas = false; 
     } else {
         // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
@@ -138,6 +141,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarVientoEcmwf = (modoEcmwfGuardado === "permanente");
         chkMostrarVientoEcmwfDesplegable = (modoEcmwfGuardado === "desplegable");
         chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true";
+        chkColorearFlechasBalizas = localStorage.getItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS") === "true"; 
     }
 
     // Sincronizar los checkboxes ocultos del menú Ajustes
@@ -148,6 +152,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkMostrarTemperatura")) document.getElementById("chkMostrarTemperatura").checked = chkMostrarTemperatura;
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkMostrarBotonMinutely15")) document.getElementById("chkMostrarBotonMinutely15").checked = chkMostrarBotonMinutely15;
+    if (document.getElementById("chkColorearFlechasBalizas")) document.getElementById("chkColorearFlechasBalizas").checked = chkColorearFlechasBalizas;
 
     const modoEcmwfFijar = esSimple ? "off" : (localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off");
     if (modoEcmwfFijar === "off" && document.getElementById("radEcmwfOff")) document.getElementById("radEcmwfOff").checked = true;
@@ -3967,6 +3972,33 @@ function estiloZona(feature) {
         return { color: '#00aa44', fillColor: '#00aa44', fillOpacity: 0.1, weight: 1 };
 
     return { color: '#888', fillColor: '#888', fillOpacity: 0.1, weight: 1 };
+}
+
+function alternarColorearFlechasBalizas() {
+    chkColorearFlechasBalizas = document.getElementById("chkColorearFlechasBalizas").checked;
+    localStorage.setItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS", chkColorearFlechasBalizas);
+    
+    // Forzar actualización inmediata de todas las balizas activas en el mapa
+    Object.values(REDES_BALIZAS).forEach(red => {
+        if (typeof map !== 'undefined' && map && map.hasLayer(red.layerGroup)) {
+            actualizarIconosBalizas(red.id);
+        }
+    });
+}
+window.alternarColorearFlechasBalizas = alternarColorearFlechasBalizas;
+
+// Función de cálculo e interpolación del color de las flechas en intervalos de 5 km/h
+function obtenerColorFlechaBaliza(viento) {
+    if (!chkColorearFlechasBalizas) return '#0078d4'; // Color azul clásico por defecto
+    if (viento === null || viento === undefined || isNaN(viento)) return '#95a5a6'; // Gris si no hay datos
+    
+    const colores = ['#2ecc71','#5cd35f','#8fd94a','#c2d93a','#e8d23a','#eab93a','#e89a3a','#e87a3a','#e2503a','#e0263d'];
+    const v = Math.max(0, Number(viento));
+    
+    if (v >= 50) return '#e0263d'; // Rojo máximo por encima de 50
+    
+    const index = Math.floor(v / 5);
+    return colores[index] || '#e0263d';
 }
 
 // ---------------------------------------------------------------
@@ -14697,7 +14729,11 @@ function inicializarMapaLeaflet() {
             // -----------------------------------------------------------
             const rotacion = (d.windDirection ?? 0) + 180;
             const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
-            const colorFlechaMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
+            
+            // Evaluamos si debe colorearse dinámicamente según la velocidad del viento
+            const colorFlechaMapa = estadoMapa.esAntiguo 
+                ? '#95a5a6' 
+                : obtenerColorFlechaBaliza(d.windSpeed);
             
             const svgFlechaMapa = `
                 <svg viewBox="0 0 30 36" style="transform: rotate(${rotacion}deg); transform-origin: 50% 30%; width: 40px; height: 40px; display: block;">
@@ -14854,9 +14890,13 @@ function inicializarMapaLeaflet() {
         const estadoPopup = calcularEstadoActualizacionBaliza(d, marker.redId);
 
         // viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
+        const colorFlechaPopup = estadoPopup.esAntiguo 
+            ? '#95a5a6' 
+            : obtenerColorFlechaBaliza(d.windSpeed);
+
         const svgFlecha = `
             <svg viewBox="5 1 20 20" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7); transform-origin: center center; width: 28px; height: 28px; flex-shrink: 0;">
-                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
+                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="${colorFlechaPopup}"/>
             </svg>`;
 
         // Sacamos solo la hora y los minutos directamente
