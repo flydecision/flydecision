@@ -125,10 +125,12 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "Allgemeines Wetter (Regen / Gesamtwolkenbedeckung)",
+      "nubosidadTotal": "Gesamtbewölkung: <b>{{cobertura}}%</b> Bedeckung",
+      "lluviaValor": "Regen: <b>{{mm}} mm</b> (Liter/m²)",
       "precipitacion": "Niederschlag in mm (Liter/m²)",
       "probPrecipitacion": "Wahrscheinlichkeit (%) für Niederschlag über 0,1 mm (Liter/m²)",
       "baseNube": "Wolkenbasis MSL (km): Höhe der Wolkenbasis über dem Meeresspiegel (Altitude). Ungefähre Schätzung, berechnet aus der 2m-Temperatur und dem 2m-Taupunkt.",
-      "baseNubeValor": "Geschätzte Höhe der konvektiven Wolkenbasis: {{base_km}} km ({{base_m}} m)\nStarthöhe: {{altitud_despegue}} m\nFreie Höhe über dem Startplatz: {{espesor}} m",
+      "baseNubeValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Geschätzte Höhe der konvektiven Wolkenbasis: <b>{{base_m}} m</b> ({{base_km}} km)</li><li>Starthöhe: <b>{{altitud_despegue}} m</b></li><li>Freie Höhe über dem Startplatz: <b>{{espesor}} m</b></li></ul>",
       "viento180m": "Durchschnittlicher Wind in 180 m Höhe AGL (km/h)",
       "viento120m": "Durchschnittlicher Wind in 120 m Höhe AGL (km/h)",
       "viento80m": "Durchschnittlicher Wind in 80 m Höhe AGL (km/h)",
@@ -179,7 +181,7 @@
       "motivoMedio": "Verhältnis {{ratio}}x > 1.5 UND Δ {{delta}} > 8 km/h",
       "motivoAlto": "Verhältnis {{ratio}}x > 2.0 UND Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "Nutzbare Flughöhe: {{altitudMSL}} m MSL\nBerechnung = {{espesorUtil}} m nutzbare Dicke AGL ({{pct}}% der theoretischen {{blh}} m BLH) + {{elevacion}} m Höhe (mittlere Bodenhöhe der ECMWF 9km-Zelle)\n",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Nutzbare Flughöhe (MSL): <b>{{altitudMSL}} m</b></li><li>Nutzbare Flughöhe (AGL): <b>{{espesorUtil}} m</b> ({{pct}}% BLH)</li><li>Höhe der Grenzschicht (BLH): {{blh}} m</li><li>Mittlere Höhe der ECMWF-Zelle: {{elevacion}} m</li></ul>",
     "despegueTooltip": "Provinz: {{provincia}}\nStartplatz: {{despegue}}\nAusrichtung: {{orientacion}}",
     "cargando": "Laden...",
     "cabeceraPais": "Land",

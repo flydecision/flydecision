@@ -125,10 +125,12 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "Eguraldi orokorra (euria / hodei-estaldura totala)",
+      "nubosidadTotal": "Hodeitasun osoa: <b>{{cobertura}}%</b>-ko estaldura",
+      "lluviaValor": "Euria: <b>{{mm}} mm</b> (litro/m²)",
       "precipitacion": "Prezipitazioa mm-tan (litro/m²)",
       "probPrecipitacion": "0,1 mm (litro/m²) baino gehiagoko prezipitazioa izateko probabilitatea (%)",
       "baseNube": "Hodei-basea MSL (km): Hodei-basearen altuera itsas mailaren gainetik (altitudea). 2 m-ko tenperaturatik eta 2 m-ko ihintz-puntutik kalkulatutako gutxi gorabeherako estimazioa.",
-      "baseNubeValor": "Hodei konbektiboaren basearen estimatutako altitudea: {{base_km}} km ({{base_m}} m)\nAireratzearen altitudea: {{altitud_despegue}} m\nAireratzearen gaineko altuera librea: {{espesor}} m",
+      "baseNubeValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Hodei konbektiboaren basearen estimatutako altitudea: <b>{{base_m}} m</b> ({{base_km}} km)</li><li>Aireratzearen altitudea: <b>{{altitud_despegue}} m</b></li><li>Aireratzearen gaineko altuera librea: <b>{{espesor}} m</b></li></ul>",
       "viento180m": "Batez besteko haizea AGL 180 m-ko altueran (km/h)",
       "viento120m": "Batez besteko haizea AGL 120 m-ko altueran (km/h)",
       "viento80m": "Batez besteko haizea AGL 80 m-ko altueran (km/h)",
@@ -179,7 +181,7 @@
       "motivoMedio": "{{ratio}}x erlazioa > 1.5 ETA Δ {{delta}} > 8 km/h",
       "motivoAlto": "{{ratio}}x erlazioa > 2.0 ETA Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "Hegaldi-sabai erabilgarria: {{altitudMSL}} m MSL\nKalkulua = {{espesorUtil}} m lodiera erabilgarria AGL ({{blh}} m BLH teorikoaren %{{pct}}) + {{elevacion}} m altuera (ECMWF 9km zelularen batez besteko lur-maila)\n",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Erabilgarri dagoen sabaiaren altitudea (MSL): <b>{{altitudMSL}} m</b></li><li>Erabilgarri dagoen sabaiaren altuera (AGL): <b>{{espesorUtil}} m</b> ({{pct}}% BLH)</li><li>Muga-geruzaren altuera (BLH): {{blh}} m</li><li>ECMWF gelaxkaren batez besteko kota: {{elevacion}} m</li></ul>",
     "despegueTooltip": "Probintzia: {{provincia}}\nAireratzea: {{despegue}}\nNorabidea: {{orientacion}}",
     "cargando": "Kargatzen...",
     "cabeceraPais": "Herrialdea",

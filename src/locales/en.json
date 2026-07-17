@@ -125,10 +125,12 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "General weather (rain / total cloud cover)",
+      "nubosidadTotal": "Total cloudiness: <b>{{cobertura}}%</b> coverage",
+      "lluviaValor": "Rain: <b>{{mm}} mm</b> (liters/m²)",
       "precipitacion": "Precipitation in mm (liters/m²)",
       "probPrecipitacion": "Probability (%) of precipitation exceeding 0.1 mm (liters/m²)",
       "baseNube": "Cloud base MSL (km): Height of the cloud base above sea level (altitude). Approximate estimate calculated from 2m temperature and 2m dew point.",
-      "baseNubeValor": "Estimated altitude of the convective cloud base: {{base_km}} km ({{base_m}} m)\nTakeoff altitude: {{altitud_despegue}} m\nHeight above takeoff: {{espesor}} m",
+      "baseNubeValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Estimated altitude of the convective cloud base: <b>{{base_m}} m</b> ({{base_km}} km)</li><li>Takeoff altitude: <b>{{altitud_despegue}} m</b></li><li>Height above takeoff: <b>{{espesor}} m</b></li></ul>",
       "viento180m": "Average wind at 180 m height AGL (km/h)",
       "viento120m": "Average wind at 120 m height AGL (km/h)",
       "viento80m": "Average wind at 80 m height AGL (km/h)",
@@ -179,7 +181,7 @@
       "motivoMedio": "Ratio {{ratio}}x > 1.5 AND Δ {{delta}} > 8 km/h",
       "motivoAlto": "Ratio {{ratio}}x > 2.0 AND Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "Usable flight ceiling: {{altitudMSL}} m MSL\nCalculation = {{espesorUtil}} m usable thickness AGL ({{pct}}% of the theoretical {{blh}} m BLH) + {{elevacion}} m altitude (ECMWF 9km cell mean ground level)\n",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Usable ceiling altitude (MSL): <b>{{altitudMSL}} m</b></li><li>Usable ceiling height (AGL): <b>{{espesorUtil}} m</b> ({{pct}}% BLH)</li><li>Boundary Layer Height (BLH): {{blh}} m</li><li>Mean elevation of the ECMWF cell: {{elevacion}} m</li></ul>",
     "despegueTooltip": "Province: {{provincia}}\nTakeoff: {{despegue}}\nOrientation: {{orientacion}}",
     "cargando": "Loading...",
     "cabeceraPais": "Country",

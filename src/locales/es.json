@@ -125,10 +125,12 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "Meteo general (lluvia / nubosidad total)",
+      "nubosidadTotal": "Nubosidad total: <b>{{cobertura}}%</b> cobertura",
+      "lluviaValor": "Lluvia: <b>{{mm}} mm</b> (litros/m²)",
       "precipitacion": "Precipitación en mm (litros/m²)",
       "probPrecipitacion": "Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²)",
       "baseNube": "Base de nube MSL (km): Altura de la base de la nube sobre el nivel del mar (altitud). Estimación aproximada calculada a partir de la temperatura 2m y punto de rocío 2m.",
-      "baseNubeValor": "Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)\nAltitud del despegue: {{altitud_despegue}} m\nAltura libre sobre despegue: {{espesor}} m",
+      "baseNubeValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitud de la base estimada de la nube convectiva: <b>{{base_m}} m</b> ({{base_km}} km)</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b></li><li>Altura libre sobre despegue: <b>{{espesor}} m</b></li></ul>",
       "viento180m": "Viento medio a 180 m altura AGL (km/h)",
       "viento120m": "Viento medio a 120 m altura AGL (km/h)",
       "viento80m": "Viento medio a 80 m altura AGL (km/h)",
@@ -179,7 +181,7 @@
       "motivoMedio": "Ratio {{ratio}}x > 1.5 Y Δ {{delta}} > 8 km/h",
       "motivoAlto": "Ratio {{ratio}}x > 2.0 Y Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "Techo usable en parapente: {{altitudMSL}} m MSL\nCálculo = {{espesorUtil}} m espesor útil AGL ({{pct}}% de la BLH teórica de {{blh}} m) + {{elevacion}} m altitud (suelo medio celda ECMWF 9km)\n",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitud de techo usable (MSL): <b>{{altitudMSL}} m</b></li><li>Altura de techo usable (AGL): <b>{{espesorUtil}} m</b> ({{pct}}% BLH)</li><li>Altura de Capa Límite (BLH): {{blh}} m</li><li>Elevación media de la celda ECMWF: {{elevacion}} m</li></ul>",
     "despegueTooltip": "Provincia: {{provincia}}\nDespegue: {{despegue}}\nOrientación: {{orientacion}}",
     "cargando": "Cargando...",
     "cabeceraPais": "País",

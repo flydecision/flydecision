@@ -5938,7 +5938,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             }
 
                             if (titleFn) {
-                                td.title = titleFn(val, i);
+                                const tooltipText = titleFn(val, i);
+                                if (tooltipText) {
+                                    td.setAttribute("data-tippy-content", tooltipText);
+                                    td.setAttribute("tabindex", "0"); // Permite el foco táctil en móviles
+                                    td.style.cursor = "help";         // Indica visualmente que es clicable
+                                }
                             }
                             
                             if (cacheEsNoche[i]) {
@@ -5976,11 +5981,31 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 return "☁️";
                             }, "16px", () => "", "2px",
                             (v, i) => {
-                                let title = "";
-                                if (v != null) title += "Nubosidad total: " + Math.round(Number(v)) + "% cobertura";
+                                let htmlLista = "";
+                                
+                                // 1. Añadir punto de Nubosidad Total si existe el dato
+                                if (v != null) {
+                                    const textoNubosidad = t('tabla.tooltips.nubosidadTotal', { 
+                                        cobertura: Math.round(Number(v)), 
+                                        defaultValue: 'Nubosidad total: {{cobertura}}% cobertura' 
+                                    });
+                                    htmlLista += `<li>${textoNubosidad}</li>`;
+                                }
+
+                                // 2. Añadir punto de Lluvia si la precipitación es mayor a 0
                                 let preci = (hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] != null) ? Number(hourlyEcmwf.precipitation[i]) : 0;
-                                if (preci > 0) title += (title ? "\n" : "") + "Lluvia: " + preci.toFixed(1) + " mm (litros/m²)";
-                                return title;
+                                if (preci > 0) {
+                                    const textoLluvia = t('tabla.tooltips.lluviaValor', { 
+                                        mm: preci.toFixed(1), 
+                                        defaultValue: 'Lluvia: {{mm}} mm (litros/m²)' 
+                                    });
+                                    htmlLista += `<li>${textoLluvia}</li>`;
+                                }
+
+                                if (!htmlLista) return "";
+
+                                // Devolvemos el conjunto envuelto en la lista con su estilo unificado
+                                return `<ul style="margin: 4px 0; padding-left: 16px; text-align: left;">${htmlLista}</ul>`;
                             }
                         );
 
@@ -6053,7 +6078,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     base_m: baseMslMts,
                                     altitud_despegue: altRealDespegue,
                                     espesor: espesorMts, 
-                                    defaultValue: 'Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)\nAltitud del despegue: {{altitud_despegue}} m\nAltura libre sobre despegue: {{espesor}} m' 
+                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)</li><li>Altitud del despegue: {{altitud_despegue}} m</li><li>Altura libre sobre despegue: {{espesor}} m</li></ul>' 
                                 });
                             }
                         );
@@ -6357,35 +6382,39 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             if (cacheEsNoche[i]) clasesBase += " celda-noche";
                             if (setInicioDia.has(i)) clasesBase += " borde-grueso-izquierda";
 
-                            // === 1. TECHO ===
+                            // === 1. TECHO (Simplificado y corregido) ===
                             let vTecho = hourlyEcmwf.boundary_layer_height[i];
-                            let txtTecho = "", colorTecho = "", bgTecho = "", titleTecho = "";
+                            let celdaTechoHTML = "";
                             
-                            if (vTecho != null) {
-                                let espesorBLH = Math.round(Number(vTecho));
-                                let espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
-                                let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
+                            if (vTecho == null) {
+                                // Caso 1: Celda vacía sin datos (con fondo blanco si es de día)
+                                const bgTecho = !cacheEsNoche[i] ? 'background-color: #ffffff;' : '';
+                                celdaTechoHTML = `<td class="${clasesBase}" style="padding-bottom: 0px; font-size: 12px !important; ${bgTecho}"></td>`;
+                            } else {
+                                // Caso 2: Celda con datos (Cálculo e inyección directa)
+                                const espesorBLH = Math.round(Number(vTecho));
+                                const espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
+                                const altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
                                 
-                                let valorTexto = (altitudMSL / 1000).toFixed(1);
-                                txtTecho = (valorTexto === "0.0") ? "0" : valorTexto;
+                                const valorTexto = (altitudMSL / 1000).toFixed(1);
+                                const txtTecho = (valorTexto === "0.0") ? "0" : valorTexto;
                                 
+                                let colorTecho = "fondo-naranja";
                                 if (espesorUtil < XCTechoLims.rojo) colorTecho = "fondo-rojo";
                                 else if (espesorUtil >= XCTechoLims.verde) colorTecho = "fondo-verde";
-                                else colorTecho = "fondo-naranja";
 
-                                const textoTooltipOriginal = t('tabla.techoTooltip', {
+                                const textoTooltip = t('tabla.techoTooltip', {
                                     altitudMSL: altitudMSL,
                                     espesorUtil: espesorUtil,
                                     pct: Math.round(RATIO_TECHO_UTIL * 100),
                                     blh: espesorBLH,
-                                    elevacion: Math.round(elevacionModeloECMWF)
+                                    elevacion: Math.round(elevacionModeloECMWF),
+                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Techo de vuelo estimado (MSL): {{altitudMSL}} m</li><li>Espesor útil ({{pct}}%): {{espesorUtil}} m</li><li>Capa límite original (BLH): {{blh}} m</li><li>Elevación modelo de la celda: {{elevacion}} m</li></ul>'
                                 });
 
-                                // Protegemos el texto por si tiene comillas que puedan romper el atributo HTML
-                                titleTecho = `title="${textoTooltipOriginal.replace(/"/g, '&quot;')}"`;
+                                celdaTechoHTML = `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; cursor: help;" data-tippy-content="${textoTooltip.replace(/"/g, '&quot;')}" tabindex="0">${txtTecho}</td>`;
                             }
-                            bgTecho = (!cacheEsNoche[i] && !colorTecho) ? 'background-color: #ffffff;' : '';
-                            htmlTecho += `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; ${bgTecho}" ${titleTecho}>${txtTecho}</td>`;
+                            htmlTecho += celdaTechoHTML;
 
                             // === 2. CAPE ===
                             let vCape = hourlyEcmwf.cape[i];
@@ -6418,13 +6447,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             htmlCin += `<td class="${clasesBase} ${colorCin}" style="padding-bottom: 0px; font-size: 11px !important; ${bgCin}" title="CIN: ${vCin != null ? Math.max(0, Math.round(Number(vCin))) : 0} J/kg">${txtCin}</td>`;
                         }
 
-                        // Inyección ultra-rápida (El DOM se toca 1 sola vez por fila)
+                        // Inyección (El DOM se toca 1 sola vez por fila)
                         if (filaTecho) filaTecho.insertAdjacentHTML('beforeend', htmlTecho);
                         if (filaCape) filaCape.insertAdjacentHTML('beforeend', htmlCape);
                         if (filaCin) filaCin.insertAdjacentHTML('beforeend', htmlCin);
 
                     } else {
-                        // Si no hay datos, metemos celdas vacías como texto (mucho más rápido que antes)
+                        // Si no hay datos, metemos celdas vacías
                         let htmlVacio = "";
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             let clase = cacheEsNoche[i] ? "celda-noche" : "";
@@ -8993,6 +9022,23 @@ function comprobarAvisoCambiosPuntuacionXC() {
     window.addEventListener('offline', () => gestionarCambioConexion('offline'));
     window.addEventListener('online',  () => gestionarCambioConexion('online'));
 
+    // Cierra automáticamente todos los Tippys al hacer scroll en la ventana
+    window.addEventListener('scroll', () => {
+        if (typeof tippy !== 'undefined' && tippy.hideAll) {
+            tippy.hideAll();
+        }
+    }, { passive: true });
+
+    // También al hacer scroll dentro del contenedor propio de la tabla
+    const tablaWrapper = document.querySelector('.tabla-wrapper');
+    if (tablaWrapper) {
+        tablaWrapper.addEventListener('scroll', () => {
+            if (typeof tippy !== 'undefined' && tippy.hideAll) {
+                tippy.hideAll();
+            }
+        }, { passive: true });
+    }
+
     // ===============================================================
     // 5.5 Monitorización red con plugin Capacitor Network
     // ===============================================================
@@ -9067,6 +9113,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             placement: 'auto',
             appendTo: document.body,
             maxWidth: 400, // Dejamos que CSS limite el ancho real
+            hideOnClick: true, // <--- 1. Cierra automáticamente al hacer clic fuera
 
             // CONFIGURACIÓN DE POSICIONAMIENTO MEJORADA
             popperOptions: {

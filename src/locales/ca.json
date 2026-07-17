@@ -125,10 +125,12 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "Meteo general (pluja / cobertura total de núvols)",
+      "nubosidadTotal": "Nuvolositat total: <b>{{cobertura}}%</b> de cobertura",
+      "lluviaValor": "Pluja: <b>{{mm}} mm</b> (litres/m²)",
       "precipitacion": "Precipitació en mm (litres/m²)",
       "probPrecipitacion": "Probabilitat (%) de precipitació superior a 0,1 mm (litres/m²)",
       "baseNube": "Base de núvol MSL (km): Altura de la base del núvol sobre el nivell del mar (altitud). Estimació aproximada calculada a partir de la temperatura 2m i el punt de rosada 2m.",
-      "baseNubeValor": "Altitud de la base estimada del núvol convectiu: {{base_km}} km ({{base_m}} m)\nAltitud de l'enlairament: {{altitud_despegue}} m\nAltura lliure sobre l'enlairament: {{espesor}} m",
+      "baseNubeValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitud de la base estimada del núvol convectiu: <b>{{base_m}} m</b> ({{base_km}} km)</li><li>Altitud de l'enlairament: <b>{{altitud_despegue}} m</b></li><li>Altura lliure sobre l'enlairament: <b>{{espesor}} m</b></li></ul>",
       "viento180m": "Vent mitjà a 180 m d'altura AGL (km/h)",
       "viento120m": "Vent mitjà a 120 m d'altura AGL (km/h)",
       "viento80m": "Vent mitjà a 80 m d'altura AGL (km/h)",
@@ -179,7 +181,7 @@
       "motivoMedio": "Ràtio {{ratio}}x > 1.5 I Δ {{delta}} > 8 km/h",
       "motivoAlto": "Ràtio {{ratio}}x > 2.0 I Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "Sostre de vol utilitzable: {{altitudMSL}} m MSL\nCàlcul = {{espesorUtil}} m de gruix utilitzable AGL ({{pct}}% dels {{blh}} m BLH teòrics) + {{elevacion}} m d'elevació (nivell mitjà del terreny de la cel·la ECMWF 9km)\n",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitud de sostre usable (MSL): <b>{{altitudMSL}} m</b></li><li>Altura de sostre usable (AGL): <b>{{espesorUtil}} m</b> ({{pct}}% BLH)</li><li>Altura de la capa límit (BLH): {{blh}} m</li><li>Elevació mitjana de la cel·la ECMWF: {{elevacion}} m</li></ul>",
     "despegueTooltip": "Província: {{provincia}}\nEnlairament: {{despegue}}\nOrientació: {{orientacion}}",
     "cargando": "Carregant...",
     "cabeceraPais": "País",
