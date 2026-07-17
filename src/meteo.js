@@ -6036,16 +6036,25 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             (temp, i) => { 
                                 if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
 
-                                let t_val = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[i]);
-                                let altRealDespegue = Number(d.Altitud || 0);
+                                const t_val = Number(temp);
+                                const roc = Number(hourlyEcmwf.dew_point_2m[i]);
+                                const altRealDespegue = Number(d.Altitud || 0);
                                 
-                                let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
-                                let baseMslMts = altRealDespegue + espesorMts;
-                                let baseMslKm = (baseMslMts / 1000).toFixed(1);
-                                let valorFinal = (baseMslKm === "0.0" ? "0" : baseMslKm);
+                                // Cálculo del espesor aproximado AGL
+                                const espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
+                                const baseMslMts = altRealDespegue + espesorMts;
                                 
-                                return `Base estimada: ${valorFinal} km MSL\n(Espesor libre sobre despegue: ${espesorMts} m)`;
+                                // Formateo del valor en kilómetros (evitando el paso intermedio "baseMslKm")
+                                const valorFinal = (baseMslMts / 1000).toFixed(1);
+                                const baseKm = valorFinal === "0.0" ? "0" : valorFinal;
+                                
+                                return t('tabla.tooltips.baseNubeValor', { 
+                                    base_km: baseKm, 
+                                    base_m: baseMslMts,
+                                    altitud_despegue: altRealDespegue,
+                                    espesor: espesorMts, 
+                                    defaultValue: 'Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)\nAltitud del despegue: {{altitud_despegue}} m\nAltura libre sobre despegue: {{espesor}} m' 
+                                });
                             }
                         );
                         
