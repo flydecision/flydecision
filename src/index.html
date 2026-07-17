@@ -185,24 +185,26 @@
 	<!-- 🟦 FILTRO DISTANCIA  -->
 	<div id="div-filtro-distancia" class="div-filtro-distancia solo-modo-avanzado">
 
-		<div id="div-filtro-distancia-interno" class="div-paneles-controles-transparente">
+		<div id="div-filtro-distancia-interno" class="div-paneles-controles-transparente" style="position: relative;">
 		
-			<div id="titulo-distancia-slider" style="display: flex; align-items: center; gap: 7px; margin-bottom: 5px;">
+			<!-- Fila de título y botones unificada -->
+			<div id="titulo-distancia-slider" style="display: flex; align-items: center; gap: 7px; margin-bottom: 5px; width: 100%;">
 				<span style="cursor: pointer;" data-i18n="html.distanciaDesde">Distancia desde:</span>
 				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" data-i18n="[title]html.seleccionarOrigen">
 					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
 				</button>
 				
 				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" data-i18n="[title]html.incluirNoFavs"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
+				
+				<!-- Botón "i" integrado con margin-left: auto para alineación vertical perfecta -->
+				<button class="btn-info btn-inline"
+						style="margin-left: 20px; background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; align-items: center;"
+						data-tippy-content-i18n="btn_info.filtroDistanciaCompleto">
+					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
 			</div>	
 			
 			<div id="distancia-slider" role="slider" aria-labelledby="titulo-distancia-slider"></div>
-			
-			<button class="btn-info btn-abajo-derecha"
-					style="right: 7px; bottom: 8px;"
-					data-tippy-content-i18n="btn_info.filtroDistanciaCompleto">
-				<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-			</button>
 
 		</div>
 			
