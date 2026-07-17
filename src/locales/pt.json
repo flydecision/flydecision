@@ -181,7 +181,7 @@
       "motivoMedio": "Rácio {{ratio}}x > 1.5 E Δ {{delta}} > 8 km/h",
       "motivoAlto": "Rácio {{ratio}}x > 2.0 E Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "Teto de voo utilizável: {{altitudMSL}} m MSL\nCálculo = {{espesorUtil}} m de espessura utilizável AGL ({{pct}}% dos {{blh}} m BLH teóricos) + {{elevacion}} m de elevação (nível médio do terreno da célula ECMWF 9km)\n",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitude do teto usável (MSL): <b>{{altitudMSL}} m</b></li><li>Altura do teto usável (AGL): <b>{{espesorUtil}} m</b> ({{pct}}% BLH)</li><li>Altura da Camada Limite (BLH): {{blh}} m</li><li>Elevação média da célula ECMWF: {{elevacion}} m</li></ul>",
     "despegueTooltip": "Província: {{provincia}}\nDescolagem: {{despegue}}\nOrientação: {{orientacion}}",
     "cargando": "A carregar...",
     "cabeceraPais": "País",

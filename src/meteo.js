@@ -6382,35 +6382,39 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             if (cacheEsNoche[i]) clasesBase += " celda-noche";
                             if (setInicioDia.has(i)) clasesBase += " borde-grueso-izquierda";
 
-                            // === 1. TECHO ===
+                            // === 1. TECHO (Simplificado y corregido) ===
                             let vTecho = hourlyEcmwf.boundary_layer_height[i];
-                            let txtTecho = "", colorTecho = "", bgTecho = "", titleTecho = "";
+                            let celdaTechoHTML = "";
                             
-                            if (vTecho != null) {
-                                let espesorBLH = Math.round(Number(vTecho));
-                                let espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
-                                let altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
+                            if (vTecho == null) {
+                                // Caso 1: Celda vacía sin datos (con fondo blanco si es de día)
+                                const bgTecho = !cacheEsNoche[i] ? 'background-color: #ffffff;' : '';
+                                celdaTechoHTML = `<td class="${clasesBase}" style="padding-bottom: 0px; font-size: 12px !important; ${bgTecho}"></td>`;
+                            } else {
+                                // Caso 2: Celda con datos (Cálculo e inyección directa)
+                                const espesorBLH = Math.round(Number(vTecho));
+                                const espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
+                                const altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
                                 
-                                let valorTexto = (altitudMSL / 1000).toFixed(1);
-                                txtTecho = (valorTexto === "0.0") ? "0" : valorTexto;
+                                const valorTexto = (altitudMSL / 1000).toFixed(1);
+                                const txtTecho = (valorTexto === "0.0") ? "0" : valorTexto;
                                 
+                                let colorTecho = "fondo-naranja";
                                 if (espesorUtil < XCTechoLims.rojo) colorTecho = "fondo-rojo";
                                 else if (espesorUtil >= XCTechoLims.verde) colorTecho = "fondo-verde";
-                                else colorTecho = "fondo-naranja";
 
-                                const textoTooltipOriginal = t('tabla.techoTooltip', {
+                                const textoTooltip = t('tabla.techoTooltip', {
                                     altitudMSL: altitudMSL,
                                     espesorUtil: espesorUtil,
                                     pct: Math.round(RATIO_TECHO_UTIL * 100),
                                     blh: espesorBLH,
-                                    elevacion: Math.round(elevacionModeloECMWF)
+                                    elevacion: Math.round(elevacionModeloECMWF),
+                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Techo de vuelo estimado (MSL): {{altitudMSL}} m</li><li>Espesor útil ({{pct}}%): {{espesorUtil}} m</li><li>Capa límite original (BLH): {{blh}} m</li><li>Elevación modelo de la celda: {{elevacion}} m</li></ul>'
                                 });
 
-                                // Protegemos el texto por si tiene comillas que puedan romper el atributo HTML
-                                titleTecho = `title="${textoTooltipOriginal.replace(/"/g, '&quot;')}"`;
+                                celdaTechoHTML = `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; cursor: help;" data-tippy-content="${textoTooltip.replace(/"/g, '&quot;')}" tabindex="0">${txtTecho}</td>`;
                             }
-                            bgTecho = (!cacheEsNoche[i] && !colorTecho) ? 'background-color: #ffffff;' : '';
-                            htmlTecho += `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; ${bgTecho}" ${titleTecho}>${txtTecho}</td>`;
+                            htmlTecho += celdaTechoHTML;
 
                             // === 2. CAPE ===
                             let vCape = hourlyEcmwf.cape[i];
@@ -6443,13 +6447,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             htmlCin += `<td class="${clasesBase} ${colorCin}" style="padding-bottom: 0px; font-size: 11px !important; ${bgCin}" title="CIN: ${vCin != null ? Math.max(0, Math.round(Number(vCin))) : 0} J/kg">${txtCin}</td>`;
                         }
 
-                        // Inyección ultra-rápida (El DOM se toca 1 sola vez por fila)
+                        // Inyección (El DOM se toca 1 sola vez por fila)
                         if (filaTecho) filaTecho.insertAdjacentHTML('beforeend', htmlTecho);
                         if (filaCape) filaCape.insertAdjacentHTML('beforeend', htmlCape);
                         if (filaCin) filaCin.insertAdjacentHTML('beforeend', htmlCin);
 
                     } else {
-                        // Si no hay datos, metemos celdas vacías como texto (mucho más rápido que antes)
+                        // Si no hay datos, metemos celdas vacías
                         let htmlVacio = "";
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             let clase = cacheEsNoche[i] ? "celda-noche" : "";

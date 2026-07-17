@@ -181,7 +181,7 @@
       "motivoMedio": "Verhältnis {{ratio}}x > 1.5 UND Δ {{delta}} > 8 km/h",
       "motivoAlto": "Verhältnis {{ratio}}x > 2.0 UND Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "Nutzbare Flughöhe: {{altitudMSL}} m MSL\nBerechnung = {{espesorUtil}} m nutzbare Dicke AGL ({{pct}}% der theoretischen {{blh}} m BLH) + {{elevacion}} m Höhe (mittlere Bodenhöhe der ECMWF 9km-Zelle)\n",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Nutzbare Flughöhe (MSL): <b>{{altitudMSL}} m</b></li><li>Nutzbare Flughöhe (AGL): <b>{{espesorUtil}} m</b> ({{pct}}% BLH)</li><li>Höhe der Grenzschicht (BLH): {{blh}} m</li><li>Mittlere Höhe der ECMWF-Zelle: {{elevacion}} m</li></ul>",
     "despegueTooltip": "Provinz: {{provincia}}\nStartplatz: {{despegue}}\nAusrichtung: {{orientacion}}",
     "cargando": "Laden...",
     "cabeceraPais": "Land",

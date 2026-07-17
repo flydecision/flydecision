@@ -181,7 +181,7 @@
       "motivoMedio": "Ratio {{ratio}}x > 1.5 AND Δ {{delta}} > 8 km/h",
       "motivoAlto": "Ratio {{ratio}}x > 2.0 AND Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "Usable flight ceiling: {{altitudMSL}} m MSL\nCalculation = {{espesorUtil}} m usable thickness AGL ({{pct}}% of the theoretical {{blh}} m BLH) + {{elevacion}} m altitude (ECMWF 9km cell mean ground level)\n",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Usable ceiling altitude (MSL): <b>{{altitudMSL}} m</b></li><li>Usable ceiling height (AGL): <b>{{espesorUtil}} m</b> ({{pct}}% BLH)</li><li>Boundary Layer Height (BLH): {{blh}} m</li><li>Mean elevation of the ECMWF cell: {{elevacion}} m</li></ul>",
     "despegueTooltip": "Province: {{provincia}}\nTakeoff: {{despegue}}\nOrientation: {{orientacion}}",
     "cargando": "Loading...",
     "cabeceraPais": "Country",

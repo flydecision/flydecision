@@ -181,7 +181,7 @@
       "motivoMedio": "Ràtio {{ratio}}x > 1.5 I Δ {{delta}} > 8 km/h",
       "motivoAlto": "Ràtio {{ratio}}x > 2.0 I Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "Sostre de vol utilitzable: {{altitudMSL}} m MSL\nCàlcul = {{espesorUtil}} m de gruix utilitzable AGL ({{pct}}% dels {{blh}} m BLH teòrics) + {{elevacion}} m d'elevació (nivell mitjà del terreny de la cel·la ECMWF 9km)\n",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitud de sostre usable (MSL): <b>{{altitudMSL}} m</b></li><li>Altura de sostre usable (AGL): <b>{{espesorUtil}} m</b> ({{pct}}% BLH)</li><li>Altura de la capa límit (BLH): {{blh}} m</li><li>Elevació mitjana de la cel·la ECMWF: {{elevacion}} m</li></ul>",
     "despegueTooltip": "Província: {{provincia}}\nEnlairament: {{despegue}}\nOrientació: {{orientacion}}",
     "cargando": "Carregant...",
     "cabeceraPais": "País",
