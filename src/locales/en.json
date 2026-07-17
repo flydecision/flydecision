@@ -128,7 +128,7 @@
       "precipitacion": "Precipitation in mm (liters/m²)",
       "probPrecipitacion": "Probability (%) of precipitation exceeding 0.1 mm (liters/m²)",
       "baseNube": "Cloud base MSL (km): Height of the cloud base above sea level (altitude). Approximate estimate calculated from 2m temperature and 2m dew point.",
-      "baseNubeValor": "Estimated altitude of the convective cloud base: {{base_km}} km ({{base_m}} m)\nTakeoff altitude: {{altitud_despegue}} m\nHeight above takeoff: {{espesor}} m",
+      "baseNubeValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Estimated altitude of the convective cloud base: {{base_km}} km ({{base_m}} m)</li><li>Takeoff altitude: {{altitud_despegue}} m</li><li>Height above takeoff: {{espesor}} m</li></ul>",
       "viento180m": "Average wind at 180 m height AGL (km/h)",
       "viento120m": "Average wind at 120 m height AGL (km/h)",
       "viento80m": "Average wind at 80 m height AGL (km/h)",

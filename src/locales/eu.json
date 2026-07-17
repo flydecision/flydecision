@@ -128,7 +128,7 @@
       "precipitacion": "Prezipitazioa mm-tan (litro/m²)",
       "probPrecipitacion": "0,1 mm (litro/m²) baino gehiagoko prezipitazioa izateko probabilitatea (%)",
       "baseNube": "Hodei-basea MSL (km): Hodei-basearen altuera itsas mailaren gainetik (altitudea). 2 m-ko tenperaturatik eta 2 m-ko ihintz-puntutik kalkulatutako gutxi gorabeherako estimazioa.",
-      "baseNubeValor": "Hodei konbektiboaren basearen estimatutako altitudea: {{base_km}} km ({{base_m}} m)\nAireratzearen altitudea: {{altitud_despegue}} m\nAireratzearen gaineko altuera librea: {{espesor}} m",
+      "baseNubeValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Hodei konbektiboaren basearen estimatutako altitudea: {{base_km}} km ({{base_m}} m)</li><li>Aireratzearen altitudea: {{altitud_despegue}} m</li><li>Aireratzearen gaineko altuera librea: {{espesor}} m</li></ul>",
       "viento180m": "Batez besteko haizea AGL 180 m-ko altueran (km/h)",
       "viento120m": "Batez besteko haizea AGL 120 m-ko altueran (km/h)",
       "viento80m": "Batez besteko haizea AGL 80 m-ko altueran (km/h)",

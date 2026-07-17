@@ -128,7 +128,7 @@
       "precipitacion": "Niederschlag in mm (Liter/m²)",
       "probPrecipitacion": "Wahrscheinlichkeit (%) für Niederschlag über 0,1 mm (Liter/m²)",
       "baseNube": "Wolkenbasis MSL (km): Höhe der Wolkenbasis über dem Meeresspiegel (Altitude). Ungefähre Schätzung, berechnet aus der 2m-Temperatur und dem 2m-Taupunkt.",
-      "baseNubeValor": "Geschätzte Höhe der konvektiven Wolkenbasis: {{base_km}} km ({{base_m}} m)\nStarthöhe: {{altitud_despegue}} m\nFreie Höhe über dem Startplatz: {{espesor}} m",
+      "baseNubeValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Geschätzte Höhe der konvektiven Wolkenbasis: {{base_km}} km ({{base_m}} m)</li><li>Starthöhe: {{altitud_despegue}} m</li><li>Freie Höhe über dem Startplatz: {{espesor}} m</li></ul>",
       "viento180m": "Durchschnittlicher Wind in 180 m Höhe AGL (km/h)",
       "viento120m": "Durchschnittlicher Wind in 120 m Höhe AGL (km/h)",
       "viento80m": "Durchschnittlicher Wind in 80 m Höhe AGL (km/h)",

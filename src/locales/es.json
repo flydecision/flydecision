@@ -128,7 +128,7 @@
       "precipitacion": "Precipitación en mm (litros/m²)",
       "probPrecipitacion": "Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²)",
       "baseNube": "Base de nube MSL (km): Altura de la base de la nube sobre el nivel del mar (altitud). Estimación aproximada calculada a partir de la temperatura 2m y punto de rocío 2m.",
-      "baseNubeValor": "Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)\nAltitud del despegue: {{altitud_despegue}} m\nAltura libre sobre despegue: {{espesor}} m",
+      "baseNubeValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)</li><li>Altitud del despegue: {{altitud_despegue}} m</li><li>Altura libre sobre despegue: {{espesor}} m</li></ul>",
       "viento180m": "Viento medio a 180 m altura AGL (km/h)",
       "viento120m": "Viento medio a 120 m altura AGL (km/h)",
       "viento80m": "Viento medio a 80 m altura AGL (km/h)",

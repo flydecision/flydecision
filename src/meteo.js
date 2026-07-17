@@ -5938,7 +5938,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             }
 
                             if (titleFn) {
-                                td.title = titleFn(val, i);
+                                const tooltipText = titleFn(val, i);
+                                if (tooltipText) {
+                                    td.setAttribute("data-tippy-content", tooltipText);
+                                    td.setAttribute("tabindex", "0"); // Permite el foco táctil en móviles
+                                    td.style.cursor = "help";         // Indica visualmente que es clicable
+                                }
                             }
                             
                             if (cacheEsNoche[i]) {
@@ -6053,7 +6058,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     base_m: baseMslMts,
                                     altitud_despegue: altRealDespegue,
                                     espesor: espesorMts, 
-                                    defaultValue: 'Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)\nAltitud del despegue: {{altitud_despegue}} m\nAltura libre sobre despegue: {{espesor}} m' 
+                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)</li><li>Altitud del despegue: {{altitud_despegue}} m</li><li>Altura libre sobre despegue: {{espesor}} m</li></ul>' 
                                 });
                             }
                         );
