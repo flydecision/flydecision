@@ -125,6 +125,8 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "Meteo xeral (choiva / cobertura total de nubes)",
+      "nubosidadTotal": "Nubosidade total: <b>{{cobertura}}%</b> de cobertura",
+      "lluviaValor": "Choiva: <b>{{mm}} mm</b> (litros/m²)",
       "precipitacion": "Precipitación en mm (litros/m²)",
       "probPrecipitacion": "Probabilidade (%) de precipitación superior a 0,1 mm (litros/m²)",
       "baseNube": "Base de nube MSL (km): Altura da base da nube sobre o nivel do mar (altitude). Estimación aproximada calculada a partir da temperatura 2m e o punto de orballo 2m.",

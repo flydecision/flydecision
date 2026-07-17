@@ -125,6 +125,8 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "Allgemeines Wetter (Regen / Gesamtwolkenbedeckung)",
+      "nubosidadTotal": "Gesamtbewölkung: <b>{{cobertura}}%</b> Bedeckung",
+      "lluviaValor": "Regen: <b>{{mm}} mm</b> (Liter/m²)",
       "precipitacion": "Niederschlag in mm (Liter/m²)",
       "probPrecipitacion": "Wahrscheinlichkeit (%) für Niederschlag über 0,1 mm (Liter/m²)",
       "baseNube": "Wolkenbasis MSL (km): Höhe der Wolkenbasis über dem Meeresspiegel (Altitude). Ungefähre Schätzung, berechnet aus der 2m-Temperatur und dem 2m-Taupunkt.",

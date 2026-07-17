@@ -125,6 +125,8 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "General weather (rain / total cloud cover)",
+      "nubosidadTotal": "Total cloudiness: <b>{{cobertura}}%</b> coverage",
+      "lluviaValor": "Rain: <b>{{mm}} mm</b> (liters/m²)",
       "precipitacion": "Precipitation in mm (liters/m²)",
       "probPrecipitacion": "Probability (%) of precipitation exceeding 0.1 mm (liters/m²)",
       "baseNube": "Cloud base MSL (km): Height of the cloud base above sea level (altitude). Approximate estimate calculated from 2m temperature and 2m dew point.",

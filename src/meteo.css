@@ -2695,7 +2695,7 @@ label.custom-checkbox {
     /* Cambiado a 'scroll' para que la barra esté siempre presente de forma fija */
     overflow-y: scroll !important; 
     padding: 15px;
-    padding-right: 32px; /* Espacio para que el texto no colisione con el scroll */
+    padding-right: 45px; /* Espacio para que el texto no colisione con el scroll */
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     

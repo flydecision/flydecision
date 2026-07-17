@@ -125,6 +125,8 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "Meteo general (pluja / cobertura total de núvols)",
+      "nubosidadTotal": "Nuvolositat total: <b>{{cobertura}}%</b> de cobertura",
+      "lluviaValor": "Pluja: <b>{{mm}} mm</b> (litres/m²)",
       "precipitacion": "Precipitació en mm (litres/m²)",
       "probPrecipitacion": "Probabilitat (%) de precipitació superior a 0,1 mm (litres/m²)",
       "baseNube": "Base de núvol MSL (km): Altura de la base del núvol sobre el nivell del mar (altitud). Estimació aproximada calculada a partir de la temperatura 2m i el punt de rosada 2m.",

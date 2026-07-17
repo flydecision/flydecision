@@ -125,6 +125,8 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "Meteo general (lluvia / nubosidad total)",
+      "nubosidadTotal": "Nubosidad total: <b>{{cobertura}}%</b> cobertura",
+      "lluviaValor": "Lluvia: <b>{{mm}} mm</b> (litros/m²)",
       "precipitacion": "Precipitación en mm (litros/m²)",
       "probPrecipitacion": "Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²)",
       "baseNube": "Base de nube MSL (km): Altura de la base de la nube sobre el nivel del mar (altitud). Estimación aproximada calculada a partir de la temperatura 2m y punto de rocío 2m.",

@@ -5981,11 +5981,31 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 return "☁️";
                             }, "16px", () => "", "2px",
                             (v, i) => {
-                                let title = "";
-                                if (v != null) title += "Nubosidad total: " + Math.round(Number(v)) + "% cobertura";
+                                let htmlLista = "";
+                                
+                                // 1. Añadir punto de Nubosidad Total si existe el dato
+                                if (v != null) {
+                                    const textoNubosidad = t('tabla.tooltips.nubosidadTotal', { 
+                                        cobertura: Math.round(Number(v)), 
+                                        defaultValue: 'Nubosidad total: {{cobertura}}% cobertura' 
+                                    });
+                                    htmlLista += `<li>${textoNubosidad}</li>`;
+                                }
+
+                                // 2. Añadir punto de Lluvia si la precipitación es mayor a 0
                                 let preci = (hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] != null) ? Number(hourlyEcmwf.precipitation[i]) : 0;
-                                if (preci > 0) title += (title ? "\n" : "") + "Lluvia: " + preci.toFixed(1) + " mm (litros/m²)";
-                                return title;
+                                if (preci > 0) {
+                                    const textoLluvia = t('tabla.tooltips.lluviaValor', { 
+                                        mm: preci.toFixed(1), 
+                                        defaultValue: 'Lluvia: {{mm}} mm (litros/m²)' 
+                                    });
+                                    htmlLista += `<li>${textoLluvia}</li>`;
+                                }
+
+                                if (!htmlLista) return "";
+
+                                // Devolvemos el conjunto envuelto en la lista con su estilo unificado
+                                return `<ul style="margin: 4px 0; padding-left: 16px; text-align: left;">${htmlLista}</ul>`;
                             }
                         );
 
@@ -8998,6 +9018,23 @@ function comprobarAvisoCambiosPuntuacionXC() {
     window.addEventListener('offline', () => gestionarCambioConexion('offline'));
     window.addEventListener('online',  () => gestionarCambioConexion('online'));
 
+    // Cierra automáticamente todos los Tippys al hacer scroll en la ventana
+    window.addEventListener('scroll', () => {
+        if (typeof tippy !== 'undefined' && tippy.hideAll) {
+            tippy.hideAll();
+        }
+    }, { passive: true });
+
+    // También al hacer scroll dentro del contenedor propio de la tabla
+    const tablaWrapper = document.querySelector('.tabla-wrapper');
+    if (tablaWrapper) {
+        tablaWrapper.addEventListener('scroll', () => {
+            if (typeof tippy !== 'undefined' && tippy.hideAll) {
+                tippy.hideAll();
+            }
+        }, { passive: true });
+    }
+
     // ===============================================================
     // 5.5 Monitorización red con plugin Capacitor Network
     // ===============================================================
@@ -9072,6 +9109,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             placement: 'auto',
             appendTo: document.body,
             maxWidth: 400, // Dejamos que CSS limite el ancho real
+            hideOnClick: true, // <--- 1. Cierra automáticamente al hacer clic fuera
 
             // CONFIGURACIÓN DE POSICIONAMIENTO MEJORADA
             popperOptions: {

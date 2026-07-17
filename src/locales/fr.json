@@ -125,6 +125,8 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "Météo générale (pluie / couverture nuageuse totale)",
+      "nubosidadTotal": "Nébulosité totale : <b>{{cobertura}}%</b> de couverture",
+      "lluviaValor": "Pluie : <b>{{mm}} mm</b> (litres/m²)",
       "precipitacion": "Précipitations en mm (litres/m²)",
       "probPrecipitacion": "Probabilité (%) de précipitations dépassant 0,1 mm (litres/m²)",
       "baseNube": "Base des nuages MSL (km) : Hauteur de la base des nuages au-dessus du niveau de la mer (altitude). Estimation approximative calculée à partir de la température à 2m et du point de rosée à 2m.",

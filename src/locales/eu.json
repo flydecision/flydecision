@@ -125,6 +125,8 @@
   "tabla": {
     "tooltips": {
       "meteoGeneral": "Eguraldi orokorra (euria / hodei-estaldura totala)",
+      "nubosidadTotal": "Hodeitasun osoa: <b>{{cobertura}}%</b>-ko estaldura",
+      "lluviaValor": "Euria: <b>{{mm}} mm</b> (litro/m²)",
       "precipitacion": "Prezipitazioa mm-tan (litro/m²)",
       "probPrecipitacion": "0,1 mm (litro/m²) baino gehiagoko prezipitazioa izateko probabilitatea (%)",
       "baseNube": "Hodei-basea MSL (km): Hodei-basearen altuera itsas mailaren gainetik (altitudea). 2 m-ko tenperaturatik eta 2 m-ko ihintz-puntutik kalkulatutako gutxi gorabeherako estimazioa.",
