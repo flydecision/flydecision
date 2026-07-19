@@ -567,7 +567,19 @@
 						</button>
 					</div>
 
-					<div class="linea-con-bt-info solo-modo-avanzado">
+					<div class="linea-con-bt-info" style="margin-left: 8px;">
+						<span data-i18n="ajustes.limiteVientoRojoBalizas">Límite viento rojo balizas</span>
+						<div class="stepper-dias-seguimiento">
+							<button id="stepper-viento-balizas-menos" class="stepper-btn" onclick="cambiarVientoMaxBaliza(-5)">−</button>
+							<span id="valor-viento-max-balizas">50</span>
+							<button id="stepper-viento-balizas-mas" class="stepper-btn" onclick="cambiarVientoMaxBaliza(5)">+</button>
+						</div>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipLimiteVientoRojoBalizas">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</div>
+					
+					<div class="linea-con-bt-info">
 						<label for="chkOcultarValoresBalizas" class="custom-checkbox">
 							<input type="checkbox" id="chkOcultarValoresBalizas" onclick="alternarOcultarValoresBalizas()"> <span data-i18n="ajustes.ocultarValoresBalizas">Modo compacto en balizas (solo flechas)</span>
 						</label>
@@ -576,8 +588,6 @@
 						</button>
 					</div>
 
-					<div class="linea-con-bt-info solo-modo-avanzado" style="margin-top: 10px; margin-left: 8px;">
-					
 				</div>
 
 			</div>

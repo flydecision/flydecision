@@ -79,6 +79,7 @@ window.sessionExpandedEcmwfTakeoffs = new Set();
 let chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true"; // false por defecto
 let chkColorearFlechasBalizas = localStorage.getItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS") === "true"; 
 let chkOcultarValoresBalizas = localStorage.getItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS") === "true"; 
+let vientoMaxBalizaColor = Number(localStorage.getItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR")) || 40; // Límite de viento rojo de balizas (por defecto 50)
 
 window.modalMinutely15Abierto = false; // true mientras el usuario tiene abierto el modal de detalle 15 min
 
@@ -157,6 +158,17 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkMostrarBotonMinutely15")) document.getElementById("chkMostrarBotonMinutely15").checked = chkMostrarBotonMinutely15;
     if (document.getElementById("chkColorearFlechasBalizas")) document.getElementById("chkColorearFlechasBalizas").checked = chkColorearFlechasBalizas;
     if (document.getElementById("chkOcultarValoresBalizas")) document.getElementById("chkOcultarValoresBalizas").checked = chkOcultarValoresBalizas;
+
+    // Sincronización del stepper de viento máximo para balizas
+    const elVientoMax = document.getElementById('valor-viento-max-balizas');
+    if (elVientoMax) {
+        elVientoMax.textContent = vientoMaxBalizaColor;
+        // Ajustamos los botones +/- al iniciar según los límites de rango establecidos (de 20 a 80 km/h)
+        const btnMenos = document.getElementById('stepper-viento-balizas-menos');
+        const btnMas   = document.getElementById('stepper-viento-balizas-mas');
+        if (btnMenos) btnMenos.disabled = (vientoMaxBalizaColor <= 20);
+        if (btnMas)   btnMas.disabled   = (vientoMaxBalizaColor >= 80);
+    }
 
     const modoEcmwfFijar = esSimple ? "off" : (localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off");
     if (modoEcmwfFijar === "off" && document.getElementById("radEcmwfOff")) document.getElementById("radEcmwfOff").checked = true;
@@ -2819,6 +2831,38 @@ function cambiarDiasSeguimiento(delta) {
     if (btnMas)   btnMas.disabled   = (idx >= PASOS_DIAS_SEGUIMIENTO.length - 1);
 }
 
+function cambiarVientoMaxBaliza(delta) {
+    let actual = Number(localStorage.getItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR")) || 50;
+    actual = Math.min(80, Math.max(20, actual + delta)); // Rango operativo seguro: de 20 a 80 km/h
+    
+    vientoMaxBalizaColor = actual;
+    localStorage.setItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR", actual);
+
+    // Actualizar el valor visual del stepper
+    const el = document.getElementById('valor-viento-max-balizas');
+    if (el) el.textContent = actual;
+
+    // Desactivar botones en los límites de rango
+    const btnMenos = document.getElementById('stepper-viento-balizas-menos');
+    const btnMas   = document.getElementById('stepper-viento-balizas-mas');
+    if (btnMenos) btnMenos.disabled = (actual <= 20);
+    if (btnMas)   btnMas.disabled   = (actual >= 80);
+
+    // Repintar todas las balizas activas inmediatamente en el mapa
+    if (typeof window.REDES_BALIZAS !== 'undefined' && typeof window.actualizarIconosBalizas === 'function') {
+        Object.values(window.REDES_BALIZAS).forEach(red => {
+            window.actualizarIconosBalizas(red.id);
+            if (typeof map !== 'undefined' && map && map.hasLayer(red.layerGroup)) {
+                map.removeLayer(red.layerGroup);
+                map.addLayer(red.layerGroup);
+            }
+        });
+    }
+
+    if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+}
+window.cambiarVientoMaxBaliza = cambiarVientoMaxBaliza;
+
 // ---------------------------------------------------------------
 // 🔴 SLIDERS. RANGO HORARIO. Lógica para poder hacer clic en los pips de los días semanales y seleccionar así sus rango horario completo (tiene en cuenta chk día/noche) con un toque
 // ---------------------------------------------------------------
@@ -4041,10 +4085,13 @@ function obtenerColorFlechaBaliza(viento) {
     ];
     
     const v = Math.max(0, Number(viento));
-    if (v >= 50) return colores[0];
     
-    const paso = Math.min(10, Math.floor(v / 5));
-    const index = 10 - paso; // Inversión de escala para asociar el verde al viento flojo
+    // Usamos el límite de viento rojo configurado por el usuario de forma dinámica
+    if (v >= vientoMaxBalizaColor) return colores[0]; 
+    
+    // Mapeo dinámico inverso: La escala de 10 colores se adapta proporcionalmente al nuevo límite
+    const paso = Math.min(10, Math.floor(v / (vientoMaxBalizaColor / 10))); 
+    const index = 10 - paso;
     
     return colores[index] || colores[0];
 }
