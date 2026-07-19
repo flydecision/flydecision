@@ -4109,7 +4109,7 @@ h3 {
 
 /* Modificador: baja el botón cuando está flotando sobre la tabla */
 .btn-volver-flotante.en-tabla {
-    top: calc(var(--android-sb-height, 0px) + 490px);
+    top: calc(var(--android-sb-height, 0px) + 525px);
 }
 
 .btn-volver-flotante:active {
