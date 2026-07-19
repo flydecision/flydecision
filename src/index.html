@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes, maximum-scale=2.0"/>
 <title>Fly Decision | Análisis automático del pronóstico meteorológico para volar en parapente. Mapa de despegues. Balizas de viento</title>
-<meta name="description" content="Análisis automático del pronóstico de tiempo y orientaciones para despegues de parapente. Tabla con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente. Mapa de despegues y balizas de viento.">
-<meta property="og:description" content="Análisis automático del pronóstico y orientaciones para despegues de parapente. Tabla con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente.">
+<meta name="description" content="Análisis automático del pronóstico de tiempo y orientaciones para despegues de parapente. Tabla y mapa con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente. Mapa de despegues y balizas de viento.">
+<meta property="og:description" content="Análisis automático del pronóstico y orientaciones para despegues de parapente. Tabla y mapa con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente.">
 <meta property="og:image" content="https://flydecision.com/icons/logo_192px.png">
 <meta property="og:type" content="website">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -356,7 +356,7 @@
 		</div>
 	</div>
 
-    <!-- 2. ACORDEÓN: Viento medio y Racha máxima -->
+    <!-- ACORDEÓN: Viento medio y Racha máxima -->
 	<div class="div-configuracion-subpanel">
 		<details class="config-accordion" style="margin-bottom: 8px;">
 			<summary data-i18n="ajustes.acordeon.vientoRacha">Límites de Viento y Racha</summary>
@@ -393,7 +393,7 @@
 		</details>
 	</div>
 
-    <!-- 3. ACORDEÓN: Datos meteorológicos opcionales -->
+    <!-- ACORDEÓN: Datos meteorológicos opcionales -->
 	<div class="div-configuracion-subpanel  solo-modo-avanzado">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.datosOpcionales">Datos meteorológicos opcionales</summary>
@@ -499,7 +499,102 @@
 		</details>
 	</div>
 
-    <!-- 4. ACORDEÓN: Otras opciones -->
+	<!-- ACORDEÓN: Mapa -->
+	<div class="div-configuracion-subpanel solo-modo-avanzado">
+		<details class="config-accordion">
+			<summary data-i18n="ajustes.acordeon.mapa">Mapa</summary>
+			<div class="accordion-content">
+				
+				<!-- AJUSTES DE MEMORIA DEL MAPA -->
+				<div class="linea-con-bt-info" style="margin-top: 5px;">
+					<label for="chkAbrirMapaInicio" class="custom-checkbox">
+						<input type="checkbox" id="chkAbrirMapaInicio" onclick="alternarAjusteMemoriaMapa('chkAbrirMapaInicio', 'METEO_ABRIR_MAPA_INICIO')"> 
+						<span data-i18n="ajustes.abrirMapaInicio">Abrir mapa al iniciar</span>
+					</label>
+				</div>
+				<div class="linea-con-bt-info">
+					<label for="chkRecordarPosicionMapa" class="custom-checkbox">
+						<input type="checkbox" id="chkRecordarPosicionMapa" onclick="alternarAjusteMemoriaMapa('chkRecordarPosicionMapa', 'METEO_RECORDAR_POSICION_MAPA')"> 
+						<span data-i18n="ajustes.recordarPosicionMapa">Recordar la última posición del mapa</span>
+					</label>
+				</div>
+				<div class="linea-con-bt-info">
+					<label for="chkRecordarEstadoFiltroHorario" class="custom-checkbox">
+						<input type="checkbox" id="chkRecordarEstadoFiltroHorario" onclick="alternarAjusteMemoriaMapa('chkRecordarEstadoFiltroHorario', 'METEO_RECORDAR_ESTADO_FILTRO_HORARIO')"> 
+						<span data-i18n="ajustes.recordarEstadoFiltroHorario">Recordar el estado del filtro horario (abierto/cerrado)</span>
+					</label>
+				</div>
+				<div class="linea-con-bt-info">
+					<label for="chkRecordarCapasActivas" class="custom-checkbox">
+						<input type="checkbox" id="chkRecordarCapasActivas" onclick="alternarAjusteMemoriaMapa('chkRecordarCapasActivas', 'METEO_RECORDAR_CAPAS_ACTIVAS')"> 
+						<span data-i18n="ajustes.recordarCapasActivas">Recordar las capas activas (Despegues, Balizas..)</span>
+					</label>
+				</div>
+				<div class="linea-con-bt-info">
+					<label for="chkRecordarTipoMapa" class="custom-checkbox">
+						<input type="checkbox" id="chkRecordarTipoMapa" onclick="alternarAjusteMemoriaMapa('chkRecordarTipoMapa', 'METEO_RECORDAR_TIPO_MAPA')"> 
+						<span data-i18n="ajustes.recordarTipoMapa">Recordar el tipo de mapa</span>
+					</label>
+				</div>
+				<div class="linea-con-bt-info" style="margin-bottom: 12px;">
+					<label for="chkRecordarFiltrosMapa" class="custom-checkbox">
+						<input type="checkbox" id="chkRecordarFiltrosMapa" onclick="alternarAjusteMemoriaMapa('chkRecordarFiltrosMapa', 'METEO_RECORDAR_FILTROS_MAPA')"> 
+						<span data-i18n="ajustes.recordarFiltrosMapa">Recordar los filtros (favoritos, seguimiento, actividad...)</span>
+					</label>
+				</div>
+				
+				<!-- Botón manual para guardar la vista actual -->
+				<div style="margin-bottom: 5px; text-align: center; width: 100%;">
+					<button id="btn-guardar-vista-mapa" class="btn-accion" onclick="guardarPosicionMapaManualmente()" style="width: 100%; height: 34px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" data-i18n="[title]mapa.btnGuardarVistaTitle;mapa.btnGuardarVista">
+						💾 Guardar vista actual
+					</button>
+				</div>
+
+				<div class="linea-con-bt-info" style="display: flex; flex-direction: column; align-items: flex-start; width: 100%;">
+
+					<div style="padding-top: 10px;">
+						<span style="display: inline-flex; align-items: center; gap: 6px;">
+							<icon-baliza></icon-baliza><span data-i18n="mapa.balizas.titleBalizas">Balizas de viento</span>:
+						</span>
+					</div>
+
+					<div class="linea-con-bt-info">
+						<label for="chkColorearFlechasBalizas" class="custom-checkbox">
+							<input type="checkbox" id="chkColorearFlechasBalizas" onclick="alternarColorearFlechasBalizas()"> <span data-i18n="ajustes.colorearFlechasBalizas">Flechas de balizas según viento</span>
+						</label>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipColorearFlechasBalizas" data-tippy-content="<b>Flechas de balizas según viento</b><br><br>Colorea el relleno de las flechas de dirección del viento de las balizas en el mapa en base a la velocidad del viento actual, utilizando una escala cromática de verde (viento flojo) a rojo (viento de más de 50 km/h).">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</div>
+
+					<div class="linea-con-bt-info" style="margin-left: 8px;">
+						<span data-i18n="ajustes.limiteVientoRojoBalizas">Límite viento rojo balizas</span>
+						<div class="stepper-dias-seguimiento">
+							<button id="stepper-viento-balizas-menos" class="stepper-btn" onclick="cambiarVientoMaxBaliza(-5)">−</button>
+							<span id="valor-viento-max-balizas">50</span>
+							<button id="stepper-viento-balizas-mas" class="stepper-btn" onclick="cambiarVientoMaxBaliza(5)">+</button>
+						</div>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipLimiteVientoRojoBalizas">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</div>
+					
+					<div class="linea-con-bt-info">
+						<label for="chkOcultarValoresBalizas" class="custom-checkbox">
+							<input type="checkbox" id="chkOcultarValoresBalizas" onclick="alternarOcultarValoresBalizas()"> <span data-i18n="ajustes.ocultarValoresBalizas">Modo compacto en balizas (solo flechas)</span>
+						</label>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipOcultarValoresBalizas" data-tippy-content="<b>Modo compacto (solo flechas)</b><br><br>Oculta las cifras numéricas de velocidad del viento medio y ráfaga en los iconos de las balizas en el mapa, dejando únicamente las flechas de dirección visibles para limpiar la interfaz.">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</div>
+
+				</div>
+
+			</div>
+        </details>
+	</div>
+
+    <!-- ACORDEÓN: Otras opciones -->
 	<div class="div-configuracion-subpanel">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.otrasOpciones">Otras opciones</summary>
@@ -558,61 +653,6 @@
 
 			</div>
 		</details>
-	</div>
-
-	<!-- 5. NUEVO ACORDEÓN: Mapa -->
-	<div class="div-configuracion-subpanel solo-modo-avanzado">
-		<details class="config-accordion">
-			<summary data-i18n="ajustes.acordeon.mapa">Mapa</summary>
-			<div class="accordion-content">
-				
-				<!-- AJUSTES DE MEMORIA DEL MAPA -->
-				<div class="linea-con-bt-info" style="margin-top: 5px;">
-					<label for="chkAbrirMapaInicio" class="custom-checkbox">
-						<input type="checkbox" id="chkAbrirMapaInicio" onclick="alternarAjusteMemoriaMapa('chkAbrirMapaInicio', 'METEO_ABRIR_MAPA_INICIO')"> 
-						<span data-i18n="ajustes.abrirMapaInicio">Abrir mapa al iniciar</span>
-					</label>
-				</div>
-				<div class="linea-con-bt-info">
-					<label for="chkRecordarPosicionMapa" class="custom-checkbox">
-						<input type="checkbox" id="chkRecordarPosicionMapa" onclick="alternarAjusteMemoriaMapa('chkRecordarPosicionMapa', 'METEO_RECORDAR_POSICION_MAPA')"> 
-						<span data-i18n="ajustes.recordarPosicionMapa">Recordar la última posición del mapa</span>
-					</label>
-				</div>
-				<div class="linea-con-bt-info">
-					<label for="chkRecordarEstadoFiltroHorario" class="custom-checkbox">
-						<input type="checkbox" id="chkRecordarEstadoFiltroHorario" onclick="alternarAjusteMemoriaMapa('chkRecordarEstadoFiltroHorario', 'METEO_RECORDAR_ESTADO_FILTRO_HORARIO')"> 
-						<span data-i18n="ajustes.recordarEstadoFiltroHorario">Recordar el estado del filtro horario (abierto/cerrado)</span>
-					</label>
-				</div>
-				<div class="linea-con-bt-info">
-					<label for="chkRecordarCapasActivas" class="custom-checkbox">
-						<input type="checkbox" id="chkRecordarCapasActivas" onclick="alternarAjusteMemoriaMapa('chkRecordarCapasActivas', 'METEO_RECORDAR_CAPAS_ACTIVAS')"> 
-						<span data-i18n="ajustes.recordarCapasActivas">Recordar las capas activas (Despegues, Balizas..)</span>
-					</label>
-				</div>
-				<div class="linea-con-bt-info">
-					<label for="chkRecordarTipoMapa" class="custom-checkbox">
-						<input type="checkbox" id="chkRecordarTipoMapa" onclick="alternarAjusteMemoriaMapa('chkRecordarTipoMapa', 'METEO_RECORDAR_TIPO_MAPA')"> 
-						<span data-i18n="ajustes.recordarTipoMapa">Recordar el tipo de mapa</span>
-					</label>
-				</div>
-				<div class="linea-con-bt-info" style="margin-bottom: 12px;">
-					<label for="chkRecordarFiltrosMapa" class="custom-checkbox">
-						<input type="checkbox" id="chkRecordarFiltrosMapa" onclick="alternarAjusteMemoriaMapa('chkRecordarFiltrosMapa', 'METEO_RECORDAR_FILTROS_MAPA')"> 
-						<span data-i18n="ajustes.recordarFiltrosMapa">Recordar los filtros (favoritos, seguimiento, actividad...)</span>
-					</label>
-				</div>
-				
-				<!-- Botón manual para guardar la vista actual -->
-				<div style="margin-bottom: 5px; text-align: center; width: 100%;">
-					<button id="btn-guardar-vista-mapa" class="btn-accion" onclick="guardarPosicionMapaManualmente()" style="width: 100%; height: 34px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" data-i18n="[title]mapa.btnGuardarVistaTitle;mapa.btnGuardarVista">
-						💾 Guardar vista actual
-					</button>
-				</div>
-
-			</div>
-        </details>
 	</div>
 
 	<!-- PANEL INFO ACTUALIZACIONES METEO -->

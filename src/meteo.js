@@ -77,6 +77,10 @@ let chkMostrarVientoEcmwfDesplegable = (ecmwfMode === "desplegable");
 window.sessionExpandedEcmwfTakeoffs = new Set();
 
 let chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true"; // false por defecto
+let chkColorearFlechasBalizas = localStorage.getItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS") === "true"; 
+let chkOcultarValoresBalizas = localStorage.getItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS") === "true"; 
+let vientoMaxBalizaColor = Number(localStorage.getItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR")) || 40; // Límite de viento rojo de balizas (por defecto 50)
+
 window.modalMinutely15Abierto = false; // true mientras el usuario tiene abierto el modal de detalle 15 min
 
 function alternarBotonMinutely15() {
@@ -125,6 +129,8 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarVientoEcmwf = false;
         chkMostrarVientoEcmwfDesplegable = false;
         chkMostrarBotonMinutely15 = false;
+        chkColorearFlechasBalizas = false; 
+        chkOcultarValoresBalizas = false;
     } else {
         // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
@@ -138,6 +144,8 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarVientoEcmwf = (modoEcmwfGuardado === "permanente");
         chkMostrarVientoEcmwfDesplegable = (modoEcmwfGuardado === "desplegable");
         chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true";
+        chkColorearFlechasBalizas = localStorage.getItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS") === "true"; 
+        chkOcultarValoresBalizas = localStorage.getItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS") === "true";
     }
 
     // Sincronizar los checkboxes ocultos del menú Ajustes
@@ -148,6 +156,17 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkMostrarTemperatura")) document.getElementById("chkMostrarTemperatura").checked = chkMostrarTemperatura;
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkMostrarBotonMinutely15")) document.getElementById("chkMostrarBotonMinutely15").checked = chkMostrarBotonMinutely15;
+    if (document.getElementById("chkColorearFlechasBalizas")) document.getElementById("chkColorearFlechasBalizas").checked = chkColorearFlechasBalizas;
+    if (document.getElementById("chkOcultarValoresBalizas")) document.getElementById("chkOcultarValoresBalizas").checked = chkOcultarValoresBalizas;
+
+    // Sincronización del stepper de viento máximo para balizas
+    const elVientoMax = document.getElementById('valor-viento-max-balizas');
+    if (elVientoMax) {
+        elVientoMax.textContent = vientoMaxBalizaColor;
+        
+        // Sincronizar estado inicial de habilitación del stepper según el checkbox de colorear
+        actualizarEstadoStepperVientoBalizas();
+    }
 
     const modoEcmwfFijar = esSimple ? "off" : (localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off");
     if (modoEcmwfFijar === "off" && document.getElementById("radEcmwfOff")) document.getElementById("radEcmwfOff").checked = true;
@@ -2810,6 +2829,36 @@ function cambiarDiasSeguimiento(delta) {
     if (btnMas)   btnMas.disabled   = (idx >= PASOS_DIAS_SEGUIMIENTO.length - 1);
 }
 
+function cambiarVientoMaxBaliza(delta) {
+    // Protección de seguridad adicional por si se intenta llamar por consola estando desactivado
+    if (!chkColorearFlechasBalizas) return;
+
+    let actual = Number(localStorage.getItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR")) || 50;
+    actual = Math.min(80, Math.max(20, actual + delta)); 
+    
+    vientoMaxBalizaColor = actual;
+    localStorage.setItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR", actual);
+
+    const el = document.getElementById('valor-viento-max-balizas');
+    if (el) el.textContent = actual;
+
+    // Delegamos la habilitación/deshabilitación de botones al método común
+    actualizarEstadoStepperVientoBalizas();
+
+    if (typeof window.REDES_BALIZAS !== 'undefined' && typeof window.actualizarIconosBalizas === 'function') {
+        Object.values(window.REDES_BALIZAS).forEach(red => {
+            window.actualizarIconosBalizas(red.id);
+            if (typeof map !== 'undefined' && map && map.hasLayer(red.layerGroup)) {
+                map.removeLayer(red.layerGroup);
+                map.addLayer(red.layerGroup);
+            }
+        });
+    }
+
+    if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+}
+window.cambiarVientoMaxBaliza = cambiarVientoMaxBaliza;
+
 // ---------------------------------------------------------------
 // 🔴 SLIDERS. RANGO HORARIO. Lógica para poder hacer clic en los pips de los días semanales y seleccionar así sus rango horario completo (tiene en cuenta chk día/noche) con un toque
 // ---------------------------------------------------------------
@@ -3968,6 +4017,104 @@ function estiloZona(feature) {
 
     return { color: '#888', fillColor: '#888', fillOpacity: 0.1, weight: 1 };
 }
+
+function alternarColorearFlechasBalizas() {
+    const chk = document.getElementById("chkColorearFlechasBalizas");
+    if (chk) {
+        chkColorearFlechasBalizas = chk.checked;
+        localStorage.setItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS", chkColorearFlechasBalizas);
+    }
+    
+    // Sincronizar el estado de habilitación del stepper al instante
+    actualizarEstadoStepperVientoBalizas();
+
+    if (typeof map !== 'undefined' && map) {
+        Object.values(REDES_BALIZAS).forEach(red => {
+            actualizarIconosBalizas(red.id);
+            if (map.hasLayer(red.layerGroup)) {
+                map.removeLayer(red.layerGroup);
+                map.addLayer(red.layerGroup);
+            }
+        });
+    }
+}
+window.alternarColorearFlechasBalizas = alternarColorearFlechasBalizas;
+
+function alternarOcultarValoresBalizas() {
+    const chk = document.getElementById("chkOcultarValoresBalizas");
+    if (chk) {
+        chkOcultarValoresBalizas = chk.checked;
+        localStorage.setItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS", chkOcultarValoresBalizas);
+    }
+    
+    // Llamamos a las variables globales 
+    if (typeof window.REDES_BALIZAS !== 'undefined' && typeof window.actualizarIconosBalizas === 'function') {
+        Object.values(window.REDES_BALIZAS).forEach(red => {
+            window.actualizarIconosBalizas(red.id);
+            
+            if (typeof map !== 'undefined' && map && map.hasLayer(red.layerGroup)) {
+                map.removeLayer(red.layerGroup);
+                map.addLayer(red.layerGroup);
+            }
+        });
+    }
+}
+window.alternarOcultarValoresBalizas = alternarOcultarValoresBalizas;
+
+// Función de cálculo e interpolación del color (Paleta de alta visibilidad)
+function obtenerColorFlechaBaliza(viento) {
+    // Leemos de forma segura la variable global de Javascript
+    if (!chkColorearFlechasBalizas) return '#0078d4'; // Azul clásico si está desactivado
+    if (viento === null || viento === undefined || isNaN(viento)) return '#95a5a6'; // Gris si no hay datos
+    
+    const colores = [
+        "#7f0000", // 0 (Carmesí oscuro) - >= 50 km/h
+        "#b91c1c", // 1 - 45-50 km/h
+        "#dc2626", // 2 - 40-45 km/h
+        "#ef4444", // 3 - 35-40 km/h
+        "#f97316", // 4 - 30-35 km/h
+        "#f59e0b", // 5 - 25-30 km/h
+        "#eab308", // 6 (Amarillo oro) - 20-25 km/h
+        "#84cc16", // 7 (Verde lima) - 15-20 km/h
+        "#22c55e", // 8 (Verde claro) - 10-15 km/h
+        "#16a34a", // 9 (Verde medio) - 5-10 km/h
+        "#15803d"  // 10 (Verde bosque profundo) - 0-5 km/h
+    ];
+    
+    const v = Math.max(0, Number(viento));
+    
+    // Usamos el límite de viento rojo configurado por el usuario de forma dinámica
+    if (v >= vientoMaxBalizaColor) return colores[0]; 
+    
+    // Mapeo dinámico inverso: La escala de 10 colores se adapta proporcionalmente al nuevo límite
+    const paso = Math.min(10, Math.floor(v / (vientoMaxBalizaColor / 10))); 
+    const index = 10 - paso;
+    
+    return colores[index] || colores[0];
+}
+window.obtenerColorFlechaBaliza = obtenerColorFlechaBaliza;
+
+// Función para habilitar/deshabilitar el stepper de viento de balizas según si el coloreado está activo
+function actualizarEstadoStepperVientoBalizas() {
+    const menosBtn = document.getElementById('stepper-viento-balizas-menos');
+    const masBtn = document.getElementById('stepper-viento-balizas-mas');
+    const valorSpan = document.getElementById('valor-viento-max-balizas');
+    
+    if (!menosBtn || !masBtn) return; // Escudo de seguridad
+
+    if (!chkColorearFlechasBalizas) {
+        // Si el coloreado está apagado: Desactivamos botones y atenuamos el texto
+        menosBtn.disabled = true;
+        masBtn.disabled = true;
+        if (valorSpan) valorSpan.style.opacity = '0.4';
+    } else {
+        // Si el coloreado está encendido: Habilitamos respetando los límites de rango (20 y 80)
+        menosBtn.disabled = (vientoMaxBalizaColor <= 20);
+        masBtn.disabled   = (vientoMaxBalizaColor >= 80);
+        if (valorSpan) valorSpan.style.opacity = '1';
+    }
+}
+window.actualizarEstadoStepperVientoBalizas = actualizarEstadoStepperVientoBalizas;
 
 // ---------------------------------------------------------------
 // 🔴 BASE DE DATOS INDEXEDDB (Modo Offline sin límite de 5MB)
@@ -6433,7 +6580,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     pct: Math.round(RATIO_TECHO_UTIL * 100),
                                     blh: espesorBLH,
                                     elevacion: Math.round(elevacionModeloECMWF),
-                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Techo de vuelo estimado (MSL): {{altitudMSL}} m</li><li>Espesor útil ({{pct}}%): {{espesorUtil}} m</li><li>Capa límite original (BLH): {{blh}} m</li><li>Elevación modelo de la celda: {{elevacion}} m</li></ul>'
+                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Techo de vuelo estimado (MSL): {{altitudMSL}} m</li><li>Espesor útil ({{pct}}%): {{espesorUtil}} m</li><li>Capa límite original : {{blh}} m AGL</li><li>Elevación modelo de la celda: {{elevacion}} m</li></ul>'
                                 });
 
                                 celdaTechoHTML = `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; cursor: help;" data-tippy-content="${textoTooltip.replace(/"/g, '&quot;')}" tabindex="0">${txtTecho}</td>`;
@@ -14204,7 +14351,7 @@ function inicializarMapaLeaflet() {
         iconCreateFunction: function(cluster) {
             //const count = cluster.getChildCount(); // en el html iba el ${count} pero está quitado para no confundir con cifras de viento
             return L.divIcon({
-                html: `<div style="background-color: #0078d463; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                html: `<div style="background-color: #0078d46b; color: white; border-radius: 50%; width: 10px; height: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
                         
                     </div>`,
                 className: 'cluster-balizas-personalizado',
@@ -14594,36 +14741,37 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
     function actualizarIconosBalizas(redId) {
+        // ESCUDO DE SEGURIDAD: Si el mapa aún no existe en esta sesión, salimos silenciosamente
+        if (typeof map === 'undefined' || !map) return;
+
         const red = REDES_BALIZAS[redId];
+        if (!red || !red.marcadores) return;
+
         const zoomActual = map.getZoom();
 
         Object.values(red.marcadores).forEach(marker => {
             const d = red.datosCache[marker.stationId];
             
-            // -----------------------------------------------------------
-            // A) COMPROBAR SI ESTÁ OBSOLETA (> 3 horas)
-            // -----------------------------------------------------------
+            // 1. COMPROBAR SI ESTÁ OBSOLETA (> 3 horas)
             let balizaConDatosObsoletos = false;
 
             if (!d || typeof d.ts !== 'number') {
-                balizaConDatosObsoletos = true; // No tiene datos o no tiene ts
+                balizaConDatosObsoletos = true; 
             } else {
                 const ahoraTs = Date.now() / 1000;
                 const horasSinDatos = (ahoraTs - d.ts) / 3600;
 
-                if (horasSinDatos > 3) { // <---- X Horas límite desde última actualización antes de ocultar baliza
+                if (horasSinDatos > 3) { 
                     balizaConDatosObsoletos = true;
                 }
             }
 
-            // -----------------------------------------------------------
-            // A.2) COMPROBAR SI ESTÁ CONGELADA (Todo ceros en las últimas 4h)
-            // -----------------------------------------------------------
+            // 2. COMPROBAR SI ESTÁ CONGELADA (Todo ceros en las últimas 4h)
             let balizaCongelada = false;
             if (red.datos6h && red.datos6h[marker.stationId]) {
                 const lecturas = red.datos6h[marker.stationId];
                 const ahoraTs = Math.floor(Date.now() / 1000);
-                const desdeTs = ahoraTs - 4 * 3600; // Últimas 4 horas
+                const desdeTs = ahoraTs - 4 * 3600; 
                 
                 const puntos4h = lecturas.filter(p => 
                     p.ts >= desdeTs && 
@@ -14631,7 +14779,6 @@ function inicializarMapaLeaflet() {
                     typeof p.windSpeed === 'number'
                 );
 
-                // Si hay datos en estas 4h, y ABSOLUTAMENTE TODOS son cero
                 if (puntos4h.length > 0) {
                     const todoCeros = puntos4h.every(p => 
                         p.windSpeed === 0 && 
@@ -14643,12 +14790,11 @@ function inicializarMapaLeaflet() {
                 }
             }
 
-            // Nos aseguramos de que la baliza esté en el mapa
             if (!red.layerGroup.hasLayer(marker)) {
                 red.layerGroup.addLayer(marker);
             }
 
-            // 1. SI ESTÁ OBSOLETA (>3h) O CONGELADA A CERO: CÍRCULO GRIS
+            // A) CASO DE ERROR O DATOS OBSOLETOS -> CÍRCULO GRIS/ROJO
             if (balizaConDatosObsoletos || balizaCongelada) {
                 const tituloGris = balizaConDatosObsoletos 
                     ? "Datos obsoletos (>3h)" 
@@ -14668,11 +14814,15 @@ function inicializarMapaLeaflet() {
                     popupAnchor: [0, 25] 
                 }));
 
+                // 🚀 HACK DE REDIBUJADO DIRECTO (Para celdas inactivas)
+                if (marker._icon) {
+                    marker._icon.innerHTML = htmlObsoleto;
+                }
+
                 if (marker.isPopupOpen()) pintarPopupBaliza(marker);
-                return; // Terminamos aquí, no pintamos flechas ni números
+                return; 
             }
 
-            // 2. SI HA MANDADO SEÑAL RECIENTE, PERO EL SENSOR ESTÁ ROTO (null)
             if (d.windSpeed === null || d.windSpeed === undefined) {
                 const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
                 
@@ -14688,41 +14838,61 @@ function inicializarMapaLeaflet() {
                     popupAnchor: [0, 25] 
                 }));
 
+                // 🚀 HACK DE REDIBUJADO DIRECTO (Para celdas sin datos)
+                if (marker._icon) {
+                    marker._icon.innerHTML = htmlSinDatos;
+                }
+
                 if (marker.isPopupOpen()) pintarPopupBaliza(marker);
                 return;
             }
 
-            // -----------------------------------------------------------
-            // B) DATOS RECIENTES Y VÁLIDOS → PINTAMOS FLECHA Y NÚMEROS
-            // -----------------------------------------------------------
+            // B) CASO VÁLIDO -> DIBUJAR ICONOS
             const rotacion = (d.windDirection ?? 0) + 180;
             const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
-            const colorFlechaMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
+            
+            const colorFlechaMapa = estadoMapa.esAntiguo 
+                ? '#95a5a6' 
+                : obtenerColorFlechaBaliza(d.windSpeed);
             
             const svgFlechaMapa = `
                 <svg viewBox="0 0 30 36" style="transform: rotate(${rotacion}deg); transform-origin: 50% 30%; width: 40px; height: 40px; display: block;">
                     <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="${colorFlechaMapa}"/>
                 </svg>`;
 
-            const colorVientoMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
-            const colorRachaMapa  = estadoMapa.esAntiguo ? '#95a5a6' : '#e74c3c';
+            let htmlBaliza = "";
 
-            let cifrasHtml = `<strong style="font-size: 16px; color: ${colorVientoMapa};">${d.windSpeed}</strong>`;
-            if (zoomActual >= 10 && d.windGusts !== null && d.windGusts !== undefined) {
-                cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: ${colorRachaMapa};" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
+            if (chkOcultarValoresBalizas) {
+                // Modo compacto (Conserva las proporciones de la caja para un anclaje idéntico del popup)
+                htmlBaliza = `
+                    <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: 18px">
+                        <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                            ${svgFlechaMapa}
+                        </div>
+                        <div style="height: 20px; margin-top: -14px;"></div>
+                    </div>`;
+            } else {
+                // Modo normal (con cifras de velocidad de viento)
+                const colorVientoMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
+                const colorRachaMapa  = estadoMapa.esAntiguo ? '#95a5a6' : '#e74c3c';
+
+                let cifrasHtml = `<strong style="font-size: 16px; color: ${colorVientoMapa};">${d.windSpeed}</strong>`;
+                if (zoomActual >= 10 && d.windGusts !== null && d.windGusts !== undefined) {
+                    cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: ${colorRachaMapa};" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
+                }
+
+                htmlBaliza = `
+                    <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: 18px">
+                        <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                            ${svgFlechaMapa}
+                        </div>
+                        <div style="height: 20px; margin-top: -14px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap; text-shadow: 1px 1px 2px rgba(255,255,255,1), -1px -1px 2px rgba(255,255,255,1), 1px -1px 2px rgba(255,255,255,1), -1px 1px 2px rgba(255,255,255,1);">
+                            ${cifrasHtml}
+                        </div>
+                    </div>`;
             }
 
-            // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal. Nota: margin-left: -26px; es para desplazarlo a la izquierda y saltar el .leaflet-marker-icon.custom-div-icon {
-            const htmlBaliza = `
-                <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: 18px">
-                    <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
-                        ${svgFlechaMapa}
-                    </div>
-                    <div style="height: 20px; margin-top: -14px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap; text-shadow: 1px 1px 2px rgba(255,255,255,1), -1px -1px 2px rgba(255,255,255,1), 1px -1px 2px rgba(255,255,255,1), -1px 1px 2px rgba(255,255,255,1);">
-                        ${cifrasHtml}
-                    </div>
-                </div>`;
-
+            // Actualizamos en memoria
             marker.setIcon(L.divIcon({ 
                 html: htmlBaliza, 
                 className: 'custom-div-icon', 
@@ -14730,9 +14900,23 @@ function inicializarMapaLeaflet() {
                 popupAnchor: [0, 25] 
             }));
 
+            // 🚀 EL HACK DE REDIBUJADO DIRECTO: Si la baliza está visible en pantalla,
+            // forzamos al navegador a repintar su HTML interno de inmediato
+            if (marker._icon) {
+                marker._icon.innerHTML = htmlBaliza;
+            }
+
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
         });
+
+        if (red.layerGroup && typeof red.layerGroup.refreshClusters === 'function' && map.hasLayer(red.layerGroup)) {
+            red.layerGroup.refreshClusters();
+        }
     }
+
+    // EXPOSICIÓN GLOBAL PARA PODER ACTUALIZAR MAPA INMEDIATAMENTE DESDE AJUSTES
+    window.REDES_BALIZAS = REDES_BALIZAS;
+    window.actualizarIconosBalizas = actualizarIconosBalizas;
     
     // 🟡 6. PINTAR EL POPUP
     //___________________________________________________________________________________
@@ -14854,9 +15038,13 @@ function inicializarMapaLeaflet() {
         const estadoPopup = calcularEstadoActualizacionBaliza(d, marker.redId);
 
         // viewBox="5 1 20 20" centra la flecha a la perfección. Ahora "transform-origin: center center" hace que gire como una brújula perfecta.
+        const colorFlechaPopup = estadoPopup.esAntiguo 
+            ? '#95a5a6' 
+            : obtenerColorFlechaBaliza(d.windSpeed);
+
         const svgFlecha = `
             <svg viewBox="5 1 20 20" style="transform: rotate(${(d.windDirection ?? 0) + 180}deg) scale(0.7); transform-origin: center center; width: 28px; height: 28px; flex-shrink: 0;">
-                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="#0078d4"/>
+                <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="${colorFlechaPopup}"/>
             </svg>`;
 
         // Sacamos solo la hora y los minutos directamente
