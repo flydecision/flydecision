@@ -3985,11 +3985,15 @@ function alternarColorearFlechasBalizas() {
         localStorage.setItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS", chkColorearFlechasBalizas);
     }
     
-    // Si el mapa está inicializado, redibujamos todas las balizas al instante
+    // Si el mapa existe, redibujamos
     if (typeof map !== 'undefined' && map) {
         Object.values(REDES_BALIZAS).forEach(red => {
+            // 1. Actualizamos todos los iconos de la red en memoria
             actualizarIconosBalizas(red.id);
-            if (map.hasLayer(red.layerGroup)) {
+            
+            // 2. 🚀 REDIBUJADO SEGURO: Comprobamos el checkbox de la red de balizas (ej: Aemet, Holfuy...)
+            const chkRed = document.getElementById(red.checkboxId);
+            if (chkRed && chkRed.checked) {
                 map.removeLayer(red.layerGroup);
                 map.addLayer(red.layerGroup);
             }
@@ -4005,11 +4009,15 @@ function alternarOcultarValoresBalizas() {
         localStorage.setItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS", chkOcultarValoresBalizas);
     }
     
-    // Si el mapa está inicializado, redibujamos todas las balizas al instante
+    // Si el mapa existe, redibujamos
     if (typeof map !== 'undefined' && map) {
         Object.values(REDES_BALIZAS).forEach(red => {
+            // 1. Actualizamos todos los iconos de la red en memoria
             actualizarIconosBalizas(red.id);
-            if (map.hasLayer(red.layerGroup)) {
+            
+            // 2. 🚀 REDIBUJADO SEGURO: Comprobamos el checkbox de la red de balizas (ej: Aemet, Holfuy...)
+            const chkRed = document.getElementById(red.checkboxId);
+            if (chkRed && chkRed.checked) {
                 map.removeLayer(red.layerGroup);
                 map.addLayer(red.layerGroup);
             }
