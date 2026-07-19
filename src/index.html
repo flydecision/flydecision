@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes, maximum-scale=2.0"/>
 <title>Fly Decision | Análisis automático del pronóstico meteorológico para volar en parapente. Mapa de despegues. Balizas de viento</title>
-<meta name="description" content="Análisis automático del pronóstico de tiempo y orientaciones para despegues de parapente. Tabla con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente. Mapa de despegues y balizas de viento.">
-<meta property="og:description" content="Análisis automático del pronóstico y orientaciones para despegues de parapente. Tabla con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente.">
+<meta name="description" content="Análisis automático del pronóstico de tiempo y orientaciones para despegues de parapente. Tabla y mapa con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente. Mapa de despegues y balizas de viento.">
+<meta property="og:description" content="Análisis automático del pronóstico y orientaciones para despegues de parapente. Tabla y mapa con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente.">
 <meta property="og:image" content="https://flydecision.com/icons/logo_192px.png">
 <meta property="og:type" content="website">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
@@ -356,7 +356,7 @@
 		</div>
 	</div>
 
-    <!-- 2. ACORDEÓN: Viento medio y Racha máxima -->
+    <!-- ACORDEÓN: Viento medio y Racha máxima -->
 	<div class="div-configuracion-subpanel">
 		<details class="config-accordion" style="margin-bottom: 8px;">
 			<summary data-i18n="ajustes.acordeon.vientoRacha">Límites de Viento y Racha</summary>
@@ -393,7 +393,7 @@
 		</details>
 	</div>
 
-    <!-- 3. ACORDEÓN: Datos meteorológicos opcionales -->
+    <!-- ACORDEÓN: Datos meteorológicos opcionales -->
 	<div class="div-configuracion-subpanel  solo-modo-avanzado">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.datosOpcionales">Datos meteorológicos opcionales</summary>
@@ -499,77 +499,7 @@
 		</details>
 	</div>
 
-    <!-- 4. ACORDEÓN: Otras opciones -->
-	<div class="div-configuracion-subpanel">
-		<details class="config-accordion">
-			<summary data-i18n="ajustes.acordeon.otrasOpciones">Otras opciones</summary>
-			<div class="accordion-content">
-				
-				<div style="display: flex; justify-content: center; width: 100%; margin-bottom: 25px;">
-					<div class="div-paneles-controles" style="min-height: auto; padding-bottom: 12px; margin-bottom: 0;">
-						<div class="linea-con-bt-info">
-							<div id="titulo-configuracion-horario-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold; margin-left: 2px;">
-								<span style="font-size:1.2em; display: block;">🕜</span>
-								<span data-i18n="ajustes.horarioVueloPref"> Horario de vuelo preferido</span>
-							</div>
-							<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipHorarioVuelo">
-								<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-							</button>
-						</div>
-						<div id="configuracion-horario-slider" role="slider" aria-labelledby="titulo-configuracion-horario-slider"></div>
-					</div>
-				</div>
-
-				<div class="linea-con-bt-info solo-modo-avanzado">
-					<label for="chkMostrarSoloHorasDiurnas" class="custom-checkbox">
-						<input type="checkbox" id="chkMostrarSoloHorasDiurnas" onclick="alternarHorasNoche()"> <span data-i18n="ajustes.solo_horas_diurnas"> Solo horas diurnas</span>
-					</label>
-					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipHorasDiurnas">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-					</button>
-				</div>
-
-				<div class="linea-con-bt-info solo-modo-avanzado">
-					<label for="chkOrdenarPorXC" class="custom-checkbox">
-						<input type="checkbox" id="chkOrdenarPorXC" onclick="alternarOrdenarPorXC()"> <span data-i18n="ajustes.ordenar_xc"> Ordenar por Condiciones XC</span>
-					</label>
-					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipOrdenarXC">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-					</button>
-				</div>
-
-				<div class="linea-con-bt-info solo-modo-avanzado">
-					<label for="chkColorearFlechasBalizas" class="custom-checkbox">
-						<input type="checkbox" id="chkColorearFlechasBalizas" onclick="alternarColorearFlechasBalizas()"> <span data-i18n="ajustes.colorearFlechasBalizas">Flechas de balizas según viento</span>
-					</label>
-					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipColorearFlechasBalizas" data-tippy-content="<b>Flechas de balizas según viento</b><br><br>Colorea el relleno de las flechas de dirección del viento de las balizas en el mapa en base a la velocidad del viento actual, utilizando una escala cromática de verde (viento flojo) a rojo (viento de más de 50 km/h).">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-					</button>
-				</div>
-
-				<div class="linea-con-bt-info solo-modo-avanzado">
-					<label for="chkActivarVibracion" class="custom-checkbox">
-						<input type="checkbox" id="chkActivarVibracion" onclick="alternarVibracion()"> <span data-i18n="ajustes.vibracion">Respuesta háptica (Vibración)</span>
-					</label>
-				</div>
-
-				<div class="linea-con-bt-info solo-modo-avanzado" style="margin-top: 10px; margin-left: 8px;">
-					<span data-i18n="ajustes.diasSeguimiento">Días de seguimiento</span>
-					<div class="stepper-dias-seguimiento">
-						<button id="stepper-seguimiento-menos" class="stepper-btn" onclick="cambiarDiasSeguimiento(-1)">−</button>
-						<span id="valor-dias-seguimiento">2</span>
-						<button id="stepper-seguimiento-mas" class="stepper-btn" onclick="cambiarDiasSeguimiento(1)">+</button>
-					</div>
-					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipDiasSeguimiento">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-					</button>
-				</div>
-
-			</div>
-		</details>
-	</div>
-
-	<!-- 5. NUEVO ACORDEÓN: Mapa -->
+	<!-- ACORDEÓN: Mapa -->
 	<div class="div-configuracion-subpanel solo-modo-avanzado">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.mapa">Mapa</summary>
@@ -620,8 +550,99 @@
 					</button>
 				</div>
 
+				<div class="linea-con-bt-info" style="display: flex; flex-direction: column; align-items: flex-start; width: 100%;">
+
+					<div style="padding-top: 10px;">
+						<span style="display: inline-flex; align-items: center; gap: 6px;">
+							<icon-baliza></icon-baliza><span data-i18n="mapa.balizas.titleBalizas">Balizas de viento</span>:
+						</span>
+					</div>
+
+					<div class="linea-con-bt-info">
+						<label for="chkColorearFlechasBalizas" class="custom-checkbox">
+							<input type="checkbox" id="chkColorearFlechasBalizas" onclick="alternarColorearFlechasBalizas()"> <span data-i18n="ajustes.colorearFlechasBalizas">Flechas de balizas según viento</span>
+						</label>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipColorearFlechasBalizas" data-tippy-content="<b>Flechas de balizas según viento</b><br><br>Colorea el relleno de las flechas de dirección del viento de las balizas en el mapa en base a la velocidad del viento actual, utilizando una escala cromática de verde (viento flojo) a rojo (viento de más de 50 km/h).">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</div>
+
+					<div class="linea-con-bt-info solo-modo-avanzado">
+						<label for="chkOcultarValoresBalizas" class="custom-checkbox">
+							<input type="checkbox" id="chkOcultarValoresBalizas" onclick="alternarOcultarValoresBalizas()"> <span data-i18n="ajustes.ocultarValoresBalizas">Modo compacto en balizas (solo flechas)</span>
+						</label>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipOcultarValoresBalizas" data-tippy-content="<b>Modo compacto (solo flechas)</b><br><br>Oculta las cifras numéricas de velocidad del viento medio y ráfaga en los iconos de las balizas en el mapa, dejando únicamente las flechas de dirección visibles para limpiar la interfaz.">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</div>
+
+					<div class="linea-con-bt-info solo-modo-avanzado" style="margin-top: 10px; margin-left: 8px;">
+					
+				</div>
+
 			</div>
         </details>
+	</div>
+
+    <!-- ACORDEÓN: Otras opciones -->
+	<div class="div-configuracion-subpanel">
+		<details class="config-accordion">
+			<summary data-i18n="ajustes.acordeon.otrasOpciones">Otras opciones</summary>
+			<div class="accordion-content">
+				
+				<div style="display: flex; justify-content: center; width: 100%; margin-bottom: 25px;">
+					<div class="div-paneles-controles" style="min-height: auto; padding-bottom: 12px; margin-bottom: 0;">
+						<div class="linea-con-bt-info">
+							<div id="titulo-configuracion-horario-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold; margin-left: 2px;">
+								<span style="font-size:1.2em; display: block;">🕜</span>
+								<span data-i18n="ajustes.horarioVueloPref"> Horario de vuelo preferido</span>
+							</div>
+							<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipHorarioVuelo">
+								<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							</button>
+						</div>
+						<div id="configuracion-horario-slider" role="slider" aria-labelledby="titulo-configuracion-horario-slider"></div>
+					</div>
+				</div>
+
+				<div class="linea-con-bt-info solo-modo-avanzado">
+					<label for="chkMostrarSoloHorasDiurnas" class="custom-checkbox">
+						<input type="checkbox" id="chkMostrarSoloHorasDiurnas" onclick="alternarHorasNoche()"> <span data-i18n="ajustes.solo_horas_diurnas"> Solo horas diurnas</span>
+					</label>
+					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipHorasDiurnas">
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
+				</div>
+
+				<div class="linea-con-bt-info solo-modo-avanzado">
+					<label for="chkOrdenarPorXC" class="custom-checkbox">
+						<input type="checkbox" id="chkOrdenarPorXC" onclick="alternarOrdenarPorXC()"> <span data-i18n="ajustes.ordenar_xc"> Ordenar por Condiciones XC</span>
+					</label>
+					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipOrdenarXC">
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
+				</div>
+
+				<div class="linea-con-bt-info solo-modo-avanzado">
+					<label for="chkActivarVibracion" class="custom-checkbox">
+						<input type="checkbox" id="chkActivarVibracion" onclick="alternarVibracion()"> <span data-i18n="ajustes.vibracion">Respuesta háptica (Vibración)</span>
+					</label>
+				</div>
+
+				<div class="linea-con-bt-info solo-modo-avanzado" style="margin-top: 10px; margin-left: 8px;">
+					<span data-i18n="ajustes.diasSeguimiento">Días de seguimiento</span>
+					<div class="stepper-dias-seguimiento">
+						<button id="stepper-seguimiento-menos" class="stepper-btn" onclick="cambiarDiasSeguimiento(-1)">−</button>
+						<span id="valor-dias-seguimiento">2</span>
+						<button id="stepper-seguimiento-mas" class="stepper-btn" onclick="cambiarDiasSeguimiento(1)">+</button>
+					</div>
+					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipDiasSeguimiento">
+						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
+				</div>
+
+			</div>
+		</details>
 	</div>
 
 	<!-- PANEL INFO ACTUALIZACIONES METEO -->

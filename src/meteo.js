@@ -78,6 +78,7 @@ window.sessionExpandedEcmwfTakeoffs = new Set();
 
 let chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true"; // false por defecto
 let chkColorearFlechasBalizas = localStorage.getItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS") === "true"; 
+let chkOcultarValoresBalizas = localStorage.getItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS") === "true"; 
 
 window.modalMinutely15Abierto = false; // true mientras el usuario tiene abierto el modal de detalle 15 min
 
@@ -128,6 +129,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarVientoEcmwfDesplegable = false;
         chkMostrarBotonMinutely15 = false;
         chkColorearFlechasBalizas = false; 
+        chkOcultarValoresBalizas = false;
     } else {
         // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
@@ -142,6 +144,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarVientoEcmwfDesplegable = (modoEcmwfGuardado === "desplegable");
         chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true";
         chkColorearFlechasBalizas = localStorage.getItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS") === "true"; 
+        chkOcultarValoresBalizas = localStorage.getItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS") === "true";
     }
 
     // Sincronizar los checkboxes ocultos del menú Ajustes
@@ -153,6 +156,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkMostrarBotonMinutely15")) document.getElementById("chkMostrarBotonMinutely15").checked = chkMostrarBotonMinutely15;
     if (document.getElementById("chkColorearFlechasBalizas")) document.getElementById("chkColorearFlechasBalizas").checked = chkColorearFlechasBalizas;
+    if (document.getElementById("chkOcultarValoresBalizas")) document.getElementById("chkOcultarValoresBalizas").checked = chkOcultarValoresBalizas;
 
     const modoEcmwfFijar = esSimple ? "off" : (localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off");
     if (modoEcmwfFijar === "off" && document.getElementById("radEcmwfOff")) document.getElementById("radEcmwfOff").checked = true;
@@ -3975,31 +3979,80 @@ function estiloZona(feature) {
 }
 
 function alternarColorearFlechasBalizas() {
-    chkColorearFlechasBalizas = document.getElementById("chkColorearFlechasBalizas").checked;
-    localStorage.setItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS", chkColorearFlechasBalizas);
+    const chk = document.getElementById("chkColorearFlechasBalizas");
+    if (chk) {
+        // Actualizamos la variable global con el estado real del botón pulsado
+        chkColorearFlechasBalizas = chk.checked;
+        localStorage.setItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS", chkColorearFlechasBalizas);
+    }
     
-    // Forzar actualización inmediata de todas las balizas activas en el mapa
+    // Forzamos actualización de todas las redes
     Object.values(REDES_BALIZAS).forEach(red => {
+        actualizarIconosBalizas(red.id);
+        
+        // Redibujado síncrono instantáneo en el mapa
         if (typeof map !== 'undefined' && map && map.hasLayer(red.layerGroup)) {
-            actualizarIconosBalizas(red.id);
+            map.removeLayer(red.layerGroup);
+            map.addLayer(red.layerGroup);
         }
     });
 }
 window.alternarColorearFlechasBalizas = alternarColorearFlechasBalizas;
 
-// Función de cálculo e interpolación del color de las flechas en intervalos de 5 km/h
+function alternarOcultarValoresBalizas() {
+    const chk = document.getElementById("chkOcultarValoresBalizas");
+    if (chk) {
+        // Actualizamos la variable global con el estado real del botón pulsado
+        chkOcultarValoresBalizas = chk.checked;
+        localStorage.setItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS", chkOcultarValoresBalizas);
+    }
+    
+    // Forzamos actualización de todas las redes
+    Object.values(REDES_BALIZAS).forEach(red => {
+        actualizarIconosBalizas(red.id);
+        
+        // Redibujado síncrono instantáneo en el mapa
+        if (typeof map !== 'undefined' && map && map.hasLayer(red.layerGroup)) {
+            map.removeLayer(red.layerGroup);
+            map.addLayer(red.layerGroup);
+        }
+    });
+}
+window.alternarOcultarValoresBalizas = alternarOcultarValoresBalizas;
+
+// Función de cálculo e interpolación del color de las flechas (Paleta de alta visibilidad y contraste)
 function obtenerColorFlechaBaliza(viento) {
-    if (!chkColorearFlechasBalizas) return '#0078d4'; // Color azul clásico por defecto
+    const chk = document.getElementById("chkColorearFlechasBalizas");
+    const activo = chk ? chk.checked : chkColorearFlechasBalizas;
+
+    if (!activo) return '#0078d4'; // Azul clásico por defecto si está desactivado
     if (viento === null || viento === undefined || isNaN(viento)) return '#95a5a6'; // Gris si no hay datos
     
-    const colores = ['#2ecc71','#5cd35f','#8fd94a','#c2d93a','#e8d23a','#eab93a','#e89a3a','#e87a3a','#e2503a','#e0263d'];
+    // Paleta de alta visibilidad (Saturada: de Rojo Oscuro/Peligro a Verde Bosque/Seguro)
+    const colores = [
+        "#7f0000", // 0 (Carmesí oscuro / peligro extremo) - >= 50 km/h
+        "#b91c1c", // 1 (Rojo oscuro) - 45-50 km/h
+        "#dc2626", // 2 (Rojo vivo) - 40-45 km/h
+        "#ef4444", // 3 (Rojo claro) - 35-40 km/h
+        "#f97316", // 4 (Naranja intenso) - 30-35 km/h
+        "#f59e0b", // 5 (Naranja cálido) - 25-30 km/h
+        "#eab308", // 6 (Amarillo oro) - 20-25 km/h
+        "#84cc16", // 7 (Verde lima brillante) - 15-20 km/h
+        "#22c55e", // 8 (Verde claro saturado) - 10-15 km/h
+        "#16a34a", // 9 (Verde medio) - 5-10 km/h
+        "#15803d"  // 10 (Verde bosque profundo / seguro) - 0-5 km/h
+    ];
+    
     const v = Math.max(0, Number(viento));
+    if (v >= 50) return colores[0]; // Rojo oscuro para vientos de 50 km/h o más
     
-    if (v >= 50) return '#e0263d'; // Rojo máximo por encima de 50
+    // Mapeo inverso: Viento flojo (0) -> Verde bosque (index 10) | Viento fuerte (50) -> Rojo carmesí (index 0)
+    const paso = Math.min(10, Math.floor(v / 5)); // Segmentos de 5 km/h (rango de 0 a 10)
+    const index = 10 - paso; // Inversión de escala
     
-    const index = Math.floor(v / 5);
-    return colores[index] || '#e0263d';
+    return colores[index] || colores[0];
 }
+window.obtenerColorFlechaBaliza = obtenerColorFlechaBaliza; // Exposición global de seguridad
 
 // ---------------------------------------------------------------
 // 🔴 BASE DE DATOS INDEXEDDB (Modo Offline sin límite de 5MB)
@@ -6465,7 +6518,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     pct: Math.round(RATIO_TECHO_UTIL * 100),
                                     blh: espesorBLH,
                                     elevacion: Math.round(elevacionModeloECMWF),
-                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Techo de vuelo estimado (MSL): {{altitudMSL}} m</li><li>Espesor útil ({{pct}}%): {{espesorUtil}} m</li><li>Capa límite original (BLH): {{blh}} m</li><li>Elevación modelo de la celda: {{elevacion}} m</li></ul>'
+                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Techo de vuelo estimado (MSL): {{altitudMSL}} m</li><li>Espesor útil ({{pct}}%): {{espesorUtil}} m</li><li>Capa límite original : {{blh}} m AGL</li><li>Elevación modelo de la celda: {{elevacion}} m</li></ul>'
                                 });
 
                                 celdaTechoHTML = `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; cursor: help;" data-tippy-content="${textoTooltip.replace(/"/g, '&quot;')}" tabindex="0">${txtTecho}</td>`;
@@ -14236,7 +14289,7 @@ function inicializarMapaLeaflet() {
         iconCreateFunction: function(cluster) {
             //const count = cluster.getChildCount(); // en el html iba el ${count} pero está quitado para no confundir con cifras de viento
             return L.divIcon({
-                html: `<div style="background-color: #0078d463; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                html: `<div style="background-color: #0078d46b; color: white; border-radius: 50%; width: 10px; height: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
                         
                     </div>`,
                 className: 'cluster-balizas-personalizado',
@@ -14730,7 +14783,6 @@ function inicializarMapaLeaflet() {
             const rotacion = (d.windDirection ?? 0) + 180;
             const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
             
-            // Evaluamos si debe colorearse dinámicamente según la velocidad del viento
             const colorFlechaMapa = estadoMapa.esAntiguo 
                 ? '#95a5a6' 
                 : obtenerColorFlechaBaliza(d.windSpeed);
@@ -14740,24 +14792,38 @@ function inicializarMapaLeaflet() {
                     <polygon points="15,2 20.5,20 16.5,16.5 13.5,16.5 9.5,20" fill="${colorFlechaMapa}"/>
                 </svg>`;
 
-            const colorVientoMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
-            const colorRachaMapa  = estadoMapa.esAntiguo ? '#95a5a6' : '#e74c3c';
+            let htmlBaliza = ""; // Cambio de tamaño flechas balizas: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal. Nota: margin-left: -26px; es para desplazarlo a la izquierda y saltar el .leaflet-marker-icon.custom-div-icon {
 
-            let cifrasHtml = `<strong style="font-size: 16px; color: ${colorVientoMapa};">${d.windSpeed}</strong>`;
-            if (zoomActual >= 10 && d.windGusts !== null && d.windGusts !== undefined) {
-                cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: ${colorRachaMapa};" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
+            // Leemos directamente de la variable global de seguridad
+            if (chkOcultarValoresBalizas) {
+                // Modo compacto (Conserva las proporciones de la caja para un anclaje idéntico del popup)
+                htmlBaliza = `
+                    <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: 18px">
+                        <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                            ${svgFlechaMapa}
+                        </div>
+                        <div style="height: 20px; margin-top: -14px;"></div>
+                    </div>`;
+            } else {
+                // Modo normal (con cifras de velocidad de viento)
+                const colorVientoMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
+                const colorRachaMapa  = estadoMapa.esAntiguo ? '#95a5a6' : '#e74c3c';
+
+                let cifrasHtml = `<strong style="font-size: 16px; color: ${colorVientoMapa};">${d.windSpeed}</strong>`;
+                if (zoomActual >= 10 && d.windGusts !== null && d.windGusts !== undefined) {
+                    cifrasHtml += `<span style="font-size: 16px; color: #7f8c8d; margin: 0 1px;">/</span><strong style="font-size: 16px; color: ${colorRachaMapa};" title="Racha máxima: ${d.windGusts} km/h">${d.windGusts}</strong>`;
+                }
+
+                htmlBaliza = `
+                    <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: 18px">
+                        <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                            ${svgFlechaMapa}
+                        </div>
+                        <div style="height: 20px; margin-top: -14px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap; text-shadow: 1px 1px 2px rgba(255,255,255,1), -1px -1px 2px rgba(255,255,255,1), 1px -1px 2px rgba(255,255,255,1), -1px 1px 2px rgba(255,255,255,1);">
+                            ${cifrasHtml}
+                        </div>
+                    </div>`;
             }
-
-            // Cambio de tamaños: 2º Sumas el height del div de arriba (donde va la flecha) y el height del div de abajo (donde van las letras). Eso te da el height total del contenedor principal. Nota: margin-left: -26px; es para desplazarlo a la izquierda y saltar el .leaflet-marker-icon.custom-div-icon {
-            const htmlBaliza = `
-                <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: 18px">
-                    <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
-                        ${svgFlechaMapa}
-                    </div>
-                    <div style="height: 20px; margin-top: -14px; display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap; text-shadow: 1px 1px 2px rgba(255,255,255,1), -1px -1px 2px rgba(255,255,255,1), 1px -1px 2px rgba(255,255,255,1), -1px 1px 2px rgba(255,255,255,1);">
-                        ${cifrasHtml}
-                    </div>
-                </div>`;
 
             marker.setIcon(L.divIcon({ 
                 html: htmlBaliza, 
