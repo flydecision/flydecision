@@ -163,11 +163,9 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     const elVientoMax = document.getElementById('valor-viento-max-balizas');
     if (elVientoMax) {
         elVientoMax.textContent = vientoMaxBalizaColor;
-        // Ajustamos los botones +/- al iniciar según los límites de rango establecidos (de 20 a 80 km/h)
-        const btnMenos = document.getElementById('stepper-viento-balizas-menos');
-        const btnMas   = document.getElementById('stepper-viento-balizas-mas');
-        if (btnMenos) btnMenos.disabled = (vientoMaxBalizaColor <= 20);
-        if (btnMas)   btnMas.disabled   = (vientoMaxBalizaColor >= 80);
+        
+        // Sincronizar estado inicial de habilitación del stepper según el checkbox de colorear
+        actualizarEstadoStepperVientoBalizas();
     }
 
     const modoEcmwfFijar = esSimple ? "off" : (localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off");
@@ -2832,23 +2830,21 @@ function cambiarDiasSeguimiento(delta) {
 }
 
 function cambiarVientoMaxBaliza(delta) {
+    // Protección de seguridad adicional por si se intenta llamar por consola estando desactivado
+    if (!chkColorearFlechasBalizas) return;
+
     let actual = Number(localStorage.getItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR")) || 50;
-    actual = Math.min(80, Math.max(20, actual + delta)); // Rango operativo seguro: de 20 a 80 km/h
+    actual = Math.min(80, Math.max(20, actual + delta)); 
     
     vientoMaxBalizaColor = actual;
     localStorage.setItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR", actual);
 
-    // Actualizar el valor visual del stepper
     const el = document.getElementById('valor-viento-max-balizas');
     if (el) el.textContent = actual;
 
-    // Desactivar botones en los límites de rango
-    const btnMenos = document.getElementById('stepper-viento-balizas-menos');
-    const btnMas   = document.getElementById('stepper-viento-balizas-mas');
-    if (btnMenos) btnMenos.disabled = (actual <= 20);
-    if (btnMas)   btnMas.disabled   = (actual >= 80);
+    // Delegamos la habilitación/deshabilitación de botones al método común
+    actualizarEstadoStepperVientoBalizas();
 
-    // Repintar todas las balizas activas inmediatamente en el mapa
     if (typeof window.REDES_BALIZAS !== 'undefined' && typeof window.actualizarIconosBalizas === 'function') {
         Object.values(window.REDES_BALIZAS).forEach(red => {
             window.actualizarIconosBalizas(red.id);
@@ -4029,12 +4025,13 @@ function alternarColorearFlechasBalizas() {
         localStorage.setItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS", chkColorearFlechasBalizas);
     }
     
-    // Llamamos a las variables globales 
-    if (typeof window.REDES_BALIZAS !== 'undefined' && typeof window.actualizarIconosBalizas === 'function') {
-        Object.values(window.REDES_BALIZAS).forEach(red => {
-            window.actualizarIconosBalizas(red.id);
-            
-            if (typeof map !== 'undefined' && map && map.hasLayer(red.layerGroup)) {
+    // Sincronizar el estado de habilitación del stepper al instante
+    actualizarEstadoStepperVientoBalizas();
+
+    if (typeof map !== 'undefined' && map) {
+        Object.values(REDES_BALIZAS).forEach(red => {
+            actualizarIconosBalizas(red.id);
+            if (map.hasLayer(red.layerGroup)) {
                 map.removeLayer(red.layerGroup);
                 map.addLayer(red.layerGroup);
             }
@@ -4096,6 +4093,28 @@ function obtenerColorFlechaBaliza(viento) {
     return colores[index] || colores[0];
 }
 window.obtenerColorFlechaBaliza = obtenerColorFlechaBaliza;
+
+// Función para habilitar/deshabilitar el stepper de viento de balizas según si el coloreado está activo
+function actualizarEstadoStepperVientoBalizas() {
+    const menosBtn = document.getElementById('stepper-viento-balizas-menos');
+    const masBtn = document.getElementById('stepper-viento-balizas-mas');
+    const valorSpan = document.getElementById('valor-viento-max-balizas');
+    
+    if (!menosBtn || !masBtn) return; // Escudo de seguridad
+
+    if (!chkColorearFlechasBalizas) {
+        // Si el coloreado está apagado: Desactivamos botones y atenuamos el texto
+        menosBtn.disabled = true;
+        masBtn.disabled = true;
+        if (valorSpan) valorSpan.style.opacity = '0.4';
+    } else {
+        // Si el coloreado está encendido: Habilitamos respetando los límites de rango (20 y 80)
+        menosBtn.disabled = (vientoMaxBalizaColor <= 20);
+        masBtn.disabled   = (vientoMaxBalizaColor >= 80);
+        if (valorSpan) valorSpan.style.opacity = '1';
+    }
+}
+window.actualizarEstadoStepperVientoBalizas = actualizarEstadoStepperVientoBalizas;
 
 // ---------------------------------------------------------------
 // 🔴 BASE DE DATOS INDEXEDDB (Modo Offline sin límite de 5MB)
