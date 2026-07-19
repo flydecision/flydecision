@@ -15742,43 +15742,53 @@ function inicializarMasterCheckboxBalizas() {
     const masterChk = document.getElementById('checkboxMasterBalizas');
     if (!masterChk) return;
 
-    // Buscamos dinámicamente todos los checkboxes dentro del panel 3 de balizas,
-    // exceptuando el propio botón maestro. ¡Inmune a fallos de IDs y mayúsculas!
+    // Buscamos todos los checkboxes de redes individuales de balizas
     const checkboxesHijos = document.querySelectorAll('#infoPanel3 input[type="checkbox"]:not(#checkboxMasterBalizas)');
 
     if (checkboxesHijos.length === 0) return;
 
-    // 1. Sincronizar de MAESTRO a HIJOS (Al marcar/desmarcar el principal)
+    // 1. Sincronizar de MAESTRO a HIJOS (Marcar/Desmarcar todas)
     masterChk.addEventListener('change', function() {
         const nuevoEstado = this.checked;
         
         checkboxesHijos.forEach(chk => {
             if (chk.checked !== nuevoEstado) {
                 chk.checked = nuevoEstado;
-                // Forzamos el evento 'change' para que Leaflet cargue/borre la baliza en el mapa
+                // Forzamos el evento 'change' para que Leaflet dibuje/borre las balizas
                 chk.dispatchEvent(new Event('change'));
             }
         });
     });
 
-    // 2. Sincronizar de HIJOS a MAESTRO (Al tocar un checkbox individual, recalcula el estado del principal)
+    // 2. Sincronizar de HIJOS a MAESTRO (Control del estado indeterminado [-])
     checkboxesHijos.forEach(chk => {
         chk.addEventListener('change', () => {
             const totalMarcados = Array.from(checkboxesHijos).filter(c => c.checked).length;
 
             if (totalMarcados === 0) {
-                // Ninguno marcado -> Desmarcado
                 masterChk.checked = false;
                 masterChk.indeterminate = false;
             } else if (totalMarcados === checkboxesHijos.length) {
-                // Todos marcados -> Marcado completo
                 masterChk.checked = true;
                 masterChk.indeterminate = false;
             } else {
-                // Algunos marcados -> Estado indeterminado [-]
                 masterChk.checked = false;
                 masterChk.indeterminate = true;
             }
         });
     });
+
+    // 3. FORZAR EL ESTADO INICIAL AL ARRANCAR (Evita el autocompletado del navegador)
+    const totalMarcadosInicial = Array.from(checkboxesHijos).filter(c => c.checked).length;
+    
+    if (totalMarcadosInicial === 0) {
+        masterChk.checked = false;
+        masterChk.indeterminate = false;
+    } else if (totalMarcadosInicial === checkboxesHijos.length) {
+        masterChk.checked = true;
+        masterChk.indeterminate = false;
+    } else {
+        masterChk.checked = false;
+        masterChk.indeterminate = true;
+    }
 }

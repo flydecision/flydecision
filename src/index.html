@@ -500,7 +500,7 @@
 	</div>
 
 	<!-- ACORDEÓN: Mapa -->
-	<div class="div-configuracion-subpanel solo-modo-avanzado">
+	<div class="div-configuracion-subpanel">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.mapa">Mapa</summary>
 			<div class="accordion-content">
@@ -524,13 +524,13 @@
 						<span data-i18n="ajustes.recordarEstadoFiltroHorario">Recordar el estado del filtro horario (abierto/cerrado)</span>
 					</label>
 				</div>
-				<div class="linea-con-bt-info">
+				<div class="linea-con-bt-info solo-modo-avanzado">
 					<label for="chkRecordarCapasActivas" class="custom-checkbox">
 						<input type="checkbox" id="chkRecordarCapasActivas" onclick="alternarAjusteMemoriaMapa('chkRecordarCapasActivas', 'METEO_RECORDAR_CAPAS_ACTIVAS')"> 
 						<span data-i18n="ajustes.recordarCapasActivas">Recordar las capas activas (Despegues, Balizas..)</span>
 					</label>
 				</div>
-				<div class="linea-con-bt-info">
+				<div class="linea-con-bt-info solo-modo-avanzado">
 					<label for="chkRecordarTipoMapa" class="custom-checkbox">
 						<input type="checkbox" id="chkRecordarTipoMapa" onclick="alternarAjusteMemoriaMapa('chkRecordarTipoMapa', 'METEO_RECORDAR_TIPO_MAPA')"> 
 						<span data-i18n="ajustes.recordarTipoMapa">Recordar el tipo de mapa</span>
@@ -544,13 +544,13 @@
 				</div>
 				
 				<!-- Botón manual para guardar la vista actual -->
-				<div style="margin-bottom: 5px; text-align: center; width: 100%;">
+				<div class="solo-modo-avanzado" style="margin-bottom: 5px; text-align: center; width: 100%;">
 					<button id="btn-guardar-vista-mapa" class="btn-accion" onclick="guardarPosicionMapaManualmente()" style="width: 100%; height: 34px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 6px;" data-i18n="[title]mapa.btnGuardarVistaTitle;mapa.btnGuardarVista">
 						💾 Guardar vista actual
 					</button>
 				</div>
 
-				<div class="linea-con-bt-info" style="display: flex; flex-direction: column; align-items: flex-start; width: 100%;">
+				<div class="linea-con-bt-info solo-modo-avanzado" style="display: flex; flex-direction: column; align-items: flex-start; width: 100%;">
 
 					<div style="padding-top: 10px;">
 						<span style="display: inline-flex; align-items: center; gap: 6px;">
@@ -764,31 +764,31 @@
 				<icon-despegue></icon-despegue><span data-i18n="mapa.capasCheckbox.despegues">Despegues</span>
 				</label>
 			</div>
-			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+			<div class="linea-con-bt-info solo-modo-avanzado" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
 				<label for="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
 				<input type="checkbox" id="checkboxMapaDeCalorPeninsulaIberica" class="custom-checkbox">
 				<span data-i18n="mapa.capasCheckbox.mapaCalorPeninsula">🔥 Mapa de calor Iberia</span>
 				</label>
 			</div>
-			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+			<div class="linea-con-bt-info solo-modo-avanzado" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
 				<label for="checkboxMapaDeCalorAlpes" class="custom-checkbox">
 				<input type="checkbox" id="checkboxMapaDeCalorAlpes" class="custom-checkbox">
 				<span data-i18n="mapa.capasCheckbox.mapaCalorAlpes">🔥 Mapa de calor Alpes</span>
 				</label>
 			</div>
-			<div class="linea-con-bt-info" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
+			<div class="linea-con-bt-info solo-modo-avanzado" title="Puntos exactos de despegue de vuelos registrados en XContest desde octubre-2006 hasta mayo-2025. Según el zoom, se agrupan y forman un 'mapa de calor' (gradiente de rojos)">
 				<label for="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
 				<input type="checkbox" id="checkboxMapaDeCalorMarruecos" class="custom-checkbox">
 				<span data-i18n="mapa.capasCheckbox.mapaCalorMarruecos">🔥 Mapa de calor Marruecos</span>
 				</label>
 			</div>
-			<div class="linea-con-bt-info" title="Notas personales tomadas sobre despegues y aterrizajes">
+			<div class="linea-con-bt-info solo-modo-avanzado" title="Notas personales tomadas sobre despegues y aterrizajes">
 				<label for="checkboxNotasPersonales" class="custom-checkbox">
 				<input type="checkbox" id="checkboxNotasPersonales" class="custom-checkbox">
 				<span data-i18n="mapa.capasCheckbox.notas">✏️ Notas</span>
 				</label>
 			</div>
-			<div class="linea-con-bt-info" style="margin-bottom: 10px;" title="Despegues Paragliding.earth">
+			<div class="linea-con-bt-info solo-modo-avanzado" style="margin-bottom: 10px;" title="Despegues Paragliding.earth">
 				<label for="checkboxDespeguesMundo" class="custom-checkbox">
 				<input type="checkbox" id="checkboxDespeguesMundo" class="custom-checkbox">
 				<icon-despegue></icon-despegue><span data-i18n="mapa.capasCheckbox.despeguesMundo">Despegues Paraglidingearth</span>
@@ -955,7 +955,7 @@
 			</div>
 
 			<!-- Filtro Seguimiento -->
-			<div id="control-seguimiento-mapa-container" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 5px; padding-left: 5px;">
+			<div class="solo-modo-avanzado" id="control-seguimiento-mapa-container" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 5px; padding-left: 5px;">
 				<button id="btn-mapa-filtro-seguimiento" class="btn-info"
 					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
 					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoMapa()">
@@ -970,13 +970,13 @@
 				<input type="range" id="sliderActividad" min="1" max="5" value="1" step="1" style="width:98%;">
 			</div>
 
-			<div class="control-vuelos-container" style="margin-bottom:9px;" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
+			<div class="control-vuelos-container solo-modo-avanzado" style="margin-bottom:9px;" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
 				<label for="sliderVuelos" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.minVuelosTexto">Nº vuelos registrados >= </label><span id="valorVuelosTexto">0</span>
 				<br>
 				<input type="range" id="sliderVuelos" min="0" max="9" value="0" step="1" style="width:98%;">
 			</div>
 
-			<div class="control-ultimovuelo-container" style="margin-bottom:9px;" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
+			<div class="control-ultimovuelo-container solo-modo-avanzado" style="margin-bottom:9px;" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
 				<label for="sliderUltimoVuelo" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.anioUltimoVueloTexto">Año del último vuelo >= </label><span id="valorUltimoVueloTexto" data-i18n="mapa.todos">Todos</span>
 				<input type="range" id="sliderUltimoVuelo" min="0" max="20" value="0" step="1" style="width:98%;">
 			</div>

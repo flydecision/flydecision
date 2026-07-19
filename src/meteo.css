@@ -721,8 +721,23 @@ input[type="search"]::-webkit-search-cancel-button {
     /* TAMAÑO Y FORMA DE "TARJETA" */
     max-width: 365px;    /* En PC se queda como una ventana modal elegante */
     
-    background: #ffffff !important; 
-    background-color: #ffffff !important;
+    /* Gradientes de Sombras + Sólido Blanco de fondo */
+    background:
+        /* Cobertor blanco superior */
+        linear-gradient(#ffffff 30%, rgba(255, 255, 255, 0)) local,
+        /* Cobertor blanco inferior */
+        linear-gradient(rgba(255, 255, 255, 0), #ffffff 70%) local,
+        /* Sombra superior más oscura (35% opacidad) */
+        linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0)) scroll,
+        /* Sombra inferior más oscura (35% opacidad) */
+        linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.35)) scroll,
+        #ffffff !important; 
+
+    /* Aumentado el tamaño de la sombra de 14px a 24px */
+    background-size: 100% 40px, 100% 40px, 100% 24px, 100% 24px !important;
+    background-position: 0 0, 0 100%, 0 0, 0 100% !important;
+    background-repeat: no-repeat !important;
+    
     backdrop-filter: none !important; 
     -webkit-backdrop-filter: none !important;
     filter: none !important;
@@ -2703,6 +2718,21 @@ label.custom-checkbox {
     scrollbar-width: thin; 
     scrollbar-color: #bbb transparent; 
     margin: 0px 0px 0px 0px;
+
+    /* Gradientes de Sombras + Sólido Blanco de fondo */
+    background:
+        linear-gradient(#ffffff 30%, rgba(255, 255, 255, 0)) local,
+        linear-gradient(rgba(255, 255, 255, 0), #ffffff 70%) local,
+        /* Sombra superior más oscura (30% opacidad) */
+        linear-gradient(rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0)) scroll,
+        /* Sombra inferior más oscura (30% opacidad) */
+        linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.30)) scroll,
+        #ffffff !important;
+    
+    /* Aumentado el tamaño de la sombra de 10px a 18px */
+    background-size: 100% 30px, 100% 30px, 100% 18px, 100% 18px !important;
+    background-position: 0 0, 0 100%, 0 0, 0 100% !important;
+    background-repeat: no-repeat !important;
 }
 
 /* 1. Ancho total del área de scroll (lo aumentamos para poder simular los márgenes laterales) */
