@@ -12487,7 +12487,8 @@ function inicializarMapaLeaflet() {
                         ${count}
                     </div>`,
                 className: 'custom-cluster',
-                iconSize: L.point(40, 40)
+                iconSize: L.point(30, 30),
+                iconAnchor: L.point(15, 15) 
             });
         }
     });	
@@ -13513,7 +13514,8 @@ function inicializarMapaLeaflet() {
                         ✏️
                     </div>`,
                 className: 'custom-cluster',
-                iconSize: L.point(40, 40)
+                iconSize: L.point(30, 30),
+                iconAnchor: L.point(15, 15)
             });
         }
 
@@ -13643,7 +13645,8 @@ function inicializarMapaLeaflet() {
                         ${count}
                     </div>`,
                 className: 'custom-cluster',
-                iconSize: L.point(40, 40)
+                iconSize: L.point(30, 30),
+                iconAnchor: L.point(15, 15)
             });
         }
     });	
@@ -14344,21 +14347,22 @@ function inicializarMapaLeaflet() {
 
     // CONFIGURACIÓN DE LOS CLÚSTERES DE BALIZAS
     const opcionesClusterBalizas = {
-        maxClusterRadius: 15, // Si dos marcadores están separados menos de X px (aprox.), se agrupan.
-        disableClusteringAtZoom: 10, // A partir del zoom X, incluido, se separan siempre
-        spiderfyOnMaxZoom: true,
-        showCoverageOnHover: false,
-        iconCreateFunction: function(cluster) {
-            //const count = cluster.getChildCount(); // en el html iba el ${count} pero está quitado para no confundir con cifras de viento
-            return L.divIcon({
-                html: `<div style="background-color: #0078d46b; color: white; border-radius: 50%; width: 10px; height: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
-                        
-                    </div>`,
-                className: 'cluster-balizas-personalizado',
-                iconSize: L.point(36, 36)
-            });
-        }
-    };
+    maxClusterRadius: 15, // Si dos marcadores están separados menos de X px (aprox.), se agrupan.
+    disableClusteringAtZoom: 10, // A partir del zoom X, incluido, se separan siempre
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: false,
+    iconCreateFunction: function(cluster) {
+        //const count = cluster.getChildCount(); // en el html iba el ${count} pero está quitado para no confundir con cifras de viento
+        return L.divIcon({
+            html: `<div style="background-color: #0078d46b; color: white; border-radius: 50%; width: 10px; height: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-sizing: border-box;">
+                    
+                </div>`,
+            className: 'cluster-balizas-personalizado',
+            iconSize: L.point(10, 10),
+            iconAnchor: L.point(5, 5) 
+        });
+    }
+};
 
     const REDES_BALIZAS = {
         'euskalmet': {
