@@ -182,7 +182,7 @@
       "motivoMedio": "Ratio {{ratio}}x > 1.5 Y Δ {{delta}} > 8 km/h",
       "motivoAlto": "Ratio {{ratio}}x > 2.0 Y Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitud de techo usable : <b>{{altitudMSL}} m </b>MSL</li><li>Altura de techo usable <b>{{espesorUtil}} m</b> AGL ({{pct}}% BLH)</li><li>Altura de Capa Límite : {{blh}} m AGL</li><li>Altitud media de la celda ECMWF: {{elevacion}} m MSL</li></ul>",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitud de techo usable: <b>{{altitudMSL}} m </b>MSL</li><li>Altura de techo usable: <b>{{espesorUtil}} m</b> AGL ({{pct}}% BLH)</li><li>Altura de Capa Límite: {{blh}} m AGL</li><li>Altitud media de la celda ECMWF: {{elevacion}} m MSL</li></ul>",
     "despegueTooltip": "Provincia: {{provincia}}\nDespegue: {{despegue}}\nOrientación: {{orientacion}}",
     "cargando": "Cargando...",
     "cabeceraPais": "País",

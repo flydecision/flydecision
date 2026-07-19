@@ -182,7 +182,7 @@
       "motivoMedio": "Ratio {{ratio}}x > 1.5 ET Δ {{delta}} > 8 km/h",
       "motivoAlto": "Ratio {{ratio}}x > 2.0 ET Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitude du plafond utilisable : <b>{{altitudMSL}} m </b>MSL</li><li>Hauteur du plafond utilisable : <b>{{espesorUtil}} m</b> AGL ({{pct}}% BLH)</li><li>Hauteur de la couche limite (BLH) : {{blh}} m</li><li>Altitude moyenne de la cellule ECMWF : {{elevacion}} m MSL</li></ul>",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitude de plafond utilisable : <b>{{altitudMSL}} m </b>MSL</li><li>Hauteur de plafond utilisable : <b>{{espesorUtil}} m</b> AGL ({{pct}}% BLH)</li><li>Hauteur de la Couche Limite : {{blh}} m AGL</li><li>Altitude moyenne de la cellule ECMWF : {{elevacion}} m MSL</li></ul>",
     "despegueTooltip": "Province : {{provincia}}\nDécollage : {{despegue}}\nOrientation : {{orientacion}}",
     "cargando": "Chargement...",
     "cabeceraPais": "Pays",
