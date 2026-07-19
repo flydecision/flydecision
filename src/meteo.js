@@ -3985,15 +3985,12 @@ function alternarColorearFlechasBalizas() {
         localStorage.setItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS", chkColorearFlechasBalizas);
     }
     
-    // Si el mapa existe, redibujamos
-    if (typeof map !== 'undefined' && map) {
-        Object.values(REDES_BALIZAS).forEach(red => {
-            // 1. Actualizamos todos los iconos de la red en memoria
-            actualizarIconosBalizas(red.id);
+    // Llamamos a las variables globales 
+    if (typeof window.REDES_BALIZAS !== 'undefined' && typeof window.actualizarIconosBalizas === 'function') {
+        Object.values(window.REDES_BALIZAS).forEach(red => {
+            window.actualizarIconosBalizas(red.id);
             
-            // 2. 🚀 REDIBUJADO SEGURO: Comprobamos el checkbox de la red de balizas (ej: Aemet, Holfuy...)
-            const chkRed = document.getElementById(red.checkboxId);
-            if (chkRed && chkRed.checked) {
+            if (typeof map !== 'undefined' && map && map.hasLayer(red.layerGroup)) {
                 map.removeLayer(red.layerGroup);
                 map.addLayer(red.layerGroup);
             }
@@ -4009,15 +4006,12 @@ function alternarOcultarValoresBalizas() {
         localStorage.setItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS", chkOcultarValoresBalizas);
     }
     
-    // Si el mapa existe, redibujamos
-    if (typeof map !== 'undefined' && map) {
-        Object.values(REDES_BALIZAS).forEach(red => {
-            // 1. Actualizamos todos los iconos de la red en memoria
-            actualizarIconosBalizas(red.id);
+    // Llamamos a las variables globales 
+    if (typeof window.REDES_BALIZAS !== 'undefined' && typeof window.actualizarIconosBalizas === 'function') {
+        Object.values(window.REDES_BALIZAS).forEach(red => {
+            window.actualizarIconosBalizas(red.id);
             
-            // 2. 🚀 REDIBUJADO SEGURO: Comprobamos el checkbox de la red de balizas (ej: Aemet, Holfuy...)
-            const chkRed = document.getElementById(red.checkboxId);
-            if (chkRed && chkRed.checked) {
+            if (typeof map !== 'undefined' && map && map.hasLayer(red.layerGroup)) {
                 map.removeLayer(red.layerGroup);
                 map.addLayer(red.layerGroup);
             }
@@ -14681,7 +14675,7 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
     function actualizarIconosBalizas(redId) {
-        // ESCUDO: Si el mapa aún no existe en esta sesión, salimos silenciosamente
+        // ESCUDO DE SEGURIDAD: Si el mapa aún no existe en esta sesión, salimos silenciosamente
         if (typeof map === 'undefined' || !map) return;
 
         const red = REDES_BALIZAS[redId];
@@ -14754,6 +14748,11 @@ function inicializarMapaLeaflet() {
                     popupAnchor: [0, 25] 
                 }));
 
+                // 🚀 HACK DE REDIBUJADO DIRECTO (Para celdas inactivas)
+                if (marker._icon) {
+                    marker._icon.innerHTML = htmlObsoleto;
+                }
+
                 if (marker.isPopupOpen()) pintarPopupBaliza(marker);
                 return; 
             }
@@ -14772,6 +14771,11 @@ function inicializarMapaLeaflet() {
                     iconAnchor: [40, 23], 
                     popupAnchor: [0, 25] 
                 }));
+
+                // 🚀 HACK DE REDIBUJADO DIRECTO (Para celdas sin datos)
+                if (marker._icon) {
+                    marker._icon.innerHTML = htmlSinDatos;
+                }
 
                 if (marker.isPopupOpen()) pintarPopupBaliza(marker);
                 return;
@@ -14792,7 +14796,6 @@ function inicializarMapaLeaflet() {
 
             let htmlBaliza = "";
 
-            // Leemos directamente de la variable global (Inmune a conflictos de ID)
             if (chkOcultarValoresBalizas) {
                 // Modo compacto (Conserva las proporciones de la caja para un anclaje idéntico del popup)
                 htmlBaliza = `
@@ -14823,6 +14826,7 @@ function inicializarMapaLeaflet() {
                     </div>`;
             }
 
+            // Actualizamos en memoria
             marker.setIcon(L.divIcon({ 
                 html: htmlBaliza, 
                 className: 'custom-div-icon', 
@@ -14830,14 +14834,23 @@ function inicializarMapaLeaflet() {
                 popupAnchor: [0, 25] 
             }));
 
+            // 🚀 EL HACK DE REDIBUJADO DIRECTO: Si la baliza está visible en pantalla,
+            // forzamos al navegador a repintar su HTML interno de inmediato
+            if (marker._icon) {
+                marker._icon.innerHTML = htmlBaliza;
+            }
+
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
         });
 
-        // Forzar repinte instantáneo en el mapa:
         if (red.layerGroup && typeof red.layerGroup.refreshClusters === 'function' && map.hasLayer(red.layerGroup)) {
             red.layerGroup.refreshClusters();
         }
     }
+
+    // EXPOSICIÓN GLOBAL PARA PODER ACTUALIZAR MAPA INMEDIATAMENTE DESDE AJUSTES
+    window.REDES_BALIZAS = REDES_BALIZAS;
+    window.actualizarIconosBalizas = actualizarIconosBalizas;
     
     // 🟡 6. PINTAR EL POPUP
     //___________________________________________________________________________________
