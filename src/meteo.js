@@ -358,15 +358,26 @@ class IconDespegue extends HTMLElement {
         this.innerHTML = `
             <span style="display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; color: #555; width: 22px; height: 22px; margin-right: 3px; user-select: none;">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <!-- Pendiente de la montaña (Plana al principio y cae agresivamente hacia la derecha) -->
-                    <path d="M 0 16.5 Q 12 16.5 20 24" stroke-width="2" />
-                    <!-- Cordinos (5 líneas centradas en la nueva posición del piloto) -->
-                    <path d="M 5 5 L 12 13 L 9 3.5 M 13 3 L 12 13 L 17 3.5 M 21 5 L 12 13" stroke-width="0.8" />
-                    <!-- Vela del parapente (100% horizontal, desplazada arriba y a la derecha) -->
-                    <path d="M 5 5 Q 13 -1 21 5 Q 13 3 5 5 Z" stroke-width="2" />
-                    <!-- Piloto (Cabeza y cuerpo engrosados, desplazado arriba y a la derecha) -->
-                    <circle cx="12" cy="11.5" r="1.6" fill="currentColor" stroke="none" />
-                    <path d="M 12 13 L 13 15.5 L 15.5 15 M 13 15.5 L 11.5 18.5" stroke-width="2" />
+                    <!-- Pendiente de la montaña -->
+                    <path d="M 1.0 18.4 Q 11.1 16.6 18.4 23" stroke-width="2" />
+                    
+                    <!-- Cordinos (el central ya empieza justo en el borde de la vela, no sobresale) -->
+                    <path d="M 1.9 4.7 L 12 12.9 L 6.5 2.6 M 12 1.8 L 12 12.9 L 17.5 2.6 M 22.1 4.7 L 12 12.9" stroke-width="0.8" />
+                    
+                    <!-- Vela del parapente -->
+                    <path d="M 1.9 4.7 Q 12 -1.1 22.1 4.7 Q 12 1.6 1.9 4.7 Z" stroke-width="2" />
+                    
+                    <!-- Piloto: cabeza -->
+                    <circle cx="14.8" cy="11.7" r="1.1" fill="currentColor" stroke="none" />
+                    
+                    <!-- Cuerpo -->
+                    <path d="M 13.9 12.6 L 11.2 14.5" stroke-width="2" />
+                    
+                    <!-- Piernas (ambas llegan ahora hasta el terreno) -->
+                    <path d="M 11.2 14.5 L 8.4 18.2 M 11.2 14.5 L 13.7 19.7" stroke-width="2" />
+                    
+                    <!-- Brazo -->
+                    <path d="M 13.2 12.9 L 11.6 11.4" stroke-width="1.2" />
                 </svg>
             </span>
         `;
