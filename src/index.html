@@ -567,7 +567,7 @@
 						</button>
 					</div>
 
-					<div class="div-paneles-controles-sin-pips solo-modo-avanzado" id="container-viento-balizas-slider" style="margin-bottom: -46px !important; display: flex; flex-direction: column; justify-content: center; padding-left: 21px;">
+					<div class="div-paneles-controles-sin-pips solo-modo-avanzado" id="container-viento-balizas-slider" style="min-height: 14px; margin-top: 39px;margin-bottom: 0px !important; display: flex; flex-direction: column; justify-content: center; padding-left: 21px;">
 
 						<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding-right: 14px; padding-left: 32px; box-sizing: border-box; margin-top: -33px !important; margin-bottom: 5px !important;">
 							
@@ -576,13 +576,12 @@
 							<button class="btn-info btn-inline" style="flex-shrink: 0; margin-top: 0px !important;" data-tippy-content-i18n="btn_info.tooltipLimiteVientoRojoBalizas" data-tippy-content="<b>Límite viento rojo balizas</b><br><br>Permite personalizar el valor de velocidad del viento (km/h) a partir del cual las flechas de dirección de las balizas en el mapa se colorearán de color rojo intenso (peligro).<br><br>La escala de degradado de verde a rojo se adaptará automáticamente a este valor.">
 								<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 							</button>
-
 						</div>
-
 					</div>
-					<div class="linea-con-bt-info">
+					
+					<div class="linea-con-bt-info" style="margin-top: -12px;">
 						<label for="chkOcultarValoresBalizas" class="custom-checkbox">
-							<input type="checkbox" id="chkOcultarValoresBalizas" onclick="alternarOcultarValoresBalizas()"> <span data-i18n="ajustes.ocultarValoresBalizas">Modo compacto en balizas (solo flechas)</span>
+							<input type="checkbox" id="chkOcultarValoresBalizas" onclick="alternarOcultarValoresBalizas()"> <span data-i18n="ajustes.ocultarValoresBalizas">Ocultar cifras de viento</span>
 						</label>
 						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipOcultarValoresBalizas" data-tippy-content="<b>Modo compacto (solo flechas)</b><br><br>Oculta las cifras numéricas de velocidad del viento medio y ráfaga en los iconos de las balizas en el mapa, dejando únicamente las flechas de dirección visibles para limpiar la interfaz.">
 							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">

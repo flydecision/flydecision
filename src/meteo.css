@@ -408,7 +408,7 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
   margin-top: 20px !important;
   height: 17px !important;
   margin-left: 8px !important;
-  margin-right: 43px !important;
+  margin-right: 26px !important;
   margin-bottom: 10px;
 }
 
@@ -806,7 +806,7 @@ input[type="search"]::-webkit-search-cancel-button {
     padding-right: 25px;
     padding-left: 25px;
     padding-bottom: 8px;
-    max-height: calc(100dvh - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 100px) !important; 
+    max-height: calc(100dvh - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 120px) !important; 
     -webkit-overflow-scrolling: touch;
 }
 
