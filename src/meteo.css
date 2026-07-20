@@ -377,6 +377,41 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     line-height: 28px;
 }
 
+/* 🎨 SLIDER DE LÍMITE DE VIENTO EN BALIZAS */
+#viento-balizas-slider .noUi-connects .noUi-connect:nth-child(1) {
+    /* Degradado de verde a rojo fuerte */
+    background: linear-gradient(to right, #15803d, #84cc16, #eab308, #f97316, #dc2626) !important;
+}
+#viento-balizas-slider .noUi-connects .noUi-connect:nth-child(2) { 
+    /* Área derecha de peligro: Rojo carmesí plano */
+    background: #7f0000 !important; 
+}
+
+#viento-balizas-slider .noUi-handle[data-handle="0"] .noUi-tooltip::before {
+    content: "\00A0km/h";
+}
+#viento-balizas-slider .noUi-tooltip::before {
+    font-weight: normal;
+    font-size: 0.8em;
+    color: #333;
+    opacity: 0.9;
+    width: 100%;
+    text-align: center;
+    order: 3;
+}
+
+#viento-balizas-slider .noUi-tooltip {
+    background: transparent; 
+}
+
+#viento-balizas-slider {
+  margin-top: 20px !important;
+  height: 17px !important;
+  margin-left: 8px !important;
+  margin-right: 43px !important;
+  margin-bottom: 10px;
+}
+
 #div-menu .nav-icon-container {
     width: 34px;
     height: 24px;
