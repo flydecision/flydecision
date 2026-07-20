@@ -962,6 +962,24 @@
 				<span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.Seguimiento">Seguimiento</span>
 			</div>
 
+			<!-- Filtro Balizas Favoritas -->
+			<div id="control-favoritos-balizas-mapa-container" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
+				<button id="btn-mapa-filtro-favoritos-balizas" class="btn-info"
+					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
+					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosBalizasMapa()">
+				</button>
+				<span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.BalizasFavoritas">Balizas Favoritas</span>
+			</div>
+
+			<!-- Filtro Balizas Seguimiento -->
+			<div class="solo-modo-avanzado" id="control-seguimiento-balizas-mapa-container" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 5px; padding-left: 5px;">
+				<button id="btn-mapa-filtro-seguimiento-balizas" class="btn-info"
+					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
+					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoBalizasMapa()">
+				</button>
+				<span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.BalizasSeguimiento">Balizas en Seguimiento</span>
+			</div>
+
 			<!-- Filtro Actividad -->
 			<div class="control-actividad-mapa-container" style="margin-bottom:9px;" title="Mostrar solo los despegues con el nivel de Actividad seleccionado">
 				<label for="sliderActividad" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.Actividad">Actividad >= </label><span id="valorActividadTexto">1</span>
