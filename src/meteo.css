@@ -387,9 +387,29 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     background: #7f0000 !important; 
 }
 
-/* Etiqueta del Tooltip */
-#viento-balizas-slider .noUi-handle[data-handle="0"] .noUi-tooltip::before { 
-    content: "Límite" !important; 
+#viento-balizas-slider .noUi-handle[data-handle="0"] .noUi-tooltip::before {
+    content: "\00A0km/h";
+}
+#viento-balizas-slider .noUi-tooltip::before {
+    font-weight: normal;
+    font-size: 0.8em;
+    color: #333;
+    opacity: 0.9;
+    width: 100%;
+    text-align: center;
+    order: 3;
+}
+
+#viento-balizas-slider .noUi-tooltip {
+    background: transparent; 
+}
+
+#viento-balizas-slider {
+  margin-top: 20px !important;
+  height: 17px !important;
+  margin-left: 8px !important;
+  margin-right: 43px !important;
+  margin-bottom: 10px;
 }
 
 #div-menu .nav-icon-container {

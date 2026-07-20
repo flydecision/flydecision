@@ -166,7 +166,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
             start: vientoMaxBalizaColor,
             connect: [true, true],
             step: 5, // Pasos de 5 en 5 km/h para acompañar la escala
-            range: { min: 20, max: 80 },
+            range: { min: 10, max: 60 },
             tooltips: [true],
             format: {
                 to: value => Math.round(value),
@@ -175,7 +175,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         });
 
         // Evento 'change' (actualiza y redibuja las balizas al soltar el tirador)
-        vientoBalizasSlider.noUiSlider.on('change', function(values) {
+        vientoBalizasSlider.noUiSlider.on('update', function(values) {
             const actual = Math.round(Number(values[0]));
             vientoMaxBalizaColor = actual;
             localStorage.setItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR", actual);
