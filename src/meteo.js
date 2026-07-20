@@ -54,7 +54,7 @@ const cacheSVG_Tabla = {};
 
 let chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false"; // Por defecto true para que lo vean
 
-let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false"; // Por defecto true para que lo vean
+let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "true"; // Por defecto falso 
 
 // ECMWF
 const chkMostrarPrecipitacion = true; // Siempre activo
@@ -2833,7 +2833,7 @@ function cambiarVientoMaxBaliza(delta) {
     // Protección de seguridad adicional por si se intenta llamar por consola estando desactivado
     if (!chkColorearFlechasBalizas) return;
 
-    let actual = Number(localStorage.getItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR")) || 50;
+    let actual = Number(localStorage.getItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR")) || 40;
     actual = Math.min(80, Math.max(20, actual + delta)); 
     
     vientoMaxBalizaColor = actual;
@@ -4625,9 +4625,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", "true");
                 chkMostrarVientoAlturas = true;
                 if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = true; 
-                localStorage.setItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA", "true");
-                chkMostrarCizalladura = true;
-                if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = true; 
+                localStorage.setItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA", "false"); // Desactivado por defecto en la primera visita
+                chkMostrarCizalladura = false;
+                if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = false; 
                 
                 soloFavoritos = false;
                 modoEdicionFavoritos = true; 
