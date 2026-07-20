@@ -766,6 +766,13 @@ input[type="search"]::-webkit-search-cancel-button {
     scrollbar-gutter: stable both-edges;
 }
 
+/* TRUCO DE FUSIÓN (Permite que la sombra del fondo atraviese y flote sobre los subpaneles) */
+.div-configuracion .div-paneles-controles,
+.div-configuracion .div-configuracion-subpanel,
+.div-configuracion details.config-accordion {
+    mix-blend-mode: multiply; /* Multiplica la sombra gris del fondo sobre el color azul de las cajas */
+}
+
 .div-configuracion.activo {
     opacity: 1 !important;
     overflow-y: auto; 
@@ -2703,6 +2710,7 @@ label.custom-checkbox {
     flex-direction: column !important;
     padding: 0 !important; 
     overflow: hidden !important; 
+    border-radius: 10px;
 }
 
 .tippy-scroll-area {
@@ -2733,6 +2741,15 @@ label.custom-checkbox {
     background-size: 100% 30px, 100% 30px, 100% 18px, 100% 18px !important;
     background-position: 0 0, 0 100%, 0 0, 0 100% !important;
     background-repeat: no-repeat !important;
+}
+
+/* TRUCO DE FUSIÓN PARA TOOLTIPS (Permite que las sombras dinámicas se proyecten sobre las tablas de datos) */
+.tippy-scroll-area table,
+.tippy-scroll-area ul,
+.tippy-scroll-area ol,
+.tippy-scroll-area .tabla-minutely15,
+.tippy-scroll-area .tabla-tooltip-desglose {
+    mix-blend-mode: multiply; /* Multiplica las sombras del fondo sobre las tablas y listas del tooltip */
 }
 
 /* 1. Ancho total del área de scroll (lo aumentamos para poder simular los márgenes laterales) */
@@ -4392,6 +4409,27 @@ tr.ecmwf-oculto-temp {
     overflow-x: auto;
     max-width: 100%;
     -webkit-overflow-scrolling: touch;
+
+    background:
+        /* Cobertor blanco izquierdo (se desplaza con el contenido) */
+        linear-gradient(to right, #ffffff 30%, rgba(255, 255, 255, 0)) local,
+        /* Cobertor blanco derecho (se desplaza con el contenido) */
+        linear-gradient(to left, #ffffff 30%, rgba(255, 255, 255, 0)) local,
+        /* Sombra izquierda real (fija en el extremo izquierdo) */
+        linear-gradient(to right, rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0)) scroll,
+        /* Sombra derecha real (fija en el extremo derecho) */
+        linear-gradient(to left, rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0)) scroll,
+        #ffffff !important; /* Fondo blanco de seguridad */
+    
+    /* Definimos el tamaño: 40px de cobertor a los lados y 14px de ancho para las sombras */
+    background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100% !important;
+    background-position: 0 0, 100% 0, 0 0, 100% 0 !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Permitimos que las sombras horizontales del contenedor atraviesen las celdas de colores de la tabla */
+.minutely15-wrap .tabla-minutely15 {
+    mix-blend-mode: multiply;
 }
 
 .tabla-minutely15 {
