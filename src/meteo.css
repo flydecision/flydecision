@@ -716,24 +716,17 @@ input[type="search"]::-webkit-search-cancel-button {
     top: max(20px, var(--safe-area-inset-top, env(safe-area-inset-top, 20px))) !important;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 9999 !important; /* Asegura que quede encima de todo (filtros, tabla, etc.) */
+    z-index: 9999 !important;
 
-    /* TAMAÑO Y FORMA DE "TARJETA" */
-    max-width: 365px;    /* En PC se queda como una ventana modal elegante */
+    max-width: 365px;
     
-    /* Gradientes de Sombras + Sólido Blanco de fondo */
     background:
-        /* Cobertor blanco superior */
         linear-gradient(#ffffff 30%, rgba(255, 255, 255, 0)) local,
-        /* Cobertor blanco inferior */
         linear-gradient(rgba(255, 255, 255, 0), #ffffff 70%) local,
-        /* Sombra superior más oscura (35% opacidad) */
         linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0)) scroll,
-        /* Sombra inferior más oscura (35% opacidad) */
         linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.35)) scroll,
         #ffffff !important; 
 
-    /* Aumentado el tamaño de la sombra de 14px a 24px */
     background-size: 100% 40px, 100% 40px, 100% 24px, 100% 24px !important;
     background-position: 0 0, 0 100%, 0 0, 0 100% !important;
     background-repeat: no-repeat !important;
@@ -746,7 +739,6 @@ input[type="search"]::-webkit-search-cancel-button {
     box-shadow: 0px 0px 40px 20px rgba(0, 0, 0, 0.5);
     border: 1px solid #ccc;
 
-    /* ESTADO CERRADO */
     overflow: hidden;
     overflow-y: hidden;
     max-height: 0;
@@ -756,74 +748,75 @@ input[type="search"]::-webkit-search-cancel-button {
 
     pointer-events: none;
     
-    /* TRANSICIÓN CONSISTENTE */
     transition: 
         max-height 0.3s ease-in-out, 
         opacity 0.2s ease,
         margin 0.3s ease,
         padding 0.3s ease;
-    transform: translate(-50%, var(--vv-offset-top, 0px)); /* Para que, si la usuaria sube la pantalla mientras hay modales abiertos (como el panel de configuración, menú de geolocalización o de conexión), no se salgan del marco de la pantalla */
-    scrollbar-gutter: stable both-edges;
+    transform: translate(-50%, var(--vv-offset-top, 0px));
+    /* scrollbar-gutter: stable both-edges;  <-- ELIMINADO: causaba el bug en Chrome */
 }
 
-/* TRUCO DE FUSIÓN (Permite que la sombra del fondo atraviese y flote sobre los subpaneles) */
 .div-configuracion .div-configuracion-subpanel,
 .div-configuracion details.config-accordion {
-    mix-blend-mode: multiply; /* Multiplica la sombra gris del fondo sobre el color azul de las cajas */
+    mix-blend-mode: multiply;
 }
 
+/* ÚNICO bloque .activo, sin duplicados */
 .div-configuracion.activo {
     opacity: 1 !important;
     overflow-y: auto; 
     pointer-events: auto; 
     padding-top: 26px;
-    padding-right: 15px;
-    padding-left: 15px;
+    padding-right: 25px;
+    padding-left: 25px;
     padding-bottom: 8px;
     max-height: calc(100dvh - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)) - 100px) !important; 
     -webkit-overflow-scrolling: touch;
 }
 
 /* --- EFECTO FADE-IN DE CONTENIDO INTERNO --- */
-/* Hace que el contenido interno espere un poco a que el panel baje */
 .div-configuracion > * {
     transition: opacity 0.3s ease;
     opacity: 0;
 }
-
 .div-configuracion.activo > * {
     opacity: 1;
 }
 
-/* Barra de desplazamiento personalizada para la ventana de Ajustes (Estilo Tippy) */
-/* .div-configuracion::-webkit-scrollbar { 
-    width: 15px; 
-    background-color: #ffffff !important;
-} */
+/* ÚNICA definición de scrollbar (webkit) */
+.div-configuracion::-webkit-scrollbar { 
+    width: 10px; 
+}
 .div-configuracion::-webkit-scrollbar-track { 
-    background: #f1f1f1; 
-    border-radius: 4px; 
-    margin-top: 35px; /* Para que la barra no pise el borde superior redondeado de la ventana */
-    margin-bottom: 15px; /* Para que no pise el borde inferior */
+    background: transparent; 
+    margin: 12px 0; /* aleja la barra de las esquinas redondeadas top/bottom */
 }
 .div-configuracion::-webkit-scrollbar-thumb { 
-    background: #666; 
+    background: rgba(0, 0, 0, 0.35); 
     border-radius: 4px; 
-    border: 2px solid #f1f1f1; 
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 .div-configuracion::-webkit-scrollbar-thumb:hover { 
-    background: #444; 
+    background: rgba(0, 0, 0, 0.55); 
+}
+
+/* Firefox */
+.div-configuracion {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,0,0,0.35) transparent;
 }
 
 /* AJUSTE PARA PANTALLAS SUPERESTRECHAS (< 370px) */
 @media (max-width: 370px) {
     .div-configuracion {
-        width: 100% !important;      /* Ocupar el 100% de la pantalla */
-        max-width: none !important;  /* Quitar límite de anchura */
-        left: 0 !important;          /* Pegado a la izquierda */
-        transform: none !important;  /* Quitar el centrado matemático */
-        border-radius: 0 !important; /* Quitar esquinas redondeadas */
-        border: none !important;     /* Quitar bordes grises */
+        width: 100% !important;
+        max-width: none !important;
+        left: 0 !important;
+        transform: none !important;
+        border-radius: 0 !important;
+        border: none !important;
         transform: translateY(var(--vv-offset-top, 0px)) !important;
     }
     .div-configuracion.activo {
@@ -831,7 +824,7 @@ input[type="search"]::-webkit-search-cancel-button {
         padding-left: 5px !important;
     }
     .btn-cerrar-modal {
-        margin-right: -25px !important; /* Pegarlo más a la esquina */
+        margin-right: -25px !important;
         top: -21px !important;
     }
 }
