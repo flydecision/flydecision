@@ -567,18 +567,19 @@
 						</button>
 					</div>
 
-					<div class="linea-con-bt-info" style="margin-left: 8px;">
-						<span data-i18n="ajustes.limiteVientoRojoBalizas">Límite viento rojo balizas</span>
-						<div class="stepper-dias-seguimiento">
-							<button id="stepper-viento-balizas-menos" class="stepper-btn" onclick="cambiarVientoMaxBaliza(-5)">−</button>
-							<span id="valor-viento-max-balizas">50</span>
-							<button id="stepper-viento-balizas-mas" class="stepper-btn" onclick="cambiarVientoMaxBaliza(5)">+</button>
+					<div class="div-paneles-controles-sin-pips solo-modo-avanzado" id="container-viento-balizas-slider" style="margin-bottom: -4px !important;">
+						<div class="linea-con-bt-info"">
+							<div id="titulo-viento-balizas-slider" style="display: flex; align-items: center; gap: 6px; margin-left: 31px;">
+								<span data-i18n="ajustes.limiteVientoRojoBalizas">Límite viento (rojo)</span>
+							</div>
+							<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipLimiteVientoRojoBalizas" data-tippy-content="<b>Límite viento rojo balizas</b><br><br>Permite personalizar el valor de velocidad del viento (km/h) a partir del cual las flechas de dirección de las balizas en el mapa se colorearán de color rojo intenso (peligro).<br><br>La escala de degradado de verde a rojo se adaptará automáticamente a este valor.">
+								<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							</button>
 						</div>
-						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipLimiteVientoRojoBalizas">
-							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-						</button>
+
+						<div id="viento-balizas-slider" role="slider" aria-labelledby="titulo-viento-balizas-slider"></div>
 					</div>
-					
+
 					<div class="linea-con-bt-info">
 						<label for="chkOcultarValoresBalizas" class="custom-checkbox">
 							<input type="checkbox" id="chkOcultarValoresBalizas" onclick="alternarOcultarValoresBalizas()"> <span data-i18n="ajustes.ocultarValoresBalizas">Modo compacto en balizas (solo flechas)</span>
@@ -587,7 +588,6 @@
 							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 						</button>
 					</div>
-
 				</div>
 
 			</div>

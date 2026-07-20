@@ -159,13 +159,45 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkColorearFlechasBalizas")) document.getElementById("chkColorearFlechasBalizas").checked = chkColorearFlechasBalizas;
     if (document.getElementById("chkOcultarValoresBalizas")) document.getElementById("chkOcultarValoresBalizas").checked = chkOcultarValoresBalizas;
 
-    // Sincronización del stepper de viento máximo para balizas
-    const elVientoMax = document.getElementById('valor-viento-max-balizas');
-    if (elVientoMax) {
-        elVientoMax.textContent = vientoMaxBalizaColor;
-        
-        // Sincronizar estado inicial de habilitación del stepper según el checkbox de colorear
-        actualizarEstadoStepperVientoBalizas();
+    // Inicialización del slider de viento máximo para balizas (Rango de 20 a 80 km/h)
+    const vientoBalizasSlider = document.getElementById('viento-balizas-slider');
+    if (vientoBalizasSlider) {
+        noUiSlider.create(vientoBalizasSlider, {
+            start: vientoMaxBalizaColor,
+            connect: [true, true],
+            step: 5, // Pasos de 5 en 5 km/h para acompañar la escala
+            range: { min: 20, max: 80 },
+            tooltips: [true],
+            format: {
+                to: value => Math.round(value),
+                from: value => parseInt(value)
+            }
+        });
+
+        // Evento 'change' (actualiza y redibuja las balizas al soltar el tirador)
+        vientoBalizasSlider.noUiSlider.on('change', function(values) {
+            const actual = Math.round(Number(values[0]));
+            vientoMaxBalizaColor = actual;
+            localStorage.setItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR", actual);
+
+            if (typeof window.REDES_BALIZAS !== 'undefined' && typeof window.actualizarIconosBalizas === 'function') {
+                Object.values(window.REDES_BALIZAS).forEach(red => {
+                    window.actualizarIconosBalizas(red.id);
+                    if (typeof map !== 'undefined' && map && map.hasLayer(red.layerGroup)) {
+                        map.removeLayer(red.layerGroup);
+                        map.addLayer(red.layerGroup);
+                    }
+                });
+            }
+        });
+
+        // Evento 'slide' (vibración háptica ligera durante el arrastre)
+        vientoBalizasSlider.noUiSlider.on('slide', function() {
+            if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+        });
+
+        // Ajustamos la habilitación inicial del deslizador
+        actualizarEstadoSliderVientoBalizas();
     }
 
     const modoEcmwfFijar = esSimple ? "off" : (localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off");
@@ -2829,36 +2861,6 @@ function cambiarDiasSeguimiento(delta) {
     if (btnMas)   btnMas.disabled   = (idx >= PASOS_DIAS_SEGUIMIENTO.length - 1);
 }
 
-function cambiarVientoMaxBaliza(delta) {
-    // Protección de seguridad adicional por si se intenta llamar por consola estando desactivado
-    if (!chkColorearFlechasBalizas) return;
-
-    let actual = Number(localStorage.getItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR")) || 40;
-    actual = Math.min(80, Math.max(20, actual + delta)); 
-    
-    vientoMaxBalizaColor = actual;
-    localStorage.setItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR", actual);
-
-    const el = document.getElementById('valor-viento-max-balizas');
-    if (el) el.textContent = actual;
-
-    // Delegamos la habilitación/deshabilitación de botones al método común
-    actualizarEstadoStepperVientoBalizas();
-
-    if (typeof window.REDES_BALIZAS !== 'undefined' && typeof window.actualizarIconosBalizas === 'function') {
-        Object.values(window.REDES_BALIZAS).forEach(red => {
-            window.actualizarIconosBalizas(red.id);
-            if (typeof map !== 'undefined' && map && map.hasLayer(red.layerGroup)) {
-                map.removeLayer(red.layerGroup);
-                map.addLayer(red.layerGroup);
-            }
-        });
-    }
-
-    if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
-}
-window.cambiarVientoMaxBaliza = cambiarVientoMaxBaliza;
-
 // ---------------------------------------------------------------
 // 🔴 SLIDERS. RANGO HORARIO. Lógica para poder hacer clic en los pips de los días semanales y seleccionar así sus rango horario completo (tiene en cuenta chk día/noche) con un toque
 // ---------------------------------------------------------------
@@ -4026,7 +4028,7 @@ function alternarColorearFlechasBalizas() {
     }
     
     // Sincronizar el estado de habilitación del stepper al instante
-    actualizarEstadoStepperVientoBalizas();
+    actualizarEstadoSliderVientoBalizas();
 
     if (typeof map !== 'undefined' && map) {
         Object.values(REDES_BALIZAS).forEach(red => {
@@ -4094,27 +4096,22 @@ function obtenerColorFlechaBaliza(viento) {
 }
 window.obtenerColorFlechaBaliza = obtenerColorFlechaBaliza;
 
-// Función para habilitar/deshabilitar el stepper de viento de balizas según si el coloreado está activo
-function actualizarEstadoStepperVientoBalizas() {
-    const menosBtn = document.getElementById('stepper-viento-balizas-menos');
-    const masBtn = document.getElementById('stepper-viento-balizas-mas');
-    const valorSpan = document.getElementById('valor-viento-max-balizas');
-    
-    if (!menosBtn || !masBtn) return; // Escudo de seguridad
+// Habilita o deshabilita visual y funcionalmente el slider de viento de balizas según Ajustes
+function actualizarEstadoSliderVientoBalizas() {
+    const slider = document.getElementById('viento-balizas-slider');
+    if (!slider || !slider.noUiSlider) return;
+
+    const tooltip = slider.querySelector('.noUi-tooltip');
 
     if (!chkColorearFlechasBalizas) {
-        // Si el coloreado está apagado: Desactivamos botones y atenuamos el texto
-        menosBtn.disabled = true;
-        masBtn.disabled = true;
-        if (valorSpan) valorSpan.style.opacity = '0.4';
+        slider.setAttribute('disabled', true);
+        if (tooltip) tooltip.style.opacity = '0.5';
     } else {
-        // Si el coloreado está encendido: Habilitamos respetando los límites de rango (20 y 80)
-        menosBtn.disabled = (vientoMaxBalizaColor <= 20);
-        masBtn.disabled   = (vientoMaxBalizaColor >= 80);
-        if (valorSpan) valorSpan.style.opacity = '1';
+        slider.removeAttribute('disabled');
+        if (tooltip) tooltip.style.opacity = '1';
     }
 }
-window.actualizarEstadoStepperVientoBalizas = actualizarEstadoStepperVientoBalizas;
+window.actualizarEstadoSliderVientoBalizas = actualizarEstadoSliderVientoBalizas;
 
 // ---------------------------------------------------------------
 // 🔴 BASE DE DATOS INDEXEDDB (Modo Offline sin límite de 5MB)
