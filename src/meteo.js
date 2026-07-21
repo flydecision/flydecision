@@ -11099,7 +11099,7 @@ window.toggleBalizaSeguimientoDesdeMapa = function(redId, id, btnElement) {
 };
 
 window.ciclarFiltroFavoritosBalizasMapa = function() {
-    filtroFavoritosBalizasMapa = (filtroFavoritosBalizasMapa + 1) % 3;
+    filtroFavoritosBalizasMapa = (filtroFavoritosBalizasMapa === 1) ? 0 : 1;
     if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
         localStorage.setItem('METEO_MAPA_FILTRO_FAV_BALIZAS', filtroFavoritosBalizasMapa);
     }
@@ -11113,12 +11113,12 @@ window.ciclarFiltroFavoritosBalizasMapa = function() {
 window.actualizarBotonFavoritosBalizasMapa = function() {
     const btn = document.getElementById('btn-mapa-filtro-favoritos-balizas');
     if (!btn) return;
-    if (filtroFavoritosBalizasMapa === 0) {
+    if (filtroFavoritosBalizasMapa === 1) {
+        btn.innerHTML = SVG_FAV_SOLO;
+        btn.classList.add('borde-rojo-externo');
+    } else {
         btn.innerHTML = SVG_FAV_TODOS;
         btn.classList.remove('borde-rojo-externo');
-    } else {
-        btn.innerHTML = (filtroFavoritosBalizasMapa === 1) ? SVG_FAV_SOLO : SVG_FAV_NO;
-        btn.classList.add('borde-rojo-externo');
     }
 };
 
@@ -12069,24 +12069,6 @@ function inicializarMapaLeaflet() {
                 contConfigUltimoVuelo.classList.add('borde-rojo-externo');
             } else {
                 contConfigUltimoVuelo.classList.remove('borde-rojo-externo');
-            }
-        }
-
-        const contFavoritosBalizas = document.getElementById('control-favoritos-balizas-mapa-container');
-        if (contFavoritosBalizas) {
-            if (filtroFavoritosBalizasMapa !== 0) {
-                contFavoritosBalizas.classList.add('borde-rojo-externo');
-            } else {
-                contFavoritosBalizas.classList.remove('borde-rojo-externo');
-            }
-        }
-        
-        const contSeguimientoBalizas = document.getElementById('control-seguimiento-balizas-mapa-container');
-        if (contSeguimientoBalizas) {
-            if (filtroSeguimientoBalizasMapa !== 0) {
-                contSeguimientoBalizas.classList.add('borde-rojo-externo');
-            } else {
-                contSeguimientoBalizas.classList.remove('borde-rojo-externo');
             }
         }
 
@@ -14930,11 +14912,8 @@ function inicializarMapaLeaflet() {
             const esFavBaliza = obtenerBalizasFavoritas().some(f => f.redId === redId && f.id === marker.stationId);
             const esSegBaliza = obtenerBalizasSeguimiento().some(s => s.redId === redId && s.id === marker.stationId);
             
-            const passFav = (filtroFavoritosBalizasMapa === 0) || 
-                            (filtroFavoritosBalizasMapa === 1 && esFavBaliza) || 
-                            (filtroFavoritosBalizasMapa === 2 && !esFavBaliza);
-            const passSeg = (filtroSeguimientoBalizasMapa === 0) || 
-                            (filtroSeguimientoBalizasMapa === 1 && esSegBaliza);
+            const passFav = (filtroFavoritosBalizasMapa === 0) || (filtroFavoritosBalizasMapa === 1 && esFavBaliza);
+            const passSeg = (filtroSeguimientoBalizasMapa === 0) || (filtroSeguimientoBalizasMapa === 1 && esSegBaliza);
 
             if (passFav && passSeg) {
                 if (!red.layerGroup.hasLayer(marker)) {
@@ -15198,13 +15177,13 @@ function inicializarMapaLeaflet() {
         const esSegBaliza = obtenerBalizasSeguimiento().some(s => s.redId === marker.redId && s.id === marker.stationId);
 
         const botonesBalizaHTML = `
-        <div style="display: flex; align-items: center; gap: 6px; margin-top: 8px; margin-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 4px; margin-top: 6px; margin-bottom: -25px;">
             <!-- Botón Favorito Baliza -->
             <button class="btn-info btn-favorito-baliza"
-                style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin: 0; background: #fff; border: 1.5px solid #ccc; border-radius: 8px; box-shadow: 1px 1px 3px rgba(0,0,0,0.15); flex-shrink: 0;"
+                style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0; background: none; border: none; flex-shrink: 0;"
                 onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleBalizaFavoritaDesdeMapa('${marker.redId}', '${marker.stationId}', this); return false;"
                 title="${esFavBaliza ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos')}">
-                <svg viewBox="0 0 24 24" width="18" height="18"
+                <svg viewBox="0 0 24 24" width="20" height="20"
                     fill="${esFavBaliza ? '#e00' : 'none'}"
                     stroke="${esFavBaliza ? '#e00' : '#555'}"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -15214,7 +15193,7 @@ function inicializarMapaLeaflet() {
 
             <!-- Botón Seguimiento Baliza -->
             <button class="btn-info btn-ojo-baliza solo-modo-avanzado"
-                style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin: 0; background: #fff; border: 1.5px solid #ccc; border-radius: 8px; box-shadow: 1px 1px 3px rgba(0,0,0,0.15); flex-shrink: 0;"
+                style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0; background: none; border: none; flex-shrink: 0;"
                 onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleBalizaSeguimientoDesdeMapa('${marker.redId}', '${marker.stationId}', this); return false;"
                 title="${t('seguimiento.activar_desactivar')}">
                 ${svgOjoBoton(esSegBaliza)}
@@ -15300,7 +15279,7 @@ function inicializarMapaLeaflet() {
                     </div>
                 </div>
                 
-                <div id="pop-rosa-${red.id}-${marker.stationId}" style="flex:0 0 auto; width:110px; text-align:center;">
+                <div id="pop-rosa-${red.id}-${marker.stationId}" style="flex:0 0 auto; width:110px; text-align:center; margin-top: -11px;">
                 </div>
             </div>
 
