@@ -2659,14 +2659,28 @@ function obtenerSeguimientos() {
 function limpiarSeguimientosExpirados() {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    const vigentes = obtenerSeguimientos().filter(s => {
+
+    // 1. Limpieza de Despegues en seguimiento
+    const vigentesDespegues = obtenerSeguimientos().filter(s => {
+        if (!s.fecha) return true;
         const fechaMarcado = new Date(s.fecha);
         fechaMarcado.setHours(0, 0, 0, 0);
         const diasPasados = Math.floor((hoy - fechaMarcado) / 86400000);
         return diasPasados < diasSeguimiento;
     });
-    localStorage.setItem("METEO_SEGUIMIENTO", JSON.stringify(vigentes));
-    return vigentes;
+    localStorage.setItem("METEO_SEGUIMIENTO", JSON.stringify(vigentesDespegues));
+
+    // 2. Limpieza de Balizas en seguimiento
+    const vigentesBalizas = obtenerBalizasSeguimiento().filter(s => {
+        if (!s.fecha) return true;
+        const fechaMarcado = new Date(s.fecha);
+        fechaMarcado.setHours(0, 0, 0, 0);
+        const diasPasados = Math.floor((hoy - fechaMarcado) / 86400000);
+        return diasPasados < diasSeguimiento;
+    });
+    localStorage.setItem("METEO_BALIZAS_SEGUIMIENTO", JSON.stringify(vigentesBalizas));
+
+    return vigentesDespegues;
 }
 
 function toggleSeguimiento(id) {
@@ -7605,6 +7619,8 @@ function resetearOpcionesAvanzadas(evitarRecarga = false) {
     localStorage.removeItem('METEO_MINIMO_ANO_ULTIMO_VUELO');
     localStorage.removeItem('METEO_MAPA_FILTRO_FAV');
     localStorage.removeItem('METEO_MAPA_FILTRO_SEG');
+    localStorage.removeItem('METEO_MAPA_FILTRO_FAV_BALIZAS');
+    localStorage.removeItem('METEO_MAPA_FILTRO_SEG_BALIZAS');
     localStorage.removeItem('METEO_MAPA_FILTRO_ACT');
 
     // Sincronizamos los sliders del mapa a su origen
@@ -7621,10 +7637,14 @@ function resetearOpcionesAvanzadas(evitarRecarga = false) {
     // Resetear las variables lógicas
     if (typeof filtroFavoritosMapa !== 'undefined') filtroFavoritosMapa = 0;
     if (typeof filtroSeguimientoMapa !== 'undefined') filtroSeguimientoMapa = 0;
+    filtroFavoritosBalizasMapa = 0;
+    filtroSeguimientoBalizasMapa = 0;
     if (typeof filtroActividadMapa !== 'undefined') filtroActividadMapa = 1;
     
     if (typeof actualizarBotonFavoritosMapa === 'function') actualizarBotonFavoritosMapa();
     if (typeof actualizarBotonSeguimientoMapa === 'function') actualizarBotonSeguimientoMapa();
+    actualizarBotonFavoritosBalizasMapa();
+    actualizarBotonSeguimientoBalizasMapa();
 
     const sliderAct = document.getElementById('sliderActividad');
     const txtAct = document.getElementById('valorActividadTexto');
@@ -7653,6 +7673,8 @@ window.resetearFiltrosMapaEnVivo = function() {
     // 1. Resetear las variables lógicas principales
     filtroFavoritosMapa = 0;
     filtroSeguimientoMapa = 0;
+    filtroFavoritosBalizasMapa = 0;
+    filtroSeguimientoBalizasMapa = 0;
     filtroActividadMapa = 1;
 
     // Si recordar filtros está activo, vaciamos también la memoria de esta sesión
@@ -7661,6 +7683,8 @@ window.resetearFiltrosMapaEnVivo = function() {
         localStorage.setItem('METEO_MINIMO_ANO_ULTIMO_VUELO', '0');
         localStorage.setItem('METEO_MAPA_FILTRO_FAV', '0');
         localStorage.setItem('METEO_MAPA_FILTRO_SEG', '0');
+        localStorage.setItem('METEO_MAPA_FILTRO_FAV_BALIZAS', '0');
+        localStorage.setItem('METEO_MAPA_FILTRO_SEG_BALIZAS', '0');
         localStorage.setItem('METEO_MAPA_FILTRO_ACT', '1');
         localStorage.setItem('METEO_MAPA_FILTRO_ORI', '[]');
     }
@@ -7688,6 +7712,8 @@ window.resetearFiltrosMapaEnVivo = function() {
     // 3. Sincronizar botones de Favoritos y Seguimiento rápidos
     if (typeof actualizarBotonFavoritosMapa === 'function') actualizarBotonFavoritosMapa();
     if (typeof actualizarBotonSeguimientoMapa === 'function') actualizarBotonSeguimientoMapa();
+    actualizarBotonFavoritosBalizasMapa();
+    actualizarBotonSeguimientoBalizasMapa();
 
     // 4. Limpiar los botones de la rosa de los vientos (Orientaciones)
     const orientaciones = document.querySelectorAll('.filtro-orientacion-checkbox');
@@ -10940,9 +10966,11 @@ window.evaluarEstadoNuevosUsuarios = function() {
 
 const recordarFiltros = localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true';
 
-filtroFavoritosMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_FAV') || '0') : 0; // 0 = Todos, 1 = Solo Favoritos, 2 = Solo No Favoritos
-filtroSeguimientoMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_SEG') || '0') : 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
-filtroActividadMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_ACT') || '1') : 1; // El valor inicial de actividad mínima es 1 (Todos)
+let filtroFavoritosMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_FAV') || '0') : 0; // 0 = Todos, 1 = Solo Favoritos, 2 = Solo No Favoritos
+let filtroSeguimientoMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_SEG') || '0') : 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
+let filtroFavoritosBalizasMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_FAV_BALIZAS') || '0') : 0;
+let filtroSeguimientoBalizasMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_SEG_BALIZAS') || '0') : 0;
+let filtroActividadMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_ACT') || '1') : 1; // El valor inicial de actividad mínima es 1 (Todos)
 
 // SVGs del Botón Favorito (Todos / Solo Favs / Excluir Favs)
 const SVG_FAV_TODOS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
@@ -10997,6 +11025,134 @@ window.actualizarBotonSeguimientoMapa = function() {
     const esActivo = (filtroSeguimientoMapa === 1);
     btn.innerHTML = svgOjoBoton(esActivo);
     
+    if (esActivo) {
+        btn.classList.add('borde-rojo-externo');
+    } else {
+        btn.classList.remove('borde-rojo-externo');
+    }
+};
+
+// 🟡 FUNCIONES GESTIÓN BALIZAS FAVORITAS Y SEGUIMIENTO BALIZAS ---
+function obtenerBalizasFavoritas() {
+    const data = localStorage.getItem("METEO_BALIZAS_FAVORITAS_LISTA");
+    if (!data) return [];
+    try {
+        const parsed = JSON.parse(data);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch(e) {
+        return [];
+    }
+}
+
+function toggleBalizaFavorita(redId, id) {
+    let favoritas = obtenerBalizasFavoritas();
+    const index = favoritas.findIndex(f => f.redId === redId && f.id === id);
+    let esNueva = false;
+    if (index === -1) {
+        favoritas.push({ redId, id });
+        esNueva = true;
+    } else {
+        favoritas.splice(index, 1);
+    }
+    localStorage.setItem("METEO_BALIZAS_FAVORITAS_LISTA", JSON.stringify(favoritas));
+    return esNueva;
+}
+
+function obtenerBalizasSeguimiento() {
+    const data = localStorage.getItem("METEO_BALIZAS_SEGUIMIENTO");
+    if (!data) return [];
+    try {
+        const parsed = JSON.parse(data);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch(e) {
+        return [];
+    }
+}
+
+function toggleBalizaSeguimiento(redId, id) {
+    let seg = obtenerBalizasSeguimiento();
+    const index = seg.findIndex(s => s.redId === redId && s.id === id);
+    let esNuevo = false;
+    if (index === -1) {
+        seg.push({ redId, id, fecha: new Date().toISOString().split('T')[0] });
+        esNuevo = true;
+    } else {
+        seg.splice(index, 1);
+    }
+    localStorage.setItem("METEO_BALIZAS_SEGUIMIENTO", JSON.stringify(seg));
+    return esNuevo;
+}
+
+window.toggleBalizaFavoritaDesdeMapa = function(redId, id, btnElement) {
+    const esNueva = toggleBalizaFavorita(redId, id);
+    window.vibrarDispositivo();
+    
+    if (btnElement) {
+        const svg = btnElement.querySelector('svg');
+        if (svg) {
+            svg.setAttribute('fill', esNueva ? '#e00' : 'none');
+            svg.setAttribute('stroke', esNueva ? '#e00' : '#555');
+        }
+        btnElement.title = esNueva ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos');
+    }
+    
+    actualizarIconosBalizas(redId);
+    actualizarEstadoVisualFiltros();
+};
+
+window.toggleBalizaSeguimientoDesdeMapa = function(redId, id, btnElement) {
+    const esNuevo = toggleBalizaSeguimiento(redId, id);
+    window.vibrarDispositivo();
+    
+    if (btnElement) {
+        btnElement.innerHTML = svgOjoBoton(esNuevo);
+    }
+    
+    actualizarIconosBalizas(redId);
+    actualizarEstadoVisualFiltros();
+};
+
+window.ciclarFiltroFavoritosBalizasMapa = function() {
+    filtroFavoritosBalizasMapa = (filtroFavoritosBalizasMapa === 1) ? 0 : 1;
+    if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
+        localStorage.setItem('METEO_MAPA_FILTRO_FAV_BALIZAS', filtroFavoritosBalizasMapa);
+    }
+    actualizarBotonFavoritosBalizasMapa();
+    Object.keys(REDES_BALIZAS).forEach(redId => {
+        actualizarIconosBalizas(redId);
+    });
+    actualizarEstadoVisualFiltros();
+};
+
+window.actualizarBotonFavoritosBalizasMapa = function() {
+    const btn = document.getElementById('btn-mapa-filtro-favoritos-balizas');
+    if (!btn) return;
+    if (filtroFavoritosBalizasMapa === 1) {
+        btn.innerHTML = SVG_FAV_SOLO;
+        btn.classList.add('borde-rojo-externo');
+    } else {
+        btn.innerHTML = SVG_FAV_TODOS;
+        btn.classList.remove('borde-rojo-externo');
+    }
+};
+
+window.ciclarFiltroSeguimientoBalizasMapa = function() {
+    filtroSeguimientoBalizasMapa = (filtroSeguimientoBalizasMapa + 1) % 2;
+    if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
+        localStorage.setItem('METEO_MAPA_FILTRO_SEG_BALIZAS', filtroSeguimientoBalizasMapa);
+    }
+    actualizarBotonSeguimientoBalizasMapa();
+    Object.keys(REDES_BALIZAS).forEach(redId => {
+        actualizarIconosBalizas(redId);
+    });
+    actualizarEstadoVisualFiltros();
+};
+
+window.actualizarBotonSeguimientoBalizasMapa = function() {
+    const btn = document.getElementById('btn-mapa-filtro-seguimiento-balizas');
+    if (!btn) return;
+    const esActivo = (filtroSeguimientoBalizasMapa === 1);
+    btn.innerHTML = svgOjoBoton(esActivo);
     if (esActivo) {
         btn.classList.add('borde-rojo-externo');
     } else {
@@ -11931,7 +12087,7 @@ function inicializarMapaLeaflet() {
         }
 
         // 6. ACTUALIZAR PANEL GLOBAL (Borde rojo externo al estar retraído)
-        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos;
+        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos || filtroFavoritosBalizasMapa !== 0 || filtroSeguimientoBalizasMapa !== 0;
         const infoPanelFiltros = document.getElementById('infoPanel2'); 
         
         if (infoPanelFiltros) {
@@ -14224,9 +14380,11 @@ function inicializarMapaLeaflet() {
     adjuntarListenersFiltros();
     actualizarEstadoVisualFiltros();
 
-    // INICIALIZAR LOS BOTONES FILTRO MAPA: FAVORITOS, SEGUIMIENTO, ACTIVIDAD
+    // INICIALIZAR LOS BOTONES FILTRO MAPA: FAVORITOS, SEGUIMIENTO, BALIZAS FAVORITAS Y EN SEGUIMIENTO, ACTIVIDAD
     actualizarBotonFavoritosMapa();
     actualizarBotonSeguimientoMapa();
+    actualizarBotonFavoritosBalizasMapa();
+    actualizarBotonSeguimientoBalizasMapa();
 
     // INICIALIZAR EL SLIDER DE ACTIVIDAD DEL MAPA
     const sliderAct = document.getElementById('sliderActividad');
@@ -14355,22 +14513,22 @@ function inicializarMapaLeaflet() {
 
     // CONFIGURACIÓN DE LOS CLÚSTERES DE BALIZAS
     const opcionesClusterBalizas = {
-    maxClusterRadius: 15, // Si dos marcadores están separados menos de X px (aprox.), se agrupan.
-    disableClusteringAtZoom: 10, // A partir del zoom X, incluido, se separan siempre
-    spiderfyOnMaxZoom: true,
-    showCoverageOnHover: false,
-    iconCreateFunction: function(cluster) {
-        //const count = cluster.getChildCount(); // en el html iba el ${count} pero está quitado para no confundir con cifras de viento
-        return L.divIcon({
-            html: `<div style="background-color: #0078d46b; color: white; border-radius: 50%; width: 10px; height: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-sizing: border-box;">
-                    
-                </div>`,
-            className: 'cluster-balizas-personalizado',
-            iconSize: L.point(10, 10),
-            iconAnchor: L.point(5, 5) 
-        });
-    }
-};
+        maxClusterRadius: 15, // Si dos marcadores están separados menos de X px (aprox.), se agrupan.
+        disableClusteringAtZoom: 10, // A partir del zoom X, incluido, se separan siempre
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        iconCreateFunction: function(cluster) {
+            //const count = cluster.getChildCount(); // en el html iba el ${count} pero está quitado para no confundir con cifras de viento
+            return L.divIcon({
+                html: `<div style="background-color: #0078d46b; color: white; border-radius: 50%; width: 10px; height: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.4); text-shadow: 1px 1px 2px rgba(0,0,0,0.5); box-sizing: border-box;">
+                        
+                    </div>`,
+                className: 'cluster-balizas-personalizado',
+                iconSize: L.point(10, 10),
+                iconAnchor: L.point(5, 5) 
+            });
+        }
+    };
 
     const REDES_BALIZAS = {
         'euskalmet': {
@@ -14764,6 +14922,24 @@ function inicializarMapaLeaflet() {
         Object.values(red.marcadores).forEach(marker => {
             const d = red.datosCache[marker.stationId];
             
+            // --- FILTRADO DE BALIZAS POR FAVORITO Y SEGUIMIENTO ---
+            const esFavBaliza = obtenerBalizasFavoritas().some(f => f.redId === redId && f.id === marker.stationId);
+            const esSegBaliza = obtenerBalizasSeguimiento().some(s => s.redId === redId && s.id === marker.stationId);
+            
+            const passFav = (filtroFavoritosBalizasMapa === 0) || (filtroFavoritosBalizasMapa === 1 && esFavBaliza);
+            const passSeg = (filtroSeguimientoBalizasMapa === 0) || (filtroSeguimientoBalizasMapa === 1 && esSegBaliza);
+
+            if (passFav && passSeg) {
+                if (!red.layerGroup.hasLayer(marker)) {
+                    red.layerGroup.addLayer(marker);
+                }
+            } else {
+                if (red.layerGroup.hasLayer(marker)) {
+                    red.layerGroup.removeLayer(marker);
+                }
+                return; // Omitir el redibujado de detalles ya que ha sido filtrado
+            }
+            
             // 1. COMPROBAR SI ESTÁ OBSOLETA (> 3 horas)
             let balizaConDatosObsoletos = false;
 
@@ -14912,8 +15088,7 @@ function inicializarMapaLeaflet() {
                 popupAnchor: [0, 25] 
             }));
 
-            // 🚀 EL HACK DE REDIBUJADO DIRECTO: Si la baliza está visible en pantalla,
-            // forzamos al navegador a repintar su HTML interno de inmediato
+            // EL HACK DE REDIBUJADO DIRECTO: Si la baliza está visible en pantalla, forzamos al navegador a repintar su HTML interno de inmediato
             if (marker._icon) {
                 marker._icon.innerHTML = htmlBaliza;
             }
@@ -14960,7 +15135,7 @@ function inicializarMapaLeaflet() {
         }
 
         // =========================================================================
-        // CONSTRUCCIÓN DEL TOOLTIP DE INFORMACIÓN DINÁMICO (Movido aquí arriba)
+        // CONSTRUCCIÓN DEL TOOLTIP DE INFORMACIÓN DINÁMICO
         // =========================================================================
         // 1. Buscamos la estación exacta en el array para leer sus nuevos campos
         const estacionObj = red.estaciones.find(e => e.id === marker.stationId);
@@ -15010,18 +15185,45 @@ function inicializarMapaLeaflet() {
 
         // 4. Escapamos las comillas para no romper el atributo HTML del botón
         const tooltipSeguro = tooltipHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-        // =========================================================================
 
+        // --- BOTONES DE ACCIÓN PARA EL POPUP DE BALIZAS ---
+        const esFavBaliza = obtenerBalizasFavoritas().some(f => f.redId === marker.redId && f.id === marker.stationId);
+        const esSegBaliza = obtenerBalizasSeguimiento().some(s => s.redId === marker.redId && s.id === marker.stationId);
+
+        const botonesBalizaHTML = `
+        <div style="display: flex; align-items: center; gap: 4px; margin-top: 6px; margin-bottom: -25px;">
+            <!-- Botón Favorito Baliza -->
+            <button class="btn-info btn-favorito-baliza"
+                style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0; background: none; border: none; flex-shrink: 0;"
+                onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleBalizaFavoritaDesdeMapa('${marker.redId}', '${marker.stationId}', this); return false;"
+                title="${esFavBaliza ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos')}">
+                <svg viewBox="0 0 24 24" width="20" height="20"
+                    fill="${esFavBaliza ? '#e00' : 'none'}"
+                    stroke="${esFavBaliza ? '#e00' : '#555'}"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </button>
+
+            <!-- Botón Seguimiento Baliza -->
+            <button class="btn-info btn-ojo-baliza solo-modo-avanzado"
+                style="width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0; background: none; border: none; flex-shrink: 0;"
+                onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleBalizaSeguimientoDesdeMapa('${marker.redId}', '${marker.stationId}', this); return false;"
+                title="${t('seguimiento.activar_desactivar')}">
+                ${svgOjoBoton(esSegBaliza)}
+            </button>
+        </div>`;
+        // =========================================================================
 
         // 1. Datos numéricos o Aviso de error (Si falla o está congelada, pintamos error y SALIMOS)
         if (!d || d.windSpeed === null || d.windSpeed === undefined || balizaCongelada) {
-            // NUEVO HTML DE ERROR: Mantiene los 347px e incluye el botón Info abajo a la derecha
             containerDiv.innerHTML = `
                 <div style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%;">
                     <div>
                         <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 10px 0;">
                             <icon-baliza></icon-baliza><span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
                         </p>
+                        ${botonesBalizaHTML}
                         <p style="line-height: 1.5; font-weight: bold; color: #c0392b; margin-bottom: 40px; margin-top: 50px; text-align: center;">
                             ❌📡 ${t('mapa.balizas.baliza_sin_datos', { defaultValue: 'Estación sin datos de viento.' })}
                         </p>
@@ -15068,6 +15270,7 @@ function inicializarMapaLeaflet() {
             <p style="font-size:20px; padding-right:20px; max-width:212px; display:inline-block; margin: 0 0 0 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">
                 <icon-baliza></icon-baliza><span style="font-weight: bold;"> ${marker.stationName}</span> <small style="color:#888;">(${red.nombre})</small>
             </p>
+            ${botonesBalizaHTML}
 
             <!-- min-height: 130px; para reservar el hueco siempre -->
             <div style="display:flex; align-items:center; margin-top: 0px; min-height: 130px;">
@@ -15090,7 +15293,7 @@ function inicializarMapaLeaflet() {
                     </div>
                 </div>
                 
-                <div id="pop-rosa-${red.id}-${marker.stationId}" style="flex:0 0 auto; width:110px; text-align:center;">
+                <div id="pop-rosa-${red.id}-${marker.stationId}" style="flex:0 0 auto; width:110px; text-align:center; margin-top: -11px;">
                 </div>
             </div>
 
@@ -15694,21 +15897,29 @@ function inicializarMapaLeaflet() {
         }
     };
 
-    // Escuchamos cualquier clic, toque de pantalla o arrastre de ratón a nivel global
+    // Escuchamos interactuaciones dirigidas exclusivamente a los filtros de despegues
     ['mousedown', 'touchstart', 'click'].forEach(evtType => {
         document.addEventListener(evtType, function(e) {
 
-            // Comprobamos si el elemento tocado está DENTRO de alguno de los contenedores de filtros
-            const tocandoFiltros = e.target.closest('#infoPanel2') ||                    // Panel derecho de filtros
-                               e.target.closest('#div-filtro-horario') ||             // Barra inferior de horas
-                               e.target.closest('#wrapper-filtro-puntuacion-mapa') || // Barra de estrellas
-                               e.target.closest('.leaflet-text-search-input') ||      // Buscador de despegues
-                               e.target.closest('#btn-filtros-mapa');                 // Botón de ABRIR la meteorología
+            // Se reactiva únicamente si se toca un control específico de despegues
+            const tocandoFiltroDespegues = 
+                e.target.closest('#div-filtro-horario') ||             // Barra inferior de horas
+                e.target.closest('#wrapper-filtro-puntuacion-mapa') || // Barra de estrellas
+                e.target.closest('.leaflet-text-search-input') ||      // Buscador de despegues
+                e.target.closest('#btn-filtros-mapa') ||                 // Botón de ABRIR la meteorología
+                e.target.closest('#control-favoritos-mapa-container') ||
+                e.target.closest('#control-seguimiento-mapa-container') ||
+                e.target.closest('.control-actividad-mapa-container') ||
+                e.target.closest('.control-vuelos-container') ||
+                e.target.closest('.control-ultimovuelo-container') ||
+                e.target.closest('.control-orientacion-container') ||
+                e.target.closest('#rosaDeLosVientos') ||
+                e.target.closest('.filtro-orientacion-checkbox');
 
             // EXCEPCIÓN: Si estamos tocando el botón de CERRAR el filtro horario/meteo (o el panel de filtros general), NO reactivamos la capa de despegues.
             const tocandoBotonCerrar = e.target.closest('#btn-cerrar-filtros-mapa') || e.target.closest('#buttonCerrar2');
 
-            if (tocandoFiltros && !tocandoBotonCerrar) {
+            if (tocandoFiltroDespegues && !tocandoBotonCerrar) {
                 window.reactivarCapaDespeguesSiEstaOculta();
             }
 

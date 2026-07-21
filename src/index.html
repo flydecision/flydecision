@@ -67,9 +67,9 @@
 <!-- API Keys map layers-->
 <script src="js/config.js" defer></script>
 
-<script>window.WEB_VERSION = "4.6.1";</script>
-<link rel="stylesheet" href="meteo.css?v=4.6.1">
-<script src="meteo.js?v=4.6.1" defer></script>
+<script>window.WEB_VERSION = "4.6.2";</script>
+<link rel="stylesheet" href="meteo.css?v=4.6.2">
+<script src="meteo.js?v=4.6.2" defer></script>
 
 </head>
 
@@ -950,7 +950,7 @@
 					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
 					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosMapa()">
 				</button>
-				<span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.Favoritos">Favoritos</span>
+				<icon-despegue></icon-despegue><span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.Favoritos">Favoritos</span>
 			</div>
 
 			<!-- Filtro Seguimiento -->
@@ -959,7 +959,25 @@
 					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
 					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoMapa()">
 				</button>
-				<span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.Seguimiento">Seguimiento</span>
+				<icon-despegue></icon-despegue><span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.Seguimiento">Seguimiento</span>
+			</div>
+
+			<!-- Filtro Balizas Favoritas -->
+			<div id="control-favoritos-balizas-mapa-container" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
+				<button id="btn-mapa-filtro-favoritos-balizas" class="btn-info"
+					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
+					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosBalizasMapa()">
+				</button>
+				<icon-baliza></icon-baliza><span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.BalizasFavoritas">Favoritas</span>
+			</div>
+
+			<!-- Filtro Balizas Seguimiento -->
+			<div class="solo-modo-avanzado" id="control-seguimiento-balizas-mapa-container" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 5px; padding-left: 5px;">
+				<button id="btn-mapa-filtro-seguimiento-balizas" class="btn-info"
+					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
+					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoBalizasMapa()">
+				</button>
+				<icon-baliza></icon-baliza><span style="font-weight:bold; color:#333; white-space:nowrap;" data-i18n="mapa.Seguimiento">Seguimiento</span>
 			</div>
 
 			<!-- Filtro Actividad -->

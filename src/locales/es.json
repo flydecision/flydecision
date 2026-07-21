@@ -552,6 +552,8 @@
     "capas": "Capas",
     "Favoritos": "Favoritos",
     "Seguimiento": "Seguimiento",
+    "BalizasFavoritas": "Favoritas",
+    "BalizasSeguimiento": "Balizas en seguimiento",
     "Actividad": "Actividad >= ",
     "orientacion": "Orientación:",
     "cerrarPanel": "Cerrar Panel",

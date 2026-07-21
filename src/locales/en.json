@@ -552,6 +552,8 @@
     "Favoritos": "Favorites",
     "Seguimiento": "Tracking",
     "Actividad": "Activity >= ",
+    "BalizasFavoritas": "Favorites",
+    "BalizasSeguimiento": "Tracked beacons",
     "orientacion": "Orientation:",
     "cerrarPanel": "Close Panel",
     "resetearFiltrosMapa": "Reset all map filters",
