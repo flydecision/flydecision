@@ -2659,14 +2659,28 @@ function obtenerSeguimientos() {
 function limpiarSeguimientosExpirados() {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    const vigentes = obtenerSeguimientos().filter(s => {
+
+    // 1. Limpieza de Despegues en seguimiento
+    const vigentesDespegues = obtenerSeguimientos().filter(s => {
+        if (!s.fecha) return true;
         const fechaMarcado = new Date(s.fecha);
         fechaMarcado.setHours(0, 0, 0, 0);
         const diasPasados = Math.floor((hoy - fechaMarcado) / 86400000);
         return diasPasados < diasSeguimiento;
     });
-    localStorage.setItem("METEO_SEGUIMIENTO", JSON.stringify(vigentes));
-    return vigentes;
+    localStorage.setItem("METEO_SEGUIMIENTO", JSON.stringify(vigentesDespegues));
+
+    // 2. Limpieza de Balizas en seguimiento
+    const vigentesBalizas = obtenerBalizasSeguimiento().filter(s => {
+        if (!s.fecha) return true;
+        const fechaMarcado = new Date(s.fecha);
+        fechaMarcado.setHours(0, 0, 0, 0);
+        const diasPasados = Math.floor((hoy - fechaMarcado) / 86400000);
+        return diasPasados < diasSeguimiento;
+    });
+    localStorage.setItem("METEO_BALIZAS_SEGUIMIENTO", JSON.stringify(vigentesBalizas));
+
+    return vigentesDespegues;
 }
 
 function toggleSeguimiento(id) {
@@ -10952,11 +10966,11 @@ window.evaluarEstadoNuevosUsuarios = function() {
 
 const recordarFiltros = localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true';
 
-filtroFavoritosMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_FAV') || '0') : 0; // 0 = Todos, 1 = Solo Favoritos, 2 = Solo No Favoritos
-filtroSeguimientoMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_SEG') || '0') : 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
+let filtroFavoritosMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_FAV') || '0') : 0; // 0 = Todos, 1 = Solo Favoritos, 2 = Solo No Favoritos
+let filtroSeguimientoMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_SEG') || '0') : 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
 let filtroFavoritosBalizasMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_FAV_BALIZAS') || '0') : 0;
 let filtroSeguimientoBalizasMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_SEG_BALIZAS') || '0') : 0;
-filtroActividadMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_ACT') || '1') : 1; // El valor inicial de actividad mínima es 1 (Todos)
+let filtroActividadMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_ACT') || '1') : 1; // El valor inicial de actividad mínima es 1 (Todos)
 
 // SVGs del Botón Favorito (Todos / Solo Favs / Excluir Favs)
 const SVG_FAV_TODOS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
@@ -15883,21 +15897,29 @@ function inicializarMapaLeaflet() {
         }
     };
 
-    // Escuchamos cualquier clic, toque de pantalla o arrastre de ratón a nivel global
+    // Escuchamos interactuaciones dirigidas exclusivamente a los filtros de despegues
     ['mousedown', 'touchstart', 'click'].forEach(evtType => {
         document.addEventListener(evtType, function(e) {
 
-            // Comprobamos si el elemento tocado está DENTRO de alguno de los contenedores de filtros
-            const tocandoFiltros = e.target.closest('#infoPanel2') ||                    // Panel derecho de filtros
-                               e.target.closest('#div-filtro-horario') ||             // Barra inferior de horas
-                               e.target.closest('#wrapper-filtro-puntuacion-mapa') || // Barra de estrellas
-                               e.target.closest('.leaflet-text-search-input') ||      // Buscador de despegues
-                               e.target.closest('#btn-filtros-mapa');                 // Botón de ABRIR la meteorología
+            // Se reactiva únicamente si se toca un control específico de despegues
+            const tocandoFiltroDespegues = 
+                e.target.closest('#div-filtro-horario') ||             // Barra inferior de horas
+                e.target.closest('#wrapper-filtro-puntuacion-mapa') || // Barra de estrellas
+                e.target.closest('.leaflet-text-search-input') ||      // Buscador de despegues
+                e.target.closest('#btn-filtros-mapa') ||                 // Botón de ABRIR la meteorología
+                e.target.closest('#control-favoritos-mapa-container') ||
+                e.target.closest('#control-seguimiento-mapa-container') ||
+                e.target.closest('.control-actividad-mapa-container') ||
+                e.target.closest('.control-vuelos-container') ||
+                e.target.closest('.control-ultimovuelo-container') ||
+                e.target.closest('.control-orientacion-container') ||
+                e.target.closest('#rosaDeLosVientos') ||
+                e.target.closest('.filtro-orientacion-checkbox');
 
             // EXCEPCIÓN: Si estamos tocando el botón de CERRAR el filtro horario/meteo (o el panel de filtros general), NO reactivamos la capa de despegues.
             const tocandoBotonCerrar = e.target.closest('#btn-cerrar-filtros-mapa') || e.target.closest('#buttonCerrar2');
 
-            if (tocandoFiltros && !tocandoBotonCerrar) {
+            if (tocandoFiltroDespegues && !tocandoBotonCerrar) {
                 window.reactivarCapaDespeguesSiEstaOculta();
             }
 
