@@ -591,6 +591,7 @@
     "nVuelosXContest": "Núm. de vols XContest:",
     "minVuelosTexto": "Vols registrats >= ",
     "anioUltimoVueloTexto": "Any de l'últim vol >= ",
+    "AltitudBalizas": "Altitud balises >= ",
     "minKmMediaTexto": "Distància mitjana recorreguda mínima = ",
     "todos": "Tots",
     "titleBuscadorDespegue": "Cercar enlairament per nom",

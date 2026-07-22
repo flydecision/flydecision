@@ -591,6 +591,7 @@
     "nVuelosXContest": "Nbr. de vols XContest :",
     "minVuelosTexto": "Vols enregistrés >= ",
     "anioUltimoVueloTexto": "Année du dernier vol >= ",
+    "AltitudBalizas": "Altitude des balises >= ",
     "minKmMediaTexto": "Distance moyenne parcourue minimum = ",
     "todos": "Tous",
     "titleBuscadorDespegue": "Rechercher un décollage par nom",

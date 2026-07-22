@@ -591,6 +591,7 @@
     "nVuelosXContest": "No. of XContest flights:",
     "minVuelosTexto": "Logged flights >= ",
     "anioUltimoVueloTexto": "Last flight year >= ",
+    "AltitudBalizas": "Beacon altitude >= ",
     "minKmMediaTexto": "Minimum average distance flown = ",
     "todos": "All",
     "titleBuscadorDespegue": "Search takeoff by name",
