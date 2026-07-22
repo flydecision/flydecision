@@ -591,6 +591,7 @@
     "nVuelosXContest": "Núm. de voos XContest:",
     "minVuelosTexto": "Voos rexistrados >= ",
     "anioUltimoVueloTexto": "Ano do último voo >= ",
+    "AltitudBalizas": "Altitude balizas >= ",
     "minKmMediaTexto": "Distancia media percorrida mínima = ",
     "todos": "Todos",
     "titleBuscadorDespegue": "Buscar engalaxe por nome",

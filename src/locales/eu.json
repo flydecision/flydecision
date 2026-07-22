@@ -591,6 +591,7 @@
     "nVuelosXContest": "XContest hegaldi kopurua:",
     "minVuelosTexto": "Erregistratutako hegaldiak >= ",
     "anioUltimoVueloTexto": "Azken hegaldiaren urtea >= ",
+    "AltitudBalizas": "Balizen altitudea >= ",
     "minKmMediaTexto": "Gutxienezko batez besteko distantzia egina = ",
     "todos": "Guztiak",
     "titleBuscadorDespegue": "Bilatu aireratzea izenaren arabera",

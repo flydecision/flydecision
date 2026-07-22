@@ -7709,6 +7709,11 @@ window.resetearFiltrosMapaEnVivo = function() {
         txtAct.innerHTML = `<span style="display:inline-flex; align-items:center; gap:5px; vertical-align:middle; margin-left: 6px; margin-top: -3px;"><span style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; vertical-align: -2px; outline: none;"><span style="display: inline-block; width: 3px; height: 4px; background-color: #5b5b5b; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 7px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 10px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 13px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 16px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span></span><span>1/5</span></span>`;
     }
 
+    const sliderAltBal = document.getElementById('sliderAltitudBalizas');
+    const txtAltBal = document.getElementById('valorAltitudBalizasTexto');
+    if (sliderAltBal) sliderAltBal.value = '0';
+    if (txtAltBal) txtAltBal.textContent = '0 m';
+
     // 3. Sincronizar botones de Favoritos y Seguimiento rápidos
     if (typeof actualizarBotonFavoritosMapa === 'function') actualizarBotonFavoritosMapa();
     if (typeof actualizarBotonSeguimientoMapa === 'function') actualizarBotonSeguimientoMapa();
@@ -10346,7 +10351,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
         'sliderUltimoVuelo',
         'sliderValorInicialFiltroNumeroMinimoVuelos',
         'sliderValorInicialFiltroUltimoVuelo',
-        'sliderActividad'         
+        'sliderActividad',
+        'sliderAltitudBalizas'         
     ];
 
     idsSlidersEstandar.forEach(id => {
@@ -11522,6 +11528,25 @@ const ESCALA_KMMEDIA = [
     120, 150, 180, 200, 250
 ];
 
+const ESCALA_ALTITUD_BALIZAS = [
+    0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000,
+    1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000,
+    2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000
+];
+
+function obtenerMinAltitudBalizas() {
+    const slider = document.getElementById('sliderAltitudBalizas');
+    if (!slider) return 0;
+    const indice = parseInt(slider.value, 10);
+    const val = ESCALA_ALTITUD_BALIZAS[indice] || 0;
+    const textSpan = document.getElementById('valorAltitudBalizasTexto');
+    if (textSpan) {
+        const maxIndice = ESCALA_ALTITUD_BALIZAS.length - 1; // 30
+        textSpan.textContent = (indice === maxIndice) ? `>= 3000 m` : `${val} m`;
+    }
+    return val;
+}
+
 function inicializarMapaLeaflet() {
 
     // --- BLOQUE DE SEGURIDAD ANTI-CRASH LEAFLET ---
@@ -12086,8 +12111,21 @@ function inicializarMapaLeaflet() {
             }
         }
 
+        const minAltitudBalizas = obtenerMinAltitudBalizas();
+        const hayFiltroAltitudBalizas = minAltitudBalizas > 0;
+
+        const contAltitudBalizas = document.querySelector('.control-altitudbalizas-container');
+        if (contAltitudBalizas) {
+            contAltitudBalizas.style.backgroundColor = 'transparent';
+            if (hayFiltroAltitudBalizas) {
+                contAltitudBalizas.classList.add('borde-rojo-externo');
+            } else {
+                contAltitudBalizas.classList.remove('borde-rojo-externo');
+            }
+        }
+
         // 6. ACTUALIZAR PANEL GLOBAL (Borde rojo externo al estar retraído)
-        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos || filtroFavoritosBalizasMapa !== 0 || filtroSeguimientoBalizasMapa !== 0;
+        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos || filtroFavoritosBalizasMapa !== 0 || filtroSeguimientoBalizasMapa !== 0 || hayFiltroAltitudBalizas;
         const infoPanelFiltros = document.getElementById('infoPanel2'); 
         
         if (infoPanelFiltros) {
@@ -14333,7 +14371,7 @@ function inicializarMapaLeaflet() {
             });
         }
 
-        // 3. NUEVO: Escucha el Slider de Vuelos
+        // 3. Escucha el Slider de Vuelos
         const sliderVuelos = document.getElementById('sliderVuelos');
         if(sliderVuelos) {
             // Usamos 'input' para que filtre en tiempo real mientras arrastras
@@ -14350,7 +14388,7 @@ function inicializarMapaLeaflet() {
             });
         }
         
-        // 4. NUEVO: Escucha el Slider de Último Vuelo
+        // 4. Escucha el Slider de Último Vuelo
         const sliderUltimoVuelo = document.getElementById('sliderUltimoVuelo');
         if(sliderUltimoVuelo) {
             sliderUltimoVuelo.addEventListener('input', function() {
@@ -14365,13 +14403,25 @@ function inicializarMapaLeaflet() {
             });
         }	
         
-        // 5. NUEVO: Escucha el Slider de sliderKmMedia
+        // 5. Escucha el Slider de sliderKmMedia
         const sliderKmMedia = document.getElementById('sliderKmMedia');
         if(sliderKmMedia) {
             // Usamos 'input' para que filtre en tiempo real mientras arrastras
             // Si va muy lento el mapa, cámbialo por 'change' (filtra al soltar el ratón)
             sliderKmMedia.addEventListener('input', function() {
                 actualizarFiltrosMapa();
+                actualizarEstadoVisualFiltros();
+            });
+        }
+
+        // 6. Escucha el Slider de altitud balizas
+        const sliderAltitudBalizas = document.getElementById('sliderAltitudBalizas');
+        if (sliderAltitudBalizas) {
+            sliderAltitudBalizas.addEventListener('input', function() {
+                obtenerMinAltitudBalizas();
+                Object.keys(REDES_BALIZAS).forEach(redId => {
+                    actualizarIconosBalizas(redId);
+                });
                 actualizarEstadoVisualFiltros();
             });
         }
@@ -14838,6 +14888,7 @@ function inicializarMapaLeaflet() {
             marker.redId = red.id;
             marker.stationId = estacion.id;
             marker.stationName = estacion.name;
+            marker.stationAltitude = parseFloat(estacion.altitude) || 0;
 
             // Añadimos red.id al ID del div del popup para evitar choques si 2 redes usan el mismo ID de estación
             const panelFiltro = document.getElementById('div-filtro-horario');
@@ -14928,6 +14979,21 @@ function inicializarMapaLeaflet() {
             
             const passFav = (filtroFavoritosBalizasMapa === 0) || (filtroFavoritosBalizasMapa === 1 && esFavBaliza);
             const passSeg = (filtroSeguimientoBalizasMapa === 0) || (filtroSeguimientoBalizasMapa === 1 && esSegBaliza);
+
+            // --- FILTRADO POR ALTITUD ---
+            const minAltitud = obtenerMinAltitudBalizas();
+            const passAltitud = (minAltitud === 0) || (marker.stationAltitude >= minAltitud);
+
+            if (passFav && passSeg && passAltitud) {
+                if (!red.layerGroup.hasLayer(marker)) {
+                    red.layerGroup.addLayer(marker);
+                }
+            } else {
+                if (red.layerGroup.hasLayer(marker)) {
+                    red.layerGroup.removeLayer(marker);
+                }
+                return;
+            }
 
             if (passFav && passSeg) {
                 if (!red.layerGroup.hasLayer(marker)) {

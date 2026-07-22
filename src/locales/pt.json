@@ -590,6 +590,7 @@
     "nVuelosXContest": "N.º de voos XContest:",
     "minVuelosTexto": "Voos registados >= ",
     "anioUltimoVueloTexto": "Ano do último voo >= ",
+    "AltitudBalizas": "Altitude das balizas >= ",
     "minKmMediaTexto": "Distância média percorrida mínima = ",
     "todos": "Todos",
     "titleBuscadorDespegue": "Procurar descolagem por nome",

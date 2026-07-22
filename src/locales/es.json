@@ -592,6 +592,7 @@
     "nVuelosXContest": "Nº de vuelos en XContest:",
     "minVuelosTexto": "Vuelos registrados >= ",
     "anioUltimoVueloTexto": "Año del último vuelo >= ",
+    "AltitudBalizas": "Altitud balizas >= ",
     "minKmMediaTexto": "Mínimo de km medios recorridos = ",
     "todos": "Todos",
     "titleBuscadorDespegue": "Buscar despegue por su nombre",

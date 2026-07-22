@@ -4106,7 +4106,8 @@ h3 {
 
 .control-vuelos-container,
 .control-ultimovuelo-container,
-.control-actividad-mapa-container {  
+.control-actividad-mapa-container,
+.control-altitudbalizas-container {  
     width: 96% !important;      /* Ocupar el 95% de la anchura de su contenedor padre */
     margin-left: auto !important;  /* Centrado perfecto horizontal */
     margin-right: auto !important; /* Centrado perfecto horizontal */

@@ -591,6 +591,7 @@
     "nVuelosXContest": "Anzahl der XContest-Flüge:",
     "minVuelosTexto": "Registrierte Flüge >= ",
     "anioUltimoVueloTexto": "Jahr des letzten Fluges >= ",
+    "AltitudBalizas": "Bakenhöhe >= ",
     "minKmMediaTexto": "Minimale durchschnittlich geflogene Strecke = ",
     "todos": "Alle",
     "titleBuscadorDespegue": "Startplatz nach Namen suchen",
