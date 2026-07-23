@@ -6592,13 +6592,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 const valorTexto = (altitudMSL / 1000).toFixed(1);
                                 const txtTecho = (valorTexto === "0.0") ? "0" : valorTexto;
 
-                                let colorTecho = "fondo-naranja";
-                                if (espesorUtil < XCTechoLims.rojo) colorTecho = "fondo-rojo";
-                                else if (espesorUtil >= XCTechoLims.verde) colorTecho = "fondo-verde";
-
                                 // Altitud real del despegue y ganancia estimada de altura
                                 const altRealDespegue = Number(d.Altitud || 0);
                                 const gananciaMts = Math.max(0, altitudMSL - altRealDespegue);
+
+                                let colorTecho = "fondo-naranja";
+                                if (gananciaMts < 300) {
+                                    colorTecho = "fondo-rojo";     // Menos de 300m sobre el despegue
+                                } else if (gananciaMts >= 700) {
+                                    colorTecho = "fondo-verde";    // 700m o más sobre el despegue
+                                }
 
                                 const textoTooltip = t('tabla.techoTooltip', {
                                     altitudMSL: altitudMSL,
