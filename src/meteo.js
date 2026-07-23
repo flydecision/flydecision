@@ -431,14 +431,47 @@ function svgFlechaVientoMinutely15(gradosDireccion) {
     </svg>`;
 }
 
-function construirTablaMinutely15Html(minutely15, idDespegue) {
+function construirTablaMinutely15Html(respuestaObj, idDespegue, aromeGeneralObj) {
+    const minutely15 = respuestaObj.minutely_15 || {};
     const tiempos = minutely15.time || [];
     const ahora = new Date();
 
-    // Buscamos el despegue en la caché ya cargada de la tabla principal para sacar sus orientaciones favorables
+    // Buscamos el despegue en la caché
     const despegueObj = (DATOS_METEO_CACHE && Array.isArray(DATOS_METEO_CACHE.despegues))
         ? DATOS_METEO_CACHE.despegues.find(d => Number(d.ID) === Number(idDespegue))
         : null;
+
+    // Altitudes
+    const altDespegue = despegueObj ? Math.round(Number(despegueObj.Altitud || 0)) : 0;
+    const altModelo15 = Math.round(Number(respuestaObj.elevation || 0));
+    const altAromeGeneral = (aromeGeneralObj && aromeGeneralObj.elevation != null) ? Math.round(Number(aromeGeneralObj.elevation)) : null;
+
+    // Diferencia Celda 15 min vs Despegue
+    const difMts15 = altModelo15 - altDespegue;
+    const signoDif15 = difMts15 >= 0 ? `+${difMts15}` : `${difMts15}`;
+
+    // Diferencia Celda Arome General vs Despegue
+    let textoAromeGeneral = '';
+    if (altAromeGeneral !== null) {
+        const difMtsArome = altAromeGeneral - altDespegue;
+        const signoDifArome = difMtsArome >= 0 ? `+${difMtsArome}` : `${difMtsArome}`;
+        textoAromeGeneral = t('minutely15.altitudCeldaAromeGeneral', {
+            alt: altAromeGeneral,
+            dif: signoDifArome,
+            defaultValue: 'Altitud celda AromeHD/Arpege: <b>{{alt}} m</b> (<b>{{dif}} m</b>)'
+        }) + '<br>';
+    }
+
+    const txtAltDespegue = t('minutely15.altitudDespegue', {
+        alt: altDespegue,
+        defaultValue: 'Altitud despegue: <b>{{alt}} m</b>'
+    });
+
+    const txtAltModelo15 = t('minutely15.altitudCelda15min', {
+        alt: altModelo15,
+        dif: signoDif15,
+        defaultValue: 'Altitud celda Arome 15min: <b>{{alt}} m</b> (<b>{{dif}} m</b>)'
+    });
     const orientaciones = (despegueObj && despegueObj.Orientaciones_Grados)
         ? despegueObj.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()))
         : [];
@@ -593,8 +626,11 @@ function construirTablaMinutely15Html(minutely15, idDespegue) {
                 <tbody>${tbodyHtml}</tbody>
             </table>
         </div>
-        <p style="color:#888; text-align:center; margin-top:8px;">
-            ${t('minutely15.notaModelo', { defaultValue: 'Modelo Arome 2.5 15 min (nowcasting)' })}
+        <p style="color:#888; text-align:center; margin-top:10px; line-height:1.4;">
+            <span style="color:#000000; font-weight:bold;">${t('minutely15.notaModelo', { defaultValue: 'Modelo Arome 2.5 15min (nowcasting)' })}</span><br>
+            ${txtAltDespegue}<br>
+            ${txtAltModelo15}<br>
+            ${textoAromeGeneral}
         </p>
     `;
 }
@@ -616,9 +652,14 @@ window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
         const datos = await obtenerDatosMinutely15();
         const respuesta = buscarRespuestaMinutely15(idDespegue, datos);
 
+        // Buscamos también la respuesta general de Arome en la caché global de la app
+        const respuestaGeneralArome = (DATOS_METEO_CACHE && Array.isArray(DATOS_METEO_CACHE.respuestas))
+            ? DATOS_METEO_CACHE.respuestas.find((_, idx) => Number(DATOS_METEO_CACHE.despegues[idx].ID) === Number(idDespegue))
+            : null;
+
         const htmlTabla = (!respuesta || !respuesta.minutely_15)
             ? `<p style="text-align:center; color:#777;">${t('minutely15.sinDatos', { defaultValue: 'No hay datos disponibles para este despegue.' })}</p>`
-            : construirTablaMinutely15Html(respuesta.minutely_15, idDespegue);
+            : construirTablaMinutely15Html(respuesta, idDespegue, respuestaGeneralArome);
 
         GestorMensajes.mostrar({
             tipo: 'modal',

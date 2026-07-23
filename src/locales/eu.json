@@ -898,6 +898,9 @@
     "cargando": "Datuak kargatzen...",
     "errorCarga": "Errorea datuak kargatzean.",
     "notaModelo": "Arome 15min eredua (nowcasting)",
+    "altitudDespegue": "Aireratze-altitudea: <b>{{alt}} m</b>",
+    "altitudCelda15min": "Arome 15min gelaxkaren altitudea: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
+    "altitudCeldaAromeGeneral": "AromeHD/Arpege gelaxkaren altitudea: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
     "avisoNuevosDatos": "Arome 15min ereduaren eguneratze bat dago",
     "actualizarAhora": "Eguneratu"
   }

@@ -898,6 +898,9 @@
     "cargando": "Chargement des données...",
     "errorCarga": "Erreur lors du chargement des données.",
     "notaModelo": "Modèle Arome 15min (nowcasting)",
+    "altitudDespegue": "Altitude décollage : <b>{{alt}} m</b>",
+    "altitudCelda15min": "Altitude cellule Arome 15min : <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
+    "altitudCeldaAromeGeneral": "Altitude cellule AromeHD/Arpege : <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
     "avisoNuevosDatos": "Il y a une mise à jour du modèle Arome 15min",
     "actualizarAhora": "Mettre à jour"
   }
