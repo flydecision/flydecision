@@ -79,7 +79,7 @@ window.sessionExpandedEcmwfTakeoffs = new Set();
 let chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true"; // false por defecto
 let chkColorearFlechasBalizas = localStorage.getItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS") === "true"; 
 let chkOcultarValoresBalizas = localStorage.getItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS") === "true"; 
-let vientoMaxBalizaColor = Number(localStorage.getItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR")) || 40; // Límite de viento rojo de balizas (por defecto 50)
+let vientoMaxBalizaColor = Number(localStorage.getItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR")) || 50; // Límite de viento rojo de balizas (por defecto 50)
 
 window.modalMinutely15Abierto = false; // true mientras el usuario tiene abierto el modal de detalle 15 min
 
@@ -5427,7 +5427,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
             const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
-            const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0;
+            const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0; //Nota: como no hemos puesto en la URL elevation=nan, el downgrading topográfico calcula la altitud real del despegue con DEM 90m, así que este dato realmente es la altitud del despegue (no ocurre lo mismo con Arome/Arpege, ya que ahí hemos puesto elevation=nan y la altitud sí que es la media de la celda)
             const hayDatosMeteo = hourlyData !== null;
             let orientaciones = d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()));
 
@@ -6588,21 +6588,24 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 const espesorBLH = Math.round(Number(vTecho));
                                 const espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
                                 const altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
-                                
+
                                 const valorTexto = (altitudMSL / 1000).toFixed(1);
                                 const txtTecho = (valorTexto === "0.0") ? "0" : valorTexto;
-                                
+
                                 let colorTecho = "fondo-naranja";
                                 if (espesorUtil < XCTechoLims.rojo) colorTecho = "fondo-rojo";
                                 else if (espesorUtil >= XCTechoLims.verde) colorTecho = "fondo-verde";
 
+                                // Altitud real del despegue y ganancia estimada de altura
+                                const altRealDespegue = Number(d.Altitud || 0);
+                                const gananciaMts = Math.max(0, altitudMSL - altRealDespegue);
+
                                 const textoTooltip = t('tabla.techoTooltip', {
                                     altitudMSL: altitudMSL,
-                                    espesorUtil: espesorUtil,
-                                    pct: Math.round(RATIO_TECHO_UTIL * 100),
-                                    blh: espesorBLH,
-                                    elevacion: Math.round(elevacionModeloECMWF),
-                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Techo de vuelo estimado (MSL): {{altitudMSL}} m</li><li>Espesor útil ({{pct}}%): {{espesorUtil}} m</li><li>Capa límite original : {{blh}} m AGL</li><li>Elevación modelo de la celda: {{elevacion}} m</li></ul>'
+                                    techoKm: valorTexto === "0.0" ? "0" : valorTexto,
+                                    gananciaMts: gananciaMts,
+                                    altRealDespegue: altRealDespegue,
+                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Techo usable: {{altitudMSL}} m MSL ({{techoKm}} km)</li><li>Ganancia altura estimada: {{gananciaMts}} m (despegue a {{altRealDespegue}} m)</li></ul>'
                                 });
 
                                 celdaTechoHTML = `<td class="${clasesBase} ${colorTecho}" style="padding-bottom: 0px; font-size: 12px !important; cursor: help;" data-tippy-content="${textoTooltip.replace(/"/g, '&quot;')}" tabindex="0">${txtTecho}</td>`;
@@ -12303,7 +12306,7 @@ function inicializarMapaLeaflet() {
             
             // Evento BLUR (Al perder el foco/hacer clic fuera)
             L.DomEvent.addListener(input, 'blur', function() {
-                input.placeholder = originalPlaceholder;
+                input.placeholder = '';
             });
 
             // Autocompletado (al presionar una tecla) ---
@@ -15005,6 +15008,14 @@ function inicializarMapaLeaflet() {
                 }
                 return; // Omitir el redibujado de detalles ya que ha sido filtrado
             }
+
+            // RESPALDO: Si la lectura en vivo está vacía, usamos el histórico de 6h
+            if ((!d || d.windSpeed === null || d.windSpeed === undefined) && red.datos6h && red.datos6h[marker.stationId]) {
+                const lecturasValidas = red.datos6h[marker.stationId].filter(p => typeof p.windSpeed === 'number');
+                if (lecturasValidas.length > 0) {
+                    d = lecturasValidas[lecturasValidas.length - 1];
+                }
+            }
             
             // 1. COMPROBAR SI ESTÁ OBSOLETA (> 3 horas)
             let balizaConDatosObsoletos = false;
@@ -15179,11 +15190,17 @@ function inicializarMapaLeaflet() {
         const containerDiv = document.getElementById(`pop-${red.id}-${marker.stationId}`);
         if (!containerDiv) return;
         
-        const d = red.datosCache[marker.stationId];
+        let d = red.datosCache[marker.stationId];
 
-        // -----------------------------------------------------------
+        // RESPALDO: Si la lectura en vivo viene vacía (ej. caída temporal de servidor), recuperamos la lectura válida más reciente del histórico de 6h.
+        if ((!d || d.windSpeed === null || d.windSpeed === undefined) && red.datos6h && red.datos6h[marker.stationId]) {
+            const lecturasValidas = red.datos6h[marker.stationId].filter(p => typeof p.windSpeed === 'number');
+            if (lecturasValidas.length > 0) {
+                d = lecturasValidas[lecturasValidas.length - 1];
+            }
+        }
+
         // EVALUAR SI ESTÁ CONGELADA (Para no mostrar un gráfico plano a 0)
-        // -----------------------------------------------------------
         let balizaCongelada = false;
         if (red.datos6h && red.datos6h[marker.stationId]) {
             const lecturas = red.datos6h[marker.stationId];

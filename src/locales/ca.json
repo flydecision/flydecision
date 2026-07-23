@@ -182,7 +182,7 @@
       "motivoMedio": "Ràtio {{ratio}}x > 1.5 I Δ {{delta}} > 8 km/h",
       "motivoAlto": "Ràtio {{ratio}}x > 2.0 I Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Altitud de sostre usable: <b>{{altitudMSL}} m </b>MSL</li><li>Altura de sostre usable: <b>{{espesorUtil}} m</b> AGL ({{pct}}% BLH)</li><li>Altura de Capa Límit: {{blh}} m AGL</li><li>Altitud mitjana de la cel·la ECMWF: {{elevacion}} m MSL</li></ul>",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Sostre usable: <b>{{altitudMSL}} m MSL</b> ({{techoKm}} km)</li><li>Guany estimat: <b>+{{gananciaMts}} m</b> sobre l'enlairament ({{altRealDespegue}} m)</li></ul>",
     "despegueTooltip": "Província: {{provincia}}\nEnlairament: {{despegue}}\nOrientació: {{orientacion}}",
     "cargando": "Carregant...",
     "cabeceraPais": "País",

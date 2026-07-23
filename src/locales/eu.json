@@ -182,7 +182,7 @@
       "motivoMedio": "{{ratio}}x erlazioa > 1.5 ETA Δ {{delta}} > 8 km/h",
       "motivoAlto": "{{ratio}}x erlazioa > 2.0 ETA Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Sabai erabilgarriaren altitudea: <b>{{altitudMSL}} m </b>MSL</li><li>Sabai erabilgarriaren altuera: <b>{{espesorUtil}} m</b> AGL ({{pct}}% BLH)</li><li>Muga-geruzaren altuera: {{blh}} m AGL</li><li>ECMWF gelaxkaren batez besteko altitudea: {{elevacion}} m MSL</li></ul>",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Sabai erabilgarria: <b>{{altitudMSL}} m MSL</b> ({{techoKm}} km)</li><li>Irabazi estimatua: <b>+{{gananciaMts}} m</b> aireratzearen gainetik ({{altRealDespegue}} m)</li></ul>",
     "despegueTooltip": "Probintzia: {{provincia}}\nAireratzea: {{despegue}}\nNorabidea: {{orientacion}}",
     "cargando": "Kargatzen...",
     "cabeceraPais": "Herrialdea",

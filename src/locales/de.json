@@ -182,7 +182,7 @@
       "motivoMedio": "Verhältnis {{ratio}}x > 1.5 UND Δ {{delta}} > 8 km/h",
       "motivoAlto": "Verhältnis {{ratio}}x > 2.0 UND Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Absolute nutzbare Deckenhöhe: <b>{{altitudMSL}} m </b>MSL</li><li>Relative nutzbare Deckenhöhe: <b>{{espesorUtil}} m</b> AGL ({{pct}}% BLH)</li><li>Höhe der Grenzschicht: {{blh}} m AGL</li><li>Mittlere Höhe der ECMWF-Zelle: {{elevacion}} m MSL</li></ul>",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Nutzbare Deckenhöhe: <b>{{altitudMSL}} m MSL</b> ({{techoKm}} km)</li><li>Geschätzter Höhengewinn: <b>+{{gananciaMts}} m</b> über dem Startplatz ({{altRealDespegue}} m)</li></ul>",
     "despegueTooltip": "Provinz: {{provincia}}\nStartplatz: {{despegue}}\nAusrichtung: {{orientacion}}",
     "cargando": "Laden...",
     "cabeceraPais": "Land",
