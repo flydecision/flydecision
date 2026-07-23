@@ -182,7 +182,7 @@
       "motivoMedio": "Ratio {{ratio}}x > 1.5 AND Δ {{delta}} > 8 km/h",
       "motivoAlto": "Ratio {{ratio}}x > 2.0 AND Δ {{delta}} > 12 km/h"
     },
-    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Usable ceiling altitude: <b>{{altitudMSL}} m </b>MSL</li><li>Usable ceiling height: <b>{{espesorUtil}} m</b> AGL ({{pct}}% BLH)</li><li>Boundary Layer Height: {{blh}} m AGL</li><li>ECMWF cell mean altitude: {{elevacion}} m MSL</li></ul>",
+    "techoTooltip": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Usable ceiling: <b>{{altitudMSL}} m MSL</b> ({{techoKm}} km)</li><li>Estimated gain: <b>+{{gananciaMts}} m</b> above take-off ({{altRealDespegue}} m)</li></ul>",
     "despegueTooltip": "Province: {{provincia}}\nTakeoff: {{despegue}}\nOrientation: {{orientacion}}",
     "cargando": "Loading...",
     "cabeceraPais": "Country",
