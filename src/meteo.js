@@ -167,7 +167,9 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
             connect: [true, true],
             step: 5,
             range: { min: 10, max: 60 },
-            tooltips: [true],
+            tooltips: [{
+                to: value => Math.round(value) + ' km/h'
+            }],
             format: {
                 to: value => Math.round(value),
                 from: value => parseInt(value)
@@ -15022,7 +15024,7 @@ function inicializarMapaLeaflet() {
         const zoomActual = map.getZoom();
 
         Object.values(red.marcadores).forEach(marker => {
-            const d = red.datosCache[marker.stationId];
+            let d = red.datosCache[marker.stationId];
             
             // --- FILTRADO DE BALIZAS POR FAVORITO Y SEGUIMIENTO ---
             const esFavBaliza = obtenerBalizasFavoritas().some(f => f.redId === redId && f.id === marker.stationId);
