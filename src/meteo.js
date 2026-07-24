@@ -161,11 +161,11 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
 
     // Inicialización del slider de viento máximo para balizas (Rango de 20 a 80 km/h)
     const vientoBalizasSlider = document.getElementById('viento-balizas-slider');
-    if (vientoBalizasSlider) {
+    if (vientoBalizasSlider && !vientoBalizasSlider.noUiSlider) {
         noUiSlider.create(vientoBalizasSlider, {
             start: vientoMaxBalizaColor,
             connect: [true, true],
-            step: 5, // Pasos de 5 en 5 km/h para acompañar la escala
+            step: 5,
             range: { min: 10, max: 60 },
             tooltips: [true],
             format: {
@@ -174,7 +174,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
             }
         });
 
-        // Evento 'change' (actualiza y redibuja las balizas al soltar el tirador)
+        // Evento 'update'
         vientoBalizasSlider.noUiSlider.on('update', function(values) {
             const actual = Math.round(Number(values[0]));
             vientoMaxBalizaColor = actual;
@@ -191,14 +191,14 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
             }
         });
 
-        // Evento 'slide' (vibración háptica ligera durante el arrastre)
+        // Evento 'slide'
         vientoBalizasSlider.noUiSlider.on('slide', function() {
             if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
         });
-
-        // Ajustamos la habilitación inicial del deslizador
-        actualizarEstadoSliderVientoBalizas();
     }
+
+    // Ajustamos la habilitación inicial del deslizador
+    actualizarEstadoSliderVientoBalizas();
 
     const modoEcmwfFijar = esSimple ? "off" : (localStorage.getItem("METEO_CONFIG_ECMWF_MODE") || "off");
     if (modoEcmwfFijar === "off" && document.getElementById("radEcmwfOff")) document.getElementById("radEcmwfOff").checked = true;
@@ -4403,11 +4403,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         window.mostrarPasoModo = function(ignorarMenuParaFinalizar) {
 
             window.elegirModoSimple = function(esSimple) {
-                // Pasamos 'true' al final para evitar recargar la tabla dos veces
-                window.cambiarModoApp(esSimple, true); 
+                try {
+                    window.cambiarModoApp(esSimple, true); 
+                } catch (e) {
+                    console.warn("Aviso al aplicar modo:", e);
+                }
+                
                 GestorMensajes.ocultar();
                 
-                // Retomamos el hilo natural de cierre de edición
+                // Retomamos el cierre de edición de favoritos
                 if (typeof finalizarEdicionFavoritos === 'function') {
                     finalizarEdicionFavoritos(ignorarMenuParaFinalizar);
                 }
