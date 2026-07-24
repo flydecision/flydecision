@@ -8093,9 +8093,80 @@ document.addEventListener('i18nReady', function() {
         console.warn("No se pudo poner el texto de versión:", e);
     }
 
+    // 🚀 DETECCIÓN DE MODO DIRECTO DE BALIZAS (Multidioma)
+    const palabrasBalizas = ['balizas', 'balizak', 'balises', 'beacons', 'baken'];
+    const pathActual = window.location.pathname.toLowerCase();
+    const searchParamsActual = new URLSearchParams(window.location.search);
+
+    const esModoBalizasDirecto = palabrasBalizas.some(p => 
+        pathActual.includes(p) || searchParamsActual.has(p)
+    );
+
+    window.esModoBalizasDirecto = esModoBalizasDirecto;
+
     const huboCrashPrevio = localStorage.getItem('METEO_FLAG_CRASH_DETECTADO') === 'true';
 
-    if (huboCrashPrevio) {
+    if (esModoBalizasDirecto) {
+        sessionStorage.setItem('METEO_ENTRO_POR_MAPA_YA_VISITADO', 'true');
+        filtrosMapaAbiertos = false; // Forzar estado cerrado
+
+        const chkDesp = document.getElementById('checkboxDespegues');
+        if (chkDesp) chkDesp.checked = false;
+
+        mostrarLoading(0);
+
+        construir_tabla(false, true).then(async () => {
+            // 1. Cambiar a la vista del mapa
+            cambiarVista('mapa');
+
+            // 2. Cerrar panel de meteorología/filtro horario
+            const divFH = document.getElementById('div-filtro-horario');
+            const btnFiltros = document.getElementById('btn-filtros-mapa');
+            const btnCerrar = document.getElementById('btn-cerrar-filtros-mapa');
+            if (divFH) {
+                divFH.style.display = 'none';
+                divFH.classList.remove('flotando-en-mapa', 'borde-rojo-externo');
+            }
+            if (btnFiltros) btnFiltros.style.display = '';
+            if (btnCerrar) btnCerrar.style.display = 'none';
+            filtrosMapaAbiertos = false;
+            document.getElementById('vista-mapa')?.classList.remove('filtros-abiertos');
+
+            // 3. Remover la capa de despegues
+            if (typeof map !== 'undefined' && typeof clustergroupDespegues !== 'undefined') {
+                if (map.hasLayer(clustergroupDespegues)) {
+                    map.removeLayer(clustergroupDespegues);
+                }
+            }
+
+            // 4. Activar selector maestro de balizas
+            const masterChk = document.getElementById('checkboxMasterBalizas');
+            if (masterChk) {
+                masterChk.checked = true;
+                masterChk.indeterminate = false;
+            }
+
+            // 5. Activar todas las redes de balizas llamando a window.activarCapaBalizas
+            if (window.REDES_BALIZAS) {
+                const promesas = Object.values(window.REDES_BALIZAS).map(async (red) => {
+                    const chkRed = document.getElementById(red.checkboxId);
+                    if (chkRed) chkRed.checked = true;
+                    if (typeof window.activarCapaBalizas === 'function') {
+                        await window.activarCapaBalizas(red.id);
+                    }
+                });
+                await Promise.all(promesas);
+            }
+
+            // 6. Iluminar botón "Mapa" en la barra inferior
+            const btnMap = document.getElementById('nav-map');
+            if (btnMap && typeof window.activarMenuInferior === 'function') {
+                window.activarMenuInferior(btnMap);
+            }
+            ocultarLoading();
+        });
+
+    } else if (huboCrashPrevio) {
         // 1. Obtenemos el contador de incidencias seguidas (si no existe, empezamos en 0)
         let contadorCrashes = parseInt(localStorage.getItem('METEO_CRASH_COUNTER') || '0');
         contadorCrashes++;
@@ -13004,7 +13075,7 @@ function inicializarMapaLeaflet() {
                 // Restaurar el estado de visibilidad si el check de "Recordar capas activas" está ON
                 const recordarCapas = localStorage.getItem('METEO_RECORDAR_CAPAS_ACTIVAS') === 'true';
                 const chkDespeguesPersist = document.getElementById('checkboxDespegues');
-                const despeguesDebenVerse = recordarCapas ? (localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false') : true; // True por defecto
+                let despeguesDebenVerse = window.esModoBalizasDirecto ? false : (recordarCapas ? (localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false') : true);
 
                 if (chkDespeguesPersist) chkDespeguesPersist.checked = despeguesDebenVerse;
 
@@ -14846,26 +14917,26 @@ function inicializarMapaLeaflet() {
             umbralRojoMin: 45,
             urlWeb: (id) => `https://www.openwindmap.org/windbird-${id}`
         },
-        'ffvl': {
-            id: 'ffvl',
-            nombre: 'FFVL',
-            estaciones: [],
-            urlCache: 'https://flydecision.com/balizas_ffvl_cache.json',
-            url6h:    'https://flydecision.com/balizas_ffvl_6h.json',
-            checkboxId: 'checkboxBalizasFFVL',
-            lsKey: 'METEO_MAPA_CAPA_BALIZAS_FFVL_VISIBLE',
-            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
-            marcadores: {},
-            dibujadas: false,
-            datosCache: {},
-            ultimoJsonRaw: null,
-            datos6h: null,
-            fetched6hAt: 0,
-            intervalo: null,
-            umbralAmarilloMin: 30,
-            umbralRojoMin: 45,
-            urlWeb: (id) => `https://www.balisemeteo.com/balise.php?idBalise=${id}`
-        },
+        // 'ffvl': {
+        //     id: 'ffvl',
+        //     nombre: 'FFVL',
+        //     estaciones: [],
+        //     urlCache: 'https://flydecision.com/balizas_ffvl_cache.json',
+        //     url6h:    'https://flydecision.com/balizas_ffvl_6h.json',
+        //     checkboxId: 'checkboxBalizasFFVL',
+        //     lsKey: 'METEO_MAPA_CAPA_BALIZAS_FFVL_VISIBLE',
+        //     layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+        //     marcadores: {},
+        //     dibujadas: false,
+        //     datosCache: {},
+        //     ultimoJsonRaw: null,
+        //     datos6h: null,
+        //     fetched6hAt: 0,
+        //     intervalo: null,
+        //     umbralAmarilloMin: 30,
+        //     umbralRojoMin: 45,
+        //     urlWeb: (id) => `https://www.balisemeteo.com/balise.php?idBalise=${id}`
+        // },
         'metar': {
             id: 'metar',
             nombre: 'Metar',
@@ -15231,6 +15302,8 @@ function inicializarMapaLeaflet() {
     // EXPOSICIÓN GLOBAL PARA PODER ACTUALIZAR MAPA INMEDIATAMENTE DESDE AJUSTES
     window.REDES_BALIZAS = REDES_BALIZAS;
     window.actualizarIconosBalizas = actualizarIconosBalizas;
+    window.activarCapaBalizas = activarCapaBalizas;      
+    window.desactivarCapaBalizas = desactivarCapaBalizas; 
     
     // 🟡 6. PINTAR EL POPUP
     //___________________________________________________________________________________
