@@ -220,9 +220,9 @@ if (paramsArranque.has('lat') && paramsArranque.has('lon')) {
 
 // UMBRALES DE CIZALLADURA (Factor multiplicador)
 const LIMITES_CIZALLADURA = {
-    "180 m": { naranja: 1.8, rojo: 2.3 }, // +80% / +130%
-    "120 m": { naranja: 1.6, rojo: 2.0 }, // +60% / +100%
-    "80 m":  { naranja: 1.4, rojo: 1.7 }  // +40% / +70%
+    "100 m": { naranja: 1.8, rojo: 2.3 }, // +80% / +130%
+    "50 m": { naranja: 1.6, rojo: 2.0 }, // +60% / +100%
+    "20 m":  { naranja: 1.4, rojo: 1.7 }  // +40% / +70%
 }
 
 const HorariosMediosActualizacion = ["01:32", "03:02", "06:02", "11:22", "13:32", "16:22", "19:12", "23:22"]; // en UTC-0
@@ -5406,12 +5406,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         ];
 
         // ⚡ Pre-cálculo: traducciones estáticas (no dependen del despegue ni de la hora)
-        const labelViento180 = t('tabla.viento_altura', { metros: 180 });
-        const labelViento120 = t('tabla.viento_altura', { metros: 120 });
-        const labelViento80  = t('tabla.viento_altura', { metros: 80 });
-        const tituloViento180 = t('tabla.tooltips.viento180m');
-        const tituloViento120 = t('tabla.tooltips.viento120m');
-        const tituloViento80  = t('tabla.tooltips.viento80m');
+        const labelViento100 = t('tabla.viento_altura', { metros: 100 });
+        const labelViento50 = t('tabla.viento_altura', { metros: 50 });
+        const labelViento20  = t('tabla.viento_altura', { metros: 20 });
+        const tituloViento100 = t('tabla.tooltips.viento100m');
+        const tituloViento50 = t('tabla.tooltips.viento80m');
+        const tituloViento20  = t('tabla.tooltips.viento20m');
         const labelViento10  = t('tabla.viento_altura', { metros: 10 });
         const tituloViento10 = t('tabla.tooltips.viento10m');
         const tituloRacha10 = t('tabla.tooltips.racha10m');
@@ -5521,12 +5521,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             if (chkMostrarBaseNube) filaBaseNube = document.createElement("tr");
             if (chkMostrarTemperatura) filaTemperatura = document.createElement("tr");
 
-            let fila180, fila120, fila80;
+            let fila100, fila50, fila20;
             
             if (chkMostrarVientoAlturas) {
-                fila180 = document.createElement("tr");
-                fila120 = document.createElement("tr");
-                fila80  = document.createElement("tr");
+                fila100 = document.createElement("tr");
+                fila50 = document.createElement("tr");
+                fila20  = document.createElement("tr");
             }
 
 			const filaVel = document.createElement("tr");	
@@ -5580,7 +5580,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 });
             }
 
-            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, filaTemperatura, fila180, fila120, fila80, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
+            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, filaTemperatura, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                 filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
@@ -6039,9 +6039,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // Velocidades alturas
                 if (chkMostrarVientoAlturas) {
                     const alturas = [
-                        { tr: fila180, label: labelViento180, title: tituloViento180, bordeTop: true },
-                        { tr: fila120, label: labelViento120, title: tituloViento120 },
-                        { tr: fila80,  label: labelViento80,  title: tituloViento80,  bordeBottom: true }
+                        { tr: fila100, label: labelViento100, title: tituloViento100, bordeTop: true },
+                        { tr: fila50, label: labelViento50, title: tituloViento50 },
+                        { tr: fila20,  label: labelViento20,  title: tituloViento20,  bordeBottom: true }
                     ];
 
                     alturas.forEach(item => {
@@ -6331,13 +6331,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         renderEcmwfData(filaTemperatura, emptyArr, () => "", "9px", () => "");
                     }
 
-					// ⚪ Velocidades alturas 80, 120, 180 m *****************************
+					// ⚪ Velocidades alturas 80, 120, 100 m *****************************
 
                     if (chkMostrarVientoAlturas) {
                         
-                        const arr180 = hourlyData.wind_speed_180m || [];
-                        const arr120 = hourlyData.wind_speed_120m || [];
-                        const arr80  = hourlyData.wind_speed_80m  || [];
+                        const arr100 = hourlyData.wind_speed_100m || [];
+                        const arr50 = hourlyData.wind_speed_50m || [];
+                        const arr20  = hourlyData.wind_speed_20m  || [];
                         const arr10  = hourlyData.wind_speed_10m  || []; // Necesario para comparar
 
                         // Función helper para pintar celdas de altura optimizada
@@ -6418,9 +6418,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         // Pasamos la clave "80m", "120m" para que busque en el objeto LIMITES_CIZALLADURA
                         // Bordes top/bottom aplicados directamente en la creación (ver parámetros), sin segunda pasada
-                        pintarCeldaAltura(fila180, arr180, "180 m", true, false);
-                        pintarCeldaAltura(fila120, arr120, "120 m", false, false);
-                        pintarCeldaAltura(fila80,  arr80,  "80 m", false, true);
+                        pintarCeldaAltura(fila100, arr100, "100 m", true, false);
+                        pintarCeldaAltura(fila50, arr50, "50 m", false, false);
+                        pintarCeldaAltura(fila20,  arr20,  "20 m", false, true);
                     }
 
 					// ⚪ Velocidad 10 m *****************************
@@ -6435,7 +6435,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         // (NOTA: Si en algún momento en este bucle necesitaras los de 80 o 120m, 
                         // se leen exactamente igual, sin hacer .slice() previamente:)
-                        // let v80 = hourlyData.wind_speed_80m ? hourlyData.wind_speed_80m[i] : null;
+                        // let v80 = hourlyData.wind_speed_20m ? hourlyData.wind_speed_20m[i] : null;
 
                         let velocidad = Math.round(Math.max(0, velocidadModelo)); // Redondeo a 0 decimales
 
@@ -6546,9 +6546,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                     // ⚪ Cizalladura / Fiabilidad *****************************
                     if (chkMostrarCizalladura) {
-                        const arr180 = hourlyData.wind_speed_180m || [];
-                        const arr120 = hourlyData.wind_speed_120m || [];
-                        const arr80  = hourlyData.wind_speed_80m  || [];
+                        const arr100 = hourlyData.wind_speed_100m || [];
+                        const arr50 = hourlyData.wind_speed_50m || [];
+                        const arr20  = hourlyData.wind_speed_20m  || [];
                         const arr10  = hourlyData.wind_speed_10m  || []; 
 
                         // TRUCO OPTIMIZACIÓN: Sacamos los textos fijos fuera del bucle
@@ -6570,20 +6570,20 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             if (cacheEsNoche[i]) td.classList.add("celda-noche");
                             if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
-                            if (arr80[i] === undefined && arr120[i] === undefined && arr180[i] === undefined) {
+                            if (arr20[i] === undefined && arr50[i] === undefined && arr100[i] === undefined) {
                                 td.textContent = "-";
                                 filaCizalladura.appendChild(td);
                                 continue; // Equivalente a return en un bucle for
                             }
 
-                            const vel80 = arr80[i] !== undefined ? Math.round(Math.max(0, arr80[i])) : 0;
-                            const vel120 = arr120[i] !== undefined ? Math.round(Math.max(0, arr120[i])) : 0;
-                            const vel180 = arr180[i] !== undefined ? Math.round(Math.max(0, arr180[i])) : 0;
+                            const vel20 = arr20[i] !== undefined ? Math.round(Math.max(0, arr20[i])) : 0;
+                            const vel50 = arr50[i] !== undefined ? Math.round(Math.max(0, arr50[i])) : 0;
+                            const vel100 = arr100[i] !== undefined ? Math.round(Math.max(0, arr100[i])) : 0;
                             
                             // Leemos directo sin vel10Raw
                             const vel10 = Math.round(Math.max(0, arr10[i]));
 
-                            const vientoMaxAltura = Math.max(vel80, vel120, vel180);
+                            const vientoMaxAltura = Math.max(vel20, vel50, vel100);
                             const delta = vientoMaxAltura - vel10;
                             const vel10Calculo = Math.max(8, vel10);
                             const ratio = vientoMaxAltura / vel10Calculo;
