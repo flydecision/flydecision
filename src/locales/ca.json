@@ -441,7 +441,7 @@
     "hace": "Fa <b>{{tiempo}}</b>",
     "esperandoPrimerDato": "Esperant les primeres dades...",
     "avisoModelos": {
-      "viento": "Vent (Météo-France: Arome-HD i Arpege)",
+      "viento": "Vent (Arome-HD / ICON-EU)",
       "general": "Meteo general i condicions tèrmiques d'XC (ECMWF)"
     },
     "avisoNuevoMeteo": "<p>ℹ️ Hi ha noves dades meteorològiques de:</p><p><b>{{modelos}}</b></p><p>S'aplicaran a continuació.</p>"
@@ -470,7 +470,7 @@
     "probPrecipitacion": "Probabilitat de precipitació",
     "baseNube": "Base de núvol MSL",
     "temperatura": "Temperatura",
-    "vientoAlturas": "Vent a 80, 120 i 100 m",    
+    "vientoAlturas": "Vent a 20, 50 i 100 m",    
     "cizalladura_fiabilidad": "Cisallament del vent / Fiabilitat",
     "XC": "XC: Sostre MSL, CAPE i CIN",
     "detalle15min": "Vent Arome 15min",
@@ -732,7 +732,7 @@
     "tooltipProbPrecipitacion": "<b>Probabilitat de precipitació (%)</b><br><br>Probabilitat (%) que la precipitació superi els 0,1 mm (litres/m²).<br><br>Dades originals del model ECMWF.",
     "tooltipBaseNube": "<b>Base de núvol MSL (km)</b><br><br>Mostra una fila amb l'altitud estimada de la base del núvol sobre el nivell del mar (MSL), calculada a partir de la temperatura i el punt de rosada a 2 m originals del model ECMWF.<br><br>És una aproximació vàlida per a núvols convectius, però no detecta núvols orogràfics, boires, estrats o altres tipus de nuvolositat no originats per convecció.<br><br>Aquesta aproximació de 125 m/°C pot diferir en zones de muntanya diversos centenars de metres respecte a la base real per efectes de mescla, subsidència, humitat no homogènia i diferències entre la temperatura real de l'aire i la del model.",
     "tooltipTemperatura": "<b>Temperatura a 2 m del sòl (°C)</b><br><br>Mostra una fila amb la temperatura estimada a l'altitud de l'enlairament.",
-    "tooltipVientoAlturas": "<b>Vent a 20, 50 i 100 m (km/h)</b><br><br>Mostra 3 files amb les previsions de la velocitat mitjana del vent a 80, 120 i 100 m sobre el nivell del terra. Aquestes 3 files es mostren a sobre de la fila estàndard de velocitat mitjana del vent a 10m.<br><br>Aquests valors permeten avaluar el grau de turbulència de cisallament i la fiabilitat de la previsió del vent mitjà.<br><br>Dades originals del model Arome/Arpege (Météo-France).",
+    "tooltipVientoAlturas": "<b>Vent a 20, 50 i 100 m (km/h)</b><br><br>Mostra 3 files amb els pronòstics de velocitat de vent mitjà a 20, 50 i 100 m d'altura sobre el terra. Aquestes 3 files es mostren per sobre de la fila estàndard de velocitat de vent mitjà a 10 m del terra.<br><br>Aquests valors ofereixen la possibilitat d'avaluar el grau de turbulència per cisallament i també el grau de fiabilitat del pronòstic de vent mitjà.<br><br>Dades originals del model AromeHD (0-48h) i ICON-EU (48-92h).",
     "tooltipCizalladura": "<b>Cisallament del vent / Fiabilitat</b><br><br>Mostra una fila fina sota la fila d'orientació amb un valor calculat: el nivell de Cisallament del Vent a Baixes Cotes (LLWS) i el grau de Fiabilitat de la previsió del vent mitjà a 10 m.<br><br>El sistema analitza els valors de vent mitjà a 10, 80, 120 i 100 m sobre el terra i, mitjançant un algoritme, mostra un indicador codificat per colors.<br><br>🟩 Verd: Cisallament del vent baix per velocitat i alta fiabilitat de la previsió de velocitat a 10 m.<br>🟧 Taronja: Valors de cisallament i fiabilitat moderats.<br>🟥 Vermell: Alt cisallament del vent per velocitat i baixa fiabilitat de la previsió de velocitat a 10 m.<br><br>Aquest cisallament es produeix quan hi ha un alt gradient de velocitat prop del terra. Aquest nivell també està correlacionat amb la fiabilitat de la velocitat del vent a 10 m sobre el terra.<br><br>El motiu és que si la massa d'aire es mou a velocitats similars, el grau de turbulència de cisallament induïda per la velocitat serà baix, la previsió del vent a nivell del terra serà més fiable, i viceversa.",
     "tooltipXC": "<b>XC: Sostre MSL, CAPE, CIN</b><br><br>Mostra un grup de 3 files amb dades centrades en el vol de distància (Cross Country / XC):<ul><li><b>Sostre de Vol MSL (km):</b> Alçada Màxima de la Capa Límit (BLH)</li><li><b>CAPE (J/kg):</b> Energia Potencial Convectiva Disponible</li><li><b>CIN (J/kg):</b> Inhibició Convectiva</li></ul>Dades originals del model ECMWF.",
     "tooltipdDetalle15min": "<b>Vent Arome 15min</b><br><br>Activa un botó per a cada enlairament que permet mostrar el pronòstic de molt curt termini (Nowcasting o Previsió Immediata).<br><br>Aquest model especial assimila gairebé contínuament les últimes dades reals de les fonts disponibles per ajustar la predicció. Mostra:<ul><li><b>Vent i Direcció a 10, 20, 50 i 100 metres d'altura sobre el nivell del terreny (AGL)</b></li><li><b>Precipitació:</b> Precipitació prevista en mm (litres/m²)</li></ul>Dades originals del model d'alta resolució AROME-HD 1.3km, mostrat en intervals de 15 minuts i amb actualitzacions automàtiques cada 1 hora.",
@@ -900,7 +900,7 @@
     "notaModelo": "Model Arome 15min (nowcasting)",
     "altitudDespegue": "Altitud enlairament: <b>{{alt}} m</b>",
     "altitudCelda15min": "Altitud cel·la Arome 15min: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
-    "altitudCeldaAromeGeneral": "Altitud cel·la AromeHD/Arpege: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
+    "altitudCeldaAromeGeneral": "Altitud cel·la AromeHD/ICON-EU: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
     "avisoNuevosDatos": "Hi ha una actualització del model Arome 15min",
     "actualizarAhora": "Actualitzar"
   }

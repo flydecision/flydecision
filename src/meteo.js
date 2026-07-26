@@ -460,7 +460,7 @@ function construirTablaMinutely15Html(respuestaObj, idDespegue, aromeGeneralObj)
         textoAromeGeneral = t('minutely15.altitudCeldaAromeGeneral', {
             alt: altAromeGeneral,
             dif: signoDifArome,
-            defaultValue: 'Altitud celda AromeHD/Arpege: <b>{{alt}} m</b> (<b>{{dif}} m</b>)'
+            defaultValue: 'Altitud celda AromeHD/ICON-EU: <b>{{alt}} m</b> (<b>{{dif}} m</b>)'
         }) + '<br>';
     }
 
@@ -5500,7 +5500,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
             const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
-            const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0; //Nota: como no hemos puesto en la URL elevation=nan, el downgrading topográfico calcula la altitud real del despegue con DEM 90m, así que este dato realmente es la altitud del despegue (no ocurre lo mismo con Arome/Arpege, ya que ahí hemos puesto elevation=nan y la altitud sí que es la media de la celda)
+            const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0; //Nota: como no hemos puesto en la URL elevation=nan, el downgrading topográfico calcula la altitud real del despegue con DEM 90m, así que este dato realmente es la altitud del despegue (no ocurre lo mismo con Arome/ICON, ya que ahí hemos puesto elevation=nan y la altitud sí que es la media de la celda)
             const hayDatosMeteo = hourlyData !== null;
             let orientaciones = d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()));
 

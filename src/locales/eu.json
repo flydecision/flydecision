@@ -441,7 +441,7 @@
     "hace": "Duela <b>{{tiempo}}</b>",
     "esperandoPrimerDato": "Lehenengo datuen zain...",
     "avisoModelos": {
-      "viento": "Haizea (Météo-France: Arome-HD eta Arpege)",
+      "viento": "Haizea (Arome-HD / ICON-EU)",
       "general": "Eguraldi orokorra eta XC baldintza termikoak (ECMWF)"
     },
     "avisoNuevoMeteo": "<p>ℹ️ Datu meteorologiko berriak daude hauetatik:</p><p><b>{{modelos}}</b></p><p>Jarraian aplikatuko dira.</p>"
@@ -470,7 +470,7 @@
     "probPrecipitacion": "Prezipitazio probabilitatea",
     "baseNube": "Hodei-basea MSL",
     "temperatura": "Tenperatura",
-    "vientoAlturas": "Haizea 80, 120 eta 100 m-tan",    
+    "vientoAlturas": "Haizea 20, 50 eta 100 m-ra",    
     "cizalladura_fiabilidad": "Haize-zizailadura / Fidagarritasuna",
     "XC": "XC: MSL Sabaia, CAPE eta CIN",
     "detalle15min": "Arome 15min haizea",
@@ -732,7 +732,7 @@
     "tooltipProbPrecipitacion": "<b>Prezipitazio probabilitatea (%)</b><br><br>Prezipitazioak 0,1 mm (litro/m²) gainditzeko probabilitatea (%).<br><br>ECMWF ereduaren jatorrizko datuak.",
     "tooltipBaseNube": "<b>Hodei-basea MSL (km)</b><br><br>Hodei-basearen itsas mailaren gaineko (MSL) estimatutako altitudea erakusten duen errenkada bat bistaratzen du, ECMWF ereduaren jatorrizko 2 m-ko tenperaturatik eta ihintz-puntutik kalkulatuta.<br><br>Hodei konbektiboetarako hurbilketa balioduna da, baina ez ditu hodei orografikoak, lainoak, estratuak edo konbekzioz sortu gabeko beste hodeitasun mota batzuk detektatzen.<br><br>125 m/°C-ko hurbilketa hau mendi-eremuetan benetako basetik ehunka metro desberdina izan daiteke, nahasketa-efektuen, subsidentziaren, hezetasun ez-homogeneoaren eta airearen benetako tenperaturaren eta ereduarenaren arteko aldeen ondorioz.",
     "tooltipTemperatura": "<b>Tenperatura lurretik 2 m-ra (°C)</b><br><br>Aireratzearen altitudean estimatutako tenperatura duen errenkada bat erakusten du.",
-    "tooltipVientoAlturas": "<b>Haizea 20, 50 eta 100 m-tan (km/h)</b><br><br>3 lerro erakusten ditu lurretik 80, 120 eta 100 m-ko batez besteko haize-abiaduraren iragarpenekin. 3 lerro hauek 10 m-ko batez besteko haize-abiaduraren lerro estandarraren gainean erakusten dira.<br><br>Balio hauek zizailadura-turbulentziaren gradua eta batez besteko haize-iragarpenaren fidagarritasuna ebaluatzeko aukera ematen dute.<br><br>Arome/Arpege ereduaren (Météo-France) jatorrizko datuak.",
+    "tooltipVientoAlturas": "<b>Haizea 20, 50 eta 100 m-ra (km/h)</b><br><br>Lurretik 20, 50 eta 100 m-ko altueran batez besteko haize-abiaduraren iragarpenak dituzten 3 errenkada erakusten ditu. 3 errenkada hauek lurretik 10 m-ra dagoen batez besteko haize-abiaduraren errenkada estandarraren gainean erakusten dira.<br><br>Balio horiek zizailaduragatiko turbulentzia-maila eta batez besteko haizearen iragarpenaren fidagarritasun-maila ebaluatzeko aukera ematen dute.<br><br>AromeHD (0-48h) eta ICON-EU (48-92h) ereduetako jatorrizko datuak.",
     "tooltipCizalladura": "<b>Haize-zizailadura / Fidagarritasuna</b><br><br>Norabidearen lerroaren azpian lerro mehe bat erakusten du, kalkulatutako balio batekin: Behe-mailako haize-zizailaduraren (LLWS) maila eta 10 m-ko batez besteko haizearen iragarpenaren Fidagarritasun gradua.<br><br>Sistemak lurretik 10, 80, 120 eta 100 m-ko batez besteko haize-balioak aztertzen ditu eta, algoritmo baten bidez, kolorez kodetutako adierazle bat erakusten du.<br><br>🟩 Berdea: Haize-zizailadura txikia abiaduragatik eta 10 m-ko abiadura-iragarpenaren fidagarritasun handia.<br>🟧 Laranja: Zizailadura eta fidagarritasun balio ertainak.<br>🟥 Gorria: Haize-zizailadura handia abiaduragatik eta 10 m-ko abiadura-iragarpenaren fidagarritasun txikia.<br><br>Zizailadura hau lurretik gertu abiadura-gradiente handia dagoenean gertatzen da. Maila hau ere lurretik 10 m-ko haizearen abiaduraren fidagarritasunarekin erlazionatuta dago.<br><br>Arrazoia da aire-masa antzeko abiaduretan mugitzen bada, abiadurak eragindako zizailadura-turbulentziaren maila txikia izango dela, eta lur mailako haizearen iragarpena fidagarriagoa izango dela, eta alderantziz.",
     "tooltipXC": "<b>XC: MSL Sabaia, CAPE, CIN</b><br><br>Distantzia luzeko hegaldiari (Cross Country / XC) bideratutako datuak dituzten 3 lerroko talde bat erakusten du:<ul><li><b>MSL Hegaldi Sabaia (km):</b> Muga-geruzaren (BLH) gehienezko altuera</li><li><b>CAPE (J/kg):</b> Eskuragarri dagoen energia potentzial konbektiboa</li><li><b>CIN (J/kg):</b> Inhibizio konbektiboa</li></ul>ECMWF ereduaren jatorrizko datuak.",
     "tooltipdDetalle15min": "<b>Arome 15min haizea</b><br><br>Aireratze bakoitzeko botoi bat aktibatzen du, oso epe laburreko iragarpena (Nowcasting edo Berehalako Iragarpena) erakusteko aukera ematen duena.<br><br>Eredu berezi honek ia etengabe asimilatzen ditu eskuragarri dauden iturrietako azken datu errealak, iragarpena doitzeko. Honako hauek erakusten ditu:<ul><li><b>Haizea eta Norabidea lurzoruaren mailatik 10, 20, 50 eta 100 metroko altueran (AGL)</b></li><li><b>Prezipitazioa:</b> Aurreikusitako prezipitazioa mm-tan (litro/m²)</li></ul>AROME-HD 1.3km bereizmen handiko ereduaren jatorrizko datuak, 15 minutuko tarteetan erakutsiak eta ordubetez behingo eguneratze automatikoekin.",
@@ -900,7 +900,7 @@
     "notaModelo": "Arome 15min eredua (nowcasting)",
     "altitudDespegue": "Aireratze-altitudea: <b>{{alt}} m</b>",
     "altitudCelda15min": "Arome 15min gelaxkaren altitudea: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
-    "altitudCeldaAromeGeneral": "AromeHD/Arpege gelaxkaren altitudea: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
+    "altitudCeldaAromeGeneral": "AromeHD/ICON-EU gelaxkaren altitudea: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
     "avisoNuevosDatos": "Arome 15min ereduaren eguneratze bat dago",
     "actualizarAhora": "Eguneratu"
   }

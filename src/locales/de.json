@@ -441,7 +441,7 @@
     "hace": "vor <b>{{tiempo}}</b>",
     "esperandoPrimerDato": "Warte auf erste Daten...",
     "avisoModelos": {
-      "viento": "Wind (Météo-France: Arome-HD und Arpège)",
+      "viento": "Wind (Arome-HD / ICON-EU)",
       "general": "Allgemeines Wetter und thermische XC-Bedingungen (ECMWF)"
     },
     "avisoNuevoMeteo": "<p>ℹ️ Es gibt neue Wetterdaten von:</p><p><b>{{modelos}}</b></p><p>Sie werden im Anschluss angewendet.</p>"
@@ -470,7 +470,7 @@
     "probPrecipitacion": "Niederschlagswahrscheinlichkeit",
     "baseNube": "Wolkenbasis MSL",
     "temperatura": "Temperatur",
-    "vientoAlturas": "Wind auf 80, 120 und 100 m",    
+    "vientoAlturas": "Wind in 20, 50 und 100 m",    
     "cizalladura_fiabilidad": "Windscherung / Zuverlässigkeit",
     "XC": "XC: Flughöhe MSL, CAPE und CIN",
     "detalle15min": "Arome 15min wind",
@@ -732,7 +732,7 @@
     "tooltipProbPrecipitacion": "<b>Niederschlagswahrscheinlichkeit (%)</b><br><br>Wahrscheinlichkeit (%), dass der Niederschlag 0,1 mm (Liter/m²) überschreitet.<br><br>Originaldaten des ECMWF-Modells.",
     "tooltipBaseNube": "<b>Wolkenbasis MSL (km)</b><br><br>Zeigt eine Zeile mit der geschätzten Höhe der Wolkenbasis über dem Meeresspiegel (MSL) an, berechnet aus der originalen 2m-Temperatur und dem 2m-Taupunkt des ECMWF-Modells.<br><br>Es ist eine gültige Näherung für konvektive Wolken, erfasst jedoch keine orografischen Wolken, Nebel, Stratuswolken oder andere Arten von Bewölkung, die nicht durch Konvektion entstanden sind.<br><br>Diese Näherung von 125 m/°C kann in Berggebieten aufgrund von Mischeffekten, Subsidenz, inhomogener Luftfeuchtigkeit und Unterschieden zwischen der tatsächlichen Lufttemperatur und der des Modells um mehrere hundert Meter von der tatsächlichen Basis abweichen.",
     "tooltipTemperatura": "<b>Temperatur 2 m über dem Boden (°C)</b><br><br>Zeigt eine Zeile mit der geschätzten Temperatur auf Starthöhe.",
-    "tooltipVientoAlturas": "<b>Wind auf 20, 50 und 100 m (km/h)</b><br><br>Zeigt 3 Zeilen mit Vorhersagen zur mittleren Windgeschwindigkeit in 80, 120 und 100 m über dem Boden. Diese 3 Zeilen werden über der Standardzeile für die mittlere Windgeschwindigkeit auf 10 m angezeigt.<br><br>Diese Werte ermöglichen die Bewertung des Grads der Scherungsturbulenz und der Zuverlässigkeit der mittleren Windvorhersage.<br><br>Originaldaten des Arome/Arpège-Modells (Météo-France).",
+    "tooltipVientoAlturas": "<b>Wind in 20, 50 und 100 m (km/h)</b><br><br>Zeigt 3 Zeilen mit den Vorhersagen der mittleren Windgeschwindigkeit in 20, 50 und 100 m Höhe über dem Boden. Diese 3 Zeilen werden über der Standardzeile für die mittlere Windgeschwindigkeit in 10 m Höhe über dem Boden angezeigt.<br><br>Diese Werte bieten die Möglichkeit, den Grad der Scherturbulenz sowie den Grad der Zuverlässigkeit der mittleren Windvorhersage zu bewerten.<br><br>Originaldaten der Modelle AromeHD (0-48h) und ICON-EU (48-92h).",
     "tooltipCizalladura": "<b>Windscherung / Zuverlässigkeit</b><br><br>Zeigt eine dünne Zeile unterhalb der Ausrichtungszeile an, die einen berechneten Wert darstellt: das Niveau der Windscherung in niedriger Höhe (LLWS) und den Zuverlässigkeitsgrad der Vorhersage für den mittleren Wind auf 10 m.<br><br>Das System analysiert die mittleren Windwerte in 10, 80, 120 und 100 m über dem Boden und zeigt über einen Algorithmus einen farbcodierten Indikator an.<br><br>🟩 Grün: Geringe Windscherung durch Geschwindigkeit und hohe Zuverlässigkeit der 10m-Geschwindigkeitsvorhersage.<br>🟧 Orange: Moderate Scherungs- und Zuverlässigkeitswerte.<br>🟥 Rot: Hohe Windscherung durch Geschwindigkeit und geringe Zuverlässigkeit der 10m-Geschwindigkeitsvorhersage.<br><br>Diese Scherung tritt auf, wenn es in Bodennähe einen hohen Geschwindigkeitsgradienten gibt. Dieses Niveau korreliert auch mit der Zuverlässigkeit der Windgeschwindigkeit in 10 m über dem Boden.<br><br>Der Grund dafür ist, dass, wenn sich die Luftmasse mit ähnlichen Geschwindigkeiten bewegt, der Grad der durch die Geschwindigkeit induzierten Scherungsturbulenz gering ist, die Vorhersage für den Wind am Boden zuverlässiger ist und umgekehrt.",
     "tooltipXC": "<b>XC: Flughöhe MSL, CAPE, CIN</b><br><br>Zeigt eine Gruppe von 3 Zeilen mit Daten an, die auf Streckenflüge (Cross Country / XC) ausgerichtet sind:<ul><li><b>MSL Flughöhe (km):</b> Maximale Höhe der Grenzschicht (BLH)</li><li><b>CAPE (J/kg):</b> Konvektiv verfügbare potentielle Energie</li><li><b>CIN (J/kg):</b> Konvektionshemmung</li></ul>Originaldaten des ECMWF-Modells.",
     "tooltipdDetalle15min": "<b>Arome 15min wind</b><br><br>Aktiviert einen Button für jeden Startplatz, der die Anzeige der sehr kurzfristigen Vorhersage (Nowcasting oder unmittelbare Vorhersage) ermöglicht.<br><br>Dieses spezielle Modell assimiliert fast kontinuierlich die neuesten realen Daten aus verfügbaren Quellen, um die Vorhersage anzupassen. Es zeigt:<ul><li><b>Wind und Richtung in 10, 20, 50 und 100 Metern Höhe über dem Boden (AGL)</b></li><li><b>Niederschlag:</b> Erwarteter Niederschlag in mm (Liter/m²)</li></ul>Originaldaten des hochauflösenden Modells AROME-HD 1.3km, angezeigt in 15-Minuten-Intervallen und mit automatischen Updates alle 1 Stunde.",
@@ -900,7 +900,7 @@
     "notaModelo": "Modell Arome 15min (nowcasting)",
     "altitudDespegue": "Startplatzhöhe: <b>{{alt}} m</b>",
     "altitudCelda15min": "Höhe Arome 15min-Zelle: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
-    "altitudCeldaAromeGeneral": "Höhe AromeHD/Arpege-Zelle: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
+    "altitudCeldaAromeGeneral": "Höhe AromeHD/ICON-EU-Zelle: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
     "avisoNuevosDatos": "Es gibt ein Update für das Arome 15min Modell",
     "actualizarAhora": "Aktualisieren"
   }

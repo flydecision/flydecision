@@ -441,7 +441,7 @@
     "hace": "hace <b>{{tiempo}}</b>",
     "esperandoPrimerDato": "Esperando primer dato...",
     "avisoModelos": {
-      "viento": "Viento (Météo-France: Arome-HD y Arpege)",
+      "viento": "Viento (Arome-HD / ICON-EU)",
       "min15": "Arome 15min",
       "general": "Meteo general y condiciones térmicas XC (ECMWF)"
     },
@@ -471,7 +471,7 @@
     "probPrecipitacion": "Probabilidad de Precipitación",
     "baseNube": "Base de nube MSL",
     "temperatura": "Temperatura",
-    "vientoAlturas": "Viento a 80, 120 y 100 m",
+    "vientoAlturas": "Viento a 20, 50 y 100 m",
     "cizalladura_fiabilidad": "Cizalladura / Fiabilidad",
     "XC": "XC: Techo MSL, CAPE y CIN",
     "detalle15min": "Viento Arome 15min",
@@ -733,7 +733,7 @@
     "tooltipProbPrecipitacion": "<b>Probabilidad de Precipitación (%)</b><br><br>Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²).<br><br>Dato original del modelo ECMWF.",
     "tooltipBaseNube": "<b>Base de nube MSL (km)</b><br><br>Muestra una fila con la altitud estimada de la base de la nube sobre el nivel del mar (MSL), calculada a partir de la temperatura y el punto de rocío a 2 m originales del modelo ECMWF.<br><br>Es una aproximación válida para nubes convectivas, pero no detecta nubes orográficas, nieblas, estratos u otros tipos de nubosidad no originados por convección.<br><br>Esta aproximación de 125 m/°C puede diferir en zonas de montaña varios cientos de metros respecto a la base real por efectos de mezcla, subsidencia, humedad no homogénea y diferencias entre la temperatura real del aire y la del modelo.",
     "tooltipTemperatura": "<b>Temperatura a 2 m del suelo (°C)</b><br><br>Muestra una fila con la temperatura estimada a la altitud del despegue.",
-    "tooltipVientoAlturas": "<b>Viento a 20, 50 y 100 m (km/h)</b><br><br>Muestra 3 filas con los pronósticos de velocidad de viento medio a 80, 120 y 100 m de altura sobre el suelo. Estas 3 filas se muestran por encima de la fila estándar de velocidad de viento medio a 10 m del suelo.<br><br>Estos valores ofrecen la posibilidad de evaluar el grado de turbulencia por cizalla y también el grado de fiabilidad del pronóstico de viento medio.<br><br>Datos originales del modelo Arome/Arpege (Météo-France).",
+    "tooltipVientoAlturas": "<b>Viento a 20, 50 y 100 m (km/h)</b><br><br>Muestra 3 filas con los pronósticos de velocidad de viento medio a 20, 50 y 100 m de altura sobre el suelo. Estas 3 filas se muestran por encima de la fila estándar de velocidad de viento medio a 10 m del suelo.<br><br>Estos valores ofrecen la posibilidad de evaluar el grado de turbulencia por cizalla y también el grado de fiabilidad del pronóstico de viento medio.<br><br>Datos originales del modelo AromeHD (0-48h) e ICON-EU (48-92h).",
     "tooltipCizalladura": "<b>Cizalladura / Fiabilidad</b><br><br>Muestra una fina fila debajo de la fila de orientación que muestra un valor calculado: el nivel de Cizalladura de Bajo Nivel (LLWS - Low-Level Wind Shear) y también el grado de Fiabilidad del pronóstico de viento medio a 10 m de altura.<br><br>El sistema analiza los valores de viento medio a 10, 80, 120 y 100 m de altura sobre el suelo y, mediante un algoritmo, muestra un semáforo de colores.<br><br>🟩 Verde: Baja cizalladura por velocidad y alta fiabilidad del pronóstico de velocidad a 10 m.<br>🟧 Naranja: Valores medios de cizalladura y fiabilidad.<br>🟥 Rojo: Alta cizalladura por velocidad y baja fiabilidad del pronóstico de velocidad a 10 m.<br><br>Esta cizalladura ocurre cuando hay un gradiente alto de velocidades cerca del suelo. Ese nivel también es correlativo a la fiabilidad de la velocidad de viento a 10 m del suelo.<br><br>La razón es que, si la masa de aire se mueve a velocidades similares, el grado de turbulencia por cizalladura de velocidad será pequeña y, además, el pronóstico de viento a nivel del suelo será más fiable y viceversa.",
     "tooltipXC": "<b>XC: Techo MSL, CAPE, CIN</b><br><br>Muestra un grupo de 3 filas con datos enfocados al vuelo de Cross Country (XC):<ul><li><b>Techo de vuelo MSL (km):</b> Altitud máxima de la capa límite (BLH = Boundary Layer Height)</li><li><b>CAPE (J/kg):</b> Energía Potencial Convectiva Disponible (Convective Available Potential Energy)</li><li><b>CIN (J/kg):</b> Inhibición Convectiva (Convective INhibition)</li></ul>Datos originales del modelo ECMWF.",
     "tooltipdDetalle15min": "<b>Viento Arome 15min</b><br><br>Activa un botón para cada despegue que permite mostrar el pronóstico de muy corto plazo (Nowcasting o Previsión Inmediata).<br><br>Este modelo especial asimila casi continuamente los últimos datos reales de las fuentes disponibles para ajustar la predicción. Muestra:<ul><li><b>Viento y Dirección a 10, 20, 50 y 100 metros de altura sobre el nivel del terreno (AGL)</b></li><li><b>Precipitación:</b> Precipitación prevista en mm (litros/m²)</li></ul>Datos originales del modelo de alta resolución AROME-HD 1.3km, mostrado en intervalos de 15 minutos y con actualizaciones automáticas cada 1 hora.",
@@ -901,7 +901,7 @@
     "notaModelo": "Modelo Arome 15min (nowcasting)",
     "altitudDespegue": "Altitud despegue: <b>{{alt}} m</b>",
     "altitudCelda15min": "Altitud celda Arome 15min: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
-    "altitudCeldaAromeGeneral": "Altitud celda AromeHD/Arpege: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
+    "altitudCeldaAromeGeneral": "Altitud celda AromeHD/ICON-EU: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
     "avisoNuevosDatos": "Hay una actualización del modelo Arome 15min",
     "actualizarAhora": "Actualizar"
   }

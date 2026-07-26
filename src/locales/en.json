@@ -441,7 +441,7 @@
     "hace": "<b>{{tiempo}}</b> ago",
     "esperandoPrimerDato": "Waiting for first data...",
     "avisoModelos": {
-      "viento": "Wind (Météo-France: Arome-HD and Arpege)",
+      "viento": "Wind (Arome-HD / ICON-EU)",
       "general": "General weather and XC thermal conditions (ECMWF)"
     },
     "avisoNuevoMeteo": "<p>ℹ️ There is new weather data from:</p><p><b>{{modelos}}</b></p><p>They will be applied next.</p>"
@@ -470,7 +470,7 @@
     "probPrecipitacion": "Precipitation probability",
     "baseNube": "Cloud base MSL",
     "temperatura": "Temperature",
-    "vientoAlturas": "Wind at 80, 120 y 100 m",    
+    "vientoAlturas": "Wind at 20, 50 and 100 m",    
     "cizalladura_fiabilidad": "Wind Shear / Reliability",
     "XC": "XC: MSL Ceiling, CAPE and CIN",
     "detalle15min": "Arome 15min wind",
@@ -732,7 +732,7 @@
     "tooltipProbPrecipitacion": "<b>Precipitation Probability (%)</b><br><br>Probability (%) that precipitation exceeds 0.1 mm (liters/m²).<br><br>Original data from the ECMWF model.",
     "tooltipBaseNube": "<b>Cloud base MSL (km)</b><br><br>Shows a row with the estimated altitude of the cloud base above sea level (MSL), calculated from the original 2m temperature and dew point of the ECMWF model.<br><br>It is a valid approximation for convective clouds, but it does not detect orographic clouds, fog, stratus, or other types of cloudiness not originating from convection.<br><br>This approximation of 125 m/°C may differ in mountain areas by several hundred meters from the actual base due to mixing effects, subsidence, non-homogeneous humidity, and differences between the actual air temperature and that of the model.",
     "tooltipTemperatura": "<b>Temperature at 2 m above ground (°C)</b><br><br>Shows a row with the estimated temperature at takeoff altitude.",
-    "tooltipVientoAlturas": "<b>Wind at 20, 50 and 100 m (km/h)</b><br><br>Displays 3 rows with mean wind speed forecasts at 80, 120, and 100 m above ground level. These 3 rows are shown above the standard 10m mean wind speed row.<br><br>These values allow for evaluating the degree of shear turbulence and the reliability of the mean wind forecast.<br><br>Original data from the Arome/Arpege model (Météo-France).",
+    "tooltipVientoAlturas": "<b>Wind at 20, 50 and 100 m (km/h)</b><br><br>Shows 3 rows with the mean wind speed forecasts at 20, 50 and 100 m above the ground. These 3 rows are shown above the standard row for mean wind speed at 10 m above the ground.<br><br>These values offer the possibility of evaluating the degree of shear turbulence and also the degree of reliability of the mean wind forecast.<br><br>Original data from the AromeHD (0-48h) and ICON-EU (48-92h) models.",
     "tooltipCizalladura": "<b>Wind Shear / Reliability</b><br><br>Displays a thin row below the orientation row showing a calculated value: the Low-Level Wind Shear (LLWS) level and the degree of Reliability of the 10m mean wind forecast.<br><br>The system analyzes mean wind values at 10, 80, 120, and 100 m above ground level and, through an algorithm, shows a color-coded indicator.<br><br>🟩 Green: Low wind shear by speed and high reliability of the 10m speed forecast.<br>🟧 Orange: Moderate shear and reliability values.<br>🟥 Red: High wind shear by speed and low reliability of the 10m speed forecast.<br><br>This shear occurs when there is a high velocity gradient near the ground. This level is also correlative to the reliability of the wind speed at 10m above ground level.<br><br>The reason is that if the air mass moves at similar speeds, the degree of velocity-induced shear turbulence will be low, and the ground-level wind forecast will be more reliable, and vice versa.",
     "tooltipXC": "<b>XC: Ceiling MSL, CAPE, CIN</b><br><br>Displays a group of 3 rows with data focused on Cross Country (XC) flight:<ul><li><b>MSL Flight Ceiling (km):</b> Maximum Boundary Layer Height (BLH)</li><li><b>CAPE (J/kg):</b> Convective Available Potential Energy</li><li><b>CIN (J/kg):</b> Convective INhibition</li></ul>Original data from the ECMWF model.",
     "tooltipdDetalle15min": "<b>Arome 15min wind</b><br><br>Activates a button for each takeoff that allows displaying the very short-term forecast (Nowcasting or Immediate Forecast).<br><br>This special model almost continuously assimilates the latest real data from available sources to adjust the prediction. It shows:<ul><li><b>Wind and Direction at 10, 20, 50 and 100 meters height above ground level (AGL)</b></li><li><b>Precipitation:</b> Expected precipitation in mm (liters/m²)</li></ul>Original data from the high-resolution AROME-HD 1.3km model, displayed in 15-minute intervals and with automatic updates every 1 hour.",
@@ -900,7 +900,7 @@
     "notaModelo": "Arome 15min model (nowcasting)",
     "altitudDespegue": "Takeoff altitude: <b>{{alt}} m</b>",
     "altitudCelda15min": "Arome 15min cell altitude: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
-    "altitudCeldaAromeGeneral": "AromeHD/Arpege cell altitude: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
+    "altitudCeldaAromeGeneral": "AromeHD/ICON-EU cell altitude: <b>{{alt}} m</b> (<b>{{dif}} m</b>)",
     "avisoNuevosDatos": "There is an update for the Arome 15min model",
     "actualizarAhora": "Update"
   }

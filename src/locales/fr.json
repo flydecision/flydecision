@@ -441,7 +441,7 @@
     "hace": "il y a <b>{{tiempo}}</b>",
     "esperandoPrimerDato": "En attente des premières données...",
     "avisoModelos": {
-      "viento": "Vent (Météo-France : Arome-HD et Arpège)",
+      "viento": "Vent (Arome-HD / ICON-EU)",
       "general": "Météo générale et conditions thermiques XC (CEPMMT/ECMWF)"
     },
     "avisoNuevoMeteo": "<p>ℹ️ Il y a de nouvelles données météorologiques de :</p><p><b>{{modelos}}</b></p><p>Elles seront appliquées ci-après.</p>"
@@ -470,7 +470,7 @@
     "probPrecipitacion": "Probabilité de précipitations",
     "baseNube": "Base des nuages MSL",
     "temperatura": "Température",
-    "vientoAlturas": "Vent à 80, 120 et 100 m",    
+    "vientoAlturas": "Vent à 20, 50 et 100 m",    
     "cizalladura_fiabilidad": "Cisaillement du vent / Fiabilité",
     "XC": "XC : Plafond MSL, CAPE et CIN",
     "detalle15min": "Vent Arome 15min",
@@ -732,7 +732,7 @@
     "tooltipProbPrecipitacion": "<b>Probabilité de précipitations (%)</b><br><br>Probabilité (%) que les précipitations dépassent 0,1 mm (litres/m²).<br><br>Données originales du modèle CEPMMT (ECMWF).",
     "tooltipBaseNube": "<b>Base des nuages MSL (km)</b><br><br>Affiche une ligne avec l'altitude estimée de la base des nuages au-dessus du niveau de la mer (MSL), calculée à partir de la température et du point de rosée à 2 m originaux du modèle ECMWF.<br><br>C'est une approximation valide pour les nuages convectifs, mais elle ne détecte pas les nuages orographiques, les brouillards, les stratus ou d'autres types de nébulosité non engendrés par la convection.<br><br>Cette approximation de 125 m/°C peut différer dans les zones de montagne de plusieurs centaines de mètres par rapport à la base réelle en raison des effets de mélange, de subsidence, d'une humidité non homogène et des différences entre la température réelle de l'air et celle du modèle.",
     "tooltipTemperatura": "<b>Température à 2 m du sol (°C)</b><br><br>Affiche une ligne avec la température estimée à l'altitude du décollage.",
-    "tooltipVientoAlturas": "<b>Vent à 20, 50 et 100 m (km/h)</b><br><br>Affiche 3 lignes avec les prévisions de la vitesse moyenne du vent à 80, 120 et 100 m au-dessus du niveau du sol. Ces 3 lignes sont affichées au-dessus de la ligne standard de la vitesse moyenne du vent à 10 m.<br><br>Ces valeurs permettent d'évaluer le degré de turbulence due au cisaillement et la fiabilité de la prévision du vent moyen.<br><br>Données originales du modèle Arome/Arpège (Météo-France).",
+    "tooltipVientoAlturas": "<b>Vent à 20, 50 et 100 m (km/h)</b><br><br>Affiche 3 lignes avec les prévisions de vitesse du vent moyen à 20, 50 et 100 m de hauteur au-dessus du sol. Ces 3 lignes sont affichées au-dessus de la ligne standard de la vitesse du vent moyen à 10 m du sol.<br><br>Ces valeurs offrent la possibilité d'évaluer le degré de turbulence par cisaillement et aussi le degré de fiabilité des prévisions de vent moyen.<br><br>Données originales du modèle AromeHD (0-48h) et ICON-EU (48-92h).",
     "tooltipCizalladura": "<b>Cisaillement du vent / Fiabilité</b><br><br>Affiche une fine ligne en dessous de la ligne d'orientation montrant une valeur calculée : le niveau de cisaillement du vent à basse altitude (LLWS) et le degré de fiabilité de la prévision du vent moyen à 10 m.<br><br>Le système analyse les valeurs du vent moyen à 10, 80, 120 et 100 m au-dessus du sol et, grâce à un algorithme, affiche un indicateur à code couleur.<br><br>🟩 Vert : Faible cisaillement du vent par vitesse et haute fiabilité de la prévision de la vitesse à 10 m.<br>🟧 Orange : Valeurs de cisaillement et de fiabilité modérées.<br>🟥 Rouge : Fort cisaillement du vent par vitesse et faible fiabilité de la prévision de la vitesse à 10 m.<br><br>Ce cisaillement se produit lorsqu'il y a un fort gradient de vitesse près du sol. Ce niveau est également corrélé à la fiabilité de la vitesse du vent à 10 m au-dessus du sol.<br><br>La raison est que si la masse d'air se déplace à des vitesses similaires, le degré de turbulence de cisaillement induit par la vitesse sera faible, et la prévision du vent au niveau du sol sera plus fiable, et vice versa.",
     "tooltipXC": "<b>XC : Plafond MSL, CAPE, CIN</b><br><br>Affiche un groupe de 3 lignes avec des données axées sur le vol de distance (Cross Country / XC) :<ul><li><b>Plafond de vol MSL (km) :</b> Hauteur maximale de la couche limite (BLH)</li><li><b>CAPE (J/kg) :</b> Énergie Potentielle Convective Disponible</li><li><b>CIN (J/kg) :</b> Inhibition Convective</li></ul>Données originales du modèle CEPMMT (ECMWF).",
     "tooltipdDetalle15min": "<b>Vent Arome 15min</b><br><br>Active un bouton pour chaque décollage permettant d'afficher les prévisions à très court terme (Nowcasting ou Prévision Immédiate).<br><br>Ce modèle spécial assimile presque continuellement les dernières données réelles des sources disponibles pour ajuster la prévision. Il affiche :<ul><li><b>Vent et Direction à 10, 20, 50 et 100 mètres de hauteur au-dessus du niveau du sol (AGL)</b></li><li><b>Précipitations :</b> Précipitations prévues en mm (litres/m²)</li></ul>Données originales du modèle à haute résolution AROME-HD 1.3km, affichées par intervalles de 15 minutes et avec des mises à jour automatiques toutes les 1 heure.",
