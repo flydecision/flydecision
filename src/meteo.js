@@ -1824,6 +1824,20 @@ function iniciarGuiaFavoritos(forzar = false) {
 
 // --- FUNCIÓN AUXILIAR PRIVADA ---
 function _activarEdicionFavoritosSync(irAlMapa = false) {
+    // Si veníamos del modo directo de balizas, cancelamos esa restricción al configurar despegues
+    window.esModoBalizasDirecto = false;
+
+    // Reactivar checkbox y visibilidad de la capa de despegues
+    const chkDesp = document.getElementById('checkboxDespegues');
+    if (chkDesp) chkDesp.checked = true;
+    localStorage.setItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE', 'true');
+
+    if (typeof map !== 'undefined' && map && typeof clustergroupDespegues !== 'undefined') {
+        if (!map.hasLayer(clustergroupDespegues)) {
+            map.addLayer(clustergroupDespegues);
+        }
+    }
+
     localStorage.setItem("METEO_CONFIG_FAVS_HECHA", "true");
     window.venirDeEdicionActiva = true; 
     modoEdicionFavoritos = true;
