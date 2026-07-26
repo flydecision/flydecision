@@ -3614,7 +3614,10 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         : [];
 
     indicesEvaluacion.forEach(i => {
-        if (velArray[i] === undefined || velArray[i] === null) return;
+        // 🛡️ PROTECCIÓN: Si falta la velocidad, la racha o la dirección en este modelo/hora, la saltamos
+        if (!velArray || velArray[i] === undefined || velArray[i] === null) return;
+        if (!rachaArray || rachaArray[i] === undefined || rachaArray[i] === null) return;
+        if (!dirArray || dirArray[i] === undefined || dirArray[i] === null) return;
 
         horasValidas++;
 
@@ -5771,6 +5774,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                     ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
 
+                    ⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${latitud}/${longitud}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a><br>
+
                     ⛅ <a href='https://meteo-fly.com/?lat=${latitud}&lon=${longitud}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a><br>
 
                     <div class="popup-toggle-header" style="cursor: pointer; border-radius: 3px; padding-top: 8px;">
@@ -6342,20 +6347,25 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         // Función helper para pintar celdas de altura optimizada
                         const pintarCeldaAltura = (tr, dataArray, alturaKey, bordeTop, bordeBottom) => {
-                            // Ya no hacemos dataArray.slice().forEach(...)
                             for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
-                                
-                                let rawVal = dataArray[i]; // Leemos directamente
+                                let rawVal = (dataArray && dataArray[i] !== undefined) ? dataArray[i] : null;
 
                                 const td = document.createElement("td");
                                 
-                                // Optimizaciones de caché y Set
                                 if (cacheEsNoche[i]) td.classList.add("celda-noche");
                                 if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
                                 if (bordeTop) td.style.borderTop = "1px solid #000";
                                 if (bordeBottom) td.style.borderBottom = "1px solid #000";
 
-                                // 1. Datos Reales (para mostrar en texto)
+                                // SI EL MODELO NO ENTREGA ESTA ALTURA (rawVal es null)
+                                if (rawVal === null || rawVal === undefined) {
+                                    td.textContent = "";
+                                    if (!cacheEsNoche[i]) td.style.backgroundColor = "#ffffff";
+                                    tr.appendChild(td);
+                                    continue; // Omitimos el cálculo de colores/ratios
+                                }
+
+                                // Datos Reales
                                 let valAltura = Math.round(Math.max(0, rawVal));
                                 let valSueloRaw = arr10[i] || 0; 
 
@@ -11476,34 +11486,37 @@ function aplicarPuntuacionEnMapa(soloPuntuacion = false) {
     despegues.forEach((d, i) => idxPorId.set(Number(d.ID), i));
 
     markersDespegues.forEach(marker => {
-        const meta = marker.metadata;
-        if (!meta) return;
+        try {
+            const meta = marker.metadata;
+            if (!meta) return;
 
-        const despObj = marker._despObj || null;
-        if (!despObj) return;
+            const despObj = marker._despObj || null;
+            if (!despObj) return;
 
-        const idx = idxPorId.get(Number(despObj.ID));
-        if (idx === undefined) return;
+            const idx = idxPorId.get(Number(despObj.ID));
+            if (idx === undefined) return;
 
-        let nota = null;
-        let color = null;
+            let nota = null;
+            let color = null;
 
-        // ESCUDO: Si no estamos editando favoritos, calculamos la meteo normal.
-        // Si estamos editando, las variables se quedan en 'null' y el despegue se pinta blanco/neutro.
-        if (!modoEdicionFavoritos) {
-            const hourlyData  = respuestas[idx] ? respuestas[idx].hourly : null;
-            const hourlyEcmwf = respuestasEcmwf && respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
+            // ESCUDO: Si no estamos editando favoritos, calculamos la meteo normal.
+            if (!modoEdicionFavoritos) {
+                const hourlyData  = respuestas[idx] ? respuestas[idx].hourly : null;
+                const hourlyEcmwf = respuestasEcmwf && respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
 
-            const evaluacion = calcularPuntuacionesDespegue(despObj, hourlyData, hourlyEcmwf, indicesEvaluacionMapa);
-            nota = evaluacion.notaCondiciones;
-            color = colorNotaMapa(nota);
+                const evaluacion = calcularPuntuacionesDespegue(despObj, hourlyData, hourlyEcmwf, indicesEvaluacionMapa);
+                nota = evaluacion.notaCondiciones;
+                color = colorNotaMapa(nota);
+            }
+
+            marker._notaMapa = (nota !== null) ? nota : -1;
+            const nombreMostrar = despObj ? despObj.Despegue : meta.despegue;
+
+            const actividadScore = despObj ? despObj.Actividad : null;
+            marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color, actividadScore));
+        } catch (errMarker) {
+            console.warn("Aviso: No se pudo evaluar la puntuación para este despegue:", errMarker);
         }
-
-        marker._notaMapa = (nota !== null) ? nota : -1;
-        const nombreMostrar = despObj ? despObj.Despegue : meta.despegue;
-
-        const actividadScore = despObj ? despObj.Actividad : null;
-        marker.setIcon(window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color, actividadScore));
     });
 
     if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues && clustergroupDespegues._map) {
@@ -12992,6 +13005,8 @@ function inicializarMapaLeaflet() {
 
                             ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
 
+                            ⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a><br>
+
                             ⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a><br>
 
                             <div class="popup-toggle-header" style="cursor: pointer; border-radius: 3px; padding-top: 8px; margin-bottom: 10px;">
@@ -13273,6 +13288,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+                        <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                         <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
@@ -13474,6 +13490,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+                        <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                         <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
@@ -13683,6 +13700,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+                        <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                         <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
@@ -14059,6 +14077,7 @@ function inicializarMapaLeaflet() {
                     <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
+                    <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                     <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                     
                     <div class="popup-toggle-header" 
