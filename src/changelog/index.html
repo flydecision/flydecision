@@ -150,6 +150,21 @@ footer { text-align: center; font-size: 0.8rem; color: #777; margin-top: 20px; m
 
 <!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
 <div class="release">
+<div class="v-header"><span class="v-number">v4.8.0</span><span class="v-date">26 Jul 2026</span></div>
+
+<div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
+<ul class="lista">
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Mejora del pronóstico de viento para los días +3 y +4 (48-96h)</b>. Ahora ese rango horario se toma del modelo ICON-EU 7km en lugar del modelo Arpege Europe 7km. El pronóstico de viento para las primeras 0-48h se siguen tomando del modelo Arome-HD 1.3km. Nota: el rango 0-48h realmente es algo variable por razones del propio modelo. De esta forma, tenemos la mejor combinación de grado de acierto en el pronóstico para los 4 días, por combinación de modelos óptimos y además por el doble de frecuencia de actualización del modelo ICON-EU para esas 48-96h respecto a Arpege.</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc">La incorporación anterior de ICON-EU ha supuesto la <b>eliminación de los pronósticos para Canarias</b>, ya que el modelo no cubre ese área. Se siguen mostrando los despegues pero habrá que visualizar la meteo en los enlaces del despegue o ir a otras aplicaciones. Es una limitación esperemos que temporal en espera de implementar ICON-GLOBAL para ese área (es una cuestión de costes de llamadas a la API, por el momento no asumible).</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc">La <b>URL directa flydecision.com/balizas</b> (o /balizak, /balises, /beacons, /baken) muestra directamente el mapa limpio solo con las balizas, sin despegues ni filtro horario ni de condiciones.</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Enlace a Open-meteo</b> en la lista de enlaces externos de cada despegue o grupo de despegues. Son unos magníficos mapas meteorológicos con múltiples datos y modelos.</span></li>
+</ul>
+</div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
 <div class="v-header"><span class="v-number">v4.7.0</span><span class="v-date">24 Jul 2026</span></div>
 
 <div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
