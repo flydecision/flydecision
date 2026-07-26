@@ -9114,7 +9114,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 dataGenElement.innerHTML = `
                     <div style="margin: 5px 0 0 0; padding-left: 23px; padding-right: 0px; list-style-type: disc; line-height: 1.3; text-align: left;">
                         <p style="margin-bottom: -6px;">
-                            <span style="font-size: 0.8rem;">${semaforoMF.emoji}</span> Arome-HD: ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
+                            <span style="font-size: 0.8rem;">${semaforoMF.emoji}</span> Arome/ICON: ${t('actualizacion.hace', { tiempo: timeAgoMF })} <span style="color:#777; font-size: 0.9em; font-style:italic;">(${refMF})</span><br>
                             <span style="padding-left: 21px;">${textoFuturoMF}</span>
                         </p>
                         <p style="margin-bottom: -6px;">
