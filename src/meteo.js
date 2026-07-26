@@ -2979,7 +2979,6 @@ function clickOnDia(sliderElement, diaIndex) {
     window.limitePaginacionMeteo = 10;
     const mismodia = window.diaSeleccionadoSlider === diaIndex;
     
-    // INICIAMOS EL SPINNER INMEDIATAMENTE AL TOCAR EL BOTÓN DEL DÍA
     ejecutarOperacionPesada(() => {
         window.diaSeleccionadoSlider = diaIndex;
         const dayRanges = sliderElement.dayRanges;
@@ -2989,6 +2988,8 @@ function clickOnDia(sliderElement, diaIndex) {
         window.indicesDiaActualSlider = window.indicesHorasRangoHorario.slice(startPos, endPos + 1);
 
         const newMax = window.indicesDiaActualSlider.length - 1;
+
+        if (newMax < 0) return; // 🛡️ Protección si el rango del día está vacío
 
         // Actualizar rango del slider
         sliderElement.noUiSlider.updateOptions({
@@ -3020,23 +3021,32 @@ function clickOnDia(sliderElement, diaIndex) {
                 let prefFin    = parseInt(rawFin);
                 let encontradoInicio = false;
 
-                const fechaPrimerDato = new Date(window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]].endsWith('Z') ? window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] : window.horasCrudasRangoHorario[window.indicesDiaActualSlider[0]] + 'Z');
-                const esHoy = new Date().getDate() === fechaPrimerDato.getDate();
+                // 🛡️ PROTECCIÓN ANTI-CRASH: Verificar que la cadena de texto existe antes de usar .endsWith()
+                const idxPrimerDato = window.indicesDiaActualSlider[0];
+                const rawHoraFirst = (window.horasCrudasRangoHorario && idxPrimerDato !== undefined) 
+                    ? window.horasCrudasRangoHorario[idxPrimerDato] 
+                    : null;
 
-                if (mismodia && esHoy) {
-                    const horaActual = new Date().getHours();
-                    if (horaActual >= prefInicio + 2) {
-                        prefInicio = Math.max(0, horaActual - 1); 
-                        if (prefFin <= prefInicio) {
-                            prefFin = 23; 
+                if (rawHoraFirst) {
+                    const fechaPrimerDato = new Date(rawHoraFirst.endsWith('Z') ? rawHoraFirst : rawHoraFirst + 'Z');
+                    const esHoy = new Date().getDate() === fechaPrimerDato.getDate();
+
+                    if (mismodia && esHoy) {
+                        const horaActual = new Date().getHours();
+                        if (horaActual >= prefInicio + 2) {
+                            prefInicio = Math.max(0, horaActual - 1); 
+                            if (prefFin <= prefInicio) {
+                                prefFin = 23; 
+                            }
                         }
                     }
                 }
 
                 window.indicesDiaActualSlider.forEach((idxReal, i) => {
-                    const h = new Date(window.horasCrudasRangoHorario[idxReal].endsWith('Z')
-                        ? window.horasCrudasRangoHorario[idxReal]
-                        : window.horasCrudasRangoHorario[idxReal] + 'Z').getHours();
+                    const hStr = window.horasCrudasRangoHorario ? window.horasCrudasRangoHorario[idxReal] : null;
+                    if (!hStr) return; // 🛡️ Si falta esta hora en el array, se omite limpiamente
+
+                    const h = new Date(hStr.endsWith('Z') ? hStr : hStr + 'Z').getHours();
 
                     if (!encontradoInicio) {
                         if (prefInicio === 0 || h >= prefInicio) { finalStart = i; encontradoInicio = true; }
@@ -3055,25 +3065,24 @@ function clickOnDia(sliderElement, diaIndex) {
         }
 
         sliderElement.noUiSlider.set([finalStart, finalEnd]);
-            window.sliderHorasValues = [finalStart, finalEnd];
+        window.sliderHorasValues = [finalStart, finalEnd];
 
-            window.ultimoRangoSlider = null;
-            window.restaurarRangoDesdeCalendario = false;
+        window.ultimoRangoSlider = null;
+        window.restaurarRangoDesdeCalendario = false;
 
-            const vistaMapa = document.getElementById('vista-mapa');
-            const enMapa = vistaMapa && vistaMapa.style.display === 'flex';
+        const vistaMapa = document.getElementById('vista-mapa');
+        const enMapa = vistaMapa && vistaMapa.style.display === 'flex';
 
-            if (enMapa) {
-                // Saltamos la reconstrucción de la tabla
-                window.tablaRecrearAlVolver = true;
-                if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
-            } else {
-                construir_tabla(false, false); 
-                if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
-            }
+        if (enMapa) {
+            window.tablaRecrearAlVolver = true;
+            if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
+        } else {
+            construir_tabla(false, false); 
+            if (typeof aplicarPuntuacionEnMapa === 'function') aplicarPuntuacionEnMapa();
+        }
 
-        }); 
-    }
+    }); 
+}
 
 // Función que adjunta el evento Y AHORA TAMBIÉN FORZA LA POSICIÓN VISUAL
 function adjuntarEventoPips(sliderElement) {
