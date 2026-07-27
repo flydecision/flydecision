@@ -944,59 +944,74 @@
 			<button id="buttonResetFiltros2" data-i18n="[title]mapa.resetearFiltrosMapa" onclick="resetearFiltrosMapaEnVivo()"><span id="iconoResetFiltros2">🔄</span></button>
 			<button id="buttonFijar2" data-i18n="[title]mapa.fijarPanel"><span id="iconoFijar2">📌</span></button>			 
 			
-			<!-- Filtro Favoritos -->
-			<div id="control-favoritos-mapa-container" class="linea-con-bt-info" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-top: 6px; margin-bottom: 1px; padding-left: 5px;">
-				<button id="btn-mapa-filtro-favoritos" class="btn-info"
-					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
-					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosMapa()">
-				</button>
-				<icon-despegue></icon-despegue>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMetar">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
+			<!-- Contenedor Principal en 2 Columnas -->
+			<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 8px; margin-bottom: 8px;">
 
-			<!-- Filtro Seguimiento -->
-			<div id="control-seguimiento-mapa-container" class="linea-con-bt-info solo-modo-avanzado" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
-				<button id="btn-mapa-filtro-seguimiento" class="btn-info"
-					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
-					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoMapa()">
-				</button>
-				<icon-despegue></icon-despegue>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMetar">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
+				<!-- COLUMNA IZQUIERDA: DESPEGUES -->
+				<div style="display: flex; flex-direction: column; flex: 1; border-right: 1px solid #ccc; padding-right: 10px;">
+					
+					<!-- Filtro Favoritos Despegues -->
+					<div id="control-favoritos-mapa-container" class="linea-con-bt-info" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
+						<button id="btn-mapa-filtro-favoritos" class="btn-info"
+							style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
+							onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosMapa()">
+						</button>
+						<icon-despegue></icon-despegue>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroFavoritosMapa">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</div>
 
-			<!-- Filtro Balizas Favoritas -->
-			<div id="control-favoritos-balizas-mapa-container" class="linea-con-bt-info" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
-				<button id="btn-mapa-filtro-favoritos-balizas" class="btn-info"
-					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
-					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosBalizasMapa()">
-				</button>
-				<icon-baliza></icon-baliza>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMetar">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
-			</div>
+					<!-- Filtro Seguimiento Despegues -->
+					<div id="control-seguimiento-mapa-container" class="linea-con-bt-info solo-modo-avanzado" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
+						<button id="btn-mapa-filtro-seguimiento" class="btn-info"
+							style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
+							onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoMapa()">
+						</button>
+						<icon-despegue></icon-despegue>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroSeguimientoMapa">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</div>
 
-			<!-- Filtro Balizas Seguimiento -->
-			<div id="control-seguimiento-balizas-mapa-container" class="linea-con-bt-info solo-modo-avanzado" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 5px; padding-left: 5px;">
-				<button id="btn-mapa-filtro-seguimiento-balizas" class="btn-info"
-					style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
-					onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoBalizasMapa()">
-				</button>
-				<icon-baliza></icon-baliza>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMetar">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-				</button>
+				</div>
+
+				<!-- COLUMNA DERECHA: BALIZAS -->
+				<div style="display: flex; flex-direction: column; flex: 1; padding-left: 10px;">
+					
+					<!-- Filtro Balizas Favoritas -->
+					<div id="control-favoritos-balizas-mapa-container" class="linea-con-bt-info" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
+						<button id="btn-mapa-filtro-favoritos-balizas" class="btn-info"
+							style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
+							onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroFavoritosBalizasMapa()">
+						</button>
+						<icon-baliza></icon-baliza>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroFavoritosBalizasMapa">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</div>
+
+					<!-- Filtro Balizas Seguimiento -->
+					<div id="control-seguimiento-balizas-mapa-container" class="linea-con-bt-info solo-modo-avanzado" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
+						<button id="btn-mapa-filtro-seguimiento-balizas" class="btn-info"
+							style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; padding:0; margin:0; border-radius:8px; background:#fff; border:1.5px solid #ccc; box-shadow:1px 1px 3px rgba(0,0,0,0.15); flex-shrink:0;"
+							onclick="if(event){event.stopPropagation(); event.preventDefault();} ciclarFiltroSeguimientoBalizasMapa()">
+						</button>
+						<icon-baliza></icon-baliza>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroSeguimientoBalizasMapa">
+							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</div>
+
+				</div>
+
 			</div>
 
 			<!-- Filtro Actividad -->
 			<div class="control-actividad-mapa-container" style="margin-bottom:9px;" title="Mostrar solo los despegues con el nivel de Actividad seleccionado">
 				<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
 					<label for="sliderActividad" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.Actividad">Actividad >= </label><span id="valorActividadTexto">1</span>
-					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMetar">
+					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroActividad">
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
@@ -1007,7 +1022,7 @@
 			<div class="control-vuelos-container solo-modo-avanzado" style="margin-bottom:9px;" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
 				<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
 					<label for="sliderVuelos" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.minVuelosTexto">Nº vuelos registrados >= </label><span id="valorVuelosTexto">0</span>
-					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMetar">
+					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroVuelos">
 						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
