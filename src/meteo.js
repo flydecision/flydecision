@@ -6225,10 +6225,62 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     // Datos ECMWF Grupo 1 (Precipitaciones, nubes bajas)
                     if (hourlyEcmwf) {
 
+                        // 🛡️ MAPEO DE SEGURIDAD: Emparejar la hora de AROME con la hora exacta de ECMWF
+                        const ecmwfTimeMap = new Map();
+                        if (Array.isArray(hourlyEcmwf.time)) {
+                            hourlyEcmwf.time.forEach((tStr, idxEcmwf) => {
+                                ecmwfTimeMap.set(tStr, idxEcmwf);
+                            });
+                        }
+
+                        // Helper ajustado para buscar por hora real (horas[i]) en lugar de por índice i
+                        const renderEcmwfData = (tr, dataArr, formatFn, fontSize, colorFn, paddingBottom = "0px", titleFn = null) => {
+                            if (!tr || !dataArr) return;
+                            
+                            for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                                const idxEcmwf = ecmwfTimeMap.get(horas[i]);
+                                let val = (idxEcmwf !== undefined) ? dataArr[idxEcmwf] : null;
+                                
+                                const td = document.createElement("td");
+                                let appliedColor = false;
+                                
+                                if (colorFn) {
+                                    const colorClass = colorFn(val, idxEcmwf);
+                                    if (colorClass) {
+                                        td.classList.add(colorClass);
+                                        appliedColor = true;
+                                    }
+                                }
+
+                                if (titleFn) {
+                                    const tooltipText = titleFn(val, idxEcmwf);
+                                    if (tooltipText) {
+                                        td.setAttribute("data-tippy-content", tooltipText);
+                                        td.setAttribute("tabindex", "0");
+                                        td.style.cursor = "help";
+                                    }
+                                }
+                                
+                                if (cacheEsNoche[i]) {
+                                    td.classList.add("celda-noche");
+                                } else if (!appliedColor) {
+                                    td.style.backgroundColor = "#ffffff"; 
+                                }
+                                
+                                if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+                                
+                                if (fontSize) td.style.setProperty('font-size', fontSize, 'important');
+                                if (paddingBottom) td.style.paddingBottom = paddingBottom;
+                                
+                                td.textContent = formatFn(val, idxEcmwf);
+                                tr.appendChild(td);
+                            }
+                        };
+
                         // Meteo General (Nubosidad y Lluvia)
                         renderEcmwfData(filaNubesTotal, hourlyEcmwf.cloud_cover, 
-                            (v, i) => {
-                                let preci = (hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] != null) ? Number(hourlyEcmwf.precipitation[i]) : 0;
+                            (v, idxE) => {
+                                let preci = (idxE !== undefined && hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[idxE] != null) ? Number(hourlyEcmwf.precipitation[idxE]) : 0;
                                 if (preci > 0 && preci <= 0.2) return "🌦️";
                                 if (preci >= 0.3) return "🌧️";
 
@@ -6240,10 +6292,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (n < 90) return "🌥️";
                                 return "☁️";
                             }, "16px", () => "", "2px",
-                            (v, i) => {
+                            (v, idxE) => {
                                 let htmlLista = "";
-                                
-                                // 1. Añadir punto de Nubosidad Total si existe el dato
                                 if (v != null) {
                                     const textoNubosidad = t('tabla.tooltips.nubosidadTotal', { 
                                         cobertura: Math.round(Number(v)), 
@@ -6251,9 +6301,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     });
                                     htmlLista += `<li>${textoNubosidad}</li>`;
                                 }
-
-                                // 2. Añadir punto de Lluvia si la precipitación es mayor a 0
-                                let preci = (hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] != null) ? Number(hourlyEcmwf.precipitation[i]) : 0;
+                                let preci = (idxE !== undefined && hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[idxE] != null) ? Number(hourlyEcmwf.precipitation[idxE]) : 0;
                                 if (preci > 0) {
                                     const textoLluvia = t('tabla.tooltips.lluviaValor', { 
                                         mm: preci.toFixed(1), 
@@ -6261,10 +6309,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     });
                                     htmlLista += `<li>${textoLluvia}</li>`;
                                 }
-
                                 if (!htmlLista) return "";
-
-                                // Devolvemos el conjunto envuelto en la lista con su estilo unificado
                                 return `<ul style="margin: 4px 0; padding-left: 16px; text-align: left;">${htmlLista}</ul>`;
                             }
                         );
@@ -6287,49 +6332,36 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             }
                         );
 
-                        // Base de nubes estimada MSL con Downscaling Activo en la API
+                        // Base de nubes estimada MSL
                         renderEcmwfData(filaBaseNube, hourlyEcmwf.temperature_2m, 
-                            (temp, i) => {
-                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
-                                
+                            (temp, idxE) => {
+                                if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
                                 let t_val = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[i]);
+                                let roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
                                 let altRealDespegue = Number(d.Altitud || 0); 
-                                
-                                // El espesor ya está calculado sobre la altitud del despegue debido al downscaling de la API
                                 let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
                                 let baseMslMts = altRealDespegue + espesorMts;
                                 let baseMslKm = (baseMslMts / 1000).toFixed(1);
-                                
                                 return baseMslKm === "0.0" ? "0" : baseMslKm;
                             }, 
                             "12px", 
-                            (temp, i) => {
-                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
-                                
+                            (temp, idxE) => {
+                                if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
                                 let t_val = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[i]);
-                                
-                                // El espesor es directamente el margen libre sobre el despegue
+                                let roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
                                 let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
-
                                 if (espesorMts < 100) return "fondo-rojo";     
                                 if (espesorMts <= 300) return "fondo-naranja"; 
                                 return "fondo-verde";                          
                             },
                             "0px",
-                            (temp, i) => { 
-                                if (temp == null || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[i] == null) return "";
-
+                            (temp, idxE) => { 
+                                if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
                                 const t_val = Number(temp);
-                                const roc = Number(hourlyEcmwf.dew_point_2m[i]);
+                                const roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
                                 const altRealDespegue = Number(d.Altitud || 0);
-                                
-                                // Cálculo del espesor aproximado AGL
                                 const espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
                                 const baseMslMts = altRealDespegue + espesorMts;
-                                
-                                // Formateo del valor en kilómetros (evitando el paso intermedio "baseMslKm")
                                 const valorFinal = (baseMslMts / 1000).toFixed(1);
                                 const baseKm = valorFinal === "0.0" ? "0" : valorFinal;
                                 
@@ -6346,8 +6378,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         // Temperatura a 2 metros
                         renderEcmwfData(filaTemperatura, hourlyEcmwf.temperature_2m, 
                             v => v == null ? "" : Math.round(Number(v)), "12px",
-                            () => "", // Sin color dinámico (aplica fondo blanco/gris de noche automáticamente)
-                            "0px"
+                            () => "", "0px"
                         );
                         
                     } else {
@@ -6649,22 +6680,31 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         let htmlCape = "";
                         let htmlCin = "";
 
+                        // Reutilizamos el mapa de horas ecmwfTimeMap creado arriba
+                        const ecmwfTimeMap = new Map();
+                        if (Array.isArray(hourlyEcmwf.time)) {
+                            hourlyEcmwf.time.forEach((tStr, idxEcmwf) => {
+                                ecmwfTimeMap.set(tStr, idxEcmwf);
+                            });
+                        }
+
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             
                             let clasesBase = "";
                             if (cacheEsNoche[i]) clasesBase += " celda-noche";
                             if (setInicioDia.has(i)) clasesBase += " borde-grueso-izquierda";
 
-                            // === 1. TECHO (Simplificado y corregido) ===
-                            let vTecho = hourlyEcmwf.boundary_layer_height[i];
+                            // Buscamos el índice exacto coincidente con la hora AROME
+                            const idxEcmwf = ecmwfTimeMap.get(horas[i]);
+
+                            // === 1. TECHO ===
+                            let vTecho = (idxEcmwf !== undefined && hourlyEcmwf.boundary_layer_height) ? hourlyEcmwf.boundary_layer_height[idxEcmwf] : null;
                             let celdaTechoHTML = "";
                             
                             if (vTecho == null) {
-                                // Caso 1: Celda vacía sin datos (con fondo blanco si es de día)
                                 const bgTecho = !cacheEsNoche[i] ? 'background-color: #ffffff;' : '';
                                 celdaTechoHTML = `<td class="${clasesBase}" style="padding-bottom: 0px; font-size: 12px !important; ${bgTecho}"></td>`;
                             } else {
-                                // Caso 2: Celda con datos (Cálculo e inyección directa)
                                 const espesorBLH = Math.round(Number(vTecho));
                                 const espesorUtil = Math.round(espesorBLH * RATIO_TECHO_UTIL);
                                 const altitudMSL = Math.round(espesorUtil + elevacionModeloECMWF);
@@ -6672,15 +6712,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 const valorTexto = (altitudMSL / 1000).toFixed(1);
                                 const txtTecho = (valorTexto === "0.0") ? "0" : valorTexto;
 
-                                // Altitud real del despegue y ganancia estimada de altura
                                 const altRealDespegue = Number(d.Altitud || 0);
                                 const gananciaMts = Math.max(0, altitudMSL - altRealDespegue);
 
                                 let colorTecho = "fondo-naranja";
                                 if (gananciaMts < 300) {
-                                    colorTecho = "fondo-rojo";     // Menos de 300m sobre el despegue
+                                    colorTecho = "fondo-rojo";
                                 } else if (gananciaMts >= 700) {
-                                    colorTecho = "fondo-verde";    // 700m o más sobre el despegue
+                                    colorTecho = "fondo-verde";
                                 }
 
                                 const textoTooltip = t('tabla.techoTooltip', {
@@ -6696,7 +6735,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             htmlTecho += celdaTechoHTML;
 
                             // === 2. CAPE ===
-                            let vCape = hourlyEcmwf.cape[i];
+                            let vCape = (idxEcmwf !== undefined && hourlyEcmwf.cape) ? hourlyEcmwf.cape[idxEcmwf] : null;
                             let txtCape = "", colorCape = "", bgCape = "";
                             
                             if (vCape != null && vCape !== "") {
@@ -6711,7 +6750,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             htmlCape += `<td class="${clasesBase} ${colorCape}" style="padding-bottom: 0px; font-size: 11px !important; ${bgCape}" title="CAPE: ${vCape || 0} J/kg">${txtCape}</td>`;
 
                             // === 3. CIN ===
-                            let vCin = hourlyEcmwf.convective_inhibition[i];
+                            let vCin = (idxEcmwf !== undefined && hourlyEcmwf.convective_inhibition) ? hourlyEcmwf.convective_inhibition[idxEcmwf] : null;
                             let txtCin = "", colorCin = "", bgCin = "";
                             
                             if (vCin != null && vCin !== "") {
