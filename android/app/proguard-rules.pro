@@ -19,3 +19,18 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# --- Reglas para Capacitor ---
+-keep class com.getcapacitor.** { *; }
+-keep class capacitor.** { *; }
+-dontwarn com.getcapacitor.**
+-dontwarn capacitor.**
+
+# Mantener clases nativas de plugins (por si acaso)
+-keep class * extends com.getcapacitor.Plugin { *; }
+-keep class * extends com.getcapacitor.PluginHandle { *; }
+
+# Mantener nombres de clase para los reflection de JavaScript a Java
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}

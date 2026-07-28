@@ -18,8 +18,18 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // 1. Activa R8 para minificar y reducir el código
+            minifyEnabled true
+            
+            // 2. Elimina recursos (imágenes, xml) que no se usen
+            shrinkResources true
+            
+            // 3. Cambia a 'proguard-android-optimize.txt' (con "-optimize")
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            //signingConfig signingConfigs.release
+            // Esta línea permite que el .bat genere un APK de Release firmado para pruebas:
+            signingConfig signingConfigs.debug
         }
     }
 }

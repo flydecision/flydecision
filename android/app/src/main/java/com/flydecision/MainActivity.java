@@ -20,8 +20,8 @@ public class MainActivity extends BridgeActivity {
         // 2. Forzar explícitamente la barra de navegación (y de estado) a transparente.
         // EdgeToEdge.enable() no siempre sobreescribe el color definido en el theme
         // (styles.xml / themes.xml), así que lo fijamos aquí a mano.
-        getWindow().setNavigationBarColor(android.graphics.Color.TRANSPARENT);
-        getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
+        // Comentada en 28/72026 para evitar aviso Google Play. getWindow().setNavigationBarColor(android.graphics.Color.TRANSPARENT);
+        // Comentada en 28/72026 para evitar aviso Google Play. getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
 
         // 3. Evitar que el sistema añada su propia capa semitransparente de contraste
         // encima de la barra de navegación (y de estado). Sin esto, cada fabricante
