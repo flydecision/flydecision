@@ -6896,48 +6896,56 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                     if (mostrarEcmwfDOM) {
 
-                        // Pintar las filas especiales de interpolación vertical (Fijas + Altitud Real)
                         const altReal = Number(d.Altitud) || 0;
 
-                        // Helper para instanciar las celdas de interpolación (Aprovecha los datos calculados)
-                        const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHora, bordeTopVel, bordeBottomDirPx) => {
+                        // 🛡️ MAPEO DE SEGURIDAD: Sincronizar horas de AROME con los geopotenciales de ECMWF
+                        const ecmwfTimeMap = new Map();
+                        if (hourlyEcmwf && Array.isArray(hourlyEcmwf.time)) {
+                            hourlyEcmwf.time.forEach((tStr, idxEcmwf) => {
+                                ecmwfTimeMap.set(tStr, idxEcmwf);
+                            });
+                        }
+
+                        // Helper para instanciar las celdas de interpolación buscando por la hora real
+                        const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHoraArome, bordeTopVel, bordeBottomDirPx) => {
                             const tdVel = document.createElement("td");
                             tdVel.classList.add("ecmwf-neutral");
-                            if (cacheEsNoche[indiceHora]) tdVel.classList.add("celda-noche");
-                            if (setInicioDia.has(indiceHora)) tdVel.classList.add("borde-grueso-izquierda");
+                            if (cacheEsNoche[indiceHoraArome]) tdVel.classList.add("celda-noche");
+                            if (setInicioDia.has(indiceHoraArome)) tdVel.classList.add("borde-grueso-izquierda");
                             tdVel.style.fontSize = "12px";
                             if (bordeTopVel) tdVel.style.borderTop = "1px solid #000";
 
                             const tdDir = document.createElement("td");
                             tdDir.classList.add("ecmwf-neutral");
-                            if (cacheEsNoche[indiceHora]) tdDir.classList.add("celda-noche");
-                            if (setInicioDia.has(indiceHora)) tdDir.classList.add("borde-grueso-izquierda");
+                            if (cacheEsNoche[indiceHoraArome]) tdDir.classList.add("celda-noche");
+                            if (setInicioDia.has(indiceHoraArome)) tdDir.classList.add("borde-grueso-izquierda");
                             tdDir.style.fontSize = "12px";
                             if (bordeBottomDirPx) tdDir.style.borderBottom = bordeBottomDirPx;
 
+                            // Buscamos la posición coincidente en ECMWF
+                            const idxEcmwf = ecmwfTimeMap.get(horas[indiceHoraArome]);
+
                             if (!debeMostrarse) {
-                                // Despegue colapsado: nos ahorramos el cálculo trigonométrico (sin/cos/atan2/sqrt),
-                                // solo placeholder visual. Si el usuario expande, el siguiente rebuild calculará el valor real.
                                 tdVel.textContent = "…";
                                 tdDir.textContent = "…";
-                            } else if (!hourlyEcmwf) {
+                            } else if (!hourlyEcmwf || idxEcmwf === undefined) {
                                 tdVel.textContent = "—";
                                 tdDir.textContent = "—";
                             } else {
                                 const interp = interpolarVientoAltitudReal(
                                     altObj,
-                                    hourlyEcmwf.geopotential_height_1000hPa[indiceHora],
-                                    hourlyEcmwf.geopotential_height_925hPa[indiceHora],
-                                    hourlyEcmwf.geopotential_height_850hPa[indiceHora],
-                                    hourlyEcmwf.geopotential_height_700hPa[indiceHora],
-                                    hourlyEcmwf.wind_speed_1000hPa[indiceHora],
-                                    hourlyEcmwf.wind_speed_925hPa[indiceHora],
-                                    hourlyEcmwf.wind_speed_850hPa[indiceHora],
-                                    hourlyEcmwf.wind_speed_700hPa[indiceHora],
-                                    hourlyEcmwf.wind_direction_1000hPa[indiceHora],
-                                    hourlyEcmwf.wind_direction_925hPa[indiceHora],
-                                    hourlyEcmwf.wind_direction_850hPa[indiceHora],
-                                    hourlyEcmwf.wind_direction_700hPa[indiceHora]
+                                    hourlyEcmwf.geopotential_height_1000hPa ? hourlyEcmwf.geopotential_height_1000hPa[idxEcmwf] : null,
+                                    hourlyEcmwf.geopotential_height_925hPa ? hourlyEcmwf.geopotential_height_925hPa[idxEcmwf] : null,
+                                    hourlyEcmwf.geopotential_height_850hPa ? hourlyEcmwf.geopotential_height_850hPa[idxEcmwf] : null,
+                                    hourlyEcmwf.geopotential_height_700hPa ? hourlyEcmwf.geopotential_height_700hPa[idxEcmwf] : null,
+                                    hourlyEcmwf.wind_speed_1000hPa ? hourlyEcmwf.wind_speed_1000hPa[idxEcmwf] : null,
+                                    hourlyEcmwf.wind_speed_925hPa ? hourlyEcmwf.wind_speed_925hPa[idxEcmwf] : null,
+                                    hourlyEcmwf.wind_speed_850hPa ? hourlyEcmwf.wind_speed_850hPa[idxEcmwf] : null,
+                                    hourlyEcmwf.wind_speed_700hPa ? hourlyEcmwf.wind_speed_700hPa[idxEcmwf] : null,
+                                    hourlyEcmwf.wind_direction_1000hPa ? hourlyEcmwf.wind_direction_1000hPa[idxEcmwf] : null,
+                                    hourlyEcmwf.wind_direction_925hPa ? hourlyEcmwf.wind_direction_925hPa[idxEcmwf] : null,
+                                    hourlyEcmwf.wind_direction_850hPa ? hourlyEcmwf.wind_direction_850hPa[idxEcmwf] : null,
+                                    hourlyEcmwf.wind_direction_700hPa ? hourlyEcmwf.wind_direction_700hPa[idxEcmwf] : null
                                 );
 
                                 if (interp === null) {
@@ -6959,8 +6967,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         };
 
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
-                            // Ejecutamos la interpolación para cada piso en altitud fija
-                            // (bordes aplicados directamente en la creación: top solo en 3000m, bottom fino en 1500/1000m, grueso en 500m y altitud real)
+                            // Ejecutamos la interpolación vinculada a la hora de la columna i
                             crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i, true, "1px solid #000");
                             crearCeldasInterpoladas(filaEcmwfVel1500, filaEcmwfDir1500, 1500, 1500, i, false, "1px solid #000");
                             crearCeldasInterpoladas(filaEcmwfVel1000, filaEcmwfDir1000, 1000, 1000, i, false, "1px solid #000");
