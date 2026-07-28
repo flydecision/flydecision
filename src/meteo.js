@@ -5134,6 +5134,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			horas = horasApi.slice(indiceInicio); // Esto mostrará TODAS las horas que tenga el .json
 		}
 
+        // 🛡️ MAPEO DE SEGURIDAD (GLOBAL): Hora ISO de AROME -> índice real en ECMWF.
+        // Se construye UNA sola vez por render de tabla (no por despegue), asumiendo que
+        // 'hourly.time' es el mismo eje horario para todos los despegues del mismo JSON.
+        const ecmwfTimeMap = new Map();
+        if (respuestasEcmwf && respuestasEcmwf[0] && respuestasEcmwf[0].hourly && Array.isArray(respuestasEcmwf[0].hourly.time)) {
+            respuestasEcmwf[0].hourly.time.forEach((tStr, idxEcmwf) => {
+                ecmwfTimeMap.set(tStr, idxEcmwf);
+            });
+        }
+
         // ---------------------------------------------------------------
         // 🟡 CONSTRUCCIÓN DE LA TABLA. Cabecera. Fila de días de la semana (Lunes, Martes,..)
         // ---------------------------------------------------------------
@@ -6225,14 +6235,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     // Datos ECMWF Grupo 1 (Precipitaciones, nubes bajas)
                     if (hourlyEcmwf) {
 
-                        // 🛡️ MAPEO DE SEGURIDAD: Emparejar la hora de AROME con la hora exacta de ECMWF
-                        const ecmwfTimeMap = new Map();
-                        if (Array.isArray(hourlyEcmwf.time)) {
-                            hourlyEcmwf.time.forEach((tStr, idxEcmwf) => {
-                                ecmwfTimeMap.set(tStr, idxEcmwf);
-                            });
-                        }
-
                         // Helper ajustado para buscar por hora real (horas[i]) en lugar de por índice i
                         const renderEcmwfData = (tr, dataArr, formatFn, fontSize, colorFn, paddingBottom = "0px", titleFn = null) => {
                             if (!tr || !dataArr) return;
@@ -6680,14 +6682,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         let htmlCape = "";
                         let htmlCin = "";
 
-                        // Reutilizamos el mapa de horas ecmwfTimeMap creado arriba
-                        const ecmwfTimeMap = new Map();
-                        if (Array.isArray(hourlyEcmwf.time)) {
-                            hourlyEcmwf.time.forEach((tStr, idxEcmwf) => {
-                                ecmwfTimeMap.set(tStr, idxEcmwf);
-                            });
-                        }
-
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             
                             let clasesBase = "";
@@ -6897,14 +6891,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     if (mostrarEcmwfDOM) {
 
                         const altReal = Number(d.Altitud) || 0;
-
-                        // 🛡️ MAPEO DE SEGURIDAD: Sincronizar horas de AROME con los geopotenciales de ECMWF
-                        const ecmwfTimeMap = new Map();
-                        if (hourlyEcmwf && Array.isArray(hourlyEcmwf.time)) {
-                            hourlyEcmwf.time.forEach((tStr, idxEcmwf) => {
-                                ecmwfTimeMap.set(tStr, idxEcmwf);
-                            });
-                        }
 
                         // Helper para instanciar las celdas de interpolación buscando por la hora real
                         const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHoraArome, bordeTopVel, bordeBottomDirPx) => {
