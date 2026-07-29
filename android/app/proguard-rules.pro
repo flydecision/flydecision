@@ -20,17 +20,32 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# --- Reglas para Capacitor ---
+# =========================================================
+# REGLAS DEFINITIVAS DE PROGUARD PARA CAPACITOR Y R8
+# =========================================================
+
+# 1. Proteger el núcleo de Capacitor y evitar advertencias
 -keep class com.getcapacitor.** { *; }
 -keep class capacitor.** { *; }
 -dontwarn com.getcapacitor.**
 -dontwarn capacitor.**
 
-# Mantener clases nativas de plugins (por si acaso)
+# 2. Mantener absolutamente TODOS los plugins de Capacitor
 -keep class * extends com.getcapacitor.Plugin { *; }
 -keep class * extends com.getcapacitor.PluginHandle { *; }
 
-# Mantener nombres de clase para los reflection de JavaScript a Java
+# 3. MANTENER ANOTACIONES (Crucial para el puente JS -> Java)
+-keepattributes *Annotation*
+-keepattributes JavascriptInterface
+-keepattributes Signature
+-keepattributes Exceptions
+
+# 4. Evitar que R8 renombre métodos invocados desde JavaScript
 -keepclassmembers class * {
     @android.webkit.JavascriptInterface <methods>;
+}
+
+# 5. Evitar que R8/shrinkResources borre iconos o recursos buscados por texto
+-keepclassmembers class **.R$* {
+    public static <fields>;
 }
