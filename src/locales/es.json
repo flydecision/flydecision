@@ -383,6 +383,52 @@
     }
   },
 
+  "guiaMapa": {
+  "preguntaVerGuia": "¿Quieres ver una breve guía explicativa del Mapa interactivo?",
+  "pasos": {
+    "intro": {
+      "titulo": "Mapa Interactivo",
+      "descripcion": "Explora despegues de parapente, estaciones meteorológicas en tiempo real (balizas) y capas de mapas topo o satélite."
+    },
+    "buscadorMapa": {
+      "titulo": "Buscador de Despegues",
+      "descripcion": "Escribe el nombre de cualquier despegue para encontrarlo y centrarlo rápidamente en el mapa."
+    },
+    "btnFiltrosMeteo": {
+      "titulo": "Botón Meteo",
+      "descripcion": "Abre la barra meteorológica para filtrar por horas o día de la semana directamente sobre el mapa."
+    },
+    "filtroHorarioMeteo": {
+      "titulo": "Predicción Meteorológica",
+      "descripcion": "Selecciona la hora de vuelo deseada. Los iconos del mapa se colorearán según la calidad de las condiciones en ese horario."
+    },
+    "panelDespegues": {
+      "titulo": "Capa de Despegues",
+      "descripcion": "Gestiona la visibilidad de los despegues oficiales, mapas de calor por frecuencia de vuelos o tus notas personales."
+    },
+    "panelBalizas": {
+      "titulo": "Balizas de Viento",
+      "descripcion": "Activa o desactiva redes meteorológicas en tiempo real (Euskalmet, MeteoNavarra, MeteoCat, AEMET, Holfuy, etc.)."
+    },
+    "panelFiltros": {
+      "titulo": "Filtros del Mapa",
+      "descripcion": "Filtra por orientación de ladera, nivel de actividad, número de vuelos registrados o altitud de balizas."
+    },
+    "btnGps": {
+      "titulo": "Mi Ubicación",
+      "descripcion": "Centra instantáneamente el mapa en tu posición GPS actual."
+    },
+    "controlCapas": {
+      "titulo": "Mapas Base",
+      "descripcion": "Cambia entre mapa topográfico, ortofoto satélite, OpenTopoMap y capas aeronáuticas/térmicas."
+    },
+    "navTabla": {
+      "titulo": "Vista Tabla",
+      "descripcion": "Pulsa aquí para volver en cualquier momento a la vista de tabla meteorológica general."
+    }
+  }
+},
+
   "asistente": {
     "paso1": {
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>¿Dónde ir a volar?</p>",

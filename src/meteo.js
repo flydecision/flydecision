@@ -1819,6 +1819,179 @@ function iniciarGuiaFavoritos(forzar = false) {
 }
 
 // ---------------------------------------------------------------
+// 🟡 GUÍA MAPA
+// ---------------------------------------------------------------
+
+function sugerirGuiaMapa(forzar = false) {
+
+    if (guiaActiva || window.onboardingMapaActivo) return;
+
+    if (!forzar && localStorage.getItem('METEO_GUIA_MAPA_VISTA') === 'true') {
+        return; 
+    }
+
+    const htmlAyuda = !forzar 
+        ? `<p style="color: #555; margin-top: 10px;">${t('guiaPrincipal.podrasVerla')}</p>`
+        : '';
+
+    const botonesModal = [
+        {
+            texto: forzar ? t('botones.cancelar') : t('botones.no'),
+            estilo: 'secundario',
+            onclick: function() {
+                if (!forzar) {
+                    localStorage.setItem('METEO_GUIA_MAPA_VISTA', 'true');
+                }
+                GestorMensajes.ocultar();
+            }
+        },
+        {
+            texto: t('botones.verGuia'),
+            onclick: function() {
+                GestorMensajes.ocultar();
+                localStorage.setItem('METEO_GUIA_MAPA_VISTA', 'true');
+                setTimeout(() => iniciarGuiaMapa(true), 300);
+            }
+        }
+    ];
+
+    GestorMensajes.mostrar({
+        tipo: 'modal',
+        htmlContenido: `
+            <div style="text-align: center;">
+                <p style="font-size: 2.5em; margin: 0 0 10px 0;">💡</p>
+                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">${t('guiaMapa.preguntaVerGuia')}</p>
+                ${htmlAyuda}
+            </div>
+        `,
+        botones: botonesModal,
+        anchoBotones: '130px'
+    });
+}
+
+function iniciarGuiaMapa(forzar = false) {
+    guiaActiva = true;
+
+    if (!forzar && localStorage.getItem('METEO_GUIA_MAPA_VISTA') === 'true') {
+        return; 
+    }
+
+    // Cambiamos a la vista del mapa si no estamos en ella
+    if (typeof cambiarVista === 'function') {
+        cambiarVista('mapa');
+    }
+
+    const driverObj = window.driver.js.driver({
+        showProgress: true, 
+        progressText: t('guiaPrincipal.progreso'),
+        smoothScroll: true,
+        overlayClickBehavior: () => {}, 
+        overlayColor: 'rgba(0, 0, 0, 0.75)', 
+        allowClose: true,      
+        stageRadius: 8,   
+
+        nextBtnText: t('guiaPrincipal.siguiente'),
+        prevBtnText: '←',
+        doneBtnText: t('guiaPrincipal.cerrar'),
+
+        steps: [
+            { 
+                popover: { 
+                    title: t('guiaMapa.pasos.intro.titulo'), 
+                    description: t('guiaMapa.pasos.intro.descripcion') 
+                } 
+            },
+            { 
+                element: '.leaflet-text-search-input',
+                popover: { 
+                    title: t('guiaMapa.pasos.buscadorMapa.titulo'), 
+                    description: t('guiaMapa.pasos.buscadorMapa.descripcion')
+                } 
+            },
+            { 
+                element: '#btn-filtros-mapa',
+                popover: { 
+                    title: t('guiaMapa.pasos.btnFiltrosMeteo.titulo'), 
+                    description: t('guiaMapa.pasos.btnFiltrosMeteo.descripcion')
+                },
+                onHighlighted: () => {
+                    // Desplegar el filtro horario en el mapa si estuviera cerrado
+                    const divFH = document.getElementById('div-filtro-horario');
+                    if (divFH && !divFH.classList.contains('flotando-en-mapa')) {
+                        if (typeof toggleFiltrosMapa === 'function') toggleFiltrosMapa();
+                    }
+                    setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 200);
+                }
+            },
+            { 
+                element: '#div-filtro-horario',
+                popover: { 
+                    title: t('guiaMapa.pasos.filtroHorarioMeteo.titulo'), 
+                    description: t('guiaMapa.pasos.filtroHorarioMeteo.descripcion')
+                } 
+            },
+            { 
+                element: '#infoPanel',
+                popover: { 
+                    title: t('guiaMapa.pasos.panelDespegues.titulo'), 
+                    description: t('guiaMapa.pasos.panelDespegues.descripcion')
+                } 
+            },
+            { 
+                element: '#infoPanel3',
+                popover: { 
+                    title: t('guiaMapa.pasos.panelBalizas.titulo'), 
+                    description: t('guiaMapa.pasos.panelBalizas.descripcion')
+                } 
+            },
+            { 
+                element: '#infoPanel2',
+                popover: { 
+                    title: t('guiaMapa.pasos.panelFiltros.titulo'), 
+                    description: t('guiaMapa.pasos.panelFiltros.descripcion')
+                } 
+            },
+            { 
+                element: '.leaflet-control-locate',
+                popover: { 
+                    title: t('guiaMapa.pasos.btnGps.titulo'), 
+                    description: t('guiaMapa.pasos.btnGps.descripcion')
+                } 
+            },
+            { 
+                element: '.leaflet-control-layers',
+                popover: { 
+                    title: t('guiaMapa.pasos.controlCapas.titulo'), 
+                    description: t('guiaMapa.pasos.controlCapas.descripcion')
+                } 
+            },
+            { 
+                element: '#nav-home',
+                popover: { 
+                    title: t('guiaMapa.pasos.navTabla.titulo'), 
+                    description: t('guiaMapa.pasos.navTabla.descripcion')
+                } 
+            }
+        ],
+        
+        onDestroyStarted: () => {
+            localStorage.setItem('METEO_GUIA_MAPA_VISTA', 'true'); 
+            
+            guiaActiva = false;
+            
+            if (actualizacionesPendientes.length > 0) {
+                mostrarAvisoActualizacionMeteo(actualizacionesPendientes);
+                actualizacionesPendientes = [];
+            }
+
+            driverObj.destroy();
+        }
+    });
+
+    driverObj.drive();
+}
+
+// ---------------------------------------------------------------
 // 🔴 GESTIÓN DE FAVORITOS
 // ---------------------------------------------------------------
 
@@ -10978,6 +11151,13 @@ window.cambiarVista = function(vista) {
                 if (btnCerrar)  btnCerrar.style.display  = 'none';
             }
         }
+
+        // SUGERIR GUÍA DEL MAPA LA PRIMERA VEZ
+        setTimeout(() => {
+            if (typeof sugerirGuiaMapa === 'function') {
+                sugerirGuiaMapa();
+            }
+        }, 600); // 600ms de margen para que el mapa termine de renderizar de forma fluida
 
     } 
     else if (vista === 'tabla') {
