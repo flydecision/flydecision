@@ -14119,7 +14119,7 @@ function inicializarMapaLeaflet() {
 
     const markersNotasPersonales = []; 
 
-    Papa.parse('map/personal.csv', {
+    Papa.parse('https://flydecision.com/map/personal.csv', {
 
     download: true,
     header: true, // Usa la primera fila como nombres de columnas
