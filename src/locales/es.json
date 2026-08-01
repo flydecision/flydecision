@@ -384,47 +384,55 @@
   },
 
   "guiaMapa": {
-  "preguntaVerGuia": "¿Quieres ver una breve guía explicativa del Mapa interactivo?",
+  "preguntaVerGuia": "¿Quieres ver una guía visual del Mapa?",
   "pasos": {
     "intro": {
-      "titulo": "Mapa Interactivo",
-      "descripcion": "Explora despegues de parapente, estaciones meteorológicas en tiempo real (balizas) y capas de mapas topo o satélite."
+      "titulo": "Mapa",
+      "descripcion": "Explora despegues de parapente y evalúa sus condiciones según el pronóstico por horas.<br><br>Puedes filtrar despegues por su puntuación meteo, orientación o nivel de actividad, consultar balizas de viento en tiempo real con gráficos de tendencias, ver mapas de calor de vuelos XContest y seleccionar capas de mapas topográficos o satélite."
+    },
+    "filtroHorarioMeteo": {
+      "titulo": "Predicción Meteorológica",
+      "descripcion": "Selecciona el día y el rango horario de vuelo deseado.<br><br>Los iconos del mapa se colorearán con una gradación de 10 pasos de rojo a verde 🟥🟧🟩 según la calidad de las condiciones en ese horario, al igual que en la tabla."
+    },
+    "filtroPuntuacion": {
+      "titulo": "Filtro de puntuación",
+      "descripcion": "Filtra los despegues según la puntuación de su pronóstico meteorológico.<br><br>Desliza este control para fijar una nota mínima (de 0 a 10 estrellas) y oculta automáticamente del mapa aquellos lugares cuya evaluación no alcance tu nivel de exigencia en el horario seleccionado."
     },
     "buscadorMapa": {
       "titulo": "Buscador de Despegues",
-      "descripcion": "Escribe el nombre de cualquier despegue para encontrarlo y centrarlo rápidamente en el mapa."
+      "descripcion": "Escribe el nombre de cualquier despegue para encontrarlo y centrarlo rápidamente en el mapa.<br><br>Se desplegará una pequeña ventana con mucha información sobre él."
+    },
+    "panelDespegues": {
+      "titulo": "Capas de Despegues",
+      "descripcion": "Gestiona la visibilidad de los despegues, de los mapas de calor (puntos de despegue reales registrados) o notas adicionales sobre puntos de despegue y aterrizajes."
+    },
+    "panelBalizas": {
+      "titulo": "Balizas de viento",
+      "descripcion": "Activa o desactiva diversas redes de estaciones meteorológicas que transmiten datos de viento en tiempo real (balizas)."
+    },
+    "panelFiltros": {
+      "titulo": "Filtros",
+      "descripcion": "Filtra la información del mapa según tus necesidades. Puedes mostrar u ocultar únicamente tus despegues y balizas favoritas o en seguimiento. Además, puedes filtrar despegues por orientación, nivel de actividad o volumen de vuelos registrados en XContest, y filtrar balizas según su altitud."
+    },
+    "btnGps": {
+      "titulo": "Mi Ubicación",
+      "descripcion": "Centra el mapa en tu posición GPS actual."
+    },
+    "btnGeocoder": {
+      "titulo": "Buscador general",
+      "descripcion": "Busca cualquier ciudad, municipio, montaña o zona geográfica para navegar rápidamente a ella.<br><br>También puedes escribir directamente coordenadas GPS en formato decimal (ej: 42.734, -1.990) para centrar el mapa en un punto exacto."
+    },
+    "controlCapas": {
+      "titulo": "Mapas base",
+      "descripcion": "Elige el tipo de mapa de fondo que prefieras: topográficos, fotos aéreas, de relieve, areas de térmicas y rutas (skyways y thermals KK7) y capas aeronáuticas/restricciones."
     },
     "btnFiltrosMeteo": {
       "titulo": "Botón Meteo",
       "descripcion": "Abre la barra meteorológica para filtrar por horas o día de la semana directamente sobre el mapa."
     },
-    "filtroHorarioMeteo": {
-      "titulo": "Predicción Meteorológica",
-      "descripcion": "Selecciona la hora de vuelo deseada. Los iconos del mapa se colorearán según la calidad de las condiciones en ese horario."
-    },
-    "panelDespegues": {
-      "titulo": "Capa de Despegues",
-      "descripcion": "Gestiona la visibilidad de los despegues oficiales, mapas de calor por frecuencia de vuelos o tus notas personales."
-    },
-    "panelBalizas": {
-      "titulo": "Balizas de Viento",
-      "descripcion": "Activa o desactiva redes meteorológicas en tiempo real (Euskalmet, MeteoNavarra, MeteoCat, AEMET, Holfuy, etc.)."
-    },
-    "panelFiltros": {
-      "titulo": "Filtros del Mapa",
-      "descripcion": "Filtra por orientación de ladera, nivel de actividad, número de vuelos registrados o altitud de balizas."
-    },
-    "btnGps": {
-      "titulo": "Mi Ubicación",
-      "descripcion": "Centra instantáneamente el mapa en tu posición GPS actual."
-    },
-    "controlCapas": {
-      "titulo": "Mapas Base",
-      "descripcion": "Cambia entre mapa topográfico, ortofoto satélite, OpenTopoMap y capas aeronáuticas/térmicas."
-    },
     "navTabla": {
       "titulo": "Vista Tabla",
-      "descripcion": "Pulsa aquí para volver en cualquier momento a la vista de tabla meteorológica general."
+      "descripcion": "Accede a la tabla meteorológica detallada por horas. Aquí verás la predicción completa de cada despegue (viento a varias alturas, rachas, dirección, cizalladura, techo térmico XC, lluvia y temperatura) evaluada con colores según tus límites de seguridad.<br><br>Podrás filtrar por horario de vuelo, buscar despegues por provincia o distancia, gestionar tus favoritos y ver la previsión inmediata (nocasting) Arome de intervalo 15 minutos."
     }
   }
 },

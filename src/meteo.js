@@ -1902,17 +1902,10 @@ function iniciarGuiaMapa(forzar = false) {
                 } 
             },
             { 
-                element: '.leaflet-text-search-input',
+                element: '#div-filtro-horario',
                 popover: { 
-                    title: t('guiaMapa.pasos.buscadorMapa.titulo'), 
-                    description: t('guiaMapa.pasos.buscadorMapa.descripcion')
-                } 
-            },
-            { 
-                element: '#btn-filtros-mapa',
-                popover: { 
-                    title: t('guiaMapa.pasos.btnFiltrosMeteo.titulo'), 
-                    description: t('guiaMapa.pasos.btnFiltrosMeteo.descripcion')
+                    title: t('guiaMapa.pasos.filtroHorarioMeteo.titulo'), 
+                    description: t('guiaMapa.pasos.filtroHorarioMeteo.descripcion')
                 },
                 onHighlighted: () => {
                     // Desplegar el filtro horario en el mapa si estuviera cerrado
@@ -1924,10 +1917,17 @@ function iniciarGuiaMapa(forzar = false) {
                 }
             },
             { 
-                element: '#div-filtro-horario',
+                element: '#div-filtro-puntuacion-mapa',
                 popover: { 
-                    title: t('guiaMapa.pasos.filtroHorarioMeteo.titulo'), 
-                    description: t('guiaMapa.pasos.filtroHorarioMeteo.descripcion')
+                    title: t('guiaMapa.pasos.filtroPuntuacion.titulo'), 
+                    description: t('guiaMapa.pasos.filtroPuntuacion.descripcion')
+                } 
+            },
+            { 
+                element: '.leaflet-text-search-input',
+                popover: { 
+                    title: t('guiaMapa.pasos.buscadorMapa.titulo'), 
+                    description: t('guiaMapa.pasos.buscadorMapa.descripcion')
                 } 
             },
             { 
@@ -1956,6 +1956,13 @@ function iniciarGuiaMapa(forzar = false) {
                 popover: { 
                     title: t('guiaMapa.pasos.btnGps.titulo'), 
                     description: t('guiaMapa.pasos.btnGps.descripcion')
+                } 
+            },
+            { 
+                element: '.leaflet-control-geocoder',
+                popover: { 
+                    title: t('guiaMapa.pasos.btnGeocoder.titulo'), 
+                    description: t('guiaMapa.pasos.btnGeocoder.descripcion')
                 } 
             },
             { 
