@@ -466,9 +466,11 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     transition: opacity 0.2s ease;
 }
 
-/* Comportamiento al entrar: el cursor aparece y el texto se va */
 #buscador-despegues-provincias:focus::placeholder {
-    color: #888 !important;
+    color: transparent !important;
+}
+#buscador-despegues-provincias:focus::-webkit-input-placeholder {
+    color: transparent !important;
 }
 
 /* Cuando editamos favoritos, el buscador se ensancha a 365px para albergar el placeholder largo */
