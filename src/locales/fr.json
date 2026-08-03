@@ -212,9 +212,9 @@
     "progreso": "{{current}} sur {{total}}",
     "siguiente": "Suivant →",
     "cerrar": "Fermer le guide",
-    "preguntaVerGuia": "Souhaitez-vous voir un guide visuel pour cet écran ?",
-    "preguntaVerGuiaPrincipal": "Souhaitez-vous voir un guide visuel pour<br>l'écran principal ?",
-    "verEnAjustes": "Vous pouvez le consulter à tout moment dans :<br><i>⚙️ Paramètres</i> → <i>Guide</i>",
+    "preguntaVerGuia": "Voulez-vous voir un guide visuel sur cet écran ?",
+    "preguntaVerGuiaPrincipal": "Voulez-vous voir un guide visuel sur<br>l'écran <i>Tableau</i> ?",
+    "verEnAjustes": "Vous pouvez le voir à tout moment dans :<br><i>⚙️ Paramètres</i> → <i>Guides</i>",
     "podrasVerla": "Vous pouvez le consulter à tout moment en utilisant le bouton <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> sur cet écran.",
     "pasos": {
       "paso1": {
@@ -317,7 +317,7 @@
   },
 
   "guiaFavoritos": {
-    "preguntaVerGuia": "Souhaitez-vous voir un guide visuel pour cet écran ?",
+    "preguntaVerGuia": "Voulez-vous voir un guide visuel sur<br>l'écran <i>Éditer les favoris</i> ?",
     "podrasVerla": "Vous pouvez le consulter à tout moment en utilisant le bouton <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> sur cet écran.",
     "pasos": {
       "intro": {
@@ -382,6 +382,64 @@
       }
     }
   },
+
+"guiaMapa": {
+  "preguntaVerGuia": "Voulez-vous voir un guide visuel de la Carte ?",
+  "pasos": {
+    "intro": {
+      "titulo": "Carte",
+      "descripcion": "Explorez les décollages de parapente et évaluez leurs conditions selon les prévisions horaires.<br><br>Vous pouvez filtrer les décollages par leur score météo, orientation ou niveau d'activité, consulter les balises de vent en temps réel avec des graphiques de tendances, voir les cartes de chaleur des décollages XContest et sélectionner différents types de cartes."
+    },
+    "filtroHorarioMeteo": {
+      "titulo": "Plage horaire et filtre",
+      "descripcion": "Sélectionnez le jour et la plage horaire de vol souhaitée.<br><br>Les icônes de la carte seront colorées avec une gradation en 10 étapes du rouge au vert 🟥🟧🟩 selon la qualité des conditions à cette heure, tout comme dans le tableau."
+    },
+    "filtroPuntuacion": {
+      "titulo": "Filtre par score",
+      "descripcion": "Filtrez les décollages selon le score de leurs prévisions météorologiques et pour la plage horaire sélectionnée.<br><br>Faites glisser ce contrôle pour fixer une note minimale (de 0 à 10 étoiles) et masquer ainsi les décollages dont l'évaluation n'atteint pas votre niveau d'exigence dans l'horaire sélectionné.<br><br>N'oubliez pas que vous pouvez ajuster toutes ces limites pour le score dans <i>Paramètres</i> selon vos préférences."
+    },
+    "btnCerrarFiltroMeteo": {
+      "titulo": "Fermer le contrôle horaire et le filtre météo",
+      "descripcion": "Ferme ce panneau, de sorte que les décollages ne soient plus colorés en fonction de leur météo et s'affichent en blanc.<br><br>Cela peut être utile pour explorer les décollages ou les balises de vent avec un maximum d'espace à l'écran."
+    },
+    "buscadorMapa": {
+      "titulo": "Recherche de décollages",
+      "descripcion": "Tapez le nom de n'importe quel décollage pour le trouver et le centrer rapidement sur la carte.<br><br>Une petite fenêtre se déploiera avec beaucoup d'informations à son sujet."
+    },
+    "panelDespegues": {
+      "titulo": "Couches de décollages",
+      "descripcion": "Gérez la visibilité des décollages, des cartes de chaleur (points de décollage réels enregistrés) ou des notes supplémentaires sur les points de décollage et d'atterrissage."
+    },
+    "panelBalizas": {
+      "titulo": "Balises de vent",
+      "descripcion": "Activez ou désactivez divers réseaux de stations météorologiques qui transmettent des données de vent en temps réel (balises)."
+    },
+    "panelFiltros": {
+      "titulo": "Filtres",
+      "descripcion": "Filtrez les informations de la carte selon vos besoins. Vous pouvez afficher ou masquer uniquement vos décollages et balises favoris ou suivis. De plus, vous pouvez filtrer les décollages par orientation, niveau d'activité ou volume de vols enregistrés sur XContest, et filtrer les balises selon leur altitude."
+    },
+    "btnGps": {
+      "titulo": "Ma position",
+      "descripcion": "Centre la carte sur votre position actuelle."
+    },
+    "btnGeocoder": {
+      "titulo": "Recherche générale",
+      "descripcion": "Recherchez n'importe quelle ville, municipalité, montagne ou zone géographique pour y naviguer rapidement.<br><br>Vous pouvez également taper directement les coordonnées au format décimal (ex: 42.734 -1.990) pour centrer la carte sur un point précis."
+    },
+    "controlCapas": {
+      "titulo": "Cartes de base",
+      "descripcion": "Choisissez le type de carte de fond que vous préférez : topographique, photos aériennes, relief, zones thermiques et itinéraires (skyways et thermals KK7) et couches aéronautiques/restrictions."
+    },
+    "btnFiltrosMeteo": {
+      "titulo": "Bouton Météo",
+      "descripcion": "Ouvre la barre météorologique pour filtrer par heures ou jour de la semaine directement sur la carte."
+    },
+    "navTabla": {
+      "titulo": "Vue Tableau",
+      "descripcion": "Accédez au tableau météorologique horaire détaillé. Vous y verrez les prévisions complètes de chaque décollage (vent à différentes hauteurs, rafales, direction, cisaillement, plafond thermique XC, pluie et température) évaluées avec des couleurs selon vos limites de sécurité.<br><br>Vous pourrez filtrer par horaire de vol, rechercher des décollages par province ou distance, gérer vos favoris et voir les prévisions immédiates (nowcasting) Arome par intervalles de 15 minutes."
+    }
+  }
+},
 
   "asistente": {
     "paso1": {

@@ -212,9 +212,9 @@
     "progreso": "{{current}} of {{total}}",
     "siguiente": "Next →",
     "cerrar": "Close guide",
-    "preguntaVerGuia": "Would you like to see a visual guide for this screen?",
-    "preguntaVerGuiaPrincipal": "Would you like to see a visual guide for the<br>Main Screen?",
-    "verEnAjustes": "You can see it anytime in:<br><i>⚙️ Settings</i> → <i>Guide</i>",
+    "preguntaVerGuia": "Do you want to see a visual guide about this screen?",
+    "preguntaVerGuiaPrincipal": "Do you want to see a visual guide about the<br><i>Table</i> screen?",
+    "verEnAjustes": "You can view it anytime in:<br><i>⚙️ Settings</i> → <i>Guides</i>", 
     "podrasVerla": "You can see it anytime using the <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> button on this screen.",
     "pasos": {
       "paso1": {
@@ -317,7 +317,7 @@
   },
 
   "guiaFavoritos": {
-    "preguntaVerGuia": "Would you like to see a visual guide for this screen?",
+    "preguntaVerGuia": "Do you want to see a visual guide about the<br><i>Edit favorites</i> screen?",
     "podrasVerla": "You can see it anytime using the <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> button on this screen.",
     "pasos": {
       "intro": {
@@ -382,6 +382,64 @@
       }
     }
   },
+
+"guiaMapa": {
+  "preguntaVerGuia": "Do you want to see a visual guide of the Map?",
+  "pasos": {
+    "intro": {
+      "titulo": "Map",
+      "descripcion": "Explore paragliding take-offs and evaluate their conditions according to the hourly forecast.<br><br>You can filter take-offs by their meteo score, orientation or activity level, check real-time wind beacons with trend graphs, view XContest take-off heatmaps and select various types of maps."
+    },
+    "filtroHorarioMeteo": {
+      "titulo": "Time range and filter",
+      "descripcion": "Select the day and desired flight time range.<br><br>The map icons will be colored with a 10-step gradation from red to green 🟥🟧🟩 according to the quality of the conditions at that time, just like in the table."
+    },
+    "filtroPuntuacion": {
+      "titulo": "Filter by score",
+      "descripcion": "Filter take-offs according to the score of their meteorological forecast and for the selected time range.<br><br>Slide this control to set a minimum grade (from 0 to 10 stars) and this will hide the take-offs whose evaluation does not meet your demanding level in the selected schedule.<br><br>Remember that you can adjust all these limits for the score in <i>Settings</i> according to your preferences."
+    },
+    "btnCerrarFiltroMeteo": {
+      "titulo": "Close time control and meteo filter",
+      "descripcion": "Closes this panel, so take-offs are no longer colored based on their weather and are shown in white.<br><br>It can be useful for exploring take-offs or wind beacons with maximum screen space."
+    },
+    "buscadorMapa": {
+      "titulo": "Take-off Search",
+      "descripcion": "Type the name of any take-off to find it and center it quickly on the map.<br><br>A small window will unfold with plenty of information about it."
+    },
+    "panelDespegues": {
+      "titulo": "Take-off Layers",
+      "descripcion": "Manage the visibility of take-offs, heatmaps (actual registered take-off points) or additional notes on take-off and landing points."
+    },
+    "panelBalizas": {
+      "titulo": "Wind beacons",
+      "descripcion": "Enable or disable various networks of meteorological stations that transmit real-time wind data (beacons)."
+    },
+    "panelFiltros": {
+      "titulo": "Filters",
+      "descripcion": "Filter map information according to your needs. You can show or hide only your favorite or tracked take-offs and beacons. Furthermore, you can filter take-offs by orientation, activity level or volume of flights registered in XContest, and filter beacons according to their altitude."
+    },
+    "btnGps": {
+      "titulo": "My Location",
+      "descripcion": "Centers the map on your current position."
+    },
+    "btnGeocoder": {
+      "titulo": "General Search",
+      "descripcion": "Search for any city, municipality, mountain or geographic area to navigate to it quickly.<br><br>You can also directly type coordinates in decimal format (e.g. 42.734 -1.990) to center the map on an exact point."
+    },
+    "controlCapas": {
+      "titulo": "Base maps",
+      "descripcion": "Choose the type of background map you prefer: topographic, aerial photos, relief, thermal areas and routes (skyways and thermals KK7) and aeronautical/restriction layers."
+    },
+    "btnFiltrosMeteo": {
+      "titulo": "Meteo Button",
+      "descripcion": "Opens the meteorological bar to filter by hours or day of the week directly on the map."
+    },
+    "navTabla": {
+      "titulo": "Table View",
+      "descripcion": "Access the detailed hourly meteorological table. Here you will see the complete forecast for each take-off (wind at various heights, gusts, direction, shear, XC thermal ceiling, rain and temperature) evaluated with colors according to your safety limits.<br><br>You will be able to filter by flight schedule, search for take-offs by province or distance, manage your favorites and view the immediate forecast (nowcasting) Arome at 15-minute intervals."
+    }
+  }
+},
 
   "asistente": {
     "paso1": {

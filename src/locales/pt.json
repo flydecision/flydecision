@@ -212,9 +212,9 @@
     "progreso": "{{current}} de {{total}}",
     "siguiente": "Seguinte →",
     "cerrar": "Fechar guia",
-    "preguntaVerGuia": "Deseja ver um guia visual deste ecrã?",
-    "preguntaVerGuiaPrincipal": "Deseja ver um guia visual do<br>ecrã principal?",
-    "verEnAjustes": "Pode consultá-lo a qualquer momento em:<br><i>⚙️ Definições</i> → <i>Guia</i>",
+    "preguntaVerGuia": "Deseja ver um guia visual sobre este ecrã?",
+    "preguntaVerGuiaPrincipal": "Deseja ver um guia visual sobre o<br>ecrã <i>Tabela</i>?",
+    "verEnAjustes": "Pode vê-lo quando quiser em:<br><i>⚙️ Definições</i> → <i>Guias</i>",
     "podrasVerla": "Pode consultá-lo a qualquer momento utilizando o botão <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> neste ecrã.",
     "pasos": {
       "paso1": {
@@ -317,7 +317,7 @@
   },
 
   "guiaFavoritos": {
-    "preguntaVerGuia": "Deseja ver um guia visual deste ecrã?",
+    "preguntaVerGuia": "Deseja ver um guia visual sobre o<br>ecrã <i>Editar favoritos</i>?",
     "podrasVerla": "Pode consultá-lo a qualquer momento utilizando o botão <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> neste ecrã.",
     "pasos": {
       "intro": {
@@ -382,6 +382,64 @@
       }
     }
   },
+
+"guiaMapa": {
+  "preguntaVerGuia": "Deseja ver um guia visual do Mapa?",
+  "pasos": {
+    "intro": {
+      "titulo": "Mapa",
+      "descripcion": "Explore descolagens de parapente e avalie as suas condições de acordo com a previsão horária.<br><br>Pode filtrar as descolagens pela sua pontuação meteo, orientação ou nível de atividade, consultar balizas de vento em tempo real com gráficos de tendências, ver mapas de calor de descolagens XContest e selecionar vários tipos de mapas."
+    },
+    "filtroHorarioMeteo": {
+      "titulo": "Intervalo horário e filtro",
+      "descripcion": "Selecione o dia e o intervalo horário de voo desejado.<br><br>Os ícones do mapa serão coloridos com uma gradação de 10 passos de vermelho a verde 🟥🟧🟩 de acordo com a qualidade das condições nesse horário, tal como na tabela."
+    },
+    "filtroPuntuacion": {
+      "titulo": "Filtro por pontuação",
+      "descripcion": "Filtre as descolagens de acordo com a pontuação da sua previsão meteorológica e para o intervalo de tempo selecionado.<br><br>Deslize este controlo para definir uma nota mínima (de 0 a 10 estrelas) e assim ocultarão as descolagens cuja avaliação não atinja o seu nível de exigência no horário selecionado.<br><br>Lembre-se de que todos estes limites para a pontuação podem ser ajustados em <i>Definições</i> de acordo com as suas preferências."
+    },
+    "btnCerrarFiltroMeteo": {
+      "titulo": "Fechar controlo horário e filtro meteo",
+      "descripcion": "Fecha este painel, de modo que as descolagens deixam de ser coloridas em função da sua meteo e são mostradas em branco.<br><br>Pode ser útil para explorar descolagens ou balizas de vento com o máximo de espaço no ecrã."
+    },
+    "buscadorMapa": {
+      "titulo": "Pesquisa de Descolagens",
+      "descripcion": "Escreva o nome de qualquer descolagem para encontrá-la e centrá-la rapidamente no mapa.<br><br>Irá expandir-se uma pequena janela com muita informação sobre ela."
+    },
+    "panelDespegues": {
+      "titulo": "Camadas de Descolagens",
+      "descripcion": "Faça a gestão da visibilidade das descolagens, dos mapas de calor (pontos de descolagem reais registados) ou de notas adicionais sobre os pontos de descolagem e aterragem."
+    },
+    "panelBalizas": {
+      "titulo": "Balizas de vento",
+      "descripcion": "Ative ou desative várias redes de estações meteorológicas que transmitem dados de vento em tempo real (balizas)."
+    },
+    "panelFiltros": {
+      "titulo": "Filtros",
+      "descripcion": "Filtre a informação do mapa de acordo com as suas necessidades. Pode mostrar ou ocultar apenas as suas descolagens e balizas favoritas ou em seguimento. Além disso, pode filtrar descolagens por orientação, nível de atividade ou volume de voos registados no XContest, e filtrar balizas de acordo com a sua altitude."
+    },
+    "btnGps": {
+      "titulo": "A Minha Localização",
+      "descripcion": "Centra o mapa na sua posição atual."
+    },
+    "btnGeocoder": {
+      "titulo": "Pesquisa geral",
+      "descripcion": "Procure por qualquer cidade, município, montanha ou área geográfica para navegar rapidamente até ela.<br><br>Também pode escrever diretamente as coordenadas em formato decimal (ex: 42.734 -1.990) para centrar o mapa num ponto exato."
+    },
+    "controlCapas": {
+      "titulo": "Mapas base",
+      "descripcion": "Escolha o tipo de mapa de fundo que prefere: topográficos, fotografias aéreas, de relevo, áreas de térmicas e rotas (skyways e thermals KK7) e camadas aeronáuticas/restrições."
+    },
+    "btnFiltrosMeteo": {
+      "titulo": "Botão Meteo",
+      "descripcion": "Abre a barra meteorológica para filtrar por horas ou dias da semana diretamente no mapa."
+    },
+    "navTabla": {
+      "titulo": "Vista Tabela",
+      "descripcion": "Aceda à tabela meteorológica detalhada por horas. Aqui verá a previsão completa de cada descolagem (vento a várias alturas, rajadas, direção, cisalhamento, teto térmico XC, chuva e temperatura) avaliada com cores de acordo com os seus limites de segurança.<br><br>Poderá filtrar por horário de voo, pesquisar descolagens por província ou distância, gerir os seus favoritos e ver a previsão imediata (nowcasting) Arome em intervalos de 15 minutos."
+    }
+  }
+},
 
   "asistente": {
     "paso1": {
