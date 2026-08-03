@@ -1579,7 +1579,7 @@ function sugerirGuiaFavoritos(forzar = false) {
 
     // Eliminamos el checkbox y ajustamos el texto informativo
     const htmlAyuda = !forzar 
-        ? `<p style="color: #555; margin-top: 10px;">${t('guiaPrincipal.podrasVerla')}</p>`
+        ? `<p style="color: #555; margin-top: 10px;">${t('guiaFavoritos.podrasVerla')}</p>`
         : '';
 
     const botonesModal =[
@@ -1610,7 +1610,7 @@ function sugerirGuiaFavoritos(forzar = false) {
         htmlContenido: `
             <div style="text-align: center;">
                 <p style="font-size: 2.5em; margin: 0 0 10px 0;">💡</p>
-                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">${t('guiaPrincipal.preguntaVerGuia')}</p>
+                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">${t('guiaFavoritos.preguntaVerGuia')}</p>
                 ${htmlAyuda}
             </div>
         `,
@@ -1924,6 +1924,13 @@ function iniciarGuiaMapa(forzar = false) {
                 } 
             },
             { 
+                element: '#btn-cerrar-filtros-mapa',
+                popover: { 
+                    title: t('guiaMapa.pasos.btnCerrarFiltroMeteo.titulo'), 
+                    description: t('guiaMapa.pasos.btnCerrarFiltroMeteo.descripcion')
+                } 
+            },
+            { 
                 element: '.leaflet-text-search-input',
                 popover: { 
                     title: t('guiaMapa.pasos.buscadorMapa.titulo'), 
@@ -1970,13 +1977,6 @@ function iniciarGuiaMapa(forzar = false) {
                 popover: { 
                     title: t('guiaMapa.pasos.controlCapas.titulo'), 
                     description: t('guiaMapa.pasos.controlCapas.descripcion')
-                } 
-            },
-            { 
-                element: '#nav-home',
-                popover: { 
-                    title: t('guiaMapa.pasos.navTabla.titulo'), 
-                    description: t('guiaMapa.pasos.navTabla.descripcion')
                 } 
             }
         ],

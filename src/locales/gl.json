@@ -212,9 +212,9 @@
     "progreso": "{{current}} de {{total}}",
     "siguiente": "Seguinte →",
     "cerrar": "Pechar guía",
-    "preguntaVerGuia": "Desexas ver unha guía visual desta pantalla?",
-    "preguntaVerGuiaPrincipal": "Desexas ver unha guía visual da<br>pantalla principal?",
-    "verEnAjustes": "Podes consultala en calquera momento en:<br><i>⚙️ Axustes</i> → <i>Guía</i>",
+    "preguntaVerGuia": "Queres ver unha guía visual sobre esta pantalla?",
+    "preguntaVerGuiaPrincipal": "Queres ver unha guía visual sobre a<br>pantalla <i>Táboa</i>?",
+    "verEnAjustes": "Podes vela cando queiras en:<br><i>⚙️ Axustes</i> → <i>Guías</i>",
     "podrasVerla": "Podes consultala en calquera momento utilizando o botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> nesta pantalla.",
     "pasos": {
       "paso1": {
@@ -317,7 +317,7 @@
   },
 
   "guiaFavoritos": {
-    "preguntaVerGuia": "Desexas ver unha guía visual desta pantalla?",
+    "preguntaVerGuia": "Queres ver unha guía visual sobre a<br>pantalla <i>Editar favoritos</i>?",
     "podrasVerla": "Podes consultala en calquera momento utilizando o botón <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> nesta pantalla.",
     "pasos": {
       "intro": {
@@ -382,6 +382,64 @@
       }
     }
   },
+
+"guiaMapa": {
+  "preguntaVerGuia": "Queres ver unha guía visual do Mapa?",
+  "pasos": {
+    "intro": {
+      "titulo": "Mapa",
+      "descripcion": "Explora engalaxes de parapente e avalía as súas condicións segundo o prognóstico por horas.<br><br>Podes filtrar engalaxes pola súa puntuación meteo, orientación ou nivel de actividade, consultar balizas de vento en tempo real con gráficos de tendencias, ver mapas de calor de engalaxes XContest e seleccionar diversos tipos de mapas."
+    },
+    "filtroHorarioMeteo": {
+      "titulo": "Rango horario e filtro",
+      "descripcion": "Selecciona o día e o rango horario de voo desexado.<br><br>As iconas do mapa coloraranse cunha gradación de 10 pasos de vermello a verde 🟥🟧🟩 segundo a calidade das condicións nese horario, igual que na táboa."
+    },
+    "filtroPuntuacion": {
+      "titulo": "Filtro por puntuación",
+      "descripcion": "Filtra as engalaxes segundo a puntuación do seu prognóstico meteorolóxico e para o rango horario seleccionado.<br><br>Desliza este control para fixar unha nota mínima (de 0 a 10 estrelas) e así ocultaranse as engalaxes cuxa avaliación non alcance o teu nivel de esixencia no horario seleccionado.<br><br>Lembra que todos estes límites para a puntuación pódense axustar en <i>Axustes</i> segundo as túas preferencias."
+    },
+    "btnCerrarFiltroMeteo": {
+      "titulo": "Pechar control horario e filtro meteo",
+      "descripcion": "Pecha este panel, de forma que xa non se colorean as engalaxes en función da súa meteo e móstranse en cor branca.<br><br>Pode ser útil para explorar engalaxes ou balizas de vento co máximo de espazo na pantalla."
+    },
+    "buscadorMapa": {
+      "titulo": "Buscador de Engalaxes",
+      "descripcion": "Escribe o nome de calquera engalaxe para atopala e centrala rapidamente no mapa.<br><br>Despregarase unha pequena xanela con moita información sobre ela."
+    },
+    "panelDespegues": {
+      "titulo": "Capas de Engalaxes",
+      "descripcion": "Xestiona a visibilidade das engalaxes, dos mapas de calor (puntos de engalaxe reais rexistrados) ou notas adicionais sobre puntos de engalaxe e aterraxes."
+    },
+    "panelBalizas": {
+      "titulo": "Balizas de vento",
+      "descripcion": "Activa ou desactiva diversas redes de estacións meteorolóxicas que transmiten datos de vento en tempo real (balizas)."
+    },
+    "panelFiltros": {
+      "titulo": "Filtros",
+      "descripcion": "Filtra a información do mapa segundo as túas necesidades. Podes mostrar ou ocultar unicamente as túas engalaxes e balizas favoritas ou en seguimento. Ademais, podes filtrar engalaxes por orientación, nivel de actividade ou volume de voos rexistrados en XContest, e filtrar balizas segundo a súa altitude."
+    },
+    "btnGps": {
+      "titulo": "A Miña Localización",
+      "descripcion": "Centra o mapa na túa posición actual."
+    },
+    "btnGeocoder": {
+      "titulo": "Buscador xeral",
+      "descripcion": "Busca calquera cidade, municipio, montaña ou zona xeográfica para navegar rapidamente a ela.<br><br>Tamén podes escribir directamente coordenadas en formato decimal (ex: 42.734 -1.990) para centrar o mapa nun punto exacto."
+    },
+    "controlCapas": {
+      "titulo": "Mapas base",
+      "descripcion": "Elixe o tipo de mapa de fondo que prefiras: topográficos, fotos aéreas, de relevo, áreas de térmicas e rutas (skyways e thermals KK7) e capas aeronáuticas/restricións."
+    },
+    "btnFiltrosMeteo": {
+      "titulo": "Botón Meteo",
+      "descripcion": "Abre a barra meteorolóxica para filtrar por horas ou día da semana directamente sobre o mapa."
+    },
+    "navTabla": {
+      "titulo": "Vista Táboa",
+      "descripcion": "Accede á táboa meteorolóxica detallada por horas. Aquí verás a predición completa de cada engalaxe (vento a varias alturas, refachos, dirección, cizalladura, teito térmico XC, choiva e temperatura) avaliada con cores segundo os teus límites de seguridade.<br><br>Poderás filtrar por horario de voo, buscar engalaxes por provincia ou distancia, xestionar os teus favoritos e ver a previsión inmediata (nowcasting) Arome de intervalo 15 minutos."
+    }
+  }
+},
 
   "asistente": {
     "paso1": {

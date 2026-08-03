@@ -212,9 +212,9 @@
     "progreso": "{{current}} de {{total}}",
     "siguiente": "Següent →",
     "cerrar": "Tancar guia",
-    "preguntaVerGuia": "Vols veure una guia visual d'aquesta pantalla?",
-    "preguntaVerGuiaPrincipal": "Vols veure una guia visual de la<br>pantalla principal?",
-    "verEnAjustes": "Pots consultar-la en qualsevol moment a:<br><i>⚙️ Ajustos</i> → <i>Guia</i>",
+    "preguntaVerGuia": "Vols veure una guia visual sobre aquesta pantalla?",
+    "preguntaVerGuiaPrincipal": "Vols veure una guia visual sobre la<br>pantalla <i>Taula</i>?",
+    "verEnAjustes": "Pots veure-la quan vulguis a:<br><i>⚙️ Ajustos</i> → <i>Guies</i>",
     "podrasVerla": "Pots consultar-la en qualsevol moment utilitzant el botó <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> d'aquesta pantalla.",
     "pasos": {
       "paso1": {
@@ -317,7 +317,7 @@
   },
 
   "guiaFavoritos": {
-    "preguntaVerGuia": "Vols veure una guia visual d'aquesta pantalla?",
+    "preguntaVerGuia": "Vols veure una guia visual sobre la<br>pantalla <i>Editar favorits</i>?",
     "podrasVerla": "Pots consultar-la en qualsevol moment utilitzant el botó <img src='icons/icono_ayuda_60.webp' width='18' height='18' style='vertical-align:middle;'> d'aquesta pantalla.",
     "pasos": {
       "intro": {
@@ -382,6 +382,64 @@
       }
     }
   },
+
+"guiaMapa": {
+  "preguntaVerGuia": "Vols veure una guia visual del Mapa?",
+  "pasos": {
+    "intro": {
+      "titulo": "Mapa",
+      "descripcion": "Explora enlairaments de parapent i avalua les seves condicions segons el pronòstic per hores.<br><br>Pots filtrar enlairaments per la seva puntuació meteo, orientació o nivell d'activitat, consultar balises de vent en temps real amb gràfics de tendències, veure mapes de calor d'enlairaments XContest i seleccionar diversos tipus de mapes."
+    },
+    "filtroHorarioMeteo": {
+      "titulo": "Rang horari i filtre",
+      "descripcion": "Selecciona el dia i el rang horari de vol desitjat.<br><br>Els icones del mapa s'acoloriran amb una gradació de 10 passos de vermell a verd 🟥🟧🟩 segons la qualitat de les condicions en aquest horari, igual que a la taula."
+    },
+    "filtroPuntuacion": {
+      "titulo": "Filtre per puntuació",
+      "descripcion": "Filtra els enlairaments segons la puntuació del seu pronòstic meteorològic i per al rang horari seleccionat.<br><br>Llisca aquest control per fixar una nota mínima (de 0 a 10 estrelles) i així s'ocultaran els enlairaments l'avaluació dels quals no assoleixi el teu nivell d'exigència en l'horari seleccionat.<br><br>Recorda que tots aquests límits per a la puntuació els pots ajustar a <i>Ajustos</i> segons les teves preferències."
+    },
+    "btnCerrarFiltroMeteo": {
+      "titulo": "Tancar control horari i filtre meteo",
+      "descripcion": "Tanca aquest panell, de manera que ja no s'acoloreixen els enlairaments en funció de la seva meteo i es mostren en color blanc.<br><br>Pot ser útil per explorar enlairaments o balises de vent amb el màxim d'espai a la pantalla."
+    },
+    "buscadorMapa": {
+      "titulo": "Cercador d'Enlairaments",
+      "descripcion": "Escriu el nom de qualsevol enlairament per trobar-lo i centrar-lo ràpidament al mapa.<br><br>Es desplegarà una petita finestra amb molta informació sobre ell."
+    },
+    "panelDespegues": {
+      "titulo": "Capes d'Enlairaments",
+      "descripcion": "Gestiona la visibilitat dels enlairaments, dels mapes de calor (punts d'enlairament reals registrats) o notes addicionals sobre punts d'enlairament i aterratges."
+    },
+    "panelBalizas": {
+      "titulo": "Balises de vent",
+      "descripcion": "Activa o desactiva diverses xarxes d'estacions meteorològiques que transmeten dades de vent en temps real (balises)."
+    },
+    "panelFiltros": {
+      "titulo": "Filtres",
+      "descripcion": "Filtra la informació del mapa segons les teves necessitats. Pots mostrar o ocultar únicament els teus enlairaments i balises favorites o en seguiment. A més, pots filtrar enlairaments per orientació, nivell d'activitat o volum de vols registrats a XContest, i filtrar balises segons la seva altitud."
+    },
+    "btnGps": {
+      "titulo": "La Meva Ubicació",
+      "descripcion": "Centra el mapa en la teva posició actual."
+    },
+    "btnGeocoder": {
+      "titulo": "Cercador general",
+      "descripcion": "Cerca qualsevol ciutat, municipi, muntanya o zona geogràfica per navegar ràpidament cap a ella.<br><br>També pots escriure directament coordenades en format decimal (ex: 42.734 -1.990) per centrar el mapa en un punt exacte."
+    },
+    "controlCapas": {
+      "titulo": "Mapes base",
+      "descripcion": "Tria el tipus de mapa de fons que prefereixis: topogràfics, fotos aèries, de relleu, àrees de tèrmiques i rutes (skyways i thermals KK7) i capes aeronàutiques/restriccions."
+    },
+    "btnFiltrosMeteo": {
+      "titulo": "Botó Meteo",
+      "descripcion": "Obre la barra meteorològica per filtrar per hores o dia de la setmana directament sobre el mapa."
+    },
+    "navTabla": {
+      "titulo": "Vista Taula",
+      "descripcion": "Accedeix a la taula meteorològica detallada per hores. Aquí veuràs la predicció completa de cada enlairament (vent a diverses altures, ratxes, direcció, cisallament, sostre tèrmic XC, pluja i temperatura) avaluada amb colors segons els teus límits de seguretat.<br><br>Podràs filtrar per horari de vol, buscar enlairaments per província o distància, gestionar els teus favorits i veure la previsió immediata (nowcasting) Arome d'interval 15 minuts."
+    }
+  }
+},
 
   "asistente": {
     "paso1": {
