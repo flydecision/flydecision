@@ -587,6 +587,18 @@
       "errorShare": "Ezin izan da partekatzeko menua ireki. Saiatu beste metodo bat erabiltzen.",
       "sinShare": "Zure gailuak ez du fitxategiak zuzenean partekatzeko aukerarik ematen. Ziurtatu Telegram instalatuta duzula.",
       "errorGuardar": "Ene, zerbaitek huts egin du: "
+    },
+    "centroGuias": {
+      "link": "Gidak",
+      "titulo": "Gida bisualak",
+      "btnTabla": "Taula",
+      "descTabla": "Orduz orduko iragarpen meteorologikoa eta puntuazioa",
+      "btnMapa": "Mapa",
+      "descMapa": "Aireratzeak, zuzeneko balizak eta hainbat datu-geruza",
+      "btnFavoritos": "Gogokoen edizioa",
+      "descFavoritos": "Ohiko aireratzeak gehitu eta kudeatu",
+      "btnAjustes": "Ezarpenak",
+      "descAjustes": "Hizkuntza, puntuaziorako mugak, erakutsitako datuen pertsonalizazioa..."
     }
   },
 
@@ -597,6 +609,7 @@
     "btnGuardarVistaTitle": "Gorde uneko zentroa eta zooma zure ikuspegi lehenetsi gisa",
     "seleccionarOrigen": "Hautatu jatorria",
     "miUbicacion": "Nire kokapena",
+    "titleGuiaMapa": "Maparen gida azkarra",
     "irMiUbicacion": "Joan nire kokapenera",
     "titlebtnFiltrosMeteo": "Baldintza meteorologikoen araberako iragazkiak",
     "titleDespeguesDeParapente": "Parapente-aireratzeak",

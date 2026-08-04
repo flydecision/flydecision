@@ -587,6 +587,18 @@
       "errorShare": "Não foi possível abrir o menu de partilha. Tenta usar outro método.",
       "sinShare": "O teu dispositivo não permite partilhar ficheiros diretamente. Certifica-te de que tens o Telegram instalado.",
       "errorGuardar": "Ups, algo correu mal: "
+    },
+    "centroGuias": {
+      "link": "Guias",
+      "titulo": "Guias visuais",
+      "btnTabla": "Tabela",
+      "descTabla": "Previsão meteorológica horária e pontuação",
+      "btnMapa": "Mapa",
+      "descMapa": "Descolagens, balizas em direto e várias camadas de dados",
+      "btnFavoritos": "Edição de Favoritos",
+      "descFavoritos": "Adicionar e gerir descolagens habituais",
+      "btnAjustes": "Definições",
+      "descAjustes": "Idioma, limites para a pontuação, personalização de dados mostrados..."
     }
   },
 
@@ -597,6 +609,7 @@
     "btnGuardarVistaTitle": "Guardar o centro e o zoom atuais como a sua vista predefinida",
     "seleccionarOrigen": "Selecionar origem",
     "miUbicacion": "A minha localização",
+    "titleGuiaMapa": "Guia rápido do mapa",
     "irMiUbicacion": "Ir para a minha localização",
     "titlebtnFiltrosMeteo": "Filtros por Condições meteorológicas",
     "titleDespeguesDeParapente": "Descolagens de parapente",

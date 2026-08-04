@@ -1268,6 +1268,150 @@ function mensajeAvisoRecarga(titulo = '', contenido = '') { // Opcional, puede s
 // ---------------------------------------------------------------
 
 // ---------------------------------------------------------------
+// 💡 CENTRO DE GUÍAS (MODAL DE SELECCIÓN)
+// ---------------------------------------------------------------
+
+function abrirCentroGuias() {
+    window.lanzarGuiaSeleccionada = function(tipoGuia) {
+        GestorMensajes.ocultar();
+        
+        // 1. Si el panel de Ajustes está abierto, lo cerramos para dejar limpia la pantalla
+        const panelConfig = document.getElementById("div-configuracion");
+        if (panelConfig && panelConfig.classList.contains("activo")) {
+            if (typeof alternardivConfiguracion === 'function') {
+                alternardivConfiguracion(null, true);
+            }
+        }
+
+        // 2. Pequeña pausa para permitir que el modal y el panel se cierren sin interferir con Driver.js
+        setTimeout(() => {
+            switch(tipoGuia) {
+                case 'tabla':
+                    if (typeof iniciarGuiaPrincipal === 'function') iniciarGuiaPrincipal(true);
+                    break;
+                case 'mapa':
+                    if (typeof iniciarGuiaMapa === 'function') iniciarGuiaMapa(true);
+                    break;
+                case 'favoritos':
+                    if (!modoEdicionFavoritos && typeof _activarEdicionFavoritosSync === 'function') {
+                        _activarEdicionFavoritosSync(false);
+                    }
+                    if (typeof iniciarGuiaFavoritos === 'function') iniciarGuiaFavoritos(true);
+                    break;
+                case 'ajustes':
+                    if (typeof iniciarGuiaAjustes === 'function') {
+                        iniciarGuiaAjustes(true);
+                    } else {
+                        // Aviso provisional si aún no has creado la guía de ajustes
+                        mensajeModalAceptar(
+                            t('ajustes.centroGuias.proximamenteTitulo', { defaultValue: '⚙️ Guía de Ajustes' }),
+                            t('ajustes.centroGuias.proximamenteDesc', { defaultValue: 'Esta guía estará disponible próximamente.' })
+                        );
+                    }
+                    break;
+            }
+        }, 300);
+    };
+
+    GestorMensajes.mostrar({
+        tipo: 'modal',
+        htmlContenido: `
+            <div style="text-align: center; padding: 5px 0 15px;">
+                <p style="font-size: 2.2rem; margin: 0 0 5px 0;">💡</p>
+                <h3 style="margin: 0 0 6px 0; font-size: 20px;">
+                    ${t('ajustes.centroGuias.titulo', { defaultValue: 'Guías visuales' })}
+                </h3>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- 1. Guía Tabla -->
+                <button style="
+                    display: flex; align-items: center; gap: 12px;
+                    padding: 12px 15px; border-radius: 12px; border: none;
+                    background: #378ADD; color: #fff;
+                    cursor: pointer; text-align: left; width: 100%;
+                " onclick="window.lanzarGuiaSeleccionada('tabla')">
+                    <span style="font-size: 22px; flex-shrink: 0;">📊</span>
+                    <div>
+                        <div style="font-size: 16px; font-weight: bold;">
+                            ${t('ajustes.centroGuias.btnTabla', { defaultValue: 'Tabla' })}
+                        </div>
+                        <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">
+                            ${t('ajustes.centroGuias.descTabla', { defaultValue: 'Pronóstico meteorológico por horas y puntuación' })}
+                        </div>
+                    </div>
+                </button>
+
+                <!-- 2. Guía Mapa -->
+                <button style="
+                    display: flex; align-items: center; gap: 12px;
+                    padding: 12px 15px; border-radius: 12px; border: none;
+                    background: #378ADD; color: #fff;
+                    cursor: pointer; text-align: left; width: 100%;
+                " onclick="window.lanzarGuiaSeleccionada('mapa')">
+                    <span style="font-size: 22px; flex-shrink: 0;">🗺️</span>
+                    <div>
+                        <div style="font-size: 16px; font-weight: bold;">
+                            ${t('ajustes.centroGuias.btnMapa', { defaultValue: 'Mapa' })}
+                        </div>
+                        <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">
+                            ${t('ajustes.centroGuias.descMapa', { defaultValue: 'Despegues, balizas en directo y diversas capas de datos' })}
+                        </div>
+                    </div>
+                </button>
+
+                <!-- 3. Guía Favoritos -->
+                <button style="
+                    display: flex; align-items: center; gap: 12px;
+                    padding: 12px 15px; border-radius: 12px; border: none;
+                    background: #378ADD; color: #fff;
+                    cursor: pointer; text-align: left; width: 100%;
+                " onclick="window.lanzarGuiaSeleccionada('favoritos')">
+                    <span style="font-size: 22px; flex-shrink: 0;">❤️</span>
+                    <div>
+                        <div style="font-size: 16px; font-weight: bold;">
+                            ${t('ajustes.centroGuias.btnFavoritos', { defaultValue: 'Edición de Favoritos' })}
+                        </div>
+                        <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">
+                            ${t('ajustes.centroGuias.descFavoritos', { defaultValue: 'Añadir y gestionar despegues habituales' })}
+                        </div>
+                    </div>
+                </button>
+
+            </div>
+        `,
+        botones: [
+            {
+                texto: t('botones.cancelar', { defaultValue: 'Cancelar' }),
+                estilo: 'secundario',
+                onclick: function() {
+                    GestorMensajes.ocultar();
+                }
+            }
+        ]
+    });
+}
+// PENDIENTE
+//                 <!-- 4. Guía Ajustes -->
+//                 <button style="
+//                     display: flex; align-items: center; gap: 12px;
+//                     padding: 12px 15px; border-radius: 12px; border: none;
+//                     background: #378ADD; color: #fff;
+//                     cursor: pointer; text-align: left; width: 100%;
+//                 " onclick="window.lanzarGuiaSeleccionada('ajustes')">
+//                     <span style="font-size: 22px; flex-shrink: 0;">⚙️</span>
+//                     <div>
+//                         <div style="font-size: 16px; font-weight: bold;">
+//                             ${t('ajustes.centroGuias.btnAjustes', { defaultValue: 'Ajustes' })}
+//                         </div>
+//                         <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">
+//                             ${t('ajustes.centroGuias.descAjustes', { defaultValue: 'Idioma, límites para la puntuación, personalización de datos mostrados...' })}
+//                         </div>
+//                     </div>
+//                 </button>
+
+
+// ---------------------------------------------------------------
 // 🟡 GUÍA PRINCIPAL
 // ---------------------------------------------------------------
 
@@ -1879,6 +2023,12 @@ function iniciarGuiaMapa(forzar = false) {
     // Cambiamos a la vista del mapa si no estamos en ella
     if (typeof cambiarVista === 'function') {
         cambiarVista('mapa');
+    }
+
+    // ACTIVAR BOTÓN "MAPA" EN EL MENÚ INFERIOR
+    const btnNavMap = document.getElementById('nav-map');
+    if (btnNavMap && typeof window.activarMenuInferior === 'function') {
+        window.activarMenuInferior(btnNavMap);
     }
 
     const driverObj = window.driver.js.driver({
@@ -13026,7 +13176,7 @@ function inicializarMapaLeaflet() {
             container.style.overflow = 'hidden';
             
             var link = L.DomUtil.create('a', '', container);
-            link.title = (typeof t === 'function' ? t('mapa.titleGuiaMapa', { defaultValue: 'Guía interactiva del mapa' }) : 'Guía del mapa');
+            link.title = (typeof t === 'function' ? t('mapa.titleGuiaMapa', { defaultValue: 'Guía rápida del mapa' }) : 'Guía rápida del mapa');
             link.style.display = 'flex';
             link.style.alignItems = 'center';
             link.style.justifyContent = 'center';
