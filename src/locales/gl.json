@@ -587,6 +587,18 @@
       "errorShare": "Non se puido abrir o menú de compartir. Tenta usar outro método.",
       "sinShare": "O teu dispositivo non permite compartir ficheiros directamente. Asegúrate de ter Telegram instalado.",
       "errorGuardar": "Vaites, algo fallou: "
+    },
+    "centroGuias": {
+      "link": "Guías",
+      "titulo": "Guías visuais",
+      "btnTabla": "Táboa",
+      "descTabla": "Prognóstico meteorolóxico por horas e puntuación",
+      "btnMapa": "Mapa",
+      "descMapa": "Engalaxes, balizas en directo e diversas capas de datos",
+      "btnFavoritos": "Edición de Favoritos",
+      "descFavoritos": "Engadir e xestionar engalaxes habituais",
+      "btnAjustes": "Axustes",
+      "descAjustes": "Idioma, límites para a puntuación, personalización de datos mostrados..."
     }
   },
 

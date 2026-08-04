@@ -588,6 +588,18 @@
       "errorShare": "No se pudo abrir el menú de compartir. Intenta usar otro método.",
       "sinShare": "Tu dispositivo no permite compartir archivos directamente. Asegúrate de tener Telegram instalado.",
       "errorGuardar": "Vaya, algo ha fallado: "
+    },
+    "centroGuias": {
+      "link": "Guías",
+      "titulo": "Guías visuales",
+      "btnTabla": "Tabla",
+      "descTabla": "Pronóstico meteorológico por horas y puntuación",
+      "btnMapa": "Mapa",
+      "descMapa": "Despegues, balizas en directo y diversas capas de datos",
+      "btnFavoritos": "Edición de Favoritos",
+      "descFavoritos": "Añadir y gestionar despegues habituales",
+      "btnAjustes": "Ajustes",
+      "descAjustes": "Idioma, límites para la puntuación, personalización de datos mostrados..."
     }
   },
 

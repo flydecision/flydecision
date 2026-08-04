@@ -587,6 +587,18 @@
       "errorShare": "Could not open the share menu. Try using another method.",
       "sinShare": "Your device does not allow sharing files directly. Make sure you have Telegram installed.",
       "errorGuardar": "Oops, something went wrong: "
+    },
+    "centroGuias": {
+      "link": "Guides",
+      "titulo": "Visual guides",
+      "btnTabla": "Table",
+      "descTabla": "Hourly meteorological forecast and score",
+      "btnMapa": "Map",
+      "descMapa": "Take-offs, live beacons and various data layers",
+      "btnFavoritos": "Favorites Editing",
+      "descFavoritos": "Add and manage regular take-offs",
+      "btnAjustes": "Settings",
+      "descAjustes": "Language, limits for scoring, customization of displayed data..."
     }
   },
 

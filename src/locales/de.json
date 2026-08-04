@@ -587,6 +587,18 @@
       "errorShare": "Das Teilen-Menü konnte nicht geöffnet werden. Versuche eine andere Methode.",
       "sinShare": "Dein Gerät erlaubt es nicht, Dateien direkt zu teilen. Stelle sicher, dass du Telegram installiert hast.",
       "errorGuardar": "Hoppla, etwas ist schiefgelaufen: "
+    },
+    "centroGuias": {
+      "link": "Anleitungen",
+      "titulo": "Visuelle Anleitungen",
+      "btnTabla": "Tabelle",
+      "descTabla": "Stündliche Wettervorhersage und Punktzahl",
+      "btnMapa": "Karte",
+      "descMapa": "Startplätze, Live-Baken und verschiedene Datenebenen",
+      "btnFavoritos": "Favoritenbearbeitung",
+      "descFavoritos": "Hinzufügen und Verwalten regelmäßiger Startplätze",
+      "btnAjustes": "Einstellungen",
+      "descAjustes": "Sprache, Grenzwerte für die Punktzahl, Anpassung der angezeigten Daten..."
     }
   },
 

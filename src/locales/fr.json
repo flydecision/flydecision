@@ -587,6 +587,18 @@
       "errorShare": "Impossible d'ouvrir le menu de partage. Essaie d'utiliser une autre méthode.",
       "sinShare": "Ton appareil ne permet pas de partager des fichiers directement. Assure-toi d'avoir installé Telegram.",
       "errorGuardar": "Oups, quelque chose a mal tourné : "
+    },
+    "centroGuias": {
+      "link": "Guides",
+      "titulo": "Guides visuels",
+      "btnTabla": "Tableau",
+      "descTabla": "Prévisions météorologiques horaires et score",
+      "btnMapa": "Carte",
+      "descMapa": "Décollages, balises en direct et diverses couches de données",
+      "btnFavoritos": "Édition des favoris",
+      "descFavoritos": "Ajouter et gérer les décollages habituels",
+      "btnAjustes": "Paramètres",
+      "descAjustes": "Langue, limites pour le score, personnalisation des données affichées..."
     }
   },
 

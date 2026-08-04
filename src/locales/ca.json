@@ -587,6 +587,18 @@
       "errorShare": "No s'ha pogut obrir el menú de compartir. Intenta utilitzar un altre mètode.",
       "sinShare": "El teu dispositiu no permet compartir fitxers directament. Assegura't de tenir Telegram instal·lat.",
       "errorGuardar": "Vaja, alguna cosa ha fallat: "
+    },
+    "centroGuias": {
+      "link": "Guies",
+      "titulo": "Guies visuals",
+      "btnTabla": "Taula",
+      "descTabla": "Pronòstic meteorològic per hores i puntuació",
+      "btnMapa": "Mapa",
+      "descMapa": "Enlairaments, balises en directe i diverses capes de dades",
+      "btnFavoritos": "Edició de Favorits",
+      "descFavoritos": "Afegir i gestionar enlairaments habituals",
+      "btnAjustes": "Ajustos",
+      "descAjustes": "Idioma, límits per a la puntuació, personalització de dades mostrades..."
     }
   },
 
