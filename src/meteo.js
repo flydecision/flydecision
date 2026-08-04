@@ -13026,7 +13026,7 @@ function inicializarMapaLeaflet() {
             container.style.overflow = 'hidden';
             
             var link = L.DomUtil.create('a', '', container);
-            link.title = (typeof t === 'function' ? t('mapa.titleGuiaMapa', { defaultValue: 'Guía interactiva del mapa' }) : 'Guía del mapa');
+            link.title = (typeof t === 'function' ? t('mapa.titleGuiaMapa', { defaultValue: 'Guía rápida del mapa' }) : 'Guía rápida del mapa');
             link.style.display = 'flex';
             link.style.alignItems = 'center';
             link.style.justifyContent = 'center';
