@@ -15409,7 +15409,7 @@ function inicializarMapaLeaflet() {
         if (red.estaciones.length === 0) {
             try {
                 // Descargamos el JSON dinámicamente usando el id de la red (ej: balizas_aemet_arraybalizas.json)
-                const resp = await fetch(`https://flydecision.com/balizas_${red.id}_arraybalizas.json?_=${Date.now()}`);
+                const resp = await fetch(`https://flydecision.com/balizas_${red.id}_arraybalizas.json`);
                 if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                 red.estaciones = await resp.json();
             } catch (err) {
