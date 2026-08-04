@@ -1318,7 +1318,7 @@ function abrirCentroGuias() {
         htmlContenido: `
             <div style="text-align: center; padding: 5px 0 15px;">
                 <p style="font-size: 2.2rem; margin: 0 0 5px 0;">💡</p>
-                <h3 style="margin: 0 0 6px 0; font-size: 20px;">
+                <h3 style="margin: 0 0 6px 0; font-size: 22px;">
                     ${t('ajustes.centroGuias.titulo', { defaultValue: 'Guías visuales' })}
                 </h3>
             </div>
@@ -1333,10 +1333,10 @@ function abrirCentroGuias() {
                 " onclick="window.lanzarGuiaSeleccionada('tabla')">
                     <span style="font-size: 22px; flex-shrink: 0;">📊</span>
                     <div>
-                        <div style="font-size: 16px; font-weight: bold;">
+                        <div style="font-size: 20px; font-weight: bold;">
                             ${t('ajustes.centroGuias.btnTabla', { defaultValue: 'Tabla' })}
                         </div>
-                        <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">
+                        <div style="font-size: 16px; opacity: 0.9; margin-top: 2px;">
                             ${t('ajustes.centroGuias.descTabla', { defaultValue: 'Pronóstico meteorológico por horas y puntuación' })}
                         </div>
                     </div>
@@ -1351,10 +1351,10 @@ function abrirCentroGuias() {
                 " onclick="window.lanzarGuiaSeleccionada('mapa')">
                     <span style="font-size: 22px; flex-shrink: 0;">🗺️</span>
                     <div>
-                        <div style="font-size: 16px; font-weight: bold;">
+                        <div style="font-size: 20px; font-weight: bold;">
                             ${t('ajustes.centroGuias.btnMapa', { defaultValue: 'Mapa' })}
                         </div>
-                        <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">
+                        <div style="font-size: 16px; opacity: 0.9; margin-top: 2px;">
                             ${t('ajustes.centroGuias.descMapa', { defaultValue: 'Despegues, balizas en directo y diversas capas de datos' })}
                         </div>
                     </div>
@@ -1369,10 +1369,10 @@ function abrirCentroGuias() {
                 " onclick="window.lanzarGuiaSeleccionada('favoritos')">
                     <span style="font-size: 22px; flex-shrink: 0;">❤️</span>
                     <div>
-                        <div style="font-size: 16px; font-weight: bold;">
+                        <div style="font-size: 20px; font-weight: bold;">
                             ${t('ajustes.centroGuias.btnFavoritos', { defaultValue: 'Edición de Favoritos' })}
                         </div>
-                        <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">
+                        <div style="font-size: 16px; opacity: 0.9; margin-top: 2px;">
                             ${t('ajustes.centroGuias.descFavoritos', { defaultValue: 'Añadir y gestionar despegues habituales' })}
                         </div>
                     </div>
@@ -1401,10 +1401,10 @@ function abrirCentroGuias() {
 //                 " onclick="window.lanzarGuiaSeleccionada('ajustes')">
 //                     <span style="font-size: 22px; flex-shrink: 0;">⚙️</span>
 //                     <div>
-//                         <div style="font-size: 16px; font-weight: bold;">
+//                         <div style="font-size: 20px; font-weight: bold;">
 //                             ${t('ajustes.centroGuias.btnAjustes', { defaultValue: 'Ajustes' })}
 //                         </div>
-//                         <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">
+//                         <div style="font-size: 16px; opacity: 0.9; margin-top: 2px;">
 //                             ${t('ajustes.centroGuias.descAjustes', { defaultValue: 'Idioma, límites para la puntuación, personalización de datos mostrados...' })}
 //                         </div>
 //                     </div>
