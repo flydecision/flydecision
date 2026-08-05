@@ -269,6 +269,16 @@ let autoSeleccionInicialHecha = false; // bandera de control para la selección 
 // Tiempo máximo (en milisegundos) que la app intentará descargar los datos si la conexión es lenta. Pasado este tiempo, forzará el uso de la caché offline.
 const TIMEOUT_DESCARGA_DATOS_MS = 5000;
 
+// Envuelve fetch con un timeout duro, para que nunca se quede colgado indefinidamente
+// (evita el bloqueo tipo "Esperando conexión" cuando el WebView de Android
+// deja un fetch a medias tras salir de Doze/cambio de red)
+function fetchConTimeout(url, opciones = {}, timeoutMs = 8000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    return fetch(url, { ...opciones, signal: controller.signal })
+        .finally(() => clearTimeout(timeoutId));
+}
+
 // Este mapa define el RANGO de 16 orientaciones que cubre cada una de las 8 selecciones del usuario.
 // Usamos el formato '_ORIENTACION' para coincidir con la metadata.
 const MAPA_RANGO_ORIENTACION = {
@@ -402,7 +412,7 @@ async function obtenerDatosMinutely15() {
         return DATOS_METEO_MINUTELY15_CACHE;
     }
 
-    const res = await fetch(`https://flydecision.com/meteo-datos-15min.json?t=${Date.now()}`, { cache: "no-store" });
+    const res = await fetchConTimeout(`https://flydecision.com/meteo-datos-15min.json?t=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) throw new Error("HTTP " + res.status);
     const datos = await res.json();
     
@@ -7949,7 +7959,7 @@ async function comprobarVersionApp() {
 
     try {
         // 4. Descargamos la última versión del servidor (silenciosamente)
-        const response = await fetch("https://flydecision.com/version_app.txt?t=" + Date.now(), { cache: "no-store" });
+        const response = await fetchConTimeout("https://flydecision.com/version_app.txt?t=" + Date.now(), { cache: "no-store" });
         if (!response.ok) return;
 
         const versionServidor = (await response.text()).trim();
@@ -9147,6 +9157,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
     let avisoOfflineActivo = false; // Esta es la variable MAESTRA que decide si mostramos la nube naranja
     let statusActualizaciónEnCurso = false;
     let hayErrorData = false;
+    let ultimoCicloCompletadoTs = Date.now();
 
     // Datos
     let lastStatusTimestamp = 0;
@@ -9511,11 +9522,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
         try {
             // Hacemos las tres peticiones a la vez (si una falla, no bloquea a las otras)
             const [resMF, resECMWF, resMin15] = await Promise.all([
-                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
-                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time_ecmwf.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
-                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time_15min.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null)
+                fetchConTimeout("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
+                fetchConTimeout("https://flydecision.com/json_timestamp_and_model_run_ref_time_ecmwf.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
+                fetchConTimeout("https://flydecision.com/json_timestamp_and_model_run_ref_time_15min.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null)
             ]);
-            
+                        
             // Procesar Météo-France
             if (resMF && resMF.ok) {
                 const textContent = (await resMF.text()).trim();
@@ -9565,9 +9576,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
         try {
             const [resMF, resECMWF, resMin15] = await Promise.all([
-                fetch('https://flydecision.com/meteo-status.txt?t=' + Date.now()).catch(() => null),
-                fetch('https://flydecision.com/meteo-status-ecmwf.txt?t=' + Date.now()).catch(() => null),
-                fetch('https://flydecision.com/meteo-status-15min.txt?t=' + Date.now()).catch(() => null)
+                fetchConTimeout('https://flydecision.com/meteo-status.txt?t=' + Date.now()).catch(() => null),
+                fetchConTimeout('https://flydecision.com/meteo-status-ecmwf.txt?t=' + Date.now()).catch(() => null),
+                fetchConTimeout('https://flydecision.com/meteo-status-15min.txt?t=' + Date.now()).catch(() => null)
             ]);
 
             let currentlyUpdatingMF = false;
@@ -9742,10 +9753,24 @@ function comprobarAvisoCambiosPuntuacionXC() {
         }
 
         refrescoPanelInfoActualizaciones();
+        ultimoCicloCompletadoTs = Date.now();
         timerCiclo = setTimeout(cicloActualizacion, intervaloActualizacion);
     }
 
     // --- Listeners y Heartbeat ---
+
+    // 🐕 Watchdog: si el ciclo lleva demasiado tiempo sin completarse (p.ej. un fetch
+    // colgado en Android que ni resuelve ni rechaza), lo forzamos a reiniciarse.
+    setInterval(() => {
+        const inactivo = Date.now() - ultimoCicloCompletadoTs;
+        if (inactivo > 90000) {
+            console.warn("🐕 Watchdog: cicloActualizacion parece colgado. Forzando reinicio.");
+            if (timerCiclo) clearTimeout(timerCiclo);
+            statusActualizaciónEnCurso = false;
+            ultimoCicloCompletadoTs = Date.now();
+            cicloActualizacion();
+        }
+    }, 30000);
     
     // 1. Eventos del Navegador
     window.addEventListener('offline', () => gestionarCambioConexion('offline'));
@@ -15409,7 +15434,7 @@ function inicializarMapaLeaflet() {
         if (red.estaciones.length === 0) {
             try {
                 // Descargamos el JSON dinámicamente usando el id de la red (ej: balizas_aemet_arraybalizas.json)
-                const resp = await fetch(`https://flydecision.com/balizas_${red.id}_arraybalizas.json`);
+                const resp = await fetchConTimeout(`https://flydecision.com/balizas_${red.id}_arraybalizas.json`);
                 if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                 red.estaciones = await resp.json();
             } catch (err) {
@@ -15481,7 +15506,7 @@ function inicializarMapaLeaflet() {
     async function cargarDatosBalizas(redId) {
         const red = REDES_BALIZAS[redId];
         try {
-            const res = await fetch(`${red.urlCache}?_=${Date.now()}`);
+            const res = await fetchConTimeout(`${red.urlCache}?_=${Date.now()}`);
             const textoCrudo = await res.text();
 
             // Si el contenido es idéntico, retornamos FALSE (nada nuevo)
@@ -15511,7 +15536,7 @@ function inicializarMapaLeaflet() {
     if (!force && red.datos6h && (ahora - red.fetched6hAt) < 5 * 60 * 1000) return;
     
     try {
-        const res = await fetch(`${red.url6h}?_=${ahora}`);
+        const res = await fetchConTimeout(`${red.url6h}?_=${ahora}`);
         red.datos6h = await res.json();
         red.fetched6hAt = ahora;
     } catch (e) {
