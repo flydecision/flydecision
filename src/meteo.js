@@ -5204,7 +5204,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     console.warn(`⏳ Red muy lenta (${TIMEOUT_DESCARGA_DATOS_MS/1000}s). Abortando descarga...`);
                 }, TIMEOUT_DESCARGA_DATOS_MS); 
 
-                // Intentamos descargar (Petición de red real)
+                // Intentamos descargar (Petición de red real con protección anti-cuelgue al parsear):
                 const[res1, res2] = await Promise.all([
                     fetchConTimeout(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS),
                     fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
@@ -5214,10 +5214,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     throw new Error(`⚠️ Error al cargar archivos JSON`);
                 }
 
-                // Si llegamos aquí, el servidor respondió. Ahora descargamos el "peso" real del JSON.
-                // Si la red 2G es muy lenta, el cronómetro (que sigue vivo) cortará esta descarga.
-                data = await res1.json();
-                dataEcmwf = await res2.json();
+                // 🛡️ Protección anti-cuelgue al leer el JSON (muy común al despertar de suspensión)
+                const parseJsonWithTimeout = async (res) => {
+                    return Promise.race([
+                        res.json(),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout al parsear JSON")), 8000))
+                    ]);
+                };
+
+                data = await parseJsonWithTimeout(res1);
+                dataEcmwf = await parseJsonWithTimeout(res2);
                 
                 // Solo apagamos el cronómetro cuando la descarga completa ha finalizado con éxito
                 clearTimeout(timeoutId); 
@@ -10516,8 +10522,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
     }
 
     // ---------------------------------------------------------------
-	// 🔴 ANDROID: Detectar el "Despertar" de la App (Resume) para que pida datos nuevos y se actualice slider rango horario
-	// ---------------------------------------------------------------
+    // 🔴 ANDROID: Detectar el "Despertar" de la App (Resume) para que pida datos nuevos y se actualice slider rango horario
+    // ---------------------------------------------------------------
 
     function iniciarDetectorResume() {
             
@@ -10548,21 +10554,30 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 if (overlayResume) overlayResume.classList.add('spinner-transparente');
                 mostrarLoading(); // Mostramos spinner por si acaso, sin bloquear
                 
+                // 🛡️ RED DE SEGURIDAD DEL SPINNER (WATCHDOG):
+                // Si el WebView de Android se queda colgado al despertar, forzamos 
+                // que el spinner se apague a los 12 segundos sí o sí.
+                let watchdog = setTimeout(() => {
+                    console.warn("⏰ Watchdog Resume: Forzando apagado de spinner por cuelgue.");
+                    if (overlayResume) overlayResume.classList.remove('spinner-transparente');
+                    ocultarLoading();
+                }, 12000);
+
                 try {
                     // 1. PASO CLAVE: Consultamos SOLO el archivo ligero de texto (bytes)
-                    // Usamos un timeout corto (3s) para no bloquear si la red es mala
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-                    const response = await fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { 
-                        cache: "no-store",
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
+                    // Usamos nuestro helper global en lugar de AbortController manual para mayor consistencia
+                    const response = await fetchConTimeout("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { 
+                        cache: "no-store"
+                    }, 5000); // 5 segundos de timeout máximo
 
                     if (response.ok) {
-                        const textContent = (await response.text()).trim();
-                        const parts = textContent.split('|');
+                        // 🛡️ Protección anti-cuelgue al leer el texto (similar al parche del JSON)
+                        const textContent = await Promise.race([
+                            response.text(),
+                            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout leyendo texto")), 5000))
+                        ]);
+                        
+                        const parts = textContent.trim().split('|');
                         const serverTimestamp = parts[0] ? new Date(parts[0]).getTime() : 0;
 
                         if (serverTimestamp > timestampDatosLocal) {
@@ -10579,6 +10594,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     // Si falla la comprobación (ej. túnel, offline), no borramos nada.
                     // Repintamos con caché para asegurar que la UI esté bien.
                     construir_tabla(false);
+                } finally {
+                    // 🛡️ Se ejecuta SIEMPRE, haya éxito o error. Cancelamos el watchdog 
+                    // y nos aseguramos de quitar el spinner transparente.
+                    clearTimeout(watchdog);
+                    if (overlayResume) overlayResume.classList.remove('spinner-transparente');
                 }
 
                 // 3. Lanzamos el ciclo de verificación de status para actualizar textos de "hace X tiempo"
@@ -10625,7 +10645,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     // Un pequeño retraso de 1 segundo para que la tabla cargue primero y no sea tan brusco
     setTimeout(comprobarAvisoCambiosPuntuacionXC, 1000);
-
+    
     // ---------------------------------------------------------------
 	// 🔴 ANDROID: GESTOR DE ENLACES EXTERNOS (In-App Browser)
 	// ---------------------------------------------------------------
