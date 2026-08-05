@@ -4553,46 +4553,104 @@ window.actualizarEstadoSliderVientoBalizas = actualizarEstadoSliderVientoBalizas
 
 const initDB = () => {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("FlyDecisionDB", 1); //Versión de la DB. Si el año que viene decides que además de la tabla meteoCache quieres crear otra que se llame mapasOffline, tendrás que cambiar ese 1 por un 2 y gestionar el evento de actualización
+        let dbOpenTimeout;
+        const request = indexedDB.open("FlyDecisionDB", 1);
+        
         request.onupgradeneeded = (e) => {
             const db = e.target.result;
             if (!db.objectStoreNames.contains("meteoCache")) {
                 db.createObjectStore("meteoCache");
             }
         };
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
+        
+        request.onsuccess = () => {
+            clearTimeout(dbOpenTimeout);
+            resolve(request.result);
+        };
+        
+        request.onerror = () => {
+            clearTimeout(dbOpenTimeout);
+            reject(request.error);
+        };
+
+        // 🛡️ NUEVO: Capturar el evento 'blocked' (muy común en Android al despertar)
+        request.onblocked = () => {
+            clearTimeout(dbOpenTimeout);
+            console.warn("IndexedDB bloqueada. Rechazando para evitar colapso.");
+            reject(new Error("IndexedDB bloqueada"));
+        };
+
+        // 🛡️ NUEVO: Si tarda más de 3 segundos, abortamos para no colgar la app.
+        dbOpenTimeout = setTimeout(() => {
+            reject(new Error("Timeout al abrir IndexedDB"));
+        }, 3000);
     });
 };
 
 const guardarEnCacheIDB = async (key, data) => {
     try {
         const db = await initDB();
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => { // Cambiamos a resolve siempre para no romper el flujo principal
+            let txTimeout;
             const tx = db.transaction("meteoCache", "readwrite");
             const store = tx.objectStore("meteoCache");
-            store.put(data, key); // Guarda el objeto directo (super rápido, sin stringify)
-            tx.oncomplete = () => resolve(true);
-            tx.onerror = () => reject(tx.error);
+            store.put(data, key); // Guarda el objeto directo
+            
+            // 🛡️ Si tarda más de 3 segundos, abortamos la espera para no colgar la app
+            txTimeout = setTimeout(() => {
+                console.warn(`Escritura de ${key} tardó demasiado. Abortando espera.`);
+                resolve(false); 
+            }, 3000);
+
+            tx.oncomplete = () => {
+                clearTimeout(txTimeout);
+                resolve(true);
+            };
+            
+            tx.onerror = () => {
+                clearTimeout(txTimeout);
+                console.error("Error guardando en BD offline, devolviendo false");
+                resolve(false); // Devolvemos false en lugar de reject para evitar crasheos
+            };
+
+            tx.onabort = () => {
+                clearTimeout(txTimeout);
+                console.warn("Transacción abortada al guardar en BD offline");
+                resolve(false);
+            };
         });
     } catch(e) { 
-        console.error("Error guardando en BD offline", e); 
-        return false;
+        console.error("Error crítico en initDB al guardar:", e); 
+        return false; 
     }
 };
 
 const leerDeCacheIDB = async (key) => {
     try {
         const db = await initDB();
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => { // Cambiamos a resolve siempre para no romper el flujo
+            let txTimeout;
             const tx = db.transaction("meteoCache", "readonly");
             const store = tx.objectStore("meteoCache");
             const request = store.get(key);
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
+            
+            txTimeout = setTimeout(() => {
+                console.warn(`Lectura de ${key} tardó demasiado. Devolviendo null.`);
+                resolve(null); // Si se cuelga, devolvemos null para que la app continúe
+            }, 3000);
+
+            request.onsuccess = () => {
+                clearTimeout(txTimeout);
+                resolve(request.result);
+            };
+            request.onerror = () => {
+                clearTimeout(txTimeout);
+                console.error("Error leyendo IDB, devolviendo null");
+                resolve(null); // Devolvemos null en lugar de reject para evitar crasheos
+            };
         });
     } catch(e) { 
-        console.error("Error leyendo de BD offline", e); 
+        console.error("Fallo crítico en initDB al leer:", e); 
         return null; 
     }
 };
@@ -5123,8 +5181,18 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
         // 1. ¿Lo tenemos ya en RAM? (Velocidad instantánea)
         if (DATOS_METEO_CACHE && DATOS_METEO_ECMWF_CACHE) {
-            data = DATOS_METEO_CACHE;
-            dataEcmwf = DATOS_METEO_ECMWF_CACHE;
+            // 🛡️ Comprobamos si la caché en RAM tiene más de 6 horas
+            const timestampCache = DATOS_METEO_CACHE.timestamp ? new Date(DATOS_METEO_CACHE.timestamp).getTime() : 0;
+            const esCadenaAntigua = (Date.now() - timestampCache) > (6 * 60 * 60 * 1000); 
+
+            if (!esCadenaAntigua) {
+                data = DATOS_METEO_CACHE;
+                dataEcmwf = DATOS_METEO_ECMWF_CACHE;
+            } else {
+                // Si es muy antigua, forzamos que ignore la RAM e intente bajar de red o lea el disco
+                DATOS_METEO_CACHE = null; 
+                DATOS_METEO_ECMWF_CACHE = null;
+            }
         } 
         else {
             // 2. Si no está en RAM, intentamos buscarlo fuera
@@ -5138,8 +5206,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 // Intentamos descargar (Petición de red real)
                 const[res1, res2] = await Promise.all([
-                    fetch(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store", signal: controller.signal }),
-                    fetch(`https://flydecision.com/meteo-datos-ecmwf.json?t=${Date.now()}`, { cache: "no-store", signal: controller.signal })
+                    fetchConTimeout(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS),
+                    fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
                 ]);
 
                 if (!res1.ok || !res2.ok) {
@@ -9219,14 +9287,42 @@ function comprobarAvisoCambiosPuntuacionXC() {
         }
     }
 
+    let fallosConectividadWebView = 0; // Contador de fallos del WebView
+
     async function comprobarConectividadReal() {
         try {
             const res = await fetch("https://flydecision.com/meteo-status.txt?t=" + Date.now(), {
                 cache: "no-store",
                 signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined
             });
-            return res && res.ok;
+            
+            if (res && res.ok) {
+                fallosConectividadWebView = 0; // Todo OK, reseteamos contador
+                return true;
+            }
+            fallosConectividadWebView++;
+            return false;
         } catch (e) {
+            fallosConectividadWebView++;
+            console.warn(`Fallo de fetch #${fallosConectividadWebView}`);
+
+            // Si fallamos 3 veces, pero el plugin nativo dice que SÍ hay internet,
+            // significa que el WebView de Android está roto internamente. Forzamos recarga.
+            if (fallosConectividadWebView >= 3 && typeof Capacitor !== 'undefined' && Capacitor.Plugins.Network) {
+                const status = await Capacitor.Plugins.Network.getStatus();
+                if (status.connected) {
+                    console.error("🌐 El WebView tiene la red colgada. Forzando reinicio de la app...");
+                    // Mostramos un mensaje sutil y recargamos
+                    if (typeof GestorMensajes !== 'undefined') {
+                        GestorMensajes.mostrar({
+                            tipo: 'no-modal', posicion: 'centro',
+                            htmlContenido: `<p style="text-align:center; margin:0;">Sincronizando red...</p>`,
+                            botones: []
+                        });
+                    }
+                    setTimeout(() => window.location.reload(), 800);
+                }
+            }
             return false;
         }
     }
