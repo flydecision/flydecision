@@ -9272,14 +9272,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
             if ((avisoOfflineActivo || esModoOffline) && !timerOnline) {
                 console.log(new Date().toLocaleString(), `📶 Red detectada. Esperando ${TIEMPO_CONFIRMACION_ONLINE/1000}s de estabilidad...`);
                 timerOnline = setTimeout(async () => {
-                    // CAMBIO: sustituimos el chequeo de navigator.onLine (poco fiable)
-                    // por una comprobación real de conectividad contra el servidor.
                     const hayConexionReal = await comprobarConectividadReal();
-
-                    timerOnline = null; // Se resetea SIEMPRE, haya éxito o no, evitando el bloqueo
+                    timerOnline = null;
 
                     if (!hayConexionReal) {
-                        console.log(new Date().toLocaleString(), "⚠️ Doble check falló (sin conectividad real). Reintentando más tarde.");
+                        console.log(new Date().toLocaleString(), "⚠️ Doble check falló (sin conectividad real). Reintentando en unos segundos...");
+                        gestionarCambioConexion('online'); // 🔁 reprograma otro intento en vez de morir aquí
                         return;
                     }
 
@@ -9863,7 +9861,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     // 🐕 Watchdog: si el ciclo lleva demasiado tiempo sin completarse (p.ej. un fetch
     // colgado en Android que ni resuelve ni rechaza), lo forzamos a reiniciarse.
-    setInterval(() => {
+    setInterval(async () => {
         const inactivo = Date.now() - ultimoCicloCompletadoTs;
         if (inactivo > 90000) {
             console.warn("🐕 Watchdog: cicloActualizacion parece colgado. Forzando reinicio.");
@@ -9871,6 +9869,19 @@ function comprobarAvisoCambiosPuntuacionXC() {
             statusActualizaciónEnCurso = false;
             ultimoCicloCompletadoTs = Date.now();
             cicloActualizacion();
+        }
+
+        // 🐕 Watchdog extra: si llevamos "atascados" en modo offline mucho tiempo
+        // sin que ningún evento online nos haya rescatado, forzamos un chequeo real.
+        if ((avisoOfflineActivo || esModoOffline) && !timerOnline) {
+            const hayConexionReal = await comprobarConectividadReal();
+            if (hayConexionReal) {
+                console.warn("🐕 Watchdog: conexión real detectada pese a estar en modo offline. Recuperando.");
+                avisoOfflineActivo = false;
+                esModoOffline = false;
+                cicloActualizacion();
+                construir_tabla(true);
+            }
         }
     }, 30000);
     
