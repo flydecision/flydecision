@@ -269,6 +269,16 @@ let autoSeleccionInicialHecha = false; // bandera de control para la selección 
 // Tiempo máximo (en milisegundos) que la app intentará descargar los datos si la conexión es lenta. Pasado este tiempo, forzará el uso de la caché offline.
 const TIMEOUT_DESCARGA_DATOS_MS = 5000;
 
+// Envuelve fetch con un timeout duro, para que nunca se quede colgado indefinidamente
+// (evita el bloqueo tipo "Esperando conexión" cuando el WebView de Android
+// deja un fetch a medias tras salir de Doze/cambio de red)
+function fetchConTimeout(url, opciones = {}, timeoutMs = 8000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    return fetch(url, { ...opciones, signal: controller.signal })
+        .finally(() => clearTimeout(timeoutId));
+}
+
 // Este mapa define el RANGO de 16 orientaciones que cubre cada una de las 8 selecciones del usuario.
 // Usamos el formato '_ORIENTACION' para coincidir con la metadata.
 const MAPA_RANGO_ORIENTACION = {
@@ -402,7 +412,7 @@ async function obtenerDatosMinutely15() {
         return DATOS_METEO_MINUTELY15_CACHE;
     }
 
-    const res = await fetch(`https://flydecision.com/meteo-datos-15min.json?t=${Date.now()}`, { cache: "no-store" });
+    const res = await fetchConTimeout(`https://flydecision.com/meteo-datos-15min.json?t=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) throw new Error("HTTP " + res.status);
     const datos = await res.json();
     
@@ -4543,46 +4553,104 @@ window.actualizarEstadoSliderVientoBalizas = actualizarEstadoSliderVientoBalizas
 
 const initDB = () => {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("FlyDecisionDB", 1); //Versión de la DB. Si el año que viene decides que además de la tabla meteoCache quieres crear otra que se llame mapasOffline, tendrás que cambiar ese 1 por un 2 y gestionar el evento de actualización
+        let dbOpenTimeout;
+        const request = indexedDB.open("FlyDecisionDB", 1);
+        
         request.onupgradeneeded = (e) => {
             const db = e.target.result;
             if (!db.objectStoreNames.contains("meteoCache")) {
                 db.createObjectStore("meteoCache");
             }
         };
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
+        
+        request.onsuccess = () => {
+            clearTimeout(dbOpenTimeout);
+            resolve(request.result);
+        };
+        
+        request.onerror = () => {
+            clearTimeout(dbOpenTimeout);
+            reject(request.error);
+        };
+
+        // 🛡️ NUEVO: Capturar el evento 'blocked' (muy común en Android al despertar)
+        request.onblocked = () => {
+            clearTimeout(dbOpenTimeout);
+            console.warn("IndexedDB bloqueada. Rechazando para evitar colapso.");
+            reject(new Error("IndexedDB bloqueada"));
+        };
+
+        // 🛡️ NUEVO: Si tarda más de 3 segundos, abortamos para no colgar la app.
+        dbOpenTimeout = setTimeout(() => {
+            reject(new Error("Timeout al abrir IndexedDB"));
+        }, 3000);
     });
 };
 
 const guardarEnCacheIDB = async (key, data) => {
     try {
         const db = await initDB();
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => { // Cambiamos a resolve siempre para no romper el flujo principal
+            let txTimeout;
             const tx = db.transaction("meteoCache", "readwrite");
             const store = tx.objectStore("meteoCache");
-            store.put(data, key); // Guarda el objeto directo (super rápido, sin stringify)
-            tx.oncomplete = () => resolve(true);
-            tx.onerror = () => reject(tx.error);
+            store.put(data, key); // Guarda el objeto directo
+            
+            // 🛡️ Si tarda más de 3 segundos, abortamos la espera para no colgar la app
+            txTimeout = setTimeout(() => {
+                console.warn(`Escritura de ${key} tardó demasiado. Abortando espera.`);
+                resolve(false); 
+            }, 3000);
+
+            tx.oncomplete = () => {
+                clearTimeout(txTimeout);
+                resolve(true);
+            };
+            
+            tx.onerror = () => {
+                clearTimeout(txTimeout);
+                console.error("Error guardando en BD offline, devolviendo false");
+                resolve(false); // Devolvemos false en lugar de reject para evitar crasheos
+            };
+
+            tx.onabort = () => {
+                clearTimeout(txTimeout);
+                console.warn("Transacción abortada al guardar en BD offline");
+                resolve(false);
+            };
         });
     } catch(e) { 
-        console.error("Error guardando en BD offline", e); 
-        return false;
+        console.error("Error crítico en initDB al guardar:", e); 
+        return false; 
     }
 };
 
 const leerDeCacheIDB = async (key) => {
     try {
         const db = await initDB();
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => { // Cambiamos a resolve siempre para no romper el flujo
+            let txTimeout;
             const tx = db.transaction("meteoCache", "readonly");
             const store = tx.objectStore("meteoCache");
             const request = store.get(key);
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
+            
+            txTimeout = setTimeout(() => {
+                console.warn(`Lectura de ${key} tardó demasiado. Devolviendo null.`);
+                resolve(null); // Si se cuelga, devolvemos null para que la app continúe
+            }, 3000);
+
+            request.onsuccess = () => {
+                clearTimeout(txTimeout);
+                resolve(request.result);
+            };
+            request.onerror = () => {
+                clearTimeout(txTimeout);
+                console.error("Error leyendo IDB, devolviendo null");
+                resolve(null); // Devolvemos null en lugar de reject para evitar crasheos
+            };
         });
     } catch(e) { 
-        console.error("Error leyendo de BD offline", e); 
+        console.error("Fallo crítico en initDB al leer:", e); 
         return null; 
     }
 };
@@ -5113,8 +5181,18 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
         // 1. ¿Lo tenemos ya en RAM? (Velocidad instantánea)
         if (DATOS_METEO_CACHE && DATOS_METEO_ECMWF_CACHE) {
-            data = DATOS_METEO_CACHE;
-            dataEcmwf = DATOS_METEO_ECMWF_CACHE;
+            // 🛡️ Comprobamos si la caché en RAM tiene más de 6 horas
+            const timestampCache = DATOS_METEO_CACHE.timestamp ? new Date(DATOS_METEO_CACHE.timestamp).getTime() : 0;
+            const esCadenaAntigua = (Date.now() - timestampCache) > (6 * 60 * 60 * 1000); 
+
+            if (!esCadenaAntigua) {
+                data = DATOS_METEO_CACHE;
+                dataEcmwf = DATOS_METEO_ECMWF_CACHE;
+            } else {
+                // Si es muy antigua, forzamos que ignore la RAM e intente bajar de red o lea el disco
+                DATOS_METEO_CACHE = null; 
+                DATOS_METEO_ECMWF_CACHE = null;
+            }
         } 
         else {
             // 2. Si no está en RAM, intentamos buscarlo fuera
@@ -5126,20 +5204,26 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     console.warn(`⏳ Red muy lenta (${TIMEOUT_DESCARGA_DATOS_MS/1000}s). Abortando descarga...`);
                 }, TIMEOUT_DESCARGA_DATOS_MS); 
 
-                // Intentamos descargar (Petición de red real)
+                // Intentamos descargar (Petición de red real con protección anti-cuelgue al parsear):
                 const[res1, res2] = await Promise.all([
-                    fetch(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store", signal: controller.signal }),
-                    fetch(`https://flydecision.com/meteo-datos-ecmwf.json?t=${Date.now()}`, { cache: "no-store", signal: controller.signal })
+                    fetchConTimeout(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS),
+                    fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
                 ]);
 
                 if (!res1.ok || !res2.ok) {
                     throw new Error(`⚠️ Error al cargar archivos JSON`);
                 }
 
-                // Si llegamos aquí, el servidor respondió. Ahora descargamos el "peso" real del JSON.
-                // Si la red 2G es muy lenta, el cronómetro (que sigue vivo) cortará esta descarga.
-                data = await res1.json();
-                dataEcmwf = await res2.json();
+                // 🛡️ Protección anti-cuelgue al leer el JSON (muy común al despertar de suspensión)
+                const parseJsonWithTimeout = async (res) => {
+                    return Promise.race([
+                        res.json(),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout al parsear JSON")), 8000))
+                    ]);
+                };
+
+                data = await parseJsonWithTimeout(res1);
+                dataEcmwf = await parseJsonWithTimeout(res2);
                 
                 // Solo apagamos el cronómetro cuando la descarga completa ha finalizado con éxito
                 clearTimeout(timeoutId); 
@@ -7949,7 +8033,7 @@ async function comprobarVersionApp() {
 
     try {
         // 4. Descargamos la última versión del servidor (silenciosamente)
-        const response = await fetch("https://flydecision.com/version_app.txt?t=" + Date.now(), { cache: "no-store" });
+        const response = await fetchConTimeout("https://flydecision.com/version_app.txt?t=" + Date.now(), { cache: "no-store" });
         if (!response.ok) return;
 
         const versionServidor = (await response.text()).trim();
@@ -9147,6 +9231,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
     let avisoOfflineActivo = false; // Esta es la variable MAESTRA que decide si mostramos la nube naranja
     let statusActualizaciónEnCurso = false;
     let hayErrorData = false;
+    let ultimoCicloCompletadoTs = Date.now();
 
     // Datos
     let lastStatusTimestamp = 0;
@@ -9187,14 +9272,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
             if ((avisoOfflineActivo || esModoOffline) && !timerOnline) {
                 console.log(new Date().toLocaleString(), `📶 Red detectada. Esperando ${TIEMPO_CONFIRMACION_ONLINE/1000}s de estabilidad...`);
                 timerOnline = setTimeout(async () => {
-                    // CAMBIO: sustituimos el chequeo de navigator.onLine (poco fiable)
-                    // por una comprobación real de conectividad contra el servidor.
                     const hayConexionReal = await comprobarConectividadReal();
-
-                    timerOnline = null; // Se resetea SIEMPRE, haya éxito o no, evitando el bloqueo
+                    timerOnline = null;
 
                     if (!hayConexionReal) {
-                        console.log(new Date().toLocaleString(), "⚠️ Doble check falló (sin conectividad real). Reintentando más tarde.");
+                        console.log(new Date().toLocaleString(), "⚠️ Doble check falló (sin conectividad real). Reintentando en unos segundos...");
+                        gestionarCambioConexion('online'); // 🔁 reprograma otro intento en vez de morir aquí
                         return;
                     }
 
@@ -9208,14 +9291,42 @@ function comprobarAvisoCambiosPuntuacionXC() {
         }
     }
 
+    let fallosConectividadWebView = 0; // Contador de fallos del WebView
+
     async function comprobarConectividadReal() {
         try {
             const res = await fetch("https://flydecision.com/meteo-status.txt?t=" + Date.now(), {
                 cache: "no-store",
                 signal: AbortSignal.timeout ? AbortSignal.timeout(5000) : undefined
             });
-            return res && res.ok;
+            
+            if (res && res.ok) {
+                fallosConectividadWebView = 0; // Todo OK, reseteamos contador
+                return true;
+            }
+            fallosConectividadWebView++;
+            return false;
         } catch (e) {
+            fallosConectividadWebView++;
+            console.warn(`Fallo de fetch #${fallosConectividadWebView}`);
+
+            // Si fallamos 3 veces, pero el plugin nativo dice que SÍ hay internet,
+            // significa que el WebView de Android está roto internamente. Forzamos recarga.
+            if (fallosConectividadWebView >= 3 && typeof Capacitor !== 'undefined' && Capacitor.Plugins.Network) {
+                const status = await Capacitor.Plugins.Network.getStatus();
+                if (status.connected) {
+                    console.error("🌐 El WebView tiene la red colgada. Forzando reinicio de la app...");
+                    // Mostramos un mensaje sutil y recargamos
+                    if (typeof GestorMensajes !== 'undefined') {
+                        GestorMensajes.mostrar({
+                            tipo: 'no-modal', posicion: 'centro',
+                            htmlContenido: `<p style="text-align:center; margin:0;">Sincronizando red...</p>`,
+                            botones: []
+                        });
+                    }
+                    setTimeout(() => window.location.reload(), 800);
+                }
+            }
             return false;
         }
     }
@@ -9511,11 +9622,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
         try {
             // Hacemos las tres peticiones a la vez (si una falla, no bloquea a las otras)
             const [resMF, resECMWF, resMin15] = await Promise.all([
-                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
-                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time_ecmwf.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
-                fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time_15min.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null)
+                fetchConTimeout("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
+                fetchConTimeout("https://flydecision.com/json_timestamp_and_model_run_ref_time_ecmwf.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
+                fetchConTimeout("https://flydecision.com/json_timestamp_and_model_run_ref_time_15min.txt?t=" + Date.now(), { cache: "no-store" }).catch(() => null)
             ]);
-            
+                        
             // Procesar Météo-France
             if (resMF && resMF.ok) {
                 const textContent = (await resMF.text()).trim();
@@ -9565,9 +9676,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
         try {
             const [resMF, resECMWF, resMin15] = await Promise.all([
-                fetch('https://flydecision.com/meteo-status.txt?t=' + Date.now()).catch(() => null),
-                fetch('https://flydecision.com/meteo-status-ecmwf.txt?t=' + Date.now()).catch(() => null),
-                fetch('https://flydecision.com/meteo-status-15min.txt?t=' + Date.now()).catch(() => null)
+                fetchConTimeout('https://flydecision.com/meteo-status.txt?t=' + Date.now()).catch(() => null),
+                fetchConTimeout('https://flydecision.com/meteo-status-ecmwf.txt?t=' + Date.now()).catch(() => null),
+                fetchConTimeout('https://flydecision.com/meteo-status-15min.txt?t=' + Date.now()).catch(() => null)
             ]);
 
             let currentlyUpdatingMF = false;
@@ -9742,10 +9853,37 @@ function comprobarAvisoCambiosPuntuacionXC() {
         }
 
         refrescoPanelInfoActualizaciones();
+        ultimoCicloCompletadoTs = Date.now();
         timerCiclo = setTimeout(cicloActualizacion, intervaloActualizacion);
     }
 
     // --- Listeners y Heartbeat ---
+
+    // 🐕 Watchdog: si el ciclo lleva demasiado tiempo sin completarse (p.ej. un fetch
+    // colgado en Android que ni resuelve ni rechaza), lo forzamos a reiniciarse.
+    setInterval(async () => {
+        const inactivo = Date.now() - ultimoCicloCompletadoTs;
+        if (inactivo > 90000) {
+            console.warn("🐕 Watchdog: cicloActualizacion parece colgado. Forzando reinicio.");
+            if (timerCiclo) clearTimeout(timerCiclo);
+            statusActualizaciónEnCurso = false;
+            ultimoCicloCompletadoTs = Date.now();
+            cicloActualizacion();
+        }
+
+        // 🐕 Watchdog extra: si llevamos "atascados" en modo offline mucho tiempo
+        // sin que ningún evento online nos haya rescatado, forzamos un chequeo real.
+        if ((avisoOfflineActivo || esModoOffline) && !timerOnline) {
+            const hayConexionReal = await comprobarConectividadReal();
+            if (hayConexionReal) {
+                console.warn("🐕 Watchdog: conexión real detectada pese a estar en modo offline. Recuperando.");
+                avisoOfflineActivo = false;
+                esModoOffline = false;
+                cicloActualizacion();
+                construir_tabla(true);
+            }
+        }
+    }, 30000);
     
     // 1. Eventos del Navegador
     window.addEventListener('offline', () => gestionarCambioConexion('offline'));
@@ -10395,8 +10533,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
     }
 
     // ---------------------------------------------------------------
-	// 🔴 ANDROID: Detectar el "Despertar" de la App (Resume) para que pida datos nuevos y se actualice slider rango horario
-	// ---------------------------------------------------------------
+    // 🔴 ANDROID: Detectar el "Despertar" de la App (Resume) para que pida datos nuevos y se actualice slider rango horario
+    // ---------------------------------------------------------------
 
     function iniciarDetectorResume() {
             
@@ -10427,21 +10565,30 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 if (overlayResume) overlayResume.classList.add('spinner-transparente');
                 mostrarLoading(); // Mostramos spinner por si acaso, sin bloquear
                 
+                // 🛡️ RED DE SEGURIDAD DEL SPINNER (WATCHDOG):
+                // Si el WebView de Android se queda colgado al despertar, forzamos 
+                // que el spinner se apague a los 12 segundos sí o sí.
+                let watchdog = setTimeout(() => {
+                    console.warn("⏰ Watchdog Resume: Forzando apagado de spinner por cuelgue.");
+                    if (overlayResume) overlayResume.classList.remove('spinner-transparente');
+                    ocultarLoading();
+                }, 12000);
+
                 try {
                     // 1. PASO CLAVE: Consultamos SOLO el archivo ligero de texto (bytes)
-                    // Usamos un timeout corto (3s) para no bloquear si la red es mala
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-                    const response = await fetch("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { 
-                        cache: "no-store",
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
+                    // Usamos nuestro helper global en lugar de AbortController manual para mayor consistencia
+                    const response = await fetchConTimeout("https://flydecision.com/json_timestamp_and_model_run_ref_time.txt?t=" + Date.now(), { 
+                        cache: "no-store"
+                    }, 5000); // 5 segundos de timeout máximo
 
                     if (response.ok) {
-                        const textContent = (await response.text()).trim();
-                        const parts = textContent.split('|');
+                        // 🛡️ Protección anti-cuelgue al leer el texto (similar al parche del JSON)
+                        const textContent = await Promise.race([
+                            response.text(),
+                            new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout leyendo texto")), 5000))
+                        ]);
+                        
+                        const parts = textContent.trim().split('|');
                         const serverTimestamp = parts[0] ? new Date(parts[0]).getTime() : 0;
 
                         if (serverTimestamp > timestampDatosLocal) {
@@ -10458,6 +10605,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     // Si falla la comprobación (ej. túnel, offline), no borramos nada.
                     // Repintamos con caché para asegurar que la UI esté bien.
                     construir_tabla(false);
+                } finally {
+                    // 🛡️ Se ejecuta SIEMPRE, haya éxito o error. Cancelamos el watchdog 
+                    // y nos aseguramos de quitar el spinner transparente.
+                    clearTimeout(watchdog);
+                    if (overlayResume) overlayResume.classList.remove('spinner-transparente');
                 }
 
                 // 3. Lanzamos el ciclo de verificación de status para actualizar textos de "hace X tiempo"
@@ -10504,7 +10656,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     // Un pequeño retraso de 1 segundo para que la tabla cargue primero y no sea tan brusco
     setTimeout(comprobarAvisoCambiosPuntuacionXC, 1000);
-
+    
     // ---------------------------------------------------------------
 	// 🔴 ANDROID: GESTOR DE ENLACES EXTERNOS (In-App Browser)
 	// ---------------------------------------------------------------
@@ -15409,7 +15561,7 @@ function inicializarMapaLeaflet() {
         if (red.estaciones.length === 0) {
             try {
                 // Descargamos el JSON dinámicamente usando el id de la red (ej: balizas_aemet_arraybalizas.json)
-                const resp = await fetch(`https://flydecision.com/balizas_${red.id}_arraybalizas.json`);
+                const resp = await fetchConTimeout(`https://flydecision.com/balizas_${red.id}_arraybalizas.json`);
                 if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                 red.estaciones = await resp.json();
             } catch (err) {
@@ -15481,7 +15633,7 @@ function inicializarMapaLeaflet() {
     async function cargarDatosBalizas(redId) {
         const red = REDES_BALIZAS[redId];
         try {
-            const res = await fetch(`${red.urlCache}?_=${Date.now()}`);
+            const res = await fetchConTimeout(`${red.urlCache}?_=${Date.now()}`);
             const textoCrudo = await res.text();
 
             // Si el contenido es idéntico, retornamos FALSE (nada nuevo)
@@ -15511,7 +15663,7 @@ function inicializarMapaLeaflet() {
     if (!force && red.datos6h && (ahora - red.fetched6hAt) < 5 * 60 * 1000) return;
     
     try {
-        const res = await fetch(`${red.url6h}?_=${ahora}`);
+        const res = await fetchConTimeout(`${red.url6h}?_=${ahora}`);
         red.datos6h = await res.json();
         red.fetched6hAt = ahora;
     } catch (e) {
