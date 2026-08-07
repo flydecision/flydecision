@@ -9910,39 +9910,39 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // 5.5 Monitorización red con plugin Capacitor Network
     // ===============================================================
 
+    let monitorRedListenerRegistrado = false; // 🔒 evita registrar el listener networkStatusChange más de una vez
+    
     async function iniciarMonitorRedNativo() {
         // Solo si estamos en la App con Capacitor
         if (typeof Capacitor !== 'undefined' && Capacitor.Plugins.Network) {
             const Network = Capacitor.Plugins.Network;
 
-            // 1. CHEQUEO INICIAL: ¿Cómo hemos despertado?
+            // 1. CHEQUEO INICIAL: ¿Cómo hemos despertado? Esto se ejecuta SIEMPRE,
+            // tanto al arrancar como en cada resume, para "curar" cualquier bandera
+            // offline que se hubiera quedado atascada por un evento espurio.
             const status = await Network.getStatus();
             
             if (status.connected) {
-                console.log(new Date().toLocaleString(), "⚡ [Nativo] Red detectada al inicio. Forzando ONLINE.");
-                // Forzamos la verdad: HAY RED.
-                // Esto evita que el Heartbeat falle los primeros segundos y active el timerOffline.
+                console.log(new Date().toLocaleString(), "⚡ [Nativo] Red detectada. Forzando ONLINE.");
                 avisoOfflineActivo = false;
-                
-                // Si hubiera algún timer de "se ha ido la luz" pendiente, lo matamos.
                 if (timerOffline) { clearTimeout(timerOffline); timerOffline = null; }
-                
-                // Opcional: Si quieres refrescar la pantalla ya, descomenta:
-                // cicloActualizacion(); 
             } else {
-                console.log(new Date().toLocaleString(), "⚡ [Nativo] Arrancamos SIN red.");
+                console.log(new Date().toLocaleString(), "⚡ [Nativo] Sin red detectada.");
                 gestionarCambioConexion('offline');
             }
 
-            // 2. ESCUCHA ACTIVA: El sistema operativo nos avisa de cambios
-            Network.addListener('networkStatusChange', (status) => {
-                console.log(new Date().toLocaleString(), '📡 [Nativo] Cambio de red:', status.connected);
-                if (status.connected) {
-                    gestionarCambioConexion('online');
-                } else {
-                    gestionarCambioConexion('offline');
-                }
-            });
+            // 2. ESCUCHA ACTIVA: el listener sí se registra una única vez
+            if (!monitorRedListenerRegistrado) {
+                monitorRedListenerRegistrado = true;
+                Network.addListener('networkStatusChange', (status) => {
+                    console.log(new Date().toLocaleString(), '📡 [Nativo] Cambio de red:', status.connected);
+                    if (status.connected) {
+                        gestionarCambioConexion('online');
+                    } else {
+                        gestionarCambioConexion('offline');
+                    }
+                });
+            }
         }
     }
 
