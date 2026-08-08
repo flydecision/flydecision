@@ -6911,6 +6911,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
                         // Leemos el dato DIRECTAMENTE de la base de datos original (hourlyData) para esta hora 'i'
+                        if (!hourlyData.wind_speed_10m || hourlyData.wind_speed_10m[i] === undefined || hourlyData.wind_speed_10m[i] === null) {
+                            const td = document.createElement("td");
+                            td.textContent = "-";
+                            td.classList.add("celda-sin-datos");
+                            if (cacheEsNoche[i]) td.classList.add("celda-noche");
+                            if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+                            filaVel.appendChild(td);
+                            continue;
+                        }
                         let velocidadModelo = hourlyData.wind_speed_10m[i];
 
                         // (NOTA: Si en algún momento en este bucle necesitaras los de 80 o 120m, 
@@ -6957,6 +6966,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
                         // Leemos directamente del JSON original
+                        if (!hourlyData.wind_gusts_10m || hourlyData.wind_gusts_10m[i] === undefined || hourlyData.wind_gusts_10m[i] === null) {
+                            const td = document.createElement("td");
+                            td.textContent = "-";
+                            td.classList.add("celda-sin-datos");
+                            if (cacheEsNoche[i]) td.classList.add("celda-noche");
+                            if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+                            filaRacha.appendChild(td);
+                            continue;
+                        }
                         let rachaModelo = hourlyData.wind_gusts_10m[i];
                         let racha = Math.round(Math.max(0, rachaModelo));
 
@@ -6994,6 +7012,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
                         // Leemos directamente del JSON original
+                        if (!hourlyData.wind_direction_10m || hourlyData.wind_direction_10m[i] === undefined || hourlyData.wind_direction_10m[i] === null) {
+                            const td = document.createElement("td");
+                            td.textContent = "-";
+                            td.classList.add("celda-sin-datos");
+                            if (cacheEsNoche[i]) td.classList.add("celda-noche");
+                            if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
+                            filaDir.appendChild(td);
+                            continue;
+                        }
                         let dirModelo = hourlyData.wind_direction_10m[i];
                         let dir = Math.round(dirModelo);
 
