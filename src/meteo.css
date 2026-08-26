@@ -86,6 +86,13 @@ body.modo-android-manual {
     background-size: 100% 100%;
 }
 
+/* 🔵 VISTA MAPA: la barra de estado se vuelve semi-transparente y se ve el mapa detrás.
+   Solo afecta a esta vista (se activa/desactiva por JS en cambiarVista()); en la tabla
+   el body sigue teniendo el padding-top y el fondo opaco de siempre. */
+body.modo-android-manual.vista-mapa-statusbar-transp {
+    padding-top: 0 !important;
+}
+
 /* Franja opaca en la zona del nav bar de Android */
 /* body.modo-android-manual::after {
     content: '';
@@ -4219,6 +4226,20 @@ h3 {
    BOTÓN FILTROS MAPA + PANEL HORARIO
    ===================================================== */
 
+/* Degradado oscuro tras la barra de estado (solo vista mapa transparente):
+   mantiene legibles hora/batería/señal aunque el mapa se vea de fondo */
+body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--android-sb-height, 25px) + 14px);
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
+    z-index: 9999;
+    pointer-events: none;
+}
+
 .btn-filtros-mapa {
     position: absolute;
     /* top: calc(var(--safe-area-inset-top, 0px) + 3px) !important; */
@@ -4312,6 +4333,23 @@ body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
         transition: margin-top 0.2s ease;
         /* margin-top: calc(143px + var(--safe-area-inset-top, 25px)); */
         margin-top: calc(126px + 25px);
+    }
+}
+
+/* Con la barra de estado transparente el mapa llega hasta arriba (padding-top: 0),
+   así que hay que bajar manualmente estos controles la altura real de la barra de
+   estado para que queden igual que antes, en vez de pegados a los iconos del sistema */
+body.modo-android-manual.vista-mapa-statusbar-transp .btn-filtros-mapa {
+    margin-top: calc(var(--android-sb-height, 25px) + 3px);
+}
+
+body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa .leaflet-top {
+    margin-top: var(--android-sb-height, 25px);
+}
+
+@media (max-width: 560px) {
+    body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa.filtros-abiertos .leaflet-top {
+        margin-top: calc(var(--android-sb-height, 25px) + 126px + 25px);
     }
 }
 

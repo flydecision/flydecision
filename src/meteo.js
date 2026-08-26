@@ -11389,6 +11389,9 @@ window.cambiarVista = function(vista) {
         if (vistaControles) vistaControles.style.display = 'none';
         if (vistaMapa) vistaMapa.style.display = 'flex';
 
+        // 🔵 Barra de estado semi-transparente solo en el mapa (ver meteo.css)
+        document.body.classList.add('vista-mapa-statusbar-transp');
+
         if (!mapaInicializado) {
             inicializarMapaLeaflet();
             mapaInicializado = true;
