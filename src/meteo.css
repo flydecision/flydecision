@@ -86,13 +86,6 @@ body.modo-android-manual {
     background-size: 100% 100%;
 }
 
-/* 🔵 VISTA MAPA: la barra de estado se vuelve semi-transparente y se ve el mapa detrás.
-   Solo afecta a esta vista (se activa/desactiva por JS en cambiarVista()); en la tabla
-   el body sigue teniendo el padding-top y el fondo opaco de siempre. */
-body.modo-android-manual.vista-mapa-statusbar-transp {
-    padding-top: 0 !important;
-}
-
 /* Franja opaca en la zona del nav bar de Android */
 /* body.modo-android-manual::after {
     content: '';
@@ -4238,6 +4231,16 @@ body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa::before {
     background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0));
     z-index: 9999;
     pointer-events: none;
+}
+
+/* 🔵 Solo #vista-mapa se sale de su sitio normal y cubre toda la pantalla, sin tocar
+   el padding-top del body (así la tabla no se ve afectada nunca por este cambio) */
+body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
 }
 
 .btn-filtros-mapa {
