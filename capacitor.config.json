@@ -15,7 +15,7 @@
       "showSpinner": false
     },
     "StatusBar": {
-      "style": "Light"
+      "style": "LIGHT"
     },
     "Keyboard": {
       "resize": "body",
