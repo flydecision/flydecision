@@ -5328,6 +5328,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // 🔴 LÓGICA DE FILTRADO O NO DE FAVORITOS
         // ---------------------------------------------------------------
 
+        // Obtenemos el texto actual del buscador
+        const inputTextoActual = document.getElementById('buscador-despegues-provincias');
+        const hayBusquedaTexto = inputTextoActual ? (inputTextoActual.value && inputTextoActual.value.trim() !== '') : false;
+
         // Primero calculamos si el filtro de distancia está activo para ver si el check de favoritos debe aplicar
         const sliderDistElemParaFavs = document.getElementById('distancia-slider');
         let distanciaLimiteParaFavs = 9999;
@@ -5339,8 +5343,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         const btnIncNoFavsDistancia = document.getElementById('btn-incluir-no-favs-distancia');
         const incluirNoFavs = btnIncNoFavsDistancia ? btnIncNoFavsDistancia.classList.contains('activo') : false;
         
-        // Si estamos en modo edición de favoritos, el checkbox está oculto y NO debe interferir
-        const ignorarFiltroFavoritos = (!modoEdicionFavoritos && distanciaLimiteParaFavs < 9999 && incluirNoFavs);
+        // Si hay búsqueda de texto escrita o distancia con no favoritos, no restringimos a solo favoritos
+        const ignorarFiltroFavoritos = (!modoEdicionFavoritos && distanciaLimiteParaFavs < 9999 && incluirNoFavs) || hayBusquedaTexto;
 
         // Preparamos los IDs a incluir (Favoritos reales + el temporal si venimos del mapa)
         let idsAIncluir = [...favoritos];
@@ -5924,9 +5928,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
             const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
-            const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0; //Nota: como no hemos puesto en la URL elevation=nan, el downgrading topográfico calcula la altitud real del despegue con DEM 90m, así que este dato realmente es la altitud del despegue (no ocurre lo mismo con Arome/ICON, ya que ahí hemos puesto elevation=nan y la altitud sí que es la media de la celda)
+            const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0;
             const hayDatosMeteo = hourlyData !== null;
-            let orientaciones = d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()));
+            let orientaciones = (d.Orientaciones_Grados && typeof d.Orientaciones_Grados === 'string') 
+                ? d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim())) 
+                : [];
 
             // -----------------------------------------------------------
             // 🟩🟧🟥 LÓGICA DE FILTRADO POR PUNTUACIÓN (Usando la función unificada)
@@ -6052,9 +6058,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 initialRowSpan -= rowsEcmwfWind.length; 
             }
 
-            // Guardamos las coordenadas en la fila principal para el filtro rápido
+            // Guardamos las coordenadas y el texto completo en la fila principal para el filtro rápido
             filaPrincipal.dataset.lat = latitud;
             filaPrincipal.dataset.lon = longitud;
+            filaPrincipal.dataset.busqueda = (d.Despegue + " " + (d.Provincia || "") + " " + (d.Región || "") + " " + (d.País || "")).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
             // Limpieza y Control de la línea separadora inferior
             todasLasFilas.forEach(f => f.classList.remove("fila-separador"));
@@ -6204,7 +6211,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const svgParaTooltip = svgOrientaciones.replaceAll('"', "'");
             
             // 1. Preparamos el nombre para que sea seguro dentro de la función JS (escapa comillas simples)
-            const safeDespegue = d.Despegue.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeDespegue = (d.Despegue || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
             // Generamos el micro-gráfico de actividad antes de montar el tooltip
             const iconoActividad = d.Actividad ? crearIconoActividad(d.Actividad) : '';
@@ -7518,14 +7525,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const filaPrincipal = item.elementos[0];
             
             // Comprobar Texto
-            let txtCelda = "";
-            if (modoEdicionFavoritos) {
-                txtCelda = (filaPrincipal.cells[1]?.textContent + " " + filaPrincipal.cells[2]?.textContent + " " + filaPrincipal.cells[3]?.textContent + " " + filaPrincipal.cells[4]?.textContent);
-            } else {
-                txtCelda = filaPrincipal.cells[0]?.textContent || "";
-            }
-            txtCelda = txtCelda.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-            const pasaTexto = filtroTexto === "" || txtCelda.includes(filtroTexto);
+            const txtBusqueda = filaPrincipal.dataset.busqueda || "";
+            const pasaTexto = filtroTexto === "" || txtBusqueda.includes(filtroTexto);
 
             // Comprobar Distancia usando 'distanciaLimite'
             let pasaDistancia = true;
@@ -8330,15 +8331,19 @@ window.aplicarFiltrosVisuales = function(evitarScroll = false, preservarPaginaci
 let temporizadorBuscador = null;
 
 window.aplicarFiltrosVisualesBuscador = function() {
-    // 1. Feedback visual INSTANTÁNEO de la "X"
     const input = document.getElementById('buscador-despegues-provincias');
     const botonLimpiar = document.getElementById('limpiar-buscador');
-    if (input && botonLimpiar) {
-        botonLimpiar.style.display = (input.value.length > 0) ? 'block' : 'none';
-        if (input.value.trim() !== '') {
+    
+    if (input) {
+        const tieneTexto = input.value.trim() !== '';
+        if (botonLimpiar) {
+            botonLimpiar.style.display = tieneTexto ? 'block' : 'none';
+        }
+        if (tieneTexto) {
             input.classList.add('filtrado');
         } else {
             input.classList.remove('filtrado', 'buscador-despegues-sin-resultados');
+            window.despegueTemporalParaTabla = null; // Al vaciar el texto, se anula el despegue aislado
         }
     }
 
@@ -8346,19 +8351,9 @@ window.aplicarFiltrosVisualesBuscador = function() {
         clearTimeout(temporizadorBuscador);
     }
 
-    // 2. Temporizador de 500 ms
     temporizadorBuscador = setTimeout(() => {
-        
-        // Le decimos al fondo oscuro que se vuelva transparente y que permita los clics a través de él.
-        const overlay = document.getElementById('msgActualizando...');
-        if (overlay) overlay.classList.add('spinner-transparente');
-
-        // Lanzamos la operación pesada (el spinner saldrá, pero sin bloquear)
-        ejecutarOperacionPesada(() => {
-            window.aplicarFiltrosVisuales();
-        });
-
-    }, 500); 
+        construir_tabla(false, true);
+    }, 30); 
 };
 
 // Esta función extrae la parte visual que actualiza los Textos y Contadores 
@@ -8553,26 +8548,24 @@ function limpiarBuscador() {
 
     if (typeof setModoEnfoque === "function") { setModoEnfoque(false); }
     
-	if (!inputBuscador || !botonLimpiar) return;
+    const input = document.getElementById('buscador-despegues-provincias');
+    const boton = document.getElementById('limpiar-buscador');
 
-    inputBuscador.value = '';
-    botonLimpiar.style.display = 'none';
-	
-    inputBuscador.classList.remove('filtrado');
-    
-    if (modoEdicionFavoritos) {
-        inputBuscador.placeholder = t('buscador.placeholderEdicion') || "🔍 País, Región, Provincia o Despegue";
-    } else {
-        inputBuscador.placeholder = '🔍';
+    if (input) {
+        input.value = '';
+        input.classList.remove('filtrado', 'buscador-despegues-sin-resultados');
+        if (modoEdicionFavoritos) {
+            input.placeholder = t('buscador.placeholderEdicion') || "🔍 País, Región, Provincia o Despegue";
+        } else {
+            input.placeholder = '🔍';
+        }
     }
-    
-    // Si había un despegue temporal cargado, lo olvidamos y reconstruimos ---
-    if (window.despegueTemporalParaTabla) {
-        window.despegueTemporalParaTabla = null;
-        construir_tabla(); // Lo forzamos a desaparecer del DOM
-    } else {
-        ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
+    if (boton) {
+        boton.style.display = 'none';
     }
+
+    window.despegueTemporalParaTabla = null;
+    construir_tabla(false, true);
 }
 
 // ---------------------------------------------------------------
@@ -8777,17 +8770,22 @@ document.addEventListener('i18nReady', function() {
     }
 	
     // 1. Click en el botón 'X': Limpia todo y mantiene el cursor dentro
-    botonLimpiar.addEventListener('click', function() {
+    botonLimpiar.addEventListener('click', function(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         limpiarBuscador();
         if (window.matchMedia('(pointer: coarse)').matches) {
-            inputBuscador.blur(); // táctil: cierra el teclado
+            if (inputBuscador) inputBuscador.blur();
         } else {
-            setTimeout(() => inputBuscador.focus(), 10); // escritorio: mantiene el foco
+            if (inputBuscador) setTimeout(() => inputBuscador.focus(), 10);
         }
     });
 	
-    // 2. Keyup: Vuelve a comprobar si mostrar/ocultar la 'X' (el filtrado lo hace el onkeyup del HTML)
-    inputBuscador.addEventListener('keyup', gestionarBotonLimpiar);
+    // 2. Captura inmediata de escritura en cualquier teclado y pegado
+    inputBuscador.addEventListener('input', aplicarFiltrosVisualesBuscador);
+    inputBuscador.addEventListener('keyup', aplicarFiltrosVisualesBuscador);
 	
 	// 3. Keydown: Capturar la tecla ESC para limpiar el buscador
     inputBuscador.addEventListener('keydown', function(e) {
@@ -10834,9 +10832,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
         window.vibrarDispositivo();
         // 1. Buscamos el despegue en la BD global usando el ID para obtener su nombre EXACTO en la tabla
         const despegueBD = window.bdGlobalDespegues.find(d => Number(d.ID) === Number(idDespegue));
-        if (!despegueBD) return; // Si por algún motivo no existe, abortamos
+        if (!despegueBD) return;
 
-        // Apagamos preventivamente el Modo Edición (vital si el usuario era virgen y saltó directo al mapa)
+        // Apagamos preventivamente el Modo Edición
         modoEdicionFavoritos = false;
         soloFavoritos = true;
         document.body.classList.remove('modo-edicion-tabla');
@@ -10847,22 +10845,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const panelHorario = document.querySelector('.div-filtro-horario');
         if (panelHorario) panelHorario.style.display = '';
 
-        // Reseteamos y ocultamos el filtro de distancia durante este desvío, por si busca un despegue fuera del filtro
         if (typeof resetFiltroDistancia === 'function') {
-            resetFiltroDistancia(false); // 'false' para no reconstruir la tabla todavía
+            resetFiltroDistancia(false);
         }
 
-        // Lo guardamos en una variable temporal para forzar su aparición en la tabla pero no lo añadimos obligatoriamente a favoritos
         window.despegueTemporalParaTabla = Number(idDespegue);
         
         const nombreExactoTabla = despegueBD.Despegue;
 
-        cambiarVista('tabla');
-
-        // Evaluamos el entorno para devolverle el menú inferior si lo tenía oculto
-        if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
-
-        // 2. Forzamos el nombre exacto en el buscador
+        // 2. Colocar el texto en el buscador antes del cambio de vista
         const input = document.getElementById('buscador-despegues-provincias');
         if (input) {
             input.value = nombreExactoTabla;
@@ -10872,12 +10863,18 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const btnLimpiar = document.getElementById('limpiar-buscador');
         if (btnLimpiar) btnLimpiar.style.display = 'block';
 
-        // 3. Iluminar "Tabla" en lugar de "Buscar"
+        window.tablaRecrearAlVolver = false;
+
+        cambiarVista('tabla');
+
+        if (typeof evaluarEstadoNuevosUsuarios === 'function') evaluarEstadoNuevosUsuarios();
+
         if (typeof window.activarMenuInferior === 'function') {
             window.activarMenuInferior(document.getElementById('nav-home'));
         }
 
-        construir_tabla();
+        // 3. Ejecutar el filtrado visual del buscador directamente
+        window.aplicarFiltrosVisuales();
     };
 
     // ---------------------------------------------------------------
