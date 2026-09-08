@@ -15575,7 +15575,28 @@ function inicializarMapaLeaflet() {
             umbralAmarilloMin: 90,
             umbralRojoMin: 120,
             urlWeb: (id) => `https://metar-taf.com/?c=439933.86792.5&hl=${id}`
+        },
+        'noromet': {
+        id: 'noromet',
+        nombre: 'Noromet',
+        estaciones: [],
+        urlCache: 'https://flydecision.com/balizas_noromet_cache.json',
+        url6h:    'https://flydecision.com/balizas_noromet_6h.json',
+        checkboxId: 'checkboxBalizasNoromet',
+        lsKey: 'METEO_MAPA_CAPA_BALIZAS_NOROMET_VISIBLE',
+        layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+        marcadores: {},
+        dibujadas: false,
+        datosCache: {},
+        ultimoJsonRaw: null,
+        datos6h: null,
+        fetched6hAt: 0,
+        intervalo: null,
+        umbralAmarilloMin: 30,
+        umbralRojoMin: 45,
+        urlWeb: (id) => `https://noromet.org/weatherstations/${id}`
         }
+
     };    
     
     // 🟡 2. DIBUJAR LAS ESTACIONES ESTÁTICAS DE UNA RED
