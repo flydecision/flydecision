@@ -19,6 +19,17 @@ let VelocidadIdeal = Number(localStorage.getItem("METEO_VELOCIDAD_IDEAL")) || 12
 let VelocidadMax = Number(localStorage.getItem("METEO_VELOCIDAD_MAXIMA")) || 20;  
 let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 28;
 
+// ─── CONSTANTES DE CORRECCIÓN ESTADÍSTICA (VIENTO MEDIO) ───────────
+let CORR_AROME_PENDIENTE = 0.85;
+let CORR_AROME_OFFSET    = 3.2;
+
+let CORR_ICON_PENDIENTE  = 0.68;
+let CORR_ICON_OFFSET     = 4.8;
+
+let CORR_ECMWF_PENDIENTE = 0.48;
+let CORR_ECMWF_OFFSET    = 5.3;
+// ───────────────────────────────────────────────────────────────────
+
 // Valores límite para puntuación XC y colores en tabla
 // Techo AGL: 800m ya permite volar, 1500m AGL es un día excelente (se suma a la montaña).
 let XCTechoLims = JSON.parse(localStorage.getItem("METEO_XC_TECHO_LIMS")) || { rojo: 800, verde: 1500 };
@@ -81,6 +92,16 @@ let chkColorearFlechasBalizas = localStorage.getItem("METEO_CHECKBOX_COLOREAR_FL
 let chkOcultarValoresBalizas = localStorage.getItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS") === "true"; 
 let vientoMaxBalizaColor = Number(localStorage.getItem("METEO_VALOR_VIENTO_MAX_BALIZA_COLOR")) || 50; // Límite de viento rojo de balizas (por defecto 50)
 
+let chkAplicarCorreccionEstadistica = localStorage.getItem("METEO_CHECKBOX_APLICAR_CORRECCION_ESTADISTICA") === "true"; // false por defecto
+
+function alternarCorreccionEstadistica() {
+    const chk = document.getElementById("chkAplicarCorreccionEstadistica");
+    chkAplicarCorreccionEstadistica = chk ? chk.checked : false;
+    localStorage.setItem("METEO_CHECKBOX_APLICAR_CORRECCION_ESTADISTICA", chkAplicarCorreccionEstadistica);
+    if (typeof construir_tabla === 'function') construir_tabla();
+}
+window.alternarCorreccionEstadistica = alternarCorreccionEstadistica;
+
 window.modalMinutely15Abierto = false; // true mientras el usuario tiene abierto el modal de detalle 15 min
 
 function alternarBotonMinutely15() {
@@ -131,6 +152,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarBotonMinutely15 = false;
         chkColorearFlechasBalizas = false; 
         chkOcultarValoresBalizas = false;
+        chkAplicarCorreccionEstadistica = false;
     } else {
         // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
@@ -146,6 +168,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarBotonMinutely15 = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_MINUTELY15") === "true";
         chkColorearFlechasBalizas = localStorage.getItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS") === "true"; 
         chkOcultarValoresBalizas = localStorage.getItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS") === "true";
+        chkAplicarCorreccionEstadistica = localStorage.getItem("METEO_CHECKBOX_APLICAR_CORRECCION_ESTADISTICA") === "true";
     }
 
     // Sincronizar los checkboxes ocultos del menú Ajustes
@@ -158,6 +181,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkMostrarBotonMinutely15")) document.getElementById("chkMostrarBotonMinutely15").checked = chkMostrarBotonMinutely15;
     if (document.getElementById("chkColorearFlechasBalizas")) document.getElementById("chkColorearFlechasBalizas").checked = chkColorearFlechasBalizas;
     if (document.getElementById("chkOcultarValoresBalizas")) document.getElementById("chkOcultarValoresBalizas").checked = chkOcultarValoresBalizas;
+    if (document.getElementById("chkAplicarCorreccionEstadistica")) document.getElementById("chkAplicarCorreccionEstadistica").checked = chkAplicarCorreccionEstadistica;
 
     // Inicialización del slider de viento máximo para balizas (Rango de 20 a 80 km/h)
     const vientoBalizasSlider = document.getElementById('viento-balizas-slider');
@@ -3977,7 +4001,6 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         : [];
 
     indicesEvaluacion.forEach(i => {
-        // 🛡️ PROTECCIÓN: Si falta la velocidad, la racha o la dirección en este modelo/hora, la saltamos
         if (!velArray || velArray[i] === undefined || velArray[i] === null) return;
         if (!rachaArray || rachaArray[i] === undefined || rachaArray[i] === null) return;
         if (!dirArray || dirArray[i] === undefined || dirArray[i] === null) return;
@@ -3985,7 +4008,11 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         horasValidas++;
 
         let dirCorregida = dirArray[i];
-        let velocidad = Math.round(Math.max(0, velArray[i]));
+        let velBase = velArray[i];
+        if (chkAplicarCorreccionEstadistica) {
+            velBase = corregirViento10m(velBase, hourlyData, i);
+        }
+        let velocidad = Math.round(Math.max(0, velBase));
         let rachaCorregida = Math.round(Math.max(0, rachaArray[i]));
 
         // --- DIRECCIÓN Y LADERA CONTINUA ---
@@ -6921,12 +6948,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             continue;
                         }
                         let velocidadModelo = hourlyData.wind_speed_10m[i];
-
-                        // (NOTA: Si en algún momento en este bucle necesitaras los de 80 o 120m, 
-                        // se leen exactamente igual, sin hacer .slice() previamente:)
-                        // let v80 = hourlyData.wind_speed_20m ? hourlyData.wind_speed_20m[i] : null;
-
-                        let velocidad = Math.round(Math.max(0, velocidadModelo)); // Redondeo a 0 decimales
+                        if (chkAplicarCorreccionEstadistica) {
+                            velocidadModelo = corregirViento10m(velocidadModelo, hourlyData, i);
+                        }
+                        let velocidad = Math.round(Math.max(0, velocidadModelo));
 
                         const td = document.createElement("td");
 
@@ -7235,12 +7260,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
                             if (!debeMostrarse) {
-                                // Despegue colapsado: placeholder, sin formatear el valor real
                                 td.textContent = "…";
                             } else {
                                 let val = speedArr[i];
-                                td.textContent = val !== null ? Math.round(Number(val)) : "—";
-                                td.title = val !== null ? `${Math.round(Number(val))} km/h` : "N/A";
+                                if (chkAplicarCorreccionEstadistica && val !== null) {
+                                    val = corregirVientoEcmwf(val);
+                                }
+                                td.textContent = val !== null ? Math.round(Math.max(0, Number(val))) : "—";
+                                td.title = val !== null ? `${Math.round(Math.max(0, Number(val)))} km/h` : "N/A";
                             }
                             tr.appendChild(td);
                         }
@@ -7334,7 +7361,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         const altReal = Number(d.Altitud) || 0;
 
                         // Helper para instanciar las celdas de interpolación buscando por la hora real
-                        const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHoraArome, bordeTopVel, bordeBottomDirPx) => {
+                        const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHoraArome, bordeTopVel, bordeBottomDirPx, esAltitudDespegue = false) => {
                             const tdVel = document.createElement("td");
                             tdVel.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[indiceHoraArome]) tdVel.classList.add("celda-noche");
@@ -7379,7 +7406,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     tdVel.textContent = "—";
                                     tdDir.textContent = "—";
                                 } else {
-                                    const vRound = Math.round(interp.speed);
+                                    let speed = interp.speed;
+                                    
+                                    if (chkAplicarCorreccionEstadistica && esAltitudDespegue) {
+                                        speed = corregirVientoEcmwf(speed);
+                                    }
+
+                                    const vRound = Math.round(Math.max(0, speed));
                                     const dRound = Math.round(interp.dir);
 
                                     tdVel.textContent = vRound;
@@ -7395,13 +7428,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             // Ejecutamos la interpolación vinculada a la hora de la columna i
-                            crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i, true, "1px solid #000");
-                            crearCeldasInterpoladas(filaEcmwfVel1500, filaEcmwfDir1500, 1500, 1500, i, false, "1px solid #000");
-                            crearCeldasInterpoladas(filaEcmwfVel1000, filaEcmwfDir1000, 1000, 1000, i, false, "1px solid #000");
-                            crearCeldasInterpoladas(filaEcmwfVel500,  filaEcmwfDir500,  500,  500,  i, false, "2px solid #000");
+                            crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i, true, "1px solid #000", false);
+                            crearCeldasInterpoladas(filaEcmwfVel1500, filaEcmwfDir1500, 1500, 1500, i, false, "1px solid #000", false);
+                            crearCeldasInterpoladas(filaEcmwfVel1000, filaEcmwfDir1000, 1000, 1000, i, false, "1px solid #000", false);
+                            crearCeldasInterpoladas(filaEcmwfVel500,  filaEcmwfDir500,  500,  500,  i, false, "2px solid #000", false);
 
-                            // Interpolación maestra para la altitud real del despegue
-                            crearCeldasInterpoladas(filaEcmwfValt, filaEcmwfDalt, altReal, altReal, i, false, "2px solid #000");
+                            // Solo la altitud de despegue recibe la corrección estadística (true):
+                            crearCeldasInterpoladas(filaEcmwfValt, filaEcmwfDalt, altReal, altReal, i, false, "2px solid #000", true);
                         }
                     }
 				}
@@ -8134,6 +8167,32 @@ async function comprobarVersionApp() {
     } catch (e) {
         console.warn("No se pudo comprobar la versión de la app", e);
     }
+}
+
+function corregirViento10m(velOriginal, hourlyData, indiceHora) {
+    if (!chkAplicarCorreccionEstadistica || velOriginal === null || velOriginal === undefined) {
+        return velOriginal;
+    }
+    const vel = Number(velOriginal);
+
+    // Lee directamente el modelo exacto que tu PHP guardó en el JSON
+    let modelo = 'AromeHD';
+    if (hourlyData && Array.isArray(hourlyData.model_source) && hourlyData.model_source[indiceHora]) {
+        modelo = hourlyData.model_source[indiceHora];
+    }
+
+    const corregido = (modelo === 'AromeHD')
+        ? (CORR_AROME_PENDIENTE * vel) + CORR_AROME_OFFSET
+        : (CORR_ICON_PENDIENTE * vel) + CORR_ICON_OFFSET;
+
+    return Math.max(0, corregido);
+}
+
+function corregirVientoEcmwf(velOriginal) {
+    if (!chkAplicarCorreccionEstadistica || velOriginal === null || velOriginal === undefined) {
+        return velOriginal;
+    }
+    return Math.max(0, (CORR_ECMWF_PENDIENTE * Number(velOriginal)) + CORR_ECMWF_OFFSET);
 }
 
 // ---------------------------------------------------------------
@@ -10136,6 +10195,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const btnMas   = document.getElementById('stepper-seguimiento-mas');
         if (btnMenos) btnMenos.disabled = (idxDias <= 0);
         if (btnMas)   btnMas.disabled   = (idxDias >= PASOS_DIAS_SEGUIMIENTO.length - 1);
+    }
+
+    if (document.getElementById("chkAplicarCorreccionEstadistica")) {
+        document.getElementById("chkAplicarCorreccionEstadistica").checked = chkAplicarCorreccionEstadistica;
     }
 
 	window.resetFiltroDistancia = function(reconstruir = true) { //flag para que, si le hemos llamado desde activarEdicionFavoritos(), que ya tiene construir_tabla, no se llame otra vez aquí, ya que ya se hace desde esa función (bloquearía navegador)
