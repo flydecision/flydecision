@@ -28,6 +28,16 @@ let CORR_ICON_OFFSET     = 4.8;
 
 let CORR_ECMWF_PENDIENTE = 0.48;
 let CORR_ECMWF_OFFSET    = 5.3;
+
+// ─── CONSTANTES DE CORRECCIÓN ESTADÍSTICA (RACHA MÁXIMA) ───────────
+let CORR_RACHA_AROME_PENDIENTE = 0.54;
+let CORR_RACHA_AROME_OFFSET    = 4.7;
+
+let CORR_RACHA_ICON_PENDIENTE  = 0.45;
+let CORR_RACHA_ICON_OFFSET     = 5.0;
+
+let CORR_RACHA_ECMWF_PENDIENTE = 0.47;
+let CORR_RACHA_ECMWF_OFFSET    = 5.0;
 // ───────────────────────────────────────────────────────────────────
 
 // Valores límite para puntuación XC y colores en tabla
@@ -4013,7 +4023,12 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
             velBase = corregirViento10m(velBase, hourlyData, i);
         }
         let velocidad = Math.round(Math.max(0, velBase));
-        let rachaCorregida = Math.round(Math.max(0, rachaArray[i]));
+
+        let rachaBase = rachaArray[i];
+        if (chkAplicarCorreccionEstadistica) {
+            rachaBase = corregirRacha10m(rachaBase, hourlyData, i);
+        }
+        let rachaCorregida = Math.round(Math.max(0, rachaBase));
 
         // --- DIRECCIÓN Y LADERA CONTINUA ---
         let minimoAngulo = 180;
@@ -7003,6 +7018,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             continue;
                         }
                         let rachaModelo = hourlyData.wind_gusts_10m[i];
+                        if (chkAplicarCorreccionEstadistica) {
+                            rachaModelo = corregirRacha10m(rachaModelo, hourlyData, i);
+                        }
                         let racha = Math.round(Math.max(0, rachaModelo));
 
                         const td = document.createElement("td");
@@ -7451,7 +7469,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             } else if (!hourlyEcmwf || idxEcmwf === undefined || !hourlyEcmwf.wind_gusts_10m || hourlyEcmwf.wind_gusts_10m[idxEcmwf] === null || hourlyEcmwf.wind_gusts_10m[idxEcmwf] === undefined) {
                                 tdRachaEcmwf.textContent = "—";
                             } else {
-                                const rVal = Math.round(Number(hourlyEcmwf.wind_gusts_10m[idxEcmwf]));
+                                let rRaw = Number(hourlyEcmwf.wind_gusts_10m[idxEcmwf]);
+
+                                if (chkAplicarCorreccionEstadistica) {
+                                    rRaw = corregirRachaEcmwf(rRaw);
+                                }
+
+                                const rVal = Math.round(Math.max(0, rRaw));
                                 tdRachaEcmwf.textContent = rVal;
                                 tdRachaEcmwf.title = `${rVal} km/h (Racha máxima ECMWF)`;
                             }
@@ -8209,11 +8233,36 @@ function corregirViento10m(velOriginal, hourlyData, indiceHora) {
     return Math.max(0, corregido);
 }
 
+function corregirRacha10m(rachaOriginal, hourlyData, indiceHora) {
+    if (!chkAplicarCorreccionEstadistica || rachaOriginal === null || rachaOriginal === undefined) {
+        return rachaOriginal;
+    }
+    const racha = Number(rachaOriginal);
+
+    let modelo = 'AromeHD';
+    if (hourlyData && Array.isArray(hourlyData.model_source) && hourlyData.model_source[indiceHora]) {
+        modelo = hourlyData.model_source[indiceHora];
+    }
+
+    const corregido = (modelo === 'AromeHD')
+        ? (CORR_RACHA_AROME_PENDIENTE * racha) + CORR_RACHA_AROME_OFFSET
+        : (CORR_RACHA_ICON_PENDIENTE * racha) + CORR_RACHA_ICON_OFFSET;
+
+    return Math.max(0, corregido);
+}
+
 function corregirVientoEcmwf(velOriginal) {
     if (!chkAplicarCorreccionEstadistica || velOriginal === null || velOriginal === undefined) {
         return velOriginal;
     }
     return Math.max(0, (CORR_ECMWF_PENDIENTE * Number(velOriginal)) + CORR_ECMWF_OFFSET);
+}
+
+function corregirRachaEcmwf(rachaOriginal) {
+    if (!chkAplicarCorreccionEstadistica || rachaOriginal === null || rachaOriginal === undefined) {
+        return rachaOriginal;
+    }
+    return Math.max(0, (CORR_RACHA_ECMWF_PENDIENTE * Number(rachaOriginal)) + CORR_RACHA_ECMWF_OFFSET);
 }
 
 // ---------------------------------------------------------------
