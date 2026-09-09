@@ -2718,7 +2718,7 @@ function gestionarClickMasivoFavoritos() {
         if (chkMostrarXC) filasPorDespegue += 3;
         if (chkMostrarCizalladura) filasPorDespegue++;
         if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
-            filasPorDespegue += 10; 
+            filasPorDespegue += 11; 
         }
     }
 
@@ -2809,7 +2809,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
         if (chkMostrarXC) filasPorDespegue += 3;
         if (chkMostrarCizalladura) filasPorDespegue++;
         if (chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable) {
-            filasPorDespegue += 10; 
+            filasPorDespegue += 11; 
         }
     }
 
@@ -6025,7 +6025,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const mostrarEcmwfDOM = chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable;
 
             let filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500;
-            let filaEcmwfValt, filaEcmwfDalt;
+            let filaEcmwfValt, filaEcmwfRalt, filaEcmwfDalt;
             
             if (mostrarEcmwfDOM) {
                 filaEcmwfVel3000  = document.createElement("tr");
@@ -6038,12 +6038,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaEcmwfDir500   = document.createElement("tr");
 
                 filaEcmwfValt      = document.createElement("tr"); 
+                filaEcmwfRalt     = document.createElement("tr");
                 filaEcmwfDalt      = document.createElement("tr"); 
 
                 [
                     filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                     filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
-                    filaEcmwfValt, filaEcmwfDalt
+                    filaEcmwfValt, filaEcmwfRalt, filaEcmwfDalt
                 ].forEach(f => {
                     f.classList.add("ecmwf-neutral-row");
                     
@@ -6061,7 +6062,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel1500, filaEcmwfDir1500, 
                 filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
-                filaEcmwfValt, filaEcmwfDalt
+                filaEcmwfValt, filaEcmwfRalt, filaEcmwfDalt
             ].filter(Boolean);
             const rowsGroup2 = [filaTecho, filaCape, filaCin].filter(Boolean);
 
@@ -6620,6 +6621,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir500, null, "2px solid #000");
 
                 addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>`, tituloEcmwfValt);
+                addIconCellEcmwf(filaEcmwfRalt, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', tituloEcmwfRacha10);
                 addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDalt, null, "2px solid #000");
 
 				// ---------------------------------------------------------------
@@ -7427,14 +7429,33 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         };
 
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
-                            // Ejecutamos la interpolación vinculada a la hora de la columna i
                             crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i, true, "1px solid #000", false);
                             crearCeldasInterpoladas(filaEcmwfVel1500, filaEcmwfDir1500, 1500, 1500, i, false, "1px solid #000", false);
                             crearCeldasInterpoladas(filaEcmwfVel1000, filaEcmwfDir1000, 1000, 1000, i, false, "1px solid #000", false);
                             crearCeldasInterpoladas(filaEcmwfVel500,  filaEcmwfDir500,  500,  500,  i, false, "2px solid #000", false);
 
-                            // Solo la altitud de despegue recibe la corrección estadística (true):
+                            // 1. Viento medio a altitud de despegue y dirección
                             crearCeldasInterpoladas(filaEcmwfValt, filaEcmwfDalt, altReal, altReal, i, false, "2px solid #000", true);
+
+                            // 2. Racha máxima a altitud de despegue
+                            const tdRachaEcmwf = document.createElement("td");
+                            tdRachaEcmwf.classList.add("ecmwf-neutral");
+                            if (cacheEsNoche[i]) tdRachaEcmwf.classList.add("celda-noche");
+                            if (setInicioDia.has(i)) tdRachaEcmwf.classList.add("borde-grueso-izquierda");
+                            tdRachaEcmwf.style.fontSize = "12px";
+
+                            const idxEcmwf = ecmwfTimeMap.get(horas[i]);
+
+                            if (!debeMostrarse) {
+                                tdRachaEcmwf.textContent = "…";
+                            } else if (!hourlyEcmwf || idxEcmwf === undefined || !hourlyEcmwf.wind_gusts_10m || hourlyEcmwf.wind_gusts_10m[idxEcmwf] === null || hourlyEcmwf.wind_gusts_10m[idxEcmwf] === undefined) {
+                                tdRachaEcmwf.textContent = "—";
+                            } else {
+                                const rVal = Math.round(Number(hourlyEcmwf.wind_gusts_10m[idxEcmwf]));
+                                tdRachaEcmwf.textContent = rVal;
+                                tdRachaEcmwf.title = `${rVal} km/h (Racha máxima ECMWF)`;
+                            }
+                            filaEcmwfRalt.appendChild(tdRachaEcmwf);
                         }
                     }
 				}
