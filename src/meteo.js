@@ -19,26 +19,27 @@ let VelocidadIdeal = Number(localStorage.getItem("METEO_VELOCIDAD_IDEAL")) || 12
 let VelocidadMax = Number(localStorage.getItem("METEO_VELOCIDAD_MAXIMA")) || 20;  
 let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 28;
 
-// ─── CONSTANTES DE CORRECCIÓN ESTADÍSTICA (VIENTO MEDIO) ───────────
-let CORR_AROME_PENDIENTE = 0.85;
-let CORR_AROME_OFFSET    = 3.2;
-
-let CORR_ICON_PENDIENTE  = 0.68;
-let CORR_ICON_OFFSET     = 4.8;
-
-let CORR_ECMWF_PENDIENTE = 0.48;
-let CORR_ECMWF_OFFSET    = 5.3;
-
-// ─── CONSTANTES DE CORRECCIÓN ESTADÍSTICA (RACHA MÁXIMA) ───────────
-let CORR_RACHA_AROME_PENDIENTE = 0.54;
-let CORR_RACHA_AROME_OFFSET    = 4.7;
-
-let CORR_RACHA_ICON_PENDIENTE  = 0.45;
-let CORR_RACHA_ICON_OFFSET     = 5.0;
-
-let CORR_RACHA_ECMWF_PENDIENTE = 0.47;
-let CORR_RACHA_ECMWF_OFFSET    = 5.0;
-// ───────────────────────────────────────────────────────────────────
+// ─── MATRIZ DE CORRECCIÓN ESTADÍSTICA (18 FÓRMULAS OLS) ───────────────
+// Estructura: [modelo][regimen] -> { vm_m, vm_b, racha_m, racha_b }
+// Regímenes: 'headwind' (<=45°), 'crosswind' (46°-90°), 'tailwind' (>90°)
+const CORRECCIONES_ESTADISTICAS = {
+    'AromeHD': {
+        headwind:  { vm_m: 0.83, vm_b: 3.2, racha_m: 0.53, racha_b: 4.5 },
+        crosswind: { vm_m: 0.87, vm_b: 3.3, racha_m: 0.57, racha_b: 4.6 },
+        tailwind:  { vm_m: 0.90, vm_b: 3.4, racha_m: 0.53, racha_b: 5.9 }
+    },
+    'ICON-EU': {
+        headwind:  { vm_m: 0.61, vm_b: 5.1, racha_m: 0.40, racha_b: 6.0 },
+        crosswind: { vm_m: 0.61, vm_b: 5.0, racha_m: 0.50, racha_b: 3.6 },
+        tailwind:  { vm_m: 0.89, vm_b: 3.7, racha_m: 0.50, racha_b: 4.5 }
+    },
+    'ECMWF': {
+        headwind:  { vm_m: 0.44, vm_b: 5.6, racha_m: 0.66, racha_b: -0.9 },
+        crosswind: { vm_m: 0.45, vm_b: 5.4, racha_m: 0.47, racha_b: 1.8 },
+        tailwind:  { vm_m: 0.61, vm_b: 4.7, racha_m: 0.58, racha_b: 1.6 }
+    }
+};
+// ─────────────────────────────────────────────────────────────────────
 
 // Valores límite para puntuación XC y colores en tabla
 // Techo AGL: 800m ya permite volar, 1500m AGL es un día excelente (se suma a la montaña).
@@ -4020,13 +4021,13 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         let dirCorregida = dirArray[i];
         let velBase = velArray[i];
         if (chkAplicarCorreccionEstadistica) {
-            velBase = corregirViento10m(velBase, hourlyData, i);
+            velBase = corregirViento10m(velBase, hourlyData, i, despegueObj); 
         }
         let velocidad = Math.round(Math.max(0, velBase));
 
         let rachaBase = rachaArray[i];
         if (chkAplicarCorreccionEstadistica) {
-            rachaBase = corregirRacha10m(rachaBase, hourlyData, i);
+            rachaBase = corregirRacha10m(rachaBase, hourlyData, i, despegueObj); 
         }
         let rachaCorregida = Math.round(Math.max(0, rachaBase));
 
@@ -6966,7 +6967,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         }
                         let velocidadModelo = hourlyData.wind_speed_10m[i];
                         if (chkAplicarCorreccionEstadistica) {
-                            velocidadModelo = corregirViento10m(velocidadModelo, hourlyData, i);
+                            velocidadModelo = corregirViento10m(velocidadModelo, hourlyData, i, d); 
                         }
                         let velocidad = Math.round(Math.max(0, velocidadModelo));
 
@@ -7019,7 +7020,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         }
                         let rachaModelo = hourlyData.wind_gusts_10m[i];
                         if (chkAplicarCorreccionEstadistica) {
-                            rachaModelo = corregirRacha10m(rachaModelo, hourlyData, i);
+                            rachaModelo = corregirRacha10m(rachaModelo, hourlyData, i, d); 
                         }
                         let racha = Math.round(Math.max(0, rachaModelo));
 
@@ -7429,7 +7430,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     let speed = interp.speed;
                                     
                                     if (chkAplicarCorreccionEstadistica && esAltitudDespegue) {
-                                        speed = corregirVientoEcmwf(speed);
+                                        speed = corregirVientoEcmwf(speed, interp.dir, d); 
                                     }
 
                                     const vRound = Math.round(Math.max(0, speed));
@@ -7445,6 +7446,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             trVel.appendChild(tdVel);
                             trDir.appendChild(tdDir);
                         };
+
+                        let ultimoDirEcmwfAlt = null;
 
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i, true, "1px solid #000", false);
@@ -7472,10 +7475,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 let rRaw = Number(hourlyEcmwf.wind_gusts_10m[idxEcmwf]);
 
                                 if (chkAplicarCorreccionEstadistica) {
-                                    rRaw = corregirRachaEcmwf(rRaw);
+                                    rRaw = corregirRachaEcmwf(rRaw, ultimoDirEcmwfAlt, d);
                                 }
 
-                                const rVal = Math.round(Math.max(0, rRaw));
+                                let rVal = Math.round(Math.max(0, rRaw));
+
+                                // Coherencia física (Racha >= Viento medio en despegue)
+                                const vMedioDespegue = parseInt(filaEcmwfValt.lastElementChild?.textContent, 10) || 0;
+                                if (rVal < vMedioDespegue) {
+                                    rVal = vMedioDespegue;
+                                }
+
                                 tdRachaEcmwf.textContent = rVal;
                                 tdRachaEcmwf.title = `${rVal} km/h (Racha máxima ECMWF)`;
                             }
@@ -8214,26 +8224,52 @@ async function comprobarVersionApp() {
     }
 }
 
-function corregirViento10m(velOriginal, hourlyData, indiceHora) {
+// Helper para clasificar la incidencia del viento respecto a la ladera
+function obtenerRegimenIncidencia(dirViento, orientacionesGrados) {
+    if (dirViento === null || dirViento === undefined || isNaN(dirViento)) return 'headwind';
+    if (!orientacionesGrados) return 'headwind';
+
+    let oris = [];
+    if (Array.isArray(orientacionesGrados)) {
+        oris = orientacionesGrados;
+    } else if (typeof orientacionesGrados === 'string') {
+        oris = orientacionesGrados.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+    }
+
+    if (oris.length === 0) return 'headwind';
+
+    let minDelta = 180;
+    oris.forEach(ori => {
+        const d = diferenciaAngular(dirViento, ori);
+        if (d < minDelta) minDelta = d;
+    });
+
+    if (minDelta <= 45) return 'headwind';
+    if (minDelta <= 90) return 'crosswind';
+    return 'tailwind';
+}
+
+function corregirViento10m(velOriginal, hourlyData, indiceHora, despegueObj) {
     if (!chkAplicarCorreccionEstadistica || velOriginal === null || velOriginal === undefined) {
         return velOriginal;
     }
     const vel = Number(velOriginal);
 
-    // Lee directamente el modelo exacto que tu PHP guardó en el JSON
     let modelo = 'AromeHD';
     if (hourlyData && Array.isArray(hourlyData.model_source) && hourlyData.model_source[indiceHora]) {
         modelo = hourlyData.model_source[indiceHora];
     }
+    if (!CORRECCIONES_ESTADISTICAS[modelo]) modelo = 'AromeHD';
 
-    const corregido = (modelo === 'AromeHD')
-        ? (CORR_AROME_PENDIENTE * vel) + CORR_AROME_OFFSET
-        : (CORR_ICON_PENDIENTE * vel) + CORR_ICON_OFFSET;
+    const dir = (hourlyData && Array.isArray(hourlyData.wind_direction_10m)) ? hourlyData.wind_direction_10m[indiceHora] : null;
+    const oris = despegueObj ? despegueObj.Orientaciones_Grados : null;
+    const regimen = obtenerRegimenIncidencia(dir, oris);
 
-    return Math.max(0, corregido);
+    const coef = CORRECCIONES_ESTADISTICAS[modelo][regimen];
+    return Math.max(0, (coef.vm_m * vel) + coef.vm_b);
 }
 
-function corregirRacha10m(rachaOriginal, hourlyData, indiceHora) {
+function corregirRacha10m(rachaOriginal, hourlyData, indiceHora, despegueObj) {
     if (!chkAplicarCorreccionEstadistica || rachaOriginal === null || rachaOriginal === undefined) {
         return rachaOriginal;
     }
@@ -8243,26 +8279,39 @@ function corregirRacha10m(rachaOriginal, hourlyData, indiceHora) {
     if (hourlyData && Array.isArray(hourlyData.model_source) && hourlyData.model_source[indiceHora]) {
         modelo = hourlyData.model_source[indiceHora];
     }
+    if (!CORRECCIONES_ESTADISTICAS[modelo]) modelo = 'AromeHD';
 
-    const corregido = (modelo === 'AromeHD')
-        ? (CORR_RACHA_AROME_PENDIENTE * racha) + CORR_RACHA_AROME_OFFSET
-        : (CORR_RACHA_ICON_PENDIENTE * racha) + CORR_RACHA_ICON_OFFSET;
+    const dir = (hourlyData && Array.isArray(hourlyData.wind_direction_10m)) ? hourlyData.wind_direction_10m[indiceHora] : null;
+    const oris = despegueObj ? despegueObj.Orientaciones_Grados : null;
+    const regimen = obtenerRegimenIncidencia(dir, oris);
 
+    const coef = CORRECCIONES_ESTADISTICAS[modelo][regimen];
+    const corregido = (coef.racha_m * racha) + coef.racha_b;
+
+    // Regresión OLS directa, asegurando únicamente que no sea inferior a 0
     return Math.max(0, corregido);
 }
 
-function corregirVientoEcmwf(velOriginal) {
+function corregirVientoEcmwf(velOriginal, dirViento, despegueObj) {
     if (!chkAplicarCorreccionEstadistica || velOriginal === null || velOriginal === undefined) {
         return velOriginal;
     }
-    return Math.max(0, (CORR_ECMWF_PENDIENTE * Number(velOriginal)) + CORR_ECMWF_OFFSET);
+    const oris = despegueObj ? despegueObj.Orientaciones_Grados : null;
+    const regimen = obtenerRegimenIncidencia(dirViento, oris);
+    const coef = CORRECCIONES_ESTADISTICAS['ECMWF'][regimen];
+
+    return Math.max(0, (coef.vm_m * Number(velOriginal)) + coef.vm_b);
 }
 
-function corregirRachaEcmwf(rachaOriginal) {
+function corregirRachaEcmwf(rachaOriginal, dirViento, despegueObj) {
     if (!chkAplicarCorreccionEstadistica || rachaOriginal === null || rachaOriginal === undefined) {
         return rachaOriginal;
     }
-    return Math.max(0, (CORR_RACHA_ECMWF_PENDIENTE * Number(rachaOriginal)) + CORR_RACHA_ECMWF_OFFSET);
+    const oris = despegueObj ? despegueObj.Orientaciones_Grados : null;
+    const regimen = obtenerRegimenIncidencia(dirViento, oris);
+    const coef = CORRECCIONES_ESTADISTICAS['ECMWF'][regimen];
+
+    return Math.max(0, (coef.racha_m * Number(rachaOriginal)) + coef.racha_b);
 }
 
 // ---------------------------------------------------------------
