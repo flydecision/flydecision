@@ -6965,11 +6965,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             filaVel.appendChild(td);
                             continue;
                         }
-                        let velocidadModelo = hourlyData.wind_speed_10m[i];
+                        const rawVelOriginal = hourlyData.wind_speed_10m[i];
+                        let velocidadModelo = rawVelOriginal;
                         if (chkAplicarCorreccionEstadistica) {
-                            velocidadModelo = corregirViento10m(velocidadModelo, hourlyData, i, d); 
+                            velocidadModelo = corregirViento10m(velocidadModelo, hourlyData, i, d);
                         }
                         let velocidad = Math.round(Math.max(0, velocidadModelo));
+                        const velOrigRound = Math.round(Math.max(0, rawVelOriginal));
 
                         const td = document.createElement("td");
 
@@ -6978,7 +6980,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.classList.add("celda-noche");
                         }
                                     
-                        // ¡Veo que aquí ya has puesto lo del PASO 1 (setInicioDia)! ¡Genial!
                         if (setInicioDia.has(i)) {
                             td.classList.add("borde-grueso-izquierda");
                         }
@@ -6997,7 +6998,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         } 
 
                         td.textContent = velocidad;
-                        td.title = `${velocidad} km/h`;
+
+                        if (chkAplicarCorreccionEstadistica) {
+                            td.style.fontWeight = "bold";
+                            td.style.fontStyle = "italic";
+                            td.title = `${velocidad} km/h (Modelo original: ${velOrigRound} km/h)`;
+                        } else {
+                            td.title = `${velocidad} km/h`;
+                        }
 
                         filaVel.appendChild(td);
                     }
@@ -7018,25 +7026,24 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             filaRacha.appendChild(td);
                             continue;
                         }
-                        let rachaModelo = hourlyData.wind_gusts_10m[i];
+                        const rawRachaOriginal = hourlyData.wind_gusts_10m[i];
+                        let rachaModelo = rawRachaOriginal;
                         if (chkAplicarCorreccionEstadistica) {
-                            rachaModelo = corregirRacha10m(rachaModelo, hourlyData, i, d); 
+                            rachaModelo = corregirRacha10m(rachaModelo, hourlyData, i, d);
                         }
                         let racha = Math.round(Math.max(0, rachaModelo));
+                        const rachaOrigRound = Math.round(Math.max(0, rawRachaOriginal));
 
                         const td = document.createElement("td");
 
-                        // Usamos la caché de noches
                         if (cacheEsNoche[i]) {
                             td.classList.add("celda-noche");
                         }
                                     
-                        // Usamos el Set del PASO 1 (ultrarrápido)
                         if (setInicioDia.has(i)) {
                             td.classList.add("borde-grueso-izquierda");
                         }
 
-                        // Lógica de colores
                         if (racha < rachaTolerable) {
                             td.classList.add("fondo-verde");
                         } 
@@ -7048,7 +7055,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         } 
 
                         td.textContent = racha;
-                        td.title = `${racha} km/h racha máxima`;
+
+                        // Si está activa la corrección: negrita y cursiva
+                        if (chkAplicarCorreccionEstadistica) {
+                            td.style.fontWeight = "bold";
+                            td.style.fontStyle = "italic";
+                            td.title = `${racha} km/h racha máxima (Modelo original: ${rachaOrigRound} km/h)`;
+                        } else {
+                            td.title = `${racha} km/h racha máxima`;
+                        }
 
                         filaRacha.appendChild(td);
                     }
@@ -7427,17 +7442,27 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     tdVel.textContent = "—";
                                     tdDir.textContent = "—";
                                 } else {
-                                    let speed = interp.speed;
+                                    const speedOriginal = interp.speed;
+                                    let speed = speedOriginal;
                                     
                                     if (chkAplicarCorreccionEstadistica && esAltitudDespegue) {
                                         speed = corregirVientoEcmwf(speed, interp.dir, d); 
                                     }
 
                                     const vRound = Math.round(Math.max(0, speed));
+                                    const vOrigRound = Math.round(Math.max(0, speedOriginal));
                                     const dRound = Math.round(interp.dir);
 
                                     tdVel.textContent = vRound;
-                                    tdVel.title = `${vRound} km/h (Velocidad interpolada verticalmente para la altura de ${altInfo} m)`;
+
+                                    // Si está activa la corrección en altitud de despegue: negrita y cursiva
+                                    if (chkAplicarCorreccionEstadistica && esAltitudDespegue) {
+                                        tdVel.style.fontWeight = "bold";
+                                        tdVel.style.fontStyle = "italic";
+                                        tdVel.title = `${vRound} km/h (Modelo original: ${vOrigRound} km/h, altitud ${altInfo} m)`;
+                                    } else {
+                                        tdVel.title = `${vRound} km/h (Velocidad interpolada verticalmente para la altura de ${altInfo} m)`;
+                                    }
 
                                     tdDir.appendChild(crearFlechaViento(dRound));
                                     tdDir.title = `${dRound}º (Dirección interpolada verticalmente para la altura de ${altInfo} m)`;
@@ -7472,22 +7497,28 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             } else if (!hourlyEcmwf || idxEcmwf === undefined || !hourlyEcmwf.wind_gusts_10m || hourlyEcmwf.wind_gusts_10m[idxEcmwf] === null || hourlyEcmwf.wind_gusts_10m[idxEcmwf] === undefined) {
                                 tdRachaEcmwf.textContent = "—";
                             } else {
-                                let rRaw = Number(hourlyEcmwf.wind_gusts_10m[idxEcmwf]);
+                                const rRaw = Number(hourlyEcmwf.wind_gusts_10m[idxEcmwf]);
+                                let rCorregido = rRaw;
+
+                                const dirVientoHora = hourlyData?.wind_direction_10m?.[i] ?? null;
 
                                 if (chkAplicarCorreccionEstadistica) {
-                                    rRaw = corregirRachaEcmwf(rRaw, ultimoDirEcmwfAlt, d);
+                                    rCorregido = corregirRachaEcmwf(rRaw, dirVientoHora, d);
                                 }
 
-                                let rVal = Math.round(Math.max(0, rRaw));
-
-                                // Coherencia física (Racha >= Viento medio en despegue)
-                                const vMedioDespegue = parseInt(filaEcmwfValt.lastElementChild?.textContent, 10) || 0;
-                                if (rVal < vMedioDespegue) {
-                                    rVal = vMedioDespegue;
-                                }
+                                const rVal = Math.round(Math.max(0, rCorregido));
+                                const rOrigVal = Math.round(Math.max(0, rRaw));
 
                                 tdRachaEcmwf.textContent = rVal;
-                                tdRachaEcmwf.title = `${rVal} km/h (Racha máxima ECMWF)`;
+
+                                // Si está activa la corrección: negrita y cursiva
+                                if (chkAplicarCorreccionEstadistica) {
+                                    tdRachaEcmwf.style.fontWeight = "bold";
+                                    tdRachaEcmwf.style.fontStyle = "italic";
+                                    tdRachaEcmwf.title = `${rVal} km/h racha (Modelo original: ${rOrigVal} km/h, ECMWF)`;
+                                } else {
+                                    tdRachaEcmwf.title = `${rVal} km/h (Racha máxima ECMWF)`;
+                                }
                             }
                             filaEcmwfRalt.appendChild(tdRachaEcmwf);
                         }
@@ -12544,12 +12575,11 @@ function inicializarMapaLeaflet() {
         attribution: '© <a href="https://www.openaip.net" target="_blank">OpenAIP</a>'
     });
     // Otros estilos: light_all,light_nolabels,light_only_labels,dark_all,dark_nolabels,dark_only_labels,voyager,voyager_nolabels,voyager_only_labels,voyager_labels_under
-    const Carto_light = crearCapaConLimiteZoom('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    const Carto_light = crearCapaConLimiteZoom('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_3k6j_1_b7b3d9c6bac93f98d355bbd4', {
         subdomains: 'abcd',
-        maxNativeZoom: 19,
-        attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://carto.com/" target="_blank">Carto</a>'
+        maxNativeZoom: 20,
+        attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://carto.com/attributions" target="_blank">Carto</a>'
     });
-
 
     function crearCapaConLimiteZoom(url, opciones) {
         const maxNativo = opciones.maxNativeZoom ?? opciones.maxZoom ?? 19;
