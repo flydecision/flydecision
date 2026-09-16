@@ -24,33 +24,33 @@
 
 <link rel="manifest" href="manifest.json">
 
-<link rel="stylesheet" href="css/nouislider.min.css">
-<link rel="stylesheet" href="css/driver.css" />
+<link rel="stylesheet" href="/css/nouislider.min.css">
+<link rel="stylesheet" href="/css/driver.css" />
 
 <!-- Leaflet CSS -->
-<link rel="stylesheet" href="css/leaflet.css" />
-<link rel="stylesheet" href="css/MarkerCluster.css" />
-<link rel="stylesheet" href="css/MarkerCluster.Default.css" />
-<link rel="stylesheet" href="css/choices.min.css" />
-<link rel="stylesheet" href="css/Control.Geocoder.css" />
+<link rel="stylesheet" href="/css/leaflet.css" />
+<link rel="stylesheet" href="/css/MarkerCluster.css" />
+<link rel="stylesheet" href="/css/MarkerCluster.Default.css" />
+<link rel="stylesheet" href="/css/choices.min.css" />
+<link rel="stylesheet" href="/css/Control.Geocoder.css" />
 
 <!-- Leaflet JSs: -->
-<script src="js/leaflet.js" defer></script>
-<script src="js/leaflet-heat.js" defer></script>
-<script src="js/leaflet.markercluster.js" defer></script>
-<script src="js/supercluster.min.js" defer></script>
-<script src="js/choices.min.js" defer></script>
-<script src="js/Control.Geocoder.js" defer></script>
-<script src="js/togeojson.js" defer></script>
-<script src="js/papaparse.min.js" defer></script>
-<script src="js/esri-leaflet.min.js" defer></script>
+<script src="/js/leaflet.js" defer></script>
+<script src="/js/leaflet-heat.js" defer></script>
+<script src="/js/leaflet.markercluster.js" defer></script>
+<script src="/js/supercluster.min.js" defer></script>
+<script src="/js/choices.min.js" defer></script>
+<script src="/js/Control.Geocoder.js" defer></script>
+<script src="/js/togeojson.js" defer></script>
+<script src="/js/papaparse.min.js" defer></script>
+<script src="/js/esri-leaflet.min.js" defer></script>
 
-<script src="js/SmoothWheelZoom.js" defer></script>
+<script src="/js/SmoothWheelZoom.js" defer></script>
 
-<script src="js/nouislider.min.js" defer></script>
-<script src="js/popper.min.js" defer></script>
-<script src="js/tippy-bundle.umd.min.js" defer></script>
-<script src="js/driver.js.iife.js" defer></script>
+<script src="/js/nouislider.min.js" defer></script>
+<script src="/js/popper.min.js" defer></script>
+<script src="/js/tippy-bundle.umd.min.js" defer></script>
+<script src="/js/driver.js.iife.js" defer></script>
 
 <!-- Librerías idiomas i18next -->
 <script src="/js/i18next.min.js"></script>
@@ -62,14 +62,14 @@
 <script src="https://cdn.jsdelivr.net/npm/i18next-browser-languagedetector@7.2.0/i18nextBrowserLanguageDetector.min.js"></script> -->
 
 <!-- Nuevo archivo de configuración de idiomas -->
-<script src="js/i18n-setup.js" defer></script>
+<script src="/js/i18n-setup.js" defer></script>
 
 <!-- API Keys map layers-->
-<script src="js/config.js" defer></script>
+<script src="/js/config.js" defer></script>
 
 <script>window.WEB_VERSION = "4.9.2";</script>
-<link rel="stylesheet" href="meteo.css?v=4.9.2">
-<script src="meteo.js?v=4.9.2" defer></script>
+<link rel="stylesheet" href="/meteo.css?v=4.9.2">
+<script src="/meteo.js?v=4.9.2" defer></script>
 
 </head>
 
@@ -132,7 +132,7 @@
 		</button>
 
 		<button id="btn-guia-edicion-favoritos" class="group-edit" data-i18n="[title]html.guiaEdicionTitle" onclick="sugerirGuiaFavoritos(true)" style="position: relative; margin-left: auto;"> 
-			<img src="icons/icono_ayuda_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
+			<img src="/icons/icono_ayuda_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
 		</button>
 
 	</div>
@@ -194,13 +194,13 @@
 					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
 				</button>
 				
-				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" data-i18n="[title]html.incluirNoFavs"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
+				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" data-i18n="[title]html.incluirNoFavs"><img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
 				
 				<!-- Botón "i" integrado con margin-left: auto para alineación vertical perfecta -->
 				<button class="btn-info btn-inline"
 						style="margin-left: 20px; background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; align-items: center;"
 						data-tippy-content-i18n="btn_info.filtroDistanciaCompleto">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>	
 			
@@ -214,7 +214,7 @@
 	
 	<div id="div-menu2-edicion-favoritos" class="div-menu2-edicion-favoritos">
 
-		<span id="contador-favoritos-texto" style="font-size: 18px; font-weight: bold;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> 0</span>
+		<span id="contador-favoritos-texto" style="font-size: 18px; font-weight: bold;"><img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> 0</span>
 
 		<button id="btn-finalizar-edicion-favoritos" class="btn-finalizar-edicion-favoritos" data-i18n="[title]html.finalizarEdicionTitle;html.finalizarEdicion" onclick="finalizarEdicionFavoritos()">
 			Finalizar edición de despegues favoritos
@@ -236,14 +236,14 @@
         <details class="config-accordion" style="margin-bottom: 8px;">
             <summary>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <img src="icons/flag_es_ES.webp" alt="Español" title="Español" style="width: 20px; height: 16px; object-fit: cover;">
-                    <img src="icons/flag_eu_ES.webp" alt="Euskara" title="Euskara" style="width: 20px; height: 16px; object-fit: cover;">
-                    <img src="icons/flag_ca_ES.webp" alt="Català" title="Català" style="width: 20px; height: 16px; object-fit: cover;">
-					<img src="icons/flag_gl_ES.webp" alt="Galego" title="Galego" style="width: 20px; height: 16px; object-fit: cover;">
-                    <img src="icons/flag_en_GB.webp" alt="English" title="English" style="width: 20px; height: 16px; object-fit: cover;">
-                    <img src="icons/flag_fr_FR.webp" alt="Français" title="Français" style="width: 20px; height: 16px; object-fit: cover;">
-                    <img src="icons/flag_de_DE.webp" alt="Deutsch" title="Deutsch" style="width: 20px; height: 16px; object-fit: cover;">
-					<img src="icons/flag_pt_PT.webp" alt="Português" title="Português" style="width: 20px; height: 16px; object-fit: cover;">
+                    <img src="/icons/flag_es_ES.webp" alt="Español" title="Español" style="width: 20px; height: 16px; object-fit: cover;">
+                    <img src="/icons/flag_eu_ES.webp" alt="Euskara" title="Euskara" style="width: 20px; height: 16px; object-fit: cover;">
+                    <img src="/icons/flag_ca_ES.webp" alt="Català" title="Català" style="width: 20px; height: 16px; object-fit: cover;">
+					<img src="/icons/flag_gl_ES.webp" alt="Galego" title="Galego" style="width: 20px; height: 16px; object-fit: cover;">
+                    <img src="/icons/flag_en_GB.webp" alt="English" title="English" style="width: 20px; height: 16px; object-fit: cover;">
+                    <img src="/icons/flag_fr_FR.webp" alt="Français" title="Français" style="width: 20px; height: 16px; object-fit: cover;">
+                    <img src="/icons/flag_de_DE.webp" alt="Deutsch" title="Deutsch" style="width: 20px; height: 16px; object-fit: cover;">
+					<img src="/icons/flag_pt_PT.webp" alt="Português" title="Português" style="width: 20px; height: 16px; object-fit: cover;">
                     <span style="margin-right: 4px;"></span>
                 </div>
             </summary>
@@ -253,49 +253,49 @@
                 
                 <label class="fila-idioma-selector">
                     <input type="radio" name="selector-idioma" value="es-ES" class="radio-idioma" onchange="window.cambiarIdioma('es-ES')">
-                    <img src="icons/flag_es_ES.webp" alt="Español" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <img src="/icons/flag_es_ES.webp" alt="Español" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
                     <span class="lang-name">Español</span>
                 </label>
 
                 <label class="fila-idioma-selector">
                     <input type="radio" name="selector-idioma" value="eu-ES" class="radio-idioma" onchange="window.cambiarIdioma('eu-ES')">
-                    <img src="icons/flag_eu_ES.webp" alt="Euskara" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <img src="/icons/flag_eu_ES.webp" alt="Euskara" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
                     <span class="lang-name">Euskara</span>
                 </label>
 
                 <label class="fila-idioma-selector">
                     <input type="radio" name="selector-idioma" value="ca-ES" class="radio-idioma" onchange="window.cambiarIdioma('ca-ES')">
-                    <img src="icons/flag_ca_ES.webp" alt="Català" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <img src="/icons/flag_ca_ES.webp" alt="Català" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
                     <span class="lang-name">Català</span>
                 </label>
 
                 <label class="fila-idioma-selector">
                     <input type="radio" name="selector-idioma" value="gl-ES" class="radio-idioma" onchange="window.cambiarIdioma('gl-ES')">
-                    <img src="icons/flag_gl_ES.webp" alt="Galego" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <img src="/icons/flag_gl_ES.webp" alt="Galego" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
                     <span class="lang-name">Galego</span>
                 </label>
 
                 <label class="fila-idioma-selector">
                     <input type="radio" name="selector-idioma" value="en-GB" class="radio-idioma" onchange="window.cambiarIdioma('en-GB')">
-                    <img src="icons/flag_en_GB.webp" alt="English" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <img src="/icons/flag_en_GB.webp" alt="English" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
                     <span class="lang-name">English</span>
                 </label>
 
                 <label class="fila-idioma-selector">
                     <input type="radio" name="selector-idioma" value="fr-FR" class="radio-idioma" onchange="window.cambiarIdioma('fr-FR')">
-                    <img src="icons/flag_fr_FR.webp" alt="Français" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <img src="/icons/flag_fr_FR.webp" alt="Français" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
                     <span class="lang-name">Français</span>
                 </label>
 
                 <label class="fila-idioma-selector">
                     <input type="radio" name="selector-idioma" value="de-DE" class="radio-idioma" onchange="window.cambiarIdioma('de-DE')">
-                    <img src="icons/flag_de_DE.webp" alt="Deutsch" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <img src="/icons/flag_de_DE.webp" alt="Deutsch" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
                     <span class="lang-name">Deutsch</span>
                 </label>
 
                 <label class="fila-idioma-selector">
                     <input type="radio" name="selector-idioma" value="pt-PT" class="radio-idioma" onchange="window.cambiarIdioma('pt-PT')">
-                    <img src="icons/flag_pt_PT.webp" alt="Português" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
+                    <img src="/icons/flag_pt_PT.webp" alt="Português" style="width: 20px; height: 16px; object-fit: cover; margin-left: 8px; margin-right: 8px;">
                     <span class="lang-name">Português</span>
                 </label>
 
@@ -313,7 +313,7 @@
 			<div style="display: flex; align-items: center; gap: 8px;">
 				<span style="font-weight: bold; line-height: 1.2;" data-i18n="ajustes.modoApp.titulo">Modo de la aplicación:</span>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipModoApp">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 
@@ -337,7 +337,7 @@
 		<div style="display: flex; align-items: center; gap: 8px; width: 100%; max-width: 330px; min-width: 330px; margin-bottom: 8px !important;">
 			
 			<button class="btn-accion" onclick="activarEdicionFavoritos(); " style="height: 34px; display: flex; align-items: center; gap: 6px; font-weight: bold;">
-				<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width: 16px; height: 16px;">
+				<img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width: 16px; height: 16px;">
 				<span data-i18n="ajustes.editarFavoritos">Editar favoritos</span>
 			</button>
 
@@ -367,10 +367,10 @@
 					<div class="div-paneles-controles-sin-pips">
 						<div class="linea-con-bt-info">
 							<div id="titulo-velocidad-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold; margin-left: 2px;">
-								<img src="icons/icono_viento_60.webp" width="20" height="20" style="display: block;"><span data-i18n="ajustes.viento">Viento</span>
+								<img src="/icons/icono_viento_60.webp" width="20" height="20" style="display: block;"><span data-i18n="ajustes.viento">Viento</span>
 							</div>
 							<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipVientoLimites">
-							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 							</button>
 						</div>
 						<div id="velocidad-slider" role="slider" aria-labelledby="titulo-velocidad-slider"></div>
@@ -380,10 +380,10 @@
 					<div class="div-paneles-controles-sin-pips">
 						<div class="linea-con-bt-info">
 							<div id="titulo-racha-slider" style="display: flex; align-items: center; gap: 6px; font-weight: bold; margin-left: 2px;">
-								<img src="icons/icono_racha_60.webp" width="20" style="display: block;"><span data-i18n="ajustes.rachaMaxima">Racha máxima</span>
+								<img src="/icons/icono_racha_60.webp" width="20" style="display: block;"><span data-i18n="ajustes.rachaMaxima">Racha máxima</span>
 							</div>
 							<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipRachaMaxima">
-							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 							</button>
 						</div>
 						<div id="racha-slider" role="slider" aria-labelledby="titulo-racha-slider"></div>
@@ -403,7 +403,7 @@
 						<input type="checkbox" id="chkMostrarProbPrecipitacion" onclick="alternarMostrarProbPrecipitacion()"> <span data-i18n="ajustes.probPrecipitacion"> Probabilidad de Precipitación</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipProbPrecipitacion">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 				<div class="linea-con-bt-info">
@@ -411,7 +411,7 @@
 						<input type="checkbox" id="chkMostrarBaseNube" onclick="alternarMostrarBaseNube()"> <span data-i18n="ajustes.baseNube"> Base de nube MSL</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipBaseNube">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 				<div class="linea-con-bt-info">
@@ -419,7 +419,7 @@
 						<input type="checkbox" id="chkMostrarTemperatura" onclick="alternarMostrarTemperatura()"> <span data-i18n="ajustes.temperatura"> Temperatura</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipTemperatura" data-tippy-content="<b>Temperatura 2m (°C)</b><br><br>Temperatura del aire a 2 metros de altura sobre el suelo.<br><br>Datos originales del modelo ECMWF.">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 				<div class="linea-con-bt-info">
@@ -427,7 +427,7 @@
 						<input type="checkbox" id="chkMostrarVientoAlturas" onclick="alternarMostrarVientoAlturas()"> <span data-i18n="ajustes.vientoAlturas"> Viento a 20, 50 y 100 m</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipVientoAlturas">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 				<div class="linea-con-bt-info">
@@ -435,7 +435,7 @@
 						<input type="checkbox" id="chkMostrarCizalladura" onclick="alternarMostrarCizalladura()"> <span data-i18n="ajustes.cizalladura_fiabilidad"> Cizalladura / Fiabilidad</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipCizalladura">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 				<div class="linea-con-bt-info">
@@ -443,7 +443,7 @@
 						<input type="checkbox" id="chkMostrarXC" onclick="alternarMostrarXC()"> <span data-i18n="ajustes.XC">XC: Techo MSL, CAPE y CIN</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipXC">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 				<div class="linea-con-bt-info">
@@ -452,7 +452,7 @@
 					</label>
 					<button class="btn-info btn-inline"
 						data-tippy-content-i18n="btn_info.tooltipdDetalle15min">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 				
@@ -474,7 +474,7 @@
 						</span>
 						<button class="btn-info btn-inline" 
 							data-tippy-content-i18n="btn_info.tooltipSinopticoECMWF">
-							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 						</button>
 					</div>
 					
@@ -501,7 +501,7 @@
 					</label>
 					<button class="btn-info btn-inline"
 						data-tippy-content-i18n="btn_info.tooltipCorreccionEstadistica">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 
@@ -573,7 +573,7 @@
 							<input type="checkbox" id="chkColorearFlechasBalizas" onclick="alternarColorearFlechasBalizas()"> <span data-i18n="ajustes.colorearFlechasBalizas">Flechas de balizas según viento</span>
 						</label>
 						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipColorearFlechasBalizas" data-tippy-content="<b>Flechas de balizas según viento</b><br><br>Colorea el relleno de las flechas de dirección del viento de las balizas en el mapa en base a la velocidad del viento actual, utilizando una escala cromática de verde (viento flojo) a rojo (viento de más de 50 km/h).">
-							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 						</button>
 					</div>
 
@@ -584,7 +584,7 @@
 							<div id="viento-balizas-slider" role="slider" aria-labelledby="titulo-viento-balizas-slider" style="flex: 1; margin-right: 20px; margin-top: 0px !important; margin-left: 0px !important; margin-bottom: 0px !important;"></div>
 
 							<button class="btn-info btn-inline" style="flex-shrink: 0; margin-top: 0px !important;" data-tippy-content-i18n="btn_info.tooltipLimiteVientoRojoBalizas" data-tippy-content="<b>Límite viento rojo balizas</b><br><br>Permite personalizar el valor de velocidad del viento (km/h) a partir del cual las flechas de dirección de las balizas en el mapa se colorearán de color rojo intenso (peligro).<br><br>La escala de degradado de verde a rojo se adaptará automáticamente a este valor.">
-								<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+								<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 							</button>
 						</div>
 					</div>
@@ -594,7 +594,7 @@
 							<input type="checkbox" id="chkOcultarValoresBalizas" onclick="alternarOcultarValoresBalizas()"> <span data-i18n="ajustes.ocultarValoresBalizas">Ocultar cifras de viento</span>
 						</label>
 						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipOcultarValoresBalizas" data-tippy-content="<b>Modo compacto (solo flechas)</b><br><br>Oculta las cifras numéricas de velocidad del viento medio y ráfaga en los iconos de las balizas en el mapa, dejando únicamente las flechas de dirección visibles para limpiar la interfaz.">
-							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 						</button>
 					</div>
 				</div>
@@ -617,7 +617,7 @@
 								<span data-i18n="ajustes.horarioVueloPref"> Horario de vuelo preferido</span>
 							</div>
 							<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipHorarioVuelo">
-								<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+								<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 							</button>
 						</div>
 						<div id="configuracion-horario-slider" role="slider" aria-labelledby="titulo-configuracion-horario-slider"></div>
@@ -629,7 +629,7 @@
 						<input type="checkbox" id="chkMostrarSoloHorasDiurnas" onclick="alternarHorasNoche()"> <span data-i18n="ajustes.solo_horas_diurnas"> Solo horas diurnas</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipHorasDiurnas">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 
@@ -638,7 +638,7 @@
 						<input type="checkbox" id="chkOrdenarPorXC" onclick="alternarOrdenarPorXC()"> <span data-i18n="ajustes.ordenar_xc"> Ordenar por Condiciones XC</span>
 					</label>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipOrdenarXC">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 
@@ -656,7 +656,7 @@
 						<button id="stepper-seguimiento-mas" class="stepper-btn" onclick="cambiarDiasSeguimiento(1)">+</button>
 					</div>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipDiasSeguimiento">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 
@@ -672,7 +672,7 @@
 				<span style="font-weight: bold;" data-i18n="ajustes.acordeon.sobreActualizacion">Actualizaciones modelos meteo</span>
 				<button class="btn-info btn-inline" 
 					data-tippy-content-i18n="btn_info.tooltipModelosMeteo">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 
@@ -698,11 +698,11 @@
 				<span id="web-version-text" style="font-size: 12px; color: #666;"></span>
 				<!-- Estudio -->
 				<a href="https://flydecision.com/estudio" onclick="abrirLinkExterno(this.href); return false;" style="display: flex; align-items: center; margin-left: 10px; text-decoration: none;">
-					<img src="icons/study.webp" alt="Estudio estadístico comparativo de acierto de modelos meteorológicos" style="height: 24px; width: auto; border-radius: 4px;">
+					<img src="/icons/study.webp" alt="Estudio estadístico comparativo de acierto de modelos meteorológicos" style="height: 24px; width: auto; border-radius: 4px;">
 				</a>
 				<!-- Logo de Google Play -->
 				<a href="https://play.google.com/store/apps/details?id=com.flydecision" onclick="abrirLinkExterno(this.href); return false;" style="display: flex; align-items: center; margin-left: 10px;">
-					<img src="icons/logo_google_play_34.webp" alt="App Google Play" style="height: 24px; width: auto; border-radius: 4px;">
+					<img src="/icons/logo_google_play_34.webp" alt="App Google Play" style="height: 24px; width: auto; border-radius: 4px;">
 				</a>
 			</div>
 		</div>
@@ -844,7 +844,7 @@
 					<span>&nbsp;Euskalmet</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasEuskalmet">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
@@ -853,7 +853,7 @@
 					<span>&nbsp;MeteoNavarra</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteonavarra">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
@@ -862,7 +862,7 @@
 					<span>&nbsp;MeteoCat</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteocat">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
@@ -871,7 +871,7 @@
 					<span>&nbsp;MeteoGalicia</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteogalicia">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<div class="legend-item linea-con-bt-info" title="Estaciones meteorológicas de viento">
@@ -880,7 +880,7 @@
 					<span>&nbsp;AEMET</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasAemet">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
@@ -889,7 +889,7 @@
 					<span>&nbsp;Meteoclimatic</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteoclimatic">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
@@ -898,7 +898,7 @@
 					<span>&nbsp;Holfuy</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasHolfuy">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
@@ -907,7 +907,7 @@
 					<span>&nbsp;Météo-France</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMeteofrance">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
@@ -916,7 +916,7 @@
 					<span>&nbsp;OpenWindMap</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasPioupiou">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
@@ -925,7 +925,7 @@
 					<span>&nbsp;Metar</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasMetar">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
@@ -934,7 +934,7 @@
 					<span>&nbsp;Noromet</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasNoromet">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
 			<!-- <div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
@@ -943,7 +943,7 @@
 					<span>&nbsp;FFVL</span>
 				</label>
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasFFVL">
-					<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div> -->
 			<!-- 🚩 Fin Balizas -->
@@ -982,7 +982,7 @@
 						</button>
 						<icon-despegue></icon-despegue>
 						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroFavoritosMapa">
-							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 						</button>
 					</div>
 
@@ -994,7 +994,7 @@
 						</button>
 						<icon-despegue></icon-despegue>
 						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroSeguimientoMapa">
-							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 						</button>
 					</div>
 
@@ -1011,7 +1011,7 @@
 						</button>
 						<icon-baliza></icon-baliza>
 						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroFavoritosBalizasMapa">
-							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 						</button>
 					</div>
 
@@ -1023,7 +1023,7 @@
 						</button>
 						<icon-baliza></icon-baliza>
 						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroSeguimientoBalizasMapa">
-							<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 						</button>
 					</div>
 
@@ -1036,7 +1036,7 @@
 				<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
 					<label for="sliderActividad" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.Actividad">Actividad >= </label><span id="valorActividadTexto">1</span>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroActividad">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 				<input type="range" id="sliderActividad" min="1" max="5" value="1" step="1" style="width:98%;">
@@ -1046,7 +1046,7 @@
 				<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
 					<label for="sliderVuelos" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.minVuelosTexto">Nº vuelos registrados >= </label><span id="valorVuelosTexto">0</span>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipFiltroVuelos">
-						<img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
 				<input type="range" id="sliderVuelos" min="0" max="9" value="0" step="1" style="width:98%;">

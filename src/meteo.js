@@ -545,17 +545,17 @@ function construirTablaMinutely15Html(respuestaObj, idDespegue, aromeGeneralObj)
 
     const filas = [
         { etiqueta: '80 m', tituloPlano: t('minutely15.viento80', { defaultValue: 'Viento 80 m' }), datos: minutely15.wind_speed_80m, tipo: 'vel' },
-        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion80', { defaultValue: 'Dirección 80 m' }), datos: minutely15.wind_direction_80m, tipo: 'dir', bordeAbajo: true },
+        { etiqueta: '<img src="/icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion80', { defaultValue: 'Dirección 80 m' }), datos: minutely15.wind_direction_80m, tipo: 'dir', bordeAbajo: true },
         
         { etiqueta: '50 m', tituloPlano: t('minutely15.viento50', { defaultValue: 'Viento 50 m' }), datos: minutely15.wind_speed_50m, tipo: 'vel' },
-        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion50', { defaultValue: 'Dirección 50 m' }), datos: minutely15.wind_direction_50m, tipo: 'dir', bordeAbajo: true },
+        { etiqueta: '<img src="/icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion50', { defaultValue: 'Dirección 50 m' }), datos: minutely15.wind_direction_50m, tipo: 'dir', bordeAbajo: true },
         
         { etiqueta: '20 m', tituloPlano: t('minutely15.viento20', { defaultValue: 'Viento 20 m' }), datos: minutely15.wind_speed_20m, tipo: 'vel' },
-        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion20', { defaultValue: 'Dirección 20 m' }), datos: minutely15.wind_direction_20m, tipo: 'dir', bordeAbajo: true },
+        { etiqueta: '<img src="/icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion20', { defaultValue: 'Dirección 20 m' }), datos: minutely15.wind_direction_20m, tipo: 'dir', bordeAbajo: true },
         
         { etiqueta: '10 m', tituloPlano: t('minutely15.viento10', { defaultValue: 'Viento 10 m' }), datos: minutely15.wind_speed_10m, tipo: 'vel' },
-        { etiqueta: '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', tituloPlano: t('minutely15.racha10', { defaultValue: 'Racha 10 m' }), datos: minutely15.wind_gusts_10m, tipo: 'racha' },
-        { etiqueta: '<img src="icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion10', { defaultValue: 'Dirección 10 m' }), datos: minutely15.wind_direction_10m, tipo: 'dir' }
+        { etiqueta: '<img src="/icons/icono_racha_48x42.webp" width="16" height="14">', tituloPlano: t('minutely15.racha10', { defaultValue: 'Racha 10 m' }), datos: minutely15.wind_gusts_10m, tipo: 'racha' },
+        { etiqueta: '<img src="/icons/icono_direccion_45.webp" width="15" height="15">', tituloPlano: t('minutely15.direccion10', { defaultValue: 'Dirección 10 m' }), datos: minutely15.wind_direction_10m, tipo: 'dir' }
         
     ];
 
@@ -894,7 +894,7 @@ function ponerMarcador(lat, lng) {
     marcadorActual = L.marker([lat, lng], { icon: iconoRojo }).addTo(mapaLeaflet).openPopup();
 }
 
-/// 5. EVENTO BOTÓN INCLUIR NO FAVORITOS (<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">+<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)
+/// 5. EVENTO BOTÓN INCLUIR NO FAVORITOS (<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">+<img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">)
 if (btnIncNoFavsDistancia) {
     btnIncNoFavsDistancia.addEventListener('click', (e) => {
         e.preventDefault(); 
@@ -1261,7 +1261,7 @@ function mostrarConfirmacionMasiva(cantidad) {
         tipo: 'modal',
         htmlContenido: `
             <div style="text-align: center;">
-                <p style="font-size: 2em; margin: 0;"><img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></p>
+                <p style="font-size: 2em; margin: 0;"><img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️"></p>
                 <p>${t('favoritos.confirmacionMasiva', { cantidad: cantidad })}</p>
             </div>
         `,
@@ -2379,13 +2379,13 @@ function desmarcarFavoritos() {
                         btn.classList.remove("activo", "filtro-aplicado");
                     }
                     
-                    // 2. Actualizamos el contador visual ("<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> 0")
+                    // 2. Actualizamos el contador visual ("<img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️"> 0")
                     actualizarContadorVisualFavoritos();
                     
                     // 3. Restauramos el icono de la cabecera de la tabla a desmarcado
                     const thFavorito = document.getElementById('id-thFavorito');
                     if (thFavorito) {
-                        thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+                        thFavorito.innerHTML = '<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
                         thFavorito.title = t('favoritos.marcarTodos');
                     }
 
@@ -2647,7 +2647,7 @@ window.toggleFavoritoDesdeTabla = function(id, btnElement) {
         const tdsEdicion = document.querySelectorAll(`.columna-favoritos[data-id="${id}"]`);
         tdsEdicion.forEach(td => {
             if (td !== btnElement) {
-                td.innerHTML = esNuevoFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+                td.innerHTML = esNuevoFavorito ? '<img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
                 td.title = esNuevoFavorito ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos');
                 
                 let filaTabla = td.closest('tr');
@@ -2794,7 +2794,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     // --- Actualización visual (DOM) ---
     const thFavorito = document.getElementById('id-thFavorito');
     if (thFavorito) {
-        thFavorito.innerHTML = nuevoEstadoEsFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+        thFavorito.innerHTML = nuevoEstadoEsFavorito ? '<img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
         thFavorito.title = nuevoEstadoEsFavorito 
             ? t('favoritos.desmarcarTodos') 
             : t('favoritos.marcarTodos');
@@ -2836,7 +2836,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
         // Verificamos si esta fila es una de las afectadas
         if (celda && celda.dataset.id && setAfectados.has(Number(celda.dataset.id))) {
             
-            celda.innerHTML = nuevoEstadoEsFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+            celda.innerHTML = nuevoEstadoEsFavorito ? '<img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
             celda.title = nuevoEstadoEsFavorito ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos');
             
             const action = nuevoEstadoEsFavorito ? 'add' : 'remove';
@@ -4799,35 +4799,35 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 
                 <div style="display: flex; flex-direction: column; gap: 6px; align-items: center; margin-bottom: 20px;">
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('es-ES')">
-                        <img src="icons/flag_es_ES.webp" alt="Español" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_es_ES.webp" alt="Español" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Español</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('eu-ES')">
-                        <img src="icons/flag_eu_ES.webp" alt="Euskara" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_eu_ES.webp" alt="Euskara" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Euskara</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('ca-ES')">
-                        <img src="icons/flag_ca_ES.webp" alt="Català" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_ca_ES.webp" alt="Català" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Català</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('gl-ES')">
-                        <img src="icons/flag_gl_ES.webp" alt="Galego" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_gl_ES.webp" alt="Galego" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Galego</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('en-GB')">
-                        <img src="icons/flag_en_GB.webp" alt="English" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_en_GB.webp" alt="English" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">English</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('fr-FR')">
-                        <img src="icons/flag_fr_FR.webp" alt="Français" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_fr_FR.webp" alt="Français" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Français</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('de-DE')">
-                        <img src="icons/flag_de_DE.webp" alt="Deutsch" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_de_DE.webp" alt="Deutsch" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Deutsch</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('pt-PT')">
-                        <img src="icons/flag_pt_PT.webp" alt="Português" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_pt_PT.webp" alt="Português" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Português</span>
                     </button>
                 </div>
@@ -5495,7 +5495,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // ---------------------------------------------------------------
 
 		const thFavorito = document.createElement("th");
-		thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+		thFavorito.innerHTML = '<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
 		thFavorito.id = "id-thFavorito";
 		thFavorito.rowSpan = 2; // Ocupa las dos filas de la cabecera
 		thFavorito.style.fontSize = "18px";
@@ -6153,14 +6153,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tdFavorito.title = t('favoritos.despegueFavorito');
                 }
                 
-                //tdFavorito.innerHTML = esFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
-                tdFavorito.innerHTML = esFavorito ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+                //tdFavorito.innerHTML = esFavorito ? '<img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+                tdFavorito.innerHTML = esFavorito ? '<img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
                 
                 tdFavorito.onclick = function() {
                     
                     const nuevoEstado = toggleFavorito(idDespegue);
 
-                    tdFavorito.innerHTML = nuevoEstado ? '<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+                    tdFavorito.innerHTML = nuevoEstado ? '<img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">': '<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
                     tdFavorito.title = nuevoEstado ? t('favoritos.quitarDeFavoritos') : t('favoritos.anadirAFavoritos');
 
                     todasLasFilas.forEach(f => f.classList.toggle("favorito", nuevoEstado));
@@ -6562,7 +6562,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 // Racha 10 m
                 const tdIconoRacha = document.createElement("td");	
-                tdIconoRacha.innerHTML = '<img src="icons/icono_racha_48x42.webp" width="16" height="14">';
+                tdIconoRacha.innerHTML = '<img src="/icons/icono_racha_48x42.webp" width="16" height="14">';
                 tdIconoRacha.setAttribute("title", tituloRacha10);
                 /* Añadir clase para asegurar la posición fija */
                 tdIconoRacha.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
@@ -6579,7 +6579,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
 				// Dirección 10 m
                 const tdIconoDireccion = document.createElement("td");	
-                tdIconoDireccion.innerHTML = '<img src="icons/icono_direccion_45.webp" width="15" height="15">';
+                tdIconoDireccion.innerHTML = '<img src="/icons/icono_direccion_45.webp" width="15" height="15">';
                 tdIconoDireccion.setAttribute("title", tituloDireccion10);	
                 tdIconoDireccion.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
 
@@ -6625,20 +6625,20 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 };
 
                 addIconCellEcmwf(filaEcmwfVel3000, "<span style='position: relative; top: -1px; display: inline-block;'>3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf3000, "1px solid #000");
-                addIconCellEcmwf(filaEcmwfDir3000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir3000, null, "1px solid #000");
+                addIconCellEcmwf(filaEcmwfDir3000, '<img src="/icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir3000, null, "1px solid #000");
 
                 addIconCellEcmwf(filaEcmwfVel1500, "<span style='position: relative; top: -1px; display: inline-block;'>1500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf1500);
-                addIconCellEcmwf(filaEcmwfDir1500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1500, null, "1px solid #000");
+                addIconCellEcmwf(filaEcmwfDir1500, '<img src="/icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1500, null, "1px solid #000");
 
                 addIconCellEcmwf(filaEcmwfVel1000, "<span style='position: relative; top: -1px; display: inline-block;'>1000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf1000);
-                addIconCellEcmwf(filaEcmwfDir1000, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1000, null, "1px solid #000");
+                addIconCellEcmwf(filaEcmwfDir1000, '<img src="/icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1000, null, "1px solid #000");
 
                 addIconCellEcmwf(filaEcmwfVel500, "<span style='position: relative; top: -1px; display: inline-block;'>500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf500);
-                addIconCellEcmwf(filaEcmwfDir500, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir500, null, "2px solid #000");
+                addIconCellEcmwf(filaEcmwfDir500, '<img src="/icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir500, null, "2px solid #000");
 
                 addIconCellEcmwf(filaEcmwfValt, `<span style='position: relative; top: -1px; display: inline-block;'>${d.Altitud || 0} m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>`, tituloEcmwfValt);
-                addIconCellEcmwf(filaEcmwfRalt, '<img src="icons/icono_racha_48x42.webp" width="16" height="14">', tituloEcmwfRacha10);
-                addIconCellEcmwf(filaEcmwfDalt, '<img src="icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDalt, null, "2px solid #000");
+                addIconCellEcmwf(filaEcmwfRalt, '<img src="/icons/icono_racha_48x42.webp" width="16" height="14">', tituloEcmwfRacha10);
+                addIconCellEcmwf(filaEcmwfDalt, '<img src="/icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDalt, null, "2px solid #000");
 
 				// ---------------------------------------------------------------
 				// ⚪ CONSTRUCCIÓN DE LA TABLA > FILAS POR DESPEGUE > Columnas de datos por hora
@@ -8591,9 +8591,9 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
     // 2. Contadores Superiores
     const divContador = document.getElementById('contador-despegues');
     if (divContador) {
-        const iconoFiltro = `<img src="icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">`;
-        const heartRed = `<img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">`;
-        const heartWhite = `<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">`;
+        const iconoFiltro = `<img src="/icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">`;
+        const heartRed = `<img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">`;
+        const heartWhite = `<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">`;
         const htmlNumeroFiltrado = `<span class="contador-badge-filtro" title="${t('mapa.capasYFiltros')}">${iconoFiltro}<b>${visibles}</b></span>`;
 
         if (modoEdicionFavoritos) {
@@ -8636,9 +8636,9 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
         } else {
             miniCounter.title = t('contador.miniFavoritos');
             if (hayFiltros) {
-                miniCounter.innerHTML = `${visibles} de ${totalFavoritos} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
+                miniCounter.innerHTML = `${visibles} de ${totalFavoritos} <img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
             } else {
-                miniCounter.innerHTML = `${totalFavoritos} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
+                miniCounter.innerHTML = `${totalFavoritos} <img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️" style="width:13px;height:13px;">`;
             }
         }
     }
@@ -8646,7 +8646,7 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
     // 4. Corazón de la cabecera (Modo edición)
     if (modoEdicionFavoritos) {
         const thFavorito = document.getElementById('id-thFavorito'); 
-        if(thFavorito) thFavorito.innerHTML = '<img src="icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
+        if(thFavorito) thFavorito.innerHTML = '<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
     }
 
     // 5. Sugerencias Globales (Buscador Inteligente)
@@ -8687,7 +8687,7 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
                 html += `<li class="sugerencia-item">
                         <span class="sugerencia-texto"><b>${d.Despegue}</b> <br><small style="color:#666;">(${d.Provincia})</small></span>
                         <button class="sugerencia-btn" onclick="agregarDespegueDesdeBuscador(${d.ID})">
-                            ${t('buscador.anadirFavorito')} <img src="icons/red_heart_48.webp" class="icono-emoji" alt="❤️">
+                            ${t('buscador.anadirFavorito')} <img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">
                         </button>
                     </li>`;
             });
@@ -11704,12 +11704,14 @@ window.cambiarVista = function(vista) {
             }
         }
 
-        // SUGERIR GUÍA DEL MAPA LA PRIMERA VEZ
-        setTimeout(() => {
-            if (typeof sugerirGuiaMapa === 'function') {
-                sugerirGuiaMapa();
-            }
-        }, 600); // 600ms de margen para que el mapa termine de renderizar de forma fluida
+        // SUGERIR GUÍA DEL MAPA LA PRIMERA VEZ (no aplica en modo balizas directo)
+        if (!window.esModoBalizasDirecto) {
+            setTimeout(() => {
+                if (typeof sugerirGuiaMapa === 'function') {
+                    sugerirGuiaMapa();
+                }
+            }, 600); // 600ms de margen para que el mapa termine de renderizar de forma fluida
+        }
 
     } 
     else if (vista === 'tabla') {
@@ -13575,7 +13577,7 @@ function inicializarMapaLeaflet() {
             link.style.alignItems = 'center';
             link.style.justifyContent = 'center';
             
-            link.innerHTML = '<img src="icons/icono_ayuda_60.webp" width="18" height="18">';
+            link.innerHTML = '<img src="/icons/icono_ayuda_60.webp" width="18" height="18">';
             
             L.DomEvent.on(link, 'click', function(e) {
                 L.DomEvent.stopPropagation(e);
@@ -16294,7 +16296,7 @@ function inicializarMapaLeaflet() {
                         </small>
                         
                         <button class="btn-info btn-inline" data-tippy-content="${tooltipSeguro}" style="background: transparent; border: none; padding: 0; margin-left: 10px; cursor: pointer; display: flex; flex-shrink: 0; outline: none;">
-                            <img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+                            <img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
                         </button>
                     </div>
                 </div>
@@ -16335,17 +16337,17 @@ function inicializarMapaLeaflet() {
                 <div style="flex:1 1 auto; min-width:0;">
                     <!-- Fila 1: Viento -->
                     <div style="display: flex; align-items: center; height: 25px;">
-                        <img src="icons/icono_viento_48x42.webp" width="16" height="16" style="margin-right:14px;"> 
+                        <img src="/icons/icono_viento_48x42.webp" width="16" height="16" style="margin-right:14px;"> 
                         <b style="color: #0078d4;">${d.windSpeed}</b> <span style="font-size:13px; margin-left: 4px; color: #888;">km/h</span>
                     </div>
                     <!-- Fila 2: Racha -->
                     <div style="display: flex; align-items: center; height: 25px;">
-                        <img src="icons/icono_racha_48x42.webp" width="16" height="16" style="margin-right:14px;"> 
+                        <img src="/icons/icono_racha_48x42.webp" width="16" height="16" style="margin-right:14px;"> 
                         <span style="color: #c0392b; font-weight: bold;">${d.windGusts ?? '-'}</span> <span style="font-size:13px; margin-left: 4px; color: #888;">km/h</span>
                     </div>
                     <!-- Fila 3: Dirección -->
                     <div title="${d.windDirection ?? '-'}º" style="display: flex; align-items: center; height: 25px;">
-                        <img src="icons/icono_direccion_45.webp" width="16" height="16" style="margin-right:14px;">
+                        <img src="/icons/icono_direccion_45.webp" width="16" height="16" style="margin-right:14px;">
                         <b style="color: #0078d4;">${orientacionTexto}</b>
                         ${svgFlecha} 
                     </div>
@@ -16371,7 +16373,7 @@ function inicializarMapaLeaflet() {
                 
                 <!-- Botón Info Dinámico con datos del array -->
                 <button class="btn-info btn-inline" data-tippy-content="${tooltipSeguro}" style="background: transparent; border: none; padding: 0; margin-left: 10px; cursor: pointer; display: flex; flex-shrink: 0; outline: none;">
-                    <img src="icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+                    <img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
                 </button>
                 
             </div>
@@ -16492,6 +16494,10 @@ function inicializarMapaLeaflet() {
 
     async function activarCapaBalizas(redId) {
         const red = REDES_BALIZAS[redId];
+
+        // 🛡️ Evitar doble activación (síncrono, antes de cualquier await)
+        if (red.activando || map.hasLayer(red.layerGroup)) return;
+        red.activando = true;
         
         // ¡Esperamos a que descargue el JSON (si no lo tenía) y dibuje los grises!
         await dibujarEstacionesBalizas(redId); 
@@ -16526,6 +16532,8 @@ function inicializarMapaLeaflet() {
                 }
             }, 60 * 1000); 
         }
+
+        red.activando = false; 
     }
 
     function desactivarCapaBalizas(redId) {
