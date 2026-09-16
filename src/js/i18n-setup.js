@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
             load: 'languageOnly',       // ← 'en' o 'en-US' mapea a 'en-GB'
             debug: false,                  
             backend: { 
-                loadPath: 'locales/{{lng}}.json' // Buscará literalmente 'es-ES.json' o 'en-GB.json'
+                loadPath: '/locales/{{lng}}.json' // Buscará literalmente 'es-ES.json' o 'en-GB.json'
             }, 
             interpolation: { 
                 escapeValue: false         // Permite HTML en los archivos de traducción
