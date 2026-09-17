@@ -7523,7 +7523,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     const speedOriginal = interp.speed;
                                     let speed = speedOriginal;
                                     
-                                    if (chkAplicarCorreccionEstadistica && esAltitudDespegue) {
+                                    if (false && chkAplicarCorreccionEstadistica && esAltitudDespegue) {
                                         speed = corregirVientoEcmwf(speed, interp.dir, d); 
                                     }
 
@@ -7534,7 +7534,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     tdVel.textContent = vRound;
 
                                     // Si está activa la corrección en altitud de despegue: negrita y cursiva
-                                    if (chkAplicarCorreccionEstadistica && esAltitudDespegue) {
+                                    if (false && chkAplicarCorreccionEstadistica && esAltitudDespegue) {
                                         tdVel.style.fontWeight = "bold";
                                         tdVel.style.fontStyle = "italic";
                                         tdVel.title = `${vRound} km/h (Modelo original: ${vOrigRound} km/h, altitud ${altInfo} m)`;
@@ -7580,7 +7580,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                                 const dirVientoHora = hourlyData?.wind_direction_10m?.[i] ?? null;
 
-                                if (chkAplicarCorreccionEstadistica) {
+                                if (false && chkAplicarCorreccionEstadistica) {
                                     rCorregido = corregirRachaEcmwf(rRaw, dirVientoHora, d);
                                 }
 
@@ -7590,7 +7590,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 tdRachaEcmwf.textContent = rVal;
 
                                 // Si está activa la corrección: negrita y cursiva
-                                if (chkAplicarCorreccionEstadistica) {
+                                if (false && chkAplicarCorreccionEstadistica) {
                                     tdRachaEcmwf.style.fontWeight = "bold";
                                     tdRachaEcmwf.style.fontStyle = "italic";
                                     tdRachaEcmwf.title = `${rVal} km/h racha (Modelo original: ${rOrigVal} km/h, ECMWF)`;
