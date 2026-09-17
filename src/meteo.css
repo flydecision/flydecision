@@ -1682,6 +1682,22 @@ span.grados {
 .fondo-naranja { background-color: #f0c16a; }
 .fondo-rojo { background-color: #fb796e; }
 
+/* Calibración: Celda interactiva para comparar modelo original / calibrado */
+.celda-meteo-interactiva {
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+    touch-action: manipulation;
+    transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.celda-meteo-interactiva:active,
+.celda-meteo-interactiva.peek-activo {
+    transform: scale(0.92);
+    background-color: #dbeafe !important; /* Resalte azul suave al pulsar */
+}
+
 /* 🔴 SUGERENCIAS GLOBALES -------------------------------- */
 
 /* Contenedor principal */
