@@ -6566,6 +6566,68 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 tdIconoRacha.setAttribute("title", tituloRacha10);
                 /* Añadir clase para asegurar la posición fija */
                 tdIconoRacha.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
+
+                // Función local que conmuta entre original y calibrado solo para este despegue
+                const activarPeekDespegue = (peeking) => {
+                    const usarCorr = peeking ? !chkAplicarCorreccionEstadistica : chkAplicarCorreccionEstadistica;
+
+                    // 1. Conmutar celdas de Velocidad 10 m
+                    filaVel.querySelectorAll('td[data-v-raw]').forEach(td => {
+                        const val = usarCorr ? td.dataset.vCorr : td.dataset.vRaw;
+                        const cls = usarCorr ? td.dataset.cCorr : td.dataset.cRaw;
+                        td.textContent = val;
+                        td.style.fontWeight = usarCorr ? "bold" : "normal";
+                        td.style.fontStyle = usarCorr ? "italic" : "normal";
+                        td.classList.remove("fondo-verde", "fondo-naranja", "fondo-rojo");
+                        if (cls) td.classList.add(cls);
+                    });
+
+                    // 2. Conmutar celdas de Racha 10 m
+                    filaRacha.querySelectorAll('td[data-r-raw]').forEach(td => {
+                        const val = usarCorr ? td.dataset.rCorr : td.dataset.rRaw;
+                        const cls = usarCorr ? td.dataset.cCorr : td.dataset.cRaw;
+                        td.textContent = val;
+                        td.style.fontWeight = usarCorr ? "bold" : "normal";
+                        td.style.fontStyle = usarCorr ? "italic" : "normal";
+                        td.classList.remove("fondo-verde", "fondo-naranja", "fondo-rojo");
+                        if (cls) td.classList.add(cls);
+                    });
+                };
+
+                // Asignar los eventos de presionar y soltar a una celda lateral
+                const vincularPeekBoton = (tdBoton) => {
+                    if (!chkAplicarCorreccionEstadistica) return;
+                    
+                    tdBoton.classList.add("celda-meteo-interactiva");
+                    let presionado = false;
+
+                    const alPulsar = (e) => {
+                        if (presionado) return;
+                        presionado = true;
+                        tdBoton.classList.add("peek-activo");
+                        // Vibración háptica al poner el dedo (Elemento clave 2)
+                        if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+                        activarPeekDespegue(true);
+                    };
+
+                    const alSoltar = (e) => {
+                        if (!presionado) return;
+                        presionado = false;
+                        tdBoton.classList.remove("peek-activo");
+                        activarPeekDespegue(false);
+                    };
+
+                    // Eventos pointer (unificados para dedo en móvil y ratón en PC)
+                    tdBoton.addEventListener("pointerdown", alPulsar);
+                    tdBoton.addEventListener("pointerup", alSoltar);
+                    tdBoton.addEventListener("pointercancel", alSoltar);
+                    tdBoton.addEventListener("pointerleave", alSoltar);
+                    tdBoton.addEventListener("contextmenu", (e) => e.preventDefault());
+                };
+
+                // Vinculamos ambas celdas laterales
+                vincularPeekBoton(tdIconoVelocidad);
+                vincularPeekBoton(tdIconoRacha);
 				
                 // Forzamos altura a 20px
                 tdIconoRacha.style.height = "20px";
@@ -6965,6 +7027,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             filaVel.appendChild(td);
                             continue;
                         }
+
                         const rawVelOriginal = hourlyData.wind_speed_10m[i];
                         let velocidadModelo = rawVelOriginal;
                         if (chkAplicarCorreccionEstadistica) {
@@ -6973,9 +7036,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         let velocidad = Math.round(Math.max(0, velocidadModelo));
                         const velOrigRound = Math.round(Math.max(0, rawVelOriginal));
 
+                        const velCorrRound = Math.round(Math.max(0, corregirViento10m(rawVelOriginal, hourlyData, i, d)));
+
                         const td = document.createElement("td");
 
-                        // Marcar celdas de noche en datos (Usando la caché)
                         if (cacheEsNoche[i]) {
                             td.classList.add("celda-noche");
                         }
@@ -7007,6 +7071,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.title = `${velocidad} km/h`;
                         }
 
+                        // Guardar datos en la "mochila" para que funcione el mantener pulsado
+                        td.dataset.vRaw = velOrigRound;
+                        td.dataset.vCorr = velCorrRound;
+                        td.dataset.cRaw = (velOrigRound < VelocidadMin || (velOrigRound >= VelocidadIdeal && velOrigRound < VelocidadMax)) ? "fondo-naranja" : (velOrigRound <= velocidadTolerableSuperior ? "fondo-verde" : "fondo-rojo");
+                        td.dataset.cCorr = (velCorrRound < VelocidadMin || (velCorrRound >= VelocidadIdeal && velCorrRound < VelocidadMax)) ? "fondo-naranja" : (velCorrRound <= velocidadTolerableSuperior ? "fondo-verde" : "fondo-rojo");
+
                         filaVel.appendChild(td);
                     }
 
@@ -7026,6 +7096,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             filaRacha.appendChild(td);
                             continue;
                         }
+
                         const rawRachaOriginal = hourlyData.wind_gusts_10m[i];
                         let rachaModelo = rawRachaOriginal;
                         if (chkAplicarCorreccionEstadistica) {
@@ -7033,6 +7104,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         }
                         let racha = Math.round(Math.max(0, rachaModelo));
                         const rachaOrigRound = Math.round(Math.max(0, rawRachaOriginal));
+
+                        const rachaCorrRound = Math.round(Math.max(0, corregirRacha10m(rawRachaOriginal, hourlyData, i, d)));
 
                         const td = document.createElement("td");
 
@@ -7056,7 +7129,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         td.textContent = racha;
 
-                        // Si está activa la corrección: negrita y cursiva
                         if (chkAplicarCorreccionEstadistica) {
                             td.style.fontWeight = "bold";
                             td.style.fontStyle = "italic";
@@ -7064,6 +7136,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         } else {
                             td.title = `${racha} km/h racha máxima`;
                         }
+
+                        // Guardar datos en la "mochila" para que funcione el mantener pulsado
+                        td.dataset.rRaw = rachaOrigRound;
+                        td.dataset.rCorr = rachaCorrRound;
+                        td.dataset.cRaw = (rachaOrigRound < rachaTolerable) ? "fondo-verde" : (rachaOrigRound < RachaMax ? "fondo-naranja" : "fondo-rojo");
+                        td.dataset.cCorr = (rachaCorrRound < rachaTolerable) ? "fondo-verde" : (rachaCorrRound < RachaMax ? "fondo-naranja" : "fondo-rojo");
 
                         filaRacha.appendChild(td);
                     }
