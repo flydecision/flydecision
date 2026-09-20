@@ -441,6 +441,68 @@
   }
 },
 
+"guiaAjustes": {
+  "preguntaVerGuia": "Do you want to see a visual guide about the <i>Settings</i> screen?",
+  "pasos": {
+    "intro": {
+      "titulo": "Settings",
+      "descripcion": "In this panel you will find the general configuration of the application: change the language, configure your personal wind limits for score calculation, manage your favorite take-offs, activate advanced meteorological data, customize the map and much more."
+    },
+    "idioma": {
+      "titulo": "Language",
+      "descripcion": "Choose the application language among the 8 available (Español, Euskara, Català, Galego, English, Français, Deutsch and Português)."
+    },
+    "modoApp": {
+      "titulo": "Application mode",
+      "descripcion": "<b>Simple:</b> Shows only the essentials for a clean and quick reading.<br><br><b>Advanced:</b> Shows all available options for you to activate if you wish: distance filters, time tracking, wind at various heights, XC metrics, advanced map layers and filters."
+    },
+    "botonInfo": {
+      "titulo": "Information button",
+      "descripcion": "Offers a complete explanation of these options.<br><br>There are buttons like this one for each of the options or functions in this Settings panel."
+    },
+    "editarFavoritos": {
+      "titulo": "Edit favorites",
+      "descripcion": "Access the complete list of take-offs to mark or unmark your favorite take-offs.<br><br>The take-offs you mark as favorites will be the ones that appear with their meteorological forecast and score on the Table and Map.<br><br>You can also directly mark or unmark favorites on the Table and Map by turning on or off the heart on each take-off ❤️/🤍."
+    },
+    "importarConfiguracion": {
+      "titulo": "Import Configuration",
+      "descripcion": "Opens a file containing a complete previously saved configuration. This full configuration includes your favorite take-offs, customizations, limits, activated options,..."
+    },
+    "exportarConfiguracion": {
+      "titulo": "Export Configuration",
+      "descripcion": "Saves the complete application configuration to a file.<br><br>💡You can save different configurations by zones or by type of flight."
+    },
+    "restablecerConfiguracion": {
+      "titulo": "Reset Configuration",
+      "descripcion": "Removes all customizations and favorites so the application returns to its original state as if it was just installed for the first time."
+    },
+    "vientoRacha": {
+      "titulo": "Wind and Gust Limits",
+      "descripcion": "Customize your average wind range (Minimum, Ideal and Maximum) and your maximum tolerable gust.<br><br>These thresholds define the colors 🟩🟨🟥 in the Table and Map, and determine the automatic flight conditions score (0 to 10) for each take-off."
+    },
+    "datosMeteorologicosOpcionales": {
+      "titulo": "Optional meteorological data",
+      "descripcion": "Several additional options that add or customize the displayed meteorological data. Each one has its information button with the detail of its functionality.</li></ul>"
+    },
+    "mapa": {
+      "titulo": "Map",
+      "descripcion": "Configure whether you want to open the map upon startup, or remember your last view, active filters and layers...<br><br>You can also customize the <b>wind beacons</b>: color their arrows according to intensity, define the red danger threshold,...."
+    },
+    "otrasOpciones": {
+      "titulo": "Other options",
+      "descripcion": "<b>Preferred schedule:</b> Define the usual hours you fly so they are automatically selected when pressing a day of the week.<br><br>You can also limit the table to daylight hours, sort by XC potential, activate haptic vibration or choose how many days tracked take-offs are kept."
+    },
+    "modelosMeteo": {
+      "titulo": "Meteo models updates",
+      "descripcion": "Check when the data you are viewing was generated, the reference calculation run and the estimated remaining time for the next update of each model (Arome-HD, ICON-EU, Arome 15min and ECMWF)."
+    },
+    "enlaces": {
+      "titulo": "Guides, Help, Legal and others",
+      "descripcion": "Revisit this guides center whenever you need it, access the web help documentation, review the legal conditions or consult our continuous statistical study of model accuracy."
+    }
+  }
+},
+
   "asistente": {
     "paso1": {
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Where to fly?</p>",

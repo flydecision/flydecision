@@ -304,7 +304,7 @@
     </div>
 
 	<!-- MODO SIMPLE / AVANZADO -->
-	<div class="div-configuracion-subpanel" style="margin-bottom: 8px;">
+	<div id="modo-de-la-aplicacion" class="div-configuracion-subpanel" style="margin-bottom: 8px;">
 		
 		<!-- 🔴 Esta es la caja hija de 330px que lleva los bordes, las sombras y se alineará sola al centro -->
 		<div style="position: relative; border: 1px solid rgb(51, 51, 51); border-radius: 10px; box-shadow: 1px 1px 3px rgba(0, 60, 120, 0.2); max-width: 330px; min-width: 330px; box-sizing: border-box; padding: 8px 15px; background-color: #ffffff; display: flex; align-items: center; justify-content: space-between; width: 100%;">
@@ -312,7 +312,7 @@
 			<!-- Bloque Izquierdo: Texto e Icono -->
 			<div style="display: flex; align-items: center; gap: 8px;">
 				<span style="font-weight: bold; line-height: 1.2;" data-i18n="ajustes.modoApp.titulo">Modo de la aplicación:</span>
-				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipModoApp">
+				<button id="boton-info" class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipModoApp">
 					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
@@ -357,7 +357,7 @@
 	</div>
 
     <!-- ACORDEÓN: Viento medio y Racha máxima -->
-	<div class="div-configuracion-subpanel">
+	<div id="limites-de-viento-y-racha" class="div-configuracion-subpanel">
 		<details class="config-accordion" style="margin-bottom: 8px;">
 			<summary data-i18n="ajustes.acordeon.vientoRacha">Límites de Viento y Racha</summary>
 			<div class="accordion-content">
@@ -394,7 +394,7 @@
 	</div>
 
     <!-- ACORDEÓN: Datos meteorológicos opcionales -->
-	<div class="div-configuracion-subpanel  solo-modo-avanzado">
+	<div id="datos-meteorologicos-opcionales" class="div-configuracion-subpanel  solo-modo-avanzado">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.datosOpcionales">Datos meteorológicos opcionales</summary>
 			<div class="accordion-content">
@@ -510,7 +510,7 @@
 	</div>
 
 	<!-- ACORDEÓN: Mapa -->
-	<div class="div-configuracion-subpanel">
+	<div id="mapa" class="div-configuracion-subpanel">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.mapa">Mapa</summary>
 			<div class="accordion-content">
@@ -604,7 +604,7 @@
 	</div>
 
     <!-- ACORDEÓN: Otras opciones -->
-	<div class="div-configuracion-subpanel">
+	<div id="otras-opciones" class="div-configuracion-subpanel">
 		<details class="config-accordion">
 			<summary data-i18n="ajustes.acordeon.otrasOpciones">Otras opciones</summary>
 			<div class="accordion-content">
@@ -665,7 +665,7 @@
 	</div>
 
 	<!-- PANEL INFO ACTUALIZACIONES METEO -->
-	<div class="div-configuracion-subpanel">
+	<div id="actualizaciones-modelos-meteo" class="div-configuracion-subpanel">
 		<div class="div-paneles-controles" style="min-height: initial; padding-top: 5px; padding-bottom: 5px;">
 			
 			<div class="linea-con-bt-info" style="padding-left: 15px; width: 90%;">

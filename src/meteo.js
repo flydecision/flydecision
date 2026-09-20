@@ -1346,12 +1346,6 @@ function abrirCentroGuias() {
                 case 'ajustes':
                     if (typeof iniciarGuiaAjustes === 'function') {
                         iniciarGuiaAjustes(true);
-                    } else {
-                        // Aviso provisional si aún no has creado la guía de ajustes
-                        mensajeModalAceptar(
-                            t('ajustes.centroGuias.proximamenteTitulo', { defaultValue: '⚙️ Guía de Ajustes' }),
-                            t('ajustes.centroGuias.proximamenteDesc', { defaultValue: 'Esta guía estará disponible próximamente.' })
-                        );
                     }
                     break;
             }
@@ -1405,7 +1399,25 @@ function abrirCentroGuias() {
                     </div>
                 </button>
 
-                <!-- 3. Guía Favoritos -->
+                <!-- 3. Guía Ajustes -->
+                <button style="
+                    display: flex; align-items: center; gap: 12px;
+                    padding: 12px 15px; border-radius: 12px; border: none;
+                    background: #378ADD; color: #fff;
+                    cursor: pointer; text-align: left; width: 100%;
+                " onclick="window.lanzarGuiaSeleccionada('ajustes')">
+                    <span style="font-size: 22px; flex-shrink: 0;">⚙️</span>
+                    <div>
+                        <div style="font-size: 20px; font-weight: bold;">
+                            ${t('ajustes.centroGuias.btnAjustes', { defaultValue: 'Ajustes' })}
+                        </div>
+                        <div style="font-size: 16px; opacity: 0.9; margin-top: 2px;">
+                            ${t('ajustes.centroGuias.descAjustes', { defaultValue: 'Idioma, límites para la puntuación, personalización de datos mostrados...' })}
+                        </div>
+                    </div>
+                </button>
+
+                <!-- 4. Guía Edición de Favoritos -->
                 <button style="
                     display: flex; align-items: center; gap: 12px;
                     padding: 12px 15px; border-radius: 12px; border: none;
@@ -1436,25 +1448,6 @@ function abrirCentroGuias() {
         ]
     });
 }
-// PENDIENTE
-//                 <!-- 4. Guía Ajustes -->
-//                 <button style="
-//                     display: flex; align-items: center; gap: 12px;
-//                     padding: 12px 15px; border-radius: 12px; border: none;
-//                     background: #378ADD; color: #fff;
-//                     cursor: pointer; text-align: left; width: 100%;
-//                 " onclick="window.lanzarGuiaSeleccionada('ajustes')">
-//                     <span style="font-size: 22px; flex-shrink: 0;">⚙️</span>
-//                     <div>
-//                         <div style="font-size: 20px; font-weight: bold;">
-//                             ${t('ajustes.centroGuias.btnAjustes', { defaultValue: 'Ajustes' })}
-//                         </div>
-//                         <div style="font-size: 16px; opacity: 0.9; margin-top: 2px;">
-//                             ${t('ajustes.centroGuias.descAjustes', { defaultValue: 'Idioma, límites para la puntuación, personalización de datos mostrados...' })}
-//                         </div>
-//                     </div>
-//                 </button>
-
 
 // ---------------------------------------------------------------
 // 🟡 GUÍA PRINCIPAL
@@ -2192,6 +2185,273 @@ function iniciarGuiaMapa(forzar = false) {
 
     driverObj.drive();
 }
+
+// ---------------------------------------------------------------
+// 🟡 GUÍA AJUSTES
+// ---------------------------------------------------------------
+
+function sugerirGuiaAjustes(forzar = false) {
+    if (!forzar && localStorage.getItem('METEO_GUIA_AJUSTES_VISTA') === 'true') {
+        return;
+    }
+
+    const htmlAyuda = !forzar 
+        ? `<p style="color: #555; margin-top: 10px;">${t('guiaPrincipal.verEnAjustes')}</p>`
+        : '';
+
+    GestorMensajes.mostrar({
+        tipo: 'modal',
+        htmlContenido: `
+            <div style="text-align: center;">
+                <p style="font-size: 2.5em; margin: 0 0 10px 0;">⚙️</p>
+                <p style="font-size: 1.1em; font-weight: bold; margin: 0;">${t('guiaAjustes.preguntaVerGuia')}</p>
+                ${htmlAyuda}
+            </div>
+        `,
+        botones: [
+            {
+                texto: forzar ? t('botones.cancelar') : t('botones.no'),
+                estilo: 'secundario',
+                onclick: function() {
+                    if (!forzar) localStorage.setItem('METEO_GUIA_AJUSTES_VISTA', 'true');
+                    GestorMensajes.ocultar();
+                }
+            },
+            {
+                texto: t('botones.verGuia'),
+                onclick: function() {
+                    GestorMensajes.ocultar();
+                    localStorage.setItem('METEO_GUIA_AJUSTES_VISTA', 'true');
+                    setTimeout(() => iniciarGuiaAjustes(true), 300);
+                }
+            }
+        ],
+        anchoBotones: '130px'
+    });
+}
+window.sugerirGuiaAjustes = sugerirGuiaAjustes;
+
+function iniciarGuiaAjustes(forzar = false) {
+    guiaActiva = true;
+
+    if (!forzar && localStorage.getItem('METEO_GUIA_AJUSTES_VISTA') === 'true') {
+        return;
+    }
+
+    // 1. Asegurar que el panel de Ajustes está desplegado
+    const panelConfig = document.getElementById("div-configuracion");
+    if (panelConfig && !panelConfig.classList.contains("activo")) {
+        alternardivConfiguracion();
+    }
+
+    const esModoSimple = document.body.classList.contains('modo-simple');
+
+    // Helper para abrir acordeones suavemente y hacer scroll antes de que Driver los resalte
+    const prepararElementoAjustes = (selectorAccordion, selectorTarget) => {
+        const panel = document.getElementById('div-configuracion');
+        if (selectorAccordion) {
+            const acc = panel ? panel.querySelector(selectorAccordion) : null;
+            if (acc && !acc.open) acc.open = true;
+        }
+        setTimeout(() => {
+            const el = panel ? panel.querySelector(selectorTarget || selectorAccordion) : null;
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (typeof driverObj !== 'undefined') driverObj.refresh();
+        }, 120);
+    };
+
+    const driverObj = window.driver.js.driver({
+        showProgress: true,
+        progressText: t('guiaPrincipal.progreso'),
+        smoothScroll: true,
+        overlayClickBehavior: () => {},
+        overlayColor: 'rgba(0, 0, 0, 0.75)',
+        allowClose: true,
+        stageRadius: 8,
+
+        nextBtnText: t('guiaPrincipal.siguiente'),
+        prevBtnText: '←',
+        doneBtnText: t('guiaPrincipal.cerrar'),
+
+        steps: [
+            {
+                element: '#div-configuracion',
+                popover: {
+                    title: t('guiaAjustes.pasos.intro.titulo'),
+                    description: t('guiaAjustes.pasos.intro.descripcion'),
+                    side: 'over',
+                    align: 'center'
+                }
+            },
+            {
+                element: '#div-configuracion details.config-accordion:first-of-type summary',
+                popover: {
+                    title: t('guiaAjustes.pasos.idioma.titulo'),
+                    description: t('guiaAjustes.pasos.idioma.descripcion')
+                }
+            },
+            {
+                element: '#modo-de-la-aplicacion',
+                popover: {
+                    title: t('guiaAjustes.pasos.modoApp.titulo'),
+                    description: t('guiaAjustes.pasos.modoApp.descripcion')
+                },
+                onHighlightStarted: () => {
+                    const el = document.getElementById('radModoSimple')?.closest('.div-configuracion-subpanel');
+                    if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
+                }
+            },
+            {
+                element: '#boton-info',
+                popover: {
+                    title: t('guiaAjustes.pasos.botonInfo.titulo'),
+                    description: t('guiaAjustes.pasos.botonInfo.descripcion')
+                }
+            },
+            {
+                element: 'button[onclick*="activarEdicionFavoritos"]',
+                popover: {
+                    title: t('guiaAjustes.pasos.editarFavoritos.titulo'),
+                    description: t('guiaAjustes.pasos.editarFavoritos.descripcion')
+                },
+                onHighlightStarted: () => {
+                    const el = document.querySelector('button[onclick*="activarEdicionFavoritos"]')?.closest('.div-configuracion-subpanel');
+                    if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
+                }
+            },
+            {
+                element: 'button[onclick*="importarConfiguracion"]',
+                popover: {
+                    title: t('guiaAjustes.pasos.importarConfiguracion.titulo'),
+                    description: t('guiaAjustes.pasos.importarConfiguracion.descripcion')
+                },
+                onHighlightStarted: () => {
+                    const el = document.querySelector('button[onclick*="importarConfiguracion"]')?.closest('.div-configuracion-subpanel');
+                    if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
+                }
+            },
+            {
+                element: 'button[onclick*="exportarConfiguracion"]',
+                popover: {
+                    title: t('guiaAjustes.pasos.exportarConfiguracion.titulo'),
+                    description: t('guiaAjustes.pasos.exportarConfiguracion.descripcion')
+                },
+                onHighlightStarted: () => {
+                    const el = document.querySelector('button[onclick*="exportarConfiguracion"]')?.closest('.div-configuracion-subpanel');
+                    if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
+                }
+            },
+            {
+                element: 'button[onclick*="btnRestablecerConfiguración"]',
+                popover: {
+                    title: t('guiaAjustes.pasos.restablecerConfiguracion.titulo'),
+                    description: t('guiaAjustes.pasos.restablecerConfiguracion.descripcion')
+                },
+                onHighlightStarted: () => {
+                    const el = document.querySelector('button[onclick*="btnRestablecerConfiguración"]')?.closest('.div-configuracion-subpanel');
+                    if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
+                }
+            },
+            {
+                element: '#limites-de-viento-y-racha',
+                popover: {
+                    title: t('guiaAjustes.pasos.vientoRacha.titulo'),
+                    description: t('guiaAjustes.pasos.vientoRacha.descripcion')
+                },
+                onHighlightStarted: () => {
+                    const acc = document.getElementById('velocidad-slider')?.closest('details');
+                    if (acc && !acc.open) acc.open = true;
+                    setTimeout(() => {
+                        acc?.scrollIntoView({ behavior: 'auto', block: 'center' });
+                        if (typeof driverObj !== 'undefined') driverObj.refresh();
+                    }, 120);
+                }
+            },
+            ...(!esModoSimple ? [{
+                element: '#datos-meteorologicos-opcionales',
+                popover: {
+                    title: t('guiaAjustes.pasos.datosMeteorologicosOpcionales.titulo'),
+                    description: t('guiaAjustes.pasos.datosMeteorologicosOpcionales.descripcion')
+                },
+                onHighlightStarted: () => {
+                    const acc = document.getElementById('chkMostrarProbPrecipitacion')?.closest('details');
+                    if (acc && !acc.open) acc.open = true;
+                    setTimeout(() => {
+                        acc?.scrollIntoView({ behavior: 'auto', block: 'center' });
+                        if (typeof driverObj !== 'undefined') driverObj.refresh();
+                    }, 120);
+                }
+            }] : []),
+            {
+                element: '#mapa',
+                popover: {
+                    title: t('guiaAjustes.pasos.mapa.titulo'),
+                    description: t('guiaAjustes.pasos.mapa.descripcion')
+                },
+                onHighlightStarted: () => {
+                    const acc = document.getElementById('chkAbrirMapaInicio')?.closest('details');
+                    if (acc && !acc.open) acc.open = true;
+                    setTimeout(() => {
+                        acc?.scrollIntoView({ behavior: 'auto', block: 'center' });
+                        if (typeof driverObj !== 'undefined') driverObj.refresh();
+                    }, 120);
+                }
+            },
+            {
+                element: '#otras-opciones',
+                popover: {
+                    title: t('guiaAjustes.pasos.otrasOpciones.titulo'),
+                    description: t('guiaAjustes.pasos.otrasOpciones.descripcion')
+                },
+                onHighlightStarted: () => {
+                    const acc = document.getElementById('configuracion-horario-slider')?.closest('details');
+                    if (acc && !acc.open) acc.open = true;
+                    setTimeout(() => {
+                        acc?.scrollIntoView({ behavior: 'auto', block: 'center' });
+                        if (typeof driverObj !== 'undefined') driverObj.refresh();
+                    }, 120);
+                }
+            },
+            {
+                element: '#actualizaciones-modelos-meteo',
+                popover: {
+                    title: t('guiaAjustes.pasos.modelosMeteo.titulo'),
+                    description: t('guiaAjustes.pasos.modelosMeteo.descripcion')
+                },
+                onHighlightStarted: () => {
+                    const el = document.getElementById('data_generation_time')?.closest('.div-configuracion-subpanel');
+                    if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
+                }
+            },
+            {
+                element: '.enlaces-legales',
+                popover: {
+                    title: t('guiaAjustes.pasos.enlaces.titulo'),
+                    description: t('guiaAjustes.pasos.enlaces.descripcion')
+                },
+                onHighlightStarted: () => {
+                    const el = document.querySelector('.enlaces-legales');
+                    if (el) el.scrollIntoView({ behavior: 'auto', block: 'center' });
+                }
+            }
+        ],
+
+        onDestroyStarted: () => {
+            localStorage.setItem('METEO_GUIA_AJUSTES_VISTA', 'true');
+            guiaActiva = false;
+
+            if (actualizacionesPendientes.length > 0) {
+                mostrarAvisoActualizacionMeteo(actualizacionesPendientes);
+                actualizacionesPendientes = [];
+            }
+
+            driverObj.destroy();
+        }
+    });
+
+    driverObj.drive();
+}
+window.iniciarGuiaAjustes = iniciarGuiaAjustes;
 
 // ---------------------------------------------------------------
 // 🔴 GESTIÓN DE FAVORITOS
