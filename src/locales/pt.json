@@ -441,6 +441,68 @@
   }
 },
 
+"guiaAjustes": {
+  "preguntaVerGuia": "Deseja ver um guia visual sobre o ecrã de <i>Definições</i>?",
+  "pasos": {
+    "intro": {
+      "titulo": "Definições",
+      "descripcion": "Neste painel encontra-se a configuração geral da aplicação: alterar o idioma, configurar os seus limites pessoais de vento para o cálculo da pontuação, gerir as suas descolagens favoritas, ativar dados meteorológicos avançados, personalizar o mapa e muito mais."
+    },
+    "idioma": {
+      "titulo": "Idioma",
+      "descripcion": "Escolha o idioma da aplicação entre os 8 disponíveis (Español, Euskara, Català, Galego, English, Français, Deutsch e Português)."
+    },
+    "modoApp": {
+      "titulo": "Modo da aplicação",
+      "descripcion": "<b>Simples:</b> Mostra apenas o essencial para uma leitura limpa e rápida.<br><br><b>Avançado:</b> Mostra todas as opções disponíveis para que as ative se desejar: filtros de distância, seguimento temporal, vento a várias alturas, métricas XC, camadas e filtros avançados do mapa."
+    },
+    "botonInfo": {
+      "titulo": "Botão de informação",
+      "descripcion": "Oferece uma explicação completa destas opções.<br><br>Existem botões como este para cada uma das opções ou funções deste painel de Definições."
+    },
+    "editarFavoritos": {
+      "titulo": "Editar favoritos",
+      "descripcion": "Aceda à lista completa de descolagens para marcar ou desmarcar as suas descolagens favoritas.<br><br>As descolagens que marcar como favoritas serão as que aparecerão com a sua previsão meteorológica e pontuação na Tabela e no Mapa.<br><br>Também pode marcar ou desmarcar favoritos diretamente na Tabela e no Mapa ativando ou desativando o coração que existe em cada descolagem ❤️/🤍."
+    },
+    "importarConfiguracion": {
+      "titulo": "Importar Configuração",
+      "descripcion": "Abre um ficheiro que contém uma configuração completa guardada anteriormente. Esta configuração completa inclui as suas descolagens favoritas, personalizações, limites, opções ativadas,..."
+    },
+    "exportarConfiguracion": {
+      "titulo": "Exportar Configuração",
+      "descripcion": "Guarda num ficheiro a configuração completa da aplicação.<br><br>💡Pode guardar diferentes configurações por zonas ou por tipo de voo."
+    },
+    "restablecerConfiguracion": {
+      "titulo": "Repor Configuração",
+      "descripcion": "Elimina todas as personalizações e favoritos de forma a que a aplicação volte à situação original como se tivesse acabado de ser instalada pela primeira vez."
+    },
+    "vientoRacha": {
+      "titulo": "Limites de Vento e Rajada",
+      "descripcion": "Personalize o seu intervalo de vento médio (Mínimo, Ideal e Máximo) e a sua rajada máxima tolerável.<br><br>Estes limiares definem as cores 🟩🟨🟥 na Tabela e no Mapa, e determinam a pontuação automática (0 a 10) das condições de voo para cada descolagem."
+    },
+    "datosMeteorologicosOpcionales": {
+      "titulo": "Dados meteorológicos opcionais",
+      "descripcion": "Várias opções adicionais que adicionam ou personalizam os dados meteorológicos mostrados. Cada uma tem o seu botão de informação com o detalhe da sua funcionalidade.</li></ul>"
+    },
+    "mapa": {
+      "titulo": "Mapa",
+      "descripcion": "Configure se deseja abrir o mapa ao iniciar, ou recordar a sua última vista, filtros e camadas ativas...<br><br>Também pode personalizar as <b>balizas de vento</b>: colorir as suas setas consoante a intensidade, definir o limiar vermelho de perigo,...."
+    },
+    "otrasOpciones": {
+      "titulo": "Outras opções",
+      "descripcion": "<b>Horário preferido:</b> Defina as horas habituais em que costuma voar para que sejam selecionadas automaticamente ao premir um dia da semana.<br><br>Também pode limitar a tabela a horas de luz diurna, ordenar por potencial XC, ativar a vibração háptica ou escolher quantos dias as descolagens em seguimento são mantidas."
+    },
+    "modelosMeteo": {
+      "titulo": "Atualizações modelos meteo",
+      "descripcion": "Consulte quando foram gerados os dados que está a ver, a passagem de cálculo (run) de referência e o tempo restante estimado para a próxima atualização de cada modelo (Arome-HD, ICON-EU, Arome 15min e ECMWF)."
+    },
+    "enlaces": {
+      "titulo": "Guias, Ajuda, Legal e outros",
+      "descripcion": "Volte a consultar este centro de guias quando necessitar, aceda à documentação web de ajuda, reveja as condições legais ou consulte o nosso estudo estatístico contínuo de precisão de modelos."
+    }
+  }
+},
+
   "asistente": {
     "paso1": {
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Onde voar?</p>",

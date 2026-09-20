@@ -441,6 +441,68 @@
   }
 },
 
+"guiaAjustes": {
+  "preguntaVerGuia": "Queres ver unha guía visual sobre a pantalla de <i>Axustes</i>?",
+  "pasos": {
+    "intro": {
+      "titulo": "Axustes",
+      "descripcion": "Neste panel está a configuración xeral da aplicación: cambiar o idioma, configurar os teus límites persoais de vento para o cálculo da puntuación, xestionar as túas engalaxes favoritas, activar datos meteorolóxicos avanzados, personalizar o mapa e moito máis."
+    },
+    "idioma": {
+      "titulo": "Idioma",
+      "descripcion": "Elixe o idioma da aplicación entre os 8 dispoñibles (Español, Euskara, Català, Galego, English, Français, Deutsch e Português)."
+    },
+    "modoApp": {
+      "titulo": "Modo da aplicación",
+      "descripcion": "<b>Simple:</b> Mostra só o esencial para unha lectura limpa e rápida.<br><br><b>Avanzado:</b> Mostra todas as opcións dispoñibles para que as actives se desexas: filtros de distancia, seguimento temporal, vento a varias alturas, métricas XC, capas e filtros avanzados do mapa."
+    },
+    "botonInfo": {
+      "titulo": "Botón de información",
+      "descripcion": "Ofrece unha explicación completa destas opcións.<br><br>Hai botóns como este para cada unha das opcións ou funcións deste panel de Axustes."
+    },
+    "editarFavoritos": {
+      "titulo": "Editar favoritos",
+      "descripcion": "Accede á lista completa de engalaxes para marcar ou desmarcar as túas engalaxes favoritas.<br><br>As engalaxes que marques como favoritas serán as que aparecerán co seu prognóstico meteorolóxico e puntuación na Táboa e no Mapa.<br><br>Tamén podes marcar ou desmarcar favoritos directamente na Táboa e no Mapa activando ou desactivando o corazón que hai en cada engalaxe ❤️/🤍."
+    },
+    "importarConfiguracion": {
+      "titulo": "Importar Configuración",
+      "descripcion": "Abre un ficheiro que contén unha configuración completa gardada anteriormente. Esta configuración completa inclúe as túas engalaxes favoritas, personalizacións, límites, opcións activadas,..."
+    },
+    "exportarConfiguracion": {
+      "titulo": "Exportar Configuración",
+      "descripcion": "Garda nun ficheiro a configuración completa da aplicación.<br><br>💡Podes gardar diferentes configuracións por zonas ou por tipo de voo."
+    },
+    "restablecerConfiguracion": {
+      "titulo": "Restablecer Configuración",
+      "descripcion": "Elimina todas as personalizacións e favoritos de forma que a aplicación volve á situación orixinal como se se acabase de instalar por primeira vez."
+    },
+    "vientoRacha": {
+      "titulo": "Límites de Vento e Refacho",
+      "descripcion": "Personaliza o teu rango de vento medio (Mínimo, Ideal e Máximo) e o teu refacho máximo tolerable.<br><br>Estes limiares definen as cores 🟩🟨🟥 na Táboa e no Mapa, e determinan a puntuación automática (0 a 10) de condicións de voo para cada engalaxe."
+    },
+    "datosMeteorologicosOpcionales": {
+      "titulo": "Datos meteorolóxicos opcionais",
+      "descripcion": "Varias opcións adicionais que engaden ou personalizan os datos meteorolóxicos mostrados. Cada unha ten o seu botón de información co detalle da súa funcionalidade.</li></ul>"
+    },
+    "mapa": {
+      "titulo": "Mapa",
+      "descripcion": "Configura se desexas abrir o mapa ao iniciar, ou recordar a túa última vista, filtros e capas activas...<br><br>Tamén podes personalizar as <b>balizas de vento</b>: colorear as súas frechas segundo a intensidade, definir o limiar vermello de perigo,...."
+    },
+    "otrasOpciones": {
+      "titulo": "Outras opcións",
+      "descripcion": "<b>Horario preferido:</b> Define as horas habituais nas que adoitas voar para que se seleccionen soas ao pulsar un día da semana.<br><br>Tamén podes limitar a táboa a horas de luz diúrna, ordenar por potencial XC, activar vibración háptica ou elixir cantos días se conservan as engalaxes en seguimento."
+    },
+    "modelosMeteo": {
+      "titulo": "Actualizacións modelos meteo",
+      "descripcion": "Consulta cando se xeraron os datos que estás a ver, a pasada de cálculo (run) de referencia e o tempo restante estimado para a próxima actualización de cada modelo (Arome-HD, ICON-EU, Arome 15min e ECMWF)."
+    },
+    "enlaces": {
+      "titulo": "Guías, Axuda, Legal e outros",
+      "descripcion": "Volve consultar este centro de guías cando o necesites, accede á documentación web de axuda, revisa as condicións legais ou consulta o noso estudo estatístico continuo de precisión de modelos."
+    }
+  }
+},
+
   "asistente": {
     "paso1": {
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Onde voar?</p>",

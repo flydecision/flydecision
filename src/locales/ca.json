@@ -441,6 +441,68 @@
   }
 },
 
+"guiaAjustes": {
+  "preguntaVerGuia": "Vols veure una guia visual sobre la pantalla d'<i>Ajustos</i>?",
+  "pasos": {
+    "intro": {
+      "titulo": "Ajustos",
+      "descripcion": "En aquest panell hi ha la configuració general de l'aplicació: canviar l'idioma, configurar els teus límits personals de vent per al càlcul de la puntuació, gestionar els teus enlairaments favorits, activar dades meteorològiques avançades, personalitzar el mapa i molt més."
+    },
+    "idioma": {
+      "titulo": "Idioma",
+      "descripcion": "Tria l'idioma de l'aplicació entre els 8 disponibles (Español, Euskara, Català, Galego, English, Français, Deutsch i Português)."
+    },
+    "modoApp": {
+      "titulo": "Mode de l'aplicació",
+      "descripcion": "<b>Simple:</b> Mostra només allò essencial per a una lectura neta i ràpida.<br><br><b>Avançat:</b> Mostra totes les opcions disponibles perquè les activis si vols: filtres de distància, seguiment temporal, vent a diverses altures, mètriques XC, capes i filtres avançats del mapa."
+    },
+    "botonInfo": {
+      "titulo": "Botó d'informació",
+      "descripcion": "Ofereix una explicació completa d'aquestes opcions.<br><br>Hi ha botons com aquest per a cadascuna de les opcions o funcions d'aquest panell d'Ajustos."
+    },
+    "editarFavoritos": {
+      "titulo": "Editar favorits",
+      "descripcion": "Accedeix a la llista completa d'enlairaments per marcar o desmarcar els teus enlairaments favorits.<br><br>Els enlairaments que marquis com a favorits seran els que apareixeran amb el seu pronòstic meteorològic i puntuació a la Taula i al Mapa.<br><br>També pots marcar o desmarcar favorits directament a la Taula i al Mapa activant o desactivant el cor que hi ha a cada enlairament ❤️/🤍."
+    },
+    "importarConfiguracion": {
+      "titulo": "Importar Configuració",
+      "descripcion": "Obre un fitxer que conté una configuració completa desada anteriorment. Aquesta configuració completa inclou els teus enlairaments favorits, personalitzacions, límits, opcions activades,..."
+    },
+    "exportarConfiguracion": {
+      "titulo": "Exportar Configuració",
+      "descripcion": "Desa en un fitxer la configuració completa de l'aplicació.<br><br>💡Pots desar diferents configuracions per zones o per tipus de vol."
+    },
+    "restablecerConfiguracion": {
+      "titulo": "Restablir Configuració",
+      "descripcion": "Elimina totes les personalitzacions i favorits de manera que l'aplicació torna a la situació original com si s'acabés d'instal·lar per primera vegada."
+    },
+    "vientoRacha": {
+      "titulo": "Límits de Vent i Ratxa",
+      "descripcion": "Personalitza el teu rang de vent mitjà (Mínim, Ideal i Màxim) i la teva ratxa màxima tolerable.<br><br>Aquests llindars defineixen els colors 🟩🟨🟥 a la Taula i al Mapa, i determinen la puntuació automàtica (0 a 10) de condicions de vol per a cada enlairament."
+    },
+    "datosMeteorologicosOpcionales": {
+      "titulo": "Dades meteorològiques opcionals",
+      "descripcion": "Diverses opcions addicionals que afegeixen o personalitzen les dades meteorològiques mostrades. Cadascuna té el seu botó d'informació amb el detall de la seva funcionalitat.</li></ul>"
+    },
+    "mapa": {
+      "titulo": "Mapa",
+      "descripcion": "Configura si desitges obrir el mapa en iniciar, o recordar la teva última vista, filtres i capes actives...<br><br>També pots personalitzar les <b>balises de vent</b>: acolorir les seves fletxes segons la intensitat, definir el llindar vermell de perill,...."
+    },
+    "otrasOpciones": {
+      "titulo": "Altres opcions",
+      "descripcion": "<b>Horari preferit:</b> Defineix les hores habituals en què sols volar perquè se seleccionin soles en prémer un dia de la setmana.<br><br>També pots limitar la taula a hores de llum diürna, ordenar per potencial XC, activar vibració hàptica o triar quants dies es conserven els enlairaments en seguiment."
+    },
+    "modelosMeteo": {
+      "titulo": "Actualitzacions models meteo",
+      "descripcion": "Consulta quan es van generar les dades que estàs veient, la passada de càlcul (run) de referència i el temps restant estimat per a la propera actualització de cada model (Arome-HD, ICON-EU, Arome 15min i ECMWF)."
+    },
+    "enlaces": {
+      "titulo": "Guies, Ajuda, Legal i altres",
+      "descripcion": "Torna a consultar aquest centre de guies quan ho necessitis, accedeix a la documentació web d'ajuda, revisa les condicions legals o consulta el nostre estudi estadístic continu de precisió de models."
+    }
+  }
+},
+
   "asistente": {
     "paso1": {
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>On volar?</p>",

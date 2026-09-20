@@ -441,6 +441,68 @@
   }
 },
 
+"guiaAjustes": {
+  "preguntaVerGuia": "Voulez-vous voir un guide visuel sur l'écran des <i>Paramètres</i> ?",
+  "pasos": {
+    "intro": {
+      "titulo": "Paramètres",
+      "descripcion": "Dans ce panneau se trouve la configuration générale de l'application : changer la langue, configurer vos limites personnelles de vent pour le calcul du score, gérer vos décollages favoris, activer les données météorologiques avancées, personnaliser la carte et bien plus encore."
+    },
+    "idioma": {
+      "titulo": "Langue",
+      "descripcion": "Choisissez la langue de l'application parmi les 8 disponibles (Español, Euskara, Català, Galego, English, Français, Deutsch et Português)."
+    },
+    "modoApp": {
+      "titulo": "Mode de l'application",
+      "descripcion": "<b>Simple :</b> Affiche uniquement l'essentiel pour une lecture claire et rapide.<br><br><b>Avancé :</b> Affiche toutes les options disponibles pour que vous les activiez si vous le souhaitez : filtres de distance, suivi temporel, vent à différentes hauteurs, métriques XC, couches et filtres avancés de la carte."
+    },
+    "botonInfo": {
+      "titulo": "Bouton d'information",
+      "descripcion": "Offre une explication complète de ces options.<br><br>Il y a des boutons comme celui-ci pour chacune des options ou fonctions de ce panneau de Paramètres."
+    },
+    "editarFavoritos": {
+      "titulo": "Éditer les favoris",
+      "descripcion": "Accédez à la liste complète des décollages pour marquer ou désélectionner vos décollages favoris.<br><br>Les décollages que vous marquez comme favoris seront ceux qui apparaîtront avec leurs prévisions météorologiques et leur score sur le Tableau et la Carte.<br><br>Vous pouvez également marquer ou désélectionner des favoris directement sur le Tableau et la Carte en activant ou désactivant le cœur sur chaque décollage ❤️/🤍."
+    },
+    "importarConfiguracion": {
+      "titulo": "Importer la Configuration",
+      "descripcion": "Ouvre un fichier contenant une configuration complète précédemment sauvegardée. Cette configuration complète inclut vos décollages favoris, vos personnalisations, vos limites, les options activées,..."
+    },
+    "exportarConfiguracion": {
+      "titulo": "Exporter la Configuration",
+      "descripcion": "Sauvegarde la configuration complète de l'application dans un fichier.<br><br>💡Vous pouvez sauvegarder différentes configurations par zones ou par type de vol."
+    },
+    "restablecerConfiguracion": {
+      "titulo": "Réinitialiser la Configuration",
+      "descripcion": "Supprime toutes les personnalisations et les favoris de sorte que l'application revienne à son état d'origine comme si elle venait d'être installée pour la première fois."
+    },
+    "vientoRacha": {
+      "titulo": "Limites de Vent et Rafale",
+      "descripcion": "Personnalisez votre plage de vent moyen (Minimum, Idéal et Maximum) et votre rafale maximale tolérable.<br><br>Ces seuils définissent les couleurs 🟩🟨🟥 dans le Tableau et la Carte, et déterminent le score automatique (0 à 10) des conditions de vol pour chaque décollage."
+    },
+    "datosMeteorologicosOpcionales": {
+      "titulo": "Données météorologiques optionnelles",
+      "descripcion": "Plusieurs options supplémentaires qui ajoutent ou personnalisent les données météorologiques affichées. Chacune possède son bouton d'information avec le détail de sa fonctionnalité.</li></ul>"
+    },
+    "mapa": {
+      "titulo": "Carte",
+      "descripcion": "Configurez si vous souhaitez ouvrir la carte au démarrage, ou mémoriser votre dernière vue, filtres et couches actives...<br><br>Vous pouvez également personnaliser les <b>balises de vent</b> : colorer leurs flèches selon l'intensité, définir le seuil rouge de danger,...."
+    },
+    "otrasOpciones": {
+      "titulo": "Autres options",
+      "descripcion": "<b>Hora préférée :</b> Définissez les heures habituelles auxquelles vous volez afin qu'elles se sélectionnent toutes seules en appuyant sur un jour de la semaine.<br><br>Vous pouvez également limiter le tableau aux heures de lumière du jour, trier par potentiel XC, activer la vibration haptique ou choisir le nombre de jours pendant lesquels les décollages suivis sont conservés."
+    },
+    "modelosMeteo": {
+      "titulo": "Mises à jour modèles météo",
+      "descripcion": "Consultez quand les données que vous regardez ont été générées, le modèle de calcul (run) de référence et le temps restant estimé pour la prochaine mise à jour de chaque modèle (Arome-HD, ICON-EU, Arome 15min et ECMWF)."
+    },
+    "enlaces": {
+      "titulo": "Guides, Aide, Légal et autres",
+      "descripcion": "Revenez consulter ce centre de guides quand vous en avez besoin, accédez à la documentation web d'aide, vérifiez les conditions légales ou consultez notre étude statistique continue sur la précision des modèles."
+    }
+  }
+},
+
   "asistente": {
     "paso1": {
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Où voler ?</p>",

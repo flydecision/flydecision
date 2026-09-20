@@ -441,6 +441,68 @@
   }
 },
   
+"guiaAjustes": {
+  "preguntaVerGuia": "<i>Ezarpenak</i> pantailari buruzko gida bisual bat ikusi nahi duzu?",
+  "pasos": {
+    "intro": {
+      "titulo": "Ezarpenak",
+      "descripcion": "Panel honetan aplikazioaren konfigurazio orokorra dago: hizkuntza aldatu, puntuazioa kalkulatzeko zure haize-muga pertsonalak konfiguratu, zure aireratze gogokoenak kudeatu, datu meteorologiko aurreratuak aktibatu, mapa pertsonalizatu eta askoz gehiago."
+    },
+    "idioma": {
+      "titulo": "Hizkuntza",
+      "descripcion": "Aukeratu aplikazioaren hizkuntza eskuragarri dauden 8en artean (Español, Euskara, Català, Galego, English, Français, Deutsch eta Português)."
+    },
+    "modoApp": {
+      "titulo": "Aplikazioaren modua",
+      "descripcion": "<b>Sinplea:</b> Irakurketa garbi eta azkar bat izateko funtsezkoa dena soilik erakusten du.<br><br><b>Aurreratua:</b> Nahi baduzu aktibatzeko eskuragarri dauden aukera guztiak erakusten ditu: distantzia-iragazkiak, denbora-jarraipena, haizea hainbat altueratan, XC metrikak, geruzak eta mapako iragazki aurreratuak."
+    },
+    "botonInfo": {
+      "titulo": "Informazio botoia",
+      "descripcion": "Aukera hauen azalpen osoa eskaintzen du.<br><br>Ezarpenak paneleko aukera edo funtzio bakoitzerako hau bezalako botoiak daude."
+    },
+    "editarFavoritos": {
+      "titulo": "Gogokoak editatu",
+      "descripcion": "Sartu aireratzeen zerrenda osora zure aireratze gogokoenak markatzeko edo desmarkatzeko.<br><br>Gogoko gisa markatzen dituzun aireratzeak izango dira Taulan eta Mapan beren iragarpen meteorologikoarekin eta puntuazioarekin agertuko direnak.<br><br>Gogokoak zuzenean ere marka edo desmarka ditzakezu Taulan eta Mapan, aireratze bakoitzean dagoen bihotza aktibatuz edo desaktibatuz ❤️/🤍."
+    },
+    "importarConfiguracion": {
+      "titulo": "Konfigurazioa inportatu",
+      "descripcion": "Aurrez gordetako konfigurazio oso bat duen fitxategi bat irekitzen du. Konfigurazio oso honek zure aireratze gogokoenak, pertsonalizazioak, mugak, aktibatutako aukerak... barne hartzen ditu."
+    },
+    "exportarConfiguracion": {
+      "titulo": "Konfigurazioa esportatu",
+      "descripcion": "Gorde aplikazioaren konfigurazio osoa fitxategi batean.<br><br>💡Konfigurazio desberdinak gorde ditzakezu eremuen edo hegaldi motaren arabera."
+    },
+    "restablecerConfiguracion": {
+      "titulo": "Konfigurazioa berrezarri",
+      "descripcion": "Pertsonalizazio eta gogoko guztiak ezabatzen ditu, aplikazioa jatorrizko egoerara itzul dadin, lehen aldiz instalatu berri balitz bezala."
+    },
+    "vientoRacha": {
+      "titulo": "Haizearen eta boladaren mugak",
+      "descripcion": "Pertsonalizatu zure batez besteko haize-tartea (Gutxienekoa, Ideala eta Gehienezkoa) eta onar dezakezun bolada maximoa.<br><br>Atalase horiek Taulan eta Mapan 🟩🟨🟥 koloreak zehazten dituzte, eta aireratze bakoitzeko hegaldi-baldintzen puntuazio automatikoa (0tik 10era) erabakitzen dute."
+    },
+    "datosMeteorologicosOpcionales": {
+      "titulo": "Aukerako datu meteorologikoak",
+      "descripcion": "Erakutsitako datu meteorologikoak gehitzen edo pertsonalizatzen dituzten hainbat aukera gehigarri. Bakoitzak bere informazio-botoia du bere funtzionaltasunaren xehetasunekin.</li></ul>"
+    },
+    "mapa": {
+      "titulo": "Mapa",
+      "descripcion": "Konfiguratu mapa hasieran ireki nahi duzun ala ez, edota zure azken ikuspegia, iragazkiak eta geruza aktiboak gogoratu...<br><br><b>Haize-balizak</b> ere pertsonaliza ditzakezu: beren geziak intentsitatearen arabera koloreztatu, arrisku-atalase gorria zehaztu,..."
+    },
+    "otrasOpciones": {
+      "titulo": "Beste aukera batzuk",
+      "descripcion": "<b>Ordutegi gogokoena:</b> Zehaztu hegan egin ohi duzun ohiko orduak, asteko egun bat sakatzean bakarrik hauta daitezen.<br><br>Taula eguneko argi-orduetara mugatu dezakezu, XC potentzialaren arabera ordenatu, bibrazio haptikoa aktibatu edo jarraipeneko aireratzeak zenbat egunez mantentzen diren aukeratu."
+    },
+    "modelosMeteo": {
+      "titulo": "Meteo ereduen eguneratzeak",
+      "descripcion": "Kontsultatu noiz sortu diren ikusten ari zaren datuak, erreferentziazko kalkulu-pasa (run) eta eredu bakoitzaren hurrengo eguneratzerako (Arome-HD, ICON-EU, Arome 15min eta ECMWF) estimatutako gainerako denbora."
+    },
+    "enlaces": {
+      "titulo": "Gidak, Laguntza, Legala eta beste batzuk",
+      "descripcion": "Kontsultatu gida-zentro hau berriro behar duzunean, sartu laguntzako web-dokumentaziora, berrikusi baldintza legalak edo kontsultatu gure ereduen zehaztasunari buruzko azterketa estatistiko jarraitua."
+    }
+  }
+},
+
   "asistente": {
     "paso1": {
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Non hegan egin?</p>",

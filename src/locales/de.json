@@ -441,6 +441,68 @@
   }
 },
 
+"guiaAjustes": {
+  "preguntaVerGuia": "Möchten Sie eine visuelle Anleitung für den Bildschirm <i>Einstellungen</i> sehen?",
+  "pasos": {
+    "intro": {
+      "titulo": "Einstellungen",
+      "descripcion": "In diesem Panel finden Sie die allgemeine Konfiguration der Anwendung: Sprache ändern, persönliche Windgrenzwerte für die Punkteberechnung konfigurieren, Ihre bevorzugten Startplätze verwalten, erweiterte Wetterdaten aktivieren, die Karte anpassen und vieles mehr."
+    },
+    "idioma": {
+      "titulo": "Sprache",
+      "descripcion": "Wählen Sie die Sprache der Anwendung aus den 8 verfügbaren aus (Español, Euskara, Català, Galego, English, Français, Deutsch und Português)."
+    },
+    "modoApp": {
+      "titulo": "Anwendungsmodus",
+      "descripcion": "<b>Einfach:</b> Zeigt nur das Wesentliche für ein sauberes und schnelles Lesen an.<br><br><b>Erweitert:</b> Zeigt alle verfügbaren Optionen an, damit Sie diese auf Wunsch aktivieren können: Entfernungsfilter, zeitliche Verfolgung, Wind in verschiedenen Höhen, XC-Metriken, Ebenen und erweiterte Kartenfilter."
+    },
+    "botonInfo": {
+      "titulo": "Info-Taste",
+      "descripcion": "Bietet eine vollständige Erklärung zu diesen Optionen.<br><br>Es gibt Schaltflächen wie diese für jede der Optionen oder Funktionen in diesem Einstellungsbereich."
+    },
+    "editarFavoritos": {
+      "titulo": "Favoriten bearbeiten",
+      "descripcion": "Greifen Sie auf die vollständige Liste der Startplätze zu, um Ihre bevorzugten Startplätze zu markieren oder abzuwählen.<br><br>Die von Ihnen als Favoriten markierten Startplätze werden mit ihrer Wettervorhersage und Punktzahl in der Tabelle und auf der Karte angezeigt.<br><br>Sie können Favoriten auch direkt in der Tabelle und auf der Karte markieren oder abwählen, indem Sie das Herz bei jedem Startplatz aktivieren oder deaktivieren ❤️/🤍."
+    },
+    "importarConfiguracion": {
+      "titulo": "Konfiguration importieren",
+      "descripcion": "Öffnet eine Datei, die eine zuvor gespeicherte vollständige Konfiguration enthält. Diese vollständige Konfiguration umfasst Ihre bevorzugten Startplätze, Anpassungen, Grenzwerte, aktivierte Optionen..."
+    },
+    "exportarConfiguracion": {
+      "titulo": "Konfiguration exportieren",
+      "descripcion": "Speichert die vollständige Konfiguration der Anwendung in einer Datei.<br><br>💡Sie können verschiedene Konfigurationen nach Zonen oder nach Flugtyp speichern."
+    },
+    "restablecerConfiguracion": {
+      "titulo": "Konfiguration zurücksetzen",
+      "descripcion": "Entfernt alle Anpassungen und Favoriten, sodass die Anwendung in den ursprünglichen Zustand zurückkehrt, als wäre sie zum ersten Mal installiert worden."
+    },
+    "vientoRacha": {
+      "titulo": "Wind- und Böengrenzwerte",
+      "descripcion": "Passen Sie Ihren mittleren Windbereich (Minimum, Ideal und Maximum) und Ihre maximal tolerierbare Böe an.<br><br>Diese Schwellenwerte definieren die Farben 🟩🟨🟥 in der Tabelle und auf der Karte und bestimmen die automatische Punktzahl (0 bis 10) der Flugbedingungen für jeden Startplatz."
+    },
+    "datosMeteorologicosOpcionales": {
+      "titulo": "Optionale Wetterdaten",
+      "descripcion": "Verschiedene zusätzliche Optionen, die die angezeigten Wetterdaten hinzufügen oder anpassen. Jede hat eine eigene Info-Taste mit Details zu ihrer Funktion.</li></ul>"
+    },
+    "mapa": {
+      "titulo": "Karte",
+      "descripcion": "Konfigurieren Sie, ob die Karte beim Start geöffnet werden soll, oder merken Sie sich Ihre letzte Ansicht, aktive Filter und Ebenen...<br><br>Sie können auch die <b>Windbaken</b> anpassen: ihre Pfeile nach Intensität einfärben, den roten Gefahrenschwellenwert definieren,...."
+    },
+    "otrasOpciones": {
+      "titulo": "Andere Optionen",
+      "descripcion": "<b>Bevorzugte Zeit:</b> Definieren Sie die üblichen Stunden, zu denen Sie fliegen, damit diese automatisch ausgewählt werden, wenn Sie auf einen Wochentag tippen.<br><br>Sie können die Tabelle auch auf Tageslichtstunden beschränken, nach XC-Potenzial sortieren, haptische Vibrationen aktivieren oder auswählen, wie viele Tage verfolgte Startplätze gespeichert werden."
+    },
+    "modelosMeteo": {
+      "titulo": "Aktualisierungen der Wettermodelle",
+      "descripcion": "Überprüfen Sie, wann die angezeigten Daten generiert wurden, den Referenz-Berechnungslauf (run) und die geschätzte verbleibende Zeit für das nächste Update jedes Modells (Arome-HD, ICON-EU, Arome 15min und ECMWF)."
+    },
+    "enlaces": {
+      "titulo": "Anleitungen, Hilfe, Rechtliches und Sonstiges",
+      "descripcion": "Besuchen Sie dieses Anleitungscenter bei Bedarf erneut, greifen Sie auf die Web-Hilfedokumentation zu, überprüfen Sie die rechtlichen Bedingungen oder lesen Sie unsere fortlaufende statistische Studie zur Modellgenauigkeit."
+    }
+  }
+},
+
   "asistente": {
     "paso1": {
       "html": "<p style='font-size: 1.4em; font-weight: bold; text-align:center;'><icon-despegue></icon-despegue>Fly Decision<br>Wo fliegen?</p>",
