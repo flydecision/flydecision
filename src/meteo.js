@@ -6907,20 +6907,31 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     });
                 }
 
-                // Velocidad 10 m
-                const tdIconoVelocidad = document.createElement("td");
-                tdIconoVelocidad.innerHTML = `<span style="font-size:10px; font-weight:bold;">${labelViento10}</span>`;
-                tdIconoVelocidad.setAttribute("title", tituloViento10);
-                tdIconoVelocidad.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
+                // =========================================================================
+                // CELDA LATERAL UNIFICADA: Velocidad 10 m + Racha 10 m (rowSpan = 2)
+                // Proporciona un área táctil amplia para mantener pulsado y alternar el "peek"
+                // =========================================================================
+                const tdIconoUnificado = document.createElement("td");
+                tdIconoUnificado.rowSpan = 2; // Ocupa la fila de viento medio y la de racha
+                tdIconoUnificado.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
+                tdIconoUnificado.setAttribute("title", `${tituloViento10} / ${tituloRacha10}\n(Mantén pulsado para alternar corrección estadística)`);
+                
+                tdIconoUnificado.style.cursor = "pointer";
+                tdIconoUnificado.style.userSelect = "none";
+                tdIconoUnificado.style.webkitUserSelect = "none";
+                tdIconoUnificado.style.touchAction = "manipulation"; // Evita retardos y gestos accidentales del navegador
 
-                filaVel.appendChild(tdIconoVelocidad);	 	 	 	
+                // Ambos iconos centrados y apilados con holgura
+                tdIconoUnificado.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:space-around; height:100%; min-height:42px; padding:2px 0; box-sizing:border-box;">
+                        <span style="font-size:10px; font-weight:bold; line-height:1.1;">${labelViento10}</span>
+                        <img src="/icons/icono_racha_48x42.webp" width="16" height="14" style="display:block; margin-top:3px;">
+                    </div>
+                `;
 
-                // Racha 10 m
-                const tdIconoRacha = document.createElement("td");	
-                tdIconoRacha.innerHTML = '<img src="/icons/icono_racha_48x42.webp" width="16" height="14">';
-                tdIconoRacha.setAttribute("title", tituloRacha10);
-                /* Añadir clase para asegurar la posición fija */
-                tdIconoRacha.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
+                // Añadimos la celda unificada solo a la fila superior (filaVel)
+                filaVel.appendChild(tdIconoUnificado);
+                // NOTA: filaRacha ya NO necesita appendChild porque esta celda tiene rowSpan = 2
 
                 // Función local que conmuta entre original y calibrado solo para este despegue
                 const activarPeekDespegue = (peeking) => {
@@ -6949,7 +6960,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     });
                 };
 
-                // Asignar los eventos de presionar y soltar a una celda lateral
+                // Asignar los eventos de presionar y soltar a la celda lateral unificada
                 const vincularPeekBoton = (tdBoton) => {
                     if (!chkAplicarCorreccionEstadistica) return;
                     
@@ -6960,7 +6971,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         if (presionado) return;
                         presionado = true;
                         tdBoton.classList.add("peek-activo");
-                        // Vibración háptica al poner el dedo (Elemento clave 2)
                         if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
                         activarPeekDespegue(true);
                     };
@@ -6972,27 +6982,21 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         activarPeekDespegue(false);
                     };
 
-                    // Eventos pointer (unificados para dedo en móvil y ratón en PC)
-                    tdBoton.addEventListener("pointerdown", alPulsar);
-                    tdBoton.addEventListener("pointerup", alSoltar);
+                    // pointerdown/up gestionan pantalla táctil y ratón con captura de puntero
+                    tdBoton.addEventListener("pointerdown", (e) => {
+                        try { tdBoton.setPointerCapture(e.pointerId); } catch(err){}
+                        alPulsar(e);
+                    });
+                    tdBoton.addEventListener("pointerup", (e) => {
+                        try { tdBoton.releasePointerCapture(e.pointerId); } catch(err){}
+                        alSoltar(e);
+                    });
                     tdBoton.addEventListener("pointercancel", alSoltar);
-                    tdBoton.addEventListener("pointerleave", alSoltar);
                     tdBoton.addEventListener("contextmenu", (e) => e.preventDefault());
                 };
 
-                // Vinculamos ambas celdas laterales
-                vincularPeekBoton(tdIconoVelocidad);
-                vincularPeekBoton(tdIconoRacha);
-				
-                // Forzamos altura a 20px
-                tdIconoRacha.style.height = "20px";
-                tdIconoRacha.style.minHeight = "20px";
-                tdIconoRacha.style.maxHeight = "20px";
-                tdIconoRacha.style.lineHeight = "20px";
-                tdIconoRacha.style.padding = "0px";
-                tdIconoRacha.style.boxSizing = "border-box"; // Vital para que los bordes no sumen altura
-
-				filaRacha.appendChild(tdIconoRacha);
+                // Vinculamos la celda unificada
+                vincularPeekBoton(tdIconoUnificado);
 
 				// Dirección 10 m
                 const tdIconoDireccion = document.createElement("td");	
