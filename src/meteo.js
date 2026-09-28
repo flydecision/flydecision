@@ -13,6 +13,8 @@ let soloSeguimiento = false;
 let modoEdicionFavoritos = false;
 let totalFavoritos = 0;
 let totalDespeguesDisponibles = 0;
+let ecmwfTimeMap = new Map();
+window.ecmwfTimeMap = ecmwfTimeMap;
 
 let VelocidadMin = Number(localStorage.getItem("METEO_VELOCIDAD_MINIMA")) || 0; 
 let VelocidadIdeal = Number(localStorage.getItem("METEO_VELOCIDAD_IDEAL")) || 12;
@@ -3471,8 +3473,8 @@ const HORAS_LUZ_CON_MARGEN = [
     { inicio: 6, fin: 23 }, // 5: Junio
     { inicio: 6, fin: 23 }, // 6: Julio
     { inicio: 7, fin: 22 }, // 7: Agosto
-    { inicio: 7, fin: 21 }, // 8: Septiembre
-    { inicio: 7, fin: 20 }, // 9: Octubre (Optimizado para cambio de hora)
+    { inicio: 7, fin: 22 }, // 8: Septiembre
+    { inicio: 7, fin: 21 }, // 9: Octubre (Optimizado para cambio de hora)
     { inicio: 7, fin: 19 }, // 10: Noviembre
     { inicio: 8, fin: 19 }  // 11: Diciembre
 ];
@@ -3593,26 +3595,28 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 
     pipIndices.forEach((startIdx, i) => {
         const idxReal = indices[startIdx];
+        if (!horas || !horas[idxReal]) return;
+
         const d = new Date(horas[idxReal].endsWith('Z') ? horas[idxReal] : horas[idxReal] + 'Z');
-        const label = t(`dias.${diasClaves[d.getDay()]}`) + " " + d.getDate();
+        const diaSemanaTexto = t(`dias.${diasClaves[d.getDay()]}`);
+        const numeroDia = d.getDate();
 
         const btn = document.createElement('button');
-        btn.textContent = label;
-        
-        // Si el modo "Ver todos los días" está activo, obligamos a que ningún día se pinte de azul
+        // Solo las 3 letras del día de la semana para que los 7 botones quepan holgados
+        btn.textContent = diaSemanaTexto;
+        // La fecha completa (ej: "lun 28") visible al pasar el ratón o mantener pulsado
+        btn.title = `${diaSemanaTexto} ${numeroDia}`;
+
         const esActivo = (!modoVerTodosLosDias && i === diaSeleccionado);
-        
         btn.className = 'pip-dia-btn' + (esActivo ? ' pip-activo' : '');
         btn.dataset.diaIndex = i;
 
         btn.addEventListener('click', function() {
-            // 1. APAGAR el modo calendario si se pulsa un día
             modoVerTodosLosDias = false;
             const btnCal = document.getElementById('btn-ver-todos-dias');
             if (btnCal) btnCal.classList.remove('activo');
             document.getElementById('div-filtro-horario').classList.remove('ocultar-slider-por-calendario');
 
-            // 2. Lógica normal de días
             document.querySelectorAll('.pip-dia-btn').forEach(b => b.classList.remove('pip-activo'));
             this.classList.add('pip-activo');
             clickOnDia(sliderElement, parseInt(this.dataset.diaIndex));
@@ -3866,14 +3870,15 @@ window.calcularIndicesPreferencia = function(diaObjetivo) {
 // 🔴 SLIDERS. FILTRO RANGO HORARIO. Construcción
 // ---------------------------------------------------------------
 
-function gestionarSliderHoras(respuestas, soloHorasDeLuz) {
-
+function gestionarSliderHoras(respuestas, respuestasEcmwf, soloHorasDeLuz) {
     const sliderHoras = document.getElementById('horario-slider'); 
 
     window.horasCrudasRangoHorario = [];
-    if (respuestas && respuestas.length > 0 && respuestas[0].hourly && respuestas[0].hourly.time) {
-        window.horasCrudasRangoHorario = respuestas[0].hourly.time;
-    }
+    const timeEcmwf = (respuestasEcmwf && respuestasEcmwf[0] && respuestasEcmwf[0].hourly && Array.isArray(respuestasEcmwf[0].hourly.time)) ? respuestasEcmwf[0].hourly.time : [];
+    const timeArome = (respuestas && respuestas.length > 0 && respuestas[0].hourly && Array.isArray(respuestas[0].hourly.time)) ? respuestas[0].hourly.time : [];
+
+    // Priorizamos el eje temporal de ECMWF si tiene más días (7 días = 168 horas)
+    window.horasCrudasRangoHorario = (timeEcmwf.length > timeArome.length) ? timeEcmwf : timeArome;
 
     // --- LÓGICA DE FILTRADO Y ZONA HORARIA (Idéntica a la original) ---
     let horasFiltradasPermanentemente = window.horasCrudasRangoHorario;
@@ -4251,6 +4256,65 @@ window.toggleVerTodosLosDias = function() {
 // 🔴 FUNCIONES GLOBALES (hay otras más, pero éstas tienen que estar antes de construir la tabla)
 // ---------------------------------------------------------------
 
+// 🟡 Función matemática de interpolación de viento vectorial mediante geopotenciales para la altitud real
+
+function interpolarVientoAltitudReal(H_target, h1000, h925, h850, h700, v1000, v925, v850, v700, d1000, d925, d850, d700) {
+    const heights = [h1000, h925, h850, h700];
+    const speeds = [v1000, v925, v850, v700];
+    const directions = [d1000, d925, d850, d700];
+
+    let points = [];
+    for (let k = 0; k < 4; k++) {
+        const z = heights[k];
+        const v = speeds[k];
+        const d = directions[k];
+        if (z !== null && v !== null && d !== null) {
+            const rad = Number(d) * Math.PI / 180;
+            const u = Number(v) * Math.sin(rad);
+            const v_comp = Number(v) * Math.cos(rad);
+            points.push({ z: Number(z), u, v_comp });
+        }
+    }
+
+    if (points.length === 0) return null;
+    if (points.length === 1) {
+        const speed = Math.sqrt(points[0].u * points[0].u + points[0].v_comp * points[0].v_comp);
+        const dir = (Math.atan2(points[0].u, points[0].v_comp) * 180 / Math.PI + 360) % 360;
+        return { speed, dir };
+    }
+
+    points.sort((a, b) => a.z - b.z);
+
+    let u_interp = null, v_interp = null;
+    const interp = (h, p1, p2, key) => p1[key] + ((h - p1.z) / (p2.z - p1.z)) * (p2[key] - p1[key]);
+
+    let bracketFound = false;
+    for (let j = 0; j < points.length - 1; j++) {
+        const p1 = points[j];
+        const p2 = points[j+1];
+        if (H_target >= p1.z && H_target <= p2.z) {
+            u_interp = interp(H_target, p1, p2, 'u');
+            v_interp = interp(H_target, p1, p2, 'v_comp');
+            bracketFound = true;
+            break;
+        }
+    }
+
+    if (!bracketFound) {
+        if (H_target < points[0].z) {
+            u_interp = interp(H_target, points[0], points[1], 'u');
+            v_interp = interp(H_target, points[0], points[1], 'v_comp');
+        } else {
+            u_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'u');
+            v_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'v_comp');
+        }
+    }
+
+    const speed = Math.sqrt(u_interp * u_interp + v_interp * v_interp);
+    const dir = (Math.atan2(u_interp, v_interp) * 180 / Math.PI + 360) % 360;
+    return { speed, dir };
+}
+
 // 🟡 FUNCIÓN COMÚN DE PUNTUACIÓN (Unificado para Tabla y Mapa)
 
 function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indicesEvaluacion) {
@@ -4272,21 +4336,40 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         : [];
 
     indicesEvaluacion.forEach(i => {
-        if (!velArray || velArray[i] === undefined || velArray[i] === null) return;
-        if (!rachaArray || rachaArray[i] === undefined || rachaArray[i] === null) return;
-        if (!dirArray || dirArray[i] === undefined || dirArray[i] === null) return;
+        let vRaw = (velArray && velArray[i] !== undefined) ? velArray[i] : null;
+        let rRaw = (rachaArray && rachaArray[i] !== undefined) ? rachaArray[i] : null;
+        let dRaw = (dirArray && dirArray[i] !== undefined) ? dirArray[i] : null;
 
+        // Fallback a ECMWF en días 5 a 7 (usando window.ecmwfTimeMap de forma protegida)
+        if (vRaw === null && hourlyEcmwf && window.horasCrudasRangoHorario && window.ecmwfTimeMap) {
+            const hStr = window.horasCrudasRangoHorario[i];
+            const idxE = hStr ? window.ecmwfTimeMap.get(hStr) : undefined;
+            if (idxE !== undefined) {
+                if (vRaw === null && hourlyEcmwf.wind_speed_10m && hourlyEcmwf.wind_speed_10m[idxE] != null) {
+                    vRaw = hourlyEcmwf.wind_speed_10m[idxE];
+                }
+                if (rRaw === null && hourlyEcmwf.wind_gusts_10m && hourlyEcmwf.wind_gusts_10m[idxE] != null) {
+                    rRaw = hourlyEcmwf.wind_gusts_10m[idxE];
+                }
+                if (dRaw === null && hourlyEcmwf.wind_direction_10m && hourlyEcmwf.wind_direction_10m[idxE] != null) {
+                    dRaw = hourlyEcmwf.wind_direction_10m[idxE];
+                }
+            }
+        }
+
+        if (vRaw === null || rRaw === null || dRaw === null) return;
         horasValidas++;
 
-        let dirCorregida = dirArray[i];
-        let velBase = velArray[i];
-        if (chkAplicarCorreccionEstadistica) {
+        // Usamos los valores ya comprobados (vRaw, rRaw, dRaw) para no depender de velArray[i] en días 5 a 7
+        let dirCorregida = Number(dRaw);
+        let velBase = Number(vRaw);
+        if (chkAplicarCorreccionEstadistica && typeof corregirViento10m === 'function') {
             velBase = corregirViento10m(velBase, hourlyData, i, despegueObj); 
         }
         let velocidad = Math.round(Math.max(0, velBase));
 
-        let rachaBase = rachaArray[i];
-        if (chkAplicarCorreccionEstadistica) {
+        let rachaBase = Number(rRaw);
+        if (chkAplicarCorreccionEstadistica && typeof corregirRacha10m === 'function') {
             rachaBase = corregirRacha10m(rachaBase, hourlyData, i, despegueObj); 
         }
         let rachaCorregida = Math.round(Math.max(0, rachaBase));
@@ -4343,7 +4426,16 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         }
 
         // 💦 Veto Supremo: Lluvia
-        if (hourlyEcmwf && hourlyEcmwf.precipitation && Number(hourlyEcmwf.precipitation[i]) > 0) {
+        let idxE = undefined;
+        if (window.ecmwfTimeMap && window.horasCrudasRangoHorario) {
+            const hStr = window.horasCrudasRangoHorario[i];
+            idxE = hStr ? window.ecmwfTimeMap.get(hStr) : undefined;
+        }
+        const lluviaVal = (hourlyEcmwf && idxE !== undefined && hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[idxE] != null)
+            ? Number(hourlyEcmwf.precipitation[idxE])
+            : ((hourlyEcmwf && hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] != null) ? Number(hourlyEcmwf.precipitation[i]) : 0);
+
+        if (lluviaVal > 0) {
             vetoActivado = true;
         }
 
@@ -4355,15 +4447,24 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         // --- PUNTUACIÓN DE XC ---
         if (hourlyEcmwf && typeof chkMostrarXC !== 'undefined' && chkMostrarXC) {
             let ptsXC_hora = 0;
-            let lluviaXC = (hourlyEcmwf.precipitation && hourlyEcmwf.precipitation[i] != null) ? Number(hourlyEcmwf.precipitation[i]) : 0;
-            let capeXC = (hourlyEcmwf.cape && hourlyEcmwf.cape[i] != null) ? Number(hourlyEcmwf.cape[i]) : 0;
+            let lluviaXC = lluviaVal;
+            let capeXC = (idxE !== undefined && hourlyEcmwf.cape && hourlyEcmwf.cape[idxE] != null)
+                ? Number(hourlyEcmwf.cape[idxE])
+                : ((hourlyEcmwf.cape && hourlyEcmwf.cape[i] != null) ? Number(hourlyEcmwf.cape[i]) : 0);
 
             if (lluviaXC > 0 || capeXC > XCCapeLims.riesgo) {
                 ptsXC_hora = 0;
             } else {
-                let techoRaw = (hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[i] != null) ? Number(hourlyEcmwf.boundary_layer_height[i]) : 0;
+                let blhVal = (idxE !== undefined && hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[idxE] != null)
+                    ? hourlyEcmwf.boundary_layer_height[idxE]
+                    : ((hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[i] != null) ? hourlyEcmwf.boundary_layer_height[i] : 0);
+                let techoRaw = Number(blhVal);
                 let techoUtil = techoRaw * RATIO_TECHO_UTIL;
-                let cin = (hourlyEcmwf.convective_inhibition && hourlyEcmwf.convective_inhibition[i] != null) ? Math.max(0, Number(hourlyEcmwf.convective_inhibition[i])) : 0;
+
+                let cinVal = (idxE !== undefined && hourlyEcmwf.convective_inhibition && hourlyEcmwf.convective_inhibition[idxE] != null)
+                    ? hourlyEcmwf.convective_inhibition[idxE]
+                    : ((hourlyEcmwf.convective_inhibition && hourlyEcmwf.convective_inhibition[i] != null) ? hourlyEcmwf.convective_inhibition[i] : 0);
+                let cin = Math.max(0, Number(cinVal));
 
                 let ptsTecho = 0;
                 if (techoUtil >= XCTechoLims.verde) ptsTecho = 40;
@@ -5717,21 +5818,18 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 		// ---------------------------------------------------------------
 		
 		// Primero lo creamos o recreamos con los datos base de la construcción de la tabla mediante una función en que hemos encapsulado su creacción (que depende de esos datos, no como los otros sliders de filtros, que son más estáticos).
-		gestionarSliderHoras(respuestas, soloHorasDeLuz);
+		gestionarSliderHoras(respuestas, respuestasEcmwf, soloHorasDeLuz);
 		
 		const sliderHoras = document.getElementById('horario-slider');
 
-		// Declaramos las variables FUERA
-        let indiceInicioRangoHorario = 0;
+		let indiceInicioRangoHorario = 0;
         let indiceFinRangoHorario = 99999;
 
-        // 🆕 Lógica condicionada por el botón Calendario
         if (modoVerTodosLosDias) {
-            // Si el botón está hundido, mostramos TODO el rango disponible (0 a 999)
+            // Modo calendario: abarca desde el inicio del primer día hasta el final disponible
             indiceInicioRangoHorario = 0;
             indiceFinRangoHorario = 99999;
         } else {
-            // Lógica normal: leer del slider
             if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario.length > 0) {
                 const vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
                 indiceInicioRangoHorario = window.indicesDiaActualSlider[vals[0]];
@@ -5843,18 +5941,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
 		// Añadir verificación antes de acceder a respuestas[0]
 		let horas = [];
-		let indicesInicioDia = []; // Necesitamos la posición de inicio de día para usarla en los TD de datos. ARRAY PARA GUARDAR ÍNDICES
+        let indicesInicioDia = []; 
 
-		if (respuestas && respuestas.length > 0 && respuestas[0].hourly && respuestas[0].hourly.time) {
-			const horasApi = respuestas[0].hourly.time;
-			const indiceInicio = 0; // Siempre empezamos desde la primera hora que tenga el .json
-			horas = horasApi.slice(indiceInicio); // Esto mostrará TODAS las horas que tenga el .json
-		}
+        const timeEcmwf = (respuestasEcmwf && respuestasEcmwf[0] && respuestasEcmwf[0].hourly && Array.isArray(respuestasEcmwf[0].hourly.time)) ? respuestasEcmwf[0].hourly.time : [];
+        const timeArome = (respuestas && respuestas.length > 0 && respuestas[0].hourly && Array.isArray(respuestas[0].hourly.time)) ? respuestas[0].hourly.time : [];
+        const horasApi = (timeEcmwf.length > timeArome.length) ? timeEcmwf : timeArome;
+        horas = horasApi.slice(0);
 
-        // 🛡️ MAPEO DE SEGURIDAD (GLOBAL): Hora ISO de AROME -> índice real en ECMWF.
-        // Se construye UNA sola vez por render de tabla (no por despegue), asumiendo que
-        // 'hourly.time' es el mismo eje horario para todos los despegues del mismo JSON.
-        const ecmwfTimeMap = new Map();
+        // 🛡️ MAPEO DE SEGURIDAD: Hora ISO -> índice real en ECMWF (variable global).
+        ecmwfTimeMap.clear();
         if (respuestasEcmwf && respuestasEcmwf[0] && respuestasEcmwf[0].hourly && Array.isArray(respuestasEcmwf[0].hourly.time)) {
             respuestasEcmwf[0].hourly.time.forEach((tStr, idxEcmwf) => {
                 ecmwfTimeMap.set(tStr, idxEcmwf);
@@ -7270,7 +7365,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         pintarCeldaAltura(fila20,  arr20,  "20 m", false, true);
                     }
 
-					// ⚪ Velocidad 10 m *****************************
+// ⚪ Velocidad 10 m *****************************
 					
 					// Ponemos esta constante fuera del bucle para no calcularla 100 veces
                     const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
@@ -7278,7 +7373,42 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
                         // Leemos el dato DIRECTAMENTE de la base de datos original (hourlyData) para esta hora 'i'
-                        if (!hourlyData.wind_speed_10m || hourlyData.wind_speed_10m[i] === undefined || hourlyData.wind_speed_10m[i] === null) {
+                        let rawVelOriginal = (hourlyData && hourlyData.wind_speed_10m) ? hourlyData.wind_speed_10m[i] : null;
+                        let esDatoEcmwf = false;
+
+                        // Fallback a ECMWF si Arome no tiene datos para esta hora (días 5 a 7)
+                        if (rawVelOriginal === null || rawVelOriginal === undefined) {
+                            const idxE = ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined;
+                            if (idxE !== undefined && hourlyEcmwf) {
+                                // 1. Prioridad: Viento interpolado verticalmente a la altitud REAL del despegue
+                                const interp = (typeof interpolarVientoAltitudReal === 'function') ? interpolarVientoAltitudReal(
+                                    Number(d.Altitud) || 0,
+                                    hourlyEcmwf.geopotential_height_1000hPa ? hourlyEcmwf.geopotential_height_1000hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_925hPa ? hourlyEcmwf.geopotential_height_925hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_850hPa ? hourlyEcmwf.geopotential_height_850hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_700hPa ? hourlyEcmwf.geopotential_height_700hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_1000hPa ? hourlyEcmwf.wind_speed_1000hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_925hPa ? hourlyEcmwf.wind_speed_925hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_850hPa ? hourlyEcmwf.wind_speed_850hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_700hPa ? hourlyEcmwf.wind_speed_700hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_1000hPa ? hourlyEcmwf.wind_direction_1000hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_925hPa ? hourlyEcmwf.wind_direction_925hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_850hPa ? hourlyEcmwf.wind_direction_850hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_700hPa ? hourlyEcmwf.wind_direction_700hPa[idxE] : null
+                                ) : null;
+
+                                if (interp) {
+                                    rawVelOriginal = interp.speed;
+                                    esDatoEcmwf = true;
+                                } else if (hourlyEcmwf.wind_speed_10m && hourlyEcmwf.wind_speed_10m[idxE] != null) {
+                                    // 2. Respaldo secundario: 10m de ECMWF
+                                    rawVelOriginal = hourlyEcmwf.wind_speed_10m[idxE];
+                                    esDatoEcmwf = true;
+                                }
+                            }
+                        }
+
+                        if (rawVelOriginal === null || rawVelOriginal === undefined) {
                             const td = document.createElement("td");
                             td.textContent = "-";
                             td.classList.add("celda-sin-datos");
@@ -7288,7 +7418,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             continue;
                         }
 
-                        const rawVelOriginal = hourlyData.wind_speed_10m[i];
                         let velocidadModelo = rawVelOriginal;
                         if (chkAplicarCorreccionEstadistica) {
                             velocidadModelo = corregirViento10m(velocidadModelo, hourlyData, i, d);
@@ -7323,12 +7452,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         td.textContent = velocidad;
 
+                        const etiquetaModelo = esDatoEcmwf ? " [ECMWF]" : "";
                         if (chkAplicarCorreccionEstadistica) {
                             td.style.fontWeight = "bold";
                             td.style.fontStyle = "italic";
-                            td.title = `${velocidad} km/h (Modelo original: ${velOrigRound} km/h)`;
+                            td.title = `${velocidad} km/h (Modelo original: ${velOrigRound} km/h)${etiquetaModelo}`;
                         } else {
-                            td.title = `${velocidad} km/h`;
+                            td.title = `${velocidad} km/h${etiquetaModelo}`;
                         }
 
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
@@ -7347,7 +7477,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
                         // Leemos directamente del JSON original
-                        if (!hourlyData.wind_gusts_10m || hourlyData.wind_gusts_10m[i] === undefined || hourlyData.wind_gusts_10m[i] === null) {
+                        let rawRachaOriginal = (hourlyData && hourlyData.wind_gusts_10m) ? hourlyData.wind_gusts_10m[i] : null;
+
+                        // Fallback a ECMWF si Arome no tiene datos para esta hora (días 5 a 7)
+                        if (rawRachaOriginal === null || rawRachaOriginal === undefined) {
+                            const idxE = ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined;
+                            if (idxE !== undefined && hourlyEcmwf && hourlyEcmwf.wind_gusts_10m && hourlyEcmwf.wind_gusts_10m[idxE] != null) {
+                                rawRachaOriginal = hourlyEcmwf.wind_gusts_10m[idxE];
+                            }
+                        }
+
+                        if (rawRachaOriginal === null || rawRachaOriginal === undefined) {
                             const td = document.createElement("td");
                             td.textContent = "-";
                             td.classList.add("celda-sin-datos");
@@ -7357,7 +7497,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             continue;
                         }
 
-                        const rawRachaOriginal = hourlyData.wind_gusts_10m[i];
                         let rachaModelo = rawRachaOriginal;
                         if (chkAplicarCorreccionEstadistica) {
                             rachaModelo = corregirRacha10m(rachaModelo, hourlyData, i, d);
@@ -7411,7 +7550,39 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
                         // Leemos directamente del JSON original
-                        if (!hourlyData.wind_direction_10m || hourlyData.wind_direction_10m[i] === undefined || hourlyData.wind_direction_10m[i] === null) {
+                        let dirModelo = (hourlyData && hourlyData.wind_direction_10m) ? hourlyData.wind_direction_10m[i] : null;
+
+                        // Fallback a ECMWF si Arome no tiene datos para esta hora (días 5 a 7)
+                        if (dirModelo === null || dirModelo === undefined) {
+                            const idxE = ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined;
+                            if (idxE !== undefined && hourlyEcmwf) {
+                                // 1. Prioridad: Dirección interpolada verticalmente a la altitud REAL del despegue
+                                const interp = (typeof interpolarVientoAltitudReal === 'function') ? interpolarVientoAltitudReal(
+                                    Number(d.Altitud) || 0,
+                                    hourlyEcmwf.geopotential_height_1000hPa ? hourlyEcmwf.geopotential_height_1000hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_925hPa ? hourlyEcmwf.geopotential_height_925hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_850hPa ? hourlyEcmwf.geopotential_height_850hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_700hPa ? hourlyEcmwf.geopotential_height_700hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_1000hPa ? hourlyEcmwf.wind_speed_1000hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_925hPa ? hourlyEcmwf.wind_speed_925hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_850hPa ? hourlyEcmwf.wind_speed_850hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_700hPa ? hourlyEcmwf.wind_speed_700hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_1000hPa ? hourlyEcmwf.wind_direction_1000hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_925hPa ? hourlyEcmwf.wind_direction_925hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_850hPa ? hourlyEcmwf.wind_direction_850hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_700hPa ? hourlyEcmwf.wind_direction_700hPa[idxE] : null
+                                ) : null;
+
+                                if (interp) {
+                                    dirModelo = interp.dir;
+                                } else if (hourlyEcmwf.wind_direction_10m && hourlyEcmwf.wind_direction_10m[idxE] != null) {
+                                    // 2. Respaldo secundario: 10m de ECMWF
+                                    dirModelo = hourlyEcmwf.wind_direction_10m[idxE];
+                                }
+                            }
+                        }
+
+                        if (dirModelo === null || dirModelo === undefined) {
                             const td = document.createElement("td");
                             td.textContent = "-";
                             td.classList.add("celda-sin-datos");
@@ -7420,7 +7591,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             filaDir.appendChild(td);
                             continue;
                         }
-                        let dirModelo = hourlyData.wind_direction_10m[i];
+
                         let dir = Math.round(dirModelo);
 
                         const td = document.createElement("td");
@@ -7670,64 +7841,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             }
                             tr.appendChild(td);
                         }
-                    };
-
-                    // Función matemática de interpolación de viento vectorial mediante geopotenciales para la altitud real
-                    const interpolarVientoAltitudReal = (H_target, h1000, h925, h850, h700, v1000, v925, v850, v700, d1000, d925, d850, d700) => {
-                        const heights = [h1000, h925, h850, h700];
-                        const speeds = [v1000, v925, v850, v700];
-                        const directions = [d1000, d925, d850, d700];
-
-                        let points = [];
-                        for (let k = 0; k < 4; k++) {
-                            const z = heights[k];
-                            const v = speeds[k];
-                            const d = directions[k];
-                            if (z !== null && v !== null && d !== null) {
-                                const rad = Number(d) * Math.PI / 180;
-                                const u = Number(v) * Math.sin(rad);
-                                const v_comp = Number(v) * Math.cos(rad);
-                                points.push({ z: Number(z), u, v_comp });
-                            }
-                        }
-
-                        if (points.length === 0) return null;
-                        if (points.length === 1) {
-                            const speed = Math.sqrt(points[0].u * points[0].u + points[0].v_comp * points[0].v_comp);
-                            const dir = (Math.atan2(points[0].u, points[0].v_comp) * 180 / Math.PI + 360) % 360;
-                            return { speed, dir };
-                        }
-
-                        points.sort((a, b) => a.z - b.z);
-
-                        let u_interp = null, v_interp = null;
-                        const interp = (h, p1, p2, key) => p1[key] + ((h - p1.z) / (p2.z - p1.z)) * (p2[key] - p1[key]);
-
-                        let bracketFound = false;
-                        for (let j = 0; j < points.length - 1; j++) {
-                            const p1 = points[j];
-                            const p2 = points[j+1];
-                            if (H_target >= p1.z && H_target <= p2.z) {
-                                u_interp = interp(H_target, p1, p2, 'u');
-                                v_interp = interp(H_target, p1, p2, 'v_comp');
-                                bracketFound = true;
-                                break;
-                            }
-                        }
-
-                        if (!bracketFound) {
-                            if (H_target < points[0].z) {
-                                u_interp = interp(H_target, points[0], points[1], 'u');
-                                v_interp = interp(H_target, points[0], points[1], 'v_comp');
-                            } else {
-                                u_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'u');
-                                v_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'v_comp');
-                            }
-                        }
-
-                        const speed = Math.sqrt(u_interp * u_interp + v_interp * v_interp);
-                        const dir = (Math.atan2(u_interp, v_interp) * 180 / Math.PI + 360) % 360;
-                        return { speed, dir };
                     };
 
                     if (mostrarEcmwfDOM) {
