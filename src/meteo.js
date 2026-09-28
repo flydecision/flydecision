@@ -3473,8 +3473,8 @@ const HORAS_LUZ_CON_MARGEN = [
     { inicio: 6, fin: 23 }, // 5: Junio
     { inicio: 6, fin: 23 }, // 6: Julio
     { inicio: 7, fin: 22 }, // 7: Agosto
-    { inicio: 7, fin: 21 }, // 8: Septiembre
-    { inicio: 7, fin: 20 }, // 9: Octubre (Optimizado para cambio de hora)
+    { inicio: 7, fin: 22 }, // 8: Septiembre
+    { inicio: 7, fin: 21 }, // 9: Octubre (Optimizado para cambio de hora)
     { inicio: 7, fin: 19 }, // 10: Noviembre
     { inicio: 8, fin: 19 }  // 11: Diciembre
 ];
@@ -4255,6 +4255,65 @@ window.toggleVerTodosLosDias = function() {
 // ---------------------------------------------------------------
 // 🔴 FUNCIONES GLOBALES (hay otras más, pero éstas tienen que estar antes de construir la tabla)
 // ---------------------------------------------------------------
+
+// 🟡 Función matemática de interpolación de viento vectorial mediante geopotenciales para la altitud real
+
+function interpolarVientoAltitudReal(H_target, h1000, h925, h850, h700, v1000, v925, v850, v700, d1000, d925, d850, d700) {
+    const heights = [h1000, h925, h850, h700];
+    const speeds = [v1000, v925, v850, v700];
+    const directions = [d1000, d925, d850, d700];
+
+    let points = [];
+    for (let k = 0; k < 4; k++) {
+        const z = heights[k];
+        const v = speeds[k];
+        const d = directions[k];
+        if (z !== null && v !== null && d !== null) {
+            const rad = Number(d) * Math.PI / 180;
+            const u = Number(v) * Math.sin(rad);
+            const v_comp = Number(v) * Math.cos(rad);
+            points.push({ z: Number(z), u, v_comp });
+        }
+    }
+
+    if (points.length === 0) return null;
+    if (points.length === 1) {
+        const speed = Math.sqrt(points[0].u * points[0].u + points[0].v_comp * points[0].v_comp);
+        const dir = (Math.atan2(points[0].u, points[0].v_comp) * 180 / Math.PI + 360) % 360;
+        return { speed, dir };
+    }
+
+    points.sort((a, b) => a.z - b.z);
+
+    let u_interp = null, v_interp = null;
+    const interp = (h, p1, p2, key) => p1[key] + ((h - p1.z) / (p2.z - p1.z)) * (p2[key] - p1[key]);
+
+    let bracketFound = false;
+    for (let j = 0; j < points.length - 1; j++) {
+        const p1 = points[j];
+        const p2 = points[j+1];
+        if (H_target >= p1.z && H_target <= p2.z) {
+            u_interp = interp(H_target, p1, p2, 'u');
+            v_interp = interp(H_target, p1, p2, 'v_comp');
+            bracketFound = true;
+            break;
+        }
+    }
+
+    if (!bracketFound) {
+        if (H_target < points[0].z) {
+            u_interp = interp(H_target, points[0], points[1], 'u');
+            v_interp = interp(H_target, points[0], points[1], 'v_comp');
+        } else {
+            u_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'u');
+            v_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'v_comp');
+        }
+    }
+
+    const speed = Math.sqrt(u_interp * u_interp + v_interp * v_interp);
+    const dir = (Math.atan2(u_interp, v_interp) * 180 / Math.PI + 360) % 360;
+    return { speed, dir };
+}
 
 // 🟡 FUNCIÓN COMÚN DE PUNTUACIÓN (Unificado para Tabla y Mapa)
 
@@ -7306,7 +7365,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         pintarCeldaAltura(fila20,  arr20,  "20 m", false, true);
                     }
 
-                    // ⚪ Velocidad 10 m *****************************
+// ⚪ Velocidad 10 m *****************************
 					
 					// Ponemos esta constante fuera del bucle para no calcularla 100 veces
                     const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
@@ -7319,32 +7378,32 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         // Fallback a ECMWF si Arome no tiene datos para esta hora (días 5 a 7)
                         if (rawVelOriginal === null || rawVelOriginal === undefined) {
-                            const idxE = ecmwfTimeMap.get(horas[i]);
+                            const idxE = ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined;
                             if (idxE !== undefined && hourlyEcmwf) {
-                                if (hourlyEcmwf.wind_speed_10m && hourlyEcmwf.wind_speed_10m[idxE] != null) {
+                                // 1. Prioridad: Viento interpolado verticalmente a la altitud REAL del despegue
+                                const interp = (typeof interpolarVientoAltitudReal === 'function') ? interpolarVientoAltitudReal(
+                                    Number(d.Altitud) || 0,
+                                    hourlyEcmwf.geopotential_height_1000hPa ? hourlyEcmwf.geopotential_height_1000hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_925hPa ? hourlyEcmwf.geopotential_height_925hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_850hPa ? hourlyEcmwf.geopotential_height_850hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_700hPa ? hourlyEcmwf.geopotential_height_700hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_1000hPa ? hourlyEcmwf.wind_speed_1000hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_925hPa ? hourlyEcmwf.wind_speed_925hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_850hPa ? hourlyEcmwf.wind_speed_850hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_700hPa ? hourlyEcmwf.wind_speed_700hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_1000hPa ? hourlyEcmwf.wind_direction_1000hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_925hPa ? hourlyEcmwf.wind_direction_925hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_850hPa ? hourlyEcmwf.wind_direction_850hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_700hPa ? hourlyEcmwf.wind_direction_700hPa[idxE] : null
+                                ) : null;
+
+                                if (interp) {
+                                    rawVelOriginal = interp.speed;
+                                    esDatoEcmwf = true;
+                                } else if (hourlyEcmwf.wind_speed_10m && hourlyEcmwf.wind_speed_10m[idxE] != null) {
+                                    // 2. Respaldo secundario: 10m de ECMWF
                                     rawVelOriginal = hourlyEcmwf.wind_speed_10m[idxE];
                                     esDatoEcmwf = true;
-                                } else {
-                                    // Respaldo por interpolación vertical a la cota del despegue
-                                    const interp = interpolarVientoAltitudReal(
-                                        Number(d.Altitud) || 0,
-                                        hourlyEcmwf.geopotential_height_1000hPa ? hourlyEcmwf.geopotential_height_1000hPa[idxE] : null,
-                                        hourlyEcmwf.geopotential_height_925hPa ? hourlyEcmwf.geopotential_height_925hPa[idxE] : null,
-                                        hourlyEcmwf.geopotential_height_850hPa ? hourlyEcmwf.geopotential_height_850hPa[idxE] : null,
-                                        hourlyEcmwf.geopotential_height_700hPa ? hourlyEcmwf.geopotential_height_700hPa[idxE] : null,
-                                        hourlyEcmwf.wind_speed_1000hPa ? hourlyEcmwf.wind_speed_1000hPa[idxE] : null,
-                                        hourlyEcmwf.wind_speed_925hPa ? hourlyEcmwf.wind_speed_925hPa[idxE] : null,
-                                        hourlyEcmwf.wind_speed_850hPa ? hourlyEcmwf.wind_speed_850hPa[idxE] : null,
-                                        hourlyEcmwf.wind_speed_700hPa ? hourlyEcmwf.wind_speed_700hPa[idxE] : null,
-                                        hourlyEcmwf.wind_direction_1000hPa ? hourlyEcmwf.wind_direction_1000hPa[idxE] : null,
-                                        hourlyEcmwf.wind_direction_925hPa ? hourlyEcmwf.wind_direction_925hPa[idxE] : null,
-                                        hourlyEcmwf.wind_direction_850hPa ? hourlyEcmwf.wind_direction_850hPa[idxE] : null,
-                                        hourlyEcmwf.wind_direction_700hPa ? hourlyEcmwf.wind_direction_700hPa[idxE] : null
-                                    );
-                                    if (interp) {
-                                        rawVelOriginal = interp.speed;
-                                        esDatoEcmwf = true;
-                                    }
                                 }
                             }
                         }
@@ -7422,7 +7481,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         // Fallback a ECMWF si Arome no tiene datos para esta hora (días 5 a 7)
                         if (rawRachaOriginal === null || rawRachaOriginal === undefined) {
-                            const idxE = ecmwfTimeMap.get(horas[i]);
+                            const idxE = ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined;
                             if (idxE !== undefined && hourlyEcmwf && hourlyEcmwf.wind_gusts_10m && hourlyEcmwf.wind_gusts_10m[idxE] != null) {
                                 rawRachaOriginal = hourlyEcmwf.wind_gusts_10m[idxE];
                             }
@@ -7495,30 +7554,30 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         // Fallback a ECMWF si Arome no tiene datos para esta hora (días 5 a 7)
                         if (dirModelo === null || dirModelo === undefined) {
-                            const idxE = ecmwfTimeMap.get(horas[i]);
+                            const idxE = ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined;
                             if (idxE !== undefined && hourlyEcmwf) {
-                                if (hourlyEcmwf.wind_direction_10m && hourlyEcmwf.wind_direction_10m[idxE] != null) {
+                                // 1. Prioridad: Dirección interpolada verticalmente a la altitud REAL del despegue
+                                const interp = (typeof interpolarVientoAltitudReal === 'function') ? interpolarVientoAltitudReal(
+                                    Number(d.Altitud) || 0,
+                                    hourlyEcmwf.geopotential_height_1000hPa ? hourlyEcmwf.geopotential_height_1000hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_925hPa ? hourlyEcmwf.geopotential_height_925hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_850hPa ? hourlyEcmwf.geopotential_height_850hPa[idxE] : null,
+                                    hourlyEcmwf.geopotential_height_700hPa ? hourlyEcmwf.geopotential_height_700hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_1000hPa ? hourlyEcmwf.wind_speed_1000hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_925hPa ? hourlyEcmwf.wind_speed_925hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_850hPa ? hourlyEcmwf.wind_speed_850hPa[idxE] : null,
+                                    hourlyEcmwf.wind_speed_700hPa ? hourlyEcmwf.wind_speed_700hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_1000hPa ? hourlyEcmwf.wind_direction_1000hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_925hPa ? hourlyEcmwf.wind_direction_925hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_850hPa ? hourlyEcmwf.wind_direction_850hPa[idxE] : null,
+                                    hourlyEcmwf.wind_direction_700hPa ? hourlyEcmwf.wind_direction_700hPa[idxE] : null
+                                ) : null;
+
+                                if (interp) {
+                                    dirModelo = interp.dir;
+                                } else if (hourlyEcmwf.wind_direction_10m && hourlyEcmwf.wind_direction_10m[idxE] != null) {
+                                    // 2. Respaldo secundario: 10m de ECMWF
                                     dirModelo = hourlyEcmwf.wind_direction_10m[idxE];
-                                } else {
-                                    // Respaldo por interpolación vertical a la cota del despegue
-                                    const interp = interpolarVientoAltitudReal(
-                                        Number(d.Altitud) || 0,
-                                        hourlyEcmwf.geopotential_height_1000hPa ? hourlyEcmwf.geopotential_height_1000hPa[idxE] : null,
-                                        hourlyEcmwf.geopotential_height_925hPa ? hourlyEcmwf.geopotential_height_925hPa[idxE] : null,
-                                        hourlyEcmwf.geopotential_height_850hPa ? hourlyEcmwf.geopotential_height_850hPa[idxE] : null,
-                                        hourlyEcmwf.geopotential_height_700hPa ? hourlyEcmwf.geopotential_height_700hPa[idxE] : null,
-                                        hourlyEcmwf.wind_speed_1000hPa ? hourlyEcmwf.wind_speed_1000hPa[idxE] : null,
-                                        hourlyEcmwf.wind_speed_925hPa ? hourlyEcmwf.wind_speed_925hPa[idxE] : null,
-                                        hourlyEcmwf.wind_speed_850hPa ? hourlyEcmwf.wind_speed_850hPa[idxE] : null,
-                                        hourlyEcmwf.wind_speed_700hPa ? hourlyEcmwf.wind_speed_700hPa[idxE] : null,
-                                        hourlyEcmwf.wind_direction_1000hPa ? hourlyEcmwf.wind_direction_1000hPa[idxE] : null,
-                                        hourlyEcmwf.wind_direction_925hPa ? hourlyEcmwf.wind_direction_925hPa[idxE] : null,
-                                        hourlyEcmwf.wind_direction_850hPa ? hourlyEcmwf.wind_direction_850hPa[idxE] : null,
-                                        hourlyEcmwf.wind_direction_700hPa ? hourlyEcmwf.wind_direction_700hPa[idxE] : null
-                                    );
-                                    if (interp) {
-                                        dirModelo = interp.dir;
-                                    }
                                 }
                             }
                         }
@@ -7782,64 +7841,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             }
                             tr.appendChild(td);
                         }
-                    };
-
-                    // Función matemática de interpolación de viento vectorial mediante geopotenciales para la altitud real
-                    const interpolarVientoAltitudReal = (H_target, h1000, h925, h850, h700, v1000, v925, v850, v700, d1000, d925, d850, d700) => {
-                        const heights = [h1000, h925, h850, h700];
-                        const speeds = [v1000, v925, v850, v700];
-                        const directions = [d1000, d925, d850, d700];
-
-                        let points = [];
-                        for (let k = 0; k < 4; k++) {
-                            const z = heights[k];
-                            const v = speeds[k];
-                            const d = directions[k];
-                            if (z !== null && v !== null && d !== null) {
-                                const rad = Number(d) * Math.PI / 180;
-                                const u = Number(v) * Math.sin(rad);
-                                const v_comp = Number(v) * Math.cos(rad);
-                                points.push({ z: Number(z), u, v_comp });
-                            }
-                        }
-
-                        if (points.length === 0) return null;
-                        if (points.length === 1) {
-                            const speed = Math.sqrt(points[0].u * points[0].u + points[0].v_comp * points[0].v_comp);
-                            const dir = (Math.atan2(points[0].u, points[0].v_comp) * 180 / Math.PI + 360) % 360;
-                            return { speed, dir };
-                        }
-
-                        points.sort((a, b) => a.z - b.z);
-
-                        let u_interp = null, v_interp = null;
-                        const interp = (h, p1, p2, key) => p1[key] + ((h - p1.z) / (p2.z - p1.z)) * (p2[key] - p1[key]);
-
-                        let bracketFound = false;
-                        for (let j = 0; j < points.length - 1; j++) {
-                            const p1 = points[j];
-                            const p2 = points[j+1];
-                            if (H_target >= p1.z && H_target <= p2.z) {
-                                u_interp = interp(H_target, p1, p2, 'u');
-                                v_interp = interp(H_target, p1, p2, 'v_comp');
-                                bracketFound = true;
-                                break;
-                            }
-                        }
-
-                        if (!bracketFound) {
-                            if (H_target < points[0].z) {
-                                u_interp = interp(H_target, points[0], points[1], 'u');
-                                v_interp = interp(H_target, points[0], points[1], 'v_comp');
-                            } else {
-                                u_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'u');
-                                v_interp = interp(H_target, points[points.length - 2], points[points.length - 1], 'v_comp');
-                            }
-                        }
-
-                        const speed = Math.sqrt(u_interp * u_interp + v_interp * v_interp);
-                        const dir = (Math.atan2(u_interp, v_interp) * 180 / Math.PI + 360) % 360;
-                        return { speed, dir };
                     };
 
                     if (mostrarEcmwfDOM) {
