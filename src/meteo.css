@@ -1688,14 +1688,22 @@ span.grados {
     user-select: none !important;
     -webkit-user-select: none !important;
     -webkit-touch-callout: none !important;
-    touch-action: manipulation;
-    transition: transform 0.1s ease, background-color 0.15s ease;
+    touch-action: none !important; /* Clave en móviles: bloquea el scroll mientras mantienes el dedo pulsado */
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+/* Efecto de pulsado mediante sombra interior y color, sin romper las filas de la tabla */
 .celda-meteo-interactiva:active,
 .celda-meteo-interactiva.peek-activo {
-    transform: scale(0.92);
-    background-color: #dbeafe !important; /* Resalte azul suave al pulsar */
+    background-color: #dbeafe !important; /* Tu resalte azul suave original */
+    box-shadow: inset 0 0 0 1.5px #007aff, inset 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Si quieres que se encojan ligeramente los iconos de dentro (sin mover la celda): */
+.celda-meteo-interactiva:active > div,
+.celda-meteo-interactiva.peek-activo > div {
+    transform: scale(0.93);
+    transition: transform 0.1s ease;
 }
 
 /* 🔴 SUGERENCIAS GLOBALES -------------------------------- */
@@ -1923,9 +1931,7 @@ span.grados {
     flex: 1 1 0;
     min-width: 0;
     max-width: none;
-    font-weight: bold;
     height: 30px;
-    font-size: 0.88em;
     text-transform: capitalize;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
     white-space: nowrap; 
@@ -1934,7 +1940,7 @@ span.grados {
     display: flex;
     align-items: center;
     justify-content: center;
-    max-width: 42px;
+    max-width: 40px;
 }
 
 .pip-dia-btn.pip-activo {
