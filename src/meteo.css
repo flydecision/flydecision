@@ -1941,6 +1941,7 @@ span.grados {
     align-items: center;
     justify-content: center;
     max-width: 40px;
+    font-weight: bold;
 }
 
 .pip-dia-btn.pip-activo {
