@@ -7109,7 +7109,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCellEcmwf(filaEcmwfDalt, '<img src="/icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDalt, null, "2px solid #000");
 
                 // 10 m AGL (Suelo del modelo ECMWF) (3 filas: Vel + Racha + Dir con borde inferior grueso)
-                addIconCellEcmwf(filaEcmwfVel10, "<span style='position: relative; top: -1px; display: inline-block;'>10 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>AGL</span></span>", tituloEcmwf10);
+                const altDespReal = Number(d.Altitud) || 0;
+                const altCeldaEcmwf = (respuestasEcmwf && respuestasEcmwf[idx] && respuestasEcmwf[idx].elevation != null)
+                    ? Math.round(Number(respuestasEcmwf[idx].elevation))
+                    : null;
+
+                const tooltip10m = altCeldaEcmwf !== null 
+                    ? `${tituloEcmwf10}\n• Cota suelo modelo: ${altCeldaEcmwf} m MSL\n• Cota despegue real: ${altDespReal} m MSL (${altCeldaEcmwf - altDespReal >= 0 ? '+' : ''}${altCeldaEcmwf - altDespReal} m)`
+                    : tituloEcmwf10;
+
+                addIconCellEcmwf(filaEcmwfVel10, "<span style='position: relative; top: -1px; display: inline-block;'>10 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>AGL</span></span>", tooltip10m);
                 addIconCellEcmwf(filaEcmwfRacha10, '<img src="/icons/icono_racha_48x42.webp" width="16" height="14">', tituloEcmwfRacha10);
                 addIconCellEcmwf(filaEcmwfDir10, '<img src="/icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir10, null, "2px solid #000");
 
@@ -7703,10 +7712,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             if (cacheEsNoche[i]) td.classList.add("celda-noche");
                             if (setInicioDia.has(i)) td.classList.add("borde-grueso-izquierda");
 
-                            if (arr20[i] === undefined && arr50[i] === undefined && arr100[i] === undefined) {
-                                td.textContent = "-";
+                            if (arr20[i] == null && arr50[i] == null && arr100[i] == null) {
+                                if (!cacheEsNoche[i]) {
+                                    td.style.backgroundColor = "#ffffff";
+                                }
+                                td.textContent = "";
                                 filaCizalladura.appendChild(td);
-                                continue; // Equivalente a return en un bucle for
+                                continue;
                             }
 
                             const vel20 = arr20[i] !== undefined ? Math.round(Math.max(0, arr20[i])) : 0;
