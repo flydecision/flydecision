@@ -7918,14 +7918,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         // Helper para instanciar las celdas de interpolación buscando por la hora real
                         const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHoraArome, bordeTopVel, bordeBottomDirPx, esAltitudDespegue = false) => {
                             const tdVel = document.createElement("td");
-                            tdVel.classList.add("ecmwf-neutral");
+                            if (!esAltitudDespegue) tdVel.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[indiceHoraArome]) tdVel.classList.add("celda-noche");
                             if (setInicioDia.has(indiceHoraArome)) tdVel.classList.add("borde-grueso-izquierda");
                             tdVel.style.fontSize = "12px";
                             if (bordeTopVel) tdVel.style.borderTop = "1px solid #000";
 
                             const tdDir = document.createElement("td");
-                            tdDir.classList.add("ecmwf-neutral");
+                            if (!esAltitudDespegue) tdDir.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[indiceHoraArome]) tdDir.classList.add("celda-noche");
                             if (setInicioDia.has(indiceHoraArome)) tdDir.classList.add("borde-grueso-izquierda");
                             tdDir.style.fontSize = "12px";
@@ -7937,9 +7937,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             if (!debeMostrarse) {
                                 tdVel.textContent = "…";
                                 tdDir.textContent = "…";
+                                if (!cacheEsNoche[indiceHoraArome]) {
+                                    tdVel.style.backgroundColor = "#ffffff";
+                                    tdDir.style.backgroundColor = "#ffffff";
+                                }
                             } else if (!hourlyEcmwf || idxEcmwf === undefined) {
                                 tdVel.textContent = "—";
                                 tdDir.textContent = "—";
+                                if (!cacheEsNoche[indiceHoraArome]) {
+                                    tdVel.style.backgroundColor = "#ffffff";
+                                    tdDir.style.backgroundColor = "#ffffff";
+                                }
                             } else {
                                 const interp = interpolarVientoAltitudReal(
                                     altObj,
@@ -7960,6 +7968,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (interp === null) {
                                     tdVel.textContent = "—";
                                     tdDir.textContent = "—";
+                                    if (!cacheEsNoche[indiceHoraArome]) {
+                                        tdVel.style.backgroundColor = "#ffffff";
+                                        tdDir.style.backgroundColor = "#ffffff";
+                                    }
                                 } else {
                                     const speedOriginal = interp.speed;
                                     let speed = speedOriginal;
@@ -7973,6 +7985,25 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     const dRound = Math.round(interp.dir);
 
                                     tdVel.textContent = vRound;
+
+                                    // Colorear SOLO si es la altitud de despegue
+                                    if (esAltitudDespegue) {
+                                        if (vRound < VelocidadMin) {
+                                            tdVel.classList.add("fondo-naranja");
+                                        } else if (vRound <= velocidadTolerableSuperior) {
+                                            tdVel.classList.add("fondo-verde");
+                                        } else if (vRound < VelocidadMax) {
+                                            tdVel.classList.add("fondo-naranja");
+                                        } else {
+                                            tdVel.classList.add("fondo-rojo");
+                                        }
+
+                                        let minDiff = 180;
+                                        if (orientaciones && orientaciones.length > 0) {
+                                            minDiff = Math.min(...orientaciones.map(o => diferenciaAngular(dRound, o)));
+                                        }
+                                        tdDir.classList.add(colorPorDiferencia(minDiff));
+                                    }
 
                                     // Si está activa la corrección en altitud de despegue: negrita y cursiva
                                     if (false && chkAplicarCorreccionEstadistica && esAltitudDespegue) {
@@ -8007,43 +8038,64 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                             // 2.1. Velocidad 10 m AGL
                             const tdVel10 = document.createElement("td");
-                            tdVel10.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[i]) tdVel10.classList.add("celda-noche");
                             if (setInicioDia.has(i)) tdVel10.classList.add("borde-grueso-izquierda");
                             tdVel10.style.fontSize = "12px";
 
                             if (!debeMostrarse) {
                                 tdVel10.textContent = "…";
+                                if (!cacheEsNoche[i]) tdVel10.style.backgroundColor = "#ffffff";
                             } else if (!hourlyEcmwf || idxEcmwf === undefined || hourlyEcmwf.wind_speed_10m?.[idxEcmwf] == null) {
                                 tdVel10.textContent = "—";
+                                if (!cacheEsNoche[i]) tdVel10.style.backgroundColor = "#ffffff";
                             } else {
                                 const v10 = Math.round(Math.max(0, Number(hourlyEcmwf.wind_speed_10m[idxEcmwf])));
                                 tdVel10.textContent = v10;
+
+                                if (v10 < VelocidadMin) {
+                                    tdVel10.classList.add("fondo-naranja");
+                                } else if (v10 <= velocidadTolerableSuperior) {
+                                    tdVel10.classList.add("fondo-verde");
+                                } else if (v10 < VelocidadMax) {
+                                    tdVel10.classList.add("fondo-naranja");
+                                } else {
+                                    tdVel10.classList.add("fondo-rojo");
+                                }
+
                                 tdVel10.title = `${v10} km/h (Velocidad 10 m AGL ECMWF)`;
                             }
                             filaEcmwfVel10.appendChild(tdVel10);
 
                             // 2.2. Racha 10 m AGL
                             const tdRacha10 = document.createElement("td");
-                            tdRacha10.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[i]) tdRacha10.classList.add("celda-noche");
                             if (setInicioDia.has(i)) tdRacha10.classList.add("borde-grueso-izquierda");
                             tdRacha10.style.fontSize = "12px";
 
                             if (!debeMostrarse) {
                                 tdRacha10.textContent = "…";
+                                if (!cacheEsNoche[i]) tdRacha10.style.backgroundColor = "#ffffff";
                             } else if (!hourlyEcmwf || idxEcmwf === undefined || hourlyEcmwf.wind_gusts_10m?.[idxEcmwf] == null) {
                                 tdRacha10.textContent = "—";
+                                if (!cacheEsNoche[i]) tdRacha10.style.backgroundColor = "#ffffff";
                             } else {
                                 const r10 = Math.round(Math.max(0, Number(hourlyEcmwf.wind_gusts_10m[idxEcmwf])));
                                 tdRacha10.textContent = r10;
+
+                                if (r10 < rachaTolerable) {
+                                    tdRacha10.classList.add("fondo-verde");
+                                } else if (r10 < RachaMax) {
+                                    tdRacha10.classList.add("fondo-naranja");
+                                } else {
+                                    tdRacha10.classList.add("fondo-rojo");
+                                }
+
                                 tdRacha10.title = `${r10} km/h (Racha máxima 10 m AGL ECMWF)`;
                             }
                             filaEcmwfRacha10.appendChild(tdRacha10);
 
                             // 2.3. Dirección 10 m AGL (con borde inferior de 2px para cerrar el grupo)
                             const tdDir10 = document.createElement("td");
-                            tdDir10.classList.add("ecmwf-neutral");
                             if (cacheEsNoche[i]) tdDir10.classList.add("celda-noche");
                             if (setInicioDia.has(i)) tdDir10.classList.add("borde-grueso-izquierda");
                             tdDir10.style.fontSize = "12px";
@@ -8051,11 +8103,20 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                             if (!debeMostrarse) {
                                 tdDir10.textContent = "…";
+                                if (!cacheEsNoche[i]) tdDir10.style.backgroundColor = "#ffffff";
                             } else if (!hourlyEcmwf || idxEcmwf === undefined || hourlyEcmwf.wind_direction_10m?.[idxEcmwf] == null) {
                                 tdDir10.textContent = "—";
+                                if (!cacheEsNoche[i]) tdDir10.style.backgroundColor = "#ffffff";
                             } else {
                                 const d10 = Math.round(Number(hourlyEcmwf.wind_direction_10m[idxEcmwf]));
                                 tdDir10.appendChild(crearFlechaViento(d10));
+
+                                let minDiff10 = 180;
+                                if (orientaciones && orientaciones.length > 0) {
+                                    minDiff10 = Math.min(...orientaciones.map(o => diferenciaAngular(d10, o)));
+                                }
+                                tdDir10.classList.add(colorPorDiferencia(minDiff10));
+
                                 tdDir10.title = `${d10}º (Dirección 10 m AGL ECMWF)`;
                             }
                             filaEcmwfDir10.appendChild(tdDir10);
