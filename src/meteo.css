@@ -1951,6 +1951,13 @@ span.grados {
     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
 
+/* Fin de semana en estado de reposo */
+.pip-dia-btn.dia-fin-semana:not(.pip-activo) {
+    color: #0066cc;                /* Texto azul nítido que llama la atención */
+    font-weight: 800;              /* Ligeramente más contundente */
+    border-color: #b0cce8;         /* Borde con sutil tono azul */
+}
+
 /* Distinción visual sutil para los días 5, 6 y 7 (modelo ECMWF) */
 /* .pip-dia-btn.dia-extendido-ecmwf:not(.pip-activo) {
     border-style: dashed;

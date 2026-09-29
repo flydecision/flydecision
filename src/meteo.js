@@ -3607,8 +3607,11 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
         // La fecha completa (ej: "lun 28") visible al pasar el ratón o mantener pulsado
         btn.title = `${diaSemanaTexto} ${numeroDia}`;
 
+        const diaSemanaNum = d.getDay(); // 0 = Domingo, 6 = Sábado
+        const esFinDeSemana = (diaSemanaNum === 0 || diaSemanaNum === 6);
+
         const esActivo = (!modoVerTodosLosDias && i === diaSeleccionado);
-        btn.className = 'pip-dia-btn' + (esActivo ? ' pip-activo' : '');
+        btn.className = 'pip-dia-btn' + (esActivo ? ' pip-activo' : '') + (esFinDeSemana ? ' dia-fin-semana' : '');
         btn.dataset.diaIndex = i;
 
         btn.addEventListener('click', function() {
