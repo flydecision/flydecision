@@ -16264,6 +16264,26 @@ function inicializarMapaLeaflet() {
         umbralAmarilloMin: 30,
         umbralRojoMin: 45,
         urlWeb: (id) => `https://noromet.org/weatherstations/${id}`
+        },
+        'siar': {
+        id: 'siar',
+        nombre: 'SIAR',
+        estaciones: [],
+        urlCache: 'https://flydecision.com/balizas_siar_cache.json',
+        url6h:    'https://flydecision.com/balizas_siar_6h.json',
+        checkboxId: 'checkboxBalizasSiar',
+        lsKey: 'METEO_MAPA_CAPA_BALIZAS_SIAR_VISIBLE',
+        layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+        marcadores: {},
+        dibujadas: false,
+        datosCache: {},
+        ultimoJsonRaw: null,
+        datos6h: null,
+        fetched6hAt: 0,
+        intervalo: null,
+        umbralAmarilloMin: 60,
+        umbralRojoMin: 90,
+        urlWeb: (id) => `https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio`
         }
 
     };    
