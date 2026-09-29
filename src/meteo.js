@@ -255,6 +255,13 @@ if (paramsArranque.has('lat') && paramsArranque.has('lon')) {
     sessionStorage.setItem('METEO_ENTRO_POR_MAPA_YA_VISITADO', 'true');
 }
 
+// Si entra por URL directa de balizas, activar recordar la posición del mapa
+const _palabrasBalizasInit = ['balizas', 'balizak', 'balises', 'beacons', 'baken'];
+const _pathInit = window.location.pathname.toLowerCase();
+if (_palabrasBalizasInit.some(p => _pathInit.includes(p) || paramsArranque.has(p))) {
+    localStorage.setItem('METEO_RECORDAR_POSICION_MAPA', 'true');
+}
+
 // UMBRALES DE CIZALLADURA (Factor multiplicador)
 const LIMITES_CIZALLADURA = {
     "100 m": { naranja: 1.8, rojo: 2.3 }, // +80% / +130%
@@ -9280,6 +9287,11 @@ document.addEventListener('i18nReady', function() {
     const huboCrashPrevio = localStorage.getItem('METEO_FLAG_CRASH_DETECTADO') === 'true';
 
     if (esModoBalizasDirecto) {
+        // Asegurar que recordar posición queda activo y el checkbox de ajustes marcado
+        localStorage.setItem('METEO_RECORDAR_POSICION_MAPA', 'true');
+        const chkRecordarPos = document.getElementById('chkRecordarPosicionMapa');
+        if (chkRecordarPos) chkRecordarPos.checked = true;
+
         sessionStorage.setItem('METEO_ENTRO_POR_MAPA_YA_VISITADO', 'true');
         filtrosMapaAbiertos = false; // Forzar estado cerrado
 

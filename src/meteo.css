@@ -1953,9 +1953,9 @@ span.grados {
 
 /* Fin de semana en estado de reposo */
 .pip-dia-btn.dia-fin-semana:not(.pip-activo) {
-    color: #0066cc;                /* Texto azul nítido que llama la atención */
-    font-weight: 800;              /* Ligeramente más contundente */
-    border-color: #b0cce8;         /* Borde con sutil tono azul */
+    color: #d96600;                /* Color cálido/aviso típico de fin de semana */
+    border-color: #ffd8b3;
+    background-color: #fffaf5;
 }
 
 /* Distinción visual sutil para los días 5, 6 y 7 (modelo ECMWF) */
