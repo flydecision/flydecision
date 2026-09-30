@@ -6961,9 +6961,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const tdIconoUnificado = document.createElement("td");
                 tdIconoUnificado.rowSpan = 2; // Ocupa la fila de viento medio y la de racha
                 tdIconoUnificado.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
-                tdIconoUnificado.setAttribute("title", `${tituloViento10} / ${tituloRacha10}\n(Mantén pulsado para alternar corrección estadística)`);
-                
-                tdIconoUnificado.style.cursor = "pointer";
+                if (chkAplicarCorreccionEstadistica) {
+                    const txtAlternarCorr = t('tabla.tooltips.mantenerPulsadoAlternar', { defaultValue: '(Mantén pulsado para alternar corrección estadística)' });
+                    tdIconoUnificado.setAttribute("title", `${tituloViento10} / ${tituloRacha10}\n${txtAlternarCorr}`);
+                    tdIconoUnificado.style.cursor = "pointer";
+                } else {
+                    tdIconoUnificado.setAttribute("title", `${tituloViento10} / ${tituloRacha10}`);
+                    tdIconoUnificado.style.cursor = "default";
+                }
                 tdIconoUnificado.style.userSelect = "none";
                 tdIconoUnificado.style.webkitUserSelect = "none";
                 tdIconoUnificado.style.touchAction = "manipulation"; // Evita retardos y gestos accidentales del navegador
@@ -7114,8 +7119,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     ? Math.round(Number(respuestasEcmwf[idx].elevation))
                     : null;
 
+                const diffCota = altDespReal - altCeldaEcmwf;
+                const signoDiff = diffCota >= 0 ? `+${diffCota}` : `${diffCota}`;
+
+                // Variables de traducción
+                const lblCotaModelo = t('tabla.tooltips.cotaSueloModelo', { defaultValue: 'Cota suelo modelo' });
+                const lblCotaDespegue = t('tabla.tooltips.cotaDespegueReal', { defaultValue: 'Cota despegue real' });
+
                 const tooltip10m = altCeldaEcmwf !== null 
-                    ? `${tituloEcmwf10}\n• Cota suelo modelo: ${altCeldaEcmwf} m MSL\n• Cota despegue real: ${altDespReal} m MSL (${altCeldaEcmwf - altDespReal >= 0 ? '+' : ''}${altCeldaEcmwf - altDespReal} m)`
+                    ? `${tituloEcmwf10}\n• ${lblCotaModelo}: ${altCeldaEcmwf} m MSL\n• ${lblCotaDespegue}: ${altDespReal} m MSL (${signoDiff} m)`
                     : tituloEcmwf10;
 
                 addIconCellEcmwf(filaEcmwfVel10, "<span style='position: relative; top: -1px; display: inline-block;'>10 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>AGL</span></span>", tooltip10m);
