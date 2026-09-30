@@ -22,26 +22,31 @@ let VelocidadMax = Number(localStorage.getItem("METEO_VELOCIDAD_MAXIMA")) || 20;
 let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 28;
 
 // 📊 INICIO CÓDIGO ESTUDIO
-// ─── MATRIZ DE CORRECCIÓN ESTADÍSTICA (18 FÓRMULAS OLS) ───────────────
-// Estructura: [modelo][regimen] -> { vm_m, vm_b, racha_m, racha_b }
-// Regímenes: 'headwind' (<=45°), 'crosswind' (46°-90°), 'tailwind' (>90°)
+// ─── MATRIZ DE CORRECCIÓN ESTADÍSTICA (POR MODELO Y HORIZONTE OLS) ────
+// Estructura: [modelo][horizonte_horas] -> { vm_m, vm_b, racha_m, racha_b }
 const CORRECCIONES_ESTADISTICAS = {
     'AromeHD': {
-        headwind:  { vm_m: 0.83, vm_b: 3.2, racha_m: 0.53, racha_b: 4.5 },
-        crosswind: { vm_m: 0.87, vm_b: 3.3, racha_m: 0.57, racha_b: 4.6 },
-        tailwind:  { vm_m: 0.90, vm_b: 3.4, racha_m: 0.53, racha_b: 5.9 }
+        '6':   { vm_m: 0.92, vm_b: 2.7, racha_m: 0.59, racha_b: 3.3 },
+        '24':  { vm_m: 0.94, vm_b: 2.5, racha_m: 0.59, racha_b: 3.8 }
     },
     'ICON-EU': {
-        headwind:  { vm_m: 0.61, vm_b: 5.1, racha_m: 0.40, racha_b: 6.0 },
-        crosswind: { vm_m: 0.61, vm_b: 5.0, racha_m: 0.50, racha_b: 3.6 },
-        tailwind:  { vm_m: 0.89, vm_b: 3.7, racha_m: 0.50, racha_b: 4.5 }
+        '6':   { vm_m: 0.74, vm_b: 4.1, racha_m: 0.47, racha_b: 4.6 },
+        '24':  { vm_m: 0.78, vm_b: 3.7, racha_m: 0.47, racha_b: 4.0 },
+        '48':  { vm_m: 0.75, vm_b: 3.9, racha_m: 0.47, racha_b: 4.2 },
+        '72':  { vm_m: 0.75, vm_b: 4.0, racha_m: 0.46, racha_b: 4.4 }
     },
     'ECMWF': {
-        headwind:  { vm_m: 0.44, vm_b: 5.6, racha_m: 0.66, racha_b: -0.9 },
-        crosswind: { vm_m: 0.45, vm_b: 5.4, racha_m: 0.47, racha_b: 1.8 },
-        tailwind:  { vm_m: 0.61, vm_b: 4.7, racha_m: 0.58, racha_b: 1.6 }
+        '6':   { vm_m: 0.48, vm_b: 5.7, racha_m: 0.66, racha_b: -1.5 },
+        '24':  { vm_m: 0.52, vm_b: 4.4, racha_m: 0.59, racha_b: 0.9 },
+        '48':  { vm_m: 0.51, vm_b: 4.5, racha_m: 0.60, racha_b: 0.8 },
+        '72':  { vm_m: 0.50, vm_b: 4.7, racha_m: 0.58, racha_b: 1.2 },
+        // TODO: +96h, +120h y +144h usan provisionalmente +72h hasta tener muestras suficientes en el estudio
+        '96':  { vm_m: 0.50, vm_b: 4.7, racha_m: 0.58, racha_b: 1.2 },
+        '120': { vm_m: 0.50, vm_b: 4.7, racha_m: 0.58, racha_b: 1.2 },
+        '144': { vm_m: 0.50, vm_b: 4.7, racha_m: 0.58, racha_b: 1.2 }
     }
 };
+// ─────────────────────────────────────────────────────────────────────
 // 📊 FIN CÓDIGO ESTUDIO
 
 // Valores límite para puntuación XC y colores en tabla
@@ -8889,29 +8894,30 @@ async function comprobarVersionApp() {
 }
 
 // 📊 INICIO CÓDIGO ESTUDIO
-// Helper para clasificar la incidencia del viento respecto a la ladera
-function obtenerRegimenIncidencia(dirViento, orientacionesGrados) {
-    if (dirViento === null || dirViento === undefined || isNaN(dirViento)) return 'headwind';
-    if (!orientacionesGrados) return 'headwind';
-
-    let oris = [];
-    if (Array.isArray(orientacionesGrados)) {
-        oris = orientacionesGrados;
-    } else if (typeof orientacionesGrados === 'string') {
-        oris = orientacionesGrados.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+// Determina el horizonte temporal (+6h, +24h, etc.) según las horas reales que faltan desde ahora
+function obtenerHorizonteCorreccion(hourlyData, indiceHora) {
+    let timeStr = null;
+    if (hourlyData && Array.isArray(hourlyData.time) && hourlyData.time[indiceHora]) {
+        timeStr = hourlyData.time[indiceHora];
+    } else if (window.horasCrudasRangoHorario && window.horasCrudasRangoHorario[indiceHora]) {
+        timeStr = window.horasCrudasRangoHorario[indiceHora];
     }
 
-    if (oris.length === 0) return 'headwind';
+    if (!timeStr) return '24'; // Valor seguro por defecto
 
-    let minDelta = 180;
-    oris.forEach(ori => {
-        const d = diferenciaAngular(dirViento, ori);
-        if (d < minDelta) minDelta = d;
-    });
+    const fechaPronostico = new Date(timeStr.endsWith('Z') ? timeStr : timeStr + 'Z').getTime();
+    const ahoraMs = Date.now();
+    // Horas reales de antelación entre la celda pronosticada y el momento actual
+    const diffHoras = (fechaPronostico - ahoraMs) / 3600000;
 
-    if (minDelta <= 45) return 'headwind';
-    if (minDelta <= 90) return 'crosswind';
-    return 'tailwind';
+    // Fronteras a medio camino entre horizontes del estudio
+    if (diffHoras <= 15)  return '6';   // Punto medio entre +6h y +24h (15h)
+    if (diffHoras <= 36)  return '24';  // Punto medio entre +24h y +48h (36h)
+    if (diffHoras <= 60)  return '48';  // Punto medio entre +48h y +72h (60h)
+    if (diffHoras <= 84)  return '72';  // Punto medio entre +72h y +96h (84h)
+    if (diffHoras <= 108) return '96';  // Punto medio entre +96h y +120h (108h)
+    if (diffHoras <= 132) return '120'; // Punto medio entre +120h y +144h (132h)
+    return '144';
 }
 
 function corregirViento10m(velOriginal, hourlyData, indiceHora, despegueObj) {
@@ -8923,14 +8929,16 @@ function corregirViento10m(velOriginal, hourlyData, indiceHora, despegueObj) {
     let modelo = 'AromeHD';
     if (hourlyData && Array.isArray(hourlyData.model_source) && hourlyData.model_source[indiceHora]) {
         modelo = hourlyData.model_source[indiceHora];
+    } else if (indiceHora >= 72) {
+        modelo = 'ECMWF';
     }
-    if (!CORRECCIONES_ESTADISTICAS[modelo]) modelo = 'AromeHD';
 
-    const dir = (hourlyData && Array.isArray(hourlyData.wind_direction_10m)) ? hourlyData.wind_direction_10m[indiceHora] : null;
-    const oris = despegueObj ? despegueObj.Orientaciones_Grados : null;
-    const regimen = obtenerRegimenIncidencia(dir, oris);
+    const horiz = obtenerHorizonteCorreccion(hourlyData, indiceHora);
+    const coef = CORRECCIONES_ESTADISTICAS[modelo]?.[horiz] 
+              || CORRECCIONES_ESTADISTICAS['ICON-EU']?.[horiz] 
+              || CORRECCIONES_ESTADISTICAS['ECMWF']?.[horiz] 
+              || CORRECCIONES_ESTADISTICAS['ECMWF']['72'];
 
-    const coef = CORRECCIONES_ESTADISTICAS[modelo][regimen];
     return Math.max(0, (coef.vm_m * vel) + coef.vm_b);
 }
 
@@ -8943,40 +8951,39 @@ function corregirRacha10m(rachaOriginal, hourlyData, indiceHora, despegueObj) {
     let modelo = 'AromeHD';
     if (hourlyData && Array.isArray(hourlyData.model_source) && hourlyData.model_source[indiceHora]) {
         modelo = hourlyData.model_source[indiceHora];
+    } else if (indiceHora >= 72) {
+        modelo = 'ECMWF';
     }
-    if (!CORRECCIONES_ESTADISTICAS[modelo]) modelo = 'AromeHD';
 
-    const dir = (hourlyData && Array.isArray(hourlyData.wind_direction_10m)) ? hourlyData.wind_direction_10m[indiceHora] : null;
-    const oris = despegueObj ? despegueObj.Orientaciones_Grados : null;
-    const regimen = obtenerRegimenIncidencia(dir, oris);
+    const horiz = obtenerHorizonteCorreccion(hourlyData, indiceHora);
+    const coef = CORRECCIONES_ESTADISTICAS[modelo]?.[horiz] 
+              || CORRECCIONES_ESTADISTICAS['ICON-EU']?.[horiz] 
+              || CORRECCIONES_ESTADISTICAS['ECMWF']?.[horiz] 
+              || CORRECCIONES_ESTADISTICAS['ECMWF']['72'];
 
-    const coef = CORRECCIONES_ESTADISTICAS[modelo][regimen];
-    const corregido = (coef.racha_m * racha) + coef.racha_b;
-
-    // Regresión OLS directa, asegurando únicamente que no sea inferior a 0
-    return Math.max(0, corregido);
+    return Math.max(0, (coef.racha_m * racha) + coef.racha_b);
 }
 
-function corregirVientoEcmwf(velOriginal, dirViento, despegueObj) {
+function corregirVientoEcmwf(velOriginal, hourlyEcmwf, indiceHora, despegueObj) {
     if (!chkAplicarCorreccionEstadistica || velOriginal === null || velOriginal === undefined) {
         return velOriginal;
     }
-    const oris = despegueObj ? despegueObj.Orientaciones_Grados : null;
-    const regimen = obtenerRegimenIncidencia(dirViento, oris);
-    const coef = CORRECCIONES_ESTADISTICAS['ECMWF'][regimen];
+    const vel = Number(velOriginal);
+    const horiz = obtenerHorizonteCorreccion(hourlyEcmwf, indiceHora);
+    const coef = CORRECCIONES_ESTADISTICAS['ECMWF'][horiz] || CORRECCIONES_ESTADISTICAS['ECMWF']['72'];
 
-    return Math.max(0, (coef.vm_m * Number(velOriginal)) + coef.vm_b);
+    return Math.max(0, (coef.vm_m * vel) + coef.vm_b);
 }
 
-function corregirRachaEcmwf(rachaOriginal, dirViento, despegueObj) {
+function corregirRachaEcmwf(rachaOriginal, hourlyEcmwf, indiceHora, despegueObj) {
     if (!chkAplicarCorreccionEstadistica || rachaOriginal === null || rachaOriginal === undefined) {
         return rachaOriginal;
     }
-    const oris = despegueObj ? despegueObj.Orientaciones_Grados : null;
-    const regimen = obtenerRegimenIncidencia(dirViento, oris);
-    const coef = CORRECCIONES_ESTADISTICAS['ECMWF'][regimen];
+    const racha = Number(rachaOriginal);
+    const horiz = obtenerHorizonteCorreccion(hourlyEcmwf, indiceHora);
+    const coef = CORRECCIONES_ESTADISTICAS['ECMWF'][horiz] || CORRECCIONES_ESTADISTICAS['ECMWF']['72'];
 
-    return Math.max(0, (coef.racha_m * Number(rachaOriginal)) + coef.racha_b);
+    return Math.max(0, (coef.racha_m * racha) + coef.racha_b);
 }
 // 📊 FIN CÓDIGO ESTUDIO
 
