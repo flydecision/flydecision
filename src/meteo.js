@@ -21,6 +21,7 @@ let VelocidadIdeal = Number(localStorage.getItem("METEO_VELOCIDAD_IDEAL")) || 12
 let VelocidadMax = Number(localStorage.getItem("METEO_VELOCIDAD_MAXIMA")) || 20;  
 let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 28;
 
+// 📊 INICIO CÓDIGO ESTUDIO
 // ─── MATRIZ DE CORRECCIÓN ESTADÍSTICA (18 FÓRMULAS OLS) ───────────────
 // Estructura: [modelo][regimen] -> { vm_m, vm_b, racha_m, racha_b }
 // Regímenes: 'headwind' (<=45°), 'crosswind' (46°-90°), 'tailwind' (>90°)
@@ -41,7 +42,7 @@ const CORRECCIONES_ESTADISTICAS = {
         tailwind:  { vm_m: 0.61, vm_b: 4.7, racha_m: 0.58, racha_b: 1.6 }
     }
 };
-// ─────────────────────────────────────────────────────────────────────
+// 📊 FIN CÓDIGO ESTUDIO
 
 // Valores límite para puntuación XC y colores en tabla
 // Techo AGL: 800m ya permite volar, 1500m AGL es un día excelente (se suma a la montaña).
@@ -1820,25 +1821,40 @@ function iniciarGuiaFavoritos(forzar = false) {
 
     const esModoSimple = document.body.classList.contains('modo-simple');
 
-    // 1. Limpiamos solo el buscador y la lógica visual de los filtros
-    if (typeof limpiarBuscador === 'function') limpiarBuscador();
-    if (typeof aplicarFiltrosVisuales === 'function') ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
+    // 1. Limpieza directa y síncrona del buscador sin disparar eventos en bucle
+    const inputBusc = document.getElementById('buscador-despegues-provincias');
+    let requiereReconstruir = false;
+    if (inputBusc && inputBusc.value.trim() !== '') {
+        inputBusc.value = '';
+        inputBusc.classList.remove('filtrado', 'buscador-despegues-sin-resultados');
+        requiereReconstruir = true;
+    }
+    const btnLimp = document.getElementById('limpiar-buscador');
+    if (btnLimp) btnLimp.style.display = 'none';
 
-    // 2. Nos aseguramos de que el panel de Distancia esté abierto y visible
+    // 2. Panel de Distancia abierto y reseteado a infinito (sin disparar evento set)
     const panelDistancia = document.getElementById("div-filtro-distancia");
     if (panelDistancia) {
         panelDistancia.classList.add("activo");
-        
-        // 3. RESETEAMOS EL SLIDER DE DISTANCIA A INFINITO (sin cerrar el panel)
-        setTimeout(() => {
-            const sliderDist = document.getElementById('distancia-slider');
-            if (sliderDist && sliderDist.noUiSlider) {
-                // Obtenemos el índice máximo de la escala (Infinito) y movemos el slider ahí
-                const MAX_INDEX = CORTES_DISTANCIA_GLOBAL.length - 1;
-                sliderDist.noUiSlider.set(MAX_INDEX);
-                sliderDist.noUiSlider.updateOptions({}, true);
+        const sliderDist = document.getElementById('distancia-slider');
+        if (sliderDist && sliderDist.noUiSlider) {
+            const MAX_INDEX = CORTES_DISTANCIA_GLOBAL.length - 1;
+            const valActual = Math.round(Number(sliderDist.noUiSlider.get()));
+            if (valActual !== MAX_INDEX) {
+                ultimaDistanciaConfirmada = MAX_INDEX;
+                sliderDist.noUiSlider.set(MAX_INDEX, false); // false evita disparar listener 'set'
+                requiereReconstruir = true;
             }
-        }, 50);
+        }
+    }
+
+    // Scroll instantáneo al inicio para asegurar posición limpia
+    const wrapper = document.querySelector('.tabla-wrapper');
+    if (wrapper) wrapper.scrollTop = 0;
+
+    // Solo reconstruimos si realmente había un filtro activo previo
+    if (requiereReconstruir && typeof construir_tabla === 'function') {
+        construir_tabla(false, true);
     }
 
     const driverObj = window.driver.js.driver({
@@ -1864,11 +1880,15 @@ function iniciarGuiaFavoritos(forzar = false) {
             },
 
             { 
-                element: '#tabla tbody tr:nth-child(1) td:first-child', 
+                element: '#tabla tbody td.columna-favoritos', 
                 popover: { 
                     title: t('guiaFavoritos.pasos.celdaFavorito.titulo'), 
                     description: t('guiaFavoritos.pasos.celdaFavorito.descripcion')
-                } 
+                },
+                onHighlightStarted: () => {
+                    setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 50);
+                    setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 200);
+                }
             },
 
             ...(!esModoSimple ? [{ 
@@ -4327,6 +4347,7 @@ function interpolarVientoAltitudReal(H_target, h1000, h925, h850, h700, v1000, v
 
 // 🟡 FUNCIÓN COMÚN DE PUNTUACIÓN (Unificado para Tabla y Mapa)
 
+// 📊 INICIO CÓDIGO ESTUDIO
 function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indicesEvaluacion) {
     if (!hourlyData || !indicesEvaluacion || indicesEvaluacion.length === 0) {
         return { notaCondiciones: null, notaXC: null, horasValidas: 0, horasValidasXC: 0 };
@@ -4539,6 +4560,7 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
 
     return { notaCondiciones, notaXC, horasValidas, horasValidasXC };
 }
+// 📊 FIN CÓDIGO ESTUDIO
 
 // 🟡 Más funciones
 
@@ -6961,9 +6983,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const tdIconoUnificado = document.createElement("td");
                 tdIconoUnificado.rowSpan = 2; // Ocupa la fila de viento medio y la de racha
                 tdIconoUnificado.classList.add("columna-meteo", "columna-simbolo-fija", "borde-grueso-izquierda");
-                tdIconoUnificado.setAttribute("title", `${tituloViento10} / ${tituloRacha10}\n(Mantén pulsado para alternar corrección estadística)`);
-                
-                tdIconoUnificado.style.cursor = "pointer";
+                if (chkAplicarCorreccionEstadistica) {
+                    const txtAlternarCorr = t('tabla.tooltips.mantenerPulsadoAlternar', { defaultValue: '(Mantén pulsado para alternar corrección estadística)' });
+                    tdIconoUnificado.setAttribute("title", `${tituloViento10} / ${tituloRacha10}\n${txtAlternarCorr}`);
+                    tdIconoUnificado.style.cursor = "pointer";
+                } else {
+                    tdIconoUnificado.setAttribute("title", `${tituloViento10} / ${tituloRacha10}`);
+                    tdIconoUnificado.style.cursor = "default";
+                }
                 tdIconoUnificado.style.userSelect = "none";
                 tdIconoUnificado.style.webkitUserSelect = "none";
                 tdIconoUnificado.style.touchAction = "manipulation"; // Evita retardos y gestos accidentales del navegador
@@ -7114,8 +7141,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     ? Math.round(Number(respuestasEcmwf[idx].elevation))
                     : null;
 
+                const diffCota = altDespReal - altCeldaEcmwf;
+                const signoDiff = diffCota >= 0 ? `+${diffCota}` : `${diffCota}`;
+
+                // Variables de traducción
+                const lblCotaModelo = t('tabla.tooltips.cotaSueloModelo', { defaultValue: 'Cota suelo modelo' });
+                const lblCotaDespegue = t('tabla.tooltips.cotaDespegueReal', { defaultValue: 'Cota despegue real' });
+
                 const tooltip10m = altCeldaEcmwf !== null 
-                    ? `${tituloEcmwf10}\n• Cota suelo modelo: ${altCeldaEcmwf} m MSL\n• Cota despegue real: ${altDespReal} m MSL (${altCeldaEcmwf - altDespReal >= 0 ? '+' : ''}${altCeldaEcmwf - altDespReal} m)`
+                    ? `${tituloEcmwf10}\n• ${lblCotaModelo}: ${altCeldaEcmwf} m MSL\n• ${lblCotaDespegue}: ${altDespReal} m MSL (${signoDiff} m)`
                     : tituloEcmwf10;
 
                 addIconCellEcmwf(filaEcmwfVel10, "<span style='position: relative; top: -1px; display: inline-block;'>10 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>AGL</span></span>", tooltip10m);
@@ -8854,6 +8888,7 @@ async function comprobarVersionApp() {
     }
 }
 
+// 📊 INICIO CÓDIGO ESTUDIO
 // Helper para clasificar la incidencia del viento respecto a la ladera
 function obtenerRegimenIncidencia(dirViento, orientacionesGrados) {
     if (dirViento === null || dirViento === undefined || isNaN(dirViento)) return 'headwind';
@@ -8943,6 +8978,7 @@ function corregirRachaEcmwf(rachaOriginal, dirViento, despegueObj) {
 
     return Math.max(0, (coef.racha_m * Number(rachaOriginal)) + coef.racha_b);
 }
+// 📊 FIN CÓDIGO ESTUDIO
 
 // ---------------------------------------------------------------
 // 🟡 Modo Simple / Avanzado
