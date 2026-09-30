@@ -21,6 +21,7 @@ let VelocidadIdeal = Number(localStorage.getItem("METEO_VELOCIDAD_IDEAL")) || 12
 let VelocidadMax = Number(localStorage.getItem("METEO_VELOCIDAD_MAXIMA")) || 20;  
 let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 28;
 
+// 📊 INICIO CÓDIGO ESTUDIO
 // ─── MATRIZ DE CORRECCIÓN ESTADÍSTICA (18 FÓRMULAS OLS) ───────────────
 // Estructura: [modelo][regimen] -> { vm_m, vm_b, racha_m, racha_b }
 // Regímenes: 'headwind' (<=45°), 'crosswind' (46°-90°), 'tailwind' (>90°)
@@ -41,7 +42,7 @@ const CORRECCIONES_ESTADISTICAS = {
         tailwind:  { vm_m: 0.61, vm_b: 4.7, racha_m: 0.58, racha_b: 1.6 }
     }
 };
-// ─────────────────────────────────────────────────────────────────────
+// 📊 FIN CÓDIGO ESTUDIO
 
 // Valores límite para puntuación XC y colores en tabla
 // Techo AGL: 800m ya permite volar, 1500m AGL es un día excelente (se suma a la montaña).
@@ -4346,6 +4347,7 @@ function interpolarVientoAltitudReal(H_target, h1000, h925, h850, h700, v1000, v
 
 // 🟡 FUNCIÓN COMÚN DE PUNTUACIÓN (Unificado para Tabla y Mapa)
 
+// 📊 INICIO CÓDIGO ESTUDIO
 function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indicesEvaluacion) {
     if (!hourlyData || !indicesEvaluacion || indicesEvaluacion.length === 0) {
         return { notaCondiciones: null, notaXC: null, horasValidas: 0, horasValidasXC: 0 };
@@ -4558,6 +4560,7 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
 
     return { notaCondiciones, notaXC, horasValidas, horasValidasXC };
 }
+// 📊 FIN CÓDIGO ESTUDIO
 
 // 🟡 Más funciones
 
@@ -8885,6 +8888,7 @@ async function comprobarVersionApp() {
     }
 }
 
+// 📊 INICIO CÓDIGO ESTUDIO
 // Helper para clasificar la incidencia del viento respecto a la ladera
 function obtenerRegimenIncidencia(dirViento, orientacionesGrados) {
     if (dirViento === null || dirViento === undefined || isNaN(dirViento)) return 'headwind';
@@ -8974,6 +8978,7 @@ function corregirRachaEcmwf(rachaOriginal, dirViento, despegueObj) {
 
     return Math.max(0, (coef.racha_m * Number(rachaOriginal)) + coef.racha_b);
 }
+// 📊 FIN CÓDIGO ESTUDIO
 
 // ---------------------------------------------------------------
 // 🟡 Modo Simple / Avanzado
