@@ -4211,6 +4211,15 @@ h3 {
     white-space: nowrap !important; /* Evita que el texto salte de línea */
 }
 
+/* Chips de sesión: ocultos por defecto, visibles solo si recordar filtros está activo */
+.chip-sesion-volatil {
+    display: none;
+}
+
+body.recordar-filtros-mapa-activo .chip-sesion-volatil {
+    display: inline-block;
+}
+
 /* 🔴🔴 FIN MAPA */
 
 /* 🛑 BOTÓN FLOTANTE "VOLVER" (Módulo Mapa) */

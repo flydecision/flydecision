@@ -129,11 +129,23 @@ function alternarBotonMinutely15() {
     if (typeof construir_tabla === 'function') construir_tabla();
 }
 
+// Actualiza la clase en el body para mostrar/ocultar los chips (sesión)
+function actualizarVisibilidadChipsSesion() {
+    const activo = localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true';
+    document.body.classList.toggle('recordar-filtros-mapa-activo', activo);
+}
+window.actualizarVisibilidadChipsSesion = actualizarVisibilidadChipsSesion;
+
 // Función genérica para guardar los ajustes de memoria del mapa
 window.alternarAjusteMemoriaMapa = function(idCheckbox, lsKey) {
     const checkbox = document.getElementById(idCheckbox);
     if (checkbox) {
         localStorage.setItem(lsKey, checkbox.checked);
+        
+        // Si la usuaria toca "Recordar filtros", actualizamos los chips al instante
+        if (lsKey === 'METEO_RECORDAR_FILTROS_MAPA') {
+            actualizarVisibilidadChipsSesion();
+        }
     }
 };
 
@@ -154,6 +166,8 @@ window.addEventListener('DOMContentLoaded', () => {
             checkbox.checked = localStorage.getItem(ajuste.key) === 'true';
         }
     });
+    
+    actualizarVisibilidadChipsSesion();
 });
 
 // Controlador dinámico de variables para el Modo Básico/Avanzado
@@ -15951,7 +15965,7 @@ function inicializarMapaLeaflet() {
         sliderTiempoFiltro.value = indiceTiempo;
         obtenerMaxTiempoBalizas(); // Lee el valor e inyecta el texto ("Todas", "1 h", etc.)
     }
-    
+
     // Ejecutamos el motor de filtros y la interfaz para aplicar los datos recién leídos
     if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
     

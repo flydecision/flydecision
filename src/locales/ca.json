@@ -732,6 +732,8 @@
     "TiempoBalizas": "Actualització balises <= ",
     "todas": "Totes",
     "titleTiempoBalizas": "Mostra només les balises amb dades actualitzades dins del temps seleccionat",
+    "sesion": "(sessió)",
+    "titleSesion": "Filtre no memoritzat: no es desa encara que tinguis activat recordar filtres",
     "minKmMediaTexto": "Distància mitjana recorreguda mínima = ",
     "todos": "Tots",
     "titleBuscadorDespegue": "Cercar enlairament per nom",

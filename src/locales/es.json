@@ -733,6 +733,8 @@
     "TiempoBalizas": "Actualización balizas <= ",
     "todas": "Todas",
     "titleTiempoBalizas": "Mostrar solo las balizas con datos actualizados dentro del tiempo seleccionado",
+    "sesion": "(sesión)",
+    "titleSesion": "Filtro temporal: se reinicia automáticamente al salir",
     "minKmMediaTexto": "Mínimo de km medios recorridos = ",
     "todos": "Todos",
     "titleBuscadorDespegue": "Buscar despegue por su nombre",

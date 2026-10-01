@@ -732,6 +732,8 @@
     "TiempoBalizas": "Balizen eguneratzea <= ",
     "todas": "Guztiak",
     "titleTiempoBalizas": "Hautatutako denboraren barruan eguneratutako datuak dituzten balizak soilik erakutsi",
+    "sesion": "(saioa)",
+    "titleSesion": "Memorizatu gabeko iragazkia: ez da gordetzen iragazkiak gogoratzea aktibatuta izan arren",
     "minKmMediaTexto": "Gutxienezko batez besteko distantzia egina = ",
     "todos": "Guztiak",
     "titleBuscadorDespegue": "Bilatu aireratzea izenaren arabera",

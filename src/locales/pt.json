@@ -731,6 +731,8 @@
     "TiempoBalizas": "Atualização balizas <= ",
     "todas": "Todas",
     "titleTiempoBalizas": "Mostrar apenas as balizas com dados atualizados dentro do tempo selecionado",
+    "sesion": "(sessão)",
+    "titleSesion": "Filtro não memorizado: não é guardado mesmo que tenha a opção de recordar filtros ativada",
     "minKmMediaTexto": "Distância média percorrida mínima = ",
     "todos": "Todos",
     "titleBuscadorDespegue": "Procurar descolagem por nome",
