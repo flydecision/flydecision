@@ -7041,37 +7041,80 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 // Asignar los eventos de presionar y soltar a la celda lateral unificada
                 const vincularPeekBoton = (tdBoton) => {
-                    if (!chkAplicarCorreccionEstadistica) return;
+                    if (!chkAplicarCorreccionEstadistica || !tdBoton) return;
                     
+                    // Evitar revinculación duplicada
+                    if (tdBoton.dataset.peekAsignado === "true") return;
+                    tdBoton.dataset.peekAsignado = "true";
+
                     tdBoton.classList.add("celda-meteo-interactiva");
+
+                    // Estilos inline de refuerzo por si el CSS no cargara
+                    tdBoton.style.touchAction = "none";
+                    tdBoton.style.webkitTouchCallout = "none";
+                    tdBoton.style.userSelect = "none";
+                    tdBoton.style.webkitUserSelect = "none";
+
                     let presionado = false;
 
                     const alPulsar = (e) => {
                         if (presionado) return;
                         presionado = true;
+                        
                         tdBoton.classList.add("peek-activo");
-                        if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+
+                        // 1 sola vibración
+                        if (typeof window.vibrarDispositivo === 'function') {
+                            window.vibrarDispositivo();
+                        }
+
                         activarPeekDespegue(true);
                     };
 
                     const alSoltar = (e) => {
                         if (!presionado) return;
                         presionado = false;
+                        
                         tdBoton.classList.remove("peek-activo");
                         activarPeekDespegue(false);
                     };
 
-                    // pointerdown/up gestionan pantalla táctil y ratón con captura de puntero
-                    tdBoton.addEventListener("pointerdown", (e) => {
-                        try { tdBoton.setPointerCapture(e.pointerId); } catch(err){}
+                    // --- GESTIÓN TÁCTIL EN MÓVILES (iOS / Android) ---
+                    tdBoton.addEventListener("touchstart", (e) => {
+                        e.preventDefault(); // Impide long-press del sistema, scroll y clics sintéticos
+                        e.stopPropagation();
                         alPulsar(e);
-                    });
-                    tdBoton.addEventListener("pointerup", (e) => {
-                        try { tdBoton.releasePointerCapture(e.pointerId); } catch(err){}
+                    }, { passive: false });
+
+                    tdBoton.addEventListener("touchend", (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        alSoltar(e);
+                    }, { passive: false });
+
+                    tdBoton.addEventListener("touchcancel", (e) => {
                         alSoltar(e);
                     });
-                    tdBoton.addEventListener("pointercancel", alSoltar);
+
+                    // --- GESTIÓN RATÓN (Escritorio) ---
+                    tdBoton.addEventListener("mousedown", (e) => {
+                        if (e.button !== 0) return; // Solo botón izquierdo
+                        alPulsar(e);
+                    });
+
+                    // El mouseup en window asegura soltar aunque el cursor salga de la celda
+                    window.addEventListener("mouseup", () => {
+                        if (presionado) alSoltar();
+                    });
+
+                    // --- ELIMINAR MENÚ Y CLIC RESIDUAL ---
                     tdBoton.addEventListener("contextmenu", (e) => e.preventDefault());
+                    
+                    // Anular en fase de captura cualquier listener de click previo que pudiera tener la celda
+                    tdBoton.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                    }, true);
                 };
 
                 // Vinculamos la celda unificada
@@ -16476,6 +16519,26 @@ function inicializarMapaLeaflet() {
         umbralAmarilloMin: 60,
         umbralRojoMin: 90,
         urlWeb: (id) => `https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio`
+        },
+        'lariojasiar': {
+        id: 'lariojasiar',
+        nombre: 'La Rioja SIAR',
+        estaciones: [],
+        urlCache: 'https://flydecision.com/balizas_lariojasiar_cache.json',
+        url6h:    'https://flydecision.com/balizas_lariojasiar_6h.json',
+        checkboxId: 'checkboxBalizasLaRiojaSiar',
+        lsKey: 'METEO_MAPA_CAPA_BALIZAS_LARIOJASIAR_VISIBLE',
+        layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+        marcadores: {},
+        dibujadas: false,
+        datosCache: {},
+        ultimoJsonRaw: null,
+        datos6h: null,
+        fetched6hAt: 0,
+        intervalo: null,
+        umbralAmarilloMin: 60,
+        umbralRojoMin: 90,
+        urlWeb: (id) => `https://www.larioja.org/agricultura/es/informacion-agroclimatica/red-estaciones`
         }
 
     };    

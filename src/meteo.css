@@ -1688,8 +1688,17 @@ span.grados {
     user-select: none !important;
     -webkit-user-select: none !important;
     -webkit-touch-callout: none !important;
-    touch-action: none !important; /* Clave en móviles: bloquea el scroll mientras mantienes el dedo pulsado */
+    touch-action: none !important;
+    -webkit-tap-highlight-color: transparent !important; /* Elimina el destello gris/azul nativo de Android/iOS al pulsar */
+    -webkit-user-drag: none !important; /* NUEVO: Evita que el navegador intente arrastrar la celda o su texto al mantener pulsado */
     transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Bloquear eventos en los elementos hijos */
+.celda-meteo-interactiva * {
+    pointer-events: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
 }
 
 /* Efecto de pulsado mediante sombra interior y color, sin romper las filas de la tabla */
@@ -1953,8 +1962,6 @@ span.grados {
 
 /* Fin de semana en estado de reposo */
 .pip-dia-btn.dia-fin-semana:not(.pip-activo) {
-    color: #853e00;
-    border-color: #ffd8b3;
     background-color: #ffeddb;
 }
 
