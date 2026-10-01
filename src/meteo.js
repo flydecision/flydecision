@@ -9075,6 +9075,7 @@ function resetearOpcionesAvanzadas(evitarRecarga = false) {
     localStorage.removeItem('METEO_MAPA_FILTRO_FAV_BALIZAS');
     localStorage.removeItem('METEO_MAPA_FILTRO_SEG_BALIZAS');
     localStorage.removeItem('METEO_MAPA_FILTRO_ACT');
+    localStorage.removeItem('METEO_MAPA_FILTRO_TIEMPO_BALIZAS'); 
 
     // Sincronizamos los sliders del mapa a su origen
     const sliderVuelosFiltro = document.getElementById('sliderVuelos');
@@ -9106,6 +9107,18 @@ function resetearOpcionesAvanzadas(evitarRecarga = false) {
         // Truco rápido para re-pintar el 1/5 sin necesitar la función renderizarTextoActividad
         txtAct.innerHTML = `<span style="display:inline-flex; align-items:center; gap:5px; vertical-align:middle; margin-left: 6px; margin-top: -3px;"><span style="display: inline-flex; justify-content: space-between; align-items: flex-end; width: 20px; height: 16px; margin-left: -3px; vertical-align: -2px; outline: none;"><span style="display: inline-block; width: 3px; height: 4px; background-color: #5b5b5b; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 7px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 10px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 13px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span><span style="display: inline-block; width: 3px; height: 16px; background-color: #e9e9e9; border-radius: 1.5px 1.5px 0 0;"></span></span><span>1/5</span></span>`;
     }
+
+    // Resetear Altitud de Balizas a 0 m
+    const sliderAltBal = document.getElementById('sliderAltitudBalizas');
+    const txtAltBal = document.getElementById('valorAltitudBalizasTexto');
+    if (sliderAltBal) sliderAltBal.value = '0';
+    if (txtAltBal) txtAltBal.textContent = '0 m';
+
+    // Tiempo de Actualización de Balizas a "Todas"
+    const sliderTiempoBal = document.getElementById('sliderTiempoBalizas');
+    const txtTiempoBal = document.getElementById('valorTiempoBalizasTexto');
+    if (sliderTiempoBal) sliderTiempoBal.value = '0';
+    if (txtTiempoBal) txtTiempoBal.textContent = (typeof t === 'function' ? t('mapa.todas', { defaultValue: 'Todas' }) : 'Todas');
 
     const orientaciones = document.querySelectorAll('.filtro-orientacion-checkbox');
     orientaciones.forEach(c => c.checked = false);
@@ -9140,6 +9153,7 @@ window.resetearFiltrosMapaEnVivo = function() {
         localStorage.setItem('METEO_MAPA_FILTRO_SEG_BALIZAS', '0');
         localStorage.setItem('METEO_MAPA_FILTRO_ACT', '1');
         localStorage.setItem('METEO_MAPA_FILTRO_ORI', '[]');
+        localStorage.setItem('METEO_MAPA_FILTRO_TIEMPO_BALIZAS', '0'); 
     }
 
     // 2. Resetear Sliders visuales del mapa
@@ -9166,6 +9180,11 @@ window.resetearFiltrosMapaEnVivo = function() {
     const txtAltBal = document.getElementById('valorAltitudBalizasTexto');
     if (sliderAltBal) sliderAltBal.value = '0';
     if (txtAltBal) txtAltBal.textContent = '0 m';
+
+    const sliderTiempoBal = document.getElementById('sliderTiempoBalizas');
+    const txtTiempoBal = document.getElementById('valorTiempoBalizasTexto');
+    if (sliderTiempoBal) sliderTiempoBal.value = '0';
+    if (txtTiempoBal) txtTiempoBal.textContent = (typeof t === 'function' ? t('mapa.todas', { defaultValue: 'Todas' }) : 'Todas');
 
     // 3. Sincronizar botones de Favoritos y Seguimiento rápidos
     if (typeof actualizarBotonFavoritosMapa === 'function') actualizarBotonFavoritosMapa();
@@ -11953,7 +11972,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
         'sliderValorInicialFiltroNumeroMinimoVuelos',
         'sliderValorInicialFiltroUltimoVuelo',
         'sliderActividad',
-        'sliderAltitudBalizas'         
+        'sliderAltitudBalizas',
+        'sliderTiempoBalizas'
     ];
 
     idsSlidersEstandar.forEach(id => {
@@ -13163,6 +13183,45 @@ function obtenerMinAltitudBalizas() {
     return val;
 }
 
+const ESCALA_TIEMPO_BALIZAS = [
+    { texto: 'Todas', minutos: Infinity },
+    { texto: '3 h', minutos: 180 },
+    { texto: '2 h', minutos: 120 },
+    { texto: '1,5 h', minutos: 90 },
+    { texto: '1 h', minutos: 60 },
+    { texto: '45 min', minutos: 45 },
+    { texto: '30 min', minutos: 30 },
+    { texto: '15 min', minutos: 15 }
+];
+
+function obtenerMinAltitudBalizas() {
+    const slider = document.getElementById('sliderAltitudBalizas');
+    if (!slider) return 0;
+    const indice = parseInt(slider.value, 10);
+    const val = ESCALA_ALTITUD_BALIZAS[indice] || 0;
+    const textSpan = document.getElementById('valorAltitudBalizasTexto');
+    if (textSpan) {
+        const maxIndice = ESCALA_ALTITUD_BALIZAS.length - 1; // 30
+        textSpan.textContent = (indice === maxIndice) ? `>= 3000 m` : `${val} m`;
+    }
+    return val;
+}
+
+function obtenerMaxTiempoBalizas() {
+    const slider = document.getElementById('sliderTiempoBalizas');
+    if (!slider) return { texto: (typeof t === 'function' ? t('mapa.todas', { defaultValue: 'Todas' }) : 'Todas'), minutos: Infinity };
+    const indice = parseInt(slider.value, 10);
+    const item = ESCALA_TIEMPO_BALIZAS[indice] || ESCALA_TIEMPO_BALIZAS[0];
+    const textSpan = document.getElementById('valorTiempoBalizasTexto');
+    if (textSpan) {
+        textSpan.textContent = item.minutos === Infinity 
+            ? (typeof t === 'function' ? t('mapa.todas', { defaultValue: 'Todas' }) : 'Todas')
+            : item.texto;
+    }
+    return item;
+}
+
+
 function inicializarMapaLeaflet() {
 
     // --- BLOQUE DE SEGURIDAD ANTI-CRASH LEAFLET ---
@@ -13739,9 +13798,22 @@ function inicializarMapaLeaflet() {
             }
         }
 
+        const filtroTiempoBalizas = obtenerMaxTiempoBalizas();
+        const hayFiltroTiempoBalizas = filtroTiempoBalizas.minutos !== Infinity;
+
+        const contTiempoBalizas = document.querySelector('.control-tiempobalizas-container');
+        if (contTiempoBalizas) {
+            contTiempoBalizas.style.backgroundColor = 'transparent';
+            if (hayFiltroTiempoBalizas) {
+                contTiempoBalizas.classList.add('borde-rojo-externo');
+            } else {
+                contTiempoBalizas.classList.remove('borde-rojo-externo');
+            }
+        }
+
         // 6. ACTUALIZAR PANEL GLOBAL (Borde rojo externo al estar retraído)
-        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos || filtroFavoritosBalizasMapa !== 0 || filtroSeguimientoBalizasMapa !== 0 || hayFiltroAltitudBalizas;
-        const infoPanelFiltros = document.getElementById('infoPanel2'); 
+        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos || filtroFavoritosBalizasMapa !== 0 || filtroSeguimientoBalizasMapa !== 0 || hayFiltroAltitudBalizas || hayFiltroTiempoBalizas;
+        const infoPanelFiltros = document.getElementById('infoPanel2');
         
         if (infoPanelFiltros) {
             if (hayCualquierFiltro) {
@@ -15873,6 +15945,13 @@ function inicializarMapaLeaflet() {
         textoUltimoVueloFiltro.innerText = val === 'Todos' ? t('mapa.todos') : val;
     }
 
+    const sliderTiempoFiltro = document.getElementById('sliderTiempoBalizas');
+    const indiceTiempo = recordarFiltrosMapa ? (localStorage.getItem('METEO_MAPA_FILTRO_TIEMPO_BALIZAS') || '0') : '0';
+    if (sliderTiempoFiltro) {
+        sliderTiempoFiltro.value = indiceTiempo;
+        obtenerMaxTiempoBalizas(); // Lee el valor e inyecta el texto ("Todas", "1 h", etc.)
+    }
+    
     // Ejecutamos el motor de filtros y la interfaz para aplicar los datos recién leídos
     if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
     
@@ -16066,6 +16145,21 @@ function inicializarMapaLeaflet() {
         if (sliderAltitudBalizas) {
             sliderAltitudBalizas.addEventListener('input', function() {
                 obtenerMinAltitudBalizas();
+                Object.keys(REDES_BALIZAS).forEach(redId => {
+                    actualizarIconosBalizas(redId);
+                });
+                actualizarEstadoVisualFiltros();
+            });
+        }
+
+        // 7. Escucha el Slider de tiempo de actualización balizas
+        const sliderTiempoBalizas = document.getElementById('sliderTiempoBalizas');
+        if (sliderTiempoBalizas) {
+            sliderTiempoBalizas.addEventListener('input', function() {
+                if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
+                    localStorage.setItem('METEO_MAPA_FILTRO_TIEMPO_BALIZAS', this.value);
+                }
+                obtenerMaxTiempoBalizas();
                 Object.keys(REDES_BALIZAS).forEach(redId => {
                     actualizarIconosBalizas(redId);
                 });
@@ -16680,6 +16774,14 @@ function inicializarMapaLeaflet() {
 
         Object.values(red.marcadores).forEach(marker => {
             let d = red.datosCache[marker.stationId];
+
+            // RESPALDO: Si la lectura en vivo está vacía, usamos el histórico de 6h
+            if ((!d || d.windSpeed === null || d.windSpeed === undefined) && red.datos6h && red.datos6h[marker.stationId]) {
+                const lecturasValidas = red.datos6h[marker.stationId].filter(p => typeof p.windSpeed === 'number');
+                if (lecturasValidas.length > 0) {
+                    d = lecturasValidas[lecturasValidas.length - 1];
+                }
+            }
             
             // --- FILTRADO DE BALIZAS POR FAVORITO Y SEGUIMIENTO ---
             const esFavBaliza = obtenerBalizasFavoritas().some(f => f.redId === redId && f.id === marker.stationId);
@@ -16692,18 +16794,19 @@ function inicializarMapaLeaflet() {
             const minAltitud = obtenerMinAltitudBalizas();
             const passAltitud = (minAltitud === 0) || (marker.stationAltitude >= minAltitud);
 
-            if (passFav && passSeg && passAltitud) {
-                if (!red.layerGroup.hasLayer(marker)) {
-                    red.layerGroup.addLayer(marker);
+            // --- FILTRADO POR TIEMPO MÁXIMO DE ACTUALIZACIÓN ---
+            const maxTiempo = obtenerMaxTiempoBalizas();
+            let passTiempo = true;
+            if (maxTiempo.minutos !== Infinity) {
+                if (!d || typeof d.ts !== 'number') {
+                    passTiempo = false;
+                } else {
+                    const antiguedadMin = (Date.now() - d.ts * 1000) / 60000;
+                    passTiempo = antiguedadMin <= maxTiempo.minutos;
                 }
-            } else {
-                if (red.layerGroup.hasLayer(marker)) {
-                    red.layerGroup.removeLayer(marker);
-                }
-                return;
             }
 
-            if (passFav && passSeg) {
+            if (passFav && passSeg && passAltitud && passTiempo) {
                 if (!red.layerGroup.hasLayer(marker)) {
                     red.layerGroup.addLayer(marker);
                 }
@@ -16711,7 +16814,7 @@ function inicializarMapaLeaflet() {
                 if (red.layerGroup.hasLayer(marker)) {
                     red.layerGroup.removeLayer(marker);
                 }
-                return; // Omitir el redibujado de detalles ya que ha sido filtrado
+                return; // Omitir el redibujado de la baliza al estar filtrada
             }
 
             // RESPALDO: Si la lectura en vivo está vacía, usamos el histórico de 6h
