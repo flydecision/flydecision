@@ -6692,7 +6692,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                     ⛅ <a href='https://meteo-parapente.com/#/${latitud},${longitud},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
 
-                    ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
+                    ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
 
                     ⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${latitud}/${longitud}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a><br>
 
@@ -14507,7 +14507,7 @@ function inicializarMapaLeaflet() {
 
                             ⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
 
-                            ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
+                            ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
 
                             ⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a><br>
 
@@ -14791,7 +14791,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">${t('mapa.coordenadasMedias')}<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
-                        <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+                        <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                         <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
@@ -14993,7 +14993,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">${t('mapa.coordenadasMedias')}<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
-                        <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+                        <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                         <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
@@ -15203,7 +15203,7 @@ function inicializarMapaLeaflet() {
                         <div style="margin-bottom: 5px;">${t('mapa.coordenadasMedias')}<br><b>${lat.toFixed(4)}, ${lon.toFixed(4)}</b></div>
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
-                        <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
+                        <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                         <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
@@ -15580,7 +15580,7 @@ function inicializarMapaLeaflet() {
                     <div style="margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">${t('mapa.labelOrientacion')} ${SVGorientaciones} <b>${escapeHtml(traducirCadenaOrientacion(orientacion))}</b></div>
                     <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
-                    <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodel/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
+                    <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                     <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                     
@@ -16309,8 +16309,8 @@ function inicializarMapaLeaflet() {
             datos6h: null,
             fetched6hAt: 0,
             intervalo: null,
-            umbralAmarilloMin: 90,
-            umbralRojoMin: 120,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
             urlWeb: (id) => `https://www.meteo.cat/observacions/xema/dades?codi=${id}`
         },
         'meteogalicia': {
@@ -16330,8 +16330,8 @@ function inicializarMapaLeaflet() {
             datos6h: null,
             fetched6hAt: 0,
             intervalo: null,
-            umbralAmarilloMin: 30,
-            umbralRojoMin: 45,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
             urlWeb: (id) => `https://www.meteogalicia.gal/web/observacion/rede-meteoroloxica?idEstacion=${id}`
         },
         'aemet': {
@@ -16351,8 +16351,8 @@ function inicializarMapaLeaflet() {
             datos6h: null,
             fetched6hAt: 0,
             intervalo: null,
-            umbralAmarilloMin: 90,
-            umbralRojoMin: 120,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
             urlWeb: (id) => `https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=arn&l=${id}&w=0&datos=img&x=h24&f=vel_viento`
         },
         'meteoclimatic': {
@@ -16372,8 +16372,8 @@ function inicializarMapaLeaflet() {
             datos6h: null,
             fetched6hAt: 0,
             intervalo: null,
-            umbralAmarilloMin: 40,
-            umbralRojoMin: 60,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
             urlWeb: (id) => `https://www.meteoclimatic.net/perfil/${id}`
         },
         'holfuy': {
@@ -16393,8 +16393,8 @@ function inicializarMapaLeaflet() {
             datos6h: null,
             fetched6hAt: 0,
             intervalo: null,
-            umbralAmarilloMin: 30,
-            umbralRojoMin: 45,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
             urlWeb: (id) => {
                 // Si el ID empieza por 's' o 'S', se la quitamos para la URL
                 const idLimpio = id.toLowerCase().startsWith('s') ? id.substring(1) : id;
@@ -16417,8 +16417,8 @@ function inicializarMapaLeaflet() {
             datos6h: null,
             fetched6hAt: 0,
             intervalo: null,
-            umbralAmarilloMin: 30,
-            umbralRojoMin: 45
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90
         },
         'pioupiou': {
             id: 'pioupiou',
@@ -16436,8 +16436,8 @@ function inicializarMapaLeaflet() {
             datos6h: null,
             fetched6hAt: 0,
             intervalo: null,
-            umbralAmarilloMin: 30,
-            umbralRojoMin: 45,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
             urlWeb: (id) => `https://www.openwindmap.org/windbird-${id}`
         },
         // 'ffvl': {
@@ -16476,69 +16476,69 @@ function inicializarMapaLeaflet() {
             datos6h: null,
             fetched6hAt: 0,
             intervalo: null,
-            umbralAmarilloMin: 90,
-            umbralRojoMin: 120,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
             urlWeb: (id) => `https://metar-taf.com/?c=439933.86792.5&hl=${id}`
         },
         'noromet': {
-        id: 'noromet',
-        nombre: 'Noromet',
-        estaciones: [],
-        urlCache: 'https://flydecision.com/balizas_noromet_cache.json',
-        url6h:    'https://flydecision.com/balizas_noromet_6h.json',
-        checkboxId: 'checkboxBalizasNoromet',
-        lsKey: 'METEO_MAPA_CAPA_BALIZAS_NOROMET_VISIBLE',
-        layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
-        marcadores: {},
-        dibujadas: false,
-        datosCache: {},
-        ultimoJsonRaw: null,
-        datos6h: null,
-        fetched6hAt: 0,
-        intervalo: null,
-        umbralAmarilloMin: 30,
-        umbralRojoMin: 45,
-        urlWeb: (id) => `https://noromet.org/weatherstations/${id}`
+            id: 'noromet',
+            nombre: 'Noromet',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_noromet_cache.json',
+            url6h:    'https://flydecision.com/balizas_noromet_6h.json',
+            checkboxId: 'checkboxBalizasNoromet',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_NOROMET_VISIBLE',
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
+            urlWeb: (id) => `https://noromet.org/weatherstations/${id}`
         },
         'siar': {
-        id: 'siar',
-        nombre: 'SIAR',
-        estaciones: [],
-        urlCache: 'https://flydecision.com/balizas_siar_cache.json',
-        url6h:    'https://flydecision.com/balizas_siar_6h.json',
-        checkboxId: 'checkboxBalizasSiar',
-        lsKey: 'METEO_MAPA_CAPA_BALIZAS_SIAR_VISIBLE',
-        layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
-        marcadores: {},
-        dibujadas: false,
-        datosCache: {},
-        ultimoJsonRaw: null,
-        datos6h: null,
-        fetched6hAt: 0,
-        intervalo: null,
-        umbralAmarilloMin: 60,
-        umbralRojoMin: 90,
-        urlWeb: (id) => `https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio`
+            id: 'siar',
+            nombre: 'SIAR',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_siar_cache.json',
+            url6h:    'https://flydecision.com/balizas_siar_6h.json',
+            checkboxId: 'checkboxBalizasSiar',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_SIAR_VISIBLE',
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
+            urlWeb: (id) => `https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio`
         },
-        'lariojasiar': {
-        id: 'lariojasiar',
-        nombre: 'La Rioja SIAR',
-        estaciones: [],
-        urlCache: 'https://flydecision.com/balizas_lariojasiar_cache.json',
-        url6h:    'https://flydecision.com/balizas_lariojasiar_6h.json',
-        checkboxId: 'checkboxBalizasLaRiojaSiar',
-        lsKey: 'METEO_MAPA_CAPA_BALIZAS_LARIOJASIAR_VISIBLE',
-        layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
-        marcadores: {},
-        dibujadas: false,
-        datosCache: {},
-        ultimoJsonRaw: null,
-        datos6h: null,
-        fetched6hAt: 0,
-        intervalo: null,
-        umbralAmarilloMin: 60,
-        umbralRojoMin: 90,
-        urlWeb: (id) => `https://www.larioja.org/agricultura/es/informacion-agroclimatica/red-estaciones`
+            'lariojasiar': {
+            id: 'lariojasiar',
+            nombre: 'La Rioja SIAR',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_lariojasiar_cache.json',
+            url6h:    'https://flydecision.com/balizas_lariojasiar_6h.json',
+            checkboxId: 'checkboxBalizasLaRiojaSiar',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_LARIOJASIAR_VISIBLE',
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
+            urlWeb: (id) => `https://www.larioja.org/agricultura/es/informacion-agroclimatica/red-estaciones`
         }
 
     };    
