@@ -783,7 +783,8 @@
       "coordenadas": "Koordinaten",
       "altitud": "Höhe",
       "titleBalizas": "Windstationen",
-      "marcar_todas": "Alle markieren"
+      "marcar_todas": "Alle markieren",
+      "verEnTolomet": "Bake auf Tolomet ansehen"
     }
   },
 

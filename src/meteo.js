@@ -16356,6 +16356,7 @@ function inicializarMapaLeaflet() {
             umbralAmarilloMin: 30,
             umbralRojoMin: 45,
             urlWeb: (id) => 'https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#',
+            idProveedorTolomet: 'EU'
         },
         'meteonavarra': {
             id: 'meteonavarra',
@@ -16399,6 +16400,7 @@ function inicializarMapaLeaflet() {
                 // 3. Montar y devolver la URL completa
                 return `https://meteo.navarra.es/estaciones/estacion_datos_m.cfm?idestacion=${idLimpio}&fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}&p_10=1&p_10=2&p_10=3&p_10=4&p_10=11&p_10=6&p_10=7`;
             },
+            idProveedorTolomet: 'GN'
         },
         'meteocat': {
             id: 'meteocat',
@@ -16419,7 +16421,8 @@ function inicializarMapaLeaflet() {
             intervalo: null,
             umbralAmarilloMin: 60,
             umbralRojoMin: 90,
-            urlWeb: (id) => `https://www.meteo.cat/observacions/xema/dades?codi=${id}`
+            urlWeb: (id) => `https://www.meteo.cat/observacions/xema/dades?codi=${id}`,
+            idProveedorTolomet: 'CA'
         },
         'meteogalicia': {
             id: 'meteogalicia',
@@ -16440,7 +16443,8 @@ function inicializarMapaLeaflet() {
             intervalo: null,
             umbralAmarilloMin: 60,
             umbralRojoMin: 90,
-            urlWeb: (id) => `https://www.meteogalicia.gal/web/observacion/rede-meteoroloxica?idEstacion=${id}`
+            urlWeb: (id) => `https://www.meteogalicia.gal/web/observacion/rede-meteoroloxica?idEstacion=${id}`,
+            idProveedorTolomet: 'GA'
         },
         'aemet': {
             id: 'aemet',
@@ -16461,7 +16465,8 @@ function inicializarMapaLeaflet() {
             intervalo: null,
             umbralAmarilloMin: 60,
             umbralRojoMin: 90,
-            urlWeb: (id) => `https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=arn&l=${id}&w=0&datos=img&x=h24&f=vel_viento`
+            urlWeb: (id) => `https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=arn&l=${id}&w=0&datos=img&x=h24&f=vel_viento`,
+            idProveedorTolomet: 'AE'
         },
         'meteoclimatic': {
             id: 'meteoclimatic',
@@ -16508,6 +16513,7 @@ function inicializarMapaLeaflet() {
                 const idLimpio = id.toLowerCase().startsWith('s') ? id.substring(1) : id;
                 return `https://holfuy.com/en/weather/${idLimpio}`;
             },
+            idProveedorTolomet: 'HO'
         },
         'meteofrance': {
             id: 'meteofrance',
@@ -16526,7 +16532,8 @@ function inicializarMapaLeaflet() {
             fetched6hAt: 0,
             intervalo: null,
             umbralAmarilloMin: 60,
-            umbralRojoMin: 90
+            umbralRojoMin: 90,
+            idProveedorTolomet: 'MF'
         },
         'pioupiou': {
             id: 'pioupiou',
@@ -16566,7 +16573,8 @@ function inicializarMapaLeaflet() {
         //     intervalo: null,
         //     umbralAmarilloMin: 30,
         //     umbralRojoMin: 45,
-        //     urlWeb: (id) => `https://www.balisemeteo.com/balise.php?idBalise=${id}`
+        //     urlWeb: (id) => `https://www.balisemeteo.com/balise.php?idBalise=${id}`,
+        //     idProveedorTolomet: 'FFVL'
         // },
         'metar': {
             id: 'metar',
@@ -17060,6 +17068,17 @@ function inicializarMapaLeaflet() {
         let webLink = '—';
         let urlFinal = null;
 
+        // Comprobamos si esta red tiene equivalente en Tolomet
+        const prefijoTolomet = red.idProveedorTolomet; 
+
+        const botonTolometHTML = prefijoTolomet ? `
+            <a href="https://tolomet.app/station/${prefijoTolomet}-${marker.stationId}" 
+            onclick="abrirLinkExterno(this.href); return false;" 
+            title="${t('mapa.balizas.verEnTolomet')}"  
+            style="display: flex; align-items: center; text-decoration: none;">
+                <img src="/icons/icono_tolomet.webp" alt="Tolomet" style="width: 20px; height: 20px; vertical-align: middle; border-radius: 4px;">
+            </a>` : '';
+
         // 1. Prioridad A: Usar el patrón configurado en REDES_BALIZAS
         if (typeof red.urlWeb === 'function') {
             urlFinal = red.urlWeb(marker.stationId);
@@ -17142,9 +17161,14 @@ function inicializarMapaLeaflet() {
                             ⚪ ${t('mapa.balizas.sin_datos_recientes', { defaultValue: 'Sin datos recientes' })}
                         </small>
                         
-                        <button class="btn-info btn-inline" data-tippy-content="${tooltipSeguro}" style="background: transparent; border: none; padding: 0; margin-left: 10px; cursor: pointer; display: flex; flex-shrink: 0; outline: none;">
-                            <img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-                        </button>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-left: 10px; flex-shrink: 0;">
+
+                            ${botonTolometHTML}
+
+                            <button class="btn-info btn-inline" data-tippy-content="${tooltipSeguro}" style="background: transparent; border: none; padding: 0; cursor: pointer; display: flex; outline: none;">
+                                <img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -17218,10 +17242,15 @@ function inicializarMapaLeaflet() {
                     </span>
                 </small>
                 
-                <!-- Botón Info Dinámico con datos del array -->
-                <button class="btn-info btn-inline" data-tippy-content="${tooltipSeguro}" style="background: transparent; border: none; padding: 0; margin-left: 10px; cursor: pointer; display: flex; flex-shrink: 0; outline: none;">
-                    <img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
-                </button>
+                <div style="display: flex; align-items: center; gap: 8px; margin-left: 10px; flex-shrink: 0;">
+
+                    ${botonTolometHTML}
+
+                    <!-- Botón Info Dinámico con datos del array -->
+                    <button class="btn-info btn-inline" data-tippy-content="${tooltipSeguro}" style="background: transparent; border: none; padding: 0; cursor: pointer; display: flex; outline: none;">
+                        <img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+                    </button>
+                </div>
                 
             </div>
         `;

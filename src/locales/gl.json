@@ -783,7 +783,8 @@
       "coordenadas": "Coordenadas",
       "altitud": "Altitude",
       "titleBalizas": "Balizas de vento",
-      "marcar_todas": "Marcar todas"
+      "marcar_todas": "Marcar todas",
+      "verEnTolomet": "Ver baliza en Tolomet"
     }
   },
 
