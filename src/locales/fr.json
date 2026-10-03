@@ -785,7 +785,8 @@
       "coordenadas": "Coordonnées",
       "altitud": "Altitude",
       "titleBalizas": "Balises de vent",
-      "marcar_todas": "Tout sélectionner"
+      "marcar_todas": "Tout sélectionner",
+      "verEnTolomet": "Voir la balise sur Tolomet"
     }
   },
 

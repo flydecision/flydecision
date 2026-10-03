@@ -785,7 +785,8 @@
       "coordenadas": "Coordinates",
       "altitud": "Altitude",
       "titleBalizas": "Wind beacons",
-      "marcar_todas": "Select all"
+      "marcar_todas": "Select all",
+      "verEnTolomet": "View beacon on Tolomet"
     }
   },
 
