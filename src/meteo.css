@@ -4139,7 +4139,7 @@ h3 {
     width: fit-content !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    margin-bottom: 9px !important;
+    margin-bottom: 5px !important;
     margin-top: 9px !important;
     padding: 5px 5px !important;
     background-color: transparent !important;
@@ -4157,7 +4157,8 @@ h3 {
 .control-ultimovuelo-container,
 .control-actividad-mapa-container,
 .control-altitudbalizas-container,
-.control-tiempobalizas-container {  
+.control-tiempobalizas-container,
+.control-orientacion-container {  
     width: 96% !important;      /* Ocupar el 95% de la anchura de su contenedor padre */
     margin-left: auto !important;  /* Centrado perfecto horizontal */
     margin-right: auto !important; /* Centrado perfecto horizontal */

@@ -1090,22 +1090,27 @@
 			     title="Mostrar solo las balizas con una altitud mayor o igual a la cifra seleccionada">
 				<label for="sliderAltitudBalizas" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.AltitudBalizas">Altitud balizas >= </label><span id="valorAltitudBalizasTexto">0 m</span>
 				<span class="chip-sesion-volatil" 
-				      style="font-weight:normal; font-size:0.75em; color:#6c757d; background:#eef1f4; border:1px solid #dce1e6; padding:1px 6px; border-radius:10px; margin-left:5px; vertical-align:1px;" 
+				      style="font-weight:normal; font-size:0.75em; color:#6c757d; background:#eef1f4; border:1px solid #dce1e6; padding:1px 0px; border-radius:10px; margin-left:0px; vertical-align:1px;" 
 				      data-i18n="[title]mapa.titleSesion;mapa.sesion" 
 				      title="Filtro no memorizado: no se guarda aunque tengas activado recordar filtros">(sesión)</span>
 				<input type="range" id="sliderAltitudBalizas" min="0" max="30" value="0" step="1" style="width:98%;">
 			</div>
 
 			<!-- 3. Rosa de los vientos (Volátil / Sesión) -->
-			<div class="control-orientacion-container" style="flex:1; padding:4px !important; border-radius:8px; border:1.5px solid transparent; box-sizing:border-box; transition:all 0.2s;">
-				<div style="font-weight:bold; margin-bottom:5px; text-align:center; width:100%;">
-					<span data-i18n="mapa.orientacion">Orientación:</span>
+			<div class="control-orientacion-container" 
+				style="display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; max-width: 100% !important; box-sizing: border-box !important; padding: 4px 6px !important; border-radius: 8px !important; transition: all 0.2s;">
+				
+				<!-- Columna Izquierda: Ocupa todo el espacio disponible, centrada horizontal y verticalmente -->
+				<div style="flex: 1 1 0 !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; padding-right: 8px !important;">
+					<span style="font-weight: bold; line-height: 1.2;" data-i18n="mapa.orientacion">Orientación:</span>
 					<span class="chip-sesion-volatil" 
-					      style="font-weight:normal; font-size:0.75em; color:#6c757d; background:#eef1f4; border:1px solid #dce1e6; padding:1px 6px; border-radius:10px; margin-left:5px; vertical-align:1px;" 
-					      data-i18n="[title]mapa.titleSesion;mapa.sesion" 
-					      title="Filtro no memorizado: no se guarda aunque tengas activado recordar filtros">(sesión)</span>
+						style="font-weight: normal; font-size: 0.75em; color: #6c757d; background: #eef1f4; border: 1px solid #dce1e6; padding: 1px 0px; border-radius: 10px; margin-top: 3px;" 
+						data-i18n="[title]mapa.titleSesion;mapa.sesion" 
+						title="Filtro no memorizado: no se guarda aunque tengas activado recordar filtros">(sesión)</span>
 				</div>
-				<div id="rosaDeLosVientos">
+
+				<!-- Columna Derecha: Rosa pegada totalmente a la derecha -->
+				<div id="rosaDeLosVientos" style="margin: 0 !important; margin-left: auto !important; flex-shrink: 0 !important;">
 					<label class="filtro-orientacion" data-orientacion="NO" data-i18n="[title]orientaciones.noroeste"><input type="checkbox" class="filtro-orientacion-checkbox" value="NO"><span data-i18n="orientaciones.NO">NO</span></label>
 					<label class="filtro-orientacion" data-orientacion="N"  data-i18n="[title]orientaciones.norte">  <input type="checkbox" class="filtro-orientacion-checkbox" value="N"> <span data-i18n="orientaciones.N">N</span></label>
 					<label class="filtro-orientacion" data-orientacion="NE" data-i18n="[title]orientaciones.noreste"><input type="checkbox" class="filtro-orientacion-checkbox" value="NE"><span data-i18n="orientaciones.NE">NE</span></label>
@@ -1118,6 +1123,7 @@
 					<label class="filtro-orientacion" data-orientacion="S"  data-i18n="[title]orientaciones.sur">    <input type="checkbox" class="filtro-orientacion-checkbox" value="S"> <span data-i18n="orientaciones.S">S</span></label>
 					<label class="filtro-orientacion" data-orientacion="SE" data-i18n="[title]orientaciones.sureste"> <input type="checkbox" class="filtro-orientacion-checkbox" value="SE"><span data-i18n="orientaciones.SE">SE</span></label>
 				</div>
+
 			</div>
 				
 		</div>
