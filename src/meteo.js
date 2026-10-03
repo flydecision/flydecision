@@ -26,24 +26,24 @@ let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 28;
 // Estructura: [modelo][horizonte_horas] -> { vm_m, vm_b, racha_m, racha_b }
 const CORRECCIONES_ESTADISTICAS = {
     'AromeHD': {
-        '6':   { vm_m: 0.92, vm_b: 2.7, racha_m: 0.59, racha_b: 3.3 },
-        '24':  { vm_m: 0.94, vm_b: 2.5, racha_m: 0.59, racha_b: 3.8 }
+        '6':   { vm_m: 0.92, vm_b: 2.7, racha_m: 0.60, racha_b: 3.0 },
+        '24':  { vm_m: 0.94, vm_b: 2.5, racha_m: 0.59, racha_b: 3.7 }
     },
     'ICON-EU': {
-        '6':   { vm_m: 0.74, vm_b: 4.1, racha_m: 0.47, racha_b: 4.6 },
-        '24':  { vm_m: 0.78, vm_b: 3.7, racha_m: 0.47, racha_b: 4.0 },
-        '48':  { vm_m: 0.75, vm_b: 3.9, racha_m: 0.47, racha_b: 4.2 },
-        '72':  { vm_m: 0.75, vm_b: 4.0, racha_m: 0.46, racha_b: 4.4 }
+        '6':   { vm_m: 0.75, vm_b: 4.0, racha_m: 0.48, racha_b: 4.3 },
+        '24':  { vm_m: 0.78, vm_b: 3.7, racha_m: 0.48, racha_b: 3.9 },
+        '48':  { vm_m: 0.76, vm_b: 3.8, racha_m: 0.47, racha_b: 4.1 },
+        '72':  { vm_m: 0.75, vm_b: 4.0, racha_m: 0.47, racha_b: 4.2 }
     },
     'ECMWF': {
-        '6':   { vm_m: 0.48, vm_b: 5.7, racha_m: 0.66, racha_b: -1.5 },
-        '24':  { vm_m: 0.52, vm_b: 4.4, racha_m: 0.59, racha_b: 0.9 },
-        '48':  { vm_m: 0.51, vm_b: 4.5, racha_m: 0.60, racha_b: 0.8 },
+        '6':   { vm_m: 0.48, vm_b: 5.6, racha_m: 0.65, racha_b: -1.3 },
+        '24':  { vm_m: 0.52, vm_b: 4.4, racha_m: 0.58, racha_b: 0.9 },
+        '48':  { vm_m: 0.51, vm_b: 4.4, racha_m: 0.59, racha_b: 1.0 },
         '72':  { vm_m: 0.50, vm_b: 4.7, racha_m: 0.58, racha_b: 1.2 },
-        // TODO: +96h, +120h y +144h usan provisionalmente +72h hasta tener muestras suficientes en el estudio
-        '96':  { vm_m: 0.50, vm_b: 4.7, racha_m: 0.58, racha_b: 1.2 },
-        '120': { vm_m: 0.50, vm_b: 4.7, racha_m: 0.58, racha_b: 1.2 },
-        '144': { vm_m: 0.50, vm_b: 4.7, racha_m: 0.58, racha_b: 1.2 }
+        '96':  { vm_m: 0.48, vm_b: 4.0, racha_m: 0.60, racha_b: -1.3 },
+        '120': { vm_m: 0.58, vm_b: 4.4, racha_m: 0.53, racha_b: 1.0 },
+        // +144h (+6 días) usa provisionalmente +120h hasta acumular muestras suficientes
+        '144': { vm_m: 0.58, vm_b: 4.4, racha_m: 0.53, racha_b: 1.0 }
     }
 };
 // ─────────────────────────────────────────────────────────────────────
@@ -7625,8 +7625,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
                         td.dataset.vRaw = velOrigRound;
                         td.dataset.vCorr = velCorrRound;
-                        td.dataset.cRaw = (velOrigRound < VelocidadMin || (velOrigRound >= VelocidadIdeal && velOrigRound < VelocidadMax)) ? "fondo-naranja" : (velOrigRound <= velocidadTolerableSuperior ? "fondo-verde" : "fondo-rojo");
-                        td.dataset.cCorr = (velCorrRound < VelocidadMin || (velCorrRound >= VelocidadIdeal && velCorrRound < VelocidadMax)) ? "fondo-naranja" : (velCorrRound <= velocidadTolerableSuperior ? "fondo-verde" : "fondo-rojo");
+                        td.dataset.cRaw = (velOrigRound < VelocidadMin) ? "fondo-naranja" : (velOrigRound <= velocidadTolerableSuperior ? "fondo-verde" : (velOrigRound < VelocidadMax ? "fondo-naranja" : "fondo-rojo"));
+                        td.dataset.cCorr = (velCorrRound < VelocidadMin) ? "fondo-naranja" : (velCorrRound <= velocidadTolerableSuperior ? "fondo-verde" : (velCorrRound < VelocidadMax ? "fondo-naranja" : "fondo-rojo"));
 
                         filaVel.appendChild(td);
                     }
