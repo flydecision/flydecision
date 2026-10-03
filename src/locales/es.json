@@ -145,6 +145,8 @@
       "cin": "CIN (J/kg): Inhibición Convectiva (Convective INhibition)",
       "3000mECMWF": "Viento a 3000 m de altitud (km/h). Datos del ECMWF calculados por interpolación y ajuste de geopotencial.",
       "Direccion3000mECMWF": "Dirección del viento a 3000 m de altitud (km/h). Datos del ECMWF calculados por interpolación y ajuste de geopotencial.",
+      "2000mECMWF": "Viento a 2000 m de altitud (km/h). Datos del ECMWF calculados por interpolación y ajuste de geopotencial.",
+      "Direccion2000mECMWF": "Dirección del viento a 2000 m de altitud (km/h). Datos del ECMWF calculados por interpolación y ajuste de geopotencial.",
       "1500mECMWF": "Viento a 1500 m de altitud (km/h). Datos del ECMWF calculados por interpolación y ajuste de geopotencial.",
       "Direccion1500mECMWF": "Dirección del viento a 1500 m de altitud (km/h). Datos del ECMWF calculados por interpolación y ajuste de geopotencial.",
       "1000mECMWF": "Viento a 1000 m de altitud (km/h). Datos del ECMWF calculados por interpolación y ajuste de geopotencial.",

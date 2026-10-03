@@ -145,6 +145,8 @@
       "cin": "CIN (J/kg): Inhibizio Konbektiboa (Convective INhibition)",
       "3000mECMWF": "Haizea 3000 m-ko altitudetan (km/h). ECMWFren datuak interpolazioz eta doikuntza geopotentzialez kalkulatuak.",
       "Direccion3000mECMWF": "Haizearen norabidea 3000 m-ko altitudetan (km/h). ECMWFren datuak interpolazioz eta doikuntza geopotentzialez kalkulatuak.",
+      "2000mECMWF": "Haizea 2000 m-ko altitudetan (km/h). ECMWFren datuak interpolazioz eta doikuntza geopotentzialez kalkulatuak.",
+      "Direccion2000mECMWF": "Haizearen norabidea 2000 m-ko altitudetan (km/h). ECMWFren datuak interpolazioz eta doikuntza geopotentzialez kalkulatuak.",
       "1500mECMWF": "Haizea 1500 m-ko altitudetan (km/h). ECMWFren datuak interpolazioz eta doikuntza geopotentzialez kalkulatuak.",
       "Direccion1500mECMWF": "Haizearen norabidea 1500 m-ko altitudetan (km/h). ECMWFren datuak interpolazioz eta doikuntza geopotentzialez kalkulatuak.",
       "1000mECMWF": "Haizea 1000 m-ko altitudetan (km/h). ECMWFren datuak interpolazioz eta doikuntza geopotentzialez kalkulatuak.",
