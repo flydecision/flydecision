@@ -5395,6 +5395,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             overlay.innerHTML = `
                 <div style="
+                    position: relative;
                     width: 100%; max-width: 340px;
                     background: var(--color-background-primary, #fff);
                     border-radius: 16px;
@@ -5402,6 +5403,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     padding: 1.2rem 1.5rem;
                     display: flex; flex-direction: column;
                 ">
+                    <!-- Botón de Cerrar estándar (X) -->
+                    <button id="paso1-btn-cerrar" class="tippy-close-btn" style="
+                        position: absolute; top: 10px; right: 12px;
+                        background: none; border: none; font-size: 24px; line-height: 1;
+                        color: #888; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center;
+                    " title="${t('botones.cerrar', {defaultValue: 'Cerrar'})}">&times;</button>
+
                     <!-- Cabecera -->
                     <div style="text-align:center; margin-bottom: 1.75rem;">
                         <div style="font-size: 2.2rem; margin-bottom: 0.5rem;"><icon-despegue></icon-despegue></div>
@@ -5520,18 +5528,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             const cerrar = () => overlay.remove();
 
-            document.getElementById('paso1-btn-selec-mapa').addEventListener('click', () => {
-                cerrar();
-                activarEdicionFavoritosConMapa();
-            });
-
-            document.getElementById('paso1-btn-selec-lista').addEventListener('click', () => {
-                cerrar();
-                activarEdicionFavoritos();
-            });
-
-            document.getElementById('paso1-btn-mapa').addEventListener('click', () => {
-                // 1. Mostrar el spinner AL INSTANTE
+            // Función unificada para salir al mapa (usada por la X y por el botón explorar)
+            const accionExplorarMapa = () => {
                 mostrarLoading(0); 
 
                 cerrar();
@@ -5549,24 +5547,39 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (divMenu2Explorar) divMenu2Explorar.classList.remove('mode-editing');
 
                 if (!DATOS_METEO_CACHE) {
-                    // 🚀 NUEVO: 1. Cambiamos las clases CSS para ir al mapa
                     clicBotonMapa();
-
-                    // 🚀 NUEVO: 2. Damos un respiro de 50ms al navegador para que 
-                    // PINTE el mapa vacío y aplique el display:none a la tabla en pantalla.
                     setTimeout(() => {
                         construir_tabla(false, true).then(() => {
                             if (window.marcadoresCSVCargados) {
                                 ocultarLoading();
                             }
                         });
-                    }, 50); // Este setTimeout es la clave de la fluidez
-                    
+                    }, 50);
                 } else {
                     clicBotonMapa();
                     ocultarLoading(); 
                 }
+            };
+
+            // Evento para la nueva X de cerrar
+            document.getElementById('paso1-btn-cerrar').addEventListener('click', accionExplorarMapa);
+
+            // Cerrar también si se hace clic fuera de la tarjeta (en el fondo oscuro)
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) accionExplorarMapa();
             });
+
+            document.getElementById('paso1-btn-selec-mapa').addEventListener('click', () => {
+                cerrar();
+                activarEdicionFavoritosConMapa();
+            });
+
+            document.getElementById('paso1-btn-selec-lista').addEventListener('click', () => {
+                cerrar();
+                activarEdicionFavoritos();
+            });
+
+            document.getElementById('paso1-btn-mapa').addEventListener('click', accionExplorarMapa);
 
             document.getElementById('paso1-btn-guia').addEventListener('click', () => {
                 if (typeof abrirLinkExterno === 'function') {
@@ -5576,7 +5589,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             });
 
             document.getElementById('paso1-btn-importar').addEventListener('click', () => {
-                //cerrar();
                 importarConfiguracion();
             });
         };
