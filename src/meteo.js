@@ -16762,7 +16762,6 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
     function actualizarIconosBalizas(redId) {
-        // ESCUDO DE SEGURIDAD: Si el mapa aún no existe en esta sesión, salimos silenciosamente
         if (typeof map === 'undefined' || !map) return;
 
         const red = REDES_BALIZAS[redId];
@@ -16773,77 +16772,31 @@ function inicializarMapaLeaflet() {
         Object.values(red.marcadores).forEach(marker => {
             let d = red.datosCache[marker.stationId];
 
-            // RESPALDO: Si la lectura en vivo está vacía, usamos el histórico de 6h
+            // 1. RESPALDO: Si la lectura en vivo viene vacía, buscamos la última válida en el histórico de 6h
             if ((!d || d.windSpeed === null || d.windSpeed === undefined) && red.datos6h && red.datos6h[marker.stationId]) {
                 const lecturasValidas = red.datos6h[marker.stationId].filter(p => typeof p.windSpeed === 'number');
                 if (lecturasValidas.length > 0) {
                     d = lecturasValidas[lecturasValidas.length - 1];
                 }
             }
-            
-            // --- FILTRADO DE BALIZAS POR FAVORITO Y SEGUIMIENTO ---
-            const esFavBaliza = obtenerBalizasFavoritas().some(f => f.redId === redId && f.id === marker.stationId);
-            const esSegBaliza = obtenerBalizasSeguimiento().some(s => s.redId === redId && s.id === marker.stationId);
-            
-            const passFav = (filtroFavoritosBalizasMapa === 0) || (filtroFavoritosBalizasMapa === 1 && esFavBaliza);
-            const passSeg = (filtroSeguimientoBalizasMapa === 0) || (filtroSeguimientoBalizasMapa === 1 && esSegBaliza);
 
-            // --- FILTRADO POR ALTITUD ---
-            const minAltitud = obtenerMinAltitudBalizas();
-            const passAltitud = (minAltitud === 0) || (marker.stationAltitude >= minAltitud);
-
-            // --- FILTRADO POR TIEMPO MÁXIMO DE ACTUALIZACIÓN ---
-            const maxTiempo = obtenerMaxTiempoBalizas();
-            let passTiempo = true;
-            if (maxTiempo.minutos !== Infinity) {
-                if (!d || typeof d.ts !== 'number') {
-                    passTiempo = false;
-                } else {
-                    const antiguedadMin = (Date.now() - d.ts * 1000) / 60000;
-                    passTiempo = antiguedadMin <= maxTiempo.minutos;
-                }
-            }
-
-            if (passFav && passSeg && passAltitud && passTiempo) {
-                if (!red.layerGroup.hasLayer(marker)) {
-                    red.layerGroup.addLayer(marker);
-                }
-            } else {
-                if (red.layerGroup.hasLayer(marker)) {
-                    red.layerGroup.removeLayer(marker);
-                }
-                return; // Omitir el redibujado de la baliza al estar filtrada
-            }
-
-            // RESPALDO: Si la lectura en vivo está vacía, usamos el histórico de 6h
-            if ((!d || d.windSpeed === null || d.windSpeed === undefined) && red.datos6h && red.datos6h[marker.stationId]) {
-                const lecturasValidas = red.datos6h[marker.stationId].filter(p => typeof p.windSpeed === 'number');
-                if (lecturasValidas.length > 0) {
-                    d = lecturasValidas[lecturasValidas.length - 1];
-                }
-            }
-            
-            // 1. COMPROBAR SI ESTÁ OBSOLETA (> 3 horas)
+            // 2. EVALUAR SI ESTÁ INOPERATIVA (Sin datos, obsoleta > 3h o sensor congelado a 0)
             let balizaConDatosObsoletos = false;
-
             if (!d || typeof d.ts !== 'number') {
                 balizaConDatosObsoletos = true; 
             } else {
                 const ahoraTs = Date.now() / 1000;
                 const horasSinDatos = (ahoraTs - d.ts) / 3600;
-
                 if (horasSinDatos > 3) { 
                     balizaConDatosObsoletos = true;
                 }
             }
 
-            // 2. COMPROBAR SI ESTÁ CONGELADA (Todo ceros en las últimas 4h)
             let balizaCongelada = false;
             if (red.datos6h && red.datos6h[marker.stationId]) {
                 const lecturas = red.datos6h[marker.stationId];
                 const ahoraTs = Math.floor(Date.now() / 1000);
                 const desdeTs = ahoraTs - 4 * 3600; 
-                
                 const puntos4h = lecturas.filter(p => 
                     p.ts >= desdeTs && 
                     p.ts <= ahoraTs && 
@@ -16861,11 +16814,48 @@ function inicializarMapaLeaflet() {
                 }
             }
 
-            if (!red.layerGroup.hasLayer(marker)) {
-                red.layerGroup.addLayer(marker);
+            const balizaSinViento = (!d || d.windSpeed === null || d.windSpeed === undefined || isNaN(d.windSpeed));
+            const esInoperativa = balizaConDatosObsoletos || balizaCongelada || balizaSinViento;
+
+            // 3. EVALUACIÓN DE FILTROS
+            // A) Favoritos y Seguimiento
+            const esFavBaliza = obtenerBalizasFavoritas().some(f => f.redId === redId && f.id === marker.stationId);
+            const esSegBaliza = obtenerBalizasSeguimiento().some(s => s.redId === redId && s.id === marker.stationId);
+            const passFav = (filtroFavoritosBalizasMapa === 0) || (filtroFavoritosBalizasMapa === 1 && esFavBaliza);
+            const passSeg = (filtroSeguimientoBalizasMapa === 0) || (filtroSeguimientoBalizasMapa === 1 && esSegBaliza);
+
+            // B) Altitud
+            const minAltitud = obtenerMinAltitudBalizas();
+            const passAltitud = (minAltitud === 0) || (marker.stationAltitude >= minAltitud);
+
+            // C) Tiempo de actualización
+            const maxTiempo = obtenerMaxTiempoBalizas();
+            let passTiempo = true;
+            if (maxTiempo.minutos !== Infinity) {
+                // Si el filtro de tiempo está activo, NINGUNA baliza inoperativa / sin viento puede pasar
+                if (esInoperativa) {
+                    passTiempo = false;
+                } else {
+                    const antiguedadMin = (Date.now() - d.ts * 1000) / 60000;
+                    passTiempo = antiguedadMin <= maxTiempo.minutos;
+                }
             }
 
-            // A) CASO DE ERROR O DATOS OBSOLETOS -> CÍRCULO GRIS/ROJO
+            // 4. APLICAR VISIBILIDAD (Añadir o retirar del mapa)
+            if (passFav && passSeg && passAltitud && passTiempo) {
+                if (!red.layerGroup.hasLayer(marker)) {
+                    red.layerGroup.addLayer(marker);
+                }
+            } else {
+                if (red.layerGroup.hasLayer(marker)) {
+                    red.layerGroup.removeLayer(marker);
+                }
+                return; // Marcador excluido: no se pinta nada
+            }
+
+            // 5. PINTAR ICONOS (Solo llega aquí si ha pasado todos los filtros)
+
+            // A) Caso inoperativo (Solo se verá si el filtro de tiempo está en 'Todas')
             if (balizaConDatosObsoletos || balizaCongelada) {
                 const tituloGris = balizaConDatosObsoletos 
                     ? "Datos obsoletos (>3h)" 
@@ -16885,16 +16875,12 @@ function inicializarMapaLeaflet() {
                     popupAnchor: [0, 25] 
                 }));
 
-                // 🚀 HACK DE REDIBUJADO DIRECTO (Para celdas inactivas)
-                if (marker._icon) {
-                    marker._icon.innerHTML = htmlObsoleto;
-                }
-
+                if (marker._icon) marker._icon.innerHTML = htmlObsoleto;
                 if (marker.isPopupOpen()) pintarPopupBaliza(marker);
                 return; 
             }
 
-            if (d.windSpeed === null || d.windSpeed === undefined) {
+            if (balizaSinViento) {
                 const svgPuntoRojo = `<svg viewBox="0 0 22 22" style="display: block; width: 11px; height: 11px;"><circle cx="11" cy="11" r="9" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/></svg>`;
                 
                 const htmlSinDatos = `
@@ -16909,16 +16895,12 @@ function inicializarMapaLeaflet() {
                     popupAnchor: [0, 25] 
                 }));
 
-                // 🚀 HACK DE REDIBUJADO DIRECTO (Para celdas sin datos)
-                if (marker._icon) {
-                    marker._icon.innerHTML = htmlSinDatos;
-                }
-
+                if (marker._icon) marker._icon.innerHTML = htmlSinDatos;
                 if (marker.isPopupOpen()) pintarPopupBaliza(marker);
                 return;
             }
 
-            // B) CASO VÁLIDO -> DIBUJAR ICONOS
+            // B) Caso operativo válido -> Flecha + cifras de viento
             const rotacion = (d.windDirection ?? 0) + 180;
             const estadoMapa = calcularEstadoActualizacionBaliza(d, redId);
             
@@ -16934,7 +16916,6 @@ function inicializarMapaLeaflet() {
             let htmlBaliza = "";
 
             if (chkOcultarValoresBalizas) {
-                // Modo compacto (Conserva las proporciones de la caja para un anclaje idéntico del popup)
                 htmlBaliza = `
                     <div style="width: 80px; height: 46px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; margin-left: -27px; margin-top: 18px">
                         <div style="height: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
@@ -16943,7 +16924,6 @@ function inicializarMapaLeaflet() {
                         <div style="height: 20px; margin-top: -14px;"></div>
                     </div>`;
             } else {
-                // Modo normal (con cifras de velocidad de viento)
                 const colorVientoMapa = estadoMapa.esAntiguo ? '#95a5a6' : '#0078d4';
                 const colorRachaMapa  = estadoMapa.esAntiguo ? '#95a5a6' : '#e74c3c';
 
@@ -16963,7 +16943,6 @@ function inicializarMapaLeaflet() {
                     </div>`;
             }
 
-            // Actualizamos en memoria
             marker.setIcon(L.divIcon({ 
                 html: htmlBaliza, 
                 className: 'custom-div-icon', 
@@ -16971,11 +16950,7 @@ function inicializarMapaLeaflet() {
                 popupAnchor: [0, 25] 
             }));
 
-            // EL HACK DE REDIBUJADO DIRECTO: Si la baliza está visible en pantalla, forzamos al navegador a repintar su HTML interno de inmediato
-            if (marker._icon) {
-                marker._icon.innerHTML = htmlBaliza;
-            }
-
+            if (marker._icon) marker._icon.innerHTML = htmlBaliza;
             if (marker.isPopupOpen()) pintarPopupBaliza(marker);
         });
 
