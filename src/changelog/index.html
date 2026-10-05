@@ -150,6 +150,30 @@ footer { text-align: center; font-size: 0.8rem; color: #777; margin-top: 20px; m
 
 <!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
 <div class="release">
+<div class="v-header"><span class="v-number">v5.0.2</span><span class="v-date">5 Oct 2026</span></div>
+
+<div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
+<ul class="lista">
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Pronóstico aumentado de 4 a 7 días.</b></span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Algoritmo de corrección estadística v2.0</b>. Calibración mejorada por fórmulas de regresión lineal que tienen en cuenta la dinámica del viento y rachas a 7 días (AromeHD, ICON-EU y ECMWF) adaptada según las horas de antelación del pronóstico (+6h, +24h, +48h...). Nota: el estudio sigue en marcha, ya con más de 100.000 datos, por lo que seguiremos implementando la mejora del algoritmo.</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc">En el botón desplegable opcional de viento sinóptico ECMWF, calculado por interpolación de la altura geopotencial, se ha añadido un <b>nuevo grupo con los 3 valores originales de la celda ECMWF</b>, viento medio 10m, racha 10 m (movido del grupo superior, ya que era un valor original y no interpolado) y dirección 10 m. Aunque estos valores corresponden a la altitud media de la celda, aportan información adicional, son más precisos que el valor interpolado a la altitud del despegue (por resultados del estudio) y es más coherente así su organización.</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Filtro de balizas según su frescura de datos</b> (tiempo desde la última actualización).</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Enlace a Tolomet (<a href="https://tolomet.app/">tolomet.app</a>) en el popup de cada baliza</b>, para poder acceder directamente a dicha baliza en esa aplicación. Tolomet es una recomendable aplicación gratuita con muchísimas redes de balizas (algunas no disponibles en Fly Decision), ofrece mucha información adicional de las balizas, además de una actualización normalmente algo antes que Fly Decision, ya que hace peticiones de datos directas y no en base a una frecuencia automática. Está trasladando la funcionalidad de su veterana app Android a una nueva app y web con todo un desarrollo renovado que ya es plenamente funcional.</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc">6 despegues (La Estiviacha, Garmo d'o Pico, Baldetosas, Taillón, Ipizte y Erga).</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc">Red de <b>balizas de viento La Rioja SIAR.</b></span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Ampliación del estudio estadístico en ejecución</b>. Añadido al estudio comparativo (pronósticos vs realidad balizas) los nuevos 3 días de pronóstico y también el análisis para determinar si es más exacto el valor original ECMWF de viento medio 10 m o el valor interpolado por geopotencial. En unos meses tendremos datos estadísticamente significativos para comparar y mejorar el algoritmo de corrección actual.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc"><b>Eliminada fila de viento y dirección interpolados a la altitud real por geopotencial y sustituida por una nueva fila de cota 2000 m</b> entre 1500 y 3000 m. La razón es que, tras más de 100.000 datos del estudio estadístico en marcha, se ha visto que es más exacto el dato original del modelo ECMWF de viento medio 10 m y dirección 10 m, por lo que la corrección estadística opcional se aplica a partir de ahora a esos datos y además, con las nuevas fórmulas actualizadas de regresión lineal.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">Ajustado fin de horario diurno automático de septiembre y octubre a las 21h en lugar de a las 20h.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">La URL directa a balizas (flydecision.com/balizas) ahora activa automáticamente la opción Ajustes > Recordar última vista del mapa, lo que facilita que el acceso directo vaya a la última vista automáticamente.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">El enlace que hay en cada despegue o grupo de despegues o notas del mapa a Multimodel de Meteoblue ahora apunta a su variante Multimodel ensemble, que ofrece más datos y más horizonte temporal.</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">Mejorado funcionamiento del área de toque para alternar entre valores originales de viento medio 10 m / racha y sus valores corregidos estadísticamente (solo funciona si está activado el checkbox de Aplicar corrección estadística).</span></li>
+</ul>
+</div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
 <div class="v-header"><span class="v-number">v4.11.0</span><span class="v-date">20 Sep 2026</span></div>
 
 <div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
