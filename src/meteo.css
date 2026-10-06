@@ -1961,9 +1961,9 @@ span.grados {
 }
 
 /* Fin de semana en estado de reposo */
-.pip-dia-btn.dia-fin-semana:not(.pip-activo) {
-    background-color: #ffeddb;
-}
+/* .pip-dia-btn.dia-fin-semana:not(.pip-activo) {
+    background-color: #f3f3f3;
+} */
 
 /* Distinción visual sutil para los días 5, 6 y 7 (modelo ECMWF) */
 /* .pip-dia-btn.dia-extendido-ecmwf:not(.pip-activo) {
@@ -1971,6 +1971,31 @@ span.grados {
     border-color: #aaa;
     background: #fafafa;
 } */
+
+/* Barra de calidad de vuelo (AM/PM) en botones del día */
+.pip-dia-btn {
+    position: relative;
+    padding-bottom: 7px !important; /* Espacio para la barrita inferior */
+}
+
+.pip-dia-linea-calidad {
+    position: absolute;
+    bottom: 2px;
+    left: 4px;
+    right: 4px;
+    height: 4px;
+    display: flex;
+    gap: 1.5px; /* Separación sutil entre mañana y tarde */
+    border-radius: 2px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.pip-dia-linea-calidad span {
+    flex: 1;
+    height: 100%;
+    border-radius: 1px;
+}
 
 .btn-distancia-buscador {
     border: 1.5px solid #ccc;
