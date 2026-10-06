@@ -16612,7 +16612,7 @@ function inicializarMapaLeaflet() {
             umbralRojoMin: 90,
             urlWeb: (id) => `https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio`
         },
-            'lariojasiar': {
+        'lariojasiar': {
             id: 'lariojasiar',
             nombre: 'La Rioja SIAR',
             estaciones: [],
@@ -16631,6 +16631,47 @@ function inicializarMapaLeaflet() {
             umbralAmarilloMin: 60,
             umbralRojoMin: 90,
             urlWeb: (id) => `https://www.larioja.org/agricultura/es/informacion-agroclimatica/red-estaciones`
+        },
+        'suremet': {
+            id: 'suremet',
+            nombre: 'Suremet',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_suremet_cache.json',
+            url6h:    'https://flydecision.com/balizas_suremet_6h.json',
+            checkboxId: 'checkboxBalizasSuremet',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_SUREMET_VISIBLE',
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
+            urlWeb: (id) => `https://suremet.es/estacion.php?id=${id}`
+        },
+        'weatherunderground': {
+            id: 'weatherunderground',
+            nombre: 'WeatherUnderground',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_weatherunderground_cache.json',
+            url6h:    'https://flydecision.com/balizas_weatherunderground_6h.json',
+            checkboxId: 'checkboxBalizasWeatherUnderground',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_WEATHERUNDERGROUND_VISIBLE',
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
+            urlWeb: (id) => `https://www.wunderground.com/hourly/${id}`,
+            idProveedorTolomet: 'WU'
         }
 
     };    
