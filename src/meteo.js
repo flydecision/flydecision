@@ -6410,6 +6410,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             return nodo;
         };
 
+        // Función para obtener el nombre exacto del modelo según la hora
+        const obtenerEtiquetaModelo = (i, esEcmwf, hData) => {
+            if (esEcmwf) return "ECMWF";
+            const m = (hData && Array.isArray(hData.model_source)) ? hData.model_source[i] : null;
+            if (m === 'AromeHD') return "Arome-HD";
+            if (m === 'ICON-EU') return "ICON-EU";
+            // Respaldo de seguridad si faltase el dato en esa hora concreta:
+            return (i <= 48) ? "Arome-HD" : "ICON-EU";
+        };
+
         // 🔃 Bucle principal que recorre cada despegue
         for (let idx = 0; idx < despegues.length; idx++) {
             const d = despegues[idx];
@@ -7439,7 +7449,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         renderEcmwfData(filaTemperatura, emptyArr, () => "", "9px", () => "");
                     }
 
-					// ⚪ Velocidades alturas 80, 120, 100 m *****************************
+					// ⚪ Velocidades alturas 20, 50, 100 m *****************************
 
                     if (chkMostrarVientoAlturas) {
                         
@@ -7625,7 +7635,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         td.textContent = velocidad;
 
-                        const etiquetaModelo = esDatoEcmwf ? "ECMWF" : "Arome-HD / ICON-EU";
+                        const etiquetaModelo = obtenerEtiquetaModelo(i, esDatoEcmwf, hourlyData);
 
                         if (chkAplicarCorreccionEstadistica) {
                             td.style.fontWeight = "bold";
@@ -7704,7 +7714,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         td.textContent = racha;
 
-                        const etiquetaModelo = esDatoEcmwf ? "ECMWF" : "Arome-HD / ICON-EU";
+                        const etiquetaModelo = obtenerEtiquetaModelo(i, esDatoEcmwf, hourlyData);
 
                         if (chkAplicarCorreccionEstadistica) {
                             td.style.fontWeight = "bold";
@@ -16641,8 +16651,10 @@ function inicializarMapaLeaflet() {
             id: 'suremet',
             nombre: 'Suremet',
             estaciones: [],
-            urlCache: 'https://flydecision.com/balizas_suremet_cache.json',
-            url6h:    'https://flydecision.com/balizas_suremet_6h.json',
+            //urlCache: 'https://flydecision.com/balizas_suremet_cache.json',
+            //url6h:    'https://flydecision.com/balizas_suremet_6h.json',
+            urlCache: null, 
+            url6h:    null, 
             checkboxId: 'checkboxBalizasSuremet',
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_SUREMET_VISIBLE',
             layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
@@ -16661,8 +16673,10 @@ function inicializarMapaLeaflet() {
             id: 'weatherunderground',
             nombre: 'WeatherUnderground',
             estaciones: [],
-            urlCache: 'https://flydecision.com/balizas_weatherunderground_cache.json',
-            url6h:    'https://flydecision.com/balizas_weatherunderground_6h.json',
+            //urlCache: 'https://flydecision.com/balizas_weatherunderground_cache.json',
+            //url6h:    'https://flydecision.com/balizas_weatherunderground_6h.json',
+            urlCache: null, 
+            url6h:    null, 
             checkboxId: 'checkboxBalizasWeatherUnderground',
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_WEATHERUNDERGROUND_VISIBLE',
             layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
@@ -16765,6 +16779,8 @@ function inicializarMapaLeaflet() {
 
     async function cargarDatosBalizas(redId) {
         const red = REDES_BALIZAS[redId];
+        if (!red || !red.urlCache) return false; // Evita la petición si no hay URL
+
         try {
             const res = await fetchConTimeout(`${red.urlCache}?_=${Date.now()}`);
             const textoCrudo = await res.text();
@@ -16789,20 +16805,22 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
     async function cargarDatos6hBalizasSiNecesario(redId, force = false) {
-    const red = REDES_BALIZAS[redId];
-    const ahora = Date.now();
+        const red = REDES_BALIZAS[redId];
+        if (!red || !red.url6h) return; // Evita la petición si no hay URL
+
+        const ahora = Date.now();
     
-    // Si no se está forzando (force = false), respetamos la caché local de 5 minutos
-    if (!force && red.datos6h && (ahora - red.fetched6hAt) < 5 * 60 * 1000) return;
-    
-    try {
-        const res = await fetchConTimeout(`${red.url6h}?_=${ahora}`);
-        red.datos6h = await res.json();
-        red.fetched6hAt = ahora;
-    } catch (e) {
-        console.error(`No se pudo cargar el histórico 6h de balizas ${red.nombre}`, e);
+        // Si no se está forzando (force = false), respetamos la caché local de 5 minutos
+        if (!force && red.datos6h && (ahora - red.fetched6hAt) < 5 * 60 * 1000) return;
+        
+        try {
+            const res = await fetchConTimeout(`${red.url6h}?_=${ahora}`);
+            red.datos6h = await res.json();
+            red.fetched6hAt = ahora;
+        } catch (e) {
+            console.error(`No se pudo cargar el histórico 6h de balizas ${red.nombre}`, e);
+        }
     }
-}
 
     // 🟡 5. ACTUALIZAR ICONOS DEL MAPA
     //___________________________________________________________________________________
@@ -17382,11 +17400,11 @@ function inicializarMapaLeaflet() {
         map.addLayer(red.layerGroup);
         
         // Carga inicial forzada de ambos JSON (meteo en vivo y 6h)
-        await cargarDatos6hBalizasSiNecesario(redId, true); 
-        await cargarDatosBalizas(redId);
+        if (red.url6h) await cargarDatos6hBalizasSiNecesario(redId, true); 
+        if (red.urlCache) await cargarDatosBalizas(redId);
         actualizarIconosBalizas(redId); // Pintamos ahora que ambos datos están en memoria
 
-        if (!red.intervalo) {
+        if (!red.intervalo && red.urlCache) {
             red.intervalo = setInterval(async () => {
                 // 1. Consultamos si ha cambiado el tiempo real
                 const haCambiado = await cargarDatosBalizas(redId); 
