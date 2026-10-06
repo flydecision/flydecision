@@ -17922,6 +17922,13 @@ function inicializarMasterCheckboxBalizas() {
     const masterChk = document.getElementById('checkboxMasterBalizas');
     if (!masterChk) return;
 
+    // id que no se marcan automáticamente
+    const excluidas = [
+        'checkboxBalizasSuremet',
+        'checkboxBalizasWeatherUnderground',
+        'checkboxBalizasSiar'
+    ];
+
     // Buscamos todos los checkboxes de redes individuales de balizas
     const checkboxesHijos = document.querySelectorAll('#infoPanel3 input[type="checkbox"]:not(#checkboxMasterBalizas)');
 
@@ -17932,6 +17939,9 @@ function inicializarMasterCheckboxBalizas() {
         const nuevoEstado = this.checked;
         
         checkboxesHijos.forEach(chk => {
+            // Al marcar saltamos las excluidas; al desmarcar entran todas
+            if (nuevoEstado && excluidas.includes(chk.id)) return;
+
             if (chk.checked !== nuevoEstado) {
                 chk.checked = nuevoEstado;
                 // Forzamos el evento 'change' para que Leaflet dibuje/borre las balizas
@@ -17944,11 +17954,12 @@ function inicializarMasterCheckboxBalizas() {
     checkboxesHijos.forEach(chk => {
         chk.addEventListener('change', () => {
             const totalMarcados = Array.from(checkboxesHijos).filter(c => c.checked).length;
+            const totalEsperados = checkboxesHijos.length - excluidas.length;
 
             if (totalMarcados === 0) {
                 masterChk.checked = false;
                 masterChk.indeterminate = false;
-            } else if (totalMarcados === checkboxesHijos.length) {
+            } else if (totalMarcados >= totalEsperados) {
                 masterChk.checked = true;
                 masterChk.indeterminate = false;
             } else {
@@ -17960,11 +17971,12 @@ function inicializarMasterCheckboxBalizas() {
 
     // 3. FORZAR EL ESTADO INICIAL AL ARRANCAR (Evita el autocompletado del navegador)
     const totalMarcadosInicial = Array.from(checkboxesHijos).filter(c => c.checked).length;
+    const totalEsperados = checkboxesHijos.length - excluidas.length;
     
     if (totalMarcadosInicial === 0) {
         masterChk.checked = false;
         masterChk.indeterminate = false;
-    } else if (totalMarcadosInicial === checkboxesHijos.length) {
+    } else if (totalMarcadosInicial >= totalEsperados) {
         masterChk.checked = true;
         masterChk.indeterminate = false;
     } else {
