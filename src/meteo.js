@@ -56,6 +56,9 @@ let XCTechoLims = JSON.parse(localStorage.getItem("METEO_XC_TECHO_LIMS")) || { r
 // Ratio para rebajar el dato de Techo a algo realista para parapente (tasa caída 1.2 m/s)
 let RATIO_TECHO_UTIL = 0.85;
 
+// Ratio de los mejores despegues favoritos a promediar en la barra del día (0.20 = top 20%)
+const RATIO_MEJORES_FAVORITOS_DIA = 0.20;
+
 // CAPE: 0-400 es ideal (desde día azul hasta cúmulos bonitos). >800 peligro de tormenta.
 let XCCapeLims = JSON.parse(localStorage.getItem("METEO_XC_CAPE_LIMS")) || { idealMin: 0, idealMax: 400, riesgo: 800 };
 
@@ -3639,6 +3642,52 @@ function cambiarDiasSeguimiento(delta) {
 // 🔴 SLIDERS. RANGO HORARIO. Lógica para poder hacer clic en los pips de los días semanales y seleccionar así sus rango horario completo (tiene en cuenta chk día/noche) con un toque
 // ---------------------------------------------------------------
 
+// Calcula la puntuación del semi-día (AM o PM) promediando el top % de favoritos
+function calcularPuntuacionFranjaFavoritos(indicesFranja) {
+    if (!indicesFranja || indicesFranja.length === 0) return null;
+
+    const favIds = (typeof obtenerFavoritos === 'function') 
+        ? obtenerFavoritos().map(Number).filter(n => !isNaN(n)) 
+        : [];
+    if (favIds.length === 0) return null;
+
+    const despegues = window.bdGlobalDespegues || [];
+    const respuestas = window.respuestasGlobalMapa || (typeof DATOS_METEO_CACHE !== 'undefined' ? DATOS_METEO_CACHE?.respuestas : []) || [];
+    const respuestasEcmwf = window.respuestasEcmwfGlobalMapa || (typeof DATOS_METEO_ECMWF_CACHE !== 'undefined' ? DATOS_METEO_ECMWF_CACHE?.respuestas : []) || [];
+
+    const idxPorId = new Map();
+    despegues.forEach((d, i) => idxPorId.set(Number(d.ID), i));
+
+    const notas = [];
+    favIds.forEach(id => {
+        const idx = idxPorId.get(id);
+        if (idx === undefined) return;
+
+        const desp = despegues[idx];
+        const hourlyData = respuestas[idx]?.hourly;
+        const hourlyEcmwf = respuestasEcmwf[idx]?.hourly;
+        if (!desp || !hourlyData) return;
+
+        const evalRes = calcularPuntuacionesDespegue(desp, hourlyData, hourlyEcmwf, indicesFranja);
+        if (evalRes && evalRes.notaCondiciones !== null && evalRes.horasValidas > 0) {
+            notas.push(evalRes.notaCondiciones);
+        }
+    });
+
+    if (notas.length === 0) return null;
+
+    // Ordenar de mayor a menor puntuación
+    notas.sort((a, b) => b - a);
+
+    // Tomar el porcentaje configurado (mínimo 1 despegue)
+    const cantidadATomar = Math.max(1, Math.ceil(favIds.length * RATIO_MEJORES_FAVORITOS_DIA));
+    const topNotas = notas.slice(0, cantidadATomar);
+
+    // Media de los mejores
+    const suma = topNotas.reduce((acc, val) => acc + val, 0);
+    return suma / topNotas.length;
+}
+
 function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
     const contenedor = document.getElementById('botones-dias-slider');
     if (!contenedor) return;
@@ -3656,15 +3705,62 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
         const diaSemanaTexto = t(`dias.${diasClaves[d.getDay()]}`);
         const numeroDia = d.getDate();
 
+        // 1. Separar las horas del día en Mañana (luz hasta 14h) y Tarde (14h hasta ocaso)
+        const dayRanges = sliderElement.dayRanges;
+        const indicesAM = [];
+        const indicesPM = [];
+
+        if (dayRanges && dayRanges[i]) {
+            const { startPos, endPos } = dayRanges[i];
+            for (let pos = startPos; pos <= endPos; pos++) {
+                const idxHora = indices[pos];
+                if (!horas || !horas[idxHora]) continue;
+                const dHora = new Date(horas[idxHora].endsWith('Z') ? horas[idxHora] : horas[idxHora] + 'Z');
+                const mes = dHora.getMonth();
+                const { inicio: inicioLuz, fin: finLuz } = HORAS_LUZ_CON_MARGEN[mes];
+                const h = dHora.getHours();
+
+                if (h >= inicioLuz && h < 14) {
+                    indicesAM.push(idxHora);
+                } else if (h >= 14 && h < finLuz) {
+                    indicesPM.push(idxHora);
+                }
+            }
+        }
+
+        // 2. Calcular puntuaciones del top 20% de favoritos
+        const notaAM = calcularPuntuacionFranjaFavoritos(indicesAM);
+        const notaPM = calcularPuntuacionFranjaFavoritos(indicesPM);
+
+        const colorAM = (notaAM !== null) ? COLORES_NOTA_MAPA[Math.min(10, Math.max(0, Math.round(notaAM)))] : 'transparent';
+        const colorPM = (notaPM !== null) ? COLORES_NOTA_MAPA[Math.min(10, Math.max(0, Math.round(notaPM)))] : 'transparent';
+
         const btn = document.createElement('button');
-        // Solo las 3 letras del día de la semana para que los 7 botones quepan holgados
-        btn.textContent = diaSemanaTexto;
-        // La fecha completa (ej: "lun 28") visible al pasar el ratón o mantener pulsado
-        btn.title = `${diaSemanaTexto} ${numeroDia}`;
 
-        const diaSemanaNum = d.getDay(); // 0 = Domingo, 6 = Sábado
+        // 3. Montar el contenido del botón con la barrita inferior integrada
+        let htmlBarra = '';
+        if (notaAM !== null || notaPM !== null) {
+            htmlBarra = `
+                <div class="pip-dia-linea-calidad">
+                    <span style="background-color: ${colorAM};"></span>
+                    <span style="background-color: ${colorPM};"></span>
+                </div>
+            `;
+        }
+
+        btn.innerHTML = `<span class="pip-dia-texto">${diaSemanaTexto}</span>${htmlBarra}`;
+
+        // 4. Tooltip detallado con las notas al pasar el ratón
+        let tooltipTexto = `${diaSemanaTexto} ${numeroDia}`;
+        if (notaAM !== null || notaPM !== null) {
+            const txtAM = notaAM !== null ? `${notaAM.toFixed(1)}⭐` : '—';
+            const txtPM = notaPM !== null ? `${notaPM.toFixed(1)}⭐` : '—';
+            tooltipTexto += `\n🌅 AM: ${txtAM} | 🌇 PM: ${txtPM}`;
+        }
+        btn.title = tooltipTexto;
+
+        const diaSemanaNum = d.getDay();
         const esFinDeSemana = (diaSemanaNum === 0 || diaSemanaNum === 6);
-
         const esActivo = (!modoVerTodosLosDias && i === diaSeleccionado);
         btn.className = 'pip-dia-btn' + (esActivo ? ' pip-activo' : '') + (esFinDeSemana ? ' dia-fin-semana' : '');
         btn.dataset.diaIndex = i;
@@ -3937,6 +4033,14 @@ function gestionarSliderHoras(respuestas, respuestasEcmwf, soloHorasDeLuz) {
 
     // Priorizamos el eje temporal de ECMWF si tiene más días (7 días = 168 horas)
     window.horasCrudasRangoHorario = (timeEcmwf.length > timeArome.length) ? timeEcmwf : timeArome;
+
+    // Rellenar ecmwfTimeMap antes de crear los botones del día
+    if (typeof ecmwfTimeMap !== 'undefined' && timeEcmwf.length > 0) {
+        ecmwfTimeMap.clear();
+        timeEcmwf.forEach((tStr, idxEcmwf) => {
+            ecmwfTimeMap.set(tStr, idxEcmwf);
+        });
+    }
 
     // --- LÓGICA DE FILTRADO Y ZONA HORARIA (Idéntica a la original) ---
     let horasFiltradasPermanentemente = window.horasCrudasRangoHorario;
