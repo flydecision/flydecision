@@ -280,7 +280,16 @@ const _palabrasBalizasInit = ['balizas', 'balizak', 'balises', 'beacons', 'baken
 const _pathInit = window.location.pathname.toLowerCase();
 if (_palabrasBalizasInit.some(p => _pathInit.includes(p) || paramsArranque.has(p))) {
     localStorage.setItem('METEO_RECORDAR_POSICION_MAPA', 'true');
+    window.esModoBalizasDirecto = true;                   
+    document.body.classList.add('modo-balizas-directo'); 
 }
+// Lista común de checkboxes de balizas que NO se activan automáticamente
+const CHECKBOXES_BALIZAS_EXCLUIDAS = [
+    'checkboxBalizasSuremet',
+    'checkboxBalizasWeatherUnderground',
+    'checkboxBalizasSiar'
+];
+window.CHECKBOXES_BALIZAS_EXCLUIDAS = CHECKBOXES_BALIZAS_EXCLUIDAS;
 
 // UMBRALES DE CIZALLADURA (Factor multiplicador)
 const LIMITES_CIZALLADURA = {
@@ -9575,10 +9584,15 @@ document.addEventListener('i18nReady', function() {
                 masterChk.indeterminate = false;
             }
 
-            // 5. Activar todas las redes de balizas llamando a window.activarCapaBalizas
+            // 5. Activar todas las redes de balizas operativas (saltando las excluidas)
             if (window.REDES_BALIZAS) {
                 const promesas = Object.values(window.REDES_BALIZAS).map(async (red) => {
+                    // Si está en la lista de excluidas, no la activamos
+                    if (CHECKBOXES_BALIZAS_EXCLUIDAS.includes(red.checkboxId)) return;
+
                     const chkRed = document.getElementById(red.checkboxId);
+                    if (chkRed && chkRed.disabled) return;
+
                     if (chkRed) chkRed.checked = true;
                     if (typeof window.activarCapaBalizas === 'function') {
                         await window.activarCapaBalizas(red.id);
@@ -17922,16 +17936,9 @@ function inicializarMasterCheckboxBalizas() {
     const masterChk = document.getElementById('checkboxMasterBalizas');
     if (!masterChk) return;
 
-    // id que no se marcan automáticamente
-    const excluidas = [
-        'checkboxBalizasSuremet',
-        'checkboxBalizasWeatherUnderground',
-        'checkboxBalizasSiar'
-    ];
+    const excluidas = CHECKBOXES_BALIZAS_EXCLUIDAS;
 
-    // Buscamos todos los checkboxes de redes individuales de balizas
     const checkboxesHijos = document.querySelectorAll('#infoPanel3 input[type="checkbox"]:not(#checkboxMasterBalizas)');
-
     if (checkboxesHijos.length === 0) return;
 
     // 1. Sincronizar de MAESTRO a HIJOS (Marcar/Desmarcar todas)
