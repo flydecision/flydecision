@@ -4221,6 +4221,22 @@ body.recordar-filtros-mapa-activo .chip-sesion-volatil {
     display: inline-block;
 }
 
+/* 🛑 MODO DIRECTO DE BALIZAS (/balizas). Oculta controles de despegues, configuración y elementos marcados */
+body.modo-balizas-directo #btn-filtros-mapa,
+body.modo-balizas-directo #btn-configurar-app-mapa,
+body.modo-balizas-directo #infoPanel,
+body.modo-balizas-directo .leaflet-control-infopanel1, /* Contenedor Leaflet del panel de despegues */
+body.modo-balizas-directo .leaflet-text-search-container,
+body.modo-balizas-directo .control-orientacion-container,
+body.modo-balizas-directo .control-vuelos-container,
+body.modo-balizas-directo .control-actividad-mapa-container,
+body.modo-balizas-directo #control-seguimiento-mapa-container,
+body.modo-balizas-directo #control-favoritos-mapa-container,
+body.modo-balizas-directo .leaflet-control-guia-mapa,
+body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para elementos sin ID */
+    display: none !important;
+}
+
 /* 🔴🔴 FIN MAPA */
 
 /* 🛑 BOTÓN FLOTANTE "VOLVER" (Módulo Mapa) */
