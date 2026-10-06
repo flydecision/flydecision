@@ -6410,6 +6410,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             return nodo;
         };
 
+        // Función para obtener el nombre exacto del modelo según la hora
+        const obtenerEtiquetaModelo = (i, esEcmwf, hData) => {
+            if (esEcmwf) return "ECMWF";
+            const m = (hData && Array.isArray(hData.model_source)) ? hData.model_source[i] : null;
+            if (m === 'AromeHD') return "Arome-HD";
+            if (m === 'ICON-EU') return "ICON-EU";
+            // Respaldo de seguridad si faltase el dato en esa hora concreta:
+            return (i <= 48) ? "Arome-HD" : "ICON-EU";
+        };
+
         // 🔃 Bucle principal que recorre cada despegue
         for (let idx = 0; idx < despegues.length; idx++) {
             const d = despegues[idx];
@@ -7439,7 +7449,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         renderEcmwfData(filaTemperatura, emptyArr, () => "", "9px", () => "");
                     }
 
-					// ⚪ Velocidades alturas 80, 120, 100 m *****************************
+					// ⚪ Velocidades alturas 20, 50, 100 m *****************************
 
                     if (chkMostrarVientoAlturas) {
                         
@@ -7538,7 +7548,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                     // ⚪ Velocidad 10 m *****************************
 					
-					// Ponemos esta constante fuera del bucle para no calcularla 100 veces
+                    // Ponemos esta constante fuera del bucle para no calcularla 100 veces
                     const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
 
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
@@ -7551,12 +7561,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         if (rawVelOriginal === null || rawVelOriginal === undefined) {
                             const idxE = ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined;
                             if (idxE !== undefined && hourlyEcmwf) {
-                                // 1. Prioridad: Viento 10 m nativo de ECMWF (menor MAE y RMSE demostrado en el estudio)
+                                // 1. Prioridad: Viento 10 m nativo de ECMWF
                                 if (hourlyEcmwf.wind_speed_10m && hourlyEcmwf.wind_speed_10m[idxE] != null) {
                                     rawVelOriginal = hourlyEcmwf.wind_speed_10m[idxE];
                                     esDatoEcmwf = true;
                                 } else if (typeof interpolarVientoAltitudReal === 'function') {
-                                    // 2. Respaldo secundario: solo si faltase el 10 m, interpolamos por geopotencial
+                                    // 2. Respaldo secundario: geopotencial
                                     const interp = interpolarVientoAltitudReal(
                                         Number(d.Altitud) || 0,
                                         hourlyEcmwf.geopotential_height_1000hPa ? hourlyEcmwf.geopotential_height_1000hPa[idxE] : null,
@@ -7614,7 +7624,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.classList.add("fondo-naranja");
                         } 
                         else if (velocidad <= velocidadTolerableSuperior) {
-                            td.classList.add("fondo-verde"); // Velocidad ideal
+                            td.classList.add("fondo-verde");
                         } 
                         else if (velocidad < VelocidadMax) {
                             td.classList.add("fondo-naranja");
@@ -7625,13 +7635,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         td.textContent = velocidad;
 
-                        const etiquetaModelo = esDatoEcmwf ? " [ECMWF]" : "";
+                        const etiquetaModelo = obtenerEtiquetaModelo(i, esDatoEcmwf, hourlyData);
+
                         if (chkAplicarCorreccionEstadistica) {
                             td.style.fontWeight = "bold";
                             td.style.fontStyle = "italic";
-                            td.title = `${velocidad} km/h (Modelo original: ${velOrigRound} km/h)${etiquetaModelo}`;
+                            td.title = `${velocidad} ${t('tabla.tooltips.viento10mUnidades')} | ${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}: ${velOrigRound} km/h`;
                         } else {
-                            td.title = `${velocidad} km/h${etiquetaModelo}`;
+                            td.title = `${velocidad} ${t('tabla.tooltips.viento10mUnidades')} [${etiquetaModelo}]`;
                         }
 
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
@@ -7651,12 +7662,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         
                         // Leemos directamente del JSON original
                         let rawRachaOriginal = (hourlyData && hourlyData.wind_gusts_10m) ? hourlyData.wind_gusts_10m[i] : null;
+                        let esDatoEcmwf = false; 
 
                         // Fallback a ECMWF si Arome no tiene datos para esta hora (días 5 a 7)
                         if (rawRachaOriginal === null || rawRachaOriginal === undefined) {
                             const idxE = ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined;
                             if (idxE !== undefined && hourlyEcmwf && hourlyEcmwf.wind_gusts_10m && hourlyEcmwf.wind_gusts_10m[idxE] != null) {
                                 rawRachaOriginal = hourlyEcmwf.wind_gusts_10m[idxE];
+                                esDatoEcmwf = true; 
                             }
                         }
 
@@ -7701,12 +7714,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         td.textContent = racha;
 
+                        const etiquetaModelo = obtenerEtiquetaModelo(i, esDatoEcmwf, hourlyData);
+
                         if (chkAplicarCorreccionEstadistica) {
                             td.style.fontWeight = "bold";
                             td.style.fontStyle = "italic";
-                            td.title = `${racha} km/h racha máxima (Modelo original: ${rachaOrigRound} km/h)`;
+                            td.title = `${racha} ${t('tabla.tooltips.racha10mUnidades')} | ${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}: ${rachaOrigRound} km/h`;
                         } else {
-                            td.title = `${racha} km/h racha máxima`;
+                            td.title = `${racha} ${t('tabla.tooltips.racha10mUnidades')} [${etiquetaModelo}]`;
                         }
 
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
@@ -16636,8 +16651,10 @@ function inicializarMapaLeaflet() {
             id: 'suremet',
             nombre: 'Suremet',
             estaciones: [],
-            urlCache: 'https://flydecision.com/balizas_suremet_cache.json',
-            url6h:    'https://flydecision.com/balizas_suremet_6h.json',
+            //urlCache: 'https://flydecision.com/balizas_suremet_cache.json',
+            //url6h:    'https://flydecision.com/balizas_suremet_6h.json',
+            urlCache: null, 
+            url6h:    null, 
             checkboxId: 'checkboxBalizasSuremet',
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_SUREMET_VISIBLE',
             layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
@@ -16656,8 +16673,10 @@ function inicializarMapaLeaflet() {
             id: 'weatherunderground',
             nombre: 'WeatherUnderground',
             estaciones: [],
-            urlCache: 'https://flydecision.com/balizas_weatherunderground_cache.json',
-            url6h:    'https://flydecision.com/balizas_weatherunderground_6h.json',
+            //urlCache: 'https://flydecision.com/balizas_weatherunderground_cache.json',
+            //url6h:    'https://flydecision.com/balizas_weatherunderground_6h.json',
+            urlCache: null, 
+            url6h:    null, 
             checkboxId: 'checkboxBalizasWeatherUnderground',
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_WEATHERUNDERGROUND_VISIBLE',
             layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
@@ -16670,7 +16689,7 @@ function inicializarMapaLeaflet() {
             intervalo: null,
             umbralAmarilloMin: 60,
             umbralRojoMin: 90,
-            urlWeb: (id) => `https://www.wunderground.com/hourly/${id}`,
+            urlWeb: (id) => `https://www.wunderground.com/dashboard/pws/${id}`,
             idProveedorTolomet: 'WU'
         }
 
@@ -16760,6 +16779,8 @@ function inicializarMapaLeaflet() {
 
     async function cargarDatosBalizas(redId) {
         const red = REDES_BALIZAS[redId];
+        if (!red || !red.urlCache) return false; // Evita la petición si no hay URL
+
         try {
             const res = await fetchConTimeout(`${red.urlCache}?_=${Date.now()}`);
             const textoCrudo = await res.text();
@@ -16784,20 +16805,22 @@ function inicializarMapaLeaflet() {
     //___________________________________________________________________________________
 
     async function cargarDatos6hBalizasSiNecesario(redId, force = false) {
-    const red = REDES_BALIZAS[redId];
-    const ahora = Date.now();
+        const red = REDES_BALIZAS[redId];
+        if (!red || !red.url6h) return; // Evita la petición si no hay URL
+
+        const ahora = Date.now();
     
-    // Si no se está forzando (force = false), respetamos la caché local de 5 minutos
-    if (!force && red.datos6h && (ahora - red.fetched6hAt) < 5 * 60 * 1000) return;
-    
-    try {
-        const res = await fetchConTimeout(`${red.url6h}?_=${ahora}`);
-        red.datos6h = await res.json();
-        red.fetched6hAt = ahora;
-    } catch (e) {
-        console.error(`No se pudo cargar el histórico 6h de balizas ${red.nombre}`, e);
+        // Si no se está forzando (force = false), respetamos la caché local de 5 minutos
+        if (!force && red.datos6h && (ahora - red.fetched6hAt) < 5 * 60 * 1000) return;
+        
+        try {
+            const res = await fetchConTimeout(`${red.url6h}?_=${ahora}`);
+            red.datos6h = await res.json();
+            red.fetched6hAt = ahora;
+        } catch (e) {
+            console.error(`No se pudo cargar el histórico 6h de balizas ${red.nombre}`, e);
+        }
     }
-}
 
     // 🟡 5. ACTUALIZAR ICONOS DEL MAPA
     //___________________________________________________________________________________
@@ -17057,7 +17080,6 @@ function inicializarMapaLeaflet() {
         const altitud = (estacionObj && estacionObj.altitude) ? `${estacionObj.altitude} m` : '—';
         
         // Lógica para obtener la URL de la web oficial de la baliza
-        let webLink = '—';
         let urlFinal = null;
 
         // Comprobamos si esta red tiene equivalente en Tolomet
@@ -17068,7 +17090,7 @@ function inicializarMapaLeaflet() {
             onclick="abrirLinkExterno(this.href); return false;" 
             title="${t('mapa.balizas.verEnTolomet')}"  
             style="display: flex; align-items: center; text-decoration: none;">
-                <img src="/icons/icono_tolomet.webp" alt="Tolomet" style="width: 20px; height: 20px; vertical-align: middle; border-radius: 4px;">
+                <img src="/icons/icono_tolomet.webp" alt="Tolomet" style="width: 18px; height: 19px; vertical-align: middle; border-radius: 4px;">
             </a>` : '';
 
         // 1. Prioridad A: Usar el patrón configurado en REDES_BALIZAS
@@ -17080,12 +17102,16 @@ function inicializarMapaLeaflet() {
             urlFinal = estacionObj.url;
         }
 
-        // Si hemos conseguido una URL válida, construimos el enlace HTML
-        if (urlFinal) {
-            webLink = `<a href="${urlFinal}" onclick="abrirLinkExterno(this.href); return false;" style="color: #5b9be4; text-decoration: underline; font-weight: bold;">${typeof t === 'function' ? t('mapa.enlaceOficial', { defaultValue: 'Web' }) : 'Web'}</a>`;
-        }
+        // Si hemos conseguido una URL válida, construimos el botón con el icono web
+        const botonWebHTML = urlFinal ? `
+            <a href="${urlFinal}" 
+            onclick="abrirLinkExterno(this.href); return false;" 
+            title="${t('mapa.balizas.webOficial')}" 
+            style="display: flex; align-items: center; text-decoration: none;">
+                <img src="/icons/icono_www.webp" alt="Web" style="width: 18px; height: 18px; vertical-align: middle; border-radius: 4px;">
+            </a>` : '';
 
-        // 3. Construimos la estructura fija del Tooltip (Siempre se verá igual)
+        // 3. Construimos la estructura fija del Tooltip (Siempre se verá igual, sin el enlace web al final)
         let tooltipHTML = `<div style="text-align: left; line-height: 1.4; padding: 2px;">`;
         
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.baliza', { defaultValue: 'Baliza' }) : 'Baliza'}:</b> ${stName}<br>`;
@@ -17098,7 +17124,6 @@ function inicializarMapaLeaflet() {
             tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.balizas_actualizada', { defaultValue: 'Actualizada' }) : 'Actualizada'}:</b> ${formatearFechaHoraBaliza(d.ts)}<br>`;
         }
         
-        tooltipHTML += `${webLink}`;
         tooltipHTML += `</div>`;
 
         // 4. Escapamos las comillas para no romper el atributo HTML del botón
@@ -17154,9 +17179,8 @@ function inicializarMapaLeaflet() {
                         </small>
                         
                         <div style="display: flex; align-items: center; gap: 8px; margin-left: 10px; flex-shrink: 0;">
-
                             ${botonTolometHTML}
-
+                            ${botonWebHTML} 
                             <button class="btn-info btn-inline" data-tippy-content="${tooltipSeguro}" style="background: transparent; border: none; padding: 0; cursor: pointer; display: flex; outline: none;">
                                 <img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
                             </button>
@@ -17235,10 +17259,13 @@ function inicializarMapaLeaflet() {
                 </small>
                 
                 <div style="display: flex; align-items: center; gap: 8px; margin-left: 10px; flex-shrink: 0;">
-
+                    <!-- Enlace Tolomet (si existe) -->
                     ${botonTolometHTML}
 
-                    <!-- Botón Info Dinámico con datos del array -->
+                    <!-- Enlace Web oficial (si existe) -->
+                    ${botonWebHTML}
+
+                    <!-- Botón Info Dinámico -->
                     <button class="btn-info btn-inline" data-tippy-content="${tooltipSeguro}" style="background: transparent; border: none; padding: 0; cursor: pointer; display: flex; outline: none;">
                         <img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
                     </button>
@@ -17373,11 +17400,11 @@ function inicializarMapaLeaflet() {
         map.addLayer(red.layerGroup);
         
         // Carga inicial forzada de ambos JSON (meteo en vivo y 6h)
-        await cargarDatos6hBalizasSiNecesario(redId, true); 
-        await cargarDatosBalizas(redId);
+        if (red.url6h) await cargarDatos6hBalizasSiNecesario(redId, true); 
+        if (red.urlCache) await cargarDatosBalizas(redId);
         actualizarIconosBalizas(redId); // Pintamos ahora que ambos datos están en memoria
 
-        if (!red.intervalo) {
+        if (!red.intervalo && red.urlCache) {
             red.intervalo = setInterval(async () => {
                 // 1. Consultamos si ha cambiado el tiempo real
                 const haCambiado = await cargarDatosBalizas(redId); 
@@ -17895,6 +17922,13 @@ function inicializarMasterCheckboxBalizas() {
     const masterChk = document.getElementById('checkboxMasterBalizas');
     if (!masterChk) return;
 
+    // id que no se marcan automáticamente
+    const excluidas = [
+        'checkboxBalizasSuremet',
+        'checkboxBalizasWeatherUnderground',
+        'checkboxBalizasSiar'
+    ];
+
     // Buscamos todos los checkboxes de redes individuales de balizas
     const checkboxesHijos = document.querySelectorAll('#infoPanel3 input[type="checkbox"]:not(#checkboxMasterBalizas)');
 
@@ -17905,6 +17939,9 @@ function inicializarMasterCheckboxBalizas() {
         const nuevoEstado = this.checked;
         
         checkboxesHijos.forEach(chk => {
+            // Al marcar saltamos las excluidas; al desmarcar entran todas
+            if (nuevoEstado && excluidas.includes(chk.id)) return;
+
             if (chk.checked !== nuevoEstado) {
                 chk.checked = nuevoEstado;
                 // Forzamos el evento 'change' para que Leaflet dibuje/borre las balizas
@@ -17917,11 +17954,12 @@ function inicializarMasterCheckboxBalizas() {
     checkboxesHijos.forEach(chk => {
         chk.addEventListener('change', () => {
             const totalMarcados = Array.from(checkboxesHijos).filter(c => c.checked).length;
+            const totalEsperados = checkboxesHijos.length - excluidas.length;
 
             if (totalMarcados === 0) {
                 masterChk.checked = false;
                 masterChk.indeterminate = false;
-            } else if (totalMarcados === checkboxesHijos.length) {
+            } else if (totalMarcados >= totalEsperados) {
                 masterChk.checked = true;
                 masterChk.indeterminate = false;
             } else {
@@ -17933,11 +17971,12 @@ function inicializarMasterCheckboxBalizas() {
 
     // 3. FORZAR EL ESTADO INICIAL AL ARRANCAR (Evita el autocompletado del navegador)
     const totalMarcadosInicial = Array.from(checkboxesHijos).filter(c => c.checked).length;
+    const totalEsperados = checkboxesHijos.length - excluidas.length;
     
     if (totalMarcadosInicial === 0) {
         masterChk.checked = false;
         masterChk.indeterminate = false;
-    } else if (totalMarcadosInicial === checkboxesHijos.length) {
+    } else if (totalMarcadosInicial >= totalEsperados) {
         masterChk.checked = true;
         masterChk.indeterminate = false;
     } else {

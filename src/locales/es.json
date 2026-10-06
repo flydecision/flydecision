@@ -137,6 +137,9 @@
       "viento20m": "Viento medio a 20 m altura AGL (km/h)",
       "viento10m": "Viento medio a 10 m altura AGL (km/h)",
       "racha10m": "Racha máxima a 10 m altura AGL (km/h)",
+      "viento10mUnidades": "km/h de viento medio a 10 m altura suelo (AGL)",
+      "racha10mUnidades": "km/h de racha máxima a 10 m altura suelo (AGL)",
+      "datoOriginal": "Dato original del modelo",
       "mantenerPulsadoAlternar": "(Mantén pulsado para alternar corrección estadística)",
       "direccion10m": "Dirección del viento a 10 m altura AGL",
       "cizalladura": "Cizalladura de Bajo Nivel por velocidad / Fiabilidad del pronóstico de viento medio",
@@ -787,7 +790,8 @@
       "altitud": "Altitud",
       "titleBalizas": "Balizas de viento",
       "marcar_todas": "Marcar todas",
-      "verEnTolomet": "Ver baliza en Tolomet"
+      "verEnTolomet": "Ver en Tolomet",
+      "webOficial": "Ver en web oficial"
     }
   },
 
@@ -907,6 +911,8 @@
     "tooltipcheckboxBalizasSiar": "<b>Balizas de viento SIAR</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propiedad</b>: Ministerio de Agricultura, Pesca y Alimentación (Gobierno de España)</li><li><b>Cobertura geográfica</b>: España</li><li><b>Número aproximado de balizas mostradas</b>: 521</li><li><b>Frecuencia aproximada de actualización de los datos</b>: 30 minutos (variable según estación)</li><li><b>Web</b>: <a href='https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio' target='_blank' style='color: #007bff; text-decoration: underline;'>SIAR</a></li></ul>",
     "tooltipcheckboxBalizasLaRiojaSiar": "<b>Balizas de viento La Rioja SIAR</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propiedad</b>: Gobierno de La Rioja (España)</li><li><b>Cobertura geográfica</b>: La Rioja (España)</li><li><b>Número aproximado de balizas mostradas</b>: 29</li><li><b>Frecuencia aproximada de actualización de los datos</b>: 15 minutos (variable según estación)</li><li><b>Web</b>: <a href='https://www.larioja.org/emergencias-112/es/meteorologia/datos-actuales-rioja' target='_blank' style='color: #007bff; text-decoration: underline;'>La Rioja SIAR</a></li></ul>",
     "tooltipcheckboxBalizasMeteoclimatic": "<b>Balizas de viento Meteoclimatic</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propiedad</b>: personas particulares no profesionales</li><li><b>Cobertura geográfica</b>: España y Portugal</li><li><b>Número aproximado de balizas mostradas</b>: 1476</li><li><b>Frecuencia aproximada de actualización de los datos</b>: 15 minutos (variable según estación)</li><li><b>Web</b>: <a href='https://www.meteoclimatic.net/' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteoclimatic</a></li></ul>",
+    "tooltipcheckboxBalizasSuremet": "<b>Balizas de viento Suremet</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propiedad</b>: Red de estaciones Suremet</li><li><b>Cobertura geográfica</b>: Sureste de España</li><li><b>Número aproximado de balizas mostradas</b>: 1137</li><li><b>Frecuencia aproximada de actualización de los datos</b>: 15 minutos (variable según estación)</li><li><b>Web</b>: <a href='https://suremet.es/' target='_blank' style='color: #007bff; text-decoration: underline;'>Suremet</a></li></ul>",
+    "tooltipcheckboxBalizasWeatherUnderground": "<b>Balizas de viento WeatherUnderground</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propiedad</b>: WeatherUnderground</li><li><b>Cobertura geográfica</b>: Mundial</li><li><b>Número aproximado de balizas mostradas</b>: 5000</li><li><b>Frecuencia aproximada de actualización de los datos</b>: 15 minutos (variable según estación)</li><li><b>Web</b>: <a href='https://www.wunderground.com/wundermap' target='_blank' style='color: #007bff; text-decoration: underline;'>WeatherUnderground</a></li></ul>",
     "tooltipFiltroFavoritosMapa": "<b>Filtro de despegues favoritos</b><br><br>Muestra únicamente los despegues marcados como <i>favoritos</i> y oculta el resto.<br><br>Si se vuelve a seleccionar una segunda vez, muestra únicamente los que no son favoritos. Este modo resulta útil para localizar en tu área preferida despegues nuevos introducidos en la base de datos o para revisar cuáles aún no has marcado como favoritos.<br><br>La tercera vez que se selecciona se desactiva el filtro.<br><br>Consulta en <i>Ajustes > Guías</i> la descripción del marcaje de Favoritos y Seguimiento.",
     "tooltipFiltroSeguimientoMapa": "<b>Filtro de despegues en seguimiento</b><br><br>Muestra únicamente los despegues marcados como <i>en seguimiento</i> y oculta el resto.<br><br>Consulta en <i>Ajustes > Guías</i> la descripción del marcaje de Favoritos y Seguimiento.",
     "tooltipFiltroFavoritosBalizasMapa": "<b>Filtro de balizas favoritas</b><br><br>Muestra únicamente las balizas marcadas como <i>favoritas</i> y oculta el resto.<br><br>Consulta en <i>Ajustes > Guías</i> la descripción del marcaje de Favoritos y Seguimiento.",

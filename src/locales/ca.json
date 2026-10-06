@@ -137,6 +137,9 @@
       "viento20m": "Vent mitjà a 20 m d'altura AGL (km/h)",
       "viento10m": "Vent mitjà a 10 m d'altura AGL (km/h)",
       "racha10m": "Ràfega màxima a 10 m d'altura AGL (km/h)",
+      "viento10mUnidades": "km/h de vent mitjà a 10 m d'altura del terra (AGL)",
+      "racha10mUnidades": "km/h de ratxa màxima a 10 m d'altura del terra (AGL)",
+      "datoOriginal": "Dada original del model",
       "mantenerPulsadoAlternar": "(Mantingues premut per alternar correcció estadística)",
       "direccion10m": "Direcció del vent a 10 m d'altura AGL",
       "cizalladura": "Cisallament de Baix Nivell per velocitat / Fiabilitat del pronòstic de vent mitjà",
@@ -786,7 +789,8 @@
       "altitud": "Altitud",
       "titleBalizas": "Balises de vent",
       "marcar_todas": "Marcar totes",
-      "verEnTolomet": "Veure balisa a Tolomet"
+      "verEnTolomet": "Veure a Tolomet",
+      "webOficial": "Veure a la web oficial"
     }
   },
 
@@ -906,6 +910,8 @@
     "tooltipcheckboxBalizasSiar": "<b>Balises de vent SIAR</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propietat</b>: Ministeri d'Agricultura, Pesca i Alimentació (Govern d'Espanya)</li><li><b>Cobertura geogràfica</b>: Espanya</li><li><b>Nombre aproximat de balises mostrades</b>: 521</li><li><b>Freqüència aproximada d'actualització de les dades</b>: 30 minuts (variable segons estació)</li><li><b>Web</b>: <a href='https://servicio.mapa.gob.es/siarweb/consultaDatos/inicio' target='_blank' style='color: #007bff; text-decoration: underline;'>SIAR</a></li></ul>",
     "tooltipcheckboxBalizasLaRiojaSiar": "<b>Balises de vent La Rioja SIAR</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propietat</b>: Govern de La Rioja (Espanya)</li><li><b>Cobertura geogràfica</b>: La Rioja (Espanya)</li><li><b>Nombre aproximat de balises mostrades</b>: 29</li><li><b>Freqüència aproximada d'actualització de les dades</b>: 15 minuts (variable segons estació)</li><li><b>Web</b>: <a href='https://www.larioja.org/emergencias-112/es/meteorologia/datos-actuales-rioja' target='_blank' style='color: #007bff; text-decoration: underline;'>La Rioja SIAR</a></li></ul>",
     "tooltipcheckboxBalizasMeteoclimatic": "<b>Balises de vent Meteoclimatic</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propietat</b>: persones particulars no professionals</li><li><b>Cobertura geogràfica</b>: Espanya i Portugal</li><li><b>Nombre aproximat de balises mostrades</b>: 1476</li><li><b>Freqüència aproximada d'actualització de les dades</b>: 15 minuts (variable segons l'estació)</li><li><b>Web</b>: <a href='https://www.meteoclimatic.net/' target='_blank' style='color: #007bff; text-decoration: underline;'>Meteoclimatic</a></li></ul>",
+    "tooltipcheckboxBalizasSuremet": "<b>Balises de vent Suremet</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propietat</b>: Xarxa d'estacions Suremet</li><li><b>Cobertura geogràfica</b>: Sud-est d'Espanya</li><li><b>Nombre aproximat de balises mostrades</b>: 1137</li><li><b>Freqüència aproximada d'actualització de les dades</b>: 15 minuts (variable segons estació)</li><li><b>Web</b>: <a href='https://suremet.es/' target='_blank' style='color: #007bff; text-decoration: underline;'>Suremet</a></li></ul>",
+    "tooltipcheckboxBalizasWeatherUnderground": "<b>Balises de vent WeatherUnderground</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propietat</b>: WeatherUnderground</li><li><b>Cobertura geogràfica</b>: Mundial</li><li><b>Nombre aproximat de balises mostrades</b>: 5000</li><li><b>Freqüència aproximada d'actualització de les dades</b>: 15 minuts (variable segons estació)</li><li><b>Web</b>: <a href='https://www.wunderground.com/wundermap' target='_blank' style='color: #007bff; text-decoration: underline;'>WeatherUnderground</a></li></ul>",
     "tooltipFiltroFavoritosMapa": "<b>Filtre d'enlairaments favorits</b><br><br>Mostra únicament els enlairaments marcats com a <i>favorits</i> i oculta la resta.<br><br>Si es torna a seleccionar una segona vegada, mostra únicament els que no són favorits. Aquest mode resulta útil per localitzar a la teva àrea preferida enlairaments nous introduïts a la base de dades o per revisar quins encara no has marcat com a favorits.<br><br>La tercera vegada que se selecciona es desactiva el filtre.<br><br>Consulta a <i>Ajustos > Guies</i> la descripció del marcatge de Favorits i Seguiment.",
     "tooltipFiltroSeguimientoMapa": "<b>Filtre d'enlairaments en seguiment</b><br><br>Mostra únicament els enlairaments marcats com a <i>en seguiment</i> i oculta la resta.<br><br>Consulta a <i>Ajustos > Guies</i> la descripció del marcatge de Favorits i Seguiment.",
     "tooltipFiltroFavoritosBalizasMapa": "<b>Filtre de balises favorites</b><br><br>Mostra únicament les balises marcades com a <i>favorites</i> i oculta la resta.<br><br>Consulta a <i>Ajustos > Guies</i> la descripció del marcatge de Favorits i Seguiment.",
