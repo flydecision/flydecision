@@ -67,9 +67,9 @@
 <!-- API Keys map layers-->
 <script src="/js/config.js" defer></script>
 
-<script>window.WEB_VERSION = "5.0.2";</script>
-<link rel="stylesheet" href="/meteo.css?v=5.0.2">
-<script src="/meteo.js?v=5.0.2" defer></script>
+<script>window.WEB_VERSION = "5.1.0b";</script>
+<link rel="stylesheet" href="/meteo.css?v=5.1.0b">
+<script src="/meteo.js?v=5.1.0b" defer></script>
 
 </head>
 
@@ -947,7 +947,25 @@
 				</button>
 			</div>
 			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
-				<label for="checkboxBalizasSiar" class="custom-checkbox" style="color: #999; opacity: 0.6; cursor: not-allowed;">
+				<label for="checkboxBalizasSuremet" class="custom-checkbox" style="color: #999; opacity: 0.6;">
+					<input type="checkbox" id="checkboxBalizasSuremet" class="custom-checkbox">
+					<span>&nbsp;Suremet</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasSuremet">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasWeatherUnderground" class="custom-checkbox" style="color: #999; opacity: 0.6;">
+					<input type="checkbox" id="checkboxBalizasWeatherUnderground" class="custom-checkbox">
+					<span>&nbsp;WeatherUnderground</span>
+				</label>
+				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasWeatherUnderground">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+				<label for="checkboxBalizasSiar" class="custom-checkbox" style="color: #999; opacity: 0.6;">
 					<input type="checkbox" id="checkboxBalizasSiar" class="custom-checkbox">
 					<span>&nbsp;SIAR</span>
 				</label>
@@ -955,7 +973,7 @@
 					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
 			</div>
-			<div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
+			<!-- <div class="linea-con-bt-info" title="Estaciones meteorológicas de viento">
 				<label for="checkboxBalizasFFVL" class="custom-checkbox" style="color: #999; opacity: 0.6; cursor: not-allowed;">
 					<input type="checkbox" id="checkboxBalizasFFVL" class="custom-checkbox" disabled>
 					<span>&nbsp;FFVL</span>
@@ -963,7 +981,7 @@
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasFFVL">
 					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
-			</div>
+			</div> -->
 			<!-- 🚩 Fin Balizas -->
 		</div>
 	</div>
