@@ -243,7 +243,7 @@
       },
       "diasSemana": {
         "titulo": "🗓️ Dies de la setmana",
-        "descripcion": "Aquests botons dels dies de la setmana faciliten la selecció de la franja horària d'aquell dia. Aquest serà l'ús típic de l'aplicació: un cop d'ull ràpid als enlairaments 'possibles' per a aquest dia."
+        "descripcion": "Aquests botons de dia de la setmana faciliten la selecció del rang horari d'aquell dia. Serà l'ús habitual de l'aplicació: donar un cop d'ull ràpid als enlairaments 'possibles' aquell dia.<br><br><b>Semàfor de puntuació general del dia</b>: La barra sota cada dia resumeix d'un cop d'ull les possibilitats de volar en els teus enlairaments favorits.<br><br>Cada barra es divideix en dues meitats: l'esquerra per al matí (fins a les 14:00 h) i la dreta per a la tarda. El color (de vermell 🟥 a verd 🟩) es calcula fent la mitjana del 20% dels teus millors enlairaments favorits per a aquesta franja horària; a més, en passar el ratolí es mostra un tooltip amb aquesta informació i la puntuació prevista (⭐)."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Dia seleccionat",

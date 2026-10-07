@@ -243,7 +243,7 @@
       },
       "diasSemana": {
         "titulo": "🗓️ Jours de la semaine",
-        "descripcion": "Ces boutons de jours de la semaine facilitent la sélection de la plage horaire de ce jour-là. Ce sera l'utilisation typique de l'application : un coup d'œil rapide aux décollages 'possibles' pour ce jour-là."
+        "descripcion": "Ces boutons de jour de la semaine facilitent la sélection de la plage horaire pour ce jour-là. Ce sera l'utilisation habituelle de l'application : jeter un coup d'œil rapide aux décollages 'possibles' ce jour-là.<br><br><b>Feu tricolore du score général de la journée</b> : La barre sous chaque jour résume d'un coup d'œil les possibilités de voler sur vos décollages favoris.<br><br>Chaque barre est divisée en deux moitiés : la gauche pour le matin (jusqu'à 14:00 h) et la droite pour l'après-midi. La couleur (du rouge 🟥 au vert 🟩) est calculée en faisant la moyenne du top 20 % de vos décollages favoris pour cette plage horaire ; de plus, le survol de la souris affiche une infobulle avec cette information et le score prévu (⭐)."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Jour sélectionné",

@@ -243,7 +243,7 @@
       },
       "diasSemana": {
         "titulo": "🗓️ Wochentage",
-        "descripcion": "Diese Wochentag-Schaltflächen erleichtern die Auswahl des Zeitraums für diesen Tag. Dies ist die typische Nutzung der App: ein schneller Blick auf die 'möglichen' Startplätze für diesen Tag."
+        "descripcion": "Diese Wochentag-Schaltflächen erleichtern die Auswahl des Zeitbereichs für diesen Tag. Dies wird die übliche Nutzung der Anwendung sein: ein kurzer Blick auf die 'möglichen' Startplätze an diesem Tag.<br><br><b>Ampel für die Tagesgesamtpunktzahl</b>: Der Balken unter jedem Tag fasst auf einen Blick die Möglichkeiten zusammen, an Ihren bevorzugten Startplätzen zu fliegen.<br><br>Jeder Balken ist in zwei Hälften geteilt: die linke für den Vormittag (bis 14:00 h) und die rechte für den Nachmittag. Die Farbe (von rot 🟥 bis grün 🟩) wird durch die Durchschnittsbildung der besten 20% Ihrer bevorzugten Startplätze für dieses Zeitfenster berechnet; außerdem zeigt das Bewegen der Maus darüber einen Tooltip mit diesen Informationen und der vorhergesagten Punktzahl (⭐)."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Ausgewählter Tag",

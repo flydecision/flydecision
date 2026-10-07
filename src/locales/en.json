@@ -243,7 +243,7 @@
       },
       "diasSemana": {
         "titulo": "🗓️ Days of the Week",
-        "descripcion": "These day-of-the-week buttons make it easy to select that day's time range. This will be the typical use of the app: a quick look at the 'possible' takeoffs for that day."
+        "descripcion": "These day of the week buttons facilitate the selection of the time range for that day. It will be the usual use of the application: taking a quick look at the 'possible' take-offs that day.<br><br><b>Overall daily score traffic light</b>: The bar under each day summarizes at a glance the possibilities of flying at your favorite take-offs.<br><br>Each bar is divided into two halves: the left for the morning (until 14:00 h) and the right for the afternoon. The color (from red 🟥 to green 🟩) is calculated by averaging the top 20% of your favorite take-offs for that time slot; furthermore, hovering the mouse shows a tooltip with this information and the predicted score (⭐)."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Selected Day",

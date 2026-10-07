@@ -243,7 +243,7 @@
       },
       "diasSemana": {
         "titulo": "🗓️ Días da semana",
-        "descripcion": "Estes botóns dos días da semana facilitan a selección da franxa horaria dese día. Este será o uso típico da aplicación: unha ollada rápida ás engalaxes 'posibles' para ese día."
+        "descripcion": "Estes botóns de día da semana facilitan a selección do rango horario dese día. Será o uso habitual da aplicación: botar unha ollada rápida ás engalaxes 'posibles' ese día.<br><br><b>Semáforo de puntuación xeral do día</b>: A barra baixo cada día resume dunha ollada as posibilidades de voar nas túas engalaxes favoritas.<br><br>Cada barra divídese en dúas metades: a esquerda para a mañá (ata as 14:00 h) e a dereita para a tarde. A cor (de vermello 🟥 a verde 🟩) calcúlase promediando o 20% das túas mellores engalaxes favoritas para esa franxa horaria; ademais, ao pasar o rato móstrase un tooltip con esta información e a puntuación prevista (⭐)."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Día seleccionado",
