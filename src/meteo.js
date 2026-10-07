@@ -3695,17 +3695,22 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 
     const horas = window.horasCrudasRangoHorario;
     const indices = window.indicesHorasRangoHorario;
-    const diasClaves = ["dom","lun","mar","mie","jue","vie","sab"];
+    const diasClavesCortos = ["dom","lun","mar","mie","jue","vie","sab"];
+    const diasClavesLargos = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
 
     pipIndices.forEach((startIdx, i) => {
         const idxReal = indices[startIdx];
         if (!horas || !horas[idxReal]) return;
 
         const d = new Date(horas[idxReal].endsWith('Z') ? horas[idxReal] : horas[idxReal] + 'Z');
-        const diaSemanaTexto = t(`dias.${diasClaves[d.getDay()]}`);
+        const diaSemanaTextoCorto = t(`dias.${diasClavesCortos[d.getDay()]}`);
+        
+        // Nombre completo del día capitalizado (ej. "Martes", "Saturday")
+        const diaLargoRaw = t(`dias.${diasClavesLargos[d.getDay()]}`);
+        const diaSemanaCompleto = diaLargoRaw.charAt(0).toUpperCase() + diaLargoRaw.slice(1);
         const numeroDia = d.getDate();
 
-        // 1. Separar las horas del día en Mañana (luz hasta 14h) y Tarde (14h hasta ocaso)
+        // 1. Separar las horas del día con el margen de +1h en amanecer y -1h en ocaso
         const dayRanges = sliderElement.dayRanges;
         const indicesAM = [];
         const indicesPM = [];
@@ -3720,9 +3725,12 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
                 const { inicio: inicioLuz, fin: finLuz } = HORAS_LUZ_CON_MARGEN[mes];
                 const h = dHora.getHours();
 
-                if (h >= inicioLuz && h < 14) {
+                // Mañana: primera hora diurna + 1h hasta las 14:00 h
+                if (h >= (inicioLuz + 1) && h < 14) {
                     indicesAM.push(idxHora);
-                } else if (h >= 14 && h < finLuz) {
+                } 
+                // Tarde: desde las 14:00 h hasta la última hora diurna - 1h
+                else if (h >= 14 && h < (finLuz - 1)) {
                     indicesPM.push(idxHora);
                 }
             }
@@ -3737,7 +3745,7 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 
         const btn = document.createElement('button');
 
-        // 3. Montar el contenido del botón con la barrita inferior integrada
+        // 3. Contenido visual del botón (texto corto visible para que quepan holgados)
         let htmlBarra = '';
         if (notaAM !== null || notaPM !== null) {
             htmlBarra = `
@@ -3748,15 +3756,27 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
             `;
         }
 
-        btn.innerHTML = `<span class="pip-dia-texto">${diaSemanaTexto}</span>${htmlBarra}`;
+        btn.innerHTML = `<span class="pip-dia-texto">${diaSemanaTextoCorto}</span>${htmlBarra}`;
 
-        // 4. Tooltip detallado con las notas al pasar el ratón
-        let tooltipTexto = `${diaSemanaTexto} ${numeroDia}`;
+        // 4. Tooltip detallado con notas, significado de colores y cálculo
+        let tooltipTexto = `${diaSemanaCompleto} ${numeroDia}`;
+        const favIds = (typeof obtenerFavoritos === 'function') ? obtenerFavoritos().map(Number).filter(n => !isNaN(n)) : [];
+
         if (notaAM !== null || notaPM !== null) {
-            const txtAM = notaAM !== null ? `${notaAM.toFixed(1)}⭐` : '—';
-            const txtPM = notaPM !== null ? `${notaPM.toFixed(1)}⭐` : '—';
-            tooltipTexto += `\n🌅 AM: ${txtAM} | 🌇 PM: ${txtPM}`;
+            const txtAM = notaAM !== null ? `${Math.round(notaAM)}⭐` : '—';
+            const txtPM = notaPM !== null ? `${Math.round(notaPM)}⭐` : '—';
+            const pct = Math.round(RATIO_MEJORES_FAVORITOS_DIA * 100);
+
+            tooltipTexto += `\n──────────────────────`;
+            tooltipTexto += `\n${t('dias.manana', { defaultValue: 'Barra izquierda = puntuación de la mañana (de amanecer + 1 hora hasta 14h)' })}: ${txtAM}`;
+            tooltipTexto += `\n${t('dias.tarde', { defaultValue: 'Barra derecha = puntuación de la tarde (desde 14h hasta ocaso - 1 hora)' })}: ${txtPM}`;
+            tooltipTexto += `\n──────────────────────`;
+            tooltipTexto += `\n${t('dias.semaforoCalculo', { pct: pct, defaultValue: 'ℹ️ La puntuación de cada rango horario es la media del top {{pct}}% de tus despegues favoritos' })}`;
+        } else if (favIds.length === 0) {
+            tooltipTexto += `\n──────────────────────`;
+            tooltipTexto += `\n${t('dias.sinFavoritosTooltip', { defaultValue: 'Marca despegues favoritos para ver la puntuación general de cada día' })}`;
         }
+
         btn.title = tooltipTexto;
 
         const diaSemanaNum = d.getDay();

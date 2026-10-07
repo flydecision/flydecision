@@ -57,7 +57,11 @@
     "mie": "Qua",
     "jue": "Qui",
     "vie": "Sex",
-    "sab": "Sáb"
+    "sab": "Sáb",
+    "manana": "Barra esquerda = pontuação da manhã (do nascer do sol + 1 hora até às 14h)",
+    "tarde": "Barra direita = pontuação da tarde (das 14h até ao pôr do sol - 1 hora)",
+    "semaforoCalculo": "ℹ️ A pontuação de cada intervalo de tempo é a média do top {{pct}}% das suas descolagens favoritas",
+    "sinFavoritosTooltip": "Marque descolagens favoritas para ver a pontuação geral de cada dia"
   },
 
   "gps": {
@@ -239,7 +243,7 @@
       },
       "diasSemana": {
         "titulo": "🗓️ Dias da semana",
-        "descripcion": "Estes botões dos dias da semana facilitam a seleção da janela de tempo desse dia. Esta será a utilização típica da aplicação: uma vista de olhos rápida às descolagens 'possíveis' para esse dia."
+        "descripcion": "Estes botões de dia da semana facilitam a seleção do intervalo de tempo para esse dia. Será a utilização habitual da aplicação: dar uma vista de olhos rápida às descolagens 'possíveis' nesse dia.<br><br><b>Semáforo de pontuação geral do dia</b>: A barra sob cada dia resume num piscar de olhos as possibilidades de voar nas suas descolagens favoritas.<br><br>Cada barra divide-se em duas metades: a esquerda para a manhã (até às 14:00 h) e a direita para a tarde. A cor (de vermelho 🟥 a verde 🟩) é calculada fazendo a média do top 20% das suas descolagens favoritas para essa faixa horária; além disso, ao passar o rato é mostrado um tooltip com esta informação e a pontuação prevista (⭐)."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Dia selecionado",

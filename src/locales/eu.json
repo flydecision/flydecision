@@ -57,7 +57,11 @@
     "mie": "Asz",
     "jue": "Osg",
     "vie": "Osr",
-    "sab": "Lar"
+    "sab": "Lar",
+    "manana": "Ezkerreko barra = goizeko puntuazioa (egunsentia + ordu 1etik 14h-ra)",
+    "tarde": "Eskuineko barra = arratsaldeko puntuazioa (14h-tik ilunabarrera - ordu 1)",
+    "semaforoCalculo": "ℹ️ Ordu-tarte bakoitzeko puntuazioa zure aireratze gogokoenen top {{pct}}%-aren batez bestekoa da",
+    "sinFavoritosTooltip": "Markatu aireratze gogokoenak egun bakoitzeko puntuazio orokorra ikusteko"
   },
 
   "gps": {
@@ -239,7 +243,7 @@
       },
       "diasSemana": {
         "titulo": "🗓️ Asteko egunak",
-        "descripcion": "Asteko egunetako botoi hauek egun horretako ordu-tartea hautatzea errazten dute. Hau izango da aplikazioaren erabilera tipikoa: egun horretarako 'posible' diren aireratzeei begiratu azkar bat ematea."
+        "descripcion": "Asteko egunen botoi hauek egun horretako ordu-tartearen hautaketa errazten dute. Hori izango da aplikazioaren ohiko erabilera: egun horretan 'posible' diren aireratzeei begirada azkar bat ematea.<br><br><b>Eguneko puntuazio orokorraren semaforoa</b>: Egun bakoitzaren azpiko barrak begiratu batean laburbiltzen ditu zure aireratze gogokoenetan hegan egiteko aukukas.<br><br>Barra bakoitza bi erditan banatzen da: ezkerrekoa goizerako (14:00ak arte) eta eskuinekoa arratsalderako. Kolorea (gorritik 🟥 berdera 🟩) ordu-tarte horretarako zure aireratze gogokoen onenen % 20aren batez bestekoa eginez kalkulatzen da; gainera, sagua gainetik pasatzean informazio hau eta aurreikusitako puntuazioa (⭐) erakusten dituen tooltip bat bistaratzen da."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Hautatutako eguna",

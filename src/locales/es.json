@@ -57,7 +57,11 @@
     "mie": "Mié",
     "jue": "Jue",
     "vie": "Vie",
-    "sab": "Sáb"
+    "sab": "Sáb",
+    "manana": "Barra izquierda = puntuación de la mañana (de amanecer + 1 hora hasta 14h)",
+    "tarde": "Barra derecha = puntuación de la tarde (desde 14h hasta ocaso - 1 hora)",
+    "semaforoCalculo": "ℹ️ La puntuación de cada rango horario es la media del top {{pct}}% de tus despegues favoritos",
+    "sinFavoritosTooltip": "Marca despegues favoritos para ver la puntuación general de cada día"
   },
 
   "gps": {
@@ -239,7 +243,7 @@
       },      
       "diasSemana": {
         "titulo": "🗓️ Días de la semana",
-        "descripcion": "Estos botones de día de la semana facilitan la selección del rango horario de ese día. Será el uso habitual de la aplicación: echar un vistazo rápido a los despegues 'posibles' ese día."
+        "descripcion": "Estos botones de día de la semana facilitan la selección del rango horario de ese día. Será el uso habitual de la aplicación: echar un vistazo rápido a los despegues 'posibles' ese día.<br><br><b>Semáforo de puntuación general del día</b>: La barra bajo cada día resume de un vistazo las posibilidades de volar en tus despegues favoritos.<br><br>Cada barra se divide en dos mitades: la izquierda para la mañana (hasta las 14:00 h) y la derecha para la tarde. El color (de rojo 🟥 a verde 🟩) se calcula promediando el 20% de tus mejores despegues favoritos para esa franja horaria; además, al pasar el ratón se muestra un tooltip con esta información y la puntuación prevista (⭐)."
       },
       "diaSeleccionado": {
         "titulo": "🗓️ Día seleccionado",
