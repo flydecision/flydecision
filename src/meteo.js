@@ -16785,6 +16785,27 @@ function inicializarMapaLeaflet() {
             umbralRojoMin: 90,
             urlWeb: (id) => `https://www.larioja.org/agricultura/es/informacion-agroclimatica/red-estaciones`
         },
+        'lariojasos': {
+            id: 'lariojasos',
+            nombre: 'La Rioja SOS',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_lariojasos_cache.json',
+            url6h:    'https://flydecision.com/balizas_lariojasos_6h.json',
+            checkboxId: 'checkboxBalizasLaRiojaSos',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_LARIOJASOS_VISIBLE',
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
+            urlWeb: (id) => `https://www.larioja.org/emergencias-112/es/meteorologia/datos-actuales-rioja/detalle-estacion?homepage=${id}`,
+            idProveedorTolomet: 'RI'
+        },
         'suremet': {
             id: 'suremet',
             nombre: 'Suremet',
