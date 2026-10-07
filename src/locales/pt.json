@@ -57,7 +57,11 @@
     "mie": "Qua",
     "jue": "Qui",
     "vie": "Sex",
-    "sab": "Sáb"
+    "sab": "Sáb",
+    "manana": "Barra esquerda = pontuação da manhã (do nascer do sol + 1 hora até às 14h)",
+    "tarde": "Barra direita = pontuação da tarde (das 14h até ao pôr do sol - 1 hora)",
+    "semaforoCalculo": "ℹ️ A pontuação de cada intervalo de tempo é a média do top {{pct}}% das suas descolagens favoritas",
+    "sinFavoritosTooltip": "Marque descolagens favoritas para ver a pontuação geral de cada dia"
   },
 
   "gps": {

@@ -3750,13 +3750,25 @@ function crearBotonesDia(sliderElement, pipIndices, diaSeleccionado) {
 
         btn.innerHTML = `<span class="pip-dia-texto">${diaSemanaTexto}</span>${htmlBarra}`;
 
-        // 4. Tooltip detallado con las notas al pasar el ratón
+        // 4. Tooltip detallado con notas, significado de colores y cálculo
         let tooltipTexto = `${diaSemanaTexto} ${numeroDia}`;
+        const favIds = (typeof obtenerFavoritos === 'function') ? obtenerFavoritos().map(Number).filter(n => !isNaN(n)) : [];
+
         if (notaAM !== null || notaPM !== null) {
-            const txtAM = notaAM !== null ? `${notaAM.toFixed(1)}⭐` : '—';
-            const txtPM = notaPM !== null ? `${notaPM.toFixed(1)}⭐` : '—';
-            tooltipTexto += `\n🌅 AM: ${txtAM} | 🌇 PM: ${txtPM}`;
+            const txtAM = notaAM !== null ? `${notaAM.toFixed(0)}⭐` : '—';
+            const txtPM = notaPM !== null ? `${notaPM.toFixed(0)}⭐` : '—';
+            const pct = Math.round(RATIO_MEJORES_FAVORITOS_DIA * 100);
+
+            tooltipTexto += `\n──────────────────────`;
+            tooltipTexto += `\n${t('dias.manana', { defaultValue: 'Barra izquierda = puntuación de la mañana (de amanecer + 1 hora hasta 14h)' })}: ${txtAM}`;
+            tooltipTexto += `\n${t('dias.tarde', { defaultValue: 'Barra derecha = puntuación de la tarde (desde 14h hasta ocaso - 1 hora)' })}: ${txtPM}`;
+            tooltipTexto += `\n──────────────────────`;
+            tooltipTexto += `\n${t('dias.semaforoCalculo', { pct: pct, defaultValue: 'ℹ️ La puntuación de cada rango horario es la media del top {{pct}}% de tus despegues favoritos' })}`;
+        } else if (favIds.length === 0) {
+            tooltipTexto += `\n──────────────────────`;
+            tooltipTexto += `\n${t('dias.sinFavoritosTooltip', { defaultValue: 'Marca despegues favoritos para ver la puntuación general de cada día' })}`;
         }
+
         btn.title = tooltipTexto;
 
         const diaSemanaNum = d.getDay();

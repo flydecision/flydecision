@@ -57,7 +57,11 @@
     "mie": "Wed",
     "jue": "Thu",
     "vie": "Fri",
-    "sab": "Sat"
+    "sab": "Sat",
+    "manana": "Left bar = morning score (from sunrise + 1 hour to 14h)",
+    "tarde": "Right bar = afternoon score (from 14h to sunset - 1 hour)",
+    "semaforoCalculo": "ℹ️ The score for each time range is the average of the top {{pct}}% of your favorite take-offs",
+    "sinFavoritosTooltip": "Mark favorite take-offs to see the overall score for each day"
   },
 
   "gps": {

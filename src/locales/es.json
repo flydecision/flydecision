@@ -57,7 +57,11 @@
     "mie": "Mié",
     "jue": "Jue",
     "vie": "Vie",
-    "sab": "Sáb"
+    "sab": "Sáb",
+    "manana": "Barra izquierda = puntuación de la mañana (de amanecer + 1 hora hasta 14h)",
+    "tarde": "Barra derecha = puntuación de la tarde (desde 14h hasta ocaso - 1 hora)",
+    "semaforoCalculo": "ℹ️ La puntuación de cada rango horario es la media del top {{pct}}% de tus despegues favoritos",
+    "sinFavoritosTooltip": "Marca despegues favoritos para ver la puntuación general de cada día"
   },
 
   "gps": {

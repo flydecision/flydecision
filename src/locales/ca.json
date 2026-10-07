@@ -57,7 +57,11 @@
     "mie": "Dmc",
     "jue": "Dij",
     "vie": "Div",
-    "sab": "Dis"
+    "sab": "Dis",
+    "manana": "Barra esquerra = puntuació del matí (d'alba + 1 hora fins a 14h)",
+    "tarde": "Barra dreta = puntuació de la tarda (des de 14h fins a l'ocàs - 1 hora)",
+    "semaforoCalculo": "ℹ️ La puntuació de cada rang horari és la mitjana del top {{pct}}% dels teus enlairaments favorits",
+    "sinFavoritosTooltip": "Marca enlairaments favorits per veure la puntuació general de cada dia"
   },
 
   "gps": {

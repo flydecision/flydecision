@@ -57,7 +57,11 @@
     "mie": "Asz",
     "jue": "Osg",
     "vie": "Osr",
-    "sab": "Lar"
+    "sab": "Lar",
+    "manana": "Ezkerreko barra = goizeko puntuazioa (egunsentia + ordu 1etik 14h-ra)",
+    "tarde": "Eskuineko barra = arratsaldeko puntuazioa (14h-tik ilunabarrera - ordu 1)",
+    "semaforoCalculo": "ℹ️ Ordu-tarte bakoitzeko puntuazioa zure aireratze gogokoenen top {{pct}}%-aren batez bestekoa da",
+    "sinFavoritosTooltip": "Markatu aireratze gogokoenak egun bakoitzeko puntuazio orokorra ikusteko"
   },
 
   "gps": {

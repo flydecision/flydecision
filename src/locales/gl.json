@@ -57,7 +57,11 @@
     "mie": "Mér",
     "jue": "Xov",
     "vie": "Ven",
-    "sab": "Sáb"
+    "sab": "Sáb",
+    "manana": "Barra esquerda = puntuación da mañá (de amencer + 1 hora ata as 14h)",
+    "tarde": "Barra dereita = puntuación da tarde (desde as 14h ata o solpor - 1 hora)",
+    "semaforoCalculo": "ℹ️ A puntuación de cada rango horario é a media do top {{pct}}% das túas engalaxes favoritas",
+    "sinFavoritosTooltip": "Marca engalaxes favoritas para ver a puntuación xeral de cada día"
   },
 
   "gps": {

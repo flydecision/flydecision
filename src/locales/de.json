@@ -57,7 +57,11 @@
     "mie": "Mi",
     "jue": "Do",
     "vie": "Fr",
-    "sab": "Sa"
+    "sab": "Sa",
+    "manana": "Linker Balken = Vormittagspunktzahl (von Sonnenaufgang + 1 Stunde bis 14h)",
+    "tarde": "Rechter Balken = Nachmittagspunktzahl (von 14h bis Sonnenuntergang - 1 Stunde)",
+    "semaforoCalculo": "ℹ️ Die Punktzahl für jeden Zeitbereich ist der Durchschnitt der Top {{pct}}% Ihrer bevorzugten Startplätze",
+    "sinFavoritosTooltip": "Markieren Sie bevorzugte Startplätze, um die Gesamtpunktzahl für jeden Tag zu sehen"
   },
 
   "gps": {

@@ -57,7 +57,11 @@
     "mie": "Mer",
     "jue": "Jeu",
     "vie": "Ven",
-    "sab": "Sam"
+    "sab": "Sam",
+    "manana": "Barre gauche = score du matin (du lever du soleil + 1 heure jusqu'à 14h)",
+    "tarde": "Barre droite = score de l'après-midi (de 14h jusqu'au coucher du soleil - 1 heure)",
+    "semaforoCalculo": "ℹ️ Le score de chaque plage horaire est la moyenne du top {{pct}}% de vos décollages favoris",
+    "sinFavoritosTooltip": "Marquez des décollages favoris pour voir le score général de chaque jour"
   },
 
   "gps": {
