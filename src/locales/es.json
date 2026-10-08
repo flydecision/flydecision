@@ -807,6 +807,7 @@
       "planeoNecesario": "Planeo necesario (L/D):",
       "posibleBloqueoRelieve": "Posible bloqueo por relieve",
       "altitud": "Altitud",
+      "altura": "Altura suelo",
       "descenso": "Descenso",
       "distancia": "Distancia",
       "planeo": "Planeo"

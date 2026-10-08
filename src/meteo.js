@@ -18567,7 +18567,20 @@ function actualizarTooltipCursor(e) {
             else colorGr = '#ef4444';                // Rojo: planeo límite
         }
 
-        tooltip.innerHTML = `⛰️ ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <b style="color:${colorGr};">${grStr}</b>`;
+        // -------------------------------------------------------------
+        // Cálculo de Altura Suelo (Llegada AGL con planeo medio de vela)
+        // -------------------------------------------------------------
+        const PLANEO_VELA_REFERENCIA = 6.0; 
+        const perdidaPlaneo = dist / PLANEO_VELA_REFERENCIA;
+        const altitudLlegada = altPiloto - perdidaPlaneo;
+        const alturaSuelo = Math.round(altitudLlegada - cotaM);
+
+        const signoAlturaSuelo = alturaSuelo >= 0 ? `+${alturaSuelo}` : `${alturaSuelo}`;
+        const colorAlturaSuelo = alturaSuelo >= 50 ? '#22c55e' : (alturaSuelo >= 0 ? '#eab308' : '#ef4444');
+        const strAlturaSuelo = `<b style="color:${colorAlturaSuelo};">${signoAlturaSuelo} m</b>`;
+
+        // Tooltip actualizado con Altura suelo debajo de Altitud:
+        tooltip.innerHTML = `⛰️ ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura suelo' })}: ${strAlturaSuelo}<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <b style="color:${colorGr};">${grStr}</b>`;
     });
 }
 
