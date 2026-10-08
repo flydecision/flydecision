@@ -805,7 +805,11 @@
       "alturaExtraDespegue": "Altura extra: ",
       "cotaDespegueMasExtra": "Altitud + altura: ",
       "planeoNecesario": "Planeo necesario (L/D):",
-      "posibleBloqueoRelieve": "Posible bloqueo por relieve"
+      "posibleBloqueoRelieve": "Posible bloqueo por relieve",
+      "altitud": "Altitud",
+      "descenso": "Descenso",
+      "distancia": "Distancia",
+      "planeo": "Planeo"
     }
   },
 

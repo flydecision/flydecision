@@ -18407,6 +18407,7 @@ async function ejecutarCalculoConoPlaneo(latlng) {
     const lngStep = (ne.lng - sw.lng) / RES_GRID;
 
     // Muestreo celda a celda con Raymarching de obstáculos intermedios (20 pasos)
+    // Bucle píxel a píxel del cono de planeo
     for (let gy = 0; gy < RES_GRID; gy++) {
         const curLat = ne.lat - gy * latStep;
         for (let gx = 0; gx < RES_GRID; gx++) {
@@ -18420,11 +18421,13 @@ async function ejecutarCalculoConoPlaneo(latlng) {
                 continue;
             }
 
-            const cotaDestino = (leerElevacionGlobal(curLat, curLng) || 0) + MARGEN_SEGURIDAD_SUELO;
+            // Margen adaptativo: en laderas cercanas (0.5 km) pide 15-20 m; en valles lejanos sube a 50 m
+            const margenSeguridad = Math.min(MARGEN_SEGURIDAD_SUELO, Math.max(10, distanciaTotal * 0.04));
+            const cotaDestino = (leerElevacionGlobal(curLat, curLng) || 0) + margenSeguridad;
             const deltaZ = altitudPiloto - cotaDestino;
 
-            // El terreno está más alto que la cota de vuelo actual
             if (deltaZ <= 0) {
+                // Terreno por encima de la cota del piloto
                 data[pixelIdx]     = 40;
                 data[pixelIdx + 1] = 40;
                 data[pixelIdx + 2] = 40;
@@ -18434,29 +18437,39 @@ async function ejecutarCalculoConoPlaneo(latlng) {
 
             const finesseDirecta = distanciaTotal / deltaZ;
 
-            // Raymarching rápido de colisión con montañas intermedias
+            // RAYMARCHING CON ZONA DE EXCLUSIÓN REALISTA
             let interceptado = false;
             const pasosRayo = 16;
             for (let step = 1; step < pasosRayo; step++) {
                 const ratio = step / pasosRayo;
+                const distPaso = distanciaTotal * ratio;
+
+                // CLAVE: Ignorar los primeros 180 m (salida del despegue / meseta de cumbre)
+                // e ignorar los últimos 80 m (toma en el destino)
+                if (distPaso < 180 || (distanciaTotal - distPaso) < 80) {
+                    continue;
+                }
+
                 const interLat = latlng.lat + (curLat - latlng.lat) * ratio;
                 const interLng = latlng.lng + (curLng - latlng.lng) * ratio;
                 
-                const cotaVueloEnPunto = altitudPiloto - (deltaZ * ratio);
+                // Cota del rayo con +10 m de holgura inicial de vuelo en aire libre
+                const cotaVueloEnPunto = (altitudPiloto + 10) - (deltaZ * ratio);
                 const cotaTerrenoPunto = leerElevacionGlobal(interLat, interLng) || 0;
 
-                if (cotaTerrenoPunto >= cotaVueloEnPunto) {
+                // Solo bloquea si una montaña intermedia real corta el planeo (+5 m tolerancia de ruido)
+                if (cotaTerrenoPunto > (cotaVueloEnPunto + 5)) {
                     interceptado = true;
                     break;
                 }
             }
 
-            // Impacto previo contra relieve (sombra orográfica)
             if (interceptado) {
-                data[pixelIdx]     = 30;
-                data[pixelIdx + 1] = 30;
-                data[pixelIdx + 2] = 30;
-                data[pixelIdx + 3] = 120;
+                // Sombra orográfica real (montaña interpuesta)
+                data[pixelIdx]     = 70;
+                data[pixelIdx + 1] = 70;
+                data[pixelIdx + 2] = 70;
+                data[pixelIdx + 3] = 130;
             } else {
                 const [r, g, b, a] = obtenerColorPlaneo(finesseDirecta);
                 data[pixelIdx]     = r;
@@ -18521,13 +18534,14 @@ function actualizarTooltipCursor(e) {
 
         const cota = leerElevacionGlobal(e.latlng.lat, e.latlng.lng);
         if (cota === null) {
-            tooltip.innerHTML = '<i>' + t('mapa.planeo.popupPlaneoFueraZona', { defaultValue: 'Fuera de zona de cálculo' }) + '</i>';
+            tooltip.innerHTML = '<i>' + t('mapa.planeo.popupPlaneoFueraZona', { defaultValue: 'Este punto está fuera de zona de cálculo' }) + '</i>';
             return;
         }
 
         const dist = origenPlaneoLatLng.distanceTo(e.latlng);
         const altPiloto = cotaTerrenoBase + offsetTermicaActual;
-        const deltaZ = altPiloto - (cota + MARGEN_SEGURIDAD_SUELO);
+        const margenSeguridad = Math.min(MARGEN_SEGURIDAD_SUELO, Math.max(10, dist * 0.04));
+        const deltaZ = altPiloto - (cota + margenSeguridad);
 
         // 1. Cota en metros redondeada
         const cotaM = Math.round(cota);
@@ -18553,7 +18567,7 @@ function actualizarTooltipCursor(e) {
             else colorGr = '#ef4444';                // Rojo: planeo límite
         }
 
-        tooltip.innerHTML = `⛰️ <b>${cotaM} m</b><br>⬇️ <b>${strDesnivel}</b><br>➡️ <b>${strDist}</b><br>📐 <b style="color:${colorGr};">${grStr}</b>`;
+        tooltip.innerHTML = `⛰️ ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <b style="color:${colorGr};">${grStr}</b>`;
     });
 }
 
