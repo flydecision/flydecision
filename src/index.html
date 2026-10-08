@@ -1156,11 +1156,20 @@
 
 	<!-- 🟦 Control Planeo y sus popups -->
 	<div id="panel-control-planeo" style="display: none; position: absolute; top: 185px; right: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 10px 14px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #cbd5e1; max-width: 270px; line-height: 1.35;">
-		<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 8px;">
+		<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 6px; margin-bottom: 8px;">
 			<b style="color: #0f172a;" data-i18n="mapa.planeo.titlePlaneo">Cálculo de planeo</b>
-			<button onclick="desactivarModoPlaneo()" style="background: none; border: none; font-size: 16px; cursor: pointer; color: #64748b; padding: 0 4px;">❌</button>
+			<button id="btn-cerrar-planeo" data-i18n="[title]mapa.cerrarPanel" title="Cerrar panel" onclick="desactivarModoPlaneo()">
+				<span>❌</span>
+			</button>
 		</div>
 		
+
+		
+
+
+
+
+
 		<div id="planeo-instrucciones" style="color: #475569; font-size: 12px; margin-bottom: 8px;">
 			👆 <i data-i18n="mapa.planeo.popupPlaneoHazClic">Haz clic en el punto de despegue</i>
 		</div>
@@ -1185,7 +1194,7 @@
 			</div>
 
 			<!-- Leyenda visual de finezas -->
-			<div style="border-top: 1px solid #e2e8f0; padding-top: 6px; margin-top: 6px;">
+			<div style="border-top: 2px solid #ddd; padding-top: 6px; margin-top: 6px;">
 				<div style="margin-bottom: 4px;" data-i18n="mapa.planeo.planeoNecesario">Planeo necesario (L/D):</div>
 				
 				<!-- Fila 1: Colores -->

@@ -3365,7 +3365,7 @@ details.config-accordion .accordion-content {
 	line-height: 1;
 	cursor: pointer;
 }	
-#buttonCerrar, #buttonCerrar3, #buttonCerrar2 {
+#buttonCerrar, #buttonCerrar3, #buttonCerrar2, #btn-cerrar-planeo {
     float: right;
     margin-left: 10px;
     position: absolute;
