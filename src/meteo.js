@@ -18233,27 +18233,31 @@ function decodificarCotaTerrarium(r, g, b) {
     return (r * 256 + g + b / 256) - 32768;
 }
 
-// Calcula los 4 tramos a partir del planeo configurado
+// Calcula los umbrales para los 6 tramos de color
 function obtenerUmbralesPlaneo() {
-    const p = planeoReferencia; // ej: 8.0
+    const p = (typeof planeoReferencia !== 'undefined' && planeoReferencia > 0) ? planeoReferencia : 8.0;
     return {
-        verde: p,                  // ej: 8.0
-        amarillo: p + 1.5,         // ej: 9.5
-        naranja: p + 3.0,          // ej: 11.0
-        rojo: p + 4.5              // ej: 12.5
+        azulOscuro: p - 2.0,
+        azulClaro:  p - 1.0,
+        verde:      p,
+        amarillo:   p + 1.0,
+        naranja:    p + 2.0,
+        rojo:       p + 3.0
     };
 }
 
-// Asignación de color del cono en el Canvas
+// 6 colores aplicados al Canvas del mapa
 function obtenerColorPlaneo(finesse) {
     if (finesse <= 0) return [40, 40, 40, 140]; // Relieve superior
     const u = obtenerUmbralesPlaneo();
 
-    if (finesse <= u.verde)    return [34, 197, 94, 135];   // Verde
-    if (finesse <= u.amarillo) return [234, 179, 8, 135];   // Amarillo
-    if (finesse <= u.naranja)  return [249, 115, 22, 135];  // Naranja
-    if (finesse <= u.rojo)     return [239, 68, 68, 135];   // Rojo
-    return [0, 0, 0, 0];                                    // Inalcanzable (transparente)
+    if (finesse <= u.azulOscuro) return [37, 99, 235, 145];  // 1. Azul zafiro (sobradísimo)
+    if (finesse <= u.azulClaro)  return [6, 182, 212, 140];  // 2. Azul cian / turquesa
+    if (finesse <= u.verde)      return [34, 197, 94, 140];  // 3. Verde (planeo de tu vela)
+    if (finesse <= u.amarillo)   return [234, 179, 8, 140];  // 4. Amarillo
+    if (finesse <= u.naranja)    return [249, 115, 22, 140];  // 5. Naranja
+    if (finesse <= u.rojo)       return [239, 68, 68, 145];  // 6. Rojo (límite cono)
+    return [0, 0, 0, 0];                                     // Transparente (> P + 3)
 }
 
 window.toggleModoPlaneo = function() {
@@ -18563,8 +18567,7 @@ async function ejecutarCalculoConoPlaneo(latlng) {
         const iconoOrigen = L.divIcon({
             html: '<div class="glide-origin-marker">🪂</div>',
             className: 'custom-div-icon',
-            iconSize: [30, 30],
-            iconAnchor: [15, 15]
+            iconSize: [30, 30]
         });
 
         origenPlaneoMarker = L.marker(latlng, {
@@ -18582,17 +18585,42 @@ async function ejecutarCalculoConoPlaneo(latlng) {
 }
 
 function actualizarTextosLeyendaPlaneo() {
-    const u = obtenerUmbralesPlaneo();
-    
-    const elV = document.getElementById('txt-leg-verde');
-    const elA = document.getElementById('txt-leg-amarillo');
-    const elN = document.getElementById('txt-leg-naranja');
-    const elR = document.getElementById('txt-leg-rojo');
+    const p = (typeof planeoReferencia !== 'undefined' && planeoReferencia > 0) ? planeoReferencia : 8.0;
+    const contPips = document.getElementById('pips-gradiente-planeo');
+    if (!contPips) return;
 
-    if (elV) elV.innerHTML = `&le; ${u.verde.toFixed(1)}`;
-    if (elA) elA.textContent = `${u.verde.toFixed(1)}-${u.amarillo.toFixed(1)}`;
-    if (elN) elN.textContent = `${u.amarillo.toFixed(1)}-${u.naranja.toFixed(1)}`;
-    if (elR) elR.innerHTML = `&gt; ${u.naranja.toFixed(1)}`;
+    // 5 marcas calculadas con saltos de 1: (P - 2), (P - 1), P [50%], (P + 1), (P + 2)
+    const ticks = [
+        { pct: 16.7, val: p - 2, isRef: false },
+        { pct: 33.3, val: p - 1, isRef: false },
+        { pct: 50.0, val: p,     isRef: true },  // planeo de referencia (Centro, grueso y negrita)
+        { pct: 66.7, val: p + 1, isRef: false },
+        { pct: 83.3, val: p + 2, isRef: false }
+    ];
+
+    let html = '';
+    ticks.forEach(t => {
+        // Muestra decimal solo si no es entero (ej: 8 o 8.5)
+        const valTexto = Number.isInteger(t.val) ? t.val : t.val.toFixed(1);
+
+        if (t.isRef) {
+            // Marca de referencia: más gruesa, más larga y texto en negrita
+            html += `
+                <div style="position: absolute; left: ${t.pct}%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;">
+                    <span style="width: 2px; height: 6px; background: #0f172a; border-radius: 1px; display: block;"></span>
+                    <span style="font-weight: bold; color: #0f172a; margin-top: 1px;">${valTexto}</span>
+                </div>`;
+        } else {
+            // Marcas secundarias
+            html += `
+                <div style="position: absolute; left: ${t.pct}%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;">
+                    <span style="width: 1px; height: 4px; background: #64748b; display: block;"></span>
+                    <span style="color: #64748b; margin-top: 2px;">${valTexto}</span>
+                </div>`;
+        }
+    });
+
+    contPips.innerHTML = html;
 }
 
 // -------------------------------------------------------------------------
@@ -18675,12 +18703,14 @@ function actualizarTooltipCursor(e) {
                 grStr = gr > 35 ? '>35' : gr.toFixed(1);
 
                 const u = obtenerUmbralesPlaneo();
-                if (gr <= u.verde)         colorGr = '#22c55e';
-                else if (gr <= u.amarillo) colorGr = '#eab308';
-                else if (gr <= u.naranja)  colorGr = '#f97316';
-                else                       colorGr = '#ef4444';
+                if (gr <= u.azulOscuro)     colorGr = '#2563eb'; // 1. Azul intenso
+                else if (gr <= u.azulClaro) colorGr = '#06b6d4'; // 2. Azul cian
+                else if (gr <= u.verde)     colorGr = '#22c55e'; // 3. Verde
+                else if (gr <= u.amarillo)  colorGr = '#eab308'; // 4. Amarillo
+                else if (gr <= u.naranja)   colorGr = '#f97316'; // 5. Naranja
+                else                        colorGr = '#ef4444'; // 6. Rojo
             } else {
-                grStr = '—'; // Barrera infranqueable
+                grStr = '—';
             }
         }
 

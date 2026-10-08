@@ -1218,23 +1218,16 @@
 			<div style="border-top: 2px solid #ddd; padding-top: 6px; margin-top: 6px;">
 				<div style="margin-bottom: 4px;" data-i18n="mapa.planeo.planeoNecesario">Planeo necesario (L/D):</div>
 				
-				<!-- Fila 1: Colores -->
-				<div style="display: flex; gap: 4px; align-items: center;">
-					<span style="background: #22c55e; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0;"></span> 
-					<span id="txt-leg-verde">&le; 8</span>
+				<!-- Fila 1: Barra continua con gradiente de 6 colores -->
+				<div style="position: relative; width: 100%; margin-top: 5px;">
+					<div style="height: 11px; border-radius: 4px; background: linear-gradient(to right, #2563eb 0%, #06b6d4 25%, #22c55e 50%, #eab308 67%, #f97316 83%, #ef4444 100%); border: 1px solid rgba(0,0,0,0.12); box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);"></div>
 					
-					<span style="background: #eab308; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> 
-					<span id="txt-leg-amarillo">8-9.5</span>
-					
-					<span style="background: #f97316; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> 
-					<span id="txt-leg-naranja">9.5-11</span>
-					
-					<span style="background: #ef4444; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> 
-					<span id="txt-leg-rojo">&gt; 11</span>
+					<!-- Pips y marcas numéricas generadas dinámicamente -->
+					<div id="pips-gradiente-planeo" style="position: relative; width: 100%; height: 20px; margin-top: 2px;"></div>
 				</div>
 
-				<!-- Fila 2: Cuadrado gris y texto -->
-				<div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+				<!-- Fila 2: Cuadrado gris y relieve bloqueante -->
+				<div style="display: flex; align-items: center; gap: 6px; margin-top: 4px; color: #64748b;">
 					<span style="background: #7e7c7c; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0;"></span>
 					<span data-i18n="mapa.planeo.posibleBloqueoRelieve">Posible bloqueo por relieve</span>
 				</div>

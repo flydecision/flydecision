@@ -4290,6 +4290,7 @@ body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para el
     justify-content: center;
     font-size: 22px;
     filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4));
+    transform: translate(-3px, 9px);
 }
 
 /* Tooltip ultra-ligero que sigue al cursor */
