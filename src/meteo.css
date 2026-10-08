@@ -4269,7 +4269,6 @@ body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para el
     display: flex !important;
     align-items: center;
     justify-content: center;
-    font-size: 18px !important;
     color: #333 !important;
     text-decoration: none !important;
     cursor: pointer;
@@ -4277,7 +4276,7 @@ body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para el
 
 .leaflet-control-planeo a.activo {
     background-color: #0078d4 !important;
-    color: #ffffff !important;
+    color: #ffffff !important; /* Hace que el SVG se vuelva blanco */
 }
 
 .cursor-planeo-activo, 
