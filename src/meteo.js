@@ -18452,8 +18452,7 @@ async function ejecutarCalculoConoPlaneo(latlng) {
     const latStep = (ne.lat - sw.lat) / RES_GRID;
     const lngStep = (ne.lng - sw.lng) / RES_GRID;
 
-    // Muestreo celda a celda con Raymarching de obstáculos intermedios (20 pasos)
-    // Bucle píxel a píxel del cono de planeo
+    // Bucle píxel a píxel del cono de planeo con cálculo de envolvente y rodeo
     for (let gy = 0; gy < RES_GRID; gy++) {
         const curLat = ne.lat - gy * latStep;
         for (let gx = 0; gx < RES_GRID; gx++) {
@@ -18467,7 +18466,7 @@ async function ejecutarCalculoConoPlaneo(latlng) {
                 continue;
             }
 
-            // Margen adaptativo: en laderas cercanas (0.5 km) pide 15-20 m; en valles lejanos sube a 50 m
+            // Margen adaptativo sobre el suelo de destino
             const margenSeguridad = Math.min(MARGEN_SEGURIDAD_SUELO, Math.max(10, distanciaTotal * 0.04));
             const cotaDestino = (leerElevacionGlobal(curLat, curLng) || 0) + margenSeguridad;
             const deltaZ = altitudPiloto - cotaDestino;
@@ -18481,47 +18480,73 @@ async function ejecutarCalculoConoPlaneo(latlng) {
                 continue;
             }
 
-            const finesseDirecta = distanciaTotal / deltaZ;
-
-            // RAYMARCHING CON ZONA DE EXCLUSIÓN REALISTA
-            let interceptado = false;
+            // EVALUACIÓN AERONÁUTICA DE RELIEVE INTERMEDIO
+            let maxPenetracionRelieve = 0;
             const pasosRayo = 16;
+            const refGlide = (typeof planeoReferencia !== 'undefined' && planeoReferencia > 0) ? planeoReferencia : 8.0;
+
             for (let step = 1; step < pasosRayo; step++) {
                 const ratio = step / pasosRayo;
                 const distPaso = distanciaTotal * ratio;
 
-                // CLAVE: Ignorar los primeros 180 m (salida del despegue / meseta de cumbre)
-                // e ignorar los últimos 80 m (toma en el destino)
+                // Buffer de salida del despegue y aproximación final al suelo
                 if (distPaso < 180 || (distanciaTotal - distPaso) < 80) {
                     continue;
                 }
 
                 const interLat = latlng.lat + (curLat - latlng.lat) * ratio;
                 const interLng = latlng.lng + (curLng - latlng.lng) * ratio;
-                
-                // Cota del rayo con +10 m de holgura inicial de vuelo en aire libre
-                const cotaVueloEnPunto = (altitudPiloto + 10) - (deltaZ * ratio);
+
+                // Techo de vuelo del parapente a esa distancia según su planeo nominal
+                const cotaVueloTecho = (altitudPiloto + 10) - (distPaso / refGlide);
                 const cotaTerrenoPunto = leerElevacionGlobal(interLat, interLng) || 0;
 
-                // Solo bloquea si una montaña intermedia real corta el planeo (+5 m tolerancia de ruido)
-                if (cotaTerrenoPunto > (cotaVueloEnPunto + 5)) {
-                    interceptado = true;
-                    break;
+                // Comprobar si la montaña sobrepasa el techo de planeo de la vela
+                if (cotaTerrenoPunto > (cotaVueloTecho + 5)) {
+                    const penetracion = cotaTerrenoPunto - cotaVueloTecho;
+                    if (penetracion > maxPenetracionRelieve) {
+                        maxPenetracionRelieve = penetracion;
+                    }
                 }
             }
 
-            if (interceptado) {
-                // Sombra orográfica real (montaña interpuesta)
-                data[pixelIdx]     = 70;
-                data[pixelIdx + 1] = 70;
-                data[pixelIdx + 2] = 70;
-                data[pixelIdx + 3] = 130;
-            } else {
+            const u = obtenerUmbralesPlaneo();
+
+            if (maxPenetracionRelieve === 0) {
+                // 1. TRAYECTORIA LIMPIA: El parapente sobrevuela la cumbre/espolón sin rozar
+                const finesseDirecta = distanciaTotal / deltaZ;
                 const [r, g, b, a] = obtenerColorPlaneo(finesseDirecta);
                 data[pixelIdx]     = r;
                 data[pixelIdx + 1] = g;
                 data[pixelIdx + 2] = b;
                 data[pixelIdx + 3] = a;
+            } else if (maxPenetracionRelieve <= 130) {
+                // 2. CRESTA O ESPOLÓN SORTEABLE (Rodeo de relieve):
+                // Se aplica penalización por desvío lateral (+15% a +35% de distancia)
+                const penalizacionRodeo = 1.15 + (maxPenetracionRelieve / 130) * 0.20;
+                const distanciaConRodeo = distanciaTotal * penalizacionRodeo;
+                const finesseConRodeo = distanciaConRodeo / deltaZ;
+
+                if (finesseConRodeo <= u.rojo) {
+                    // Alcanzable bordeando el relieve
+                    const [r, g, b, a] = obtenerColorPlaneo(finesseConRodeo);
+                    data[pixelIdx]     = r;
+                    data[pixelIdx + 1] = g;
+                    data[pixelIdx + 2] = b;
+                    data[pixelIdx + 3] = a;
+                } else {
+                    // El rodeo exige más planeo del alcanzable
+                    data[pixelIdx]     = 70;
+                    data[pixelIdx + 1] = 70;
+                    data[pixelIdx + 2] = 70;
+                    data[pixelIdx + 3] = 130;
+                }
+            } else {
+                // 3. BARRERA INFRANQUEABLE (>130 m por encima del techo de vuelo)
+                data[pixelIdx]     = 70;
+                data[pixelIdx + 1] = 70;
+                data[pixelIdx + 2] = 70;
+                data[pixelIdx + 3] = 130;
             }
         }
     }
@@ -18615,17 +18640,48 @@ function actualizarTooltipCursor(e) {
 
         // 4. L/D (solo la cifra, sin ":1") y con color según dificultad
         let grStr = '—';
-        let colorGr = '#f87171'; // Rojo si el relieve es superior a la cota del piloto
+        let colorGr = '#f87171';
 
         if (deltaZ > 0) {
-            const gr = dist / deltaZ;
-            grStr = gr > 35 ? '>35' : gr.toFixed(1);
+            // Verificar si hay montaña intermedia que obligue a rodeo
+            let maxPenetracion = 0;
+            const refGlide = (typeof planeoReferencia !== 'undefined' && planeoReferencia > 0) ? planeoReferencia : 8.0;
+            const pasosRayo = 16;
 
-            const u = obtenerUmbralesPlaneo();
-            if (gr <= u.verde)         colorGr = '#22c55e'; // Verde
-            else if (gr <= u.amarillo) colorGr = '#eab308'; // Amarillo
-            else if (gr <= u.naranja)  colorGr = '#f97316'; // Naranja
-            else                       colorGr = '#ef4444'; // Rojo
+            for (let step = 1; step < pasosRayo; step++) {
+                const ratio = step / pasosRayo;
+                const distPaso = dist * ratio;
+                if (distPaso < 180 || (dist - distPaso) < 80) continue;
+
+                const interLat = origenPlaneoLatLng.lat + (e.latlng.lat - origenPlaneoLatLng.lat) * ratio;
+                const interLng = origenPlaneoLatLng.lng + (e.latlng.lng - origenPlaneoLatLng.lng) * ratio;
+                const cotaVueloTecho = (altPiloto + 10) - (distPaso / refGlide);
+                const cotaTerrenoPunto = leerElevacionGlobal(interLat, interLng) || 0;
+
+                if (cotaTerrenoPunto > (cotaVueloTecho + 5)) {
+                    const pen = cotaTerrenoPunto - cotaVueloTecho;
+                    if (pen > maxPenetracion) maxPenetracion = pen;
+                }
+            }
+
+            // Distancia efectiva (directa o con rodeo)
+            let distEfectiva = dist;
+            if (maxPenetracion > 0 && maxPenetracion <= 130) {
+                distEfectiva = dist * (1.15 + (maxPenetracion / 130) * 0.20);
+            }
+
+            if (maxPenetracion <= 130) {
+                const gr = distEfectiva / deltaZ;
+                grStr = gr > 35 ? '>35' : gr.toFixed(1);
+
+                const u = obtenerUmbralesPlaneo();
+                if (gr <= u.verde)         colorGr = '#22c55e';
+                else if (gr <= u.amarillo) colorGr = '#eab308';
+                else if (gr <= u.naranja)  colorGr = '#f97316';
+                else                       colorGr = '#ef4444';
+            } else {
+                grStr = '—'; // Barrera infranqueable
+            }
         }
 
         // -------------------------------------------------------------
@@ -18640,7 +18696,7 @@ function actualizarTooltipCursor(e) {
         const strAlturaSuelo = `<b style="color:${colorAlturaSuelo};">${signoAlturaSuelo} m</b>`;
 
         // Tooltip actualizado con Altura suelo debajo de Altitud:
-        tooltip.innerHTML = `⛰️ ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura suelo' })}: ${strAlturaSuelo}<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}<br>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <b style="color:${colorGr};">${grStr}</b>`;
+        tooltip.innerHTML = `📍 ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura suelo' })}: ${strAlturaSuelo}<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}<br>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <b style="color:${colorGr};">${grStr}</b>`;
     });
 }
 
