@@ -366,11 +366,10 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     cursor: default;
 }
 
-#valor-dias-seguimiento, #valor-viento-max-balizas {
+#valor-dias-seguimiento, #valor-viento-max-balizas, #valor-planeo-referencia {
     min-width: 28px;
     text-align: center;
     font-weight: bold;
-    font-size: 0.95em;
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
     height: 28px;

@@ -660,6 +660,18 @@
 					</button>
 				</div>
 
+				<div class="linea-con-bt-info solo-modo-avanzado" style="margin-top: 10px; margin-left: 8px;">
+					<span data-i18n="ajustes.planeoReferencia">Planeo de la vela:</span>
+					<div class="stepper-dias-seguimiento">
+						<button id="stepper-planeo-menos" class="stepper-btn" onclick="cambiarPlaneoReferencia(-1)">−</button>
+						<span id="valor-planeo-referencia">7.0</span>
+						<button id="stepper-planeo-mas" class="stepper-btn" onclick="cambiarPlaneoReferencia(1)">+</button>
+					</div>
+					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipPlaneoReferencia" data-tippy-content="<b>Planeo de la vela (L/D)</b><br><br>Relación de planeo estimada de tu parapente utilizada para calcular la altura sobre el suelo al llegar a cada punto en el mapa.">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
+				</div>
+
 			</div>
 		</details>
 	</div>
@@ -1155,7 +1167,7 @@
 	</div>
 
 	<!-- 🟦 Control Planeo y sus popups -->
-	<div id="panel-control-planeo" style="display: none; position: absolute; top: 105px; right: 39px; z-index: 1000; background: rgba(255, 255, 255, 0.95);  padding: 10px 14px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #cbd5e1; max-width: 270px; line-height: 1.35;">
+	<div id="panel-control-planeo" style="display: none; position: absolute; top: 105px; right: 39px; z-index: 1000; background: rgba(255, 255, 255, 0.95);  padding: 10px 14px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #cbd5e1; max-width: 300px; line-height: 1.35;">
 		<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 6px; margin-bottom: 8px;">
 			<!-- Título -->
 			<span style="display: inline-flex; align-items: center; gap: 6px; color: #555; user-select: none;">
@@ -1208,10 +1220,17 @@
 				
 				<!-- Fila 1: Colores -->
 				<div style="display: flex; gap: 4px; align-items: center;">
-					<span style="background: #22c55e; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0;"></span> &le; 7
-					<span style="background: #eab308; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> 7-9
-					<span style="background: #f97316; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> 9-11
-					<span style="background: #ef4444; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> &gt; 11
+					<span style="background: #22c55e; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0;"></span> 
+					<span id="txt-leg-verde">&le; 8</span>
+					
+					<span style="background: #eab308; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> 
+					<span id="txt-leg-amarillo">8-9.5</span>
+					
+					<span style="background: #f97316; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> 
+					<span id="txt-leg-naranja">9.5-11</span>
+					
+					<span style="background: #ef4444; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> 
+					<span id="txt-leg-rojo">&gt; 11</span>
 				</div>
 
 				<!-- Fila 2: Cuadrado gris y texto -->

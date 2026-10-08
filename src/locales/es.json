@@ -620,6 +620,7 @@
     "ordenar_xc": "Ordenar por Condiciones XC",
     "vibracion": "Vibrar al tocar",
     "diasSeguimiento": "Días de seguimiento:",
+    "planeoReferencia": "Planeo de la vela:",
     "titulo": "Ajustes",
     "editarFavoritos": "Editar favoritos",
     "importarConfig": "Importar configuración y favoritos",
@@ -810,7 +811,8 @@
       "altura": "Altura suelo",
       "descenso": "Descenso",
       "distancia": "Distancia",
-      "planeo": "Planeo"
+      "planeo": "Planeo",
+      "planeoVela": "Planeo vela"
     }
   },
 

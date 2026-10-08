@@ -3638,6 +3638,35 @@ function cambiarDiasSeguimiento(delta) {
     if (btnMas)   btnMas.disabled   = (idx >= PASOS_DIAS_SEGUIMIENTO.length - 1);
 }
 
+let planeoReferencia = parseFloat(localStorage.getItem('METEO_PLANEO_REFERENCIA')) || 7.0;
+window.planeoReferencia = planeoReferencia;
+
+function actualizarUIPlaneoReferencia() {
+    const el = document.getElementById('valor-planeo-referencia');
+    if (el) el.textContent = planeoReferencia.toFixed(1);
+
+    // Límites de seguridad: entre 5.0 y 14.0
+    const btnMenos = document.getElementById('stepper-planeo-menos');
+    const btnMas   = document.getElementById('stepper-planeo-mas');
+    if (btnMenos) btnMenos.disabled = (planeoReferencia <= 5.0);
+    if (btnMas)   btnMas.disabled   = (planeoReferencia >= 14.0);
+}
+
+function cambiarPlaneoReferencia(delta) {
+    // Suma o resta 0.1 redondeando para evitar errores de coma flotante de JS
+    let nuevo = Math.round((planeoReferencia + delta * 0.1) * 10) / 10;
+    nuevo = Math.min(14.0, Math.max(5.0, nuevo));
+
+    planeoReferencia = nuevo;
+    localStorage.setItem('METEO_PLANEO_REFERENCIA', planeoReferencia.toFixed(1));
+
+    actualizarUIPlaneoReferencia();
+    actualizarTextosLeyendaPlaneo()
+
+    if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+}
+window.cambiarPlaneoReferencia = cambiarPlaneoReferencia;
+
 // ---------------------------------------------------------------
 // 🔴 SLIDERS. RANGO HORARIO. Lógica para poder hacer clic en los pips de los días semanales y seleccionar así sus rango horario completo (tiene en cuenta chk día/noche) con un toque
 // ---------------------------------------------------------------
@@ -11199,6 +11228,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
         if (btnMas)   btnMas.disabled   = (idxDias >= PASOS_DIAS_SEGUIMIENTO.length - 1);
     }
 
+    // Inicializar visualmente el stepper de planeo de vela
+    actualizarUIPlaneoReferencia();
+
     if (document.getElementById("chkAplicarCorreccionEstadistica")) {
         document.getElementById("chkAplicarCorreccionEstadistica").checked = chkAplicarCorreccionEstadistica;
     }
@@ -18201,14 +18233,27 @@ function decodificarCotaTerrarium(r, g, b) {
     return (r * 256 + g + b / 256) - 32768;
 }
 
-// Escala de colores según la finura necesaria
+// Calcula los 4 tramos a partir del planeo configurado
+function obtenerUmbralesPlaneo() {
+    const p = planeoReferencia; // ej: 8.0
+    return {
+        verde: p,                  // ej: 8.0
+        amarillo: p + 1.5,         // ej: 9.5
+        naranja: p + 3.0,          // ej: 11.0
+        rojo: p + 4.5              // ej: 12.5
+    };
+}
+
+// Asignación de color del cono en el Canvas
 function obtenerColorPlaneo(finesse) {
-    if (finesse <= 0)  return [40, 40, 40, 140];    // Obstáculo orográfico / Terreno más alto
-    if (finesse <= 7)  return [34, 197, 94, 135];   // Verde (< 7:1) Seguro / En cono
-    if (finesse <= 9)  return [234, 179, 8, 135];   // Amarillo (7-9:1) EN-A / EN-B
-    if (finesse <= 11) return [249, 115, 22, 135];  // Naranja (9-11:1) Planeo exigente
-    if (finesse <= 13) return [239, 68, 68, 135];   // Rojo (11-13:1) Límite
-    return [0, 0, 0, 0];                            // Inalcanzable (> 13:1) -> Transparente
+    if (finesse <= 0) return [40, 40, 40, 140]; // Relieve superior
+    const u = obtenerUmbralesPlaneo();
+
+    if (finesse <= u.verde)    return [34, 197, 94, 135];   // Verde
+    if (finesse <= u.amarillo) return [234, 179, 8, 135];   // Amarillo
+    if (finesse <= u.naranja)  return [249, 115, 22, 135];  // Naranja
+    if (finesse <= u.rojo)     return [239, 68, 68, 135];   // Rojo
+    return [0, 0, 0, 0];                                    // Inalcanzable (transparente)
 }
 
 window.toggleModoPlaneo = function() {
@@ -18221,6 +18266,7 @@ window.toggleModoPlaneo = function() {
         if (btn) btn.classList.add('activo');
         if (panel) panel.style.display = 'block';
         if (mapDiv) mapDiv.classList.add('cursor-planeo-activo');
+        actualizarTextosLeyendaPlaneo(); 
     } else {
         desactivarModoPlaneo();
     }
@@ -18510,6 +18556,20 @@ async function ejecutarCalculoConoPlaneo(latlng) {
     }
 }
 
+function actualizarTextosLeyendaPlaneo() {
+    const u = obtenerUmbralesPlaneo();
+    
+    const elV = document.getElementById('txt-leg-verde');
+    const elA = document.getElementById('txt-leg-amarillo');
+    const elN = document.getElementById('txt-leg-naranja');
+    const elR = document.getElementById('txt-leg-rojo');
+
+    if (elV) elV.innerHTML = `&le; ${u.verde.toFixed(1)}`;
+    if (elA) elA.textContent = `${u.verde.toFixed(1)}-${u.amarillo.toFixed(1)}`;
+    if (elN) elN.textContent = `${u.amarillo.toFixed(1)}-${u.naranja.toFixed(1)}`;
+    if (elR) elR.innerHTML = `&gt; ${u.naranja.toFixed(1)}`;
+}
+
 // -------------------------------------------------------------------------
 // SEGUIDOR DE CURSOR: Formato de cota, desnivel, distancia y planeo
 // -------------------------------------------------------------------------
@@ -18561,17 +18621,17 @@ function actualizarTooltipCursor(e) {
             const gr = dist / deltaZ;
             grStr = gr > 35 ? '>35' : gr.toFixed(1);
 
-            if (gr <= 7) colorGr = '#22c55e';        // Verde: planeo fácil
-            else if (gr <= 9) colorGr = '#eab308';   // Amarillo: estándar
-            else if (gr <= 11) colorGr = '#f97316';  // Naranja: exigente
-            else colorGr = '#ef4444';                // Rojo: planeo límite
+            const u = obtenerUmbralesPlaneo();
+            if (gr <= u.verde)         colorGr = '#22c55e'; // Verde
+            else if (gr <= u.amarillo) colorGr = '#eab308'; // Amarillo
+            else if (gr <= u.naranja)  colorGr = '#f97316'; // Naranja
+            else                       colorGr = '#ef4444'; // Rojo
         }
 
         // -------------------------------------------------------------
-        // Cálculo de Altura Suelo (Llegada AGL con planeo medio de vela)
+        // Cálculo de Altura Suelo usando el planeo configurado
         // -------------------------------------------------------------
-        const PLANEO_VELA_REFERENCIA = 6.0; 
-        const perdidaPlaneo = dist / PLANEO_VELA_REFERENCIA;
+        const perdidaPlaneo = dist / planeoReferencia;
         const altitudLlegada = altPiloto - perdidaPlaneo;
         const alturaSuelo = Math.round(altitudLlegada - cotaM);
 
@@ -18580,7 +18640,7 @@ function actualizarTooltipCursor(e) {
         const strAlturaSuelo = `<b style="color:${colorAlturaSuelo};">${signoAlturaSuelo} m</b>`;
 
         // Tooltip actualizado con Altura suelo debajo de Altitud:
-        tooltip.innerHTML = `⛰️ ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura suelo' })}: ${strAlturaSuelo}<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <b style="color:${colorGr};">${grStr}</b>`;
+        tooltip.innerHTML = `⛰️ ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura suelo' })}: ${strAlturaSuelo}<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}<br>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <b style="color:${colorGr};">${grStr}</b>`;
     });
 }
 
