@@ -758,6 +758,53 @@
 		<span data-i18n="mapa.btnFiltros">Meteo</span>
 	</button>
 
+	<!-- 🪂 NUEVO: BOTÓN MODO PLANEO -->
+	<button id="btn-modo-planeo" class="btn-filtros-mapa" onclick="toggleModoPlaneo()" style="top: 140px; background: #ffffff; color: #1e3a8a; border: 1.5px solid #2563eb;" title="Calcular cono de planeo en parapente">
+		<span style="font-size: 1.1em; margin-right: 4px;">📐</span>
+		<span>Planeo</span>
+	</button>
+
+	<!-- 🪂 NUEVO: PANEL DE CONTROL Y LEYENDA DEL PLANEO -->
+	<div id="panel-control-planeo" style="display: none; position: absolute; top: 185px; right: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 10px 14px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #cbd5e1; font-size: 13px; max-width: 270px; line-height: 1.35;">
+		<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 8px;">
+			<b style="color: #0f172a; font-size: 14px;">Cono de planeo</b>
+			<button onclick="desactivarModoPlaneo()" style="background: none; border: none; font-size: 16px; cursor: pointer; color: #64748b; padding: 0 4px;">❌</button>
+		</div>
+		
+		<div id="planeo-instrucciones" style="color: #475569; font-size: 12px; margin-bottom: 8px;">
+			👆 <i>Haz clic en cualquier punto del mapa o despegue.</i>
+		</div>
+
+		<div id="planeo-ajustes-despegue" style="display: none;">
+			<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+				<span>Cota despegue:</span>
+				<b id="txt-cota-despegue">—</b>
+			</div>
+			
+			<div style="margin-bottom: 6px;">
+				<label style="display: flex; justify-content: space-between; font-size: 12px; color: #334155;">
+					<span>Ganancia térmica:</span>
+					<b id="txt-offset-termica">+0 m</b>
+				</label>
+				<input type="range" id="slider-offset-termica" min="0" max="1500" step="50" value="0" style="width: 100%; margin: 3px 0;" oninput="actualizarTermicaPlaneo(this.value)">
+			</div>
+
+			<!-- Leyenda visual de finezas -->
+			<div style="border-top: 1px solid #e2e8f0; padding-top: 6px; margin-top: 6px;">
+				<div style="font-weight: 600; font-size: 11px; color: #64748b; margin-bottom: 4px;">RELACIÓN DE PLANEO (L/D)</div>
+				<div style="display: flex; gap: 4px; align-items: center; font-size: 11px;">
+					<span style="background: #22c55e; width: 12px; height: 12px; border-radius: 3px; display: inline-block;"></span> &le; 7 (Fácil)
+					<span style="background: #eab308; width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-left: 6px;"></span> 7-9
+					<span style="background: #f97316; width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-left: 6px;"></span> 9-11
+					<span style="background: #ef4444; width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-left: 6px;"></span> &gt; 11
+				</div>
+				<div style="margin-top: 4px; font-size: 10px; color: #94a3b8;">
+					⬛ Relieve superior o cortado por montaña
+				</div>
+			</div>
+		</div>
+	</div>
+
     <div id="map" style="height: 100%; width: 100%;"></div>
 
 	<!-- 🟦 Control Despegues -->
@@ -1124,11 +1171,11 @@
 			</div>
 
 			<!-- 3. Rosa de los vientos (Volátil / Sesión) -->
-			<div class="control-orientacion-container" 
-				style="display: flex; flex-direction: row !important; align-items: center !important; justify-content: space-between !important; max-width: 100% !important; box-sizing: border-box !important; padding: 4px 6px !important; border-radius: 8px !important; transition: all 0.2s;">
-				
-				<!-- Columna Izquierda: Ocupa todo el espacio disponible, centrada horizontal y verticalmente -->
-				<div style="flex: 1 1 0 !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; padding-right: 8px !important;">
+			<div class="control-orientacion-container solo-modo-avanzado" 
+				style="display: grid !important; grid-template-columns: 1fr auto !important; align-items: stretch !important; max-width: 100% !important; box-sizing: border-box !important; padding: 4px 6px !important; border-radius: 8px !important; transition: all 0.2s;">
+
+				<!-- Columna Izquierda -->
+				<div style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; padding-right: 8px !important;">
 					<span style="font-weight: bold; line-height: 1.2;" data-i18n="mapa.orientacion">Orientación:</span>
 					<span class="chip-sesion-volatil" 
 						style="font-weight: normal; font-size: 0.75em; color: #6c757d; background: #eef1f4; border: 1px solid #dce1e6; padding: 1px 0px; border-radius: 10px; margin-top: 3px;" 
@@ -1136,8 +1183,8 @@
 						title="Filtro no memorizado: no se guarda aunque tengas activado recordar filtros">(sesión)</span>
 				</div>
 
-				<!-- Columna Derecha: Rosa pegada totalmente a la derecha -->
-				<div id="rosaDeLosVientos" style="margin: 0 !important; margin-left: auto !important; flex-shrink: 0 !important;">
+				<!-- Columna Derecha: Rosa -->
+				<div id="rosaDeLosVientos" style="margin: 0 !important; align-self: center !important;">
 					<label class="filtro-orientacion" data-orientacion="NO" data-i18n="[title]orientaciones.noroeste"><input type="checkbox" class="filtro-orientacion-checkbox" value="NO"><span data-i18n="orientaciones.NO">NO</span></label>
 					<label class="filtro-orientacion" data-orientacion="N"  data-i18n="[title]orientaciones.norte">  <input type="checkbox" class="filtro-orientacion-checkbox" value="N"> <span data-i18n="orientaciones.N">N</span></label>
 					<label class="filtro-orientacion" data-orientacion="NE" data-i18n="[title]orientaciones.noreste"><input type="checkbox" class="filtro-orientacion-checkbox" value="NE"><span data-i18n="orientaciones.NE">NE</span></label>

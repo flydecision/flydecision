@@ -18136,3 +18136,303 @@ function inicializarMasterCheckboxBalizas() {
         masterChk.indeterminate = true;
     }
 }
+
+// =========================================================================
+// 🪂 MÓDULO DE CÁLCULO DE CONO DE PLANEO (AWS TERRARIUM + CANVAS INTERPOLADO)
+// =========================================================================
+
+let modoPlaneoActivo = false;
+let origenPlaneoMarker = null;
+let capaConoPlaneo = null;
+let origenPlaneoLatLng = null;
+let cotaTerrenoBase = 0;
+let offsetTermicaActual = 0;
+const MARGEN_SEGURIDAD_SUELO = 50; // 50m de margen para aproximación sobre suelo
+const RADIO_PLANEO_KM = 16;        // 16 km de radio de análisis (~32 km de diámetro)
+const RES_GRID = 130;              // 130x130 muestras (ultrarrápido, ~8ms de ejecución)
+
+// Decodificación matemática de cota según estándar AWS Terrarium
+function decodificarCotaTerrarium(r, g, b) {
+    return (r * 256 + g + b / 256) - 32768;
+}
+
+// Escala de colores según la finura necesaria
+function obtenerColorPlaneo(finesse) {
+    if (finesse <= 0)  return [40, 40, 40, 140];    // Obstáculo orográfico / Terreno más alto
+    if (finesse <= 7)  return [34, 197, 94, 135];   // Verde (< 7:1) Seguro / En cono
+    if (finesse <= 9)  return [234, 179, 8, 135];   // Amarillo (7-9:1) EN-A / EN-B
+    if (finesse <= 11) return [249, 115, 22, 135];  // Naranja (9-11:1) Planeo exigente
+    if (finesse <= 13) return [239, 68, 68, 135];   // Rojo (11-13:1) Límite
+    return [0, 0, 0, 0];                            // Inalcanzable (> 13:1) -> Transparente
+}
+
+// Conmutar el modo
+window.toggleModoPlaneo = function() {
+    modoPlaneoActivo = !modoPlaneoActivo;
+    const btn = document.getElementById('btn-modo-planeo');
+    const panel = document.getElementById('panel-control-planeo');
+    const mapDiv = document.getElementById('map');
+
+    if (modoPlaneoActivo) {
+        if (btn) btn.classList.add('activo');
+        if (panel) panel.style.display = 'block';
+        if (mapDiv) mapDiv.classList.add('cursor-planeo-activo');
+    } else {
+        desactivarModoPlaneo();
+    }
+};
+
+window.desactivarModoPlaneo = function() {
+    modoPlaneoActivo = false;
+    const btn = document.getElementById('btn-modo-planeo');
+    const panel = document.getElementById('panel-control-planeo');
+    const mapDiv = document.getElementById('map');
+
+    if (btn) btn.classList.remove('activo');
+    if (panel) panel.style.display = 'none';
+    if (mapDiv) mapDiv.classList.remove('cursor-planeo-activo');
+
+    // Limpiar capas del mapa
+    if (capaConoPlaneo && map.hasLayer(capaConoPlaneo)) {
+        map.removeLayer(capaConoPlaneo);
+        capaConoPlaneo = null;
+    }
+    if (origenPlaneoMarker && map.hasLayer(origenPlaneoMarker)) {
+        map.removeLayer(origenPlaneoMarker);
+        origenPlaneoMarker = null;
+    }
+    origenPlaneoLatLng = null;
+};
+
+// Modificar ganancia térmica desde el deslizador
+window.actualizarTermicaPlaneo = function(valor) {
+    offsetTermicaActual = parseInt(valor, 10);
+    const txtOffset = document.getElementById('txt-offset-termica');
+    if (txtOffset) txtOffset.textContent = `+${offsetTermicaActual} m`;
+
+    if (origenPlaneoLatLng) {
+        ejecutarCalculoConoPlaneo(origenPlaneoLatLng);
+    }
+};
+
+// Conversión de coordenadas geográficas a coordenadas de tesela (Web Mercator)
+function latLngToTile(lat, lng, zoom) {
+    const n = Math.pow(2, zoom);
+    const x = Math.floor((lng + 180) / 360 * n);
+    const latRad = lat * Math.PI / 180;
+    const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n);
+    return { x, y };
+}
+
+// Descarga asíncrona de tesela Terrarium con Image
+function cargarTeselaTerrarium(zoom, x, y) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = `https://elevation-tiles-prod.s3.amazonaws.com/terrarium/${zoom}/${x}/${y}.png`;
+    });
+}
+
+// Cálculo del cono de planeo con raymarching de relieve
+async function ejecutarCalculoConoPlaneo(latlng) {
+    origenPlaneoLatLng = latlng;
+    const zoom = 11; // Zoom 11 abarca unos 40 km por tesela, resolución perfecta y rápida
+    const radioMetros = RADIO_PLANEO_KM * 1000;
+    const bounds = latlng.toBounds(radioMetros * 2);
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+
+    // Teselas mínimas necesarias para cubrir el área
+    const tileMin = latLngToTile(ne.lat, sw.lng, zoom);
+    const tileMax = latLngToTile(sw.lat, ne.lng, zoom);
+
+    const minX = Math.min(tileMin.x, tileMax.x);
+    const maxX = Math.max(tileMin.x, tileMax.x);
+    const minY = Math.min(tileMin.y, tileMax.y);
+    const maxY = Math.max(tileMin.y, tileMax.y);
+
+    const tilesW = (maxX - minX + 1);
+    const tilesH = (maxY - minY + 1);
+
+    // Canvas compuesto para coser las teselas DEM
+    const stitchCanvas = document.createElement('canvas');
+    stitchCanvas.width = tilesW * 256;
+    stitchCanvas.height = tilesH * 256;
+    const stitchCtx = stitchCanvas.getContext('2d', { willReadFrequently: true });
+
+    // Descargar teselas concurrentemente
+    const promesas = [];
+    for (let ty = minY; ty <= maxY; ty++) {
+        for (let tx = minX; tx <= maxX; tx++) {
+            promesas.push(
+                cargarTeselaTerrarium(zoom, tx, ty).then(img => ({ img, tx, ty }))
+            );
+        }
+    }
+
+    const resultados = await Promise.all(promesas);
+    resultados.forEach(({ img, tx, ty }) => {
+        if (img) {
+            stitchCtx.drawImage(img, (tx - minX) * 256, (ty - minY) * 256);
+        }
+    });
+
+    const demImageData = stitchCtx.getImageData(0, 0, stitchCanvas.width, stitchCanvas.height).data;
+
+    // Helper: Leer cota en metros de cualquier Lat/Lng del canvas cosido
+    const n = Math.pow(2, zoom);
+    const obtenerElevacion = (la, ln) => {
+        const pxGlobal = (ln + 180) / 360 * n * 256;
+        const laRad = la * Math.PI / 180;
+        const pyGlobal = (1 - Math.log(Math.tan(laRad) + 1 / Math.cos(laRad)) / Math.PI) / 2 * n * 256;
+
+        const xEnStitch = Math.floor(pxGlobal - minX * 256);
+        const yEnStitch = Math.floor(pyGlobal - minY * 256);
+
+        if (xEnStitch < 0 || xEnStitch >= stitchCanvas.width || yEnStitch < 0 || yEnStitch >= stitchCanvas.height) {
+            return 0;
+        }
+        const idx = (yEnStitch * stitchCanvas.width + xEnStitch) * 4;
+        return decodificarCotaTerrarium(demImageData[idx], demImageData[idx + 1], demImageData[idx + 2]);
+    };
+
+    // Altura del origen
+    cotaTerrenoBase = Math.round(obtenerElevacion(latlng.lat, latlng.lng));
+    const altitudPiloto = cotaTerrenoBase + offsetTermicaActual;
+
+    // Actualizar datos en UI
+    const txtCota = document.getElementById('txt-cota-despegue');
+    const panelAjustes = document.getElementById('planeo-ajustes-despegue');
+    const panelInstrucciones = document.getElementById('planeo-instrucciones');
+    if (txtCota) txtCota.textContent = `${cotaTerrenoBase} m (Total: ${altitudPiloto} m)`;
+    if (panelAjustes) panelAjustes.style.display = 'block';
+    if (panelInstrucciones) panelInstrucciones.style.display = 'none';
+
+    // Crear canvas donde pintaremos el mapa de planeo
+    const canvas = document.createElement('canvas');
+    canvas.width = RES_GRID;
+    canvas.height = RES_GRID;
+    const ctx = canvas.getContext('2d');
+    const imgData = ctx.createImageData(RES_GRID, RES_GRID);
+    const data = imgData.data;
+
+    const latStep = (ne.lat - sw.lat) / RES_GRID;
+    const lngStep = (ne.lng - sw.lng) / RES_GRID;
+
+    // Centro del análisis dentro de la cuadrícula
+    const centerGridX = ((latlng.lng - sw.lng) / (ne.lng - sw.lng)) * RES_GRID;
+    const centerGridY = ((ne.lat - latlng.lat) / (ne.lat - sw.lat)) * RES_GRID;
+
+    // Muestreo celda a celda con Raymarching de obstáculos intermedios (20 pasos)
+    for (let gy = 0; gy < RES_GRID; gy++) {
+        const curLat = ne.lat - gy * latStep;
+        for (let gx = 0; gx < RES_GRID; gx++) {
+            const curLng = sw.lng + gx * lngStep;
+            const destino = L.latLng(curLat, curLng);
+            const distanciaTotal = latlng.distanceTo(destino);
+
+            const pixelIdx = (gy * RES_GRID + gx) * 4;
+
+            if (distanciaTotal > radioMetros) {
+                // Fuera del radio de cálculo
+                data[pixelIdx + 3] = 0;
+                continue;
+            }
+
+            const cotaDestino = obtenerElevacion(curLat, curLng) + MARGEN_SEGURIDAD_SUELO;
+            const deltaZ = altitudPiloto - cotaDestino;
+
+            if (deltaZ <= 0) {
+                // El terreno está más alto que la cota de vuelo actual
+                data[pixelIdx]     = 40;
+                data[pixelIdx + 1] = 40;
+                data[pixelIdx + 2] = 40;
+                data[pixelIdx + 3] = 130;
+                continue;
+            }
+
+            const finesseDirecta = distanciaTotal / deltaZ;
+
+            // RAYMARCHING: Comprobar colisión con montañas intermedias
+            let interceptado = false;
+            const pasosRayo = 16;
+            for (let step = 1; step < pasosRayo; step++) {
+                const ratio = step / pasosRayo;
+                const interLat = latlng.lat + (curLat - latlng.lat) * ratio;
+                const interLng = latlng.lng + (curLng - latlng.lng) * ratio;
+                
+                // Cota del rayo de vuelo a esa distancia proporcional
+                const cotaVueloEnPunto = altitudPiloto - (deltaZ * ratio);
+                const cotaTerrenoPunto = obtenerElevacion(interLat, interLng);
+
+                if (cotaTerrenoPunto >= cotaVueloEnPunto) {
+                    interceptado = true;
+                    break;
+                }
+            }
+
+            if (interceptado) {
+                // Impacto previo contra relieve (sombra orográfica)
+                data[pixelIdx]     = 30;
+                data[pixelIdx + 1] = 30;
+                data[pixelIdx + 2] = 30;
+                data[pixelIdx + 3] = 120;
+            } else {
+                const [r, g, b, a] = obtenerColorPlaneo(finesseDirecta);
+                data[pixelIdx]     = r;
+                data[pixelIdx + 1] = g;
+                data[pixelIdx + 2] = b;
+                data[pixelIdx + 3] = a;
+            }
+        }
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+
+    // Superponer la imagen rasterizada en Leaflet
+    if (capaConoPlaneo && map.hasLayer(capaConoPlaneo)) {
+        map.removeLayer(capaConoPlaneo);
+    }
+    capaConoPlaneo = L.imageOverlay(canvas.toDataURL(), bounds, { opacity: 0.65 }).addTo(map);
+
+    // Crear o mover el marcador de origen interactivo
+    if (!origenPlaneoMarker) {
+        const iconoOrigen = L.divIcon({
+            html: '<div class="glide-origin-marker">🪂</div>',
+            className: 'custom-div-icon',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
+
+        origenPlaneoMarker = L.marker(latlng, {
+            icon: iconoOrigen,
+            draggable: true,
+            zIndexOffset: 1000
+        }).addTo(map);
+
+        origenPlaneoMarker.on('dragend', function(e) {
+            ejecutarCalculoConoPlaneo(e.target.getLatLng());
+        });
+    } else {
+        origenPlaneoMarker.setLatLng(latlng);
+    }
+}
+
+// Escuchar clics en el mapa mientras el modo de planeo esté activo
+document.addEventListener('DOMContentLoaded', () => {
+    // Si map ya existe o cuando se inicialice:
+    const engancharEventoMapa = () => {
+        if (typeof map !== 'undefined' && map) {
+            map.on('click', function(e) {
+                if (modoPlaneoActivo) {
+                    ejecutarCalculoConoPlaneo(e.latlng);
+                }
+            });
+        } else {
+            setTimeout(engancharEventoMapa, 250);
+        }
+    };
+    engancharEventoMapa();
+});

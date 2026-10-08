@@ -4262,6 +4262,25 @@ body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para el
     display: none !important;
 }
 
+/* Modo cálculo de planeo */
+.cursor-planeo-activo, 
+.cursor-planeo-activo .leaflet-grab, 
+.cursor-planeo-activo .leaflet-interactive {
+    cursor: crosshair !important;
+}
+#btn-modo-planeo.activo {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+}
+.glide-origin-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+
 /* 🔴🔴 FIN MAPA */
 
 /* 🛑 BOTÓN FLOTANTE "VOLVER" (Módulo Mapa) */
