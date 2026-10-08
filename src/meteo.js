@@ -14478,24 +14478,25 @@ function inicializarMapaLeaflet() {
 
             const link = L.DomUtil.create('a', '', container);
             link.id = 'btn-control-planeo';
-            link.title = 'Cono de planeo en parapente';
+            link.title = t('mapa.planeo.titlePlaneo', { defaultValue: 'Cálculo de planeo' });
             link.href = '#';
             link.role = 'button';
             link.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <!-- Contorno exterior del cartabón -->
-                    <path d="M 3 22 L 3 2 L 21 22 Z" stroke-width="1.8"></path>
-                    <!-- Triángulo interior centrado y equidistante -->
-                    <path d="M 6.5 18.5 L 6.5 11.1 L 13.1 18.5 Z" stroke-width="1.6"></path>
-                    <!-- Graduación de regla en el cateto izquierdo -->
-                    <line x1="3" y1="5" x2="4.6" y2="5" stroke-width="1.3"></line>
-                    <line x1="3" y1="7.5" x2="5.4" y2="7.5" stroke-width="1.3"></line>
-                    <line x1="3" y1="10" x2="4.6" y2="10" stroke-width="1.3"></line>
-                    <line x1="3" y1="12.5" x2="5.4" y2="12.5" stroke-width="1.3"></line>
-                    <line x1="3" y1="15" x2="4.6" y2="15" stroke-width="1.3"></line>
-                    <line x1="3" y1="17.5" x2="5.4" y2="17.5" stroke-width="1.3"></line>
-                    <line x1="3" y1="20" x2="4.6" y2="20" stroke-width="1.3"></line>
+                    <!-- Contorno exterior ensanchado al límite de las líneas rojas -->
+                    <path d="M 1.5 22.5 L 1.5 1.5 L 22.5 22.5 Z" stroke-width="1.8"></path>
+                    <!-- Triángulo interior centrado con grosor idéntico de pared (4.0 px) en los 3 lados -->
+                    <path d="M 5.5 18.5 L 5.5 11.2 L 12.8 18.5 Z" stroke-width="1.6"></path>
+                    <!-- Graduación de regla en el borde izquierdo -->
+                    <line x1="1.5" y1="4.5" x2="3.3" y2="4.5" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="7.2" x2="4.3" y2="7.2" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="9.9" x2="3.3" y2="9.9" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="12.6" x2="4.3" y2="12.6" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="15.3" x2="3.3" y2="15.3" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="18.0" x2="4.3" y2="18.0" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="20.7" x2="3.3" y2="20.7" stroke-width="1.3"></line>
                 </svg>
+
             `;
 
             L.DomEvent.on(link, 'click', function(e) {
@@ -18186,8 +18187,8 @@ let origenPlaneoLatLng = null;
 let cotaTerrenoBase = 0;
 let offsetTermicaActual = 0;
 let demStitchData = null; // Caché en memoria para consulta O(1) de cotas bajo el cursor
-const MARGEN_SEGURIDAD_SUELO = 50; // 50m de margen para aproximación sobre suelo
-const RADIO_PLANEO_KM = 16;        // 16 km de radio de análisis (~32 km de diámetro)
+const MARGEN_SEGURIDAD_SUELO = 0; // m de margen para aproximación sobre suelo
+const RADIO_PLANEO_KM = 15;        // 16 km de radio de análisis (~32 km de diámetro)
 const RES_GRID = 130;              // 130x130 muestras (ultrarrápido, ~8ms de ejecución)
 
 function decodificarCotaTerrarium(r, g, b) {
@@ -18474,13 +18475,13 @@ function actualizarTooltipCursor(e) {
         tooltip.style.display = 'block';
 
         if (!origenPlaneoLatLng || !demStitchData) {
-            tooltip.innerHTML = '👆 <i>Haz clic para situar el piloto</i>';
+            tooltip.innerHTML = '👆 ' + t('mapa.planeo.popupPlaneo1', { defaultValue: '<i>Haz clic para situar el despegue</i>' });
             return;
         }
 
         const cota = leerElevacionGlobal(e.latlng.lat, e.latlng.lng);
         if (cota === null) {
-            tooltip.innerHTML = '<i>Fuera de zona de cálculo</i>';
+            tooltip.innerHTML = t('mapa.planeo.popupPlaneoFueraZona', { defaultValue: '<i>Fuera de zona de cálculo</i>' });
             return;
         }
 
