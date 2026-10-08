@@ -14482,14 +14482,19 @@ function inicializarMapaLeaflet() {
             link.href = '#';
             link.role = 'button';
             link.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 21V3l18 18H3z"></path>
-                    <path d="M7 17V11l6 6H7z"></path>
-                    <line x1="3" y1="7" x2="5.5" y2="7"></line>
-                    <line x1="3" y1="15" x2="5.5" y2="15"></line>
-                    <line x1="9" y1="21" x2="9" y2="18.5"></line>
-                    <line x1="13" y1="21" x2="13" y2="18.5"></line>
-                    <line x1="17" y1="21" x2="17" y2="18.5"></line>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Contorno exterior del cartabón -->
+                    <path d="M 3 22 L 3 2 L 21 22 Z" stroke-width="1.8"></path>
+                    <!-- Triángulo interior centrado y equidistante -->
+                    <path d="M 6.5 18.5 L 6.5 11.1 L 13.1 18.5 Z" stroke-width="1.6"></path>
+                    <!-- Graduación de regla en el cateto izquierdo -->
+                    <line x1="3" y1="5" x2="4.6" y2="5" stroke-width="1.3"></line>
+                    <line x1="3" y1="7.5" x2="5.4" y2="7.5" stroke-width="1.3"></line>
+                    <line x1="3" y1="10" x2="4.6" y2="10" stroke-width="1.3"></line>
+                    <line x1="3" y1="12.5" x2="5.4" y2="12.5" stroke-width="1.3"></line>
+                    <line x1="3" y1="15" x2="4.6" y2="15" stroke-width="1.3"></line>
+                    <line x1="3" y1="17.5" x2="5.4" y2="17.5" stroke-width="1.3"></line>
+                    <line x1="3" y1="20" x2="4.6" y2="20" stroke-width="1.3"></line>
                 </svg>
             `;
 
