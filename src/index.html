@@ -1157,20 +1157,29 @@
 	<!-- 🟦 Control Planeo y sus popups -->
 	<div id="panel-control-planeo" style="display: none; position: absolute; top: 185px; right: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 10px 14px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #cbd5e1; max-width: 270px; line-height: 1.35;">
 		<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 6px; margin-bottom: 8px;">
-			<b style="color: #0f172a;" data-i18n="mapa.planeo.titlePlaneo">Cálculo de planeo</b>
+			<!-- Título -->
+			<span style="display: inline-flex; align-items: center; gap: 6px; color: #555; user-select: none;">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M 1.5 22.5 L 1.5 1.5 L 22.5 22.5 Z" stroke-width="1.8"></path>
+					<path d="M 5.5 18.5 L 5.5 11.2 L 12.8 18.5 Z" stroke-width="1.6"></path>
+					<line x1="1.5" y1="4.5" x2="3.3" y2="4.5" stroke-width="1.3"></line>
+					<line x1="1.5" y1="7.2" x2="4.3" y2="7.2" stroke-width="1.3"></line>
+					<line x1="1.5" y1="9.9" x2="3.3" y2="9.9" stroke-width="1.3"></line>
+					<line x1="1.5" y1="12.6" x2="4.3" y2="12.6" stroke-width="1.3"></line>
+					<line x1="1.5" y1="15.3" x2="3.3" y2="15.3" stroke-width="1.3"></line>
+					<line x1="1.5" y1="18.0" x2="4.3" y2="18.0" stroke-width="1.3"></line>
+					<line x1="1.5" y1="20.7" x2="3.3" y2="20.7" stroke-width="1.3"></line>
+				</svg>
+				<span class="texto-menu-capa" style="font-weight: bold; margin-left: 2px;" data-i18n="mapa.planeo.titlePlaneo">Cálculo de planeo</span>
+			</span>
+
+			<!-- Botón cerrar -->
 			<button id="btn-cerrar-planeo" data-i18n="[title]mapa.cerrarPanel" title="Cerrar panel" onclick="desactivarModoPlaneo()">
 				<span>❌</span>
 			</button>
 		</div>
-		
 
-		
-
-
-
-
-
-		<div id="planeo-instrucciones" style="color: #475569; font-size: 12px; margin-bottom: 8px;">
+		<div id="planeo-instrucciones" style="color: #475569; margin-bottom: 8px;">
 			👆 <i data-i18n="mapa.planeo.popupPlaneoHazClic">Haz clic en el punto de despegue</i>
 		</div>
 

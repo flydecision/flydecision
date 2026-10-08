@@ -11354,6 +11354,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 return;
             }
 
+            const panelPlaneo = document.getElementById('panel-control-planeo');
+            if ((panelPlaneo && panelPlaneo.style.display !== 'none') || (typeof modoPlaneoActivo !== 'undefined' && modoPlaneoActivo)) {
+                desactivarModoPlaneo();
+                return;
+            }
+
             // --- PRIORIDAD 1.9: Si hay un popup de despegue abierto en el mapa, lo cerramos primero ---
             const vistaMapaParaPopup = document.getElementById('vista-mapa');
             if (vistaMapaParaPopup && vistaMapaParaPopup.style.display === 'flex') {
@@ -18232,6 +18238,35 @@ window.desactivarModoPlaneo = function() {
     if (mapDiv) mapDiv.classList.remove('cursor-planeo-activo');
     if (tooltip) tooltip.style.display = 'none';
 
+    // 1. 🔄 RESETEAR VARIABLES DE CÁLCULO
+    cotaTerrenoBase = 0;
+    offsetTermicaActual = 0;
+    origenPlaneoLatLng = null;
+    demStitchData = null;
+
+    // 2. 🎚️ RESETEAR EL SLIDER A LA IZQUIERDA (CERO)
+    const slider = document.getElementById('slider-offset-termica');
+    if (slider) {
+        slider.value = 0;
+    }
+
+    // 3. 📝 RESETEAR LOS TEXTOS Y CIFRAS DEL PANEL
+    const txtCota = document.getElementById('txt-cota-despegue');
+    if (txtCota) txtCota.textContent = '—';
+
+    const txtOffset = document.getElementById('txt-offset-termica');
+    if (txtOffset) txtOffset.textContent = '+0 m';
+
+    const txtTotal = document.getElementById('txt-cota-despegue-mas-extra');
+    if (txtTotal) txtTotal.textContent = '—';
+
+    // 4. RESTAURAR VISIBILIDAD DE SUBPANELES
+    const panelAjustes = document.getElementById('planeo-ajustes-despegue');
+    const panelInstrucciones = document.getElementById('planeo-instrucciones');
+    if (panelAjustes) panelAjustes.style.display = 'none';
+    if (panelInstrucciones) panelInstrucciones.style.display = 'block';
+
+    // 5. BORRAR CAPAS DEL MAPA
     if (capaConoPlaneo && map && map.hasLayer(capaConoPlaneo)) {
         map.removeLayer(capaConoPlaneo);
         capaConoPlaneo = null;
@@ -18240,8 +18275,6 @@ window.desactivarModoPlaneo = function() {
         map.removeLayer(origenPlaneoMarker);
         origenPlaneoMarker = null;
     }
-    origenPlaneoLatLng = null;
-    demStitchData = null;
 };
 
 // Modificar ganancia térmica desde el deslizador
@@ -18249,6 +18282,11 @@ window.actualizarTermicaPlaneo = function(valor) {
     offsetTermicaActual = parseInt(valor, 10);
     const txtOffset = document.getElementById('txt-offset-termica');
     if (txtOffset) txtOffset.textContent = `+${offsetTermicaActual} m`;
+
+    const txtCotaMasExtra = document.getElementById('txt-cota-despegue-mas-extra');
+    if (txtCotaMasExtra && cotaTerrenoBase > 0) {
+        txtCotaMasExtra.textContent = `${cotaTerrenoBase + offsetTermicaActual} m`;
+    }
 
     if (origenPlaneoLatLng) {
         ejecutarCalculoConoPlaneo(origenPlaneoLatLng);
