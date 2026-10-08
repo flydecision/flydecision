@@ -758,13 +758,7 @@
 		<span data-i18n="mapa.btnFiltros">Meteo</span>
 	</button>
 
-	<!-- 🪂 NUEVO: BOTÓN MODO PLANEO -->
-	<button id="btn-modo-planeo" class="btn-filtros-mapa" onclick="toggleModoPlaneo()" style="top: 140px; background: #ffffff; color: #1e3a8a; border: 1.5px solid #2563eb;" title="Calcular cono de planeo en parapente">
-		<span style="font-size: 1.1em; margin-right: 4px;">📐</span>
-		<span>Planeo</span>
-	</button>
-
-	<!-- 🪂 NUEVO: PANEL DE CONTROL Y LEYENDA DEL PLANEO -->
+	<!-- 🪂 PANEL DE CONTROL Y LEYENDA DEL PLANEO -->
 	<div id="panel-control-planeo" style="display: none; position: absolute; top: 185px; right: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 10px 14px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #cbd5e1; font-size: 13px; max-width: 270px; line-height: 1.35;">
 		<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 8px;">
 			<b style="color: #0f172a; font-size: 14px;">Cono de planeo</b>
@@ -804,6 +798,9 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- 🪂 TOOLTIP FLOTANTE DEL CURSOR -->
+	<div id="glide-cursor-tooltip" class="glide-cursor-tooltip"></div>
 
     <div id="map" style="height: 100%; width: 100%;"></div>
 
