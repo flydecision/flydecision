@@ -18350,9 +18350,11 @@ async function ejecutarCalculoConoPlaneo(latlng) {
     const altitudPiloto = cotaTerrenoBase + offsetTermicaActual;
 
     const txtCota = document.getElementById('txt-cota-despegue');
+    const txtCotaMasExtra = document.getElementById('txt-cota-despegue-mas-extra');
     const panelAjustes = document.getElementById('planeo-ajustes-despegue');
     const panelInstrucciones = document.getElementById('planeo-instrucciones');
-    if (txtCota) txtCota.textContent = `${cotaTerrenoBase} m (Piloto: ${altitudPiloto} m)`;
+    if (txtCota) txtCota.textContent = `${cotaTerrenoBase} m`;
+    if (txtCotaMasExtra) txtCotaMasExtra.textContent = `${altitudPiloto} m`;
     if (panelAjustes) panelAjustes.style.display = 'block';
     if (panelInstrucciones) panelInstrucciones.style.display = 'none';
 
@@ -18475,13 +18477,13 @@ function actualizarTooltipCursor(e) {
         tooltip.style.display = 'block';
 
         if (!origenPlaneoLatLng || !demStitchData) {
-            tooltip.innerHTML = '👆 ' + t('mapa.planeo.popupPlaneo1', { defaultValue: '<i>Haz clic para situar el despegue</i>' });
+            tooltip.innerHTML = '👆 <i>' + t('mapa.planeo.popupPlaneoHazClic', { defaultValue: 'Haz clic para situar el despegue' }) + '</i>';
             return;
         }
 
         const cota = leerElevacionGlobal(e.latlng.lat, e.latlng.lng);
         if (cota === null) {
-            tooltip.innerHTML = t('mapa.planeo.popupPlaneoFueraZona', { defaultValue: '<i>Fuera de zona de cálculo</i>' });
+            tooltip.innerHTML = '<i>' + t('mapa.planeo.popupPlaneoFueraZona', { defaultValue: 'Fuera de zona de cálculo' }) + '</i>';
             return;
         }
 

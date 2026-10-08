@@ -1153,43 +1153,53 @@
 				
 		</div>
 	</div>
-	
+
 	<!-- 🟦 Control Planeo y sus popups -->
-	<div id="panel-control-planeo" style="display: none; position: absolute; top: 185px; right: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 10px 14px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #cbd5e1; font-size: 13px; max-width: 270px; line-height: 1.35;">
+	<div id="panel-control-planeo" style="display: none; position: absolute; top: 185px; right: 10px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 10px 14px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #cbd5e1; max-width: 270px; line-height: 1.35;">
 		<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-bottom: 8px;">
-			<b style="color: #0f172a; font-size: 14px;">Cono de planeo</b>
+			<b style="color: #0f172a;" data-i18n="mapa.planeo.titlePlaneo">Cálculo de planeo</b>
 			<button onclick="desactivarModoPlaneo()" style="background: none; border: none; font-size: 16px; cursor: pointer; color: #64748b; padding: 0 4px;">❌</button>
 		</div>
 		
 		<div id="planeo-instrucciones" style="color: #475569; font-size: 12px; margin-bottom: 8px;">
-			👆 <i>Haz clic en cualquier punto del mapa o despegue.</i>
+			👆 <i data-i18n="mapa.planeo.popupPlaneoHazClic">Haz clic en el punto de despegue</i>
 		</div>
 
 		<div id="planeo-ajustes-despegue" style="display: none;">
 			<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-				<span>Cota despegue:</span>
+				<span data-i18n="mapa.planeo.cotaDespegue">Altitud despegue: </span>
 				<b id="txt-cota-despegue">—</b>
 			</div>
 			
 			<div style="margin-bottom: 6px;">
-				<label style="display: flex; justify-content: space-between; font-size: 12px; color: #334155;">
-					<span>Ganancia térmica:</span>
+				<label style="display: flex; justify-content: space-between;">
+					<span data-i18n="mapa.planeo.alturaExtraDespegue">Altura extra: </span>
 					<b id="txt-offset-termica">+0 m</b>
 				</label>
 				<input type="range" id="slider-offset-termica" min="0" max="1500" step="50" value="0" style="width: 100%; margin: 3px 0;" oninput="actualizarTermicaPlaneo(this.value)">
 			</div>
 
+			<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+				<span data-i18n="mapa.planeo.cotaDespegueMasExtra">Altitud + altura: </span>
+				<b id="txt-cota-despegue-mas-extra">—</b>
+			</div>
+
 			<!-- Leyenda visual de finezas -->
 			<div style="border-top: 1px solid #e2e8f0; padding-top: 6px; margin-top: 6px;">
-				<div style="font-weight: 600; font-size: 11px; color: #64748b; margin-bottom: 4px;">RELACIÓN DE PLANEO (L/D)</div>
-				<div style="display: flex; gap: 4px; align-items: center; font-size: 11px;">
-					<span style="background: #22c55e; width: 12px; height: 12px; border-radius: 3px; display: inline-block;"></span> &le; 7 (Fácil)
-					<span style="background: #eab308; width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-left: 6px;"></span> 7-9
-					<span style="background: #f97316; width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-left: 6px;"></span> 9-11
-					<span style="background: #ef4444; width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-left: 6px;"></span> &gt; 11
+				<div style="margin-bottom: 4px;" data-i18n="mapa.planeo.planeoNecesario">Planeo necesario (L/D):</div>
+				
+				<!-- Fila 1: Colores -->
+				<div style="display: flex; gap: 4px; align-items: center;">
+					<span style="background: #22c55e; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0;"></span> &le; 7
+					<span style="background: #eab308; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> 7-9
+					<span style="background: #f97316; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> 9-11
+					<span style="background: #ef4444; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0; margin-left: 6px;"></span> &gt; 11
 				</div>
-				<div style="margin-top: 4px; font-size: 10px; color: #94a3b8;">
-					⬛ Relieve superior o cortado por montaña
+
+				<!-- Fila 2: Cuadrado gris y texto -->
+				<div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+					<span style="background: #7e7c7c; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0;"></span>
+					<span data-i18n="mapa.planeo.posibleBloqueoRelieve">Posible bloqueo por relieve</span>
 				</div>
 			</div>
 		</div>
