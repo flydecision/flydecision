@@ -3722,8 +3722,9 @@ h3 {
     margin-top: 0px !important;
 }
 .leaflet-control-layers-expanded {
-    border-radius: 4px !important;
+    border-radius: 10px !important;
     padding: 6px !important;
+    max-width: calc(100vw - 12px); /* que no se salga de la pantalla en móviles estrechos */
 }
 
 .info {
