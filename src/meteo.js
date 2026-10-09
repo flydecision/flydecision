@@ -18972,12 +18972,16 @@ function actualizarTooltipCursor(e) {
         const colorAlturaSuelo = alturaSuelo >= 50 ? '#22c55e' : (alturaSuelo >= 0 ? '#eab308' : '#ef4444');
         const strAlturaSuelo = `<b style="color:${colorAlturaSuelo};">${signoAlturaSuelo} m</b>`;
 
-        // Planeo requerido (L/D) con la escala de 6 colores
+        // Descenso real disponible hacia el destino
+        const desnivelDescenso = altPiloto - cotaM;
+
+        // Planeo requerido (L/D): se calcula y muestra SIEMPRE que el destino sea más bajo
         let grStr = '—';
         let colorGr = '#ef4444';
 
-        if (deltaZ > 0 && !tray.bloqueado) {
-            const gr = distEfectiva / deltaZ;
+        if (desnivelDescenso > 0) {
+            const distCalculo = tray.tieneQuiebro ? tray.distanciaEfectiva : distDirecta;
+            const gr = distCalculo / desnivelDescenso;
             grStr = gr > 35 ? '>35' : gr.toFixed(1);
 
             const u = obtenerUmbralesPlaneo();
@@ -18986,7 +18990,7 @@ function actualizarTooltipCursor(e) {
             else if (gr <= u.verde)     colorGr = '#22c55e'; // 3. Verde
             else if (gr <= u.amarillo)  colorGr = '#eab308'; // 4. Amarillo
             else if (gr <= u.naranja)   colorGr = '#f97316'; // 5. Naranja
-            else                        colorGr = '#ef4444'; // 6. Rojo
+            else                        colorGr = '#ef4444'; // 6. Rojo (para planeos exigentes: 11, 15, 20...)
         }
 
         // Contenido del Tooltip
