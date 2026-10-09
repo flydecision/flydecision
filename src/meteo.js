@@ -14478,6 +14478,12 @@ function inicializarMapaLeaflet() {
     const controlCapas = L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(map);
     window.capasLeaflet = controlCapas; // exposición global para poder cerrarlo con Atrás Android
 
+    // Solo clic: quitar apertura/cierre por hover (igual que los infoPanel)
+    L.DomEvent.off(controlCapas.getContainer(), {
+        mouseenter: controlCapas._expandSafely || controlCapas.expand,
+        mouseleave: controlCapas.collapse
+    }, controlCapas);
+
     map.on('baselayerchange', function(e) {
         if (localStorage.getItem('METEO_RECORDAR_TIPO_MAPA') === 'true') {
             localStorage.setItem('METEO_MAPA_CAPABASE_ULTIMA', e.name);
@@ -16101,6 +16107,7 @@ function inicializarMapaLeaflet() {
         retraerOpciones();
         retraerOpciones3();
         retraerOpciones2();
+        if (window.capasLeaflet) window.capasLeaflet.collapse();
     });
 
     // --- FUNCIONES EXPANSIÓN/RETRACCIÓN PANEL 1 ---
