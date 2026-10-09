@@ -18341,6 +18341,12 @@ window.desactivarModoPlaneo = function() {
     const txtTotal = document.getElementById('txt-cota-despegue-mas-extra');
     if (txtTotal) txtTotal.textContent = '—';
 
+    transparenciaConoPlaneo = 0;
+    const sliderTransparencia = document.getElementById('slider-transparencia-planeo');
+    if (sliderTransparencia) sliderTransparencia.value = 0;
+    const txtTransparencia = document.getElementById('txt-transparencia-planeo');
+    if (txtTransparencia) txtTransparencia.textContent = '0%';
+
     const panelAjustes = document.getElementById('planeo-ajustes-despegue');
     const panelInstrucciones = document.getElementById('planeo-instrucciones');
     if (panelAjustes) panelAjustes.style.display = 'none';
@@ -18385,6 +18391,21 @@ window.actualizarTermicaPlaneo = function(valor) {
 
     if (origenPlaneoLatLng) {
         ejecutarCalculoConoPlaneo(origenPlaneoLatLng);
+    }
+};
+
+let transparenciaConoPlaneo = 0;
+
+window.actualizarTransparenciaPlaneo = function(valor) {
+    transparenciaConoPlaneo = parseInt(valor, 10);
+    const txtTransparencia = document.getElementById('txt-transparencia-planeo');
+    if (txtTransparencia) txtTransparencia.textContent = `${transparenciaConoPlaneo}%`;
+
+    // En Leaflet la opacidad va de 1.0 (opaco / 0% transparencia) a 0.0 (invisible / 100% transparencia)
+    const opacidadCalculada = Math.max(0, Math.min(1, (100 - transparenciaConoPlaneo) / 100));
+
+    if (capaConoPlaneo && typeof map !== 'undefined' && map && map.hasLayer(capaConoPlaneo)) {
+        capaConoPlaneo.setOpacity(opacidadCalculada);
     }
 };
 
@@ -18605,7 +18626,8 @@ async function ejecutarCalculoConoPlaneo(latlng) {
     if (capaConoPlaneo && map.hasLayer(capaConoPlaneo)) {
         map.removeLayer(capaConoPlaneo);
     }
-    capaConoPlaneo = L.imageOverlay(canvas.toDataURL(), bounds, { opacity: 0.65 }).addTo(map);
+    const opacidadInicial = Math.max(0, Math.min(1, (100 - transparenciaConoPlaneo) / 100));
+    capaConoPlaneo = L.imageOverlay(canvas.toDataURL(), bounds, { opacity: opacidadInicial }).addTo(map);
 
     // Crear o mover el marcador de origen interactivo
     if (!origenPlaneoMarker) {
@@ -18850,22 +18872,23 @@ function actualizarTooltipCursor(e) {
         const tooltip = document.getElementById('glide-cursor-tooltip');
         if (!tooltip) return;
 
-        tooltip.style.left = e.originalEvent.clientX + 'px';
-        tooltip.style.top = e.originalEvent.clientY + 'px';
-        tooltip.style.display = 'block';
-
+        // Si aún no se ha marcado el despegue, mantener el tooltip oculto
         if (!origenPlaneoLatLng || !demStitchData) {
-            tooltip.innerHTML = '👆 <i>' + t('mapa.planeo.popupPlaneoHazClic', { defaultValue: 'Haz clic para situar el despegue' }) + '</i>';
+            tooltip.style.display = 'none';
             limpiarVisualesTrayectoria();
             return;
         }
 
         const cota = leerElevacionGlobal(e.latlng.lat, e.latlng.lng);
         if (cota === null) {
-            tooltip.innerHTML = '<i>' + t('mapa.planeo.popupPlaneoFueraZona', { defaultValue: 'Este punto está fuera de zona de cálculo' }) + '</i>';
+            tooltip.style.display = 'none';
             limpiarVisualesTrayectoria();
             return;
         }
+
+        tooltip.style.left = e.originalEvent.clientX + 'px';
+        tooltip.style.top = e.originalEvent.clientY + 'px';
+        tooltip.style.display = 'block';
 
         const cotaM = Math.round(cota);
         const distDirecta = origenPlaneoLatLng.distanceTo(e.latlng);
