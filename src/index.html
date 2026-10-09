@@ -1166,70 +1166,67 @@
 		</div>
 	</div>
 
-	<!-- 🟦 Control Planeo y sus popups -->
-	<div id="panel-control-planeo" style="display: none; position: absolute; top: 3px; right: 39px; z-index: 1000; background: rgba(255, 255, 255, 0.95);  padding: 10px 14px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #cbd5e1; max-width: 300px; line-height: 1.35;">
-		<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 6px; margin-bottom: 8px;">
-			<!-- Título -->
-			<span style="display: inline-flex; align-items: center; gap: 6px; color: #555; user-select: none;">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-					<path d="M 1.5 22.5 L 1.5 1.5 L 22.5 22.5 Z" stroke-width="1.8"></path>
-					<path d="M 5.5 18.5 L 5.5 11.2 L 12.8 18.5 Z" stroke-width="1.6"></path>
-					<line x1="1.5" y1="4.5" x2="3.3" y2="4.5" stroke-width="1.3"></line>
-					<line x1="1.5" y1="7.2" x2="4.3" y2="7.2" stroke-width="1.3"></line>
-					<line x1="1.5" y1="9.9" x2="3.3" y2="9.9" stroke-width="1.3"></line>
-					<line x1="1.5" y1="12.6" x2="4.3" y2="12.6" stroke-width="1.3"></line>
-					<line x1="1.5" y1="15.3" x2="3.3" y2="15.3" stroke-width="1.3"></line>
-					<line x1="1.5" y1="18.0" x2="4.3" y2="18.0" stroke-width="1.3"></line>
-					<line x1="1.5" y1="20.7" x2="3.3" y2="20.7" stroke-width="1.3"></line>
-				</svg>
-				<span class="texto-menu-capa" style="font-weight: bold; margin-left: 2px;" data-i18n="mapa.planeo.titlePlaneo">Cálculo de planeo</span>
-			</span>
+	<!-- 🟦 Control Planeo -->
+    <div id="infoPanelPlaneo" class="info-panel">
+		<!-- Cabecera retraída del Panel Planeo -->
+		<span id="labelMostrarOpcionesPlaneo" class="labelMostrarOpciones" style="display: inline-flex; align-items: center; gap: 6px; margin-left: 4px; color: #555; cursor: pointer; user-select: none;" data-i18n="[title]mapa.planeo.titlePlaneo" title="Cálculo de planeo">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M 1.5 22.5 L 1.5 1.5 L 22.5 22.5 Z" stroke-width="1.8"></path>
+				<path d="M 5.5 18.5 L 5.5 11.2 L 12.8 18.5 Z" stroke-width="1.6"></path>
+				<line x1="1.5" y1="4.5" x2="3.3" y2="4.5" stroke-width="1.3"></line>
+				<line x1="1.5" y1="7.2" x2="4.3" y2="7.2" stroke-width="1.3"></line>
+				<line x1="1.5" y1="9.9" x2="3.3" y2="9.9" stroke-width="1.3"></line>
+				<line x1="1.5" y1="12.6" x2="4.3" y2="12.6" stroke-width="1.3"></line>
+				<line x1="1.5" y1="15.3" x2="3.3" y2="15.3" stroke-width="1.3"></line>
+				<line x1="1.5" y1="18.0" x2="4.3" y2="18.0" stroke-width="1.3"></line>
+				<line x1="1.5" y1="20.7" x2="3.3" y2="20.7" stroke-width="1.3"></line>
+			</svg>
+			<span class="texto-menu-capa" data-i18n="mapa.planeo.titlePlaneo" style="font-weight: bold; margin-left: 2px;">Planeo</span>
+		</span>
 
-			<!-- Botón cerrar -->
-			<button id="btn-cerrar-planeo" data-i18n="[title]mapa.cerrarPanel" title="Cerrar panel" onclick="desactivarModoPlaneo()">
-				<span>❌</span>
-			</button>
-		</div>
+		<div id="divOpcionesPlaneo">
+			<button id="buttonCerrarPlaneo" data-i18n="[title]mapa.cerrarPanel" title="Cerrar panel"><span>❌</span></button>
 
-		<div id="planeo-instrucciones" style="color: #475569; margin-bottom: 8px;">
-			👆 <i data-i18n="mapa.planeo.popupPlaneoHazClic">Haz clic en el punto de despegue</i>
-		</div>
-
-		<div id="planeo-ajustes-despegue" style="display: none;">
-			<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-				<span data-i18n="mapa.planeo.cotaDespegue">Altitud despegue: </span>
-				<b id="txt-cota-despegue">—</b>
-			</div>
-			
-			<div style="margin-bottom: 6px;">
-				<label style="display: flex; justify-content: space-between;">
-					<span data-i18n="mapa.planeo.alturaExtraDespegue">Altura extra: </span>
-					<b id="txt-offset-termica">+0 m</b>
-				</label>
-				<input type="range" id="slider-offset-termica" min="0" max="1500" step="50" value="0" style="width: 100%; margin: 3px 0;" oninput="actualizarTermicaPlaneo(this.value)">
+			<div id="planeo-instrucciones" style="color: #475569; margin-top: 10px; margin-bottom: 6px;">
+				👆 <i data-i18n="mapa.planeo.popupPlaneoHazClic">Haz clic en el punto de despegue</i>
 			</div>
 
-			<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-				<span data-i18n="mapa.planeo.cotaDespegueMasExtra">Altitud + altura extra: </span>
-				<b id="txt-cota-despegue-mas-extra">—</b>
-			</div>
-
-			<!-- Leyenda visual de finezas -->
-			<div style="border-top: 2px solid #ddd; padding-top: 6px; margin-top: 6px;">
-				<div style="margin-bottom: 4px;" data-i18n="mapa.planeo.planeoNecesario">Planeo necesario (L/D):</div>
+			<div id="planeo-ajustes-despegue" style="display: none; margin-top: 10px;">
+				<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+					<span data-i18n="mapa.planeo.cotaDespegue">Altitud despegue: </span>
+					<b id="txt-cota-despegue">—</b>
+				</div>
 				
-				<!-- Fila 1: Barra continua con gradiente de 6 colores -->
-				<div style="position: relative; width: 100%; margin-top: 5px;">
-					<div style="height: 11px; border-radius: 4px; background: linear-gradient(to right, #2563eb 0%, #06b6d4 25%, #22c55e 50%, #eab308 67%, #f97316 83%, #ef4444 100%); border: 1px solid rgba(0,0,0,0.12); box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);"></div>
-					
-					<!-- Pips y marcas numéricas generadas dinámicamente -->
-					<div id="pips-gradiente-planeo" style="position: relative; width: 100%; height: 20px; margin-top: 2px;"></div>
+				<div style="margin-bottom: 6px;">
+					<label style="display: flex; justify-content: space-between;">
+						<span data-i18n="mapa.planeo.alturaExtraDespegue">Altura extra: </span>
+						<b id="txt-offset-termica">+0 m</b>
+					</label>
+					<input type="range" id="slider-offset-termica" min="0" max="1500" step="50" value="0" style="width: 100%; margin: 3px 0;" oninput="actualizarTermicaPlaneo(this.value)">
 				</div>
 
-				<!-- Fila 2: Cuadrado gris y relieve bloqueante -->
-				<div style="display: flex; align-items: center; gap: 6px; margin-top: 4px; color: #64748b;">
-					<span style="background: #7e7c7c; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0;"></span>
-					<span data-i18n="mapa.planeo.posibleBloqueoRelieve">Posible bloqueo por relieve</span>
+				<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+					<span data-i18n="mapa.planeo.cotaDespegueMasExtra">Altitud + altura extra: </span>
+					<b id="txt-cota-despegue-mas-extra">—</b>
+				</div>
+
+				<!-- Leyenda visual de finezas -->
+				<div style="border-top: 2px solid #ddd; padding-top: 6px; margin-top: 6px;">
+					<div style="margin-bottom: 4px;" data-i18n="mapa.planeo.planeoNecesario">Planeo necesario (L/D):</div>
+					
+					<!-- Fila 1: Barra continua con gradiente de 6 colores -->
+					<div style="position: relative; width: 100%; margin-top: 5px;">
+						<div style="height: 11px; border-radius: 4px; background: linear-gradient(to right, #2563eb 0%, #06b6d4 25%, #22c55e 50%, #eab308 67%, #f97316 83%, #ef4444 100%); border: 1px solid rgba(0,0,0,0.12); box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);"></div>
+						
+						<!-- Pips y marcas numéricas generadas dinámicamente -->
+						<div id="pips-gradiente-planeo" style="position: relative; width: 100%; height: 20px; margin-top: 2px;"></div>
+					</div>
+
+					<!-- Fila 2: Cuadrado gris y relieve bloqueante -->
+					<div style="display: flex; align-items: center; gap: 6px; margin-top: 4px; margin-bottom: 4px; color: #64748b;">
+						<span style="background: #7e7c7c; width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex-shrink: 0;"></span>
+						<span data-i18n="mapa.planeo.posibleBloqueoRelieve">Posible bloqueo por relieve</span>
+					</div>
 				</div>
 			</div>
 		</div>

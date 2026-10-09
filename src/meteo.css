@@ -3282,8 +3282,14 @@ details.config-accordion .accordion-content {
 
 #infoPanel.retraido .texto-menu-capa,
 #infoPanel2.retraido .texto-menu-capa,
-#infoPanel3.retraido .texto-menu-capa {
+#infoPanel3.retraido .texto-menu-capa,
+#infoPanelPlaneo.retraido .texto-menu-capa {
     display: none !important;
+}
+
+#infoPanelPlaneo:not(.retraido) {
+    width: 214px !important;
+    max-width: 90vw;
 }
 
 /* Ajustar el ancho del panel de balizas SOLO cuando está EXPANDIDO (no retraído) */
@@ -3333,10 +3339,10 @@ details.config-accordion .accordion-content {
     margin-top: 3px !important;
 }
 
-#divOpciones, #divOpciones3, #divOpciones2 {
+#divOpciones, #divOpciones3, #divOpciones2, #divOpcionesPlaneo {
 	overflow: hidden;
 }
-#divOpciones.oculto, #divOpciones3.oculto, #divOpciones2.oculto {
+#divOpciones.oculto, #divOpciones3.oculto, #divOpciones2.oculto, #divOpcionesPlaneo.oculto {
   max-height: 0; /* se retrae hasta 0 */
 }
 
@@ -3364,7 +3370,7 @@ details.config-accordion .accordion-content {
 	line-height: 1;
 	cursor: pointer;
 }	
-#buttonCerrar, #buttonCerrar3, #buttonCerrar2, #btn-cerrar-planeo {
+#buttonCerrar, #buttonCerrar3, #buttonCerrar2, #buttonCerrarPlaneo {
     float: right;
     margin-left: 10px;
     position: absolute;
@@ -3406,17 +3412,17 @@ details.config-accordion .accordion-content {
     cursor: pointer;
 }
 
-/* Ocultar los botones de cerrar cuando el panel está retraído */
 .info-panel.retraido #buttonCerrar, 
 .info-panel.retraido #buttonCerrar3,
-.info-panel.retraido #buttonCerrar2 {
+.info-panel.retraido #buttonCerrar2,
+.info-panel.retraido #buttonCerrarPlaneo {
     display: none !important;
 }
 
-/* Mostrar los botones de cerrar (usando flex para centrar el icono) cuando el panel se expande */
 .info-panel:not(.retraido) #buttonCerrar, 
 .info-panel:not(.retraido) #buttonCerrar3,
-.info-panel:not(.retraido) #buttonCerrar2 {
+.info-panel:not(.retraido) #buttonCerrar2,
+.info-panel:not(.retraido) #buttonCerrarPlaneo {
     display: flex !important;
 }
 
@@ -4258,8 +4264,8 @@ body.modo-balizas-directo .control-actividad-mapa-container,
 body.modo-balizas-directo #control-seguimiento-mapa-container,
 body.modo-balizas-directo #control-favoritos-mapa-container,
 body.modo-balizas-directo .leaflet-control-guia-mapa,
-body.modo-balizas-directo .leaflet-control-planeo,
-body.modo-balizas-directo #panel-control-planeo
+body.modo-balizas-directo .leaflet-control-infopanel-planeo,
+body.modo-balizas-directo #infoPanelPlaneo,
 body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para elementos sin ID */
     display: none !important;
 }

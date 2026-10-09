@@ -2207,7 +2207,7 @@ function iniciarGuiaMapa(forzar = false) {
                 } 
             },
             { 
-                element: '#btn-control-planeo',
+                element: '#infoPanelPlaneo',
                 popover: { 
                     title: t('guiaMapa.pasos.btnPlaneo.titulo'), 
                     description: t('guiaMapa.pasos.btnPlaneo.descripcion')
@@ -11393,8 +11393,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 return;
             }
 
-            const panelPlaneo = document.getElementById('panel-control-planeo');
-            if ((panelPlaneo && panelPlaneo.style.display !== 'none') || (typeof modoPlaneoActivo !== 'undefined' && modoPlaneoActivo)) {
+            if (typeof modoPlaneoActivo !== 'undefined' && modoPlaneoActivo) {
                 desactivarModoPlaneo();
                 return;
             }
@@ -14389,44 +14388,18 @@ function inicializarMapaLeaflet() {
         maxWidth: 150
     }).addTo(map);
 
-    // 🟡 CONTROL "Planeo"
-    L.Control.Planeo = L.Control.extend({
-        onAdd: function(map) {
-            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-planeo');
-            container.style.overflow = 'hidden';
-
-            const link = L.DomUtil.create('a', '', container);
-            link.id = 'btn-control-planeo';
-            link.title = t('mapa.planeo.titlePlaneo', { defaultValue: 'Cálculo de planeo' });
-            link.href = '#';
-            link.role = 'button';
-            link.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <!-- Contorno exterior ensanchado al límite de las líneas rojas -->
-                    <path d="M 1.5 22.5 L 1.5 1.5 L 22.5 22.5 Z" stroke-width="1.8"></path>
-                    <!-- Triángulo interior centrado con grosor idéntico de pared (4.0 px) en los 3 lados -->
-                    <path d="M 5.5 18.5 L 5.5 11.2 L 12.8 18.5 Z" stroke-width="1.6"></path>
-                    <!-- Graduación de regla en el borde izquierdo -->
-                    <line x1="1.5" y1="4.5" x2="3.3" y2="4.5" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="7.2" x2="4.3" y2="7.2" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="9.9" x2="3.3" y2="9.9" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="12.6" x2="4.3" y2="12.6" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="15.3" x2="3.3" y2="15.3" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="18.0" x2="4.3" y2="18.0" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="20.7" x2="3.3" y2="20.7" stroke-width="1.3"></line>
-                </svg>
-
-            `;
-
-            L.DomEvent.on(link, 'click', function(e) {
-                L.DomEvent.stopPropagation(e);
-                L.DomEvent.preventDefault(e);
-                toggleModoPlaneo();
-            });
+    // 🟡 CONTROL "infoPanelPlaneo"
+    const infopanelControlPlaneo = L.Control.extend({
+        onAdd: function (map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-infopanel-planeo');
+            const panelHTML = document.getElementById('infoPanelPlaneo');
+            if (panelHTML) container.appendChild(panelHTML);
+            L.DomEvent.disableClickPropagation(container);
+            L.DomEvent.disableScrollPropagation(container);
             return container;
         }
     });
-    map.addControl(new L.Control.Planeo({ position: 'topright' }));
+    map.addControl(new infopanelControlPlaneo({ position: 'topright' }));
         
     // 🟡 CONTROL "Mi ubicación"
     L.Control.Locate = L.Control.extend({
@@ -15979,6 +15952,45 @@ function inicializarMapaLeaflet() {
     iconoFijar2 = document.getElementById('iconoFijar2');
     divOpciones2 = document.getElementById('divOpciones2');
     labelMostrarOpciones2 = document.getElementById('labelMostrarOpciones2'); 
+
+    //  1.3 Inicialización de variables locales PANEL PLANEO
+    let infoPanelPlaneo, divOpcionesPlaneo, labelMostrarOpcionesPlaneo, buttonCerrarPlaneo;
+
+    infoPanelPlaneo = document.getElementById('infoPanelPlaneo');
+    buttonCerrarPlaneo = document.getElementById('buttonCerrarPlaneo');
+    divOpcionesPlaneo = document.getElementById('divOpcionesPlaneo');
+    labelMostrarOpcionesPlaneo = document.getElementById('labelMostrarOpcionesPlaneo');
+
+    function expandirAlClicarPlaneo(event) {
+        if (infoPanelPlaneo && infoPanelPlaneo.classList.contains('retraido')) {
+            L.DomEvent.stopPropagation(event);
+            window.activarModoPlaneo();
+        }
+    }
+
+    window.retraerOpcionesPlaneo = function() {
+        if (!infoPanelPlaneo) return;
+        divOpcionesPlaneo.classList.add('oculto');
+        infoPanelPlaneo.classList.add('retraido');
+        L.DomEvent.on(infoPanelPlaneo, 'click', expandirAlClicarPlaneo);
+    };
+
+    window.expandirOpcionesPlaneo = function() {
+        if (!infoPanelPlaneo) return;
+        divOpcionesPlaneo.classList.remove('oculto');
+        infoPanelPlaneo.classList.remove('retraido');
+        L.DomEvent.off(infoPanelPlaneo, 'click', expandirAlClicarPlaneo);
+    };
+
+    if (infoPanelPlaneo && labelMostrarOpcionesPlaneo && buttonCerrarPlaneo && divOpcionesPlaneo) {
+        infoPanelPlaneo.style.display = 'block';
+        window.retraerOpcionesPlaneo();
+
+        L.DomEvent.on(buttonCerrarPlaneo, 'click', function (event) {
+            L.DomEvent.stopPropagation(event);
+            window.desactivarModoPlaneo();
+        });
+    }
     
     //  2. Lógica de Inicialización y Listeners DOM/LEAFLET (Panel 1)
     if (infoPanel && labelMostrarOpciones && buttonFijar && buttonCerrar && divOpciones) {
@@ -18272,62 +18284,54 @@ function obtenerColorPlaneo(finesse) {
     return [0, 0, 0, 0];                                     // Transparente (> P + 3)
 }
 
-window.toggleModoPlaneo = function() {
-    modoPlaneoActivo = !modoPlaneoActivo;
-    const btn = document.getElementById('btn-control-planeo');
-    const panel = document.getElementById('panel-control-planeo');
-    const mapDiv = document.getElementById('map');
-
-    if (modoPlaneoActivo) {
-        if (btn) btn.classList.add('activo');
-        if (panel) panel.style.display = 'block';
-        if (mapDiv) mapDiv.classList.add('cursor-planeo-activo');
-        actualizarTextosLeyendaPlaneo();
-
-        // 1. RECORDAR SI EL FILTRO METEO ESTABA ABIERTO O CERRADO:
-        const divFH = document.getElementById('div-filtro-horario');
-        const estabaAbierto = !!(divFH && divFH.classList.contains('flotando-en-mapa'));
-        window.filtroMeteoPrePlaneo = estabaAbierto;
-
-        // 2. SI ESTABA ABIERTO, REPLEGARLO; Y QUITAR COLORES A LOS DESPEGUES:
-        if (estabaAbierto && typeof toggleFiltrosMapa === 'function') {
-            toggleFiltrosMapa(); // Esto repliega el panel y llama automáticamente a limpiarColoresMapa()
-        } else if (typeof limpiarColoresMapa === 'function') {
-            limpiarColoresMapa(); // Si ya estaba cerrado, asegura que los despegues queden neutros/blancos
-        }
-
-    } else {
-        desactivarModoPlaneo();
+window.activarModoPlaneo = function() {
+    modoPlaneoActivo = true;
+    if (typeof window.expandirOpcionesPlaneo === 'function') {
+        window.expandirOpcionesPlaneo();
     }
+    const mapDiv = document.getElementById('map');
+    if (mapDiv) mapDiv.classList.add('cursor-planeo-activo');
+    actualizarTextosLeyendaPlaneo();
+
+    // 1. Recordar si el filtro meteo estaba abierto
+    const divFH = document.getElementById('div-filtro-horario');
+    const estabaAbierto = !!(divFH && divFH.classList.contains('flotando-en-mapa'));
+    window.filtroMeteoPrePlaneo = estabaAbierto;
+
+    // 2. Si estaba abierto, replegarlo y dejar despegues neutros
+    if (estabaAbierto && typeof toggleFiltrosMapa === 'function') {
+        toggleFiltrosMapa();
+    } else if (typeof limpiarColoresMapa === 'function') {
+        limpiarColoresMapa();
+    }
+
+    // 3. Retraer paneles de la izquierda si estuvieran abiertos
+    if (typeof retraerOpciones === 'function') retraerOpciones();
+    if (typeof retraerOpciones2 === 'function') retraerOpciones2();
+    if (typeof retraerOpciones3 === 'function') retraerOpciones3();
 };
 
 window.desactivarModoPlaneo = function() {
     modoPlaneoActivo = false;
-    const btn = document.getElementById('btn-control-planeo');
-    const panel = document.getElementById('panel-control-planeo');
+    if (typeof window.retraerOpcionesPlaneo === 'function') {
+        window.retraerOpcionesPlaneo();
+    }
     const mapDiv = document.getElementById('map');
     const tooltip = document.getElementById('glide-cursor-tooltip');
 
-    if (btn) btn.classList.remove('activo');
-    if (panel) panel.style.display = 'none';
     if (mapDiv) mapDiv.classList.remove('cursor-planeo-activo');
     if (tooltip) tooltip.style.display = 'none';
 
     limpiarVisualesTrayectoria();
 
-    // 1. 🔄 RESETEAR VARIABLES DE CÁLCULO
     cotaTerrenoBase = 0;
     offsetTermicaActual = 0;
     origenPlaneoLatLng = null;
     demStitchData = null;
 
-    // 2. 🎚️ RESETEAR EL SLIDER A LA IZQUIERDA (CERO)
     const slider = document.getElementById('slider-offset-termica');
-    if (slider) {
-        slider.value = 0;
-    }
+    if (slider) slider.value = 0;
 
-    // 3. 📝 RESETEAR LOS TEXTOS Y CIFRAS DEL PANEL
     const txtCota = document.getElementById('txt-cota-despegue');
     if (txtCota) txtCota.textContent = '—';
 
@@ -18337,13 +18341,11 @@ window.desactivarModoPlaneo = function() {
     const txtTotal = document.getElementById('txt-cota-despegue-mas-extra');
     if (txtTotal) txtTotal.textContent = '—';
 
-    // 4. RESTAURAR VISIBILIDAD DE SUBPANELES
     const panelAjustes = document.getElementById('planeo-ajustes-despegue');
     const panelInstrucciones = document.getElementById('planeo-instrucciones');
     if (panelAjustes) panelAjustes.style.display = 'none';
     if (panelInstrucciones) panelInstrucciones.style.display = 'block';
 
-    // 5. BORRAR CAPAS DEL MAPA
     if (capaConoPlaneo && map && map.hasLayer(capaConoPlaneo)) {
         map.removeLayer(capaConoPlaneo);
         capaConoPlaneo = null;
@@ -18353,16 +18355,21 @@ window.desactivarModoPlaneo = function() {
         origenPlaneoMarker = null;
     }
 
-    // 6. RESTAURAR EL FILTRO METEO A SU CONDICIÓN ANTERIOR:
     if (window.filtroMeteoPrePlaneo === true) {
         const divFH = document.getElementById('div-filtro-horario');
-        // Si estaba cerrado por el planeo, volver a desplegarlo y colorear despegues
         if (divFH && !divFH.classList.contains('flotando-en-mapa') && typeof toggleFiltrosMapa === 'function') {
             toggleFiltrosMapa();
         }
     }
-    // Si estaba cerrado (false), no hace nada y continúa cerrado.
     window.filtroMeteoPrePlaneo = undefined;
+};
+
+window.toggleModoPlaneo = function() {
+    if (modoPlaneoActivo) {
+        window.desactivarModoPlaneo();
+    } else {
+        window.activarModoPlaneo();
+    }
 };
 
 // Modificar ganancia térmica desde el deslizador
