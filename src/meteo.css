@@ -366,11 +366,10 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     cursor: default;
 }
 
-#valor-dias-seguimiento, #valor-viento-max-balizas {
+#valor-dias-seguimiento, #valor-viento-max-balizas, #valor-planeo-referencia {
     min-width: 28px;
     text-align: center;
     font-weight: bold;
-    font-size: 0.95em;
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
     height: 28px;
@@ -3283,8 +3282,14 @@ details.config-accordion .accordion-content {
 
 #infoPanel.retraido .texto-menu-capa,
 #infoPanel2.retraido .texto-menu-capa,
-#infoPanel3.retraido .texto-menu-capa {
+#infoPanel3.retraido .texto-menu-capa,
+#infoPanelPlaneo.retraido .texto-menu-capa {
     display: none !important;
+}
+
+#infoPanelPlaneo:not(.retraido) {
+    width: 214px !important;
+    max-width: 90vw;
 }
 
 /* Ajustar el ancho del panel de balizas SOLO cuando está EXPANDIDO (no retraído) */
@@ -3334,10 +3339,10 @@ details.config-accordion .accordion-content {
     margin-top: 3px !important;
 }
 
-#divOpciones, #divOpciones3, #divOpciones2 {
+#divOpciones, #divOpciones3, #divOpciones2, #divOpcionesPlaneo {
 	overflow: hidden;
 }
-#divOpciones.oculto, #divOpciones3.oculto, #divOpciones2.oculto {
+#divOpciones.oculto, #divOpciones3.oculto, #divOpciones2.oculto, #divOpcionesPlaneo.oculto {
   max-height: 0; /* se retrae hasta 0 */
 }
 
@@ -3365,7 +3370,7 @@ details.config-accordion .accordion-content {
 	line-height: 1;
 	cursor: pointer;
 }	
-#buttonCerrar, #buttonCerrar3, #buttonCerrar2 {
+#buttonCerrar, #buttonCerrar3, #buttonCerrar2, #buttonCerrarPlaneo {
     float: right;
     margin-left: 10px;
     position: absolute;
@@ -3407,17 +3412,17 @@ details.config-accordion .accordion-content {
     cursor: pointer;
 }
 
-/* Ocultar los botones de cerrar cuando el panel está retraído */
 .info-panel.retraido #buttonCerrar, 
 .info-panel.retraido #buttonCerrar3,
-.info-panel.retraido #buttonCerrar2 {
+.info-panel.retraido #buttonCerrar2,
+.info-panel.retraido #buttonCerrarPlaneo {
     display: none !important;
 }
 
-/* Mostrar los botones de cerrar (usando flex para centrar el icono) cuando el panel se expande */
 .info-panel:not(.retraido) #buttonCerrar, 
 .info-panel:not(.retraido) #buttonCerrar3,
-.info-panel:not(.retraido) #buttonCerrar2 {
+.info-panel:not(.retraido) #buttonCerrar2,
+.info-panel:not(.retraido) #buttonCerrarPlaneo {
     display: flex !important;
 }
 
@@ -4247,6 +4252,7 @@ body.recordar-filtros-mapa-activo .chip-sesion-volatil {
 }
 
 /* 🛑 MODO DIRECTO DE BALIZAS (/balizas). Oculta controles de despegues, configuración y elementos marcados */
+
 body.modo-balizas-directo #btn-filtros-mapa,
 body.modo-balizas-directo #btn-configurar-app-mapa,
 body.modo-balizas-directo #infoPanel,
@@ -4258,8 +4264,58 @@ body.modo-balizas-directo .control-actividad-mapa-container,
 body.modo-balizas-directo #control-seguimiento-mapa-container,
 body.modo-balizas-directo #control-favoritos-mapa-container,
 body.modo-balizas-directo .leaflet-control-guia-mapa,
+body.modo-balizas-directo .leaflet-control-infopanel-planeo,
+body.modo-balizas-directo #infoPanelPlaneo,
 body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para elementos sin ID */
     display: none !important;
+}
+
+/* 🛑 MODO CÁLCULO PLANEO EN MAPA */
+
+.leaflet-control-planeo a {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    color: #333 !important;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.leaflet-control-planeo a.activo {
+    background-color: #0078d4 !important;
+    color: #ffffff !important; /* Hace que el SVG se vuelva blanco */
+}
+
+.cursor-planeo-activo, 
+.cursor-planeo-activo .leaflet-grab, 
+.cursor-planeo-activo .leaflet-interactive {
+    cursor: crosshair !important;
+}
+
+.glide-origin-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4));
+    transform: translate(-3px, 9px);
+}
+
+/* Tooltip ultra-ligero que sigue al cursor */
+.glide-cursor-tooltip {
+    position: fixed;
+    z-index: 99999;
+    pointer-events: none;
+    display: none;
+    transform: none;
+    background: rgb(255, 255, 255);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.45;
+    padding: 5px 9px;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 /* 🔴🔴 FIN MAPA */

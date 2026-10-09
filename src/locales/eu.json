@@ -430,6 +430,10 @@
       "titulo": "Iragazkiak",
       "descripcion": "Iragazi mapako informazioa zure beharren arabera. Zure gogoko edo jarraipeneko aireratzeak eta balizak soilik erakutsi edo ezkutatu ditzakezu. Gainera, aireratzeak orientazioaren, jarduera-mailaren edo XContest-en erregistratutako hegaldi bolumenaren arabera iragazi ditzakezu, eta balizak altueraren arabera."
     },
+    "btnPlaneo": {
+      "titulo": "Planeamendu-kalkulua",
+      "descripcion": "Kalkulatu zer eremutara irits zaitezkeen aireratze-leku batetik planeatuz.<br><br>• Egin klik mapako edozein puntutan aireratzea (🪂) kokatzeko.<br>• Mapan gainjarritako kolore-gradienteak bisualki adierazten du hara iristeko beharrezkoa den planeamendua.<br>• Sagua mugitzean hegaldi-ibilbidea ikusiko duzu, gandorrak automatikoki saihesten saiatzen dena tarteko biraketa-puntu batekin, erliebeak ahalbidetzen badu.<br>• Kurtsorea jarraitzen duen laukitxoak puntu horretarako datu guztiak adieraziko dizkizu (iritsiko zinatekeen altuera, beharrezko planeamendua,...).<br>• <i>Planeamendu-kalkulua</i> panelak informazio gehiago ikusteko edo aldatzeko aukera ematen dizu."
+    },
     "btnGps": {
       "titulo": "Nire kokapena",
       "descripcion": "Zentratu mapa zure egungo posizioan."
@@ -619,6 +623,7 @@
     "ordenar_xc": "Ordenatu XC baldintzen arabera",
     "vibracion": "Ukitzean bibratu",
     "diasSeguimiento": "Jarraipen-egunak:",
+    "planeoReferencia": "Belaren planeamendua:",
     "titulo": "Ezarpenak",
     "editarFavoritos": "Editatu gogokoak",
     "importarConfig": "Inportatu ezarpenak eta gogokoak",
@@ -795,6 +800,23 @@
       "marcar_todas": "Guztiak markatu",
       "verEnTolomet": "Ikusi Tolomet-en",
       "webOficial": "Ikusi web ofizialean"
+    },
+    "planeo": {
+      "titlePlaneo": "Planeamendu-kalkulua",
+      "popupPlaneoHazClic": "Egin klik aireratze-puntuan",
+      "popupPlaneoFueraZona": "Puntu hau kalkulu-eremutik kanpo dago",
+      "cotaDespegue": "Aireratze-altitudea: ",
+      "alturaExtraDespegue": "Altuera gehigarria: ",
+      "cotaDespegueMasExtra": "Altitudea + gehigarria: ",
+      "planeoNecesario": "Beharrezko planeamendua (L/D):",
+      "posibleBloqueoRelieve": "Erliebearen ondoriozko blokeo posiblea",
+      "altitud": "Altitudea",
+      "altura": "Iritsiera-altuera",
+      "descenso": "Jaitsiera",
+      "distancia": "Distantzia",
+      "planeo": "Planeamendua",
+      "planeoVela": "Belaren planeamendua",
+      "transparencia": "Gardentasuna:"
     }
   },
 
@@ -898,6 +920,7 @@
     "tooltipHorasDiurnas": "<b>Eguneko orduak soilik</b><br><br>Eguneko orduak soilik erakusten ditu. Desaktibatuta badago, eguneko 24 orduak erakutsiko dira.<br><br>Egunsentian eta ilunabarrean ±1 orduko marjina sartzen da.<br><br>Hilabetero automatikoki aldatzen da. Horrez gain, ordu-aldaketak dauden hiletan, ordu horiek ordu-aldaketa ofizialera (DST) egokituko dira automatikoki.",
     "tooltipOrdenarXC": "<b>Ordenatu XC baldintzen arabera:</b><br><br>Lehenespenez, aireratzeak onenetik okerrenera ordenatzen dira <i>Aireratze-baldintzen</i> puntuazioaren arabera (aireratzeko bideragarritasuna haizearen arabera).<br><br>Aukera hau aktibatzen baduzu, taula <b>XC Baldintzen</b> puntuaziorik onenetik okerrenera ordenatuko da (aire-masaren potentzial termikoa), aireratze horretan haizea ideala den ala ez kontuan hartu gabe.",
     "tooltipDiasSeguimiento": "<b>Jarraipen-egunak:</b><br><br>Aireratze bat begiarekin <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg> markatzen duzunean, <i>jarraipenean</i> geratzen da hemen konfiguratzen duzun egun kopuruan zehar.<br><br>Adibidez, 2 egunekin: astelehenean aireratze bat markatzen baduzu, astelehenean eta asteartean aktibo agertuko da. Asteazkenean automatikoki ezabatuko da aplikazioa abiaraztean.<br><br>Aireratzeak jarraipenarekin markatzeak horiek erraz iragazteko aukera ematen dizu <i>Ikusi soilik jarraipenean dauden aireratzeak</i> botoiarekin.<br><br><b>1 eta 4 egun artean edo infinitu (jarraipena ez da inoiz desaktibatzen)</b> konfigura dezakezu. Balio lehenetsia <b>3 egunekoa</b> da.",
+    "tooltipPlaneoReferencia": "<b>Belaren planeamendua:</b><br><br>Zure parapentearen aire bareko planeamendu-erlazio (L/D) estimatua zehazten du, mapako <i>Planeamendu-kalkulua</i> 📐 tresnak erabiltzen duena.<br><br>Balio errealista bat edo, nahiago baduzu, balio kontserbadore txikiago bat jar dezakezu, ustekabeko jaitsierak, aurkako haizea... saihesteko.<br><br>Balio honek koloreen eskala jarraitua zure belara egokitzen du: <b>berde</b> koloreak zure parapentearen benetako irismena mugatuko du aldeko haizerik gabe, tonu <b>urdinek</b> marjina handiz iristen zaren eremuak, eta kolore beroek (horia, laranja eta gorria) isatseko haizea edo sostengu gehigarria beharko duten planeamendu zorrotzagoak.<br><br>Gainera, datu hau mapan zehar mugitzean kurtsoreak erakusten duen zenbatetsitako <b>Iritsiera-altuera</b> (AGL) zehaztasunez kalkulatzeko erabiltzen da, puntu bakoitzera lurraren gainetik zenbat metroko marjinarekin iritsiko zinatekeen adieraziz.<br><br><b>5.0 eta 14.0</b> artean konfigura dezakezu (0.1eko jauzietan). Balio lehenetsia <b>7.0</b> da.",
     "tooltipModelosMeteo": "<b>Eredu meteorologikoak:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: lehen 0-48 orduetako haize-datuetarako. Ia Europa osoa hartzen du, Iberiar penintsula barne, Andaluziako hegoaldea izan ezik (eremu horretan ICON-EU 7km erabiltzen da 0-96h). Lurretik 20, 50 eta 100 m-ra (AGL) dauden haize-datuak ere eskaintzen ditu. Eguneratzea 3 orduz behin gutxi gorabehera (egunean 8 aldiz).</li><li><b>DWD Germany ICON-EU 7km</b>: hurrengo 48-96 orduetako haize-datuetarako. Europa osoa hartzen du Kanariak izan ezik. Ez du AGL haize-daturik eskaintzen 20 edo 50 m-ra, 100 m-ra soilik. Eguneratzea 3 orduz behin gutxi gorabehera (egunean 8 aldiz).</li><li><b>Météo-France Arome 2.5km 15min</b>: hainbat altueratako haize-datuetarako hurrengo 6 orduetan eta 15 minutuko tarteetan. Arome-HD-ren estaldura bera. Eguneratze automatikoa ordu 1ean behin (egunean 24 aldiz).</li><li><b>ECMWF IFS HRES 9km</b>: gainerako datu meteorologikoetarako 0-96h (eguraldi orokorra, hodeitza, prezipitazioa, sabaia, CAPE, CIN eta altuerako haizeak geopotentzialez zuzenduta 500, 1000, 1500 eta 3000 m-ko altitudean eta aireratzearen altitudean (MSL). Mundu osoa hartzen du. Eguneratze automatikoa 6 orduz behin gutxi gorabehera (egunean 4 aldiz)</li></ul><b>Datu meteorologikoen pasabidea:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br><i>(DDtHH)</i> balioak (adibidez: 12t03) jatorrizko zerbitzari meteorologikoan ereduaren azken exekuzio-zikloari dagokion UTC±0 (Z) eguna eta ordua adierazten du. Une horretatik aurrera, konputazio-kalkuluko hainbat ordu igarotzen dira azken banaketa eta erabilgarritasun publikoa baino lehen.",
     "tooltipModoApp": "<b>Aplikazioaren modua:</b><br><br><b>Modu sinplea</b>: Funtsezkoa soilik. Hasteko eta aplikazioarekin ohitzeko gomendatua, <i>Modu aurreratura</i> igaro aurretik.<br><br><b>Modu aurreratua</b>: Erabateko kontrola. Aukera, iragazki eta datu xehatu guztietarako sarbidea ematen du.",
     "tooltipcheckboxBalizasEuskalmet": "<b>Euskalmet haize-balizak</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Jabetza</b>: Eusko Jaurlaritza</li><li><b>Estaldura geografikoa</b>: Euskal Herria (Euskadi)</li><li><b>Erakutsitako baliza kopurua, gutxi gorabehera</b>: 64</li><li><b>Datuen eguneratzearen gutxi gorabeherako maiztasuna</b>: 10 minutu (estazioaren arabera aldakorra)</li><li><b>Webgunea</b>: <a href='https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#' target='_blank' style='color: #007bff; text-decoration: underline;'>Euskalmet</a></li></ul>",

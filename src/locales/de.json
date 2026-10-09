@@ -430,6 +430,10 @@
       "titulo": "Filter",
       "descripcion": "Filtern Sie die Karteninformationen nach Ihren Bedürfnissen. Sie können nur Ihre favorisierten oder verfolgten Startplätze und Baken ein- oder ausblenden. Außerdem können Sie Startplätze nach Ausrichtung, Aktivitätsniveau oder Volumen der in XContest registrierten Flüge filtern sowie Baken nach ihrer Höhe filtern."
     },
+    "btnPlaneo": {
+      "titulo": "Gleitberechnung",
+      "descripcion": "Berechnet, welche Gebiete Sie im Gleitflug von einem Startplatz aus erreichen können.<br><br>• Klicken Sie auf einen beliebigen Punkt auf der Karte, um den Startplatz (🪂) festzulegen.<br>• Der auf der Karte überlagerte Farbverlauf zeigt visuell die erforderliche Gleitzahl an, um dorthin zu gelangen.<br>• Wenn Sie die Maus bewegen, sehen Sie die Flugbahn, die versucht, Kämme automatisch mit einem dazwischenliegenden Wendepunkt zu umfliegen, wenn das Gelände dies zulässt.<br>• Das kleine Kästchen, das dem Mauszeiger folgt, zeigt Ihnen alle Daten für diesen Punkt an (Ankunftshöhe, erforderliche Gleitzahl,...).<br>• Das Panel <i>Gleitberechnung</i> ermöglicht es Ihnen, weitere Informationen anzuzeigen oder zu ändern."
+    },
     "btnGps": {
       "titulo": "Mein Standort",
       "descripcion": "Zentriert die Karte auf Ihre aktuelle Position."
@@ -619,6 +623,7 @@
     "ordenar_xc": "Nach XC-Bedingungen sortieren",
     "vibracion": "Bei Berührung vibrieren",
     "diasSeguimiento": "Beobachtungstage:",
+    "planeoReferencia": "Gleitzahl des Schirms:",
     "titulo": "Optionen",
     "editarFavoritos": "Favoriten bearbeiten",
     "importarConfig": "Optionen & Favoriten importieren",
@@ -795,6 +800,23 @@
       "marcar_todas": "Alle markieren",
       "verEnTolomet": "Auf Tolomet ansehen",
       "webOficial": "Auf der offiziellen Website ansehen"
+    },
+    "planeo": {
+      "titlePlaneo": "Gleitberechnung",
+      "popupPlaneoHazClic": "Klicken Sie auf den Startplatz",
+      "popupPlaneoFueraZona": "Dieser Punkt liegt außerhalb des Berechnungsgebiets",
+      "cotaDespegue": "Startplatzhöhe: ",
+      "alturaExtraDespegue": "Zusätzliche Höhe: ",
+      "cotaDespegueMasExtra": "Höhe + zusätzliche: ",
+      "planeoNecesario": "Erforderliche Gleitzahl (L/D):",
+      "posibleBloqueoRelieve": "Mögliche Blockierung durch Gelände",
+      "altitud": "Höhe",
+      "altura": "Ankunftshöhe",
+      "descenso": "Höhenverlust",
+      "distancia": "Distanz",
+      "planeo": "Gleitzahl",
+      "planeoVela": "Gleitzahl Schirms",
+      "transparencia": "Transparenz:"
     }
   },
 
@@ -898,6 +920,7 @@
     "tooltipHorasDiurnas": "<b>Nur Tageslichtstunden</b><br><br>Zeigt nur die Stunden bei Tageslicht an. Wenn diese Option deaktiviert ist, werden alle 24 Stunden des Tages angezeigt.<br><br>Eine Spanne von ±1 Std. beim Sonnenaufgang und Sonnenuntergang ist inbegriffen.<br><br>Ändert sich jeden Monat automatisch. Außerdem werden diese Stunden in Monaten mit Zeitumstellung automatisch an die offizielle Sommer-/Winterzeit (DST) angepasst.",
     "tooltipOrdenarXC": "<b>Nach XC-Bedingungen sortieren:</b><br><br>Standardmäßig werden die Startplätze basierend auf der Bewertung der <i>Startbedingungen</i> (Durchführbarkeit des Starts in Abhängigkeit vom Wind) von der besten zur schlechtesten sortiert.<br><br>Wenn du diese Option aktivierst, wird die Tabelle nach der besten bis zur schlechtesten Bewertung der <b>XC-Bedingungen</b> (thermisches Potenzial der Luftmasse) sortiert, unabhängig davon, ob der Wind an diesem Startplatz ideal ist oder nicht.",
     "tooltipDiasSeguimiento": "<b>Beobachtungstage:</b><br><br>Wenn du einen Startplatz mit dem Auge <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg> markierst, bleibt er für die hier konfigurierte Anzahl von Tagen unter <i>Beobachtung</i>.<br><br>Zum Beispiel mit 2 Tagen: Wenn du an einem Montag einen Startplatz markierst, erscheint er am Montag und Dienstag als aktiv. Am Mittwoch wird er beim Start der Anwendung automatisch entfernt.<br><br>Das Markieren von Startplätzen zur Beobachtung ermöglicht es dir, diese einfach mit dem Button <i>Nur beobachtete Startplätze anzeigen</i> zu filtern.<br><br>Du kannst zwischen <b>1 und 4 Tagen oder unendlich (die Beobachtung wird nie deaktiviert)</b> konfigurieren. Der Standardwert ist <b>3 Tage</b>.",
+    "tooltipPlaneoReferencia": "<b>Gleitzahl des Schirms:</b><br><br>Definiert die geschätzte Gleitzahl (L/D) Ihres Gleitschirms in ruhiger Luft, die vom Werkzeug <i>Gleitberechnung</i> 📐 auf der Karte verwendet wird.<br><br>Sie können einen realistischen Wert eingeben oder, wenn Sie es vorziehen, einen niedrigeren, konservativeren Wert, um unerwartetes Sinken, Gegenwind,... zu vermeiden.<br><br>Dieser Wert passt die kontinuierliche Farbskala an Ihren Schirm an: Die Farbe <b>Grün</b> begrenzt die tatsächliche Reichweite Ihres Gleitschirms ohne Rückenwind, die <b>blauen</b> Töne die Bereiche, die Sie mit ausreichendem Spielraum erreichen, und die warmen Farben (Gelb, Orange und Rot) die anspruchsvollsten Gleitflüge, die Rückenwind oder zusätzlichen Auftrieb erfordern.<br><br>Darüber hinaus werden diese Daten verwendet, um die geschätzte <b>Ankunftshöhe</b> (AGL) genau zu berechnen, die der Mauszeiger anzeigt, wenn er über die Karte bewegt wird, und gibt an, mit wie vielen Metern Spielraum über dem Boden Sie an jedem Punkt ankommen würden.<br><br>Sie können zwischen <b>5.0 und 14.0</b> (in Schritten von 0.1) konfigurieren. Der Standardwert ist <b>7.0</b>.",
     "tooltipModelosMeteo": "<b>Meteorologische Modelle:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: für Winddaten in den ersten 0-48h. Deckt fast ganz Europa ab, einschließlich der Iberischen Halbinsel, außer Südandalusien (in diesem Gebiet wird ICON-EU 7km von 0-96h verwendet). Bietet auch Winddaten in 20, 50 und 100 m Höhe über dem Boden (AGL). Aktualisierung ca. alle 3 Stunden (8 mal täglich).</li><li><b>DWD Germany ICON-EU 7km</b>: für Winddaten in den folgenden 48-96h. Deckt Europa ab, außer den Kanarischen Inseln. Bietet keine AGL-Winddaten in 20 oder 50 m, nur 100 m. Aktualisierung ca. alle 3 Stunden (8 mal täglich).</li><li><b>Météo-France Arome 2.5km 15min</b>: für Winddaten in verschiedenen Höhen in den folgenden 6 Stunden und in 15-Minuten-Intervallen. Gleiche Abdeckung wie Arome-HD. Automatische Aktualisierung stündlich (24 mal täglich).</li><li><b>ECMWF IFS HRES 9km</b>: für restliche meteorologische Daten von 0-96h (allgemeines Wetter, Bewölkung, Niederschlag, Deckenhöhe, CAPE, CIN und Höhenwinde, korrigiert durch Geopotenzial in 500, 1000, 1500 und 3000 m Höhe und auf der Startplatzhöhe (MSL). Deckt die ganze Welt ab. Automatische Aktualisierung ca. alle 6 Stunden (4 mal täglich)</li></ul><b>Meteorologisches Daten-Gateway:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>Der Wert <i>(DDtHH)</i> (Beispiel: 12t03) gibt den Tag und die Uhrzeit UTC±0 (Z) an, die dem letzten Ausführungszyklus des Modells auf dem Ursprungs-Wetterserver entsprechen. Ab diesem Moment vergehen mehrere Stunden an Rechenzeit vor der endgültigen Verteilung und öffentlichen Verfügbarkeit.",
     "tooltipModoApp": "<b>App-Modus:</b><br><br><b>Einfacher Modus</b>: Nur das Wesentliche. Empfohlen für den Einstieg, um sich mit der App vertraut zu machen, bevor du in den <i>Erweiterten Modus</i> wechselst.<br><br><b>Erweiterter Modus</b>: Volle Kontrolle. Bietet Zugriff auf alle Optionen, Filter und detaillierten Daten.",
     "tooltipcheckboxBalizasEuskalmet": "<b>Euskalmet Windstationen</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Betreiber</b>: Baskische Regierung</li><li><b>Geografische Abdeckung</b>: Baskenland (Euskadi)</li><li><b>Ungefähre Anzahl angezeigter Stationen</b>: 64</li><li><b>Ungefähre Häufigkeit der Datenaktualisierung</b>: 10 Minuten (stationsabhängig)</li><li><b>Website</b>: <a href='https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#' target='_blank' style='color: #007bff; text-decoration: underline;'>Euskalmet</a></li></ul>",

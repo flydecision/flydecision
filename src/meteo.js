@@ -2207,6 +2207,13 @@ function iniciarGuiaMapa(forzar = false) {
                 } 
             },
             { 
+                element: '#infoPanelPlaneo',
+                popover: { 
+                    title: t('guiaMapa.pasos.btnPlaneo.titulo'), 
+                    description: t('guiaMapa.pasos.btnPlaneo.descripcion')
+                } 
+            },
+            { 
                 element: '.leaflet-control-locate',
                 popover: { 
                     title: t('guiaMapa.pasos.btnGps.titulo'), 
@@ -3637,6 +3644,35 @@ function cambiarDiasSeguimiento(delta) {
     if (btnMenos) btnMenos.disabled = (idx <= 0);
     if (btnMas)   btnMas.disabled   = (idx >= PASOS_DIAS_SEGUIMIENTO.length - 1);
 }
+
+let planeoReferencia = parseFloat(localStorage.getItem('METEO_PLANEO_REFERENCIA')) || 7.0;
+window.planeoReferencia = planeoReferencia;
+
+function actualizarUIPlaneoReferencia() {
+    const el = document.getElementById('valor-planeo-referencia');
+    if (el) el.textContent = planeoReferencia.toFixed(1);
+
+    // Límites de seguridad: entre 5.0 y 14.0
+    const btnMenos = document.getElementById('stepper-planeo-menos');
+    const btnMas   = document.getElementById('stepper-planeo-mas');
+    if (btnMenos) btnMenos.disabled = (planeoReferencia <= 5.0);
+    if (btnMas)   btnMas.disabled   = (planeoReferencia >= 14.0);
+}
+
+function cambiarPlaneoReferencia(delta) {
+    // Suma o resta 0.1 redondeando para evitar errores de coma flotante de JS
+    let nuevo = Math.round((planeoReferencia + delta * 0.1) * 10) / 10;
+    nuevo = Math.min(14.0, Math.max(5.0, nuevo));
+
+    planeoReferencia = nuevo;
+    localStorage.setItem('METEO_PLANEO_REFERENCIA', planeoReferencia.toFixed(1));
+
+    actualizarUIPlaneoReferencia();
+    actualizarTextosLeyendaPlaneo()
+
+    if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+}
+window.cambiarPlaneoReferencia = cambiarPlaneoReferencia;
 
 // ---------------------------------------------------------------
 // 🔴 SLIDERS. RANGO HORARIO. Lógica para poder hacer clic en los pips de los días semanales y seleccionar así sus rango horario completo (tiene en cuenta chk día/noche) con un toque
@@ -11199,6 +11235,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
         if (btnMas)   btnMas.disabled   = (idxDias >= PASOS_DIAS_SEGUIMIENTO.length - 1);
     }
 
+    // Inicializar visualmente el stepper de planeo de vela
+    actualizarUIPlaneoReferencia();
+
     if (document.getElementById("chkAplicarCorreccionEstadistica")) {
         document.getElementById("chkAplicarCorreccionEstadistica").checked = chkAplicarCorreccionEstadistica;
     }
@@ -11351,6 +11390,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
             const panelConfig = document.getElementById("div-configuracion");
             if (panelConfig && panelConfig.classList.contains("activo")) {
                 alternardivConfiguracion(null, true); // Forzamos el cierre de acordeones
+                return;
+            }
+
+            if (typeof modoPlaneoActivo !== 'undefined' && modoPlaneoActivo) {
+                desactivarModoPlaneo();
                 return;
             }
 
@@ -14344,6 +14388,19 @@ function inicializarMapaLeaflet() {
         maxWidth: 150
     }).addTo(map);
 
+    // 🟡 CONTROL "infoPanelPlaneo"
+    const infopanelControlPlaneo = L.Control.extend({
+        onAdd: function (map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-infopanel-planeo');
+            const panelHTML = document.getElementById('infoPanelPlaneo');
+            if (panelHTML) container.appendChild(panelHTML);
+            L.DomEvent.disableClickPropagation(container);
+            L.DomEvent.disableScrollPropagation(container);
+            return container;
+        }
+    });
+    map.addControl(new infopanelControlPlaneo({ position: 'topright' }));
+        
     // 🟡 CONTROL "Mi ubicación"
     L.Control.Locate = L.Control.extend({
     onAdd: function(map) {
@@ -14462,39 +14519,39 @@ function inicializarMapaLeaflet() {
         });
     }
 
-    // 🚀 NUEVO: INTELIGENCIA UX PARA EL MENÚ DE CAPAS NATIVO (Smart Collapse)
+    // INTELIGENCIA UX PARA EL MENÚ DE CAPAS NATIVO (Smart Collapse)
     map.on('overlayadd overlayremove baselayerchange', function() {
         // Mantiene el filtro interno actualizado si tocas algo
     });
 
     // Al abrir el menú de capas nativo
     map.on('layeradd', function() {}); // No nos sirve, usamos los eventos del DOM
-        
+
     // 🟡 CONTROL "Guía del mapa"
-    L.Control.GuiaMapa = L.Control.extend({
-        onAdd: function(map) {
-            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-guia-mapa');
-            container.style.overflow = 'hidden';
+    // L.Control.GuiaMapa = L.Control.extend({
+    //     onAdd: function(map) {
+    //         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-guia-mapa');
+    //         container.style.overflow = 'hidden';
             
-            var link = L.DomUtil.create('a', '', container);
-            link.title = (typeof t === 'function' ? t('mapa.titleGuiaMapa', { defaultValue: 'Guía rápida del mapa' }) : 'Guía rápida del mapa');
-            link.style.display = 'flex';
-            link.style.alignItems = 'center';
-            link.style.justifyContent = 'center';
+    //         var link = L.DomUtil.create('a', '', container);
+    //         link.title = (typeof t === 'function' ? t('mapa.titleGuiaMapa', { defaultValue: 'Guía rápida del mapa' }) : 'Guía rápida del mapa');
+    //         link.style.display = 'flex';
+    //         link.style.alignItems = 'center';
+    //         link.style.justifyContent = 'center';
             
-            link.innerHTML = '<img src="/icons/icono_ayuda_60.webp" width="18" height="18">';
+    //         link.innerHTML = '<img src="/icons/icono_ayuda_60.webp" width="18" height="18">';
             
-            L.DomEvent.on(link, 'click', function(e) {
-                L.DomEvent.stopPropagation(e);
-                L.DomEvent.preventDefault(e);
-                if (typeof sugerirGuiaMapa === 'function') {
-                    sugerirGuiaMapa(true);
-                }
-            });
-            return container;
-        }
-    });
-    map.addControl(new L.Control.GuiaMapa({ position: 'topright' }));
+    //         L.DomEvent.on(link, 'click', function(e) {
+    //             L.DomEvent.stopPropagation(e);
+    //             L.DomEvent.preventDefault(e);
+    //             if (typeof sugerirGuiaMapa === 'function') {
+    //                 sugerirGuiaMapa(true);
+    //             }
+    //         });
+    //         return container;
+    //     }
+    // });
+    // map.addControl(new L.Control.GuiaMapa({ position: 'topright' }));
 
 
     //------------------------------------------------------------
@@ -15895,6 +15952,45 @@ function inicializarMapaLeaflet() {
     iconoFijar2 = document.getElementById('iconoFijar2');
     divOpciones2 = document.getElementById('divOpciones2');
     labelMostrarOpciones2 = document.getElementById('labelMostrarOpciones2'); 
+
+    //  1.3 Inicialización de variables locales PANEL PLANEO
+    let infoPanelPlaneo, divOpcionesPlaneo, labelMostrarOpcionesPlaneo, buttonCerrarPlaneo;
+
+    infoPanelPlaneo = document.getElementById('infoPanelPlaneo');
+    buttonCerrarPlaneo = document.getElementById('buttonCerrarPlaneo');
+    divOpcionesPlaneo = document.getElementById('divOpcionesPlaneo');
+    labelMostrarOpcionesPlaneo = document.getElementById('labelMostrarOpcionesPlaneo');
+
+    function expandirAlClicarPlaneo(event) {
+        if (infoPanelPlaneo && infoPanelPlaneo.classList.contains('retraido')) {
+            L.DomEvent.stopPropagation(event);
+            window.activarModoPlaneo();
+        }
+    }
+
+    window.retraerOpcionesPlaneo = function() {
+        if (!infoPanelPlaneo) return;
+        divOpcionesPlaneo.classList.add('oculto');
+        infoPanelPlaneo.classList.add('retraido');
+        L.DomEvent.on(infoPanelPlaneo, 'click', expandirAlClicarPlaneo);
+    };
+
+    window.expandirOpcionesPlaneo = function() {
+        if (!infoPanelPlaneo) return;
+        divOpcionesPlaneo.classList.remove('oculto');
+        infoPanelPlaneo.classList.remove('retraido');
+        L.DomEvent.off(infoPanelPlaneo, 'click', expandirAlClicarPlaneo);
+    };
+
+    if (infoPanelPlaneo && labelMostrarOpcionesPlaneo && buttonCerrarPlaneo && divOpcionesPlaneo) {
+        infoPanelPlaneo.style.display = 'block';
+        window.retraerOpcionesPlaneo();
+
+        L.DomEvent.on(buttonCerrarPlaneo, 'click', function (event) {
+            L.DomEvent.stopPropagation(event);
+            window.desactivarModoPlaneo();
+        });
+    }
     
     //  2. Lógica de Inicialización y Listeners DOM/LEAFLET (Panel 1)
     if (infoPanel && labelMostrarOpciones && buttonFijar && buttonCerrar && divOpciones) {
@@ -18136,3 +18232,861 @@ function inicializarMasterCheckboxBalizas() {
         masterChk.indeterminate = true;
     }
 }
+
+// =========================================================================
+// 🪂 MÓDULO DE PLANEO (AWS TERRARIUM + SEGUIDOR DE CURSOR ULTRA-RÁPIDO)
+// =========================================================================
+
+let modoPlaneoActivo = false;
+let origenPlaneoMarker = null;
+let capaConoPlaneo = null;
+let origenPlaneoLatLng = null;
+let cotaTerrenoBase = 0;
+let offsetTermicaActual = 0;
+let demStitchData = null; // Caché en memoria para consulta O(1) de cotas bajo el cursor
+const MARGEN_SEGURIDAD_SUELO = 0; // m de margen para aproximación sobre suelo
+const RADIO_PLANEO_KM = 15;        // 16 km de radio de análisis (~32 km de diámetro)
+const RES_GRID = 130;              // 130x130 muestras (ultrarrápido, ~8ms de ejecución)
+
+// Elementos visuales dinámicos de trayectoria quebrada
+let lineaPlaneoDinamica = null;
+let marcadorQuiebroPlaneo = null;
+let marcadorDestinoPlaneo = null;
+
+function decodificarCotaTerrarium(r, g, b) {
+    return (r * 256 + g + b / 256) - 32768;
+}
+
+// Calcula los umbrales para los 6 tramos de color
+function obtenerUmbralesPlaneo() {
+    const p = (typeof planeoReferencia !== 'undefined' && planeoReferencia > 0) ? planeoReferencia : 8.0;
+    return {
+        azulOscuro: p - 2.0,
+        azulClaro:  p - 1.0,
+        verde:      p,
+        amarillo:   p + 1.0,
+        naranja:    p + 2.0,
+        rojo:       p + 3.0
+    };
+}
+
+// 6 colores aplicados al Canvas del mapa
+function obtenerColorPlaneo(finesse) {
+    if (finesse <= 0) return [40, 40, 40, 140]; // Relieve superior
+    const u = obtenerUmbralesPlaneo();
+
+    if (finesse <= u.azulOscuro) return [37, 99, 235, 145];  // 1. Azul zafiro (sobradísimo)
+    if (finesse <= u.azulClaro)  return [6, 182, 212, 140];  // 2. Azul cian / turquesa
+    if (finesse <= u.verde)      return [34, 197, 94, 140];  // 3. Verde (planeo de tu vela)
+    if (finesse <= u.amarillo)   return [234, 179, 8, 140];  // 4. Amarillo
+    if (finesse <= u.naranja)    return [249, 115, 22, 140];  // 5. Naranja
+    if (finesse <= u.rojo)       return [239, 68, 68, 145];  // 6. Rojo (límite cono)
+    return [0, 0, 0, 0];                                     // Transparente (> P + 3)
+}
+
+window.activarModoPlaneo = function() {
+    modoPlaneoActivo = true;
+    if (typeof window.expandirOpcionesPlaneo === 'function') {
+        window.expandirOpcionesPlaneo();
+    }
+    const mapDiv = document.getElementById('map');
+    if (mapDiv) mapDiv.classList.add('cursor-planeo-activo');
+    actualizarTextosLeyendaPlaneo();
+
+    // 1. Recordar si el filtro meteo estaba abierto
+    const divFH = document.getElementById('div-filtro-horario');
+    const estabaAbierto = !!(divFH && divFH.classList.contains('flotando-en-mapa'));
+    window.filtroMeteoPrePlaneo = estabaAbierto;
+
+    // 2. Si estaba abierto, replegarlo y dejar despegues neutros
+    if (estabaAbierto && typeof toggleFiltrosMapa === 'function') {
+        toggleFiltrosMapa();
+    } else if (typeof limpiarColoresMapa === 'function') {
+        limpiarColoresMapa();
+    }
+
+    // 3. Retraer paneles de la izquierda si estuvieran abiertos
+    if (typeof retraerOpciones === 'function') retraerOpciones();
+    if (typeof retraerOpciones2 === 'function') retraerOpciones2();
+    if (typeof retraerOpciones3 === 'function') retraerOpciones3();
+};
+
+window.desactivarModoPlaneo = function() {
+    modoPlaneoActivo = false;
+    if (typeof window.retraerOpcionesPlaneo === 'function') {
+        window.retraerOpcionesPlaneo();
+    }
+    const mapDiv = document.getElementById('map');
+    const tooltip = document.getElementById('glide-cursor-tooltip');
+
+    if (mapDiv) mapDiv.classList.remove('cursor-planeo-activo');
+    if (tooltip) tooltip.style.display = 'none';
+
+    limpiarVisualesTrayectoria();
+
+    cotaTerrenoBase = 0;
+    offsetTermicaActual = 0;
+    origenPlaneoLatLng = null;
+    demStitchData = null;
+
+    const slider = document.getElementById('slider-offset-termica');
+    if (slider) slider.value = 0;
+
+    const txtCota = document.getElementById('txt-cota-despegue');
+    if (txtCota) txtCota.textContent = '—';
+
+    const txtOffset = document.getElementById('txt-offset-termica');
+    if (txtOffset) txtOffset.textContent = '+0 m';
+
+    const txtTotal = document.getElementById('txt-cota-despegue-mas-extra');
+    if (txtTotal) txtTotal.textContent = '—';
+
+    transparenciaConoPlaneo = 0;
+    const sliderTransparencia = document.getElementById('slider-transparencia-planeo');
+    if (sliderTransparencia) sliderTransparencia.value = 0;
+    const txtTransparencia = document.getElementById('txt-transparencia-planeo');
+    if (txtTransparencia) txtTransparencia.textContent = '0%';
+
+    const panelAjustes = document.getElementById('planeo-ajustes-despegue');
+    const panelInstrucciones = document.getElementById('planeo-instrucciones');
+    if (panelAjustes) panelAjustes.style.display = 'none';
+    if (panelInstrucciones) panelInstrucciones.style.display = 'block';
+
+    if (capaConoPlaneo && map && map.hasLayer(capaConoPlaneo)) {
+        map.removeLayer(capaConoPlaneo);
+        capaConoPlaneo = null;
+    }
+    if (origenPlaneoMarker && map && map.hasLayer(origenPlaneoMarker)) {
+        map.removeLayer(origenPlaneoMarker);
+        origenPlaneoMarker = null;
+    }
+
+    if (window.filtroMeteoPrePlaneo === true) {
+        const divFH = document.getElementById('div-filtro-horario');
+        if (divFH && !divFH.classList.contains('flotando-en-mapa') && typeof toggleFiltrosMapa === 'function') {
+            toggleFiltrosMapa();
+        }
+    }
+    window.filtroMeteoPrePlaneo = undefined;
+};
+
+window.toggleModoPlaneo = function() {
+    if (modoPlaneoActivo) {
+        window.desactivarModoPlaneo();
+    } else {
+        window.activarModoPlaneo();
+    }
+};
+
+// Modificar ganancia térmica desde el deslizador
+window.actualizarTermicaPlaneo = function(valor) {
+    offsetTermicaActual = parseInt(valor, 10);
+    const txtOffset = document.getElementById('txt-offset-termica');
+    if (txtOffset) txtOffset.textContent = `+${offsetTermicaActual} m`;
+
+    const txtCotaMasExtra = document.getElementById('txt-cota-despegue-mas-extra');
+    if (txtCotaMasExtra && cotaTerrenoBase > 0) {
+        txtCotaMasExtra.textContent = `${cotaTerrenoBase + offsetTermicaActual} m`;
+    }
+
+    if (origenPlaneoLatLng) {
+        ejecutarCalculoConoPlaneo(origenPlaneoLatLng);
+    }
+};
+
+let transparenciaConoPlaneo = 0;
+
+window.actualizarTransparenciaPlaneo = function(valor) {
+    transparenciaConoPlaneo = parseInt(valor, 10);
+    const txtTransparencia = document.getElementById('txt-transparencia-planeo');
+    if (txtTransparencia) txtTransparencia.textContent = `${transparenciaConoPlaneo}%`;
+
+    // En Leaflet la opacidad va de 1.0 (opaco / 0% transparencia) a 0.0 (invisible / 100% transparencia)
+    const opacidadCalculada = Math.max(0, Math.min(1, (100 - transparenciaConoPlaneo) / 100));
+
+    if (capaConoPlaneo && typeof map !== 'undefined' && map && map.hasLayer(capaConoPlaneo)) {
+        capaConoPlaneo.setOpacity(opacidadCalculada);
+    }
+};
+
+// Conversión de coordenadas geográficas a coordenadas de tesela (Web Mercator)
+function latLngToTile(lat, lng, zoom) {
+    const n = Math.pow(2, zoom);
+    const x = Math.floor((lng + 180) / 360 * n);
+    const latRad = lat * Math.PI / 180;
+    const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n);
+    return { x, y };
+}
+
+function cargarTeselaTerrarium(zoom, x, y) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = `https://elevation-tiles-prod.s3.amazonaws.com/terrarium/${zoom}/${x}/${y}.png`;
+    });
+}
+
+// Lectura de cota en memoria en 0.001 ms (usada por el canvas y por el tooltip de cursor)
+function leerElevacionGlobal(la, ln) {
+    if (!demStitchData) return null;
+    const n = Math.pow(2, demStitchData.zoom);
+    const pxGlobal = (ln + 180) / 360 * n * 256;
+    const laRad = la * Math.PI / 180;
+    const pyGlobal = (1 - Math.log(Math.tan(laRad) + 1 / Math.cos(laRad)) / Math.PI) / 2 * n * 256;
+
+    const xEnStitch = Math.floor(pxGlobal - demStitchData.minX * 256);
+    const yEnStitch = Math.floor(pyGlobal - demStitchData.minY * 256);
+
+    if (xEnStitch < 0 || xEnStitch >= demStitchData.width || yEnStitch < 0 || yEnStitch >= demStitchData.height) {
+        return null;
+    }
+    const idx = (yEnStitch * demStitchData.width + xEnStitch) * 4;
+    return decodificarCotaTerrarium(
+        demStitchData.data[idx],
+        demStitchData.data[idx + 1],
+        demStitchData.data[idx + 2]
+    );
+}
+
+async function ejecutarCalculoConoPlaneo(latlng) {
+    origenPlaneoLatLng = latlng;
+    const zoom = 11; // Zoom 11 abarca unos 40 km por tesela, resolución perfecta y rápida
+    const radioMetros = RADIO_PLANEO_KM * 1000;
+    const bounds = latlng.toBounds(radioMetros * 2);
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+
+    const tileMin = latLngToTile(ne.lat, sw.lng, zoom);
+    const tileMax = latLngToTile(sw.lat, ne.lng, zoom);
+
+    const minX = Math.min(tileMin.x, tileMax.x);
+    const maxX = Math.max(tileMin.x, tileMax.x);
+    const minY = Math.min(tileMin.y, tileMax.y);
+    const maxY = Math.max(tileMin.y, tileMax.y);
+
+    const tilesW = (maxX - minX + 1);
+    const tilesH = (maxY - minY + 1);
+
+    const stitchCanvas = document.createElement('canvas');
+    stitchCanvas.width = tilesW * 256;
+    stitchCanvas.height = tilesH * 256;
+    const stitchCtx = stitchCanvas.getContext('2d', { willReadFrequently: true });
+
+    const promesas = [];
+    for (let ty = minY; ty <= maxY; ty++) {
+        for (let tx = minX; tx <= maxX; tx++) {
+            promesas.push(
+                cargarTeselaTerrarium(zoom, tx, ty).then(img => ({ img, tx, ty }))
+            );
+        }
+    }
+
+    const resultados = await Promise.all(promesas);
+    resultados.forEach(({ img, tx, ty }) => {
+        if (img) stitchCtx.drawImage(img, (tx - minX) * 256, (ty - minY) * 256);
+    });
+
+    const demImageData = stitchCtx.getImageData(0, 0, stitchCanvas.width, stitchCanvas.height).data;
+
+    // Guardar referencia en memoria para el tooltip instantáneo
+    demStitchData = {
+        data: demImageData,
+        width: stitchCanvas.width,
+        height: stitchCanvas.height,
+        minX: minX,
+        minY: minY,
+        zoom: zoom
+    };
+
+    cotaTerrenoBase = Math.round(leerElevacionGlobal(latlng.lat, latlng.lng) || 0);
+    const altitudPiloto = cotaTerrenoBase + offsetTermicaActual;
+
+    const txtCota = document.getElementById('txt-cota-despegue');
+    const txtCotaMasExtra = document.getElementById('txt-cota-despegue-mas-extra');
+    const panelAjustes = document.getElementById('planeo-ajustes-despegue');
+    const panelInstrucciones = document.getElementById('planeo-instrucciones');
+    if (txtCota) txtCota.textContent = `${cotaTerrenoBase} m`;
+    if (txtCotaMasExtra) txtCotaMasExtra.textContent = `${altitudPiloto} m`;
+    if (panelAjustes) panelAjustes.style.display = 'block';
+    if (panelInstrucciones) panelInstrucciones.style.display = 'none';
+
+    const canvas = document.createElement('canvas');
+    canvas.width = RES_GRID;
+    canvas.height = RES_GRID;
+    const ctx = canvas.getContext('2d');
+    const imgData = ctx.createImageData(RES_GRID, RES_GRID);
+    const data = imgData.data;
+
+    const latStep = (ne.lat - sw.lat) / RES_GRID;
+    const lngStep = (ne.lng - sw.lng) / RES_GRID;
+
+    // Bucle píxel a píxel del cono de planeo con cálculo de envolvente y rodeo
+    for (let gy = 0; gy < RES_GRID; gy++) {
+        const curLat = ne.lat - gy * latStep;
+        for (let gx = 0; gx < RES_GRID; gx++) {
+            const curLng = sw.lng + gx * lngStep;
+            const destino = L.latLng(curLat, curLng);
+            const distanciaTotal = latlng.distanceTo(destino);
+            const pixelIdx = (gy * RES_GRID + gx) * 4;
+
+            if (distanciaTotal > radioMetros) {
+                data[pixelIdx + 3] = 0;
+                continue;
+            }
+
+            // Margen adaptativo sobre el suelo de destino
+            const margenSeguridad = Math.min(MARGEN_SEGURIDAD_SUELO, Math.max(10, distanciaTotal * 0.04));
+            const cotaDestino = (leerElevacionGlobal(curLat, curLng) || 0) + margenSeguridad;
+            const deltaZ = altitudPiloto - cotaDestino;
+
+            if (deltaZ <= 0) {
+                // Terreno por encima de la cota del piloto
+                data[pixelIdx]     = 40;
+                data[pixelIdx + 1] = 40;
+                data[pixelIdx + 2] = 40;
+                data[pixelIdx + 3] = 130;
+                continue;
+            }
+
+            // EVALUACIÓN AERONÁUTICA DE RELIEVE INTERMEDIO
+            let maxPenetracionRelieve = 0;
+            const pasosRayo = 16;
+            const refGlide = (typeof planeoReferencia !== 'undefined' && planeoReferencia > 0) ? planeoReferencia : 8.0;
+
+            for (let step = 1; step < pasosRayo; step++) {
+                const ratio = step / pasosRayo;
+                const distPaso = distanciaTotal * ratio;
+
+                // Buffer de salida del despegue y aproximación final al suelo
+                if (distPaso < 180 || (distanciaTotal - distPaso) < 80) {
+                    continue;
+                }
+
+                const interLat = latlng.lat + (curLat - latlng.lat) * ratio;
+                const interLng = latlng.lng + (curLng - latlng.lng) * ratio;
+
+                // Techo de vuelo del parapente a esa distancia según su planeo nominal
+                const cotaVueloTecho = (altitudPiloto + 10) - (distPaso / refGlide);
+                const cotaTerrenoPunto = leerElevacionGlobal(interLat, interLng) || 0;
+
+                // Comprobar si la montaña sobrepasa el techo de planeo de la vela
+                if (cotaTerrenoPunto > (cotaVueloTecho + 5)) {
+                    const penetracion = cotaTerrenoPunto - cotaVueloTecho;
+                    if (penetracion > maxPenetracionRelieve) {
+                        maxPenetracionRelieve = penetracion;
+                    }
+                }
+            }
+
+            const u = obtenerUmbralesPlaneo();
+
+            if (maxPenetracionRelieve === 0) {
+                // 1. TRAYECTORIA LIMPIA: El parapente sobrevuela la cumbre/espolón sin rozar
+                const finesseDirecta = distanciaTotal / deltaZ;
+                const [r, g, b, a] = obtenerColorPlaneo(finesseDirecta);
+                data[pixelIdx]     = r;
+                data[pixelIdx + 1] = g;
+                data[pixelIdx + 2] = b;
+                data[pixelIdx + 3] = a;
+            } else if (maxPenetracionRelieve <= 130) {
+                // 2. CRESTA O ESPOLÓN SORTEABLE (Rodeo de relieve):
+                // Se aplica penalización por desvío lateral (+15% a +35% de distancia)
+                const penalizacionRodeo = 1.15 + (maxPenetracionRelieve / 130) * 0.20;
+                const distanciaConRodeo = distanciaTotal * penalizacionRodeo;
+                const finesseConRodeo = distanciaConRodeo / deltaZ;
+
+                if (finesseConRodeo <= u.rojo) {
+                    // Alcanzable bordeando el relieve
+                    const [r, g, b, a] = obtenerColorPlaneo(finesseConRodeo);
+                    data[pixelIdx]     = r;
+                    data[pixelIdx + 1] = g;
+                    data[pixelIdx + 2] = b;
+                    data[pixelIdx + 3] = a;
+                } else {
+                    // El rodeo exige más planeo del alcanzable
+                    data[pixelIdx]     = 70;
+                    data[pixelIdx + 1] = 70;
+                    data[pixelIdx + 2] = 70;
+                    data[pixelIdx + 3] = 130;
+                }
+            } else {
+                // 3. BARRERA INFRANQUEABLE (>130 m por encima del techo de vuelo)
+                data[pixelIdx]     = 70;
+                data[pixelIdx + 1] = 70;
+                data[pixelIdx + 2] = 70;
+                data[pixelIdx + 3] = 130;
+            }
+        }
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+
+    if (capaConoPlaneo && map.hasLayer(capaConoPlaneo)) {
+        map.removeLayer(capaConoPlaneo);
+    }
+    const opacidadInicial = Math.max(0, Math.min(1, (100 - transparenciaConoPlaneo) / 100));
+    capaConoPlaneo = L.imageOverlay(canvas.toDataURL(), bounds, { opacity: opacidadInicial }).addTo(map);
+
+    // Crear o mover el marcador de origen interactivo
+    if (!origenPlaneoMarker) {
+        const iconoOrigen = L.divIcon({
+            html: '<div class="glide-origin-marker">🪂</div>',
+            className: 'custom-div-icon',
+            iconSize: [30, 30]
+        });
+
+        origenPlaneoMarker = L.marker(latlng, {
+            icon: iconoOrigen,
+            draggable: true,
+            zIndexOffset: 1000
+        }).addTo(map);
+
+        origenPlaneoMarker.on('dragend', function(e) {
+            ejecutarCalculoConoPlaneo(e.target.getLatLng());
+        });
+    } else {
+        origenPlaneoMarker.setLatLng(latlng);
+    }
+}
+
+function actualizarTextosLeyendaPlaneo() {
+    const p = (typeof planeoReferencia !== 'undefined' && planeoReferencia > 0) ? planeoReferencia : 8.0;
+    const contPips = document.getElementById('pips-gradiente-planeo');
+    if (!contPips) return;
+
+    // 5 marcas calculadas con saltos de 1: (P - 2), (P - 1), P [50%], (P + 1), (P + 2)
+    const ticks = [
+        { pct: 16.7, val: p - 2, isRef: false },
+        { pct: 33.3, val: p - 1, isRef: false },
+        { pct: 50.0, val: p,     isRef: true },  // planeo de referencia (Centro, grueso y negrita)
+        { pct: 66.7, val: p + 1, isRef: false },
+        { pct: 83.3, val: p + 2, isRef: false }
+    ];
+
+    let html = '';
+    ticks.forEach(t => {
+        // Muestra decimal solo si no es entero (ej: 8 o 8.5)
+        const valTexto = Number.isInteger(t.val) ? t.val : t.val.toFixed(1);
+
+        if (t.isRef) {
+            // Marca de referencia: más gruesa, más larga y texto en negrita
+            html += `
+                <div style="position: absolute; left: ${t.pct}%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;">
+                    <span style="width: 2px; height: 6px; background: #0f172a; border-radius: 1px; display: block;"></span>
+                    <span style="font-weight: bold; color: #0f172a; margin-top: 1px;">${valTexto}</span>
+                </div>`;
+        } else {
+            // Marcas secundarias
+            html += `
+                <div style="position: absolute; left: ${t.pct}%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;">
+                    <span style="width: 1px; height: 4px; background: #64748b; display: block;"></span>
+                    <span style="color: #64748b; margin-top: 2px;">${valTexto}</span>
+                </div>`;
+        }
+    });
+
+    contPips.innerHTML = html;
+}
+
+// =========================================================================
+// 📐 ENRUTAMIENTO DINÁMICO DE TRAYECTORIA Y QUIEBRO
+// =========================================================================
+function calcularTrayectoriaDinamica(origen, destino, altPiloto, cotaDestinoConMargen, refGlide) {
+    const distDirecta = origen.distanceTo(destino);
+    const deltaZ = altPiloto - cotaDestinoConMargen;
+    
+    if (distDirecta <= 0 || deltaZ <= 0) {
+        return {
+            puntos: [origen, destino],
+            tieneQuiebro: false,
+            waypoint: null,
+            distanciaEfectiva: distDirecta,
+            bloqueado: deltaZ <= 0
+        };
+    }
+
+    const pasosRayo = 16;
+    let maxPenetracion = 0;
+    let pasoPeor = -1;
+    let peorPunto = null;
+
+    // 1. Detección de colisión a lo largo de la línea directa
+    for (let step = 1; step < pasosRayo; step++) {
+        const ratio = step / pasosRayo;
+        const distPaso = distDirecta * ratio;
+        if (distPaso < 180 || (distDirecta - distPaso) < 80) continue;
+
+        const interLat = origen.lat + (destino.lat - origen.lat) * ratio;
+        const interLng = origen.lng + (destino.lng - origen.lng) * ratio;
+        const cotaVueloTecho = (altPiloto + 10) - (distPaso / refGlide);
+        const cotaTerrenoPunto = leerElevacionGlobal(interLat, interLng) || 0;
+
+        if (cotaTerrenoPunto > (cotaVueloTecho + 5)) {
+            const pen = cotaTerrenoPunto - cotaVueloTecho;
+            if (pen > maxPenetracion) {
+                maxPenetracion = pen;
+                pasoPeor = step;
+                peorPunto = L.latLng(interLat, interLng);
+            }
+        }
+    }
+
+    // Si el relieve no corta el vuelo, la trayectoria es directa y limpia
+    if (maxPenetracion === 0 || !peorPunto) {
+        return {
+            puntos: [origen, destino],
+            tieneQuiebro: false,
+            waypoint: null,
+            distanciaEfectiva: distDirecta,
+            bloqueado: false
+        };
+    }
+
+    // Si es una muralla montañosa masiva que sobrepasa el vuelo en más de 140 m
+    if (maxPenetracion > 140) {
+        return {
+            puntos: [origen, destino],
+            tieneQuiebro: false,
+            waypoint: null,
+            distanciaEfectiva: distDirecta,
+            bloqueado: true
+        };
+    }
+
+    // 2. BÚSQUEDA DEL PUNTO DE QUIEBRO / DESVÍO (Bypass lateral de la cresta)
+    const latMid = (origen.lat + destino.lat) / 2;
+    const cosLat = Math.cos(latMid * Math.PI / 180);
+    const dLat = destino.lat - origen.lat;
+    const dLng = (destino.lng - origen.lng) * cosLat;
+    const lenDeg = Math.sqrt(dLat * dLat + dLng * dLng);
+
+    if (lenDeg <= 0) {
+        return { puntos: [origen, destino], tieneQuiebro: false, waypoint: null, distanciaEfectiva: distDirecta, bloqueado: false };
+    }
+
+    // Vector unitario perpendicular a la dirección de vuelo
+    const nLat = -dLng / lenDeg;
+    const nLng = (dLat / lenDeg) / cosLat;
+
+    // Distancias laterales de rodeo a testear: 120m, 220m, 350m, 500m, 700m
+    const offsetsMetros = [120, 220, 350, 500, 700];
+    let mejorWp = null;
+    let mejorDistTotal = Infinity;
+
+    // Probar ambos lados: -1 (izquierda) y +1 (derecha)
+    for (const signo of [-1, 1]) {
+        for (const distLat of offsetsMetros) {
+            const degOffset = distLat / 111139;
+            const candLat = peorPunto.lat + signo * nLat * degOffset;
+            const candLng = peorPunto.lng + signo * nLng * degOffset;
+            const candWp = L.latLng(candLat, candLng);
+
+            const d1 = origen.distanceTo(candWp);
+            const d2 = candWp.distanceTo(destino);
+            const distTotalCand = d1 + d2;
+
+            const cotaVueloEnWp = (altPiloto + 10) - (d1 / refGlide);
+            const cotaTerrenoWp = leerElevacionGlobal(candLat, candLng) || 0;
+
+            // Si el relieve en el waypoint propuesto no deja margen de vuelo, descartar
+            if (cotaTerrenoWp >= cotaVueloEnWp - 10) continue;
+
+            // Comprobación rápida de clearance en los 2 tramos
+            let obstaculoEnTramos = false;
+            for (let f = 0.35; f <= 0.65; f += 0.30) {
+                // Tramo 1 (Origen -> Waypoint)
+                const t1Lat = origen.lat + (candLat - origen.lat) * f;
+                const t1Lng = origen.lng + (candLng - origen.lng) * f;
+                if ((d1 * f) > 180 && (leerElevacionGlobal(t1Lat, t1Lng) || 0) > ((altPiloto + 10) - ((d1 * f) / refGlide) + 5)) {
+                    obstaculoEnTramos = true;
+                    break;
+                }
+                // Tramo 2 (Waypoint -> Destino)
+                const t2Lat = candLat + (destino.lat - candLat) * f;
+                const t2Lng = candLng + (destino.lng - candLng) * f;
+                const dAcum = d1 + (d2 * f);
+                if ((distTotalCand - dAcum) > 80 && (leerElevacionGlobal(t2Lat, t2Lng) || 0) > ((altPiloto + 10) - (dAcum / refGlide) + 5)) {
+                    obstaculoEnTramos = true;
+                    break;
+                }
+            }
+
+            if (!obstaculoEnTramos) {
+                if (distTotalCand < mejorDistTotal) {
+                    mejorDistTotal = distTotalCand;
+                    mejorWp = candWp;
+                }
+                break; // Este lado ya encontró su desviación mínima suficiente
+            }
+        }
+    }
+
+    if (mejorWp) {
+        return {
+            puntos: [origen, mejorWp, destino],
+            tieneQuiebro: true,
+            waypoint: mejorWp,
+            distanciaEfectiva: mejorDistTotal,
+            bloqueado: false
+        };
+    }
+
+    // Si ningún rodeo lateral es viable
+    return {
+        puntos: [origen, destino],
+        tieneQuiebro: false,
+        waypoint: null,
+        distanciaEfectiva: distDirecta,
+        bloqueado: true
+    };
+}
+
+// -------------------------------------------------------------------------
+// SEGUIDOR DE CURSOR: Trayectoria dinámica con quiebro y tooltip completo
+// -------------------------------------------------------------------------
+let rafCursor = null;
+
+// Limpia del mapa la polilínea, el nodo de desvío y el círculo de destino
+function limpiarVisualesTrayectoria() {
+    if (lineaPlaneoDinamica && map && map.hasLayer(lineaPlaneoDinamica)) {
+        map.removeLayer(lineaPlaneoDinamica);
+        lineaPlaneoDinamica = null;
+    }
+    if (marcadorQuiebroPlaneo && map && map.hasLayer(marcadorQuiebroPlaneo)) {
+        map.removeLayer(marcadorQuiebroPlaneo);
+        marcadorQuiebroPlaneo = null;
+    }
+    if (marcadorDestinoPlaneo && map && map.hasLayer(marcadorDestinoPlaneo)) {
+        map.removeLayer(marcadorDestinoPlaneo);
+        marcadorDestinoPlaneo = null;
+    }
+}
+
+function actualizarTooltipCursor(e) {
+    if (!modoPlaneoActivo) return;
+
+    if (rafCursor) cancelAnimationFrame(rafCursor);
+    rafCursor = requestAnimationFrame(() => {
+        const tooltip = document.getElementById('glide-cursor-tooltip');
+        if (!tooltip) return;
+
+        // Si aún no se ha marcado el despegue o estamos fuera del relieve, mantener oculto
+        if (!origenPlaneoLatLng || !demStitchData) {
+            tooltip.style.display = 'none';
+            limpiarVisualesTrayectoria();
+            return;
+        }
+
+        const cota = leerElevacionGlobal(e.latlng.lat, e.latlng.lng);
+        if (cota === null) {
+            tooltip.style.display = 'none';
+            limpiarVisualesTrayectoria();
+            return;
+        }
+
+        const cotaM = Math.round(cota);
+        const distDirecta = origenPlaneoLatLng.distanceTo(e.latlng);
+        const altPiloto = cotaTerrenoBase + offsetTermicaActual;
+        const margenSeguridad = Math.min(MARGEN_SEGURIDAD_SUELO, Math.max(10, distDirecta * 0.04));
+        const cotaDestinoConMargen = cota + margenSeguridad;
+        const deltaZ = altPiloto - cotaDestinoConMargen;
+        const refGlide = (typeof planeoReferencia !== 'undefined' && planeoReferencia > 0) ? planeoReferencia : 8.0;
+
+        // 1. Cálculo de trayectoria dinámica
+        const tray = calcularTrayectoriaDinamica(origenPlaneoLatLng, e.latlng, altPiloto, cotaDestinoConMargen, refGlide);
+
+        // 2. Polilínea discontinua
+        const colorLinea = tray.bloqueado ? '#ef4444' : '#0f172a';
+        if (!lineaPlaneoDinamica) {
+            lineaPlaneoDinamica = L.polyline(tray.puntos, {
+                color: colorLinea,
+                weight: 2.5,
+                opacity: 0.85,
+                dashArray: '6, 6',
+                interactive: false
+            }).addTo(map);
+        } else {
+            lineaPlaneoDinamica.setLatLngs(tray.puntos);
+            lineaPlaneoDinamica.setStyle({ color: colorLinea });
+            if (!map.hasLayer(lineaPlaneoDinamica)) lineaPlaneoDinamica.addTo(map);
+        }
+
+        // 3. Nodo de quiebro si rodea relieve
+        if (tray.tieneQuiebro && tray.waypoint) {
+            if (!marcadorQuiebroPlaneo) {
+                marcadorQuiebroPlaneo = L.circleMarker(tray.waypoint, {
+                    radius: 5.5,
+                    color: '#0f172a',
+                    weight: 2,
+                    fillColor: '#ffffff',
+                    fillOpacity: 1,
+                    interactive: false
+                }).addTo(map);
+            } else {
+                marcadorQuiebroPlaneo.setLatLng(tray.waypoint);
+                if (!map.hasLayer(marcadorQuiebroPlaneo)) marcadorQuiebroPlaneo.addTo(map);
+            }
+        } else {
+            if (marcadorQuiebroPlaneo && map.hasLayer(marcadorQuiebroPlaneo)) {
+                map.removeLayer(marcadorQuiebroPlaneo);
+            }
+        }
+
+        // 4. Marcador destino bajo el cursor
+        if (!marcadorDestinoPlaneo) {
+            marcadorDestinoPlaneo = L.circleMarker(e.latlng, {
+                radius: 8,
+                color: '#ffffff',
+                weight: 2,
+                fillColor: '#0f172a',
+                fillOpacity: 0.35,
+                interactive: false
+            }).addTo(map);
+        } else {
+            marcadorDestinoPlaneo.setLatLng(e.latlng);
+            if (!map.hasLayer(marcadorDestinoPlaneo)) marcadorDestinoPlaneo.addTo(map);
+        }
+
+        // 5. Datos numéricos de vuelo
+        const distEfectiva = tray.distanciaEfectiva;
+        const desnivel = Math.round(cota - cotaTerrenoBase);
+        const strDesnivel = (desnivel >= 0 ? '+' : '') + desnivel + ' m';
+        const strDist = (distEfectiva / 1000).toFixed(1) + ' km';
+
+        const perdidaPlaneo = distEfectiva / refGlide;
+        const altitudLlegada = altPiloto - perdidaPlaneo;
+        const alturaSuelo = Math.round(altitudLlegada - cotaM);
+        const signoAlturaSuelo = alturaSuelo >= 0 ? `+${alturaSuelo}` : `${alturaSuelo}`;
+        const colorAlturaSuelo = alturaSuelo >= 50 ? '#22c55e' : (alturaSuelo >= 0 ? '#eab308' : '#ef4444');
+        const strAlturaSuelo = `<b style="color:${colorAlturaSuelo};">${signoAlturaSuelo} m</b>`;
+
+        const desnivelDescenso = altPiloto - cotaM;
+        let grStr = '—';
+        let colorGr = '#ef4444';
+
+        if (desnivelDescenso > 0) {
+            const distCalculo = tray.tieneQuiebro ? tray.distanciaEfectiva : distDirecta;
+            const gr = distCalculo / desnivelDescenso;
+            grStr = gr > 35 ? '>35' : gr.toFixed(1);
+
+            const u = obtenerUmbralesPlaneo();
+            if (gr <= u.azulOscuro)     colorGr = '#2563eb';
+            else if (gr <= u.azulClaro) colorGr = '#06b6d4';
+            else if (gr <= u.verde)     colorGr = '#22c55e';
+            else if (gr <= u.amarillo)  colorGr = '#eab308';
+            else if (gr <= u.naranja)   colorGr = '#f97316';
+            else                        colorGr = '#ef4444';
+        }
+
+        // Inyectar contenido en el tooltip
+        tooltip.innerHTML = `📍 ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}<div style="border-top: 2px solid #ddd; margin-top: 5px; padding-top: 5px;"><b>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura llegada' })}: ${strAlturaSuelo}</b><br><b>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <span style="color:${colorGr};">${grStr}</span></b>`;
+
+        // 6. POSICIONAMIENTO INTELIGENTE QUE RESPETA BORDES Y PANELES
+        tooltip.style.display = 'block';
+
+        const tipW = tooltip.offsetWidth || 210;
+        const tipH = tooltip.offsetHeight || 160;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const pad = 12;
+
+        const cursorX = e.originalEvent.clientX;
+        const cursorY = e.originalEvent.clientY;
+
+        // Límite inferior: respetar borde o la barra de menú inferior si está visible
+        let maxBottom = vh - pad;
+        const navBottom = document.querySelector('.bottom-nav');
+        if (navBottom && window.getComputedStyle(navBottom).display !== 'none') {
+            const navRect = navBottom.getBoundingClientRect();
+            if (navRect.top > 100 && navRect.top < vh) {
+                maxBottom = navRect.top - pad;
+            }
+        }
+
+        // Límite derecho: respetar borde o el panel de planeo desplegado
+        let maxRight = vw - pad;
+        const panelPlaneo = document.getElementById('infoPanelPlaneo');
+        if (panelPlaneo && !panelPlaneo.classList.contains('retraido')) {
+            const pRect = panelPlaneo.getBoundingClientRect();
+            if (pRect.left > 0 && cursorY < pRect.bottom + 20) {
+                maxRight = pRect.left - pad;
+            }
+        }
+
+        // Límite izquierdo: respetar paneles de la izquierda si alguno estuviese abierto
+        let minLeft = pad;
+        const panelesIzq = ['infoPanel', 'infoPanel2', 'infoPanel3'];
+        for (const idP of panelesIzq) {
+            const pEl = document.getElementById(idP);
+            if (pEl && !pEl.classList.contains('retraido')) {
+                const pRect = pEl.getBoundingClientRect();
+                if (pRect.right > 0 && cursorY < pRect.bottom + 20) {
+                    minLeft = Math.max(minLeft, pRect.right + pad);
+                }
+            }
+        }
+
+        // Límite superior: respetar filtro horario flotante si está abierto
+        let minTop = pad;
+        const filtroMeteo = document.getElementById('div-filtro-horario');
+        if (filtroMeteo && filtroMeteo.classList.contains('flotando-en-mapa')) {
+            const fRect = filtroMeteo.getBoundingClientRect();
+            if (fRect.bottom > 0) {
+                minTop = Math.max(minTop, fRect.bottom + pad);
+            }
+        }
+
+        // Cálculo horizontal (voltea a la izquierda si choca con la derecha o el panel)
+        let posX = cursorX + 16;
+        if (posX + tipW > maxRight) {
+            posX = cursorX - tipW - 16;
+        }
+        if (posX < minLeft) {
+            posX = minLeft;
+            if (posX + tipW > vw - pad) {
+                posX = Math.max(pad, vw - pad - tipW);
+            }
+        }
+
+        // Cálculo vertical (voltea hacia arriba si choca con la parte inferior o la barra nav)
+        let posY = cursorY + 16;
+        if (posY + tipH > maxBottom) {
+            posY = cursorY - tipH - 16;
+        }
+        if (posY < minTop) {
+            posY = minTop;
+            if (posY + tipH > vh - pad) {
+                posY = Math.max(pad, vh - pad - tipH);
+            }
+        }
+
+        tooltip.style.left = Math.round(posX) + 'px';
+        tooltip.style.top = Math.round(posY) + 'px';
+    });
+}
+
+function ocultarTooltipCursor() {
+    const tooltip = document.getElementById('glide-cursor-tooltip');
+    if (tooltip) tooltip.style.display = 'none';
+    limpiarVisualesTrayectoria();
+}
+
+// Enganchar listeners una vez el mapa está listo
+document.addEventListener('DOMContentLoaded', () => {
+    const initEventosPlaneo = () => {
+        if (typeof map !== 'undefined' && map) {
+            map.on('click', function(e) {
+                if (modoPlaneoActivo) {
+                    ejecutarCalculoConoPlaneo(e.latlng);
+                }
+            });
+            map.on('mousemove', actualizarTooltipCursor);
+            map.on('mouseout', ocultarTooltipCursor);
+        } else {
+            setTimeout(initEventosPlaneo, 200);
+        }
+    };
+    initEventosPlaneo();
+});

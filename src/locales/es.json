@@ -430,6 +430,10 @@
         "titulo": "Filtros",
         "descripcion": "Filtra la información del mapa según tus necesidades. Puedes mostrar u ocultar únicamente tus despegues y balizas favoritas o en seguimiento. Además, puedes filtrar despegues por orientación, nivel de actividad o volumen de vuelos registrados en XContest, y filtrar balizas según su altitud."
       },
+      "btnPlaneo": {
+        "titulo": "Cálculo de planeo",
+        "descripcion": "Calcula a qué zonas puedes llegar planeando desde un lugar de despegue.<br><br>• Haz clic en cualquier punto del mapa para situar el despegue (🪂).<br>• El gradiente de colores superpuesto en el mapa indica visualmente el planeo necesario para llegar ahí.<br>• Al mover el ratón verás la trayectoria de vuelo, que intenta esquivar crestas automáticamente con un punto de giro intermedio si el relieve lo permite.<br>• El cuadrito que sigue al cursor te indicará todos los datos para ese punto (altura a la que llegarías, planeo necesario,...).<br>• El panel de <i>Cálculo de planeo</i> te permite ver o cambiar más información."
+      },
       "btnGps": {
         "titulo": "Mi Ubicación",
         "descripcion": "Centra el mapa en tu posición actual."
@@ -620,6 +624,7 @@
     "ordenar_xc": "Ordenar por Condiciones XC",
     "vibracion": "Vibrar al tocar",
     "diasSeguimiento": "Días de seguimiento:",
+    "planeoReferencia": "Planeo de la vela:",
     "titulo": "Ajustes",
     "editarFavoritos": "Editar favoritos",
     "importarConfig": "Importar configuración y favoritos",
@@ -796,6 +801,24 @@
       "marcar_todas": "Marcar todas",
       "verEnTolomet": "Ver en Tolomet",
       "webOficial": "Ver en web oficial"
+    },
+
+    "planeo": {
+      "titlePlaneo": "Cálculo de planeo",
+      "popupPlaneoHazClic": "Haz clic en el punto de despegue",
+      "popupPlaneoFueraZona": "Este punto está fuera de zona de cálculo",
+      "cotaDespegue": "Altitud despegue: ",
+      "alturaExtraDespegue": "Altura extra: ",
+      "cotaDespegueMasExtra": "Altitud + extra: ",
+      "planeoNecesario": "Planeo necesario (L/D):",
+      "posibleBloqueoRelieve": "Posible bloqueo por relieve",
+      "altitud": "Altitud",
+      "altura": "Altura llegada",
+      "descenso": "Descenso",
+      "distancia": "Distancia",
+      "planeo": "Planeo",
+      "planeoVela": "Planeo vela",
+      "transparencia": "Transparencia:"
     }
   },
 
@@ -899,6 +922,7 @@
     "tooltipHorasDiurnas": "<b>Solo horas diurnas</b><br><br>Muestra solo las horas diurnas. Si se desactiva, se muestran las 24 horas del día.<br><br>Se incluye un margen de ±1h al amanecer y atardecer.<br><br>Cambia automáticamente cada mes. En los meses de cambios horarios, además, estas horas se ajustarán automáticamente al cambio de hora oficial (DST).",
     "tooltipOrdenarXC": "<b>Ordenar por Condiciones XC:</b><br><br>Por defecto, los despegues se ordenan de mejor a peor según la puntuación de <i>Condiciones del despegue</i> (viabilidad para despegar según el viento).<br><br>Si activas esta opción, la tabla pasará a ordenarse de mejor a peor puntuación de <b>Condiciones XC</b> (potencial térmico de la masa de aire), sin importar si el viento en ese despegue es ideal o no.",
     "tooltipDiasSeguimiento": "<b>Días de seguimiento:</b><br><br>Cuando marcas un despegue con el ojo <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>, queda en <i>seguimiento</i> durante el número de días que configures aquí.<br><br>Por ejemplo, con 2 días: si marcas un despegue el lunes, aparecerá activo el lunes y el martes. El miércoles se eliminará automáticamente al arrancar la aplicación.<br><br>Marcar despegues con seguimiento te permite filtrarlos fácilmente con el botón <i>Ver solo despegues en seguimiento</i>.<br><br>Puedes configurar entre <b>1 y 4 días o infinito (no se desactiva nunca el seguimiento)</b>. El valor por defecto es <b>3 días</b>.",
+    "tooltipPlaneoReferencia": "<b>Planeo de la vela:</b><br><br>Define la relación de planeo (L/D) estimada de tu parapente en aire en calma, utilizada por la herramienta <i>Cálculo de planeo</i> 📐 del mapa.<br><br>Puedes poner un valor realista o, si lo prefieres, un valor conservador menor, para prevenir descensos inesperados, viento en contra,...<br><br>Este valor adapta la escala continua de colores a tu vela: el color <b>verde</b> delimitará el alcance real de tu parapente sin viento a favor, los tonos <b>azules</b> las zonas a las que llegas con margen sobrado, y los colores cálidos (amarillo, naranja y rojo) los planeos más exigentes que requerirán viento de cola o sustentación adicional.<br><br>Además, este dato se utiliza para calcular con precisión la <b>Altura de llegada</b> (AGL) estimada que muestra el cursor al moverte por el mapa, indicándote con cuántos metros de margen sobre el terreno llegarías a cada punto.<br><br>Puedes configurar entre <b>5.0 y 14.0</b> (en saltos de 0.1). El valor por defecto es <b>7.0</b>.",
     "tooltipModelosMeteo": "<b>Modelos meteorológicos:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: para datos de viento en las primeras 0-48h. Cubre casi toda Europa, incluyendo península ibérica, salvo el sur de Andalucía (en esa zona se usa ICON-EU 7km de 0-96h). Ofrece también los datos de viento a 20, 50 y 100 m sobre el suelo (AGL). Actualización cada 3 horas aproximadamente (8 veces al día).</li><li><b>DWD Germany ICON-EU 7km</b>: para datos de viento en las siguientes 48-96h. Cubre Europa salvo Canarias. No ofrece datos de viento AGL a 20 ni 50 m, solo 100 m. Actualización cada 3 horas aproximadamente (8 veces al día).</li><li><b>Météo-France Arome 2.5km 15min</b>: para datos de viento a varias alturas en las siguientes 6 horas y en intervalos de 15 min. Igual cobertura que Arome-HD. Actualización automática cada 1 hora (24 veces al día).</li><li><b>ECMWF IFS HRES 9km</b>: para resto de datos meteorológicos de 0-96h (meteo general, nubosidad, precipitación, techo, CAPE, CIN y vientos de altura corregidos por geopotencial a 500, 1000, 1500 y 3000 m de altitud y a la altitud del despegue (MSL). Cubre todo el mundo. Actualización automática cada 6 horas aproximadamente (4 veces al día)</li></ul><b>Pasarela de datos meteorológicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>El valor <i>(DDtHH)</i> (ejemplo: 12t03) indica el día y la hora UTC±0 (Z) correspondiente al último ciclo de ejecución del modelo en el servidor meteorológico de origen. A partir de ese momento, hay varias horas de cálculo computacional antes de la distribución final y su disponibilidad pública.",
     "tooltipModoApp": "<b>Modo de la aplicación:</b><br><br><b>Modo simple</b>: Solo lo esencial. Recomendado para empezar y familiarizarte con la aplicación antes de pasar al <i>Modo avanzado</i>.<br><br><b>Modo avanzado</b>: Control total. Da acceso a todas las opciones, filtros y datos detallados.",
     "tooltipcheckboxBalizasEuskalmet": "<b>Balizas de viento Euskalmet</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propiedad</b>: Gobierno Vasco</li><li><b>Cobertura geográfica</b>: País Vasco (Euskadi)</li><li><b>Número aproximado de balizas mostradas</b>: 64</li><li><b>Frecuencia aproximada de actualización de los datos</b>: 10 minutos (variable según estación)</li><li><b>Web</b>: <a href='https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#' target='_blank' style='color: #007bff; text-decoration: underline;'>Euskalmet</a></li></ul>",
