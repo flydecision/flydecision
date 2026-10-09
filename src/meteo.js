@@ -18229,6 +18229,11 @@ const MARGEN_SEGURIDAD_SUELO = 0; // m de margen para aproximación sobre suelo
 const RADIO_PLANEO_KM = 15;        // 16 km de radio de análisis (~32 km de diámetro)
 const RES_GRID = 130;              // 130x130 muestras (ultrarrápido, ~8ms de ejecución)
 
+// Elementos visuales dinámicos de trayectoria quebrada
+let lineaPlaneoDinamica = null;
+let marcadorQuiebroPlaneo = null;
+let marcadorDestinoPlaneo = null;
+
 function decodificarCotaTerrarium(r, g, b) {
     return (r * 256 + g + b / 256) - 32768;
 }
@@ -18287,6 +18292,8 @@ window.desactivarModoPlaneo = function() {
     if (panel) panel.style.display = 'none';
     if (mapDiv) mapDiv.classList.remove('cursor-planeo-activo');
     if (tooltip) tooltip.style.display = 'none';
+
+    limpiarVisualesTrayectoria();
 
     // 1. 🔄 RESETEAR VARIABLES DE CÁLCULO
     cotaTerrenoBase = 0;
@@ -18623,10 +18630,179 @@ function actualizarTextosLeyendaPlaneo() {
     contPips.innerHTML = html;
 }
 
+// =========================================================================
+// 📐 ENRUTAMIENTO DINÁMICO DE TRAYECTORIA Y QUIEBRO
+// =========================================================================
+function calcularTrayectoriaDinamica(origen, destino, altPiloto, cotaDestinoConMargen, refGlide) {
+    const distDirecta = origen.distanceTo(destino);
+    const deltaZ = altPiloto - cotaDestinoConMargen;
+    
+    if (distDirecta <= 0 || deltaZ <= 0) {
+        return {
+            puntos: [origen, destino],
+            tieneQuiebro: false,
+            waypoint: null,
+            distanciaEfectiva: distDirecta,
+            bloqueado: deltaZ <= 0
+        };
+    }
+
+    const pasosRayo = 16;
+    let maxPenetracion = 0;
+    let pasoPeor = -1;
+    let peorPunto = null;
+
+    // 1. Detección de colisión a lo largo de la línea directa
+    for (let step = 1; step < pasosRayo; step++) {
+        const ratio = step / pasosRayo;
+        const distPaso = distDirecta * ratio;
+        if (distPaso < 180 || (distDirecta - distPaso) < 80) continue;
+
+        const interLat = origen.lat + (destino.lat - origen.lat) * ratio;
+        const interLng = origen.lng + (destino.lng - origen.lng) * ratio;
+        const cotaVueloTecho = (altPiloto + 10) - (distPaso / refGlide);
+        const cotaTerrenoPunto = leerElevacionGlobal(interLat, interLng) || 0;
+
+        if (cotaTerrenoPunto > (cotaVueloTecho + 5)) {
+            const pen = cotaTerrenoPunto - cotaVueloTecho;
+            if (pen > maxPenetracion) {
+                maxPenetracion = pen;
+                pasoPeor = step;
+                peorPunto = L.latLng(interLat, interLng);
+            }
+        }
+    }
+
+    // Si el relieve no corta el vuelo, la trayectoria es directa y limpia
+    if (maxPenetracion === 0 || !peorPunto) {
+        return {
+            puntos: [origen, destino],
+            tieneQuiebro: false,
+            waypoint: null,
+            distanciaEfectiva: distDirecta,
+            bloqueado: false
+        };
+    }
+
+    // Si es una muralla montañosa masiva que sobrepasa el vuelo en más de 140 m
+    if (maxPenetracion > 140) {
+        return {
+            puntos: [origen, destino],
+            tieneQuiebro: false,
+            waypoint: null,
+            distanciaEfectiva: distDirecta,
+            bloqueado: true
+        };
+    }
+
+    // 2. BÚSQUEDA DEL PUNTO DE QUIEBRO / DESVÍO (Bypass lateral de la cresta)
+    const latMid = (origen.lat + destino.lat) / 2;
+    const cosLat = Math.cos(latMid * Math.PI / 180);
+    const dLat = destino.lat - origen.lat;
+    const dLng = (destino.lng - origen.lng) * cosLat;
+    const lenDeg = Math.sqrt(dLat * dLat + dLng * dLng);
+
+    if (lenDeg <= 0) {
+        return { puntos: [origen, destino], tieneQuiebro: false, waypoint: null, distanciaEfectiva: distDirecta, bloqueado: false };
+    }
+
+    // Vector unitario perpendicular a la dirección de vuelo
+    const nLat = -dLng / lenDeg;
+    const nLng = (dLat / lenDeg) / cosLat;
+
+    // Distancias laterales de rodeo a testear: 120m, 220m, 350m, 500m, 700m
+    const offsetsMetros = [120, 220, 350, 500, 700];
+    let mejorWp = null;
+    let mejorDistTotal = Infinity;
+
+    // Probar ambos lados: -1 (izquierda) y +1 (derecha)
+    for (const signo of [-1, 1]) {
+        for (const distLat of offsetsMetros) {
+            const degOffset = distLat / 111139;
+            const candLat = peorPunto.lat + signo * nLat * degOffset;
+            const candLng = peorPunto.lng + signo * nLng * degOffset;
+            const candWp = L.latLng(candLat, candLng);
+
+            const d1 = origen.distanceTo(candWp);
+            const d2 = candWp.distanceTo(destino);
+            const distTotalCand = d1 + d2;
+
+            const cotaVueloEnWp = (altPiloto + 10) - (d1 / refGlide);
+            const cotaTerrenoWp = leerElevacionGlobal(candLat, candLng) || 0;
+
+            // Si el relieve en el waypoint propuesto no deja margen de vuelo, descartar
+            if (cotaTerrenoWp >= cotaVueloEnWp - 10) continue;
+
+            // Comprobación rápida de clearance en los 2 tramos
+            let obstaculoEnTramos = false;
+            for (let f = 0.35; f <= 0.65; f += 0.30) {
+                // Tramo 1 (Origen -> Waypoint)
+                const t1Lat = origen.lat + (candLat - origen.lat) * f;
+                const t1Lng = origen.lng + (candLng - origen.lng) * f;
+                if ((d1 * f) > 180 && (leerElevacionGlobal(t1Lat, t1Lng) || 0) > ((altPiloto + 10) - ((d1 * f) / refGlide) + 5)) {
+                    obstaculoEnTramos = true;
+                    break;
+                }
+                // Tramo 2 (Waypoint -> Destino)
+                const t2Lat = candLat + (destino.lat - candLat) * f;
+                const t2Lng = candLng + (destino.lng - candLng) * f;
+                const dAcum = d1 + (d2 * f);
+                if ((distTotalCand - dAcum) > 80 && (leerElevacionGlobal(t2Lat, t2Lng) || 0) > ((altPiloto + 10) - (dAcum / refGlide) + 5)) {
+                    obstaculoEnTramos = true;
+                    break;
+                }
+            }
+
+            if (!obstaculoEnTramos) {
+                if (distTotalCand < mejorDistTotal) {
+                    mejorDistTotal = distTotalCand;
+                    mejorWp = candWp;
+                }
+                break; // Este lado ya encontró su desviación mínima suficiente
+            }
+        }
+    }
+
+    if (mejorWp) {
+        return {
+            puntos: [origen, mejorWp, destino],
+            tieneQuiebro: true,
+            waypoint: mejorWp,
+            distanciaEfectiva: mejorDistTotal,
+            bloqueado: false
+        };
+    }
+
+    // Si ningún rodeo lateral es viable
+    return {
+        puntos: [origen, destino],
+        tieneQuiebro: false,
+        waypoint: null,
+        distanciaEfectiva: distDirecta,
+        bloqueado: true
+    };
+}
+
 // -------------------------------------------------------------------------
-// SEGUIDOR DE CURSOR: Formato de cota, desnivel, distancia y planeo
+// SEGUIDOR DE CURSOR: Trayectoria dinámica con quiebro y tooltip completo
 // -------------------------------------------------------------------------
 let rafCursor = null;
+
+// Limpia del mapa la polilínea, el nodo de desvío y el círculo de destino
+function limpiarVisualesTrayectoria() {
+    if (lineaPlaneoDinamica && map && map.hasLayer(lineaPlaneoDinamica)) {
+        map.removeLayer(lineaPlaneoDinamica);
+        lineaPlaneoDinamica = null;
+    }
+    if (marcadorQuiebroPlaneo && map && map.hasLayer(marcadorQuiebroPlaneo)) {
+        map.removeLayer(marcadorQuiebroPlaneo);
+        marcadorQuiebroPlaneo = null;
+    }
+    if (marcadorDestinoPlaneo && map && map.hasLayer(marcadorDestinoPlaneo)) {
+        map.removeLayer(marcadorDestinoPlaneo);
+        marcadorDestinoPlaneo = null;
+    }
+}
 
 function actualizarTooltipCursor(e) {
     if (!modoPlaneoActivo) return;
@@ -18642,82 +18818,95 @@ function actualizarTooltipCursor(e) {
 
         if (!origenPlaneoLatLng || !demStitchData) {
             tooltip.innerHTML = '👆 <i>' + t('mapa.planeo.popupPlaneoHazClic', { defaultValue: 'Haz clic para situar el despegue' }) + '</i>';
+            limpiarVisualesTrayectoria();
             return;
         }
 
         const cota = leerElevacionGlobal(e.latlng.lat, e.latlng.lng);
         if (cota === null) {
             tooltip.innerHTML = '<i>' + t('mapa.planeo.popupPlaneoFueraZona', { defaultValue: 'Este punto está fuera de zona de cálculo' }) + '</i>';
+            limpiarVisualesTrayectoria();
             return;
         }
 
-        const dist = origenPlaneoLatLng.distanceTo(e.latlng);
-        const altPiloto = cotaTerrenoBase + offsetTermicaActual;
-        const margenSeguridad = Math.min(MARGEN_SEGURIDAD_SUELO, Math.max(10, dist * 0.04));
-        const deltaZ = altPiloto - (cota + margenSeguridad);
-
-        // 1. Cota en metros redondeada
         const cotaM = Math.round(cota);
+        const distDirecta = origenPlaneoLatLng.distanceTo(e.latlng);
+        const altPiloto = cotaTerrenoBase + offsetTermicaActual;
+        const margenSeguridad = Math.min(MARGEN_SEGURIDAD_SUELO, Math.max(10, distDirecta * 0.04));
+        const cotaDestinoConMargen = cota + margenSeguridad;
+        const deltaZ = altPiloto - cotaDestinoConMargen;
+        const refGlide = (typeof planeoReferencia !== 'undefined' && planeoReferencia > 0) ? planeoReferencia : 8.0;
 
-        // 2. Desnivel desde el despegue con su signo (+ ó -)
-        const desnivel = Math.round(cota - cotaTerrenoBase);
-        const strDesnivel = (desnivel >= 0 ? '+' : '') + desnivel + ' m';
+        // 1. CÁLCULO DE TRAYECTORIA DINÁMICA Y PUNTO DE QUIEBRO (ESTILO SPOTAIR)
+        const tray = calcularTrayectoriaDinamica(origenPlaneoLatLng, e.latlng, altPiloto, cotaDestinoConMargen, refGlide);
 
-        // 3. Distancia en km
-        const strDist = (dist / 1000).toFixed(1) + ' km';
+        // 2. POLILÍNEA DISCONTINUA
+        const colorLinea = tray.bloqueado ? '#ef4444' : '#0f172a';
+        if (!lineaPlaneoDinamica) {
+            lineaPlaneoDinamica = L.polyline(tray.puntos, {
+                color: colorLinea,
+                weight: 2.5,
+                opacity: 0.85,
+                dashArray: '6, 6',
+                interactive: false
+            }).addTo(map);
+        } else {
+            lineaPlaneoDinamica.setLatLngs(tray.puntos);
+            lineaPlaneoDinamica.setStyle({ color: colorLinea });
+            if (!map.hasLayer(lineaPlaneoDinamica)) lineaPlaneoDinamica.addTo(map);
+        }
 
-        // 4. L/D (solo la cifra, sin ":1") y con color según dificultad
-        let grStr = '—';
-        let colorGr = '#f87171';
-
-        if (deltaZ > 0) {
-            // Verificar si hay montaña intermedia que obligue a rodeo
-            let maxPenetracion = 0;
-            const refGlide = (typeof planeoReferencia !== 'undefined' && planeoReferencia > 0) ? planeoReferencia : 8.0;
-            const pasosRayo = 16;
-
-            for (let step = 1; step < pasosRayo; step++) {
-                const ratio = step / pasosRayo;
-                const distPaso = dist * ratio;
-                if (distPaso < 180 || (dist - distPaso) < 80) continue;
-
-                const interLat = origenPlaneoLatLng.lat + (e.latlng.lat - origenPlaneoLatLng.lat) * ratio;
-                const interLng = origenPlaneoLatLng.lng + (e.latlng.lng - origenPlaneoLatLng.lng) * ratio;
-                const cotaVueloTecho = (altPiloto + 10) - (distPaso / refGlide);
-                const cotaTerrenoPunto = leerElevacionGlobal(interLat, interLng) || 0;
-
-                if (cotaTerrenoPunto > (cotaVueloTecho + 5)) {
-                    const pen = cotaTerrenoPunto - cotaVueloTecho;
-                    if (pen > maxPenetracion) maxPenetracion = pen;
-                }
-            }
-
-            // Distancia efectiva (directa o con rodeo)
-            let distEfectiva = dist;
-            if (maxPenetracion > 0 && maxPenetracion <= 130) {
-                distEfectiva = dist * (1.15 + (maxPenetracion / 130) * 0.20);
-            }
-
-            if (maxPenetracion <= 130) {
-                const gr = distEfectiva / deltaZ;
-                grStr = gr > 35 ? '>35' : gr.toFixed(1);
-
-                const u = obtenerUmbralesPlaneo();
-                if (gr <= u.azulOscuro)     colorGr = '#2563eb'; // 1. Azul intenso
-                else if (gr <= u.azulClaro) colorGr = '#06b6d4'; // 2. Azul cian
-                else if (gr <= u.verde)     colorGr = '#22c55e'; // 3. Verde
-                else if (gr <= u.amarillo)  colorGr = '#eab308'; // 4. Amarillo
-                else if (gr <= u.naranja)   colorGr = '#f97316'; // 5. Naranja
-                else                        colorGr = '#ef4444'; // 6. Rojo
+        // 3. NODO CIRCULAR BLANCO EN EL PUNTO DE QUIEBRO (SI RODEA RELIEVE)
+        if (tray.tieneQuiebro && tray.waypoint) {
+            if (!marcadorQuiebroPlaneo) {
+                marcadorQuiebroPlaneo = L.circleMarker(tray.waypoint, {
+                    radius: 5.5,
+                    color: '#0f172a',
+                    weight: 2,
+                    fillColor: '#ffffff',
+                    fillOpacity: 1,
+                    interactive: false
+                }).addTo(map);
             } else {
-                grStr = '—';
+                marcadorQuiebroPlaneo.setLatLng(tray.waypoint);
+                if (!map.hasLayer(marcadorQuiebroPlaneo)) marcadorQuiebroPlaneo.addTo(map);
+            }
+        } else {
+            if (marcadorQuiebroPlaneo && map.hasLayer(marcadorQuiebroPlaneo)) {
+                map.removeLayer(marcadorQuiebroPlaneo);
             }
         }
 
-        // -------------------------------------------------------------
-        // Cálculo de Altura Suelo usando el planeo configurado
-        // -------------------------------------------------------------
-        const perdidaPlaneo = dist / planeoReferencia;
+        // 4. CÍRCULO OBJETIVO EN EL DESTINO (BAJO EL CURSOR)
+        if (!marcadorDestinoPlaneo) {
+            marcadorDestinoPlaneo = L.circleMarker(e.latlng, {
+                radius: 8,
+                color: '#ffffff',
+                weight: 2,
+                fillColor: '#0f172a',
+                fillOpacity: 0.35,
+                interactive: false
+            }).addTo(map);
+        } else {
+            marcadorDestinoPlaneo.setLatLng(e.latlng);
+            if (!map.hasLayer(marcadorDestinoPlaneo)) marcadorDestinoPlaneo.addTo(map);
+        }
+
+        // 5. CÁLCULO DE DATOS DEL TOOLTIP
+        const distEfectiva = tray.distanciaEfectiva;
+
+        // Desnivel desde el despegue
+        const desnivel = Math.round(cota - cotaTerrenoBase);
+        const strDesnivel = (desnivel >= 0 ? '+' : '') + desnivel + ' m';
+
+        // Distancia (con aviso de desvío si hay quiebro)
+        let strDist = (distEfectiva / 1000).toFixed(1) + ' km';
+        if (tray.tieneQuiebro) {
+            strDist += ` <small style="color:#f59e0b; font-size:10px;">(${t('mapa.planeo.desvio', { defaultValue: 'desvío' })})</small>`;
+        }
+
+        // Altura suelo real considerando la distancia efectiva recorrida
+        const perdidaPlaneo = distEfectiva / refGlide;
         const altitudLlegada = altPiloto - perdidaPlaneo;
         const alturaSuelo = Math.round(altitudLlegada - cotaM);
 
@@ -18725,7 +18914,24 @@ function actualizarTooltipCursor(e) {
         const colorAlturaSuelo = alturaSuelo >= 50 ? '#22c55e' : (alturaSuelo >= 0 ? '#eab308' : '#ef4444');
         const strAlturaSuelo = `<b style="color:${colorAlturaSuelo};">${signoAlturaSuelo} m</b>`;
 
-        // Tooltip actualizado con Altura suelo debajo de Altitud:
+        // Planeo requerido (L/D) con la escala de 6 colores
+        let grStr = '—';
+        let colorGr = '#ef4444';
+
+        if (deltaZ > 0 && !tray.bloqueado) {
+            const gr = distEfectiva / deltaZ;
+            grStr = gr > 35 ? '>35' : gr.toFixed(1);
+
+            const u = obtenerUmbralesPlaneo();
+            if (gr <= u.azulOscuro)     colorGr = '#2563eb'; // 1. Azul intenso
+            else if (gr <= u.azulClaro) colorGr = '#06b6d4'; // 2. Azul cian
+            else if (gr <= u.verde)     colorGr = '#22c55e'; // 3. Verde
+            else if (gr <= u.amarillo)  colorGr = '#eab308'; // 4. Amarillo
+            else if (gr <= u.naranja)   colorGr = '#f97316'; // 5. Naranja
+            else                        colorGr = '#ef4444'; // 6. Rojo
+        }
+
+        // Contenido del Tooltip
         tooltip.innerHTML = `📍 ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura suelo' })}: ${strAlturaSuelo}<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}<br>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <b style="color:${colorGr};">${grStr}</b>`;
     });
 }
@@ -18733,6 +18939,7 @@ function actualizarTooltipCursor(e) {
 function ocultarTooltipCursor() {
     const tooltip = document.getElementById('glide-cursor-tooltip');
     if (tooltip) tooltip.style.display = 'none';
+    limpiarVisualesTrayectoria();
 }
 
 // Enganchar listeners una vez el mapa está listo
