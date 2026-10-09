@@ -798,6 +798,7 @@
       "verEnTolomet": "Ver en Tolomet",
       "webOficial": "Ver en web oficial"
     },
+
     "planeo": {
       "titlePlaneo": "Cálculo de planeo",
       "popupPlaneoHazClic": "Haz clic en el punto de despegue",
@@ -808,7 +809,7 @@
       "planeoNecesario": "Planeo necesario (L/D):",
       "posibleBloqueoRelieve": "Posible bloqueo por relieve",
       "altitud": "Altitud",
-      "altura": "Altura suelo",
+      "altura": "Altura llegada",
       "descenso": "Descenso",
       "distancia": "Distancia",
       "planeo": "Planeo",

@@ -18899,11 +18899,8 @@ function actualizarTooltipCursor(e) {
         const desnivel = Math.round(cota - cotaTerrenoBase);
         const strDesnivel = (desnivel >= 0 ? '+' : '') + desnivel + ' m';
 
-        // Distancia (con aviso de desvío si hay quiebro)
-        let strDist = (distEfectiva / 1000).toFixed(1) + ' km';
-        if (tray.tieneQuiebro) {
-            strDist += ` <small style="color:#f59e0b; font-size:10px;">(${t('mapa.planeo.desvio', { defaultValue: 'desvío' })})</small>`;
-        }
+        // Distancia
+        const strDist = (distEfectiva / 1000).toFixed(1) + ' km';
 
         // Altura suelo real considerando la distancia efectiva recorrida
         const perdidaPlaneo = distEfectiva / refGlide;
@@ -18932,7 +18929,7 @@ function actualizarTooltipCursor(e) {
         }
 
         // Contenido del Tooltip
-        tooltip.innerHTML = `📍 ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura suelo' })}: ${strAlturaSuelo}<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}<br>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <b style="color:${colorGr};">${grStr}</b>`;
+        tooltip.innerHTML = `📍 ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura llegada' })}: ${strAlturaSuelo}<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}<br>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <b style="color:${colorGr};">${grStr}</b>`;
     });
 }
 
