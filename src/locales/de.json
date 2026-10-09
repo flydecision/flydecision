@@ -807,7 +807,7 @@
       "popupPlaneoFueraZona": "Dieser Punkt liegt außerhalb des Berechnungsgebiets",
       "cotaDespegue": "Startplatzhöhe: ",
       "alturaExtraDespegue": "Zusätzliche Höhe: ",
-      "cotaDespegueMasExtra": "Höhe + zusätzliche Höhe: ",
+      "cotaDespegueMasExtra": "Höhe + zusätzliche: ",
       "planeoNecesario": "Erforderliche Gleitzahl (L/D):",
       "posibleBloqueoRelieve": "Mögliche Blockierung durch Gelände",
       "altitud": "Höhe",

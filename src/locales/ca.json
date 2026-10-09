@@ -807,7 +807,7 @@
       "popupPlaneoFueraZona": "Aquest punt està fora de la zona de càlcul",
       "cotaDespegue": "Altitud d'enlairament: ",
       "alturaExtraDespegue": "Altura extra: ",
-      "cotaDespegueMasExtra": "Altitud + altura extra: ",
+      "cotaDespegueMasExtra": "Altitud + extra: ",
       "planeoNecesario": "Planeig necessari (L/D):",
       "posibleBloqueoRelieve": "Possible bloqueig per relleu",
       "altitud": "Altitud",

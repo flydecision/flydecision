@@ -807,7 +807,7 @@
       "popupPlaneoFueraZona": "This point is outside the calculation zone",
       "cotaDespegue": "Take-off altitude: ",
       "alturaExtraDespegue": "Extra height: ",
-      "cotaDespegueMasExtra": "Altitude + extra height: ",
+      "cotaDespegueMasExtra": "Altitude + extra: ",
       "planeoNecesario": "Required glide (L/D):",
       "posibleBloqueoRelieve": "Possible terrain blockage",
       "altitud": "Altitude",

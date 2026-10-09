@@ -806,7 +806,7 @@
       "popupPlaneoFueraZona": "Este ponto está fora da zona de cálculo",
       "cotaDespegue": "Altitude de descolagem: ",
       "alturaExtraDespegue": "Altura extra: ",
-      "cotaDespegueMasExtra": "Altitude + altura extra: ",
+      "cotaDespegueMasExtra": "Altitude + extra: ",
       "planeoNecesario": "Planeio necessário (L/D):",
       "posibleBloqueoRelieve": "Possível bloqueio por relevo",
       "altitud": "Altitude",
