@@ -18872,7 +18872,7 @@ function actualizarTooltipCursor(e) {
         const tooltip = document.getElementById('glide-cursor-tooltip');
         if (!tooltip) return;
 
-        // Si aún no se ha marcado el despegue, mantener el tooltip oculto
+        // Si aún no se ha marcado el despegue o estamos fuera del relieve, mantener oculto
         if (!origenPlaneoLatLng || !demStitchData) {
             tooltip.style.display = 'none';
             limpiarVisualesTrayectoria();
@@ -18886,10 +18886,6 @@ function actualizarTooltipCursor(e) {
             return;
         }
 
-        tooltip.style.left = e.originalEvent.clientX + 'px';
-        tooltip.style.top = e.originalEvent.clientY + 'px';
-        tooltip.style.display = 'block';
-
         const cotaM = Math.round(cota);
         const distDirecta = origenPlaneoLatLng.distanceTo(e.latlng);
         const altPiloto = cotaTerrenoBase + offsetTermicaActual;
@@ -18898,10 +18894,10 @@ function actualizarTooltipCursor(e) {
         const deltaZ = altPiloto - cotaDestinoConMargen;
         const refGlide = (typeof planeoReferencia !== 'undefined' && planeoReferencia > 0) ? planeoReferencia : 8.0;
 
-        // 1. CÁLCULO DE TRAYECTORIA DINÁMICA Y PUNTO DE QUIEBRO (ESTILO SPOTAIR)
+        // 1. Cálculo de trayectoria dinámica
         const tray = calcularTrayectoriaDinamica(origenPlaneoLatLng, e.latlng, altPiloto, cotaDestinoConMargen, refGlide);
 
-        // 2. POLILÍNEA DISCONTINUA
+        // 2. Polilínea discontinua
         const colorLinea = tray.bloqueado ? '#ef4444' : '#0f172a';
         if (!lineaPlaneoDinamica) {
             lineaPlaneoDinamica = L.polyline(tray.puntos, {
@@ -18917,7 +18913,7 @@ function actualizarTooltipCursor(e) {
             if (!map.hasLayer(lineaPlaneoDinamica)) lineaPlaneoDinamica.addTo(map);
         }
 
-        // 3. NODO CIRCULAR BLANCO EN EL PUNTO DE QUIEBRO (SI RODEA RELIEVE)
+        // 3. Nodo de quiebro si rodea relieve
         if (tray.tieneQuiebro && tray.waypoint) {
             if (!marcadorQuiebroPlaneo) {
                 marcadorQuiebroPlaneo = L.circleMarker(tray.waypoint, {
@@ -18938,7 +18934,7 @@ function actualizarTooltipCursor(e) {
             }
         }
 
-        // 4. CÍRCULO OBJETIVO EN EL DESTINO (BAJO EL CURSOR)
+        // 4. Marcador destino bajo el cursor
         if (!marcadorDestinoPlaneo) {
             marcadorDestinoPlaneo = L.circleMarker(e.latlng, {
                 radius: 8,
@@ -18953,29 +18949,20 @@ function actualizarTooltipCursor(e) {
             if (!map.hasLayer(marcadorDestinoPlaneo)) marcadorDestinoPlaneo.addTo(map);
         }
 
-        // 5. CÁLCULO DE DATOS DEL TOOLTIP
+        // 5. Datos numéricos de vuelo
         const distEfectiva = tray.distanciaEfectiva;
-
-        // Desnivel desde el despegue
         const desnivel = Math.round(cota - cotaTerrenoBase);
         const strDesnivel = (desnivel >= 0 ? '+' : '') + desnivel + ' m';
-
-        // Distancia
         const strDist = (distEfectiva / 1000).toFixed(1) + ' km';
 
-        // Altura suelo real considerando la distancia efectiva recorrida
         const perdidaPlaneo = distEfectiva / refGlide;
         const altitudLlegada = altPiloto - perdidaPlaneo;
         const alturaSuelo = Math.round(altitudLlegada - cotaM);
-
         const signoAlturaSuelo = alturaSuelo >= 0 ? `+${alturaSuelo}` : `${alturaSuelo}`;
         const colorAlturaSuelo = alturaSuelo >= 50 ? '#22c55e' : (alturaSuelo >= 0 ? '#eab308' : '#ef4444');
         const strAlturaSuelo = `<b style="color:${colorAlturaSuelo};">${signoAlturaSuelo} m</b>`;
 
-        // Descenso real disponible hacia el destino
         const desnivelDescenso = altPiloto - cotaM;
-
-        // Planeo requerido (L/D): se calcula y muestra SIEMPRE que el destino sea más bajo
         let grStr = '—';
         let colorGr = '#ef4444';
 
@@ -18985,16 +18972,98 @@ function actualizarTooltipCursor(e) {
             grStr = gr > 35 ? '>35' : gr.toFixed(1);
 
             const u = obtenerUmbralesPlaneo();
-            if (gr <= u.azulOscuro)     colorGr = '#2563eb'; // 1. Azul intenso
-            else if (gr <= u.azulClaro) colorGr = '#06b6d4'; // 2. Azul cian
-            else if (gr <= u.verde)     colorGr = '#22c55e'; // 3. Verde
-            else if (gr <= u.amarillo)  colorGr = '#eab308'; // 4. Amarillo
-            else if (gr <= u.naranja)   colorGr = '#f97316'; // 5. Naranja
-            else                        colorGr = '#ef4444'; // 6. Rojo (para planeos exigentes: 11, 15, 20...)
+            if (gr <= u.azulOscuro)     colorGr = '#2563eb';
+            else if (gr <= u.azulClaro) colorGr = '#06b6d4';
+            else if (gr <= u.verde)     colorGr = '#22c55e';
+            else if (gr <= u.amarillo)  colorGr = '#eab308';
+            else if (gr <= u.naranja)   colorGr = '#f97316';
+            else                        colorGr = '#ef4444';
         }
 
-        // Contenido del Tooltip
+        // Inyectar contenido en el tooltip
         tooltip.innerHTML = `📍 ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}<div style="border-top: 2px solid #ddd; margin-top: 5px; padding-top: 5px;"><b>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura llegada' })}: ${strAlturaSuelo}</b><br><b>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <span style="color:${colorGr};">${grStr}</span></b>`;
+
+        // 6. POSICIONAMIENTO INTELIGENTE QUE RESPETA BORDES Y PANELES
+        tooltip.style.display = 'block';
+
+        const tipW = tooltip.offsetWidth || 210;
+        const tipH = tooltip.offsetHeight || 160;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const pad = 12;
+
+        const cursorX = e.originalEvent.clientX;
+        const cursorY = e.originalEvent.clientY;
+
+        // Límite inferior: respetar borde o la barra de menú inferior si está visible
+        let maxBottom = vh - pad;
+        const navBottom = document.querySelector('.bottom-nav');
+        if (navBottom && window.getComputedStyle(navBottom).display !== 'none') {
+            const navRect = navBottom.getBoundingClientRect();
+            if (navRect.top > 100 && navRect.top < vh) {
+                maxBottom = navRect.top - pad;
+            }
+        }
+
+        // Límite derecho: respetar borde o el panel de planeo desplegado
+        let maxRight = vw - pad;
+        const panelPlaneo = document.getElementById('infoPanelPlaneo');
+        if (panelPlaneo && !panelPlaneo.classList.contains('retraido')) {
+            const pRect = panelPlaneo.getBoundingClientRect();
+            if (pRect.left > 0 && cursorY < pRect.bottom + 20) {
+                maxRight = pRect.left - pad;
+            }
+        }
+
+        // Límite izquierdo: respetar paneles de la izquierda si alguno estuviese abierto
+        let minLeft = pad;
+        const panelesIzq = ['infoPanel', 'infoPanel2', 'infoPanel3'];
+        for (const idP of panelesIzq) {
+            const pEl = document.getElementById(idP);
+            if (pEl && !pEl.classList.contains('retraido')) {
+                const pRect = pEl.getBoundingClientRect();
+                if (pRect.right > 0 && cursorY < pRect.bottom + 20) {
+                    minLeft = Math.max(minLeft, pRect.right + pad);
+                }
+            }
+        }
+
+        // Límite superior: respetar filtro horario flotante si está abierto
+        let minTop = pad;
+        const filtroMeteo = document.getElementById('div-filtro-horario');
+        if (filtroMeteo && filtroMeteo.classList.contains('flotando-en-mapa')) {
+            const fRect = filtroMeteo.getBoundingClientRect();
+            if (fRect.bottom > 0) {
+                minTop = Math.max(minTop, fRect.bottom + pad);
+            }
+        }
+
+        // Cálculo horizontal (voltea a la izquierda si choca con la derecha o el panel)
+        let posX = cursorX + 16;
+        if (posX + tipW > maxRight) {
+            posX = cursorX - tipW - 16;
+        }
+        if (posX < minLeft) {
+            posX = minLeft;
+            if (posX + tipW > vw - pad) {
+                posX = Math.max(pad, vw - pad - tipW);
+            }
+        }
+
+        // Cálculo vertical (voltea hacia arriba si choca con la parte inferior o la barra nav)
+        let posY = cursorY + 16;
+        if (posY + tipH > maxBottom) {
+            posY = cursorY - tipH - 16;
+        }
+        if (posY < minTop) {
+            posY = minTop;
+            if (posY + tipH > vh - pad) {
+                posY = Math.max(pad, vh - pad - tipH);
+            }
+        }
+
+        tooltip.style.left = Math.round(posX) + 'px';
+        tooltip.style.top = Math.round(posY) + 'px';
     });
 }
 
