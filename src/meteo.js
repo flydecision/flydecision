@@ -2207,6 +2207,13 @@ function iniciarGuiaMapa(forzar = false) {
                 } 
             },
             { 
+                element: '#btn-control-planeo',
+                popover: { 
+                    title: t('guiaMapa.pasos.btnPlaneo.titulo'), 
+                    description: t('guiaMapa.pasos.btnPlaneo.descripcion')
+                } 
+            },
+            { 
                 element: '.leaflet-control-locate',
                 popover: { 
                     title: t('guiaMapa.pasos.btnGps.titulo'), 
@@ -14382,6 +14389,45 @@ function inicializarMapaLeaflet() {
         maxWidth: 150
     }).addTo(map);
 
+    // 🟡 CONTROL "Planeo"
+    L.Control.Planeo = L.Control.extend({
+        onAdd: function(map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-planeo');
+            container.style.overflow = 'hidden';
+
+            const link = L.DomUtil.create('a', '', container);
+            link.id = 'btn-control-planeo';
+            link.title = t('mapa.planeo.titlePlaneo', { defaultValue: 'Cálculo de planeo' });
+            link.href = '#';
+            link.role = 'button';
+            link.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Contorno exterior ensanchado al límite de las líneas rojas -->
+                    <path d="M 1.5 22.5 L 1.5 1.5 L 22.5 22.5 Z" stroke-width="1.8"></path>
+                    <!-- Triángulo interior centrado con grosor idéntico de pared (4.0 px) en los 3 lados -->
+                    <path d="M 5.5 18.5 L 5.5 11.2 L 12.8 18.5 Z" stroke-width="1.6"></path>
+                    <!-- Graduación de regla en el borde izquierdo -->
+                    <line x1="1.5" y1="4.5" x2="3.3" y2="4.5" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="7.2" x2="4.3" y2="7.2" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="9.9" x2="3.3" y2="9.9" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="12.6" x2="4.3" y2="12.6" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="15.3" x2="3.3" y2="15.3" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="18.0" x2="4.3" y2="18.0" stroke-width="1.3"></line>
+                    <line x1="1.5" y1="20.7" x2="3.3" y2="20.7" stroke-width="1.3"></line>
+                </svg>
+
+            `;
+
+            L.DomEvent.on(link, 'click', function(e) {
+                L.DomEvent.stopPropagation(e);
+                L.DomEvent.preventDefault(e);
+                toggleModoPlaneo();
+            });
+            return container;
+        }
+    });
+    map.addControl(new L.Control.Planeo({ position: 'topright' }));
+        
     // 🟡 CONTROL "Mi ubicación"
     L.Control.Locate = L.Control.extend({
     onAdd: function(map) {
@@ -14508,45 +14554,6 @@ function inicializarMapaLeaflet() {
     // Al abrir el menú de capas nativo
     map.on('layeradd', function() {}); // No nos sirve, usamos los eventos del DOM
 
-    // 🟡 CONTROL "Planeo"
-    L.Control.Planeo = L.Control.extend({
-        onAdd: function(map) {
-            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-planeo');
-            container.style.overflow = 'hidden';
-
-            const link = L.DomUtil.create('a', '', container);
-            link.id = 'btn-control-planeo';
-            link.title = t('mapa.planeo.titlePlaneo', { defaultValue: 'Cálculo de planeo' });
-            link.href = '#';
-            link.role = 'button';
-            link.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <!-- Contorno exterior ensanchado al límite de las líneas rojas -->
-                    <path d="M 1.5 22.5 L 1.5 1.5 L 22.5 22.5 Z" stroke-width="1.8"></path>
-                    <!-- Triángulo interior centrado con grosor idéntico de pared (4.0 px) en los 3 lados -->
-                    <path d="M 5.5 18.5 L 5.5 11.2 L 12.8 18.5 Z" stroke-width="1.6"></path>
-                    <!-- Graduación de regla en el borde izquierdo -->
-                    <line x1="1.5" y1="4.5" x2="3.3" y2="4.5" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="7.2" x2="4.3" y2="7.2" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="9.9" x2="3.3" y2="9.9" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="12.6" x2="4.3" y2="12.6" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="15.3" x2="3.3" y2="15.3" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="18.0" x2="4.3" y2="18.0" stroke-width="1.3"></line>
-                    <line x1="1.5" y1="20.7" x2="3.3" y2="20.7" stroke-width="1.3"></line>
-                </svg>
-
-            `;
-
-            L.DomEvent.on(link, 'click', function(e) {
-                L.DomEvent.stopPropagation(e);
-                L.DomEvent.preventDefault(e);
-                toggleModoPlaneo();
-            });
-            return container;
-        }
-    });
-    map.addControl(new L.Control.Planeo({ position: 'topright' }));
-        
     // 🟡 CONTROL "Guía del mapa"
     L.Control.GuiaMapa = L.Control.extend({
         onAdd: function(map) {
@@ -18275,7 +18282,20 @@ window.toggleModoPlaneo = function() {
         if (btn) btn.classList.add('activo');
         if (panel) panel.style.display = 'block';
         if (mapDiv) mapDiv.classList.add('cursor-planeo-activo');
-        actualizarTextosLeyendaPlaneo(); 
+        actualizarTextosLeyendaPlaneo();
+
+        // 1. RECORDAR SI EL FILTRO METEO ESTABA ABIERTO O CERRADO:
+        const divFH = document.getElementById('div-filtro-horario');
+        const estabaAbierto = !!(divFH && divFH.classList.contains('flotando-en-mapa'));
+        window.filtroMeteoPrePlaneo = estabaAbierto;
+
+        // 2. SI ESTABA ABIERTO, REPLEGARLO; Y QUITAR COLORES A LOS DESPEGUES:
+        if (estabaAbierto && typeof toggleFiltrosMapa === 'function') {
+            toggleFiltrosMapa(); // Esto repliega el panel y llama automáticamente a limpiarColoresMapa()
+        } else if (typeof limpiarColoresMapa === 'function') {
+            limpiarColoresMapa(); // Si ya estaba cerrado, asegura que los despegues queden neutros/blancos
+        }
+
     } else {
         desactivarModoPlaneo();
     }
@@ -18332,6 +18352,17 @@ window.desactivarModoPlaneo = function() {
         map.removeLayer(origenPlaneoMarker);
         origenPlaneoMarker = null;
     }
+
+    // 6. RESTAURAR EL FILTRO METEO A SU CONDICIÓN ANTERIOR:
+    if (window.filtroMeteoPrePlaneo === true) {
+        const divFH = document.getElementById('div-filtro-horario');
+        // Si estaba cerrado por el planeo, volver a desplegarlo y colorear despegues
+        if (divFH && !divFH.classList.contains('flotando-en-mapa') && typeof toggleFiltrosMapa === 'function') {
+            toggleFiltrosMapa();
+        }
+    }
+    // Si estaba cerrado (false), no hace nada y continúa cerrado.
+    window.filtroMeteoPrePlaneo = undefined;
 };
 
 // Modificar ganancia térmica desde el deslizador
@@ -18929,7 +18960,7 @@ function actualizarTooltipCursor(e) {
         }
 
         // Contenido del Tooltip
-        tooltip.innerHTML = `📍 ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura llegada' })}: ${strAlturaSuelo}<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}<br>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <b style="color:${colorGr};">${grStr}</b>`;
+        tooltip.innerHTML = `📍 ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}<div style="border-top: 2px solid #ddd; margin-top: 5px; padding-top: 5px;"><b>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura llegada' })}: ${strAlturaSuelo}</b><br><b>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <span style="color:${colorGr};">${grStr}</span></b>`;
     });
 }
 

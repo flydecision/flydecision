@@ -430,6 +430,10 @@
       "titulo": "Filtres",
       "descripcion": "Filtrez les informations de la carte selon vos besoins. Vous pouvez afficher ou masquer uniquement vos décollages et balises favoris ou suivis. De plus, vous pouvez filtrer les décollages par orientation, niveau d'activité ou volume de vols enregistrés sur XContest, et filtrer les balises selon leur altitude."
     },
+    "btnPlaneo": {
+      "titulo": "Calcul de finesse",
+      "descripcion": "Calcule les zones que vous pouvez atteindre en planant depuis un lieu de décollage.<br><br>• Cliquez sur n'importe quel point de la carte pour situer le décollage (🪂).<br>• Le dégradé de couleurs superposé sur la carte indique visuellement la finesse requise pour y arriver.<br>• En déplaçant la souris, vous verrez la trajectoire de vol, qui tente d'esquiver automatiquement les crêtes avec un point de contournement intermédiaire si le relief le permet.<br>• Le petit carré qui suit le curseur vous indiquera toutes les données pour ce point (hauteur d'arrivée, finesse requise,...).<br>• Le panneau <i>Calcul de finesse</i> vous permet de voir ou de modifier plus d'informations."
+    },
     "btnGps": {
       "titulo": "Ma position",
       "descripcion": "Centre la carte sur votre position actuelle."
@@ -619,6 +623,7 @@
     "ordenar_xc": "Trier par conditions XC",
     "vibracion": "Vibrer au toucher",
     "diasSeguimiento": "Jours de suivi:",
+    "planeoReferencia": "Finesse de la voile :",
     "titulo": "Paramètres",
     "editarFavoritos": "Modifier les favoris",
     "importarConfig": "Importer les paramètres et favoris",
@@ -795,6 +800,22 @@
       "marcar_todas": "Tout sélectionner",
       "verEnTolomet": "Voir sur Tolomet",
       "webOficial": "Voir sur le site officiel"
+    },
+    "planeo": {
+      "titlePlaneo": "Calcul de finesse",
+      "popupPlaneoHazClic": "Cliquez sur le point de décollage",
+      "popupPlaneoFueraZona": "Ce point est en dehors de la zone de calcul",
+      "cotaDespegue": "Altitude de décollage : ",
+      "alturaExtraDespegue": "Hauteur supplémentaire : ",
+      "cotaDespegueMasExtra": "Altitude + hauteur supplémentaire : ",
+      "planeoNecesario": "Finesse requise (L/D) :",
+      "posibleBloqueoRelieve": "Blocage possible par le relief",
+      "altitud": "Altitude",
+      "altura": "Hauteur arrivée",
+      "descenso": "Descente",
+      "distancia": "Distance",
+      "planeo": "Finesse",
+      "planeoVela": "Finesse voile"
     }
   },
 
@@ -898,6 +919,7 @@
     "tooltipHorasDiurnas": "<b>Heures de jour uniquement</b><br><br>N'affiche que les heures de la journée. Si désactivée, les 24 heures de la journée sont affichées.<br><br>Une marge de ±1h est incluse au lever et au coucher du soleil.<br><br>Change automatiquement chaque mois. De plus, les mois avec changement d'heure, ces heures s'ajusteront automatiquement à l'heure officielle d'été/hiver.",
     "tooltipOrdenarXC": "<b>Trier par conditions XC :</b><br><br>Par défaut, les décollages sont triés du meilleur au pire en fonction de la note des <i>Conditions de décollage</i> (faisabilité du décollage en fonction du vent).<br><br>Si vous activez cette option, le tableau sera trié de la meilleure à la pire note des <b>Conditions XC</b> (potentiel thermique de la masse d'air), que le vent à ce décollage soit idéal ou non.",
     "tooltipDiasSeguimiento": "<b>Jours de suivi :</b><br><br>Lorsque tu marques un décollage avec l'œil <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>, il reste en <i>suivi</i> pendant le nombre de jours que tu configures ici.<br><br>Par exemple, avec 2 jours : si tu marques un décollage le lundi, il apparaîtra actif le lundi et le mardi. Le mercredi, il sera automatiquement supprimé au démarrage de l'application.<br><br>Marquer des décollages avec un suivi te permet de les filtrer facilement avec le bouton <i>Voir uniquement les décollages en suivi</i>.<br><br>Tu peux configurer entre <b>1 et 4 jours ou infini (le suivi n'est jamais désactivé)</b>. La valeur par défaut est <b>3 jours</b>.",
+    "tooltipPlaneoReferencia": "<b>Finesse de la voile :</b><br><br>Définit la finesse estimée (L/D) de votre parapente en air calme, utilisée par l'outil <i>Calcul de finesse</i> 📐 de la carte.<br><br>Vous pouvez définir une valeur réaliste ou, si vous préférez, une valeur conservatrice plus faible, pour prévenir des descentes inattendues, du vent de face,...<br><br>Cette valeur adapte l'échelle de couleurs continue à votre voile : la couleur <b>verte</b> délimitera la portée réelle de votre parapente sans vent arrière, les tons <b>bleus</b> les zones que vous atteignez avec une marge confortable, et les couleurs chaudes (jaune, orange et rouge) les planés les plus exigeants qui nécessiteront un vent arrière ou une ascendance supplémentaire.<br><br>De plus, cette donnée est utilisée pour calculer avec précision la <b>Hauteur d'arrivée</b> (AGL) estimée affichée par le curseur en vous déplaçant sur la carte, vous indiquant avec combien de mètres de marge par rapport au sol vous arriveriez à chaque point.<br><br>Vous pouvez configurer entre <b>5.0 et 14.0</b> (par pas de 0.1). La valeur par défaut est <b>7.0</b>.",
     "tooltipModelosMeteo": "<b>Modèles météorologiques :</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b> : pour les données de vent dans les premières 0-48h. Couvre presque toute l'Europe, y compris la péninsule ibérique, sauf le sud de l'Andalousie (dans cette zone, ICON-EU 7km de 0-96h est utilisé). Fournit également des données de vent à 20, 50 et 100 m au-dessus du sol (AGL). Mise à jour toutes les 3 heures environ (8 fois par jour).</li><li><b>DWD Germany ICON-EU 7km</b> : pour les données de vent dans les 48-96h suivantes. Couvre l'Europe sauf les Canaries. Ne fournit pas de données de vent AGL à 20 ni 50 m, seulement 100 m. Mise à jour toutes les 3 heures environ (8 fois par jour).</li><li><b>Météo-France Arome 2.5km 15min</b> : pour les données de vent à plusieurs hauteurs dans les 6 heures suivantes et par intervalles de 15 min. Même couverture qu'Arome-HD. Mise à jour automatique toutes les heures (24 fois par jour).</li><li><b>ECMWF IFS HRES 9km</b> : pour le reste des données météorologiques de 0-96h (météo générale, nébulosité, précipitations, plafond, CAPE, CIN et vents d'altitude corrigés par géopotentiel à 500, 1000, 1500 et 3000 m d'altitude et à l'altitude du décollage (MSL). Couvre le monde entier. Mise à jour automatique toutes les 6 heures environ (4 fois par jour)</li></ul><b>Passerelle de données météorologiques :</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>La valeur <i>(DDtHH)</i> (exemple : 12t03) indique le jour et l'heure UTC±0 (Z) correspondant au dernier cycle d'exécution du modèle sur le serveur météorologique d'origine. À partir de ce moment, il y a plusieurs heures de calcul informatique avant la distribution finale et sa disponibilité publique.",
     "tooltipModoApp": "<b>Mode de l'application :</b><br><br><b>Mode simple</b> : Uniquement l'essentiel. Recommandé pour commencer et te familiariser avec l'application avant de passer au <i>Mode avancé</i>.<br><br><b>Mode avancé</b> : Contrôle total. Donne accès à toutes les options, filtres et données détaillées.",
     "tooltipcheckboxBalizasEuskalmet": "<b>Balises de vent Euskalmet</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b> : Gouvernement Basque</li><li><b>Couverture géographique</b> : Pays Basque (Euskadi)</li><li><b>Nombre approximatif de balises affichées</b> : 64</li><li><b>Fréquence approximative de mise à jour des données</b> : 10 minutes (variable selon la station)</li><li><b>Site web</b> : <a href='https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#' target='_blank' style='color: #007bff; text-decoration: underline;'>Euskalmet</a></li></ul>",

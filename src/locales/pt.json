@@ -430,6 +430,10 @@
       "titulo": "Filtros",
       "descripcion": "Filtre a informação do mapa de acordo com as suas necessidades. Pode mostrar ou ocultar apenas as suas descolagens e balizas favoritas ou em seguimento. Além disso, pode filtrar descolagens por orientação, nível de atividade ou volume de voos registados no XContest, e filtrar balizas de acordo com a sua altitude."
     },
+    "btnPlaneo": {
+      "titulo": "Cálculo de planeio",
+      "descripcion": "Calcula a que zonas pode chegar a planar a partir de um local de descolagem.<br><br>• Clique em qualquer ponto do mapa para situar a descolagem (🪂).<br>• O gradiente de cores sobreposto no mapa indica visualmente o planeio necessário para lá chegar.<br>• Ao mover o rato verá a trajetória de voo, que tenta esquivar cristas automaticamente com um ponto de viragem intermédio se o relevo o permitir.<br>• O quadradinho que segue o cursor indicar-lhe-á todos os dados para esse ponto (altura a que chegaria, planeio necessário,...).<br>• O painel de <i>Cálculo de planeio</i> permite-lhe ver ou alterar mais informação."
+    },
     "btnGps": {
       "titulo": "A Minha Localização",
       "descripcion": "Centra o mapa na sua posição atual."
@@ -619,6 +623,7 @@
     "ordenar_xc": "Ordenar por condições de XC",
     "vibracion": "Vibrar ao tocar",
     "diasSeguimiento": "Dias de seguimento:",
+    "planeoReferencia": "Planeio da vela:",
     "titulo": "Definições",
     "editarFavoritos": "Editar favoritos",
     "importarConfig": "Importar definições e favoritos",
@@ -794,6 +799,22 @@
       "marcar_todas": "Marcar todas",
       "verEnTolomet": "Ver no Tolomet",
       "webOficial": "Ver no site oficial"
+    },
+    "planeo": {
+      "titlePlaneo": "Cálculo de planeio",
+      "popupPlaneoHazClic": "Clique no ponto de descolagem",
+      "popupPlaneoFueraZona": "Este ponto está fora da zona de cálculo",
+      "cotaDespegue": "Altitude de descolagem: ",
+      "alturaExtraDespegue": "Altura extra: ",
+      "cotaDespegueMasExtra": "Altitude + altura extra: ",
+      "planeoNecesario": "Planeio necessário (L/D):",
+      "posibleBloqueoRelieve": "Possível bloqueio por relevo",
+      "altitud": "Altitude",
+      "altura": "Altura chegada",
+      "descenso": "Descida",
+      "distancia": "Distância",
+      "planeo": "Planeio",
+      "planeoVela": "Planeio vela"
     }
   },
 
@@ -897,6 +918,7 @@
     "tooltipHorasDiurnas": "<b>Apenas horas diurnas</b><br><br>Mostra apenas as horas de luz. Se estiver desativado, são mostradas as 24 horas do dia.<br><br>Está incluída uma margem de ±1h ao nascer e ao pôr do sol.<br><br>Muda automaticamente todos os meses. Além disso, nos meses com mudança de hora, estas horas serão ajustadas automaticamente ao horário oficial de verão/inverno (DST).",
     "tooltipOrdenarXC": "<b>Ordenar por Condições de XC:</b><br><br>Por predefinição, as descolagens são ordenadas da melhor para a pior com base na pontuação de <i>Condições de Descolagem</i> (viabilidade de descolar de acordo com o vento).<br><br>Se ativar esta opção, a tabela será ordenada da melhor para a pior pontuação de <b>Condições de XC</b> (potencial térmico da massa de ar), independentemente de o vento nessa descolagem ser o ideal ou não.",
     "tooltipDiasSeguimiento": "<b>Dias de seguimento:</b><br><br>Quando marcas uma descolagem com o olho <svg viewBox='1 4 22 16' width='14' height='14' preserveAspectRatio='xMidYMid meet' style='vertical-align:middle'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z' fill='#16a34a' stroke='none'/><circle cx='12' cy='12' r='4.5' fill='white' stroke='none'/><circle cx='12' cy='12' r='2.5' fill='#16a34a' stroke='none'/></svg>, ela fica em <i>seguimento</i> durante o número de dias que configurares aqui.<br><br>Por exemplo, com 2 dias: se marcares uma descolagem na segunda-feira, ela aparecerá ativa na segunda e na terça-feira. Na quarta-feira, será eliminada automaticamente ao iniciar a aplicação.<br><br>Marcar descolagens com seguimento permite filtrá-las facilmente com o botão <i>Ver apenas descolagens em seguimento</i>.<br><br>Podes configurar entre <b>1 e 4 dias ou infinito (o seguimento nunca é desativado)</b>. O valor padrão é <b>3 dias</b>.",
+    "tooltipPlaneoReferencia": "<b>Planeio da vela:</b><br><br>Define a relação de planeio (L/D) estimada do seu parapente em ar calmo, utilizada pela ferramenta de <i>Cálculo de planeio</i> 📐 do mapa.<br><br>Pode colocar um valor realista ou, se preferir, um valor conservador menor, para prevenir descidas inesperadas, vento de frente,...<br><br>Este valor adapta a escala contínua de cores à sua vela: a cor <b>verde</b> delimitará o alcance real do seu parapente sem vento a favor, os tons <b>azuis</b> as zonas a que chega com margem de sobra, e as cores quentes (amarelo, laranja e vermelho) os planeios mais exigentes que exigirão vento de cauda ou sustentação adicional.<br><br>Além disso, este dado é utilizado para calcular com precisão a <b>Altura de chegada</b> (AGL) estimada que o cursor mostra ao mover-se pelo mapa, indicando com quantos metros de margem sobre o terreno chegaria a cada ponto.<br><br>Pode configurar entre <b>5.0 e 14.0</b> (em saltos de 0.1). O valor por defeito é <b>7.0</b>.",
     "tooltipModelosMeteo": "<b>Modelos meteorológicos:</b><br><ul style='margin-top:5px; padding-left:20px;'><li><b>Météo-France Arome-HD 1.3km</b>: para dados de vento nas primeiras 0-48h. Cobre quase toda a Europa, incluindo a Península Ibérica, exceto o sul da Andaluzia (nessa zona utiliza-se ICON-EU 7km de 0-96h). Também fornece dados de vento a 20, 50 e 100 m acima do solo (AGL). Atualização a cada 3 horas aproximadamente (8 vezes ao dia).</li><li><b>DWD Germany ICON-EU 7km</b>: para dados de vento nas seguintes 48-96h. Cobre a Europa exceto as Canárias. Não fornece dados de vento AGL a 20 nem 50 m, apenas 100 m. Atualização a cada 3 horas aproximadamente (8 vezes ao dia).</li><li><b>Météo-France Arome 2.5km 15min</b>: para dados de vento a várias alturas nas seguintes 6 horas e em intervalos de 15 min. Mesma cobertura que Arome-HD. Atualização automática a cada hora (24 vezes ao dia).</li><li><b>ECMWF IFS HRES 9km</b>: para o resto dos dados meteorológicos de 0-96h (meteorologia geral, nebulosidade, precipitação, teto, CAPE, CIN e ventos de altitude corrigidos por geopotencial a 500, 1000, 1500 e 3000 m de altitude e à altitude da descolagem (MSL). Cobre todo o mundo. Atualização automática a cada 6 horas aproximadamente (4 vezes ao dia)</li></ul><b>Gateway de dados meteorológicos:</b> <a href='https://open-meteo.com/' target='_blank' style='color: #007bff; text-decoration: underline;'>Open-Meteo</a><br><br>O valor <i>(DDtHH)</i> (exemplo: 12t03) indica o dia e a hora UTC±0 (Z) correspondente ao último ciclo de execução do modelo no servidor meteorológico de origem. A partir desse momento, há várias horas de cálculo computacional antes da distribuição final e da sua disponibilidade pública.",
     "tooltipModoApp": "<b>Modo da aplicação:</b><br><br><b>Modo simples</b>: Apenas o essencial. Recomendado para começar e te familiarizares com a aplicação antes de passares para o <i>Modo avançado</i>.<br><br><b>Modo avançado</b>: Controlo total. Dá acesso a todas as opções, filtros e dados detalhados.",
     "tooltipcheckboxBalizasEuskalmet": "<b>Balizas de vento Euskalmet</b><br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriedade</b>: Governo Basco</li><li><b>Cobertura geográfica</b>: País Basco (Euskadi)</li><li><b>Número aproximado de balizas mostradas</b>: 64</li><li><b>Frequência aproximada de atualização dos dados</b>: 10 minutos (variável segundo a estação)</li><li><b>Site</b>: <a href='https://www.euskalmet.euskadi.eus/observacion/datos-de-estaciones/#' target='_blank' style='color: #007bff; text-decoration: underline;'>Euskalmet</a></li></ul>",
