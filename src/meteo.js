@@ -14528,30 +14528,30 @@ function inicializarMapaLeaflet() {
     map.on('layeradd', function() {}); // No nos sirve, usamos los eventos del DOM
 
     // 🟡 CONTROL "Guía del mapa"
-    L.Control.GuiaMapa = L.Control.extend({
-        onAdd: function(map) {
-            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-guia-mapa');
-            container.style.overflow = 'hidden';
+    // L.Control.GuiaMapa = L.Control.extend({
+    //     onAdd: function(map) {
+    //         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-guia-mapa');
+    //         container.style.overflow = 'hidden';
             
-            var link = L.DomUtil.create('a', '', container);
-            link.title = (typeof t === 'function' ? t('mapa.titleGuiaMapa', { defaultValue: 'Guía rápida del mapa' }) : 'Guía rápida del mapa');
-            link.style.display = 'flex';
-            link.style.alignItems = 'center';
-            link.style.justifyContent = 'center';
+    //         var link = L.DomUtil.create('a', '', container);
+    //         link.title = (typeof t === 'function' ? t('mapa.titleGuiaMapa', { defaultValue: 'Guía rápida del mapa' }) : 'Guía rápida del mapa');
+    //         link.style.display = 'flex';
+    //         link.style.alignItems = 'center';
+    //         link.style.justifyContent = 'center';
             
-            link.innerHTML = '<img src="/icons/icono_ayuda_60.webp" width="18" height="18">';
+    //         link.innerHTML = '<img src="/icons/icono_ayuda_60.webp" width="18" height="18">';
             
-            L.DomEvent.on(link, 'click', function(e) {
-                L.DomEvent.stopPropagation(e);
-                L.DomEvent.preventDefault(e);
-                if (typeof sugerirGuiaMapa === 'function') {
-                    sugerirGuiaMapa(true);
-                }
-            });
-            return container;
-        }
-    });
-    map.addControl(new L.Control.GuiaMapa({ position: 'topright' }));
+    //         L.DomEvent.on(link, 'click', function(e) {
+    //             L.DomEvent.stopPropagation(e);
+    //             L.DomEvent.preventDefault(e);
+    //             if (typeof sugerirGuiaMapa === 'function') {
+    //                 sugerirGuiaMapa(true);
+    //             }
+    //         });
+    //         return container;
+    //     }
+    // });
+    // map.addControl(new L.Control.GuiaMapa({ position: 'topright' }));
 
 
     //------------------------------------------------------------
