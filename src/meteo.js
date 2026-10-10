@@ -13513,11 +13513,11 @@ function inicializarMapaLeaflet() {
         attribution: '© <a href="https://www.openaip.net" target="_blank">OpenAIP</a>'
     });
     // Otros estilos: light_all,light_nolabels,light_only_labels,dark_all,dark_nolabels,dark_only_labels,voyager,voyager_nolabels,voyager_only_labels,voyager_labels_under
-    const Carto_light = crearCapaConLimiteZoom('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_3k6j_1_b7b3d9c6bac93f98d355bbd4', {
-        subdomains: 'abcd',
-        maxNativeZoom: 20,
-        attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://carto.com/attributions" target="_blank">Carto</a>'
-    });
+    // const Carto_light = crearCapaConLimiteZoom('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_3k6j_1_b7b3d9c6bac93f98d355bbd4', {
+    //     subdomains: 'abcd',
+    //     maxNativeZoom: 20,
+    //     attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://carto.com/attributions" target="_blank">Carto</a>'
+    // });
 
     function crearCapaConLimiteZoom(url, opciones) {
         const maxNativo = opciones.maxNativeZoom ?? opciones.maxZoom ?? 19;
@@ -13533,7 +13533,7 @@ function inicializarMapaLeaflet() {
         [t('mapa.capasBase.ESRITopo')]: ESRITopo,
         [t('mapa.capasBase.ESRIOrto')]: ESRIOrto,	
         [t('mapa.capasBase.OpenTopoMap')]: OpenTopoMap,
-        [t('mapa.capasBase.Carto_light')]: Carto_light,
+        //[t('mapa.capasBase.Carto_light')]: Carto_light,
         [t('mapa.capasBase.Tracestrack')]: Tracestrack,
         [t('mapa.capasBase.IGNTopo')]: IGNTopo,
         [t('mapa.capasBase.IGNClaro')]: IGNClaro,
