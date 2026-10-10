@@ -19074,6 +19074,13 @@ function actualizarTooltipCursor(e) {
     });
 }
 
+// ¿El evento viene de un dedo/lápiz y no de un ratón?
+function esEventoTactilPlaneo(e) {
+    const oe = e && e.originalEvent;
+    if (oe && oe.pointerType) return oe.pointerType === 'touch' || oe.pointerType === 'pen';
+    return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+}
+
 function ocultarTooltipCursor() {
     const tooltip = document.getElementById('glide-cursor-tooltip');
     if (tooltip) tooltip.style.display = 'none';
@@ -19137,15 +19144,39 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const initEventosPlaneo = () => {
         if (typeof map !== 'undefined' && map) {
+            let ultimaPulsacionLarga = 0;
+
+            const fijarDespeguePlaneo = (latlng) => {
+                ejecutarCalculoConoPlaneo(latlng);
+                map.getContainer().classList.add('planeo-con-despegue');
+            };
+
+            // TÁCTIL: pulsación larga = (re)colocar el despegue (Android dispara 'contextmenu', no 'click')
+            map.on('contextmenu', function(e) {
+                if (!modoPlaneoActivo || !esEventoTactilPlaneo(e)) return;
+                if (e.originalEvent) L.DomEvent.preventDefault(e.originalEvent); // evita menú/selección del navegador
+                ultimaPulsacionLarga = Date.now();
+                fijarDespeguePlaneo(e.latlng);
+                if (typeof window.maximizarPanelPlaneo === 'function') window.maximizarPanelPlaneo();
+            });
+
             map.on('click', function(e) {
-                if (modoPlaneoActivo) {
-                    const yaHabiaDespegue = !!origenPlaneoLatLng;
-                    ejecutarCalculoConoPlaneo(e.latlng);
-                    map.getContainer().classList.add('planeo-con-despegue');
-                    // 2.º clic en el mapa (aterrizaje): minimizar el panel
-                    if (yaHabiaDespegue && typeof window.minimizarPanelPlaneo === 'function') {
-                        window.minimizarPanelPlaneo();
-                    }
+                if (!modoPlaneoActivo) return;
+                if (Date.now() - ultimaPulsacionLarga < 700) return; // ignora el 'click' fantasma tras una pulsación larga
+
+                const yaHabiaDespegue = !!origenPlaneoLatLng;
+
+                // TÁCTIL con despegue ya fijado: toque corto = punto de aterrizaje (no mueve el despegue)
+                if (yaHabiaDespegue && esEventoTactilPlaneo(e)) {
+                    actualizarTooltipCursor(e);
+                    if (typeof window.minimizarPanelPlaneo === 'function') window.minimizarPanelPlaneo();
+                    return;
+                }
+
+                // Primer clic/toque (despegue) o clic de ratón: como antes
+                fijarDespeguePlaneo(e.latlng);
+                if (yaHabiaDespegue && typeof window.minimizarPanelPlaneo === 'function') {
+                    window.minimizarPanelPlaneo();
                 }
             });
             map.on('mousemove', actualizarTooltipCursor);
