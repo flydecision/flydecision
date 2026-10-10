@@ -802,7 +802,7 @@
       "webOficial": "Voir sur le site officiel"
     },
     "planeo": {
-      "titlePlaneo": "Calcul de finesse",
+      "titlePlaneo": "Finesse",
       "popupPlaneoHazClic": "Cliquez sur le point de décollage",
       "popupPlaneoFueraZona": "Ce point est en dehors de la zone de calcul",
       "cotaDespegue": "Altitude de décollage : ",

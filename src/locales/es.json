@@ -804,7 +804,7 @@
     },
 
     "planeo": {
-      "titlePlaneo": "Cálculo de planeo",
+      "titlePlaneo": "Planeo",
       "popupPlaneoHazClic": "Haz clic en el punto de despegue",
       "popupPlaneoFueraZona": "Este punto está fuera de zona de cálculo",
       "cotaDespegue": "Altitud despegue: ",

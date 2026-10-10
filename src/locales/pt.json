@@ -801,7 +801,7 @@
       "webOficial": "Ver no site oficial"
     },
     "planeo": {
-      "titlePlaneo": "Cálculo de planeio",
+      "titlePlaneo": "Planeio",
       "popupPlaneoHazClic": "Clique no ponto de descolagem",
       "popupPlaneoFueraZona": "Este ponto está fora da zona de cálculo",
       "cotaDespegue": "Altitude de descolagem: ",

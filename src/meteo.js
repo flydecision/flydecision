@@ -18997,8 +18997,25 @@ function actualizarTooltipCursor(e, forzar) {
             else                        colorGr = '#ef4444';
         }
 
-        // Inyectar contenido en el tooltip
-        tooltip.innerHTML = `📍 ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}<div style="border-top: 2px solid #ddd; margin-top: 5px; padding-top: 5px;"><b>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura llegada' })}: ${strAlturaSuelo}</b><br><b>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <span style="color:${colorGr};">${grStr}</span></b>`;
+                // Inyectar contenido en el tooltip: detalle plegable + resumen (siempre visible) + botón min/max
+        const tipMin = !!window.tooltipPlaneoMinimizado;
+        const tituloBtn = tipMin
+            ? t('mapa.planeo.maximizar', { defaultValue: 'Maximizar' })
+            : t('mapa.planeo.minimizar', { defaultValue: 'Minimizar' });
+        tooltip.classList.toggle('minimizado', tipMin);
+        tooltip.classList.toggle('fijado', !!window.aterrizajePlaneoFijadoLatLng);
+
+        tooltip.innerHTML =
+            `<div class="gct-fila">` +
+                `<div class="gct-cuerpo">` +
+                    `<div class="gct-detalle">📍 ${t('mapa.planeo.altitud', { defaultValue: 'Altitud' })}: ${cotaM} m<br>⬇️ ${t('mapa.planeo.descenso', { defaultValue: 'Descenso' })}: ${strDesnivel}<br>➡️ ${t('mapa.planeo.distancia', { defaultValue: 'Distancia' })}: ${strDist}<br>⚙️ ${t('mapa.planeo.planeoVela', { defaultValue: 'Planeo vela' })}: ${planeoReferencia.toFixed(1)}</div>` +
+                    `<div class="gct-resumen"><b>🪂 ${t('mapa.planeo.altura', { defaultValue: 'Altura llegada' })}: ${strAlturaSuelo}</b><br><b>📐 ${t('mapa.planeo.planeo', { defaultValue: 'Planeo' })}: <span style="color:${colorGr};">${grStr}</span></b></div>` +
+                `</div>` +
+                `<button type="button" class="gct-btn" title="${tituloBtn}" aria-label="${tituloBtn}">` +
+                    `<svg class="ico-min" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>` +
+                    `<svg class="ico-max" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="1.5"></rect></svg>` +
+                `</button>` +
+            `</div>`;
 
         // 6. POSICIONAMIENTO INTELIGENTE QUE RESPETA BORDES Y PANELES
         tooltip.style.display = 'block';
@@ -19087,7 +19104,7 @@ function actualizarTooltipCursor(e, forzar) {
 // ¿El evento nace en un control/popup de Leaflet (p. ej. el panel de planeo) y no en el mapa?
 function eventoSobreControlPlaneo(e) {
     const objetivo = e && e.originalEvent && e.originalEvent.target;
-    return !!(objetivo && objetivo.closest && objetivo.closest('.leaflet-control, .leaflet-popup'));
+    return !!(objetivo && objetivo.closest && objetivo.closest('.leaflet-control, .leaflet-popup, .glide-cursor-tooltip'));
 }
 
 // Recalcula tooltip y trayectoria del aterrizaje fijado (al mover el mapa o recalcular el cono)
@@ -19162,6 +19179,22 @@ document.addEventListener('DOMContentLoaded', () => {
     initMinMaxPlaneo();
 });
 
+// 🪂 Botón minimizar/maximizar del tooltip de aterrizaje (módulo aislado)
+document.addEventListener('DOMContentLoaded', () => {
+    const tip = document.getElementById('glide-cursor-tooltip');
+    if (!tip) return;
+
+    L.DomEvent.disableClickPropagation(tip); // un toque en el tooltip no llega al mapa
+
+    tip.addEventListener('click', function(ev) {
+        if (!ev.target.closest || !ev.target.closest('.gct-btn')) return;
+        ev.stopPropagation();
+        window.tooltipPlaneoMinimizado = !window.tooltipPlaneoMinimizado;
+        // reconstruye el tooltip con el nuevo estado y lo recoloca
+        if (typeof window.refrescarAterrizajeFijadoPlaneo === 'function') window.refrescarAterrizajeFijadoPlaneo();
+    });
+});
+
 // Enganchar listeners una vez el mapa está listo
 document.addEventListener('DOMContentLoaded', () => {
     const initEventosPlaneo = () => {
@@ -19210,7 +19243,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ignorarClickTrasPulsacionLarga = false;
                 cancelarPulsacion();
                 if (!modoPlaneoActivo || ev.pointerType !== 'mouse' || ev.button !== 0) return;
-                if (ev.target.closest && ev.target.closest('.leaflet-control, .leaflet-popup, .leaflet-marker-icon')) return;
+                if (ev.target.closest && ev.target.closest('.leaflet-control, .leaflet-popup, .leaflet-marker-icon, .glide-cursor-tooltip')) return;
                 origenPulsacion = { x: ev.clientX, y: ev.clientY };
                 const latlng = map.mouseEventToLatLng(ev);
                 temporizadorPulsacion = setTimeout(() => {
