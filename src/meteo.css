@@ -4344,6 +4344,11 @@ body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para el
     cursor: crosshair !important;
 }
 
+/* Esperando el clic de despegue: los cartelitos no responden (el clic pasa al mapa) */
+#map.cursor-planeo-activo:not(.planeo-con-despegue) .leaflet-marker-icon:has(.label-large-despegues) {
+    pointer-events: none !important;
+}
+
 .glide-origin-marker {
     display: flex;
     align-items: center;

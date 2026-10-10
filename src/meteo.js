@@ -19116,6 +19116,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const original = window[nombre];
             window[nombre] = function() {
                 panel.classList.remove('minimizado');
+                const mapEl = document.getElementById('map');
+                if (mapEl) mapEl.classList.remove('planeo-con-despegue');
                 actualizarBtn();
                 return original.apply(this, arguments);
             };
@@ -19139,6 +19141,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (modoPlaneoActivo) {
                     const yaHabiaDespegue = !!origenPlaneoLatLng;
                     ejecutarCalculoConoPlaneo(e.latlng);
+                    map.getContainer().classList.add('planeo-con-despegue');
                     // 2.º clic en el mapa (aterrizaje): minimizar el panel
                     if (yaHabiaDespegue && typeof window.minimizarPanelPlaneo === 'function') {
                         window.minimizarPanelPlaneo();
