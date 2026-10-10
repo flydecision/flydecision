@@ -4400,7 +4400,13 @@ body:has(#map.cursor-planeo-activo) #btn-filtros-mapa {
 /* Destino inalcanzable a planeo (relieve en medio): fondo naranja suave */
 .glide-cursor-tooltip.bloqueado {
     background: #fed7aa;
-    border-color: #ff0000;
+    border: 2px solid #ff0000;  /* borde el doble de grueso (antes 1px) */
+    padding: 4px 8px; 
+}
+/* Altura llegada y planeo en rojo */
+.glide-cursor-tooltip.bloqueado .gct-resumen b b,
+.glide-cursor-tooltip.bloqueado .gct-resumen span {
+    color: #dc2626 !important;
 }
 .glide-cursor-tooltip.bloqueado .gct-resumen { border-top-color: #fdba74; }
 

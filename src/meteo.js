@@ -18259,6 +18259,17 @@ const RES_GRID = 130;              // 130x130 muestras (ultrarrápido, ~8ms de e
 let lineaPlaneoDinamica = null;
 let marcadorQuiebroPlaneo = null;
 let marcadorDestinoPlaneo = null;
+let marcadorChoquePlaneo = null;
+
+// Icono ✕ rojo (con borde blanco) en el punto donde la trayectoria choca con el relieve
+function iconoChoquePlaneo() {
+    return L.divIcon({
+        className: 'planeo-choque-icon',
+        html: '<svg viewBox="0 0 24 24" width="24" height="24" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))"><path d="M5 5L19 19M19 5L5 19" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M5 5L19 19M19 5L5 19" stroke="#dc2626" stroke-width="4" stroke-linecap="round" fill="none"/></svg>',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+    });
+}
 
 function decodificarCotaTerrarium(r, g, b) {
     return (r * 256 + g + b / 256) - 32768;
@@ -18721,6 +18732,7 @@ function calcularTrayectoriaDinamica(origen, destino, altPiloto, cotaDestinoConM
     let maxPenetracion = 0;
     let pasoPeor = -1;
     let peorPunto = null;
+    let primerChoque = null; // primer punto donde el relieve corta la trayectoria
 
     // 1. Detección de colisión a lo largo de la línea directa
     for (let step = 1; step < pasosRayo; step++) {
@@ -18734,6 +18746,19 @@ function calcularTrayectoriaDinamica(origen, destino, altPiloto, cotaDestinoConM
         const cotaTerrenoPunto = leerElevacionGlobal(interLat, interLng) || 0;
 
         if (cotaTerrenoPunto > (cotaVueloTecho + 5)) {
+            // Primer contacto con el relieve: afinar entre la muestra anterior y esta (bisección)
+            if (!primerChoque) {
+                let lo = (step - 1) / pasosRayo, hi = ratio;
+                for (let k = 0; k < 6; k++) {
+                    const mid = (lo + hi) / 2;
+                    const exceso = (leerElevacionGlobal(origen.lat + (destino.lat - origen.lat) * mid,
+                                                        origen.lng + (destino.lng - origen.lng) * mid) || 0)
+                                 - ((altPiloto + 10) - (distDirecta * mid) / refGlide) - 5;
+                    if (exceso > 0) hi = mid; else lo = mid;
+                }
+                primerChoque = L.latLng(origen.lat + (destino.lat - origen.lat) * hi,
+                                        origen.lng + (destino.lng - origen.lng) * hi);
+            }
             const pen = cotaTerrenoPunto - cotaVueloTecho;
             if (pen > maxPenetracion) {
                 maxPenetracion = pen;
@@ -18761,7 +18786,8 @@ function calcularTrayectoriaDinamica(origen, destino, altPiloto, cotaDestinoConM
             tieneQuiebro: false,
             waypoint: null,
             distanciaEfectiva: distDirecta,
-            bloqueado: true
+            bloqueado: true,
+            choque: primerChoque
         };
     }
 
@@ -18849,7 +18875,8 @@ function calcularTrayectoriaDinamica(origen, destino, altPiloto, cotaDestinoConM
         tieneQuiebro: false,
         waypoint: null,
         distanciaEfectiva: distDirecta,
-        bloqueado: true
+        bloqueado: true,
+        choque: primerChoque
     };
 }
 
@@ -18871,6 +18898,10 @@ function limpiarVisualesTrayectoria() {
     if (marcadorDestinoPlaneo && map && map.hasLayer(marcadorDestinoPlaneo)) {
         map.removeLayer(marcadorDestinoPlaneo);
         marcadorDestinoPlaneo = null;
+    }
+    if (marcadorChoquePlaneo && map && map.hasLayer(marcadorChoquePlaneo)) {
+        map.removeLayer(marcadorChoquePlaneo);
+        marcadorChoquePlaneo = null;
     }
 }
 
@@ -18949,6 +18980,23 @@ function actualizarTooltipCursor(e, forzar) {
             if (marcadorQuiebroPlaneo && map.hasLayer(marcadorQuiebroPlaneo)) {
                 map.removeLayer(marcadorQuiebroPlaneo);
             }
+        }
+
+        // 3b. ✕ donde la trayectoria choca con el relieve (destino inalcanzable)
+        if (tray.bloqueado && tray.choque) {
+            if (!marcadorChoquePlaneo) {
+                marcadorChoquePlaneo = L.marker(tray.choque, {
+                    icon: iconoChoquePlaneo(),
+                    interactive: false,
+                    keyboard: false,
+                    zIndexOffset: 1000
+                }).addTo(map);
+            } else {
+                marcadorChoquePlaneo.setLatLng(tray.choque);
+                if (!map.hasLayer(marcadorChoquePlaneo)) marcadorChoquePlaneo.addTo(map);
+            }
+        } else if (marcadorChoquePlaneo && map.hasLayer(marcadorChoquePlaneo)) {
+            map.removeLayer(marcadorChoquePlaneo);
         }
 
         // 4. Marcador destino bajo el cursor
