@@ -18656,6 +18656,9 @@ async function ejecutarCalculoConoPlaneo(latlng) {
     } else {
         origenPlaneoMarker.setLatLng(latlng);
     }
+
+    // Si hay un aterrizaje fijado, actualizar su tooltip con el nuevo cálculo
+    if (typeof window.refrescarAterrizajeFijadoPlaneo === 'function') window.refrescarAterrizajeFijadoPlaneo();
 }
 
 function actualizarTextosLeyendaPlaneo() {
@@ -18871,8 +18874,15 @@ function limpiarVisualesTrayectoria() {
     }
 }
 
-function actualizarTooltipCursor(e) {
+function actualizarTooltipCursor(e, forzar) {
     if (!modoPlaneoActivo) return;
+
+    if (!forzar) {
+        // Aterrizaje fijado: el tooltip ya no sigue al cursor
+        if (window.aterrizajePlaneoFijadoLatLng) return;
+        // Eventos que nacen en el panel/controles: no tocar el aterrizaje
+        if (eventoSobreControlPlaneo(e)) return;
+    }
 
     if (rafCursor) cancelAnimationFrame(rafCursor);
     rafCursor = requestAnimationFrame(() => {
@@ -19074,7 +19084,23 @@ function actualizarTooltipCursor(e) {
     });
 }
 
+// ¿El evento nace en un control/popup de Leaflet (p. ej. el panel de planeo) y no en el mapa?
+function eventoSobreControlPlaneo(e) {
+    const objetivo = e && e.originalEvent && e.originalEvent.target;
+    return !!(objetivo && objetivo.closest && objetivo.closest('.leaflet-control, .leaflet-popup'));
+}
+
+// Recalcula tooltip y trayectoria del aterrizaje fijado (al mover el mapa o recalcular el cono)
+window.refrescarAterrizajeFijadoPlaneo = function() {
+    const ll = window.aterrizajePlaneoFijadoLatLng;
+    if (!modoPlaneoActivo || !ll || typeof map === 'undefined' || !map) return;
+    const p = map.latLngToContainerPoint(ll);
+    const r = map.getContainer().getBoundingClientRect();
+    actualizarTooltipCursor({ latlng: ll, originalEvent: { clientX: r.left + p.x, clientY: r.top + p.y } }, true);
+};
 function ocultarTooltipCursor() {
+    if (window.aterrizajePlaneoFijadoLatLng) return; // aterrizaje fijado: el tooltip se queda
+    if (rafCursor) cancelAnimationFrame(rafCursor);
     const tooltip = document.getElementById('glide-cursor-tooltip');
     if (tooltip) tooltip.style.display = 'none';
     limpiarVisualesTrayectoria();
@@ -19099,6 +19125,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 : t('mapa.planeo.minimizar', { defaultValue: 'Minimizar' });
             btn.title = txt;
             btn.setAttribute('aria-label', txt);
+            const pista = document.getElementById('planeo-pista');
+            if (pista) pista.textContent = t('mapa.planeo.pistaMoverDespegue', { defaultValue: 'Mantén 👈 para mover 🪂' });
         };
 
         window.minimizarPanelPlaneo = function() {
@@ -19118,6 +19146,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 panel.classList.remove('minimizado');
                 const mapEl = document.getElementById('map');
                 if (mapEl) mapEl.classList.remove('planeo-con-despegue');
+                window.aterrizajePlaneoFijadoLatLng = null;
                 actualizarBtn();
                 return original.apply(this, arguments);
             };
@@ -19137,17 +19166,82 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const initEventosPlaneo = () => {
         if (typeof map !== 'undefined' && map) {
-            map.on('click', function(e) {
-                if (modoPlaneoActivo) {
-                    const yaHabiaDespegue = !!origenPlaneoLatLng;
-                    ejecutarCalculoConoPlaneo(e.latlng);
-                    map.getContainer().classList.add('planeo-con-despegue');
-                    // 2.º clic en el mapa (aterrizaje): minimizar el panel
-                    if (yaHabiaDespegue && typeof window.minimizarPanelPlaneo === 'function') {
-                        window.minimizarPanelPlaneo();
-                    }
+                        // --- Gestos del modo planeo ---
+            let ultimaPulsacionLarga = 0;               // táctil: instante del 'contextmenu'
+            let ignorarClickTrasPulsacionLarga = false; // ratón: el 'click' que llega al soltar una pulsación larga
+
+            const fijarDespeguePlaneo = (latlng) => {
+                ejecutarCalculoConoPlaneo(latlng);
+                map.getContainer().classList.add('planeo-con-despegue');
+            };
+
+            // Mover el despegue: se suelta el aterrizaje fijado y el panel se maximiza
+            const recolocarDespeguePlaneo = (latlng) => {
+                window.aterrizajePlaneoFijadoLatLng = null;
+                ocultarTooltipCursor();
+                fijarDespeguePlaneo(latlng);
+                if (typeof window.maximizarPanelPlaneo === 'function') window.maximizarPanelPlaneo();
+            };
+
+            // Fijar aterrizaje: tooltip y trayectoria se quedan, el panel se minimiza
+            const fijarAterrizajePlaneo = (e) => {
+                window.aterrizajePlaneoFijadoLatLng = e.latlng;
+                actualizarTooltipCursor(e, true);
+                if (typeof window.minimizarPanelPlaneo === 'function') window.minimizarPanelPlaneo();
+                // al terminar la animación del panel, recolocar el tooltip (el panel cambia de ancho)
+                setTimeout(() => window.refrescarAterrizajeFijadoPlaneo(), 500);
+            };
+
+            // Pulsación larga táctil (Android la dispara como 'contextmenu') y clic derecho
+            map.on('contextmenu', function(e) {
+                if (!modoPlaneoActivo || eventoSobreControlPlaneo(e)) return;
+                if (e.originalEvent) L.DomEvent.preventDefault(e.originalEvent);
+                ultimaPulsacionLarga = Date.now();
+                recolocarDespeguePlaneo(e.latlng);
+            });
+
+            // Pulsación larga con ratón (botón izquierdo mantenido, sin mover)
+            const cont = map.getContainer();
+            let temporizadorPulsacion = null;
+            let origenPulsacion = null;
+            const cancelarPulsacion = () => { clearTimeout(temporizadorPulsacion); temporizadorPulsacion = null; };
+
+            cont.addEventListener('pointerdown', function(ev) {
+                ignorarClickTrasPulsacionLarga = false;
+                cancelarPulsacion();
+                if (!modoPlaneoActivo || ev.pointerType !== 'mouse' || ev.button !== 0) return;
+                if (ev.target.closest && ev.target.closest('.leaflet-control, .leaflet-popup, .leaflet-marker-icon')) return;
+                origenPulsacion = { x: ev.clientX, y: ev.clientY };
+                const latlng = map.mouseEventToLatLng(ev);
+                temporizadorPulsacion = setTimeout(() => {
+                    temporizadorPulsacion = null;
+                    ignorarClickTrasPulsacionLarga = true;
+                    recolocarDespeguePlaneo(latlng);
+                }, 500);
+            });
+            cont.addEventListener('pointermove', function(ev) {
+                if (temporizadorPulsacion && origenPulsacion &&
+                    Math.hypot(ev.clientX - origenPulsacion.x, ev.clientY - origenPulsacion.y) > 6) {
+                    cancelarPulsacion(); // se está arrastrando el mapa
                 }
             });
+            ['pointerup', 'pointercancel', 'pointerleave'].forEach(n => cont.addEventListener(n, cancelarPulsacion));
+
+            map.on('click', function(e) {
+                if (!modoPlaneoActivo) return;
+                if (ignorarClickTrasPulsacionLarga) { ignorarClickTrasPulsacionLarga = false; return; }
+                if (Date.now() - ultimaPulsacionLarga < 700) return; // 'click' fantasma tras pulsación larga táctil
+                if (eventoSobreControlPlaneo(e)) return;             // clic en el panel: no tocar nada
+
+                if (!origenPlaneoLatLng) {
+                    fijarDespeguePlaneo(e.latlng);  // 1.er clic/toque: despegue
+                } else {
+                    fijarAterrizajePlaneo(e);       // siguientes: aterrizaje
+                }
+            });
+
+            // El tooltip fijado acompaña a su punto al mover o hacer zoom en el mapa
+            map.on('move zoomend', () => window.refrescarAterrizajeFijadoPlaneo());
             map.on('mousemove', actualizarTooltipCursor);
             map.on('mouseout', ocultarTooltipCursor);
         } else {
