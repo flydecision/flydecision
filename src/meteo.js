@@ -19067,6 +19067,7 @@ function actualizarTooltipCursor(e, forzar) {
             `</div>`;
 
         // 6. POSICIONAMIENTO INTELIGENTE QUE RESPETA BORDES Y PANELES
+        const estabaVisible = tooltip.style.display === 'block';
         tooltip.style.display = 'block';
 
         const tipW = tooltip.offsetWidth || 210;
@@ -19145,6 +19146,20 @@ function actualizarTooltipCursor(e, forzar) {
                 posY = Math.max(pad, vh - pad - tipH);
             }
         }
+
+        // Movimiento suave solo cuando el tooltip "salta" (volteo por borde/panel/menú).
+        // Al seguir al cursor es instantáneo: el salto se mide frente al desplazamiento del cursor.
+        const prev = window._tooltipPlaneoPrev;
+        if (estabaVisible && prev) {
+            const saltoX = Math.abs((posX - prev.x) - (cursorX - prev.cx));
+            const saltoY = Math.abs((posY - prev.y) - (cursorY - prev.cy));
+            if (saltoX > 30 || saltoY > 30) {
+                tooltip.classList.add('movimiento-suave');
+                clearTimeout(window._tooltipPlaneoSuaveT);
+                window._tooltipPlaneoSuaveT = setTimeout(() => tooltip.classList.remove('movimiento-suave'), 300);
+            }
+        }
+        window._tooltipPlaneoPrev = { x: posX, y: posY, cx: cursorX, cy: cursorY };
 
         tooltip.style.left = Math.round(posX) + 'px';
         tooltip.style.top = Math.round(posY) + 'px';

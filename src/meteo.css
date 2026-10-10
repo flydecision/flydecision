@@ -4432,6 +4432,11 @@ body:has(#map.cursor-planeo-activo) #btn-filtros-mapa {
 .glide-cursor-tooltip.minimizado .gct-btn .ico-max { display: block; }
 .glide-cursor-tooltip.minimizado .gct-btn .ico-min { display: none; }
 
+/* Se activa solo durante un volteo del tooltip (JS); seguir al cursor sigue siendo instantáneo */
+.glide-cursor-tooltip.movimiento-suave {
+    transition: left 0.25s ease, top 0.25s ease;
+}
+
 /* Pista bajo el panel minimizado */
 #planeo-pista {
     max-height: 0;
