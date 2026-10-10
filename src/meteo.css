@@ -3294,7 +3294,7 @@ details.config-accordion .accordion-content {
     transition: width 0.45s ease;
     box-sizing: border-box;
 }
-#infoPanelPlaneo:not(.retraido):not(.minimizado) { width: 266px !important; }  /* cabe título completo + 2 botones */
+#infoPanelPlaneo:not(.retraido):not(.minimizado) { width: 212px !important; }  /* cabe título completo + 2 botones */
 #infoPanelPlaneo.minimizado:not(.retraido)       { width: 143px !important; }  /* una fila + línea de pista */
 
 /* Cuerpo que se pliega despacio */
@@ -3336,9 +3336,13 @@ details.config-accordion .accordion-content {
     color: #fc628c; /* rojo del icono */
 }
 
-#buttonMinMaxPlaneo svg { stroke-width: 4.8; }
+#buttonMinMaxPlaneo svg,
+.gct-btn svg { stroke-width: 4.8; }
 
 .info-panel:not(.retraido) #buttonMinMaxPlaneo { display: flex !important; }
+/* Esperando el despegue: sin botón minimizar (no tiene sentido todavía) */
+#map:not(.planeo-con-despegue) #buttonMinMaxPlaneo { display: none !important; }
+
 #buttonMinMaxPlaneo .ico-max { display: none; }
 #infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-max { display: block; }
 #infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-min { display: none; }
@@ -4374,6 +4378,39 @@ body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para el
     white-space: nowrap;
     border: 1px solid rgba(255, 255, 255, 0.15);
 }
+
+/* Tooltip de planeo: botón minimizar/maximizar y modo minimizado */
+.glide-cursor-tooltip.fijado { pointer-events: auto; }  /* solo cuando el aterrizaje está fijado */
+
+.gct-fila { display: flex; align-items: flex-start; gap: 8px; }
+.glide-cursor-tooltip.minimizado .gct-fila { align-items: center; }
+
+.gct-resumen { border-top: 2px solid #ddd; margin-top: 5px; padding-top: 5px; }
+.glide-cursor-tooltip.minimizado .gct-detalle { display: none; }
+.glide-cursor-tooltip.minimizado .gct-resumen { border-top: none; margin-top: 0; padding-top: 0; }
+
+/* Mismo formato que el botón min/max del panel de planeo */
+.gct-btn {
+    display: none;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(2px);
+    background: rgba(255, 255, 255, 0.9);
+    color: #e53935;
+}
+.glide-cursor-tooltip.fijado .gct-btn { display: flex; }
+.gct-btn .ico-max { display: none; }
+.glide-cursor-tooltip.minimizado .gct-btn .ico-max { display: block; }
+.glide-cursor-tooltip.minimizado .gct-btn .ico-min { display: none; }
+
 /* Pista bajo el panel minimizado */
 #planeo-pista {
     max-height: 0;

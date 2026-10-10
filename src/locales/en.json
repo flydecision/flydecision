@@ -802,7 +802,7 @@
       "webOficial": "View on official website"
     },
     "planeo": {
-      "titlePlaneo": "Glide calculation",
+      "titlePlaneo": "Glide",
       "popupPlaneoHazClic": "Click on the take-off point",
       "popupPlaneoFueraZona": "This point is outside the calculation zone",
       "cotaDespegue": "Take-off altitude: ",
@@ -816,7 +816,10 @@
       "distancia": "Distance",
       "planeo": "Glide",
       "planeoVela": "Glider glide",
-      "transparencia": "Transparency:"
+      "transparencia": "Transparency:",
+      "pistaMoverDespegue": "Hold down 👈 to move the 🪂",
+      "minimizar": "Minimize",
+      "maximizar": "Maximize"
     }
   },
 
