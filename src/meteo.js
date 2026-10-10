@@ -19147,6 +19147,42 @@ function actualizarTooltipCursor(e, forzar) {
             }
         }
 
+        // Evitar tapar la ✕ de choque y el círculo de desvío: si el tooltip los cubre,
+        // probar las otras esquinas alrededor del cursor
+        const puntosAEvitar = [];
+        const cRect = map.getContainer().getBoundingClientRect();
+        const aPantalla = (ll) => {
+            const p = map.latLngToContainerPoint(ll);
+            return { x: cRect.left + p.x, y: cRect.top + p.y };
+        };
+        if (tray.bloqueado && tray.choque) puntosAEvitar.push(aPantalla(tray.choque));
+        if (tray.tieneQuiebro && tray.waypoint) puntosAEvitar.push(aPantalla(tray.waypoint));
+
+        if (puntosAEvitar.length) {
+            const margenMarcador = 16; // radio aproximado del marcador + holgura
+            const tapa = (x, y) => puntosAEvitar.some(p =>
+                p.x > x - margenMarcador && p.x < x + tipW + margenMarcador &&
+                p.y > y - margenMarcador && p.y < y + tipH + margenMarcador);
+
+            if (tapa(posX, posY)) {
+                const candidatos = [
+                    [cursorX + 16,        cursorY + 16],          // derecha-abajo
+                    [cursorX - tipW - 16, cursorY + 16],          // izquierda-abajo
+                    [cursorX + 16,        cursorY - tipH - 16],   // derecha-arriba
+                    [cursorX - tipW - 16, cursorY - tipH - 16]    // izquierda-arriba
+                ];
+                for (const [cx, cy] of candidatos) {
+                    const dentro = cx >= minLeft && cx + tipW <= maxRight &&
+                                   cy >= minTop  && cy + tipH <= maxBottom;
+                    if (dentro && !tapa(cx, cy)) {
+                        posX = cx;
+                        posY = cy;
+                        break;
+                    }
+                }
+            }
+        }
+
         // Movimiento suave solo cuando el tooltip "salta" (volteo por borde/panel/menú).
         // Al seguir al cursor es instantáneo: el salto se mide frente al desplazamiento del cursor.
         const prev = window._tooltipPlaneoPrev;
