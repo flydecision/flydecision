@@ -19143,7 +19143,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.title = txt;
             btn.setAttribute('aria-label', txt);
             const pista = document.getElementById('planeo-pista');
-            if (pista) pista.textContent = t('mapa.planeo.pistaMoverDespegue', { defaultValue: 'Mantén 👈 para mover 🪂' });
+            if (pista) pista.textContent = t('mapa.planeo.pistaMoverDespegue', { defaultValue: 'Mantén 👈 para mover el 🪂' });
         };
 
         window.minimizarPanelPlaneo = function() {

@@ -816,7 +816,10 @@
       "distancia": "Distance",
       "planeo": "Glide",
       "planeoVela": "Glider glide",
-      "transparencia": "Transparency:"
+      "transparencia": "Transparency:",
+      "pistaMoverDespegue": "Hold down 👈 to move the 🪂",
+      "minimizar": "Minimize",
+      "maximizar": "Maximize"
     }
   },
 

@@ -816,7 +816,10 @@
       "distancia": "Distantzia",
       "planeo": "Planeamendua",
       "planeoVela": "Belaren planeamendua",
-      "transparencia": "Gardentasuna:"
+      "transparencia": "Gardentasuna:",
+      "pistaMoverDespegue": "Eduki sakatuta 👈 🪂 mugitzeko",
+      "minimizar": "Minimizatu",
+      "maximizar": "Maximizatu"
     }
   },
 

@@ -816,7 +816,10 @@
       "distancia": "Distància",
       "planeo": "Planeig",
       "planeoVela": "Planeig vela",
-      "transparencia": "Transparència:"
+      "transparencia": "Transparència:",
+      "pistaMoverDespegue": "Mantingues el 👈 per moure el 🪂",
+      "minimizar": "Minimitzar",
+      "maximizar": "Maximitzar"
     }
   },
 

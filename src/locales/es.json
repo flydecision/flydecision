@@ -818,7 +818,10 @@
       "distancia": "Distancia",
       "planeo": "Planeo",
       "planeoVela": "Planeo vela",
-      "transparencia": "Transparencia:"
+      "transparencia": "Transparencia:",
+      "pistaMoverDespegue": "Mantén el 👈 para mover el 🪂",
+      "minimizar": "Minimizar",
+      "maximizar": "Maximizar"
     }
   },
 

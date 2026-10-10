@@ -816,7 +816,10 @@
       "distancia": "Distance",
       "planeo": "Finesse",
       "planeoVela": "Finesse voile",
-      "transparencia": "Transparence :"
+      "transparencia": "Transparence :",
+      "pistaMoverDespegue": "Maintenez le 👈 pour déplacer le 🪂",
+      "minimizar": "Minimiser",
+      "maximizar": "Maximiser"
     }
   },
 

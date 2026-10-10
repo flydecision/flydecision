@@ -816,7 +816,10 @@
       "distancia": "Distanz",
       "planeo": "Gleitzahl",
       "planeoVela": "Gleitzahl Schirms",
-      "transparencia": "Transparenz:"
+      "transparencia": "Transparenz:",
+      "pistaMoverDespegue": "Halte 👈 gedrückt, um 🪂 zu bewegen",
+      "minimizar": "Minimieren",
+      "maximizar": "Maximieren"
     }
   },
 
