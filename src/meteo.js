@@ -19080,7 +19080,8 @@ function actualizarTooltipCursor(e, forzar) {
 
         // Límite inferior: respetar borde o la barra de menú inferior si está visible
         let maxBottom = vh - pad;
-        const navBottom = document.querySelector('.bottom-nav');
+        const navBottom = Array.from(document.querySelectorAll('.bottom-nav'))
+            .find(n => window.getComputedStyle(n).display !== 'none');
         if (navBottom && window.getComputedStyle(navBottom).display !== 'none') {
             const navRect = navBottom.getBoundingClientRect();
             if (navRect.top > 100 && navRect.top < vh) {

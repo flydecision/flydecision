@@ -3333,7 +3333,7 @@ details.config-accordion .accordion-content {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(2px);
     background: rgba(255, 255, 255, 0.9);
-    color: #fc628c; /* rojo del icono */
+    color: #b3b3b3; /* rojo del icono */
 }
 
 #buttonMinMaxPlaneo svg,
@@ -4425,7 +4425,7 @@ body:has(#map.cursor-planeo-activo) #btn-filtros-mapa {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(2px);
     background: rgba(255, 255, 255, 0.9);
-    color: #e53935;
+    color: #b3b3b3;
 }
 .glide-cursor-tooltip.fijado .gct-btn { display: flex; }
 .gct-btn .ico-max { display: none; }
