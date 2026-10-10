@@ -3333,7 +3333,7 @@ details.config-accordion .accordion-content {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(2px);
     background: rgba(255, 255, 255, 0.9);
-    color: #fc628c; /* rojo del icono */
+    color: #b3b3b3; /* rojo del icono */
 }
 
 #buttonMinMaxPlaneo svg,
@@ -4397,6 +4397,19 @@ body:has(#map.cursor-planeo-activo) #btn-filtros-mapa {
 .glide-cursor-tooltip.minimizado .gct-detalle { display: none; }
 .glide-cursor-tooltip.minimizado .gct-resumen { border-top: none; margin-top: 0; padding-top: 0; }
 
+/* Destino inalcanzable a planeo (relieve en medio): fondo naranja suave */
+.glide-cursor-tooltip.bloqueado {
+    background: #fed7aa;
+    border: 2px solid #ff0000;  /* borde el doble de grueso (antes 1px) */
+    padding: 4px 8px; 
+}
+/* Altura llegada y planeo en rojo */
+.glide-cursor-tooltip.bloqueado .gct-resumen b b,
+.glide-cursor-tooltip.bloqueado .gct-resumen span {
+    color: #dc2626 !important;
+}
+.glide-cursor-tooltip.bloqueado .gct-resumen { border-top-color: #fdba74; }
+
 /* Mismo formato que el botón min/max del panel de planeo */
 .gct-btn {
     display: none;
@@ -4412,12 +4425,17 @@ body:has(#map.cursor-planeo-activo) #btn-filtros-mapa {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(2px);
     background: rgba(255, 255, 255, 0.9);
-    color: #e53935;
+    color: #b3b3b3;
 }
 .glide-cursor-tooltip.fijado .gct-btn { display: flex; }
 .gct-btn .ico-max { display: none; }
 .glide-cursor-tooltip.minimizado .gct-btn .ico-max { display: block; }
 .glide-cursor-tooltip.minimizado .gct-btn .ico-min { display: none; }
+
+/* Se activa solo durante un volteo del tooltip (JS); seguir al cursor sigue siendo instantáneo */
+.glide-cursor-tooltip.movimiento-suave {
+    transition: left 0.25s ease, top 0.25s ease;
+}
 
 /* Pista bajo el panel minimizado */
 #planeo-pista {
