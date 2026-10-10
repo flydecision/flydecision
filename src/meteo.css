@@ -3287,10 +3287,61 @@ details.config-accordion .accordion-content {
     display: none !important;
 }
 
+/* 🪂 Panel Planeo: estado MINIMIZADO (una fila) / MAXIMIZADO */
 #infoPanelPlaneo:not(.retraido) {
     width: 214px !important;
     max-width: 90vw;
+    transition: width 0.45s ease;
+    box-sizing: border-box;
 }
+#infoPanelPlaneo:not(.retraido):not(.minimizado) { width: 266px !important; }  /* cabe título completo + 2 botones */
+#infoPanelPlaneo.minimizado:not(.retraido)       { width: 118px !important; }  /* cartabón + 2 botones */
+
+/* Cuerpo que se pliega despacio */
+#planeo-cuerpo {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.45s ease, opacity 0.35s ease, visibility 0s;
+}
+#planeo-cuerpo > div { min-height: 0; overflow: hidden; }
+#infoPanelPlaneo.minimizado #planeo-cuerpo {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    transition: grid-template-rows 0.45s ease, opacity 0.35s ease, visibility 0s linear 0.45s;
+}
+
+/* En minimizado solo queda el cartabón (sin texto) */
+#infoPanelPlaneo.minimizado .texto-menu-capa { display: none !important; }
+
+/* Botón minimizar/maximizar: mismo formato que el de cerrar, a su izquierda */
+#buttonMinMaxPlaneo {
+    display: none;
+    position: absolute;
+    top: 5px;
+    right: 42px;
+    width: 32px;
+    height: 32px;
+    margin-top: -2px;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    z-index: 1101;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(2px);
+    background: rgba(255, 255, 255, 0.9);
+    color: #fc628c; /* rojo del icono */
+}
+
+#buttonMinMaxPlaneo svg { stroke-width: 4.8; }
+
+.info-panel:not(.retraido) #buttonMinMaxPlaneo { display: flex !important; }
+#buttonMinMaxPlaneo .ico-max { display: none; }
+#infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-max { display: block; }
+#infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-min { display: none; }
 
 /* Ajustar el ancho del panel de balizas SOLO cuando está EXPANDIDO (no retraído) */
 /* #infoPanel3.info-panel:not(.retraido) {
