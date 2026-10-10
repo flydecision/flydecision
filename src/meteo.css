@@ -4397,6 +4397,13 @@ body:has(#map.cursor-planeo-activo) #btn-filtros-mapa {
 .glide-cursor-tooltip.minimizado .gct-detalle { display: none; }
 .glide-cursor-tooltip.minimizado .gct-resumen { border-top: none; margin-top: 0; padding-top: 0; }
 
+/* Destino inalcanzable a planeo (relieve en medio): fondo naranja suave */
+.glide-cursor-tooltip.bloqueado {
+    background: #fed7aa;
+    border-color: #ff0000;
+}
+.glide-cursor-tooltip.bloqueado .gct-resumen { border-top-color: #fdba74; }
+
 /* Mismo formato que el botón min/max del panel de planeo */
 .gct-btn {
     display: none;

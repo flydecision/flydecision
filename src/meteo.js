@@ -19004,6 +19004,7 @@ function actualizarTooltipCursor(e, forzar) {
             : t('mapa.planeo.minimizar', { defaultValue: 'Minimizar' });
         tooltip.classList.toggle('minimizado', tipMin);
         tooltip.classList.toggle('fijado', !!window.aterrizajePlaneoFijadoLatLng);
+        tooltip.classList.toggle('bloqueado', !!tray.bloqueado); // inalcanzable a planeo
 
         tooltip.innerHTML =
             `<div class="gct-fila">` +
