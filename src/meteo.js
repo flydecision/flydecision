@@ -19164,6 +19164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const mapEl = document.getElementById('map');
                 if (mapEl) mapEl.classList.remove('planeo-con-despegue');
                 window.aterrizajePlaneoFijadoLatLng = null;
+                window.tooltipPlaneoMinimizado = false; // el tooltip siempre empieza maximizado
                 actualizarBtn();
                 return original.apply(this, arguments);
             };
