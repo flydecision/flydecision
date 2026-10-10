@@ -4239,6 +4239,12 @@ h3 {
     text-align: center !important;
 }
 
+/* Rosa de vientos en rejilla, salvo en modo simple. Antes iba inline con !important y no se podía ocultar */
+body:not(.modo-simple) .control-orientacion-container {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+}
+
 .control-vuelos-container,
 .control-ultimovuelo-container,
 .control-actividad-mapa-container,
