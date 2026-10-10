@@ -19080,13 +19080,69 @@ function ocultarTooltipCursor() {
     limpiarVisualesTrayectoria();
 }
 
+// 🪂 MINIMIZAR / MAXIMIZAR PANEL PLANEO (módulo aislado)
+document.addEventListener('DOMContentLoaded', () => {
+    const initMinMaxPlaneo = () => {
+        const panel = document.getElementById('infoPanelPlaneo');
+        const btn = document.getElementById('buttonMinMaxPlaneo');
+        if (!panel || !btn ||
+            typeof window.retraerOpcionesPlaneo !== 'function' ||
+            typeof window.expandirOpcionesPlaneo !== 'function') {
+            setTimeout(initMinMaxPlaneo, 200);
+            return;
+        }
+
+        const actualizarBtn = () => {
+            const min = panel.classList.contains('minimizado');
+            const txt = min
+                ? t('mapa.planeo.maximizar', { defaultValue: 'Maximizar' })
+                : t('mapa.planeo.minimizar', { defaultValue: 'Minimizar' });
+            btn.title = txt;
+            btn.setAttribute('aria-label', txt);
+        };
+
+        window.minimizarPanelPlaneo = function() {
+            if (panel.classList.contains('retraido')) return;
+            panel.classList.add('minimizado');
+            actualizarBtn();
+        };
+        window.maximizarPanelPlaneo = function() {
+            panel.classList.remove('minimizado');
+            actualizarBtn();
+        };
+
+        // Al retraer o expandir (activar/cerrar modo planeo) se vuelve siempre a maximizado
+        ['retraerOpcionesPlaneo', 'expandirOpcionesPlaneo'].forEach(nombre => {
+            const original = window[nombre];
+            window[nombre] = function() {
+                panel.classList.remove('minimizado');
+                actualizarBtn();
+                return original.apply(this, arguments);
+            };
+        });
+
+        L.DomEvent.on(btn, 'click', function(e) {
+            L.DomEvent.stopPropagation(e);
+            if (panel.classList.contains('minimizado')) window.maximizarPanelPlaneo();
+            else window.minimizarPanelPlaneo();
+        });
+        actualizarBtn();
+    };
+    initMinMaxPlaneo();
+});
+
 // Enganchar listeners una vez el mapa está listo
 document.addEventListener('DOMContentLoaded', () => {
     const initEventosPlaneo = () => {
         if (typeof map !== 'undefined' && map) {
             map.on('click', function(e) {
                 if (modoPlaneoActivo) {
+                    const yaHabiaDespegue = !!origenPlaneoLatLng;
                     ejecutarCalculoConoPlaneo(e.latlng);
+                    // 2.º clic en el mapa (aterrizaje): minimizar el panel
+                    if (yaHabiaDespegue && typeof window.minimizarPanelPlaneo === 'function') {
+                        window.minimizarPanelPlaneo();
+                    }
                 }
             });
             map.on('mousemove', actualizarTooltipCursor);
