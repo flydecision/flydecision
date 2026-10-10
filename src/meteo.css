@@ -4328,6 +4328,14 @@ body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para el
 
 /* 🛑 MODO CÁLCULO PLANEO EN MAPA */
 
+/* En modo planeo: ocultar buscador de despegues, balizas, filtro y botón meteo */
+body:has(#map.cursor-planeo-activo) .leaflet-text-search-container,
+body:has(#map.cursor-planeo-activo) .leaflet-control-infopanel3,
+body:has(#map.cursor-planeo-activo) .leaflet-control-infopanel2,
+body:has(#map.cursor-planeo-activo) #btn-filtros-mapa {
+    display: none !important;
+}
+
 .leaflet-control-planeo a {
     display: flex !important;
     align-items: center;
