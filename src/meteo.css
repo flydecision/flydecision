@@ -4328,6 +4328,22 @@ body.modo-balizas-directo #control-favoritos-mapa-container,
 body.modo-balizas-directo .leaflet-control-guia-mapa,
 body.modo-balizas-directo .leaflet-control-infopanel-planeo,
 body.modo-balizas-directo #infoPanelPlaneo,
+/* Menú inferior: solo queda "Ajustes" */
+body.modo-balizas-directo #nav-home,   /* Tabla */
+body.modo-balizas-directo #nav-map,    /* Mapa */
+/* Dentro de Ajustes */
+body.modo-balizas-directo #modo-de-la-aplicacion,
+body.modo-balizas-directo button[onclick^="activarEdicionFavoritos"],  /* Editar favoritos */
+body.modo-balizas-directo #limites-de-viento-y-racha,
+body.modo-balizas-directo #datos-meteorologicos-opcionales,
+body.modo-balizas-directo #otras-opciones,
+body.modo-balizas-directo #actualizaciones-modelos-meteo,
+/* Enlace "Guías" (y su separador "|") */
+body.modo-balizas-directo a[onclick^="abrirCentroGuias"],
+body.modo-balizas-directo a[onclick^="abrirCentroGuias"] + .separador,
+/* Fila "Recordar el estado del filtro horario" (el filtro meteo está oculto) */
+body.modo-balizas-directo .linea-con-bt-info:has(#chkAbrirMapaInicio),
+body.modo-balizas-directo .linea-con-bt-info:has(#chkRecordarEstadoFiltroHorario),
 body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para elementos sin ID */
     display: none !important;
 }
