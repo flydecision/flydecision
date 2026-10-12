@@ -803,7 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Planeig",
-      "popupPlaneoHazClic": "Fes clic al punt d'enlairament",
+      "popupPlaneoHazClicDespegue": "Selecciona el punt d'enlairament",
+      "popupPlaneoHazClicAterrizaje": "Selecciona el punt d'aterratge",
       "popupPlaneoFueraZona": "Aquest punt està fora de la zona de càlcul",
       "cotaDespegue": "Altitud d'enlairament: ",
       "alturaExtraDespegue": "Altura extra: ",

@@ -803,7 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Planeamendu",
-      "popupPlaneoHazClic": "Egin klik aireratze-puntuan",
+      "popupPlaneoHazClicDespegue": "Hautatu aireratze-puntua",
+      "popupPlaneoHazClicAterrizaje": "Hautatu lurreratze-puntua",
       "popupPlaneoFueraZona": "Puntu hau kalkulu-eremutik kanpo dago",
       "cotaDespegue": "Aireratze-altitudea: ",
       "alturaExtraDespegue": "Altuera gehigarria: ",

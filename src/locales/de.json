@@ -803,7 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Gleitzahl",
-      "popupPlaneoHazClic": "Klicken Sie auf den Startplatz",
+      "popupPlaneoHazClicDespegue": "Wähle den Startplatz aus",
+      "popupPlaneoHazClicAterrizaje": "Wähle den Landeplatz aus",
       "popupPlaneoFueraZona": "Dieser Punkt liegt außerhalb des Berechnungsgebiets",
       "cotaDespegue": "Startplatzhöhe: ",
       "alturaExtraDespegue": "Zusätzliche Höhe: ",

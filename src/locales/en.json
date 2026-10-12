@@ -803,7 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Glide",
-      "popupPlaneoHazClic": "Click on the take-off point",
+      "popupPlaneoHazClicDespegue": "Select the take-off point",
+      "popupPlaneoHazClicAterrizaje": "Select the landing point",
       "popupPlaneoFueraZona": "This point is outside the calculation zone",
       "cotaDespegue": "Take-off altitude: ",
       "alturaExtraDespegue": "Extra height: ",

@@ -802,7 +802,8 @@
     },
     "planeo": {
       "titlePlaneo": "Planeio",
-      "popupPlaneoHazClic": "Clique no ponto de descolagem",
+      "popupPlaneoHazClicDespegue": "Selecione o ponto de descolagem",
+      "popupPlaneoHazClicAterrizaje": "Selecione o ponto de aterragem",
       "popupPlaneoFueraZona": "Este ponto está fora da zona de cálculo",
       "cotaDespegue": "Altitude de descolagem: ",
       "alturaExtraDespegue": "Altura extra: ",
