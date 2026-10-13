@@ -805,8 +805,8 @@
 
     "planeo": {
       "titlePlaneo": "Planeo",
-      "popupPlaneoHazClicDespegue": "📖 Selecciona un punto de despegue 🪂",
-      "popupPlaneoHazClicAterrizaje": "📖 Selecciona un punto de aterrizaje 🎯",
+      "popupPlaneoHazClicDespegue": "📖 Selecciona despegue 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Selecciona aterrizaje 🎯",
       "popupPlaneoFueraZona": "Este punto está fuera de zona de cálculo",
       "cotaDespegue": "Altitud despegue: ",
       "alturaExtraDespegue": "Altura extra: ",

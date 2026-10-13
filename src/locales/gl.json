@@ -803,8 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Planeo",
-      "popupPlaneoHazClicDespegue": "📖 Selecciona un punto de engalaxe 🪂",
-      "popupPlaneoHazClicAterrizaje": "📖 Selecciona un punto de aterraxe 🎯",
+      "popupPlaneoHazClicDespegue": "📖 Selecciona engalaxe 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Selecciona aterraxe 🎯",
       "popupPlaneoFueraZona": "Este punto está fóra da zona de cálculo",
       "cotaDespegue": "Altitude de engalaxe: ",
       "alturaExtraDespegue": "Altura extra: ",

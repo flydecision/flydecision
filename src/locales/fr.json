@@ -803,8 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Finesse",
-      "popupPlaneoHazClicDespegue": "📖 Sélectionnez un point de décollage 🪂",
-      "popupPlaneoHazClicAterrizaje": "📖 Sélectionnez un point d'atterrissage 🎯",
+      "popupPlaneoHazClicDespegue": "📖 Sélectionnez décollage 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Sélectionnez atterrissage 🎯",
       "popupPlaneoFueraZona": "Ce point est en dehors de la zone de calcul",
       "cotaDespegue": "Altitude de décollage : ",
       "alturaExtraDespegue": "Hauteur supplémentaire : ",

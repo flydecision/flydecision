@@ -803,8 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Planeamendu",
-      "popupPlaneoHazClicDespegue": "📖 Hautatu aireratze-puntu bat 🪂",
-      "popupPlaneoHazClicAterrizaje": "📖 Hautatu lurreratze-puntu bat 🎯",
+      "popupPlaneoHazClicDespegue": "📖 Hautatu aireratze 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Hautatu lurreratze 🎯",
       "popupPlaneoFueraZona": "Puntu hau kalkulu-eremutik kanpo dago",
       "cotaDespegue": "Aireratze-altitudea: ",
       "alturaExtraDespegue": "Altuera gehigarria: ",

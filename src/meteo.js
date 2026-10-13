@@ -10440,14 +10440,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 const status = await Capacitor.Plugins.Network.getStatus();
                 if (status.connected) {
                     console.error("🌐 El WebView tiene la red colgada. Forzando reinicio de la app...");
-                    // Mostramos un mensaje sutil y recargamos
-                    if (typeof GestorMensajes !== 'undefined') {
-                        GestorMensajes.mostrar({
-                            tipo: 'no-modal', posicion: 'centro',
-                            htmlContenido: `<p style="text-align:center; margin:0;">Sincronizando red...</p>`,
-                            botones: []
-                        });
-                    }
                     setTimeout(() => window.location.reload(), 800);
                 }
             }
