@@ -16885,7 +16885,7 @@ function inicializarMapaLeaflet() {
             intervalo: null,
             umbralAmarilloMin: 60,
             umbralRojoMin: 90,
-            urlWeb: (id) => `https://www.larioja.org/agricultura/es/informacion-agroclimatica/red-estaciones`
+            urlWeb: (id) => `https://www.larioja.org/agricultura/es/informacion-agroclimatica/red-estaciones/detalle-estacion?homepage=${id}`
         },
         'lariojasos': {
             id: 'lariojasos',
