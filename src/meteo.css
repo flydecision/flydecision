@@ -109,6 +109,10 @@ body.modo-simple .solo-modo-avanzado {
     display: none !important;
 }
 
+body.modo-simple #infoPanelPlaneo {
+    display: none !important;
+}
+
 /* 🔴 Mensaje "Esperando conexión..."  -------------------------------- */ 
 
 .offline-badge {
@@ -2615,6 +2619,19 @@ body.modo-edicion-tabla #nav-distance {
     overflow-y: auto !important;
     max-height: 45vh !important; /* Ocupará como máximo casi media pantalla */
     padding-right: 5px !important;
+
+    /* Sombras que indican "hay más texto": arriba al haber bajado, abajo mientras quede por leer.
+       Mismo truco que .div-configuracion (Ajustes). El color de las capas "local" debe ser
+       el del fondo del popover (#fde047). */
+    background:
+        linear-gradient(#fde047 30%, rgba(253, 224, 71, 0)) local,
+        linear-gradient(rgba(253, 224, 71, 0), #fde047 70%) local,
+        linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0)) scroll,
+        linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)) scroll,
+        #fde047 !important;
+    background-size: 100% 40px, 100% 40px, 100% 24px, 100% 24px !important;
+    background-position: 0 0, 0 100%, 0 0, 0 100% !important;
+    background-repeat: no-repeat !important;
 }
 
 /* 4. BOTONES "SIGUIENTE" / "CERRAR" (Siempre visibles) */
@@ -3295,7 +3312,7 @@ details.config-accordion .accordion-content {
     box-sizing: border-box;
 }
 #infoPanelPlaneo:not(.retraido):not(.minimizado) { width: 212px !important; }  /* cabe título completo + 2 botones */
-#infoPanelPlaneo.minimizado:not(.retraido)       { width: 143px !important; }  /* una fila + línea de pista */
+#infoPanelPlaneo.minimizado:not(.retraido)       { width: 240px !important; }  /* una fila + línea de pista */
 
 /* Cuerpo que se pliega despacio */
 #planeo-cuerpo {
@@ -3333,7 +3350,7 @@ details.config-accordion .accordion-content {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(2px);
     background: rgba(255, 255, 255, 0.9);
-    color: #b3b3b3; /* rojo del icono */
+    color: #9c9c9c; 
 }
 
 #buttonMinMaxPlaneo svg,
@@ -4348,13 +4365,22 @@ body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para el
     display: none !important;
 }
 
-/* 🛑 MODO CÁLCULO PLANEO EN MAPA */
+/* /balizas: la barra solo tiene el botón "Ajustes", así que se estrecha */
+body.modo-balizas-directo nav.bottom-nav.compact-nav {
+    max-width: 95px;
+}
+body.modo-balizas-directo .compact-nav .nav-item {
+    width: 100%; /* el único botón ocupa toda la barra (antes era el 33%) */
+}
+
+/* 🛑 MODO PLANEO EN MAPA */
 
 /* En modo planeo: ocultar buscador de despegues, balizas, filtro y botón meteo */
 body:has(#map.cursor-planeo-activo) .leaflet-text-search-container,
 body:has(#map.cursor-planeo-activo) .leaflet-control-infopanel3,
 body:has(#map.cursor-planeo-activo) .leaflet-control-infopanel2,
-body:has(#map.cursor-planeo-activo) #btn-filtros-mapa {
+body:has(#map.cursor-planeo-activo) #btn-filtros-mapa,
+body:has(#map.cursor-planeo-activo) .leaflet-control-geocoder {
     display: none !important;
 }
 
@@ -4469,12 +4495,35 @@ body:has(#map.cursor-planeo-activo) #btn-filtros-mapa {
     margin-left: 4px;
     pointer-events: none;
     transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+    font-style: italic;
 }
 #infoPanelPlaneo.minimizado #planeo-pista {
     max-height: 60px;
     opacity: 1;
     margin-top: 4px;
     transition-delay: 0.25s;
+}
+
+/* Instrucciones del panel de planeo: la de despegue se desvanece al fijar el despegue
+   y la de aterrizaje entra con un fundido suave */
+#planeo-instrucciones {
+    max-height: 60px;
+    overflow: hidden;
+    transition: opacity 0.25s ease, max-height 0.25s ease, margin 0.25s ease;
+}
+#map.planeo-con-despegue #planeo-instrucciones {
+    opacity: 0;
+    max-height: 0;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+#planeo-instrucciones-aterrizaje {
+    animation: planeoInstruccionEntra 0.3s ease;
+}
+@keyframes planeoInstruccionEntra {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: none; }
 }
 
 /* 🔴🔴 FIN MAPA */

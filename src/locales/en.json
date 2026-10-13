@@ -432,7 +432,7 @@
     },
     "btnPlaneo": {
       "titulo": "Glide calculation",
-      "descripcion": "Calculates which areas you can reach by gliding from a take-off location.<br><br>• Click on any point on the map to place the take-off (🪂).<br>• The color gradient overlaid on the map visually indicates the glide required to reach there.<br>• By moving the mouse you will see the flight path, which attempts to automatically avoid ridges with an intermediate turn point if the terrain allows it.<br>• The small box following the cursor will show you all the data for that point (arrival height, required glide,...).<br>• The <i>Glide calculation</i> panel allows you to see or change more information."
+      "descripcion": "Calculates which areas you can reach with a fixed glide from a take-off location.<br><br>It shows an overlaid color gradient to indicate the glide required to reach each area and complete glide information between the origin and destination points you select (arrival height, required glide, elevation difference,...).<br><br>The path attempts to avoid ridges with an intermediate turn point if the terrain allows it.<br><br>If the destination is unreachable, the data is shown in red and an ✕ on the path if it collides with any terrain.<br><br>In <i>Settings > Other options > Glider glide ratio</i> you can configure the glide value you want for these calculations."
     },
     "btnGps": {
       "titulo": "My Location",
@@ -803,7 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Glide",
-      "popupPlaneoHazClic": "Click on the take-off point",
+      "popupPlaneoHazClicDespegue": "📖 Select a take-off 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Select a landing 🎯",
       "popupPlaneoFueraZona": "This point is outside the calculation zone",
       "cotaDespegue": "Take-off altitude: ",
       "alturaExtraDespegue": "Extra height: ",
@@ -817,7 +818,7 @@
       "planeo": "Glide",
       "planeoVela": "Glider glide",
       "transparencia": "Transparency:",
-      "pistaMoverDespegue": "Hold down 👈 to move the 🪂",
+      "pistaMoverDespegue": "📖 Hold down 👈 the point to move the 🪂",
       "minimizar": "Minimize",
       "maximizar": "Maximize"
     }

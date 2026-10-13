@@ -10440,14 +10440,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 const status = await Capacitor.Plugins.Network.getStatus();
                 if (status.connected) {
                     console.error("🌐 El WebView tiene la red colgada. Forzando reinicio de la app...");
-                    // Mostramos un mensaje sutil y recargamos
-                    if (typeof GestorMensajes !== 'undefined') {
-                        GestorMensajes.mostrar({
-                            tipo: 'no-modal', posicion: 'centro',
-                            htmlContenido: `<p style="text-align:center; margin:0;">Sincronizando red...</p>`,
-                            botones: []
-                        });
-                    }
                     setTimeout(() => window.location.reload(), 800);
                 }
             }
@@ -12692,6 +12684,13 @@ window.evaluarEstadoNuevosUsuarios = function() {
     
     const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") === "true";
     const enEdicion = window.venirDeEdicionActiva === true; 
+
+    // /balizas: sin onboarding ni botón "Configurar la aplicación"; siempre el menú inferior (solo "Ajustes")
+    if (window.esModoBalizasDirecto === true) {
+        if (navMenu) navMenu.style.display = 'flex';
+        if (btnConfigMapa) btnConfigMapa.style.display = 'none';
+        return;
+    }
 
     if (!configHecha) {
         if (enEdicion && window.onboardingMapaActivo) {
@@ -16886,7 +16885,7 @@ function inicializarMapaLeaflet() {
             intervalo: null,
             umbralAmarilloMin: 60,
             umbralRojoMin: 90,
-            urlWeb: (id) => `https://www.larioja.org/agricultura/es/informacion-agroclimatica/red-estaciones`
+            urlWeb: (id) => `https://www.larioja.org/agricultura/es/informacion-agroclimatica/red-estaciones/detalle-estacion?homepage=${id}`
         },
         'lariojasos': {
             id: 'lariojasos',
@@ -19216,6 +19215,15 @@ window.refrescarAterrizajeFijadoPlaneo = function() {
     const r = map.getContainer().getBoundingClientRect();
     actualizarTooltipCursor({ latlng: ll, originalEvent: { clientX: r.left + p.x, clientY: r.top + p.y } }, true);
 };
+// Instrucción "Selecciona un punto de aterrizaje": visible con despegue fijado y aterrizaje aún sin elegir
+window.actualizarInstruccionAterrizajePlaneo = function() {
+    const el = document.getElementById('planeo-instrucciones-aterrizaje');
+    if (!el) return;
+    const mostrar = modoPlaneoActivo && !!origenPlaneoLatLng && !window.aterrizajePlaneoFijadoLatLng;
+    const txt = el.querySelector('i');
+    if (txt) txt.textContent = t('mapa.planeo.popupPlaneoHazClicAterrizaje', { defaultValue: '📖 Selecciona un punto de aterrizaje 👈' });
+    el.style.display = mostrar ? 'block' : 'none';
+};
 function ocultarTooltipCursor() {
     if (window.aterrizajePlaneoFijadoLatLng) return; // aterrizaje fijado: el tooltip se queda
     if (rafCursor) cancelAnimationFrame(rafCursor);
@@ -19244,7 +19252,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.title = txt;
             btn.setAttribute('aria-label', txt);
             const pista = document.getElementById('planeo-pista');
-            if (pista) pista.textContent = t('mapa.planeo.pistaMoverDespegue', { defaultValue: 'Mantén 👈 para mover el 🪂' });
+            if (pista) pista.textContent = t('mapa.planeo.pistaMoverDespegue', { defaultValue: '📖 Mantén pulsado el punto 👈 para mover el 🪂' });
         };
 
         window.minimizarPanelPlaneo = function() {
@@ -19266,6 +19274,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mapEl) mapEl.classList.remove('planeo-con-despegue');
                 window.aterrizajePlaneoFijadoLatLng = null;
                 window.tooltipPlaneoMinimizado = false; // el tooltip siempre empieza maximizado
+                const instAterrizaje = document.getElementById('planeo-instrucciones-aterrizaje');
+                if (instAterrizaje) instAterrizaje.style.display = 'none';
                 actualizarBtn();
                 return original.apply(this, arguments);
             };
@@ -19308,6 +19318,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const fijarDespeguePlaneo = (latlng) => {
                 ejecutarCalculoConoPlaneo(latlng);
                 map.getContainer().classList.add('planeo-con-despegue');
+                window.actualizarInstruccionAterrizajePlaneo();
             };
 
             // Mover el despegue: se suelta el aterrizaje fijado y el panel se maximiza
@@ -19321,6 +19332,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Fijar aterrizaje: tooltip y trayectoria se quedan, el panel se minimiza
             const fijarAterrizajePlaneo = (e) => {
                 window.aterrizajePlaneoFijadoLatLng = e.latlng;
+                window.actualizarInstruccionAterrizajePlaneo();
                 actualizarTooltipCursor(e, true);
                 if (typeof window.minimizarPanelPlaneo === 'function') window.minimizarPanelPlaneo();
                 // al terminar la animación del panel, recolocar el tooltip (el panel cambia de ancho)

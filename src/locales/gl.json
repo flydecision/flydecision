@@ -432,7 +432,7 @@
     },
     "btnPlaneo": {
       "titulo": "Cálculo de planeo",
-      "descripcion": "Calcula a que zonas podes chegar planeando desde un lugar de engalaxe.<br><br>• Fai clic en calquera punto do mapa para situar a engalaxe (🪂).<br>• O gradiente de cores superposto no mapa indica visualmente o planeo necesario para chegar aí.<br>• Ao mover o rato verás a traxectoria de voo, que intenta esquivar cristas automaticamente cun punto de xiro intermedio se o relevo o permite.<br>• O cadradiño que segue ao cursor indicarache todos os datos para ese punto (altura á que chegarías, planeo necesario,...).<br>• O panel de <i>Cálculo de planeo</i> permíteche ver ou cambiar máis información."
+      "descripcion": "Calcula a que zonas podes chegar cun planeo fixo desde un lugar de engalaxe.<br><br>Mostra un gradiente de cores superposto para indicar o planeo necesario para chegar a cada zona e información completa do planeo entre os puntos de orixe e destino que selecciones (altura de chegada, planeo necesario, desnivel,...).<br><br>A traxectoria intenta esquivar cristas cun punto de xiro intermedio se o relevo o permite.<br><br>Se o destino é inalcanzable, os datos móstranse en vermello e unha ✕ na traxectoria se choca cun relevo.<br><br>En <i>Axustes > Outras opcións > Planeo da vela</i> podes configurar o valor de planeo que desexes para estes cálculos."
     },
     "btnGps": {
       "titulo": "A Miña Localización",
@@ -803,7 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Planeo",
-      "popupPlaneoHazClic": "Fai clic no punto de engalaxe",
+      "popupPlaneoHazClicDespegue": "📖 Selecciona engalaxe 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Selecciona aterraxe 🎯",
       "popupPlaneoFueraZona": "Este punto está fóra da zona de cálculo",
       "cotaDespegue": "Altitude de engalaxe: ",
       "alturaExtraDespegue": "Altura extra: ",
@@ -817,7 +818,7 @@
       "planeo": "Planeo",
       "planeoVela": "Planeo vela",
       "transparencia": "Transparencia:",
-      "pistaMoverDespegue": "Mantén o 👈 para mover o 🪂",
+      "pistaMoverDespegue": "📖 Mantén premido 👈 o punto para mover o 🪂",
       "minimizar": "Minimizar",
       "maximizar": "Maximizar"
     }

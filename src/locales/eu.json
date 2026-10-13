@@ -432,7 +432,7 @@
     },
     "btnPlaneo": {
       "titulo": "Planeamendu-kalkulua",
-      "descripcion": "Kalkulatu zer eremutara irits zaitezkeen aireratze-leku batetik planeatuz.<br><br>• Egin klik mapako edozein puntutan aireratzea (🪂) kokatzeko.<br>• Mapan gainjarritako kolore-gradienteak bisualki adierazten du hara iristeko beharrezkoa den planeamendua.<br>• Sagua mugitzean hegaldi-ibilbidea ikusiko duzu, gandorrak automatikoki saihesten saiatzen dena tarteko biraketa-puntu batekin, erliebeak ahalbidetzen badu.<br>• Kurtsorea jarraitzen duen laukitxoak puntu horretarako datu guztiak adieraziko dizkizu (iritsiko zinatekeen altuera, beharrezko planeamendua,...).<br>• <i>Planeamendu-kalkulua</i> panelak informazio gehiago ikusteko edo aldatzeko aukera ematen dizu."
+      "descripcion": "Kalkulatu zer eremutara irits zaitezkeen aireratze-leku batetik planeamendu finko batekin.<br><br>Gainjarritako kolore-gradiente bat erakusten du eremu bakoitzera iristeko beharrezkoa den planeamendua adierazteko, eta planeamenduari buruzko informazio osoa hautatzen dituzun jatorri- eta helmuga-puntuen artean (iritsiera-altuera, beharrezko planeamendua, desnibela,...).<br><br>Ibilbidea gandorrak saihesten saiatzen da tarteko biraketa-puntu batekin, erliebeak ahalbidetzen badu.<br><br>Helmuga eskuraezina bada, datuak gorriz erakusten dira, eta ✕ bat ibilbidean erlieberen batekin talka egiten badu.<br><br><i>Ezarpenak > Beste aukera batzuk > Belaren planeamendua</i> atalean kalkulu hauetarako nahi duzun planeamendu-balioa konfigura dezakezu."
     },
     "btnGps": {
       "titulo": "Nire kokapena",
@@ -803,7 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Planeamendu",
-      "popupPlaneoHazClic": "Egin klik aireratze-puntuan",
+      "popupPlaneoHazClicDespegue": "📖 Hautatu aireratze 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Hautatu lurreratze 🎯",
       "popupPlaneoFueraZona": "Puntu hau kalkulu-eremutik kanpo dago",
       "cotaDespegue": "Aireratze-altitudea: ",
       "alturaExtraDespegue": "Altuera gehigarria: ",
@@ -817,7 +818,7 @@
       "planeo": "Planeamendua",
       "planeoVela": "Belaren planeamendua",
       "transparencia": "Gardentasuna:",
-      "pistaMoverDespegue": "Eduki sakatuta 👈 🪂 mugitzeko",
+      "pistaMoverDespegue": "📖 Eduki sakatuta 👈 puntua 🪂 mugitzeko",
       "minimizar": "Minimizatu",
       "maximizar": "Maximizatu"
     }

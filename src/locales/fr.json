@@ -432,7 +432,7 @@
     },
     "btnPlaneo": {
       "titulo": "Calcul de finesse",
-      "descripcion": "Calcule les zones que vous pouvez atteindre en planant depuis un lieu de décollage.<br><br>• Cliquez sur n'importe quel point de la carte pour situer le décollage (🪂).<br>• Le dégradé de couleurs superposé sur la carte indique visuellement la finesse requise pour y arriver.<br>• En déplaçant la souris, vous verrez la trajectoire de vol, qui tente d'esquiver automatiquement les crêtes avec un point de contournement intermédiaire si le relief le permet.<br>• Le petit carré qui suit le curseur vous indiquera toutes les données pour ce point (hauteur d'arrivée, finesse requise,...).<br>• Le panneau <i>Calcul de finesse</i> vous permet de voir ou de modifier plus d'informations."
+      "descripcion": "Calcule les zones que vous pouvez atteindre avec une finesse fixe depuis un lieu de décollage.<br><br>Affiche un dégradé de couleurs superposé pour indiquer la finesse requise pour atteindre chaque zone et des informations complètes sur le plané entre les points d'origine et de destination que vous sélectionnez (hauteur d'arrivée, finesse requise, dénivelé,...).<br><br>La trajectoire tente d'esquiver les crêtes avec un point de contournement intermédiaire si le relief le permet.<br><br>Si la destination est inatteignable, les données s'affichent en rouge et un ✕ sur la trajectoire si elle entre en collision avec un relief.<br><br>Dans <i>Paramètres > Autres options > Finesse de la voile</i>, vous pouvez configurer la valeur de finesse que vous souhaitez pour ces calculs."
     },
     "btnGps": {
       "titulo": "Ma position",
@@ -803,7 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Finesse",
-      "popupPlaneoHazClic": "Cliquez sur le point de décollage",
+      "popupPlaneoHazClicDespegue": "📖 Sélectionnez décollage 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Sélectionnez atterrissage 🎯",
       "popupPlaneoFueraZona": "Ce point est en dehors de la zone de calcul",
       "cotaDespegue": "Altitude de décollage : ",
       "alturaExtraDespegue": "Hauteur supplémentaire : ",
@@ -817,7 +818,7 @@
       "planeo": "Finesse",
       "planeoVela": "Finesse voile",
       "transparencia": "Transparence :",
-      "pistaMoverDespegue": "Maintenez le 👈 pour déplacer le 🪂",
+      "pistaMoverDespegue": "📖 Maintenez le point appuyé 👈 pour déplacer le 🪂",
       "minimizar": "Minimiser",
       "maximizar": "Maximiser"
     }
