@@ -109,6 +109,10 @@ body.modo-simple .solo-modo-avanzado {
     display: none !important;
 }
 
+body.modo-simple #infoPanelPlaneo {
+    display: none !important;
+}
+
 /* 🔴 Mensaje "Esperando conexión..."  -------------------------------- */ 
 
 .offline-badge {
