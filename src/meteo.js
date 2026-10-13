@@ -12693,6 +12693,13 @@ window.evaluarEstadoNuevosUsuarios = function() {
     const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") === "true";
     const enEdicion = window.venirDeEdicionActiva === true; 
 
+    // /balizas: sin onboarding ni botón "Configurar la aplicación"; siempre el menú inferior (solo "Ajustes")
+    if (window.esModoBalizasDirecto === true) {
+        if (navMenu) navMenu.style.display = 'flex';
+        if (btnConfigMapa) btnConfigMapa.style.display = 'none';
+        return;
+    }
+
     if (!configHecha) {
         if (enEdicion && window.onboardingMapaActivo) {
             // 🗺️ CASO 1: Está haciendo el onboarding expresamente desde el MAPA

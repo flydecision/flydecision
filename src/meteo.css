@@ -4352,6 +4352,14 @@ body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para el
     display: none !important;
 }
 
+/* /balizas: la barra solo tiene el botón "Ajustes", así que se estrecha */
+body.modo-balizas-directo nav.bottom-nav.compact-nav {
+    max-width: 95px;
+}
+body.modo-balizas-directo .compact-nav .nav-item {
+    width: 100%; /* el único botón ocupa toda la barra (antes era el 33%) */
+}
+
 /* 🛑 MODO CÁLCULO PLANEO EN MAPA */
 
 /* En modo planeo: ocultar buscador de despegues, balizas, filtro y botón meteo */
