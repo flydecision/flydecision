@@ -6432,6 +6432,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
 				th.textContent = hora;	
 
+				th.dataset.ts = d.getTime(); // instante (ms) de inicio de esta columna, para la línea "ahora"
+
 				const esNoche = esCeldaNoche(d); // Reutilizamos la función de chequeo de noche
 
 				// 2. Marcar celdas de noche (para ocultar por CSS o poner fondo gris si es la segunda fila)
@@ -19396,4 +19398,71 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     initEventosPlaneo();
+});
+
+// 🕒 LÍNEA "AHORA" EN LA TABLA DE PRONÓSTICO (módulo aislado)
+document.addEventListener('DOMContentLoaded', () => {
+    const tabla = document.getElementById('tabla');
+    const wrapper = document.querySelector('.tabla-wrapper');
+    if (!tabla || !wrapper) return;
+
+    const linea = document.createElement('div');
+    linea.id = 'linea-ahora-tabla';
+    wrapper.appendChild(linea);
+
+    let xContenido = null; // X de la línea en coordenadas del contenido del wrapper (null = sin línea)
+
+    // La línea desaparece cuando queda por debajo de las columnas fijas (Despegue/Meteo)
+    function visibilidadSegunScroll() {
+        if (xContenido === null) { linea.style.display = 'none'; return; }
+        const fija = tabla.querySelector('thead th.columna-meteo');
+        const limite = fija
+            ? fija.getBoundingClientRect().right - wrapper.getBoundingClientRect().left - wrapper.clientLeft
+            : 0;
+        linea.style.display = (xContenido - wrapper.scrollLeft > limite) ? 'block' : 'none';
+    }
+
+    function pintar() {
+        const filaHoras = tabla.tHead && tabla.tHead.rows[1];
+        const ths = filaHoras ? filaHoras.querySelectorAll('th[data-ts]') : [];
+        const ahora = Date.now();
+
+        let th = null;
+        for (const c of ths) {
+            const ts = Number(c.dataset.ts);
+            if (ahora >= ts && ahora < ts + 3600000) { th = c; break; }
+        }
+        // Sin columna para la hora actual (fuera del rango del slider, noche oculta...): sin línea
+        if (!th || th.offsetWidth === 0) { xContenido = null; visibilidadSegunScroll(); return; }
+
+        const wr = wrapper.getBoundingClientRect();
+        const rTh = th.getBoundingClientRect();
+        const fraccion = (ahora - Number(th.dataset.ts)) / 3600000; // minutos dentro de la hora
+
+        xContenido = (rTh.left - wr.left - wrapper.clientLeft) + wrapper.scrollLeft + fraccion * rTh.width;
+
+        const rTabla = tabla.getBoundingClientRect();
+        const topTabla = rTabla.top - wr.top - wrapper.clientTop + wrapper.scrollTop;
+        const altoDias = tabla.tHead.rows[0].getBoundingClientRect().height;
+
+        linea.style.left = xContenido + 'px';
+        linea.style.top = (topTabla + altoDias) + 'px';                 // empieza en la fila de horas
+        linea.style.height = Math.max(0, rTabla.height - altoDias) + 'px'; // hasta el borde inferior
+        visibilidadSegunScroll();
+    }
+
+    let pendiente = false;
+    const programar = () => {
+        if (pendiente) return;
+        pendiente = true;
+        requestAnimationFrame(() => { pendiente = false; pintar(); });
+    };
+
+    new MutationObserver(programar).observe(tabla, { childList: true }); // tabla reconstruida
+    if (typeof ResizeObserver === 'function') new ResizeObserver(programar).observe(tabla); // cambios de tamaño
+    window.addEventListener('resize', programar);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) programar(); });
+    wrapper.addEventListener('scroll', visibilidadSegunScroll, { passive: true });
+    setInterval(programar, 60000); // se desplaza dentro de la hora cada minuto
+    programar();
 });

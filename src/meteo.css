@@ -4943,3 +4943,16 @@ tr.ecmwf-oculto-temp {
 .tabla-minutely15 thead tr:last-child th {
     border-bottom: 2px solid #000000 !important;
 }
+
+/* 🕒 Línea "ahora" en la tabla de pronóstico */
+.tabla-wrapper { position: relative; } /* para que la línea absoluta se desplace con la tabla */
+
+#linea-ahora-tabla {
+    position: absolute;
+    display: none;
+    width: 0;
+    margin-left: -1px;
+    border-left: 1.5px dashed rgba(220, 38, 38, 0.7);
+    pointer-events: none;
+    z-index: 22; /* sobre la fila de horas (20), bajo la de días (25) y las columnas fijas visibles */
+}
