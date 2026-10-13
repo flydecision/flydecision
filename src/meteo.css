@@ -2619,6 +2619,19 @@ body.modo-edicion-tabla #nav-distance {
     overflow-y: auto !important;
     max-height: 45vh !important; /* Ocupará como máximo casi media pantalla */
     padding-right: 5px !important;
+
+    /* Sombras que indican "hay más texto": arriba al haber bajado, abajo mientras quede por leer.
+       Mismo truco que .div-configuracion (Ajustes). El color de las capas "local" debe ser
+       el del fondo del popover (#fde047). */
+    background:
+        linear-gradient(#fde047 30%, rgba(253, 224, 71, 0)) local,
+        linear-gradient(rgba(253, 224, 71, 0), #fde047 70%) local,
+        linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0)) scroll,
+        linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)) scroll,
+        #fde047 !important;
+    background-size: 100% 40px, 100% 40px, 100% 24px, 100% 24px !important;
+    background-position: 0 0, 0 100%, 0 0, 0 100% !important;
+    background-repeat: no-repeat !important;
 }
 
 /* 4. BOTONES "SIGUIENTE" / "CERRAR" (Siempre visibles) */
