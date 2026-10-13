@@ -432,7 +432,7 @@
     },
     "btnPlaneo": {
       "titulo": "Càlcul de planeig",
-      "descripcion": "Calcula a quines zones pots arribar planejant des d'un lloc d'enlairament.<br><br>• Fes clic a qualsevol punt del mapa per situar l'enlairament (🪂).<br>• El gradient de colors superposat al mapa indica visualment el planeig necessari per arribar-hi.<br>• En moure el ratolí veuràs la trajectòria de vol, que intenta esquivar crestes automàticament amb un punt de gir intermedi si el relleu ho permet.<br>• El quadret que segueix el cursor t'indicarà totes les dades per a aquest punt (altura a la qual arribaries, planeig necessari,...).<br>• El panell de <i>Càlcul de planeig</i> et permet veure o canviar més informació."
+      "descripcion": "Calcula a quines zones pots arribar amb un planeig fix des d'un lloc d'enlairament.<br><br>Mostra un gradient de colors superposat per indicar el planeig necessari per arribar a cada zona i informació completa del planeig entre els punts d'origen i destinació que seleccionis (altura d'arribada, planeig necessari, desnivell,...).<br><br>La trajectòria intenta esquivar crestes amb un punt de gir intermedi si el relleu ho permet.<br><br>Si la destinació és inabastable, les dades es mostren en vermell i una ✕ a la trajectòria si xoca amb algun relleu.<br><br>A <i>Ajustos > Altres opcions > Planeig de la vela</i> pots configurar el valor de planeig que desitgis per a aquests càlculs."
     },
     "btnGps": {
       "titulo": "La Meva Ubicació",
@@ -803,8 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Planeig",
-      "popupPlaneoHazClicDespegue": "Selecciona el punt d'enlairament",
-      "popupPlaneoHazClicAterrizaje": "Selecciona el punt d'aterratge",
+      "popupPlaneoHazClicDespegue": "📖 Selecciona un punt d'enlairament 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Selecciona un punt d'aterratge 🎯",
       "popupPlaneoFueraZona": "Aquest punt està fora de la zona de càlcul",
       "cotaDespegue": "Altitud d'enlairament: ",
       "alturaExtraDespegue": "Altura extra: ",
@@ -818,7 +818,7 @@
       "planeo": "Planeig",
       "planeoVela": "Planeig vela",
       "transparencia": "Transparència:",
-      "pistaMoverDespegue": "Mantingues el 👈 per moure el 🪂",
+      "pistaMoverDespegue": "📖 Mantingues premut 👈 el punt per moure el 🪂",
       "minimizar": "Minimitzar",
       "maximizar": "Maximitzar"
     }

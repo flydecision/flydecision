@@ -432,7 +432,7 @@
     },
     "btnPlaneo": {
       "titulo": "Gleitberechnung",
-      "descripcion": "Berechnet, welche Gebiete Sie im Gleitflug von einem Startplatz aus erreichen können.<br><br>• Klicken Sie auf einen beliebigen Punkt auf der Karte, um den Startplatz (🪂) festzulegen.<br>• Der auf der Karte überlagerte Farbverlauf zeigt visuell die erforderliche Gleitzahl an, um dorthin zu gelangen.<br>• Wenn Sie die Maus bewegen, sehen Sie die Flugbahn, die versucht, Kämme automatisch mit einem dazwischenliegenden Wendepunkt zu umfliegen, wenn das Gelände dies zulässt.<br>• Das kleine Kästchen, das dem Mauszeiger folgt, zeigt Ihnen alle Daten für diesen Punkt an (Ankunftshöhe, erforderliche Gleitzahl,...).<br>• Das Panel <i>Gleitberechnung</i> ermöglicht es Ihnen, weitere Informationen anzuzeigen oder zu ändern."
+      "descripcion": "Berechnet, welche Gebiete Sie mit einem festen Gleitflug von einem Startplatz aus erreichen können.<br><br>Zeigt einen überlagerten Farbverlauf an, um die erforderliche Gleitzahl zum Erreichen jedes Gebiets anzugeben, sowie vollständige Gleitfluginformationen zwischen den von Ihnen ausgewählten Start- und Zielpunkten (Ankunftshöhe, erforderliche Gleitzahl, Höhenunterschied,...).<br><br>Die Flugbahn versucht, Kämme mit einem dazwischenliegenden Wendepunkt zu umfliegen, wenn das Gelände dies zulässt.<br><br>Wenn das Ziel unerreichbar ist, werden die Daten in Rot und ein ✕ auf der Flugbahn angezeigt, wenn sie mit dem Gelände kollidiert.<br><br>Unter <i>Einstellungen > Weitere Optionen > Gleitzahl des Schirms</i> können Sie den gewünschten Gleitwert für diese Berechnungen konfigurieren."
     },
     "btnGps": {
       "titulo": "Mein Standort",
@@ -803,8 +803,8 @@
     },
     "planeo": {
       "titlePlaneo": "Gleitzahl",
-      "popupPlaneoHazClicDespegue": "Wähle den Startplatz aus",
-      "popupPlaneoHazClicAterrizaje": "Wähle den Landeplatz aus",
+      "popupPlaneoHazClicDespegue": "📖 Wähle einen Startplatz aus 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Wähle einen Landeplatz aus 🎯",
       "popupPlaneoFueraZona": "Dieser Punkt liegt außerhalb des Berechnungsgebiets",
       "cotaDespegue": "Startplatzhöhe: ",
       "alturaExtraDespegue": "Zusätzliche Höhe: ",
@@ -818,7 +818,7 @@
       "planeo": "Gleitzahl",
       "planeoVela": "Gleitzahl Schirms",
       "transparencia": "Transparenz:",
-      "pistaMoverDespegue": "Halte 👈 gedrückt, um 🪂 zu bewegen",
+      "pistaMoverDespegue": "📖 Halte den Punkt 👈 gedrückt, um 🪂 zu bewegen",
       "minimizar": "Minimieren",
       "maximizar": "Maximieren"
     }

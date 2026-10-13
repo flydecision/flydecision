@@ -432,7 +432,7 @@
     },
     "btnPlaneo": {
       "titulo": "Cálculo de planeio",
-      "descripcion": "Calcula a que zonas pode chegar a planar a partir de um local de descolagem.<br><br>• Clique em qualquer ponto do mapa para situar a descolagem (🪂).<br>• O gradiente de cores sobreposto no mapa indica visualmente o planeio necessário para lá chegar.<br>• Ao mover o rato verá a trajetória de voo, que tenta esquivar cristas automaticamente com um ponto de viragem intermédio se o relevo o permitir.<br>• O quadradinho que segue o cursor indicar-lhe-á todos os dados para esse ponto (altura a que chegaria, planeio necessário,...).<br>• O painel de <i>Cálculo de planeio</i> permite-lhe ver ou alterar mais informação."
+      "descripcion": "Calcula a que zonas pode chegar com um planeio fixo a partir de um local de descolagem.<br><br>Mostra um gradiente de cores sobreposto para indicar o planeio necessário para chegar a cada zona e informação completa do planeio entre os pontos de origem e destino que selecionar (altura de chegada, planeio necessário, desnível,...).<br><br>A trajetória tenta esquivar cristas com um ponto de viragem intermédio se o relevo o permitir.<br><br>Se o destino for inalcançável, os dados são mostrados a vermelho e um ✕ na trajetória se chocar com algum relevo.<br><br>Em <i>Definições > Outras opções > Planeio da vela</i> pode configurar o valor de planeio que desejar para estes cálculos."
     },
     "btnGps": {
       "titulo": "A Minha Localização",
@@ -802,8 +802,8 @@
     },
     "planeo": {
       "titlePlaneo": "Planeio",
-      "popupPlaneoHazClicDespegue": "Selecione o ponto de descolagem",
-      "popupPlaneoHazClicAterrizaje": "Selecione o ponto de aterragem",
+      "popupPlaneoHazClicDespegue": "📖 Selecione um ponto de descolagem 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Selecione um ponto de aterragem 🎯",
       "popupPlaneoFueraZona": "Este ponto está fora da zona de cálculo",
       "cotaDespegue": "Altitude de descolagem: ",
       "alturaExtraDespegue": "Altura extra: ",
@@ -817,7 +817,7 @@
       "planeo": "Planeio",
       "planeoVela": "Planeio vela",
       "transparencia": "Transparência:",
-      "pistaMoverDespegue": "Mantenha o 👈 para mover o 🪂",
+      "pistaMoverDespegue": "📖 Mantenha premido 👈 o ponto para mover o 🪂",
       "minimizar": "Minimizar",
       "maximizar": "Maximizar"
     }

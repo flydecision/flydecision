@@ -432,7 +432,7 @@
       },
       "btnPlaneo": {
         "titulo": "Cálculo de planeo",
-        "descripcion": "Calcula a qué zonas puedes llegar planeando desde un lugar de despegue.<br><br>• Haz clic en cualquier punto del mapa para situar el despegue (🪂).<br>• El gradiente de colores superpuesto en el mapa indica visualmente el planeo necesario para llegar ahí.<br>• Al mover el ratón verás la trayectoria de vuelo, que intenta esquivar crestas automáticamente con un punto de giro intermedio si el relieve lo permite.<br>• El cuadrito que sigue al cursor te indicará todos los datos para ese punto (altura a la que llegarías, planeo necesario,...).<br>• El panel de <i>Cálculo de planeo</i> te permite ver o cambiar más información."
+        "descripcion": "Calcula a qué zonas puedes llegar con un planeo fijo desde un lugar de despegue.<br><br>Muestra un gradiente de colores superpuesto para indicar el planeo necesario para llegar a cada zona e información completa del planeo entre los puntos de origen y destino que selecciones (altura de llegada, planeo necesario, desnivel,...).<br><br>La trayectoria intenta esquivar crestas con un punto de giro intermedio si el relieve lo permite.<br><br>Si el destino es inalcanzable, los datos se muestran en rojo y una ✕ en la trayectoria si choca con algún relieve.<br><br>En <i>Ajustes > Otras opciones > Planeo de la vela</i> puedes configurar el valor de planeo que desees para estos cálculos."
       },
       "btnGps": {
         "titulo": "Mi Ubicación",
@@ -805,8 +805,8 @@
 
     "planeo": {
       "titlePlaneo": "Planeo",
-      "popupPlaneoHazClicDespegue": "Selecciona el punto de despegue",
-      "popupPlaneoHazClicAterrizaje": "Selecciona el punto de aterrizaje",
+      "popupPlaneoHazClicDespegue": "📖 Selecciona un punto de despegue 🪂",
+      "popupPlaneoHazClicAterrizaje": "📖 Selecciona un punto de aterrizaje 🎯",
       "popupPlaneoFueraZona": "Este punto está fuera de zona de cálculo",
       "cotaDespegue": "Altitud despegue: ",
       "alturaExtraDespegue": "Altura extra: ",
@@ -820,7 +820,7 @@
       "planeo": "Planeo",
       "planeoVela": "Planeo vela",
       "transparencia": "Transparencia:",
-      "pistaMoverDespegue": "Mantén el 👈 para mover el 🪂",
+      "pistaMoverDespegue": "📖 Mantén pulsado 👈 el punto para mover el 🪂",
       "minimizar": "Minimizar",
       "maximizar": "Maximizar"
     }
