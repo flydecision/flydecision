@@ -654,6 +654,15 @@ function construirTablaMinutely15Html(respuestaObj, idDespegue, aromeGeneralObj)
     }
     theadHtml += '</tr>';
 
+    // Ajuste de límites por despegue
+    const f15 = obtenerFactorAjusteDespegue(idDespegue);
+    const vMin15 = VelocidadMin * f15;
+    const vIdeal15 = VelocidadIdeal * f15;
+    const vMax15 = VelocidadMax * f15;
+    const rMax15 = RachaMax * f15;
+    const vTolSup15 = vMax15 - (vMax15 - vIdeal15) / 3;
+    const rTol15 = rMax15 - (rMax15 - vMax15) / 3;
+
     let tbodyHtml = '';
     filas.forEach(fila => {
         // Detectamos si esta fila necesita borde inferior negro
@@ -676,19 +685,17 @@ function construirTablaMinutely15Html(respuestaObj, idDespegue, aromeGeneralObj)
             } 
             else if (fila.tipo === 'vel') {
                 const velocidad = Math.round(Number(valor));
-                const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
-                if (velocidad < VelocidadMin) clases += ' fondo-naranja';
-                else if (velocidad <= velocidadTolerableSuperior) clases += ' fondo-verde';
-                else if (velocidad < VelocidadMax) clases += ' fondo-naranja';
+                if (velocidad < vMin15) clases += ' fondo-naranja';
+                else if (velocidad <= vTolSup15) clases += ' fondo-verde';
+                else if (velocidad < vMax15) clases += ' fondo-naranja';
                 else clases += ' fondo-rojo';
                 contenidoCelda = velocidad;
             } 
             // LÓGICA PARA GESTIONAR EL COLOR DE LA RACHA
             else if (fila.tipo === 'racha') {
                 const racha = Math.round(Number(valor));
-                const rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3;
-                if (racha < rachaTolerable) clases += ' fondo-verde';
-                else if (racha < RachaMax) clases += ' fondo-naranja';
+                if (racha < rTol15) clases += ' fondo-verde';
+                else if (racha < rMax15) clases += ' fondo-naranja';
                 else clases += ' fondo-rojo';
                 contenidoCelda = racha;
             } 
@@ -7706,7 +7713,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 // 1. REGLA DE USUARIO: ¿Supera TU límite de seguridad ajustado?
                                 if (valAltura >= limiteAbsolutoUsuario) {
                                     claseColor = "fondo-rojo";
-                                    motivo = `Supera el límite calculado para esta altura (${limiteAbsolutoUsuario} km/h)\n(Velocidad máxima configurada: ${VelocidadMax} km/h x Factor ${factorSeguridad})`;
+                                    motivo = `Supera el límite calculado para esta altura (${limiteAbsolutoUsuario} km/h)\n(Velocidad máxima ${factorDespegue !== 1 ? 'ajustada a este despegue' : 'configurada'}: ${Math.round(velMaxDespegue * 10) / 10} km/h x Factor ${factorSeguridad})`;
                                 }
                                 // 2. REGLA FÍSICA: ¿Es viento moderado (<25 km/h)?
                                 // Si no supera tu límite y es menor a 25, asumimos que no hay peligro grave de cizalladura.
@@ -9406,15 +9413,23 @@ window.resetearFiltrosMapaEnVivo = function() {
 // 🟡 AJUSTE DE LÍMITES POR DESPEGUE
 // ---------------------------------------------------------------
 
+let _ajustesLimitesCache = null;
+
 function obtenerAjustesLimitesDespegues() {
-    const raw = localStorage.getItem("METEO_AJUSTES_LIMITES_DESPEGUES");
-    if (!raw) return {};
+    if (_ajustesLimitesCache) return _ajustesLimitesCache;
+    const limpio = {};
     try {
-        const parsed = JSON.parse(raw);
-        return (parsed && typeof parsed === 'object') ? parsed : {};
-    } catch (e) {
-        return {};
-    }
+        const parsed = JSON.parse(localStorage.getItem("METEO_AJUSTES_LIMITES_DESPEGUES") || "{}");
+        if (parsed && typeof parsed === 'object') {
+            for (const k in parsed) {
+                if (parsed[k] === null || parsed[k] === '') continue;
+                const n = Number(parsed[k]);
+                if (Number.isFinite(n)) limpio[k] = Math.min(200, Math.max(50, n));
+            }
+        }
+    } catch (e) {}
+    _ajustesLimitesCache = limpio;
+    return limpio;
 }
 
 function obtenerPorcentajeAjusteDespegue(idDespegue) {
