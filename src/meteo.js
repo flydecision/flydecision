@@ -4659,7 +4659,7 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         if (!vetoActivado) {
             if (rachaCorregida > RachaMax * 1.5)      { ptsRacha = 0; vetoActivado = true; }
             else if (rachaCorregida > RachaMax * 1.1) { ptsRacha = 0;  ratioCorreccionPorRacha = 0.2; }
-            else if (rachaCorregida > RachaMax)       { ptsRacha = 5;  ratioCorreccionPorRacha = 0.5; }
+            else if (rachaCorregida >= RachaMax)      { ptsRacha = 5;  ratioCorreccionPorRacha = 0.5; }
             else if (rachaCorregida > RachaMax * 0.8) { ptsRacha = 20; ratioCorreccionPorRacha = 0.8; }
             else                                      { ptsRacha = 30; }
         }
@@ -4668,7 +4668,7 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         if (!vetoActivado) {
             if      (velocidad > VelocidadMax * 2)   { ptsVel = 0; vetoActivado = true; }
             else if (velocidad > VelocidadMax * 1.5) { ptsVel = 3; }
-            else if (velocidad > VelocidadMax)       { ptsVel = 5; }
+            else if (velocidad >= VelocidadMax)      { ptsVel = 5; }
             else if (velocidad > VelocidadMin)       { ptsVel = 20; }
             else                                     { ptsVel = 15; }
         }
