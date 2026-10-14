@@ -6996,7 +6996,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // Badge indicador si el despegue tiene límites personalizados
             const pctAjuste = (typeof obtenerPorcentajeAjusteDespegue === 'function') ? obtenerPorcentajeAjusteDespegue(d.ID) : 100;
             const badgeAjusteHTML = pctAjuste !== 100 ? `
-                <span style="font-weight: bold; color: ${pctAjuste < 100 ? '#ea580c' : '#0284c7'}; background: ${pctAjuste < 100 ? '#fff7ed' : '#f0f9ff'}; border: 1px solid ${pctAjuste < 100 ? '#fed7aa' : '#bae6fd'}; border-radius: 4px; padding: 0 4px; display: inline-block;" title="${t('popupDespegue.ajusteLimites', { defaultValue: 'Ajuste de límites' })}: ${pctAjuste}%">${pctAjuste}%</span>
+                <span style="font-weight: bold; color: ${pctAjuste < 100 ? '#ea580c' : '#0284c7'}; background: ${pctAjuste < 100 ? '#fff7ed' : '#f0f9ff'}; border: 1px solid ${pctAjuste < 100 ? '#fed7aa' : '#bae6fd'}; border-radius: 4px; padding: 1px 5px; display: inline-block;" title="${t('popupDespegue.ajusteLimites', { defaultValue: 'Ajuste de límites' })}: ${pctAjuste}%">${pctAjuste}%</span>
             ` : '';
 
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
@@ -7140,7 +7140,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 ${botonToggleEcmwfHTML}
                 ${botonMinutely15HTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
-                ${badgeAjusteHTML ? `<div style="line-height: 1; margin: 13px 0 9px 0;">${badgeAjusteHTML}</div>` : ''}
+                ${badgeAjusteHTML ? `<span style="display: block; line-height: 1; margin: 4px auto 6px auto; text-align: center;">${badgeAjusteHTML}</span>` : ''}
                 ${htmlIconosCentrales}
                 <span class="linea-divisora-edit" style="position: absolute; bottom: 34px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
@@ -9504,9 +9504,9 @@ function generarHtmlStepperLimites(idDespegue) {
             </span>
             <div style="display: inline-flex; align-items: center; gap: 4px; margin-left: auto;">
                 <div class="stepper-dias-seguimiento" style="margin: 0; background: #fff;">
-                    <button type="button" class="stepper-btn stepper-limites-menos-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, -5);" ${pct <= 50 ? 'disabled' : ''} style="cursor: pointer;">−</button>
+                    <button type="button" class="stepper-btn stepper-limites-menos-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, -10);" ${pct <= 50 ? 'disabled' : ''} style="cursor: pointer;">−</button>
                     <span class="stepper-valor valor-ajuste-limites-${idNum}" style="min-width: 44px; text-align: center; font-weight: bold; border-left: 1px solid #ccc; border-right: 1px solid #ccc; height: 28px; line-height: 28px; color: ${colorValor}; padding: 0 4px; display: inline-block;">${pct}%</span>
-                    <button type="button" class="stepper-btn stepper-limites-mas-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, 5);" ${pct >= 200 ? 'disabled' : ''} style="cursor: pointer;">+</button>
+                    <button type="button" class="stepper-btn stepper-limites-mas-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, 10);" ${pct >= 200 ? 'disabled' : ''} style="cursor: pointer;">+</button>
                 </div>
             </div>
         </div>
@@ -13348,7 +13348,7 @@ function aplicarPuntuacionEnMapa(soloPuntuacion = false) {
         actualizarFiltrosMapa();
     }
 
-    if (marcadorAbierto) {
+    if (marcadorAbierto && !marcadorAbierto.isPopupOpen()) {
         if (map.hasLayer(marcadorAbierto) || clustergroupDespegues.hasLayer(marcadorAbierto)) {
             marcadorAbierto.openPopup();
         }
@@ -15008,13 +15008,21 @@ function inicializarMapaLeaflet() {
                             actualizarVistaOjo(btnSeg, esSeg);
                         }
 
+                        // Sincronizar stepper de ajuste de límites dinámicamente
                         const elPct = popupEl.querySelector(`.valor-ajuste-limites-${idDespegue}`);
                         if (elPct) {
-                            const pct = obtenerPorcentajeAjusteDespegue(idDespegue);
-                            elPct.textContent = `${pct}%`;
-                            elPct.style.color = pct < 100 ? '#ea580c' : (pct > 100 ? '#0284c7' : '#333');
+                            const pctActual = obtenerPorcentajeAjusteDespegue(idDespegue);
+                            elPct.textContent = `${pctActual}%`;
+                            elPct.style.color = pctActual < 100 ? '#ea580c' : (pctActual > 100 ? '#0284c7' : '#333');
+
+                            const btnMenos = popupEl.querySelector(`.stepper-limites-menos-${idDespegue}`);
+                            if (btnMenos) btnMenos.disabled = (pctActual <= 50);
+
+                            const btnMas = popupEl.querySelector(`.stepper-limites-mas-${idDespegue}`);
+                            if (btnMas) btnMas.disabled = (pctActual >= 200);
+
                             const btnReset = popupEl.querySelector(`.btn-reset-limite-${idDespegue}`);
-                            if (btnReset) btnReset.style.display = pct !== 100 ? 'inline-flex' : 'none';
+                            if (btnReset) btnReset.style.display = pctActual !== 100 ? 'inline-flex' : 'none';
                         }
                     });
 
