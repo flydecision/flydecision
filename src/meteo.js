@@ -4541,6 +4541,12 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         return { notaCondiciones: null, notaXC: null, horasValidas: 0, horasValidasXC: 0 };
     }
 
+    // Ajuste de límites. Aplicar factor de ajuste de límites local
+    const factorAjuste = (typeof obtenerFactorAjusteDespegue === 'function') ? obtenerFactorAjusteDespegue(despegueObj.ID) : 1.0;
+    const velMinEfectiva = VelocidadMin * factorAjuste;
+    const velMaxEfectiva = VelocidadMax * factorAjuste;
+    const rachaMaxEfectiva = RachaMax * factorAjuste;
+
     const velArray = hourlyData.wind_speed_10m;
     const rachaArray = hourlyData.wind_gusts_10m;
     const dirArray = hourlyData.wind_direction_10m;
@@ -4657,20 +4663,20 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
 
         let ptsRacha = 0;
         if (!vetoActivado) {
-            if (rachaCorregida > RachaMax * 1.5)      { ptsRacha = 0; vetoActivado = true; }
-            else if (rachaCorregida > RachaMax * 1.1) { ptsRacha = 0;  ratioCorreccionPorRacha = 0.2; }
-            else if (rachaCorregida >= RachaMax)      { ptsRacha = 5;  ratioCorreccionPorRacha = 0.5; }
-            else if (rachaCorregida > RachaMax * 0.8) { ptsRacha = 20; ratioCorreccionPorRacha = 0.8; }
-            else                                      { ptsRacha = 30; }
+            if (rachaCorregida > rachaMaxEfectiva * 1.5)      { ptsRacha = 0; vetoActivado = true; }
+            else if (rachaCorregida > rachaMaxEfectiva * 1.1) { ptsRacha = 0;  ratioCorreccionPorRacha = 0.2; }
+            else if (rachaCorregida >= rachaMaxEfectiva)       { ptsRacha = 5;  ratioCorreccionPorRacha = 0.5; }
+            else if (rachaCorregida > rachaMaxEfectiva * 0.8) { ptsRacha = 20; ratioCorreccionPorRacha = 0.8; }
+            else                                              { ptsRacha = 30; }
         }
 
         let ptsVel = 0;
         if (!vetoActivado) {
-            if      (velocidad > VelocidadMax * 2)   { ptsVel = 0; vetoActivado = true; }
-            else if (velocidad > VelocidadMax * 1.5) { ptsVel = 3; }
-            else if (velocidad >= VelocidadMax)      { ptsVel = 5; }
-            else if (velocidad > VelocidadMin)       { ptsVel = 20; }
-            else                                     { ptsVel = 15; }
+            if      (velocidad > velMaxEfectiva * 2)   { ptsVel = 0; vetoActivado = true; }
+            else if (velocidad > velMaxEfectiva * 1.5) { ptsVel = 3; }
+            else if (velocidad >= velMaxEfectiva)       { ptsVel = 5; }
+            else if (velocidad > velMinEfectiva)       { ptsVel = 20; }
+            else                                       { ptsVel = 15; }
         }
 
         // 💦 Veto Supremo: Lluvia
@@ -6595,6 +6601,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         for (let idx = 0; idx < despegues.length; idx++) {
             const d = despegues[idx];
 
+            // Ajuste límites para este despegue concreto
+            const factorDespegue = (typeof obtenerFactorAjusteDespegue === 'function') ? obtenerFactorAjusteDespegue(d.ID) : 1.0;
+            const velMinDespegue = VelocidadMin * factorDespegue;
+            const velIdealDespegue = VelocidadIdeal * factorDespegue;
+            const velMaxDespegue = VelocidadMax * factorDespegue;
+            const rachaMaxDespegue = RachaMax * factorDespegue;
+
+            const velocidadTolerableSuperior = velMaxDespegue - (velMaxDespegue - velIdealDespegue) / 3;
+            const rachaTolerable = rachaMaxDespegue - (rachaMaxDespegue - velMaxDespegue) / 3;
+
             const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
             const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
             const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0; //Nota: como no hemos puesto en la URL elevation=nan, el downgrading topográfico calcula la altitud real del despegue con DEM 90m, así que este dato realmente es la altitud del despegue (no ocurre lo mismo con Arome/ICON, ya que ahí hemos puesto elevation=nan y la altitud sí que es la media de la celda)
@@ -6893,6 +6909,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const contenidoTooltip = `
                 <div style="line-height: 1.4; max-width: 232px;">
                     <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${d.Despegue}</b></span><br><br>   
+
+                    ${generarHtmlStepperLimites(d.ID)}
                     
                     ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
 
@@ -6976,6 +6994,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             `;
 			
             const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block; color: #777; margin-top: -1px; margin-bottom: 2px;">(${d.Provincia})</span>`;
+
+            // Badge indicador si el despegue tiene límites personalizados
+            const pctAjuste = (typeof obtenerPorcentajeAjusteDespegue === 'function') ? obtenerPorcentajeAjusteDespegue(d.ID) : 100;
+            const badgeAjusteHTML = pctAjuste !== 100 ? `
+                <span style="font-weight: bold; color: ${pctAjuste < 100 ? '#ea580c' : '#0284c7'}; background: ${pctAjuste < 100 ? '#fff7ed' : '#f0f9ff'}; border: 1px solid ${pctAjuste < 100 ? '#fed7aa' : '#bae6fd'}; border-radius: 4px; padding: 0 3px; margin-left: 4px; display: inline-block; vertical-align: 1px;" title="${t('popupDespegue.ajusteLimites', { defaultValue: 'Ajuste de límites' })}: ${pctAjuste}%">${pctAjuste}%</span>
+            ` : '';
 
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-favorito-tabla"
@@ -7117,8 +7141,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 ${botonOjoHTML}
                 ${botonToggleEcmwfHTML}
                 ${botonMinutely15HTML}
-                <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
-                ${provinciaHTML}
+                <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong>${badgeAjusteHTML}</div>
                 ${htmlIconosCentrales}
                 <span class="linea-divisora-edit" style="position: absolute; bottom: 34px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
@@ -7671,7 +7694,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 const factorSeguridad = limites ? limites.naranja : 1.0; 
                                 
                                 // Límite Absoluto (Tu VelMax * Factor de altura)
-                                const limiteAbsolutoUsuario = Math.round(VelocidadMax * factorSeguridad);
+                                const limiteAbsolutoUsuario = Math.round(velMaxDespegue * factorSeguridad);
                                 
                                 // CONSTANTE FÍSICA: Umbral de turbulencia baja/moderada
                                 const UMBRAL_TURBULENCIA_BAJA = 25; 
@@ -7718,9 +7741,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     }
 
                     // ⚪ Velocidad 10 m *****************************
-					
-                    // Ponemos esta constante fuera del bucle para no calcularla 100 veces
-                    const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
 
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
@@ -7791,13 +7811,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.classList.add("borde-grueso-izquierda");
                         }
 
-                        if (velocidad < VelocidadMin) {
+                        if (velocidad < velMinDespegue) {
                             td.classList.add("fondo-naranja");
                         } 
                         else if (velocidad <= velocidadTolerableSuperior) {
                             td.classList.add("fondo-verde");
                         } 
-                        else if (velocidad < VelocidadMax) {
+                        else if (velocidad < velMaxDespegue) {
                             td.classList.add("fondo-naranja");
                         } 
                         else { 
@@ -7819,15 +7839,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
                         td.dataset.vRaw = velOrigRound;
                         td.dataset.vCorr = velCorrRound;
-                        td.dataset.cRaw = (velOrigRound < VelocidadMin) ? "fondo-naranja" : (velOrigRound <= velocidadTolerableSuperior ? "fondo-verde" : (velOrigRound < VelocidadMax ? "fondo-naranja" : "fondo-rojo"));
-                        td.dataset.cCorr = (velCorrRound < VelocidadMin) ? "fondo-naranja" : (velCorrRound <= velocidadTolerableSuperior ? "fondo-verde" : (velCorrRound < VelocidadMax ? "fondo-naranja" : "fondo-rojo"));
+                        td.dataset.cRaw = (velOrigRound < velMinDespegue) ? "fondo-naranja" : (velOrigRound <= velocidadTolerableSuperior ? "fondo-verde" : (velOrigRound < velMaxDespegue ? "fondo-naranja" : "fondo-rojo"));
+                        td.dataset.cCorr = (velCorrRound < velMinDespegue) ? "fondo-naranja" : (velCorrRound <= velocidadTolerableSuperior ? "fondo-verde" : (velCorrRound < velMaxDespegue ? "fondo-naranja" : "fondo-rojo"));
 
                         filaVel.appendChild(td);
                     }
 
 					// ⚪ Racha *****************************
-
-                    const rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3;
 
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
@@ -7876,7 +7894,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         if (racha < rachaTolerable) {
                             td.classList.add("fondo-verde");
                         } 
-                        else if (racha < RachaMax) { 
+                        else if (racha < rachaMaxDespegue) { 
                             td.classList.add("fondo-naranja");
                         } 
                         else { 
@@ -7898,8 +7916,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
                         td.dataset.rRaw = rachaOrigRound;
                         td.dataset.rCorr = rachaCorrRound;
-                        td.dataset.cRaw = (rachaOrigRound < rachaTolerable) ? "fondo-verde" : (rachaOrigRound < RachaMax ? "fondo-naranja" : "fondo-rojo");
-                        td.dataset.cCorr = (rachaCorrRound < rachaTolerable) ? "fondo-verde" : (rachaCorrRound < RachaMax ? "fondo-naranja" : "fondo-rojo");
+                        td.dataset.cRaw = (rachaOrigRound < rachaTolerable) ? "fondo-verde" : (rachaOrigRound < rachaMaxDespegue ? "fondo-naranja" : "fondo-rojo");
+                        td.dataset.cCorr = (rachaCorrRound < rachaTolerable) ? "fondo-verde" : (rachaCorrRound < rachaMaxDespegue ? "fondo-naranja" : "fondo-rojo");
 
                         filaRacha.appendChild(td);
                     }
@@ -8310,11 +8328,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 const v10 = Math.round(Math.max(0, Number(hourlyEcmwf.wind_speed_10m[idxEcmwf])));
                                 tdVel10.textContent = v10;
 
-                                if (v10 < VelocidadMin) {
+                                if (v10 < velMinDespegue) {
                                     tdVel10.classList.add("fondo-naranja");
                                 } else if (v10 <= velocidadTolerableSuperior) {
                                     tdVel10.classList.add("fondo-verde");
-                                } else if (v10 < VelocidadMax) {
+                                } else if (v10 < velMaxDespegue) {
                                     tdVel10.classList.add("fondo-naranja");
                                 } else {
                                     tdVel10.classList.add("fondo-rojo");
@@ -8342,7 +8360,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                                 if (r10 < rachaTolerable) {
                                     tdRacha10.classList.add("fondo-verde");
-                                } else if (r10 < RachaMax) {
+                                } else if (r10 < rachaMaxDespegue) {
                                     tdRacha10.classList.add("fondo-naranja");
                                 } else {
                                     tdRacha10.classList.add("fondo-rojo");
@@ -9383,6 +9401,118 @@ window.resetearFiltrosMapaEnVivo = function() {
     // Vibración haptics de confirmación
     if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
 };
+
+
+// ---------------------------------------------------------------
+// 🟡 AJUSTE DE LÍMITES POR DESPEGUE
+// ---------------------------------------------------------------
+
+function obtenerAjustesLimitesDespegues() {
+    const raw = localStorage.getItem("METEO_AJUSTES_LIMITES_DESPEGUES");
+    if (!raw) return {};
+    try {
+        const parsed = JSON.parse(raw);
+        return (parsed && typeof parsed === 'object') ? parsed : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+function obtenerPorcentajeAjusteDespegue(idDespegue) {
+    if (!idDespegue) return 100;
+    const ajustes = obtenerAjustesLimitesDespegues();
+    const pct = ajustes[Number(idDespegue)];
+    if (pct === undefined || isNaN(Number(pct))) return 100;
+    return Number(pct);
+}
+
+function obtenerFactorAjusteDespegue(idDespegue) {
+    return obtenerPorcentajeAjusteDespegue(idDespegue) / 100;
+}
+
+window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
+    idDespegue = Number(idDespegue);
+    if (!idDespegue) return;
+
+    const ajustes = obtenerAjustesLimitesDespegues();
+    const actual = (ajustes[idDespegue] !== undefined) ? Number(ajustes[idDespegue]) : 100;
+    let nuevo = actual + delta;
+
+    // Rango de seguridad: de 50% a 200%
+    nuevo = Math.min(200, Math.max(50, nuevo));
+
+    if (nuevo === 100) {
+        delete ajustes[idDespegue];
+    } else {
+        ajustes[idDespegue] = nuevo;
+    }
+
+    localStorage.setItem("METEO_AJUSTES_LIMITES_DESPEGUES", JSON.stringify(ajustes));
+
+    if (typeof window.vibrarDispositivo === 'function') {
+        window.vibrarDispositivo();
+    }
+
+    // 1. Actualizar el valor visual en todos los popups abiertos
+    document.querySelectorAll(`.valor-ajuste-limites-${idDespegue}`).forEach(el => {
+        el.textContent = `${nuevo}%`;
+        el.style.color = nuevo < 100 ? '#ea580c' : (nuevo > 100 ? '#0284c7' : '#333');
+    });
+
+    // 2. Controlar estado de botones y botón de reset
+    document.querySelectorAll(`.stepper-limites-menos-${idDespegue}`).forEach(btn => {
+        btn.disabled = (nuevo <= 50);
+    });
+    document.querySelectorAll(`.stepper-limites-mas-${idDespegue}`).forEach(btn => {
+        btn.disabled = (nuevo >= 200);
+    });
+    document.querySelectorAll(`.btn-reset-limite-${idDespegue}`).forEach(btn => {
+        btn.style.display = nuevo !== 100 ? 'inline-flex' : 'none';
+    });
+
+    // 3. Si estamos en el mapa, refrescar puntuación en tiempo real sin cerrar el popup
+    const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+    if (enMapa) {
+        if (typeof aplicarPuntuacionEnMapa === 'function') {
+            aplicarPuntuacionEnMapa(true);
+        }
+    }
+    
+    // Marcar para reconstruir la tabla al cerrar el popup o cambiar de vista
+    window.tablaRecrearAlVolver = true;
+    window.tablaNecesitaActualizarAjustes = true;
+};
+
+// Ajuste de límites. Generador del bloque HTML del Stepper para popups
+function generarHtmlStepperLimites(idDespegue) {
+    const idNum = Number(idDespegue);
+    if (!idNum) return '';
+    const pct = obtenerPorcentajeAjusteDespegue(idNum);
+    const colorValor = pct < 100 ? '#ea580c' : (pct > 100 ? '#0284c7' : '#333');
+    const labelTexto = typeof t === 'function' ? t('popupDespegue.ajusteLimites', { defaultValue: 'Límites:' }) : 'Límites:';
+    const tooltipTitle = typeof t === 'function' 
+        ? t('popupDespegue.tooltipAjusteLimites', { defaultValue: 'Ajusta los límites de viento y racha para este despegue. Menor al 100% es más restrictivo y mayor al 100% más tolerante.' })
+        : 'Ajusta los límites de viento y racha para este despegue. Menor al 100% es más restrictivo y mayor al 100% más tolerante.';
+
+    return `
+        <div class="bloque-ajuste-limites" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 13px 0 8px 0; padding: 3px 7px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;" title="${tooltipTitle}">
+            <span style="font-weight: bold; color: #1e293b; white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                <span style="display: flex; align-items: center; gap: 3px;">
+                    <img src="/icons/icono_viento_60.webp" width="20" height="20" style="display: block;">
+                    <img src="/icons/icono_racha_60.webp" width="20" height="20" style="display: block;">
+                </span>
+                <span>${labelTexto}</span>
+            </span>
+            <div style="display: inline-flex; align-items: center; gap: 4px; margin-left: auto;">
+                <div class="stepper-dias-seguimiento" style="margin: 0; background: #fff;">
+                    <button type="button" class="stepper-btn stepper-limites-menos-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, -5);" ${pct <= 50 ? 'disabled' : ''} style="cursor: pointer;">−</button>
+                    <span class="stepper-valor valor-ajuste-limites-${idNum}" style="min-width: 44px; text-align: center; font-weight: bold; border-left: 1px solid #ccc; border-right: 1px solid #ccc; height: 28px; line-height: 28px; color: ${colorValor}; padding: 0 4px; display: inline-block;">${pct}%</span>
+                    <button type="button" class="stepper-btn stepper-limites-mas-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, 5);" ${pct >= 200 ? 'disabled' : ''} style="cursor: pointer;">+</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
 
 // ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
@@ -11173,6 +11303,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 fragment.appendChild(scrollArea);
 
                 instance.setContent(fragment);
+            },
+            onHidden(instance) {
+                if (window.tablaNecesitaActualizarAjustes) {
+                    window.tablaNecesitaActualizarAjustes = false;
+                    construir_tabla(false, true);
+                }
             }
         });
     }
@@ -14024,6 +14160,13 @@ function inicializarMapaLeaflet() {
         }
     });
 
+    map.on('popupclose', function (e) {
+        if (window.tablaNecesitaActualizarAjustes) {
+            window.tablaNecesitaActualizarAjustes = false;
+            construir_tabla(false, true);
+        }
+    });
+
 
     // 3. Agregar el marcador si se usaron coordenadas de la URL solo si las coordenadas vinieron de la URL, agregamos el marcador y el popup
     //if (!isNaN(urlLat) && !isNaN(urlLon)) {
@@ -14782,6 +14925,8 @@ function inicializarMapaLeaflet() {
                             
                             ${botonesAccionPopupHTML}
 
+                            ${idDespegue ? generarHtmlStepperLimites(idDespegue) : ''}
+
                             ⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
 
                             ⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
@@ -14862,6 +15007,15 @@ function inicializarMapaLeaflet() {
                             const esSeg = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
                             btnSeg.title = esSeg ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
                             actualizarVistaOjo(btnSeg, esSeg);
+                        }
+
+                        const elPct = popupEl.querySelector(`.valor-ajuste-limites-${idDespegue}`);
+                        if (elPct) {
+                            const pct = obtenerPorcentajeAjusteDespegue(idDespegue);
+                            elPct.textContent = `${pct}%`;
+                            elPct.style.color = pct < 100 ? '#ea580c' : (pct > 100 ? '#0284c7' : '#333');
+                            const btnReset = popupEl.querySelector(`.btn-reset-limite-${idDespegue}`);
+                            if (btnReset) btnReset.style.display = pct !== 100 ? 'inline-flex' : 'none';
                         }
                     });
 

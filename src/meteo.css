@@ -370,7 +370,7 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     cursor: default;
 }
 
-#valor-dias-seguimiento, #valor-viento-max-balizas, #valor-planeo-referencia {
+#valor-dias-seguimiento, #valor-viento-max-balizas, #valor-planeo-referencia, .stepper-valor {
     min-width: 28px;
     text-align: center;
     font-weight: bold;
