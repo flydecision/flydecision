@@ -6993,12 +6993,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 </button>
             `;
 			
-            const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block; color: #777; margin-top: -1px; margin-bottom: 2px;">(${d.Provincia})</span>`;
-
             // Badge indicador si el despegue tiene límites personalizados
             const pctAjuste = (typeof obtenerPorcentajeAjusteDespegue === 'function') ? obtenerPorcentajeAjusteDespegue(d.ID) : 100;
             const badgeAjusteHTML = pctAjuste !== 100 ? `
-                <span style="font-weight: bold; color: ${pctAjuste < 100 ? '#ea580c' : '#0284c7'}; background: ${pctAjuste < 100 ? '#fff7ed' : '#f0f9ff'}; border: 1px solid ${pctAjuste < 100 ? '#fed7aa' : '#bae6fd'}; border-radius: 4px; padding: 0 3px; margin-left: 4px; display: inline-block; vertical-align: 1px;" title="${t('popupDespegue.ajusteLimites', { defaultValue: 'Ajuste de límites' })}: ${pctAjuste}%">${pctAjuste}%</span>
+                <span style="font-weight: bold; color: ${pctAjuste < 100 ? '#ea580c' : '#0284c7'}; background: ${pctAjuste < 100 ? '#fff7ed' : '#f0f9ff'}; border: 1px solid ${pctAjuste < 100 ? '#fed7aa' : '#bae6fd'}; border-radius: 4px; padding: 0 4px; display: inline-block;" title="${t('popupDespegue.ajusteLimites', { defaultValue: 'Ajuste de límites' })}: ${pctAjuste}%">${pctAjuste}%</span>
             ` : '';
 
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
@@ -7141,7 +7139,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 ${botonOjoHTML}
                 ${botonToggleEcmwfHTML}
                 ${botonMinutely15HTML}
-                <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong>${badgeAjusteHTML}</div>
+                <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
+                ${badgeAjusteHTML ? `<div style="line-height: 1; margin: 13px 0 9px 0;">${badgeAjusteHTML}</div>` : ''}
                 ${htmlIconosCentrales}
                 <span class="linea-divisora-edit" style="position: absolute; bottom: 34px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
