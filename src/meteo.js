@@ -9484,11 +9484,62 @@ window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
         btn.style.display = nuevo !== 100 ? 'inline-flex' : 'none';
     });
 
-    // 3. Si estamos en el mapa, refrescar puntuación en tiempo real sin cerrar el popup
+    // 3. Si estamos en el mapa, refrescar en vivo SOLO el marcador afectado sin tocar clearLayers()
     const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
-    if (enMapa) {
-        if (typeof aplicarPuntuacionEnMapa === 'function') {
-            aplicarPuntuacionEnMapa(true);
+    if (enMapa && typeof markersDespegues !== 'undefined' && markersDespegues.length > 0) {
+        const targetMarker = markersDespegues.find(m => m && m.metadata && Number(m.metadata.id) === idDespegue);
+        if (targetMarker && targetMarker._despObj) {
+            try {
+                const horas = window.horasCrudasRangoHorario || [];
+                const respuestas = window.respuestasGlobalMapa || [];
+                const respuestasEcmwf = window.respuestasEcmwfGlobalMapa || [];
+                const despegues = window.bdGlobalDespegues || [];
+
+                let indiceInicio = 0, indiceFin = 99999;
+                const sliderHoras = document.getElementById('horario-slider');
+                if (typeof modoVerTodosLosDias === 'undefined' || !modoVerTodosLosDias) {
+                    if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario?.length > 0) {
+                        const vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
+                        indiceInicio = window.indicesDiaActualSlider[vals[0]];
+                        indiceFin = window.indicesDiaActualSlider[vals[1]];
+                    }
+                }
+                const soloHorasDeLuz = localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") === "true";
+                const indicesEval = [];
+                horas.forEach((h, i) => {
+                    if (i < indiceInicio || i > indiceFin) return;
+                    const dObj = new Date(h.endsWith('Z') ? h : h + 'Z');
+                    if (soloHorasDeLuz && typeof esCeldaNoche === 'function' && esCeldaNoche(dObj)) return;
+                    indicesEval.push(i);
+                });
+
+                const idx = despegues.findIndex(d => Number(d.ID) === idDespegue);
+                if (idx >= 0 && typeof calcularPuntuacionesDespegue === 'function') {
+                    const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
+                    const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
+                    const evaluacion = calcularPuntuacionesDespegue(targetMarker._despObj, hourlyData, hourlyEcmwf, indicesEval);
+                    const nota = evaluacion.notaCondiciones;
+                    const color = typeof colorNotaMapa === 'function' ? colorNotaMapa(nota) : null;
+                    targetMarker._notaMapa = (nota !== null) ? nota : -1;
+
+                    const meta = targetMarker.metadata;
+                    const nombreMostrar = targetMarker._despObj.Despegue || meta.despegue;
+                    const actividadScore = targetMarker._despObj.Actividad || null;
+
+                    // 1. Guardamos la nueva definición del icono en memoria para cuando el clúster se redibuje
+                    targetMarker.options.icon = window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color, actividadScore);
+
+                    // 2. Si el icono está actualmente dibujado en pantalla, cambiamos su color directamente en el DOM
+                    if (targetMarker._icon) {
+                        const labelEl = targetMarker._icon.querySelector('.label-large-despegues');
+                        if (labelEl) {
+                            labelEl.style.backgroundColor = color || '#ffffff';
+                        }
+                    }
+                }
+            } catch (errColor) {
+                console.warn("Aviso al actualizar color en vivo:", errColor);
+            }
         }
     }
     
@@ -13359,7 +13410,8 @@ function aplicarPuntuacionEnMapa(soloPuntuacion = false) {
     if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues && clustergroupDespegues._map) {
         clustergroupDespegues.refreshClusters();
     }
-    if (typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || (filtrosMapaAbiertos && !soloPuntuacion))) {
+    // Si solo estamos refrescando puntuación con popup abierto, prohibido llamar a clearLayers()
+    if (!soloPuntuacion && typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || filtrosMapaAbiertos)) {
         actualizarFiltrosMapa();
     }
 
@@ -13816,6 +13868,24 @@ function inicializarMapaLeaflet() {
             chk.checked = false; // Desactivamos el checkbox visualmente
         }
     });
+
+    // 🛡️ PARCHE DE SEGURIDAD LEAFLET: Evita el crash "this._map is null" en _removeIcon al usar clústeres y filtros
+    if (typeof L !== 'undefined' && L.Marker && L.Marker.prototype._removeIcon) {
+        if (!L.Marker.prototype._removeIconPatched) {
+            const originalRemoveIcon = L.Marker.prototype._removeIcon;
+            L.Marker.prototype._removeIcon = function () {
+                if (!this._map) {
+                    if (this._icon && this._icon.parentNode) {
+                        this._icon.parentNode.removeChild(this._icon);
+                    }
+                    this._icon = null;
+                    return;
+                }
+                return originalRemoveIcon.apply(this, arguments);
+            };
+            L.Marker.prototype._removeIconPatched = true;
+        }
+    }
 
     // 🌍 ENCUADRE DINÁMICO PREDETERMINADO (Forzado por anchura con ajuste manual)
     if (esVistaPredeterminada) {
