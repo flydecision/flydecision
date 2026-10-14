@@ -829,7 +829,9 @@
     "provincia": "Province:",
     "orientacion": "Orientation:",
     "nivelActividad": "Activity level:",
-    "nivelActividadTitle": "Site activity based on last flight date (ref: Nov 2025): Green 0-6 months, Orange 6-12, Yellow 12-24, White >24 months without flights"
+    "nivelActividadTitle": "Site activity based on last flight date (ref: Nov 2025): Green 0-6 months, Orange 6-12, Yellow 12-24, White >24 months without flights",
+    "tooltipAjusteLimites": "Adjusts the general wind and gust limits for this take-off. Less than 100% is more restrictive (we want less wind at that take-off) and greater than 100% is more tolerant (we accept more wind).",
+    "ajusteLimites": "Limits:"
   },
 
   "html": {

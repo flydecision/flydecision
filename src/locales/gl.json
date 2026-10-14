@@ -829,7 +829,9 @@
     "provincia": "Provincia:",
     "orientacion": "Orientación:",
     "nivelActividad": "Nivel de actividade:",
-    "nivelActividadTitle": "Actividade do sitio baseada na data do último voo (ref: nov 2025): Verde 0-6 meses, Laranxa 6-12, Amarelo 12-24, Branco >24 meses sen voos"
+    "nivelActividadTitle": "Actividade do sitio baseada na data do último voo (ref: nov 2025): Verde 0-6 meses, Laranxa 6-12, Amarelo 12-24, Branco >24 meses sen voos",
+    "tooltipAjusteLimites": "Axusta os límites xerais de vento e refacho para esta engalaxe. Menor ao 100% é máis restritivo (queremos menos vento nesa engalaxe) e maior ao 100% máis tolerante (aceptamos máis vento).",
+    "ajusteLimites": "Límites:"
   },
 
   "html": {

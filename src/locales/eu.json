@@ -829,7 +829,9 @@
     "provincia": "Probintzia:",
     "orientacion": "Norabidea:",
     "nivelActividad": "Jarduera maila:",
-    "nivelActividadTitle": "Gunearen jarduera azken hegaldiaren datan oinarrituta (erref: 2025eko aza.): Berdea 0-6 hilabete, Laranja 6-12, Horia 12-24, Zuria >24 hilabete hegaldirik gabe"
+    "nivelActividadTitle": "Gunearen jarduera azken hegaldiaren datan oinarrituta (erref: 2025eko aza.): Berdea 0-6 hilabete, Laranja 6-12, Horia 12-24, Zuria >24 hilabete hegaldirik gabe",
+    "tooltipAjusteLimites": "Aireratze honetarako haizearen eta boladaren muga orokorrak doitzen ditu. % 100 baino gutxiago murriztaileagoa da (haize gutxiago nahi dugu aireratze horretan) eta % 100 baino gehiago toleranteagoa (haize gehiago onartzen dugu).",
+    "ajusteLimites": "Mugak:"
   },
 
   "html": {

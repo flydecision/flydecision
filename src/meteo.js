@@ -9556,7 +9556,7 @@ function generarHtmlStepperLimites(idDespegue) {
     const colorValor = pct < 100 ? '#ea580c' : (pct > 100 ? '#0284c7' : '#333');
     const labelTexto = typeof t === 'function' ? t('popupDespegue.ajusteLimites', { defaultValue: 'Límites:' }) : 'Límites:';
     const tooltipTitle = typeof t === 'function' 
-        ? t('popupDespegue.tooltipAjusteLimites', { defaultValue: 'Ajusta los límites de viento y racha para este despegue. Menor al 100% es más restrictivo y mayor al 100% más tolerante.' })
+        ? t('popupDespegue.tooltipAjusteLimites', { defaultValue: 'Ajusta los límites generales de viento y racha para este despegue. Menor al 100% es más restrictivo (queremos menos viento en ese despegue) y mayor al 100% más tolerante (aceptamos más viento).' })
         : 'Ajusta los límites de viento y racha para este despegue. Menor al 100% es más restrictivo y mayor al 100% más tolerante.';
 
     return `

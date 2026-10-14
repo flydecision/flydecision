@@ -828,7 +828,9 @@
     "provincia": "Província:",
     "orientacion": "Orientação:",
     "nivelActividad": "Nível de atividade:",
-    "nivelActividadTitle": "Atividade do local baseada na data do último voo (ref: nov 2025): Verde 0-6 meses, Laranja 6-12, Amarelo 12-24, Branco >24 meses sem voos"
+    "nivelActividadTitle": "Atividade do local baseada na data do último voo (ref: nov 2025): Verde 0-6 meses, Laranja 6-12, Amarelo 12-24, Branco >24 meses sem voos",
+    "tooltipAjusteLimites": "Ajusta os limites gerais de vento e rajada para esta descolagem. Menor que 100% é mais restritivo (queremos menos vento nessa descolagem) e maior que 100% é mais tolerante (aceitamos mais vento).",
+    "ajusteLimites": "Limites:"
   },
 
   "html": {

@@ -829,7 +829,9 @@
     "provincia": "Província:",
     "orientacion": "Orientació:",
     "nivelActividad": "Nivell d'activitat:",
-    "nivelActividadTitle": "Activitat del lloc basada en la data de l'últim vol (ref: nov 2025): Verd 0-6 mesos, Taronja 6-12, Groc 12-24, Blanc >24 mesos sense vols"
+    "nivelActividadTitle": "Activitat del lloc basada en la data de l'últim vol (ref: nov 2025): Verd 0-6 mesos, Taronja 6-12, Groc 12-24, Blanc >24 mesos sense vols",
+    "tooltipAjusteLimites": "Ajusta els límits generals de vent i ratxa per a aquest enlairament. Menor al 100% és més restrictiu (volem menys vent en aquest enlairament) i major al 100% més tolerant (acceptem més vent).",
+    "ajusteLimites": "Límits:"
   },
 
   "html": {
