@@ -1573,6 +1573,16 @@ table.tabla-tooltip-desglose {
 .columna-despegue.modo-compacto div.texto-multilinea-2 {
     margin-top: -14px;
 }
+/* Modo compacto con badge de límites: sin subir el nombre y con el badge más pequeño */
+.columna-despegue.modo-compacto.con-badge-limites div.texto-multilinea-2 {
+    margin-top: -16px;
+}
+.columna-despegue.modo-compacto .badge-limites-wrap {
+    margin: 2px auto 0 auto !important;
+}
+.columna-despegue.modo-compacto .badge-limites-wrap > span {
+    padding: 0 4px !important;
+}
 
 /* Columna Meteo (Iconos y Cabecera) */
 .columna-meteo, .columna-simbolo-fija {	

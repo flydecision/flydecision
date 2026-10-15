@@ -7216,7 +7216,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 ${botonToggleEcmwfHTML}
                 ${botonMinutely15HTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
-                ${badgeAjusteHTML ? `<span style="display: block; line-height: 1; margin: 4px auto 6px auto; text-align: center;">${badgeAjusteHTML}</span>` : ''}
+                ${badgeAjusteHTML ? `<span class="badge-limites-wrap" style="display: block; line-height: 1; margin: 4px auto 6px auto; text-align: center;">${badgeAjusteHTML}</span>` : ''}
                 ${htmlIconosCentrales}
                 <span class="linea-divisora-edit" style="position: absolute; bottom: 34px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
@@ -7230,6 +7230,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             } else {
                 if (modoCompacto) {
                     tdDespegue.classList.add('modo-compacto');
+                    if (badgeAjusteHTML) tdDespegue.classList.add('con-badge-limites');
                     tdDespegue.style.paddingBottom = (26 + paddingExtraBoton) + 'px';
                 } else if (paddingExtraBoton > 0) {
                     tdDespegue.style.paddingBottom = (6 + paddingExtraBoton) + 'px';
