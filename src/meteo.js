@@ -9540,6 +9540,22 @@ window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
             } catch (errColor) {
                 console.warn("Aviso al actualizar color en vivo:", errColor);
             }
+
+            // Reaplicar el filtro de puntuación mínima. Con el popup abierto NO se toca el cluster:
+            // se aplica al cerrarlo (si ya no pasa el filtro, desaparece entonces).
+            if (puntuacionMinimaMapa > 0 && typeof actualizarFiltrosMapa === 'function') {
+                if (targetMarker.isPopupOpen && targetMarker.isPopupOpen()) {
+                    if (!targetMarker._filtroPendiente) {
+                        targetMarker._filtroPendiente = true;
+                        targetMarker.once('popupclose', function () {
+                            this._filtroPendiente = false;
+                            setTimeout(actualizarFiltrosMapa, 0);
+                        });
+                    }
+                } else {
+                    actualizarFiltrosMapa();
+                }
+            }
         }
     }
     
@@ -13869,12 +13885,13 @@ function inicializarMapaLeaflet() {
         }
     });
 
-    // 🛡️ PARCHE DE SEGURIDAD LEAFLET: Evita el crash "this._map is null" en _removeIcon al usar clústeres y filtros
+    // 🛡️ PARCHE DE SEGURIDAD LEAFLET (con diagnóstico): evita el crash "this._map is null" en _removeIcon
     if (typeof L !== 'undefined' && L.Marker && L.Marker.prototype._removeIcon) {
         if (!L.Marker.prototype._removeIconPatched) {
             const originalRemoveIcon = L.Marker.prototype._removeIcon;
             L.Marker.prototype._removeIcon = function () {
                 if (!this._map) {
+                    console.warn('[DIAG] _removeIcon sin _map:', this.metadata && this.metadata.despegue, new Error().stack);
                     if (this._icon && this._icon.parentNode) {
                         this._icon.parentNode.removeChild(this._icon);
                     }
@@ -13911,7 +13928,7 @@ function inicializarMapaLeaflet() {
 
     // 🛑 FUNCIONES DE ACTUALIZACIÓN DE LOS FILTROS, TANTO EJECUTIVO COMO VISUAL
 
-    window.actualizarFiltrosMapa = function actualizarFiltrosMapa() {
+    const _actualizarFiltrosMapaImpl = function () {
         // A. OBTENER ESTADOS DE LOS FILTROS
         // -------------------------------------------------------
         // 1. Obtener orientaciones
@@ -14081,21 +14098,40 @@ function inicializarMapaLeaflet() {
             if (mapCont) mapCont.classList.add('bloquear-transicion-popup');
         }
 
-        // 1. Actualizar capa LOCAL (Despegues)
-        clustergroupDespegues.clearLayers();
-        clustergroupDespegues.addLayers(markersFiltradosDespegues);
-        
-        // 2. Actualizar capa MUNDO (DespeguesMundo)
-        clustergroupDespeguesMundo.clearLayers();
-        clustergroupDespeguesMundo.addLayers(markersFiltradosDespeguesMundo);
+        // Actualización por diferencias: solo se quitan/añaden los markers que cambian de estado.
+        // (clearLayers + addLayers de ~10.000 markers con chunkedLoading se pisan si se encadenan.)
+        const aplicarDiffCapa = (grupo, listaNueva) => {
+            const nuevo = new Set(listaNueva);
+            const previo = new Set(grupo.getLayers());
+            const quitar = [];
+            previo.forEach(m => { if (!nuevo.has(m)) quitar.push(m); });
+            const anadir = listaNueva.filter(m => !previo.has(m));
+            if (quitar.length) grupo.removeLayers(quitar);
+            if (anadir.length) grupo.addLayers(anadir);
+        };
+        aplicarDiffCapa(clustergroupDespegues, markersFiltradosDespegues);
+        aplicarDiffCapa(clustergroupDespeguesMundo, markersFiltradosDespeguesMundo);
 
-        // Restaurar popup de forma instantánea y totalmente invisible durante su cálculo
-        if (marcadorAbierto) {
+        // Si el popup abierto sigue pasando el filtro no se ha tocado: no hay que reabrirlo.
+        if (marcadorAbierto && !marcadorAbierto.isPopupOpen()) {
             if (markersFiltradosDespegues.includes(marcadorAbierto) || markersFiltradosDespeguesMundo.includes(marcadorAbierto)) {
                 marcadorAbierto.openPopup();
             }
         }
-    }
+    };
+
+    window.actualizarFiltrosMapa = function actualizarFiltrosMapa() {
+        if (window._filtrandoMapa) { window._filtrarMapaOtraVez = true; return; }
+        window._filtrandoMapa = true;
+        try {
+            do {
+                window._filtrarMapaOtraVez = false;
+                _actualizarFiltrosMapaImpl();
+            } while (window._filtrarMapaOtraVez);
+        } finally {
+            window._filtrandoMapa = false;
+        }
+    };
 
     // FUNCIÓN PARA GESTIONAR EL ESTADO VISUAL DE LOS CONTROLES
     function actualizarEstadoVisualFiltros() {
@@ -14247,7 +14283,7 @@ function inicializarMapaLeaflet() {
     map.on('popupclose', function (e) {
         if (window.tablaNecesitaActualizarAjustes) {
             window.tablaNecesitaActualizarAjustes = false;
-            construir_tabla(false, true);
+            construir_tabla(false, true, true); // skipMapaUpdate: el stepper ya actualizó el marker
         }
     });
 
