@@ -361,6 +361,10 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     transition: background 0.15s;
 }
 
+/* Stepper de límites teñido (≠ 100%): los botones dejan ver el fondo del contenedor */
+.stepper-dias-seguimiento.limites-tenido .stepper-btn { background: transparent; }
+.stepper-dias-seguimiento.limites-tenido .stepper-btn:active { background: rgba(0, 0, 0, 0.08); }
+
 .stepper-btn:active {
     background: #e0e0e0;
 }

@@ -7007,7 +7007,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // Badge indicador si el despegue tiene límites personalizados
             const pctAjuste = (typeof obtenerPorcentajeAjusteDespegue === 'function') ? obtenerPorcentajeAjusteDespegue(d.ID) : 100;
             const badgeAjusteHTML = pctAjuste !== 100 ? `
-                <span style="font-weight: bold; color: ${pctAjuste < 100 ? '#ea580c' : '#0284c7'}; background: ${pctAjuste < 100 ? '#fff7ed' : '#f0f9ff'}; border: 1px solid ${pctAjuste < 100 ? '#fed7aa' : '#bae6fd'}; border-radius: 4px; padding: 1px 5px; display: inline-block;" title="${t('popupDespegue.titleAjusteLimites', { defaultValue: 'Ajuste personalizado de límites de viento' })}: ${pctAjuste}%">${pctAjuste}%</span>
+                <span style="font-weight: bold; color: ${pctAjuste < 100 ? '#ea580c' : '#0284c7'}; background: ${pctAjuste < 100 ? '#ffedd5' : '#e0f2fe'}; border: 1px solid ${pctAjuste < 100 ? '#fed7aa' : '#bae6fd'}; border-radius: 4px; padding: 1px 5px; display: inline-block;" title="${t('popupDespegue.titleAjusteLimites', { defaultValue: 'Ajuste personalizado de límites de viento' })}: ${pctAjuste}%">${pctAjuste}%</span>
             ` : '';
 
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
@@ -9483,22 +9483,8 @@ window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
         el.style.color = nuevo < 100 ? '#ea580c' : (nuevo > 100 ? '#0284c7' : '#333');
     });
 
-        // 1b. Límites efectivos en el hueco reservado sobre el stepper (no cambia el tamaño del popup)
-    const LIM = obtenerLimitesEfectivosDespegue(idDespegue);
-    const fmt = n => String(Number(n.toFixed(0)));
-    const vel = fmt(LIM.max), racha = fmt(LIM.racha);
-    const textoLimites = (typeof t === 'function')
-        ? t('popupDespegue.limitesEfectivos', { defaultValue: 'Viento máx.: {{vel}} km/h<br>Racha máx.: {{racha}} km/h', vel, racha })
-        : `Viento máx. ${vel} km/h<br>Racha máx. ${racha} km/h`;
-    const MS_VISIBLE_LINEA_LIMITES = Infinity; // sin nuevos toques, se oculta en 3 seg si ponemos 3000; Infinity = hasta cerrar el popup
-    document.querySelectorAll(`.linea-limites-efectivos[data-id-desp="${idDespegue}"]`).forEach(linea => {
-        linea.innerHTML = textoLimites; // solo números interpolados + el <br> de la traducción
-        linea.style.visibility = 'visible';
-        clearTimeout(linea._tOcultar);
-        if (isFinite(MS_VISIBLE_LINEA_LIMITES)) {
-            linea._tOcultar = setTimeout(() => { linea.style.visibility = 'hidden'; }, MS_VISIBLE_LINEA_LIMITES);
-        }
-    });
+    // 1b. Fondo del stepper y límites efectivos (siempre visibles si ≠ 100%)
+    pintarEstadoLimitesDespegue(idDespegue, nuevo);
 
     // 2. Controlar estado de botones y botón de reset
     document.querySelectorAll(`.stepper-limites-menos-${idDespegue}`).forEach(btn => {
@@ -9606,6 +9592,9 @@ function generarHtmlStepperLimites(idDespegue) {
     const idNum = Number(idDespegue);
     if (!idNum) return '';
     const pct = obtenerPorcentajeAjusteDespegue(idNum);
+    const fondoStepper = fondoStepperLimites(pct);
+    const fondoBloque = fondoBloqueLimites(pct);
+    const textoLim = pct !== 100 ? textoLimitesEfectivos(idNum) : '';
     const colorValor = pct < 100 ? '#ea580c' : (pct > 100 ? '#0284c7' : '#333');
     const labelTexto = typeof t === 'function' ? t('popupDespegue.ajusteLimites', { defaultValue: 'Límites:' }) : 'Límites:';
     const tooltipTitle = typeof t === 'function' 
@@ -9613,7 +9602,7 @@ function generarHtmlStepperLimites(idDespegue) {
         : 'Ajusta los límites de viento y racha para este despegue. Menor al 100% es más restrictivo y mayor al 100% más tolerante.';
 
     return `
-        <div class="bloque-ajuste-limites" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 13px 0 8px 0; padding: 3px 7px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;" title="${tooltipTitle}">
+        <div class="bloque-ajuste-limites" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 13px 0 8px 0; padding: 3px 7px; background: ${fondoBloque}; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;" title="${tooltipTitle}">
             <span style="font-weight: bold; color: #1e293b; white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 2px;">
                 <span style="display: flex; align-items: center; gap: 3px;">
                     <img src="/icons/icono_viento_60.webp" width="20" height="20" style="display: block;">
@@ -9622,14 +9611,14 @@ function generarHtmlStepperLimites(idDespegue) {
                 <span>${labelTexto}</span>
             </span>
             <div style="display: inline-flex; align-items: center; gap: 4px; margin-left: auto;">
-                <div class="stepper-dias-seguimiento" style="margin: 0; background: #fff;">
+                <div class="stepper-dias-seguimiento ${pct !== 100 ? 'limites-tenido' : ''}" style="margin: 0; background: ${fondoStepper};">
                     <button type="button" class="stepper-btn stepper-limites-menos-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, -10);" ${pct <= 50 ? 'disabled' : ''} style="cursor: pointer;">−</button>
                     <span class="stepper-valor valor-ajuste-limites-${idNum}" style="min-width: 44px; text-align: center; font-weight: bold; border-left: 1px solid #ccc; border-right: 1px solid #ccc; height: 28px; line-height: 28px; color: ${colorValor}; padding: 0 4px; display: inline-block;">${pct}%</span>
                     <button type="button" class="stepper-btn stepper-limites-mas-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, 10);" ${pct >= 200 ? 'disabled' : ''} style="cursor: pointer;">+</button>
                 </div>
             </div>
         </div>
-        <div class="linea-limites-efectivos" data-id-desp="${idNum}" style="visibility: hidden; margin-bottom: 10px; line-height: 20px; color: #475569; text-align: left; white-space: nowrap;"></div>
+        <div class="linea-limites-efectivos" data-id-desp="${idNum}" style="display: ${textoLim ? 'block' : 'none'}; margin-bottom: 10px; line-height: 20px; color: #475569; text-align: left; white-space: nowrap;">${textoLim}</div>
     `;
 }
 
@@ -9641,6 +9630,52 @@ function obtenerLimitesEfectivosDespegue(idDespegue) {
              tolSup: max - (max - ideal) / 3,
              rachaTol: racha - (racha - max) / 3 };
 }
+
+// Texto de los límites efectivos (usa aquí tu t() actual si ya tienes tu propia clave y formato)
+function textoLimitesEfectivos(idDespegue) {
+    const L = obtenerLimitesEfectivosDespegue(idDespegue);
+    const fmt = n => String(Number(n.toFixed(0)));
+    const vel = fmt(L.max), racha = fmt(L.racha);
+    return (typeof t === 'function')
+        ? t('popupDespegue.limitesEfectivos', { defaultValue: 'Viento máx.: {{vel}} km/h<br>Racha máx.: {{racha}} km/h', vel, racha })
+        : `Viento máx.: ${vel} km/h<br>Racha máx.: ${racha} km/h`;
+}
+
+// Fondo del stepper según el porcentaje (más claro que el color de la cifra)
+function fondoStepperLimites(pct) {
+    return pct < 100 ? '#ffedd5' : (pct > 100 ? '#e0f2fe' : '#fff');
+}
+
+// Fondo del bloque completo (más suave que el del stepper). A 100% se queda como estaba.
+function fondoBloqueLimites(pct) {
+    return pct < 100 ? '#ffedd5' : (pct > 100 ? '#e0f2fe' : '#f8fafc');
+}
+
+// Pinta fondos y línea de límites en TODOS los popups abiertos de ese despegue.
+// La línea, una vez visible, se mantiene aunque se vuelva a 100% (evita que el popup se encoja y el
+// stepper baje bajo el dedo). Con reiniciar = true (al abrir/cerrar el popup) vuelve a ocultarse a 100%.
+window.pintarEstadoLimitesDespegue = function (idDespegue, pct, reiniciar = false) {
+    const fondo = fondoStepperLimites(pct);
+    const texto = textoLimitesEfectivos(idDespegue);
+    document.querySelectorAll(`.valor-ajuste-limites-${idDespegue}`).forEach(el => {
+        const stepper = el.closest('.stepper-dias-seguimiento');
+        if (stepper) {
+            stepper.style.background = fondo;
+            stepper.classList.toggle('limites-tenido', pct !== 100);
+        }
+
+        const bloque = el.closest('.bloque-ajuste-limites');
+        if (bloque) bloque.style.background = fondoBloqueLimites(pct);
+
+        const linea = bloque && bloque.nextElementSibling;
+        if (linea && linea.classList.contains('linea-limites-efectivos')) {
+            const yaVisible = linea.style.display !== 'none';
+            const mostrar = pct !== 100 || (yaVisible && !reiniciar);
+            linea.innerHTML = texto;
+            linea.style.display = mostrar ? 'block' : 'none';
+        }
+    });
+};
 
 // Refresca en vivo puntuación y colores de UN despegue en la tabla (sin reconstruirla)
 window.refrescarDespegueEnTabla = function (idDespegue) {
@@ -11477,7 +11512,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 
                 // Aplicar límites de altura y scroll vertical únicamente para el botón "i" del despegue
                 if (esInfoDespegue) {
-                    scrollArea.style.maxHeight = '330px';
+                    scrollArea.style.maxHeight = '351px';
                     scrollArea.style.overflowY = 'auto';
                     scrollArea.style.paddingRight = '8px';
                     scrollArea.style.boxSizing = 'border-box';
@@ -11490,7 +11525,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 instance.setContent(fragment);
             },
             onHidden(instance) {
-                instance.popper.querySelectorAll('.linea-limites-efectivos').forEach(el => { clearTimeout(el._tOcultar); el.style.visibility = 'hidden'; });
+                instance.popper.querySelectorAll('.linea-limites-efectivos').forEach(l => {
+                    const id = Number(l.dataset.idDesp);
+                    if (id) pintarEstadoLimitesDespegue(id, obtenerPorcentajeAjusteDespegue(id), true);
+                });
                 if (window.tablaNecesitaActualizarAjustes) {
                     window.tablaNecesitaActualizarAjustes = false;
                     construir_tabla(false, true);
@@ -15241,15 +15279,13 @@ function inicializarMapaLeaflet() {
                             actualizarVistaOjo(btnSeg, esSeg);
                         }
 
-                        // La línea temporal de límites efectivos no debe verse al abrir el popup
-                        popupEl.querySelectorAll('.linea-limites-efectivos').forEach(el => { clearTimeout(el._tOcultar); el.style.visibility = 'hidden'; });
-
                         // Sincronizar stepper de ajuste de límites dinámicamente
                         const elPct = popupEl.querySelector(`.valor-ajuste-limites-${idDespegue}`);
                         if (elPct) {
                             const pctActual = obtenerPorcentajeAjusteDespegue(idDespegue);
                             elPct.textContent = `${pctActual}%`;
                             elPct.style.color = pctActual < 100 ? '#ea580c' : (pctActual > 100 ? '#0284c7' : '#333');
+                            pintarEstadoLimitesDespegue(idDespegue, pctActual, true);
 
                             const btnMenos = popupEl.querySelector(`.stepper-limites-menos-${idDespegue}`);
                             if (btnMenos) btnMenos.disabled = (pctActual <= 50);
