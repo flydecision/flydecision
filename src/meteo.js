@@ -85,9 +85,24 @@ let bdGlobalDespegues = [];
 
 const cacheSVG_Tabla = {};
 
+// Valores por defecto de la primera visita (solo usuarias nuevas; no pisa lo que ya esté guardado)
+(function sembrarDefaultsPrimeraVisita() {
+    // Misma condición que el "CASO A: Primera visita" del arranque
+    if (localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") || localStorage.getItem("METEO_FAVORITOS_LISTA")) return;
+    const defaults = {
+        "METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS": "false",   // filas 20, 50 y 100 m
+        "METEO_CHECKBOX_MOSTRAR_CIZALLADURA": "false",      // cizalladura / fiabilidad
+        "METEO_CONFIG_ECMWF_MODE": "desplegable",           // viento ECMWF en modo oculto
+        "METEO_CHECKBOX_MOSTRAR_MINUTELY15": "true"         // viento Arome 15 min
+    };
+    for (const clave in defaults) {
+        if (localStorage.getItem(clave) === null) localStorage.setItem(clave, defaults[clave]);
+    }
+})();
+
 let chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false"; // Por defecto true para que lo vean
 
-let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "true"; // Por defecto falso 
+let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false"; 
 
 // ECMWF
 const chkMostrarPrecipitacion = true; // Siempre activo
@@ -5793,9 +5808,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 localStorage.setItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ", "true");
                 localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO", "10");
                 localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN", "20");
-                localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", "true");
-                chkMostrarVientoAlturas = true;
-                if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = true; 
+                localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", "false");
+                chkMostrarVientoAlturas = false;
+                if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = false; 
                 localStorage.setItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA", "false"); // Desactivado por defecto en la primera visita
                 chkMostrarCizalladura = false;
                 if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = false; 
@@ -7076,8 +7091,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     paddingExtraBoton = 0; 
                     bottomValue = 24;
                 } else {
-                    paddingExtraBoton = 32;
-                    bottomValue = bottomNum + 32; 
+                    // El dock gris de los 4 botones mide 70 px (69 + 1 de borde, ver ::before en meteo.css):
+                    // los 2 botones tienen que empezar por encima, con ~4 px de margen
+                    paddingExtraBoton = 40;
+                    bottomValue = bottomNum + 40; 
                 }
 
                 if (initialRowSpan > 12) {
