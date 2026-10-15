@@ -6493,6 +6493,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         const cacheEsNoche = [];
         const cacheFechas = [];
         const indicesEvaluacionTabla = []; // Contendrá solo los índices válidos a evaluar
+        window.indicesEvaluacionTablaActual = indicesEvaluacionTabla; // para refrescar un despegue en vivo
+        window._ctxTabla = new Map(); // idDespegue -> { d, hourlyData, hourlyEcmwf }
 
         if (horas && horas.length > 0) {
             horas.forEach((h, i) => {
@@ -6622,6 +6624,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
             const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0; //Nota: como no hemos puesto en la URL elevation=nan, el downgrading topográfico calcula la altitud real del despegue con DEM 90m, así que este dato realmente es la altitud del despegue (no ocurre lo mismo con Arome/ICON, ya que ahí hemos puesto elevation=nan y la altitud sí que es la media de la celda)
             const hayDatosMeteo = hourlyData !== null;
+            window._ctxTabla.set(Number(d.ID), { d, hourlyData, hourlyEcmwf });
             let orientaciones = d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()));
 
             // -----------------------------------------------------------
@@ -6742,6 +6745,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             const todasLasFilas = [...rowsGroup1, ...rowsEcmwfWind, ...rowsGroup2];
             const filaPrincipal = todasLasFilas[0];
+            todasLasFilas.forEach(f => { f.dataset.idDesp = d.ID; });
             const totalFilasRowSpan = todasLasFilas.length;
 
             // --- CALCULAMOS EL ROWSPAN REAL INICIAL ---
@@ -8345,6 +8349,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 }
 
                                 tdVel10.title = `${v10} km/h (Velocidad 10 m AGL ECMWF)`;
+                                tdVel10.dataset.lim10 = 'v';
                             }
                             filaEcmwfVel10.appendChild(tdVel10);
 
@@ -8373,6 +8378,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 }
 
                                 tdRacha10.title = `${r10} km/h (Racha máxima 10 m AGL ECMWF)`;
+                                tdRacha10.dataset.lim10 = 'r';
                             }
                             filaEcmwfRacha10.appendChild(tdRacha10);
 
@@ -8422,6 +8428,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             
             tdCondiciones.style.fontWeight = "bold";
 			tdCondiciones.classList.add("borde-grueso-izquierda", "borde-grueso-abajo", "borde-grueso-derecha", "celda-condiciones-inicio");
+            tdCondiciones.dataset.celdaNota = 'cond';
+            tdCondiciones.dataset.idDesp = idDespegue;
             //tdCondiciones.style.cursor = "help"; 
 
             if (horasValidas > 0) {
@@ -8473,6 +8481,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tdCondicionesXC.style.fontWeight = "bold";
                     tdCondicionesXC.style.textAlign = "center";
                     tdCondicionesXC.classList.add("borde-grueso-izquierda", "borde-grueso-abajo", "borde-grueso-derecha", "celda-condiciones-final");
+                    tdCondicionesXC.dataset.celdaNota = 'xc';
+                    tdCondicionesXC.dataset.idDesp = idDespegue;
 
                     if (valorVisualXC !== "-") {
                         tdCondicionesXC.style.backgroundColor = coloresNota[valorVisualXC];
@@ -9473,6 +9483,23 @@ window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
         el.style.color = nuevo < 100 ? '#ea580c' : (nuevo > 100 ? '#0284c7' : '#333');
     });
 
+        // 1b. Límites efectivos en el hueco reservado sobre el stepper (no cambia el tamaño del popup)
+    const LIM = obtenerLimitesEfectivosDespegue(idDespegue);
+    const fmt = n => String(Number(n.toFixed(1)));
+    const vel = fmt(LIM.max), racha = fmt(LIM.racha);
+    const textoLimites = (typeof t === 'function')
+        ? t('popupDespegue.limitesEfectivos', { defaultValue: 'Viento máx. {{vel}} km/h<br>Racha máx. {{racha}} km/h', vel, racha })
+        : `Viento máx. ${vel} km/h<br>Racha máx. ${racha} km/h`;
+    const MS_VISIBLE_LINEA_LIMITES = Infinity; // sin nuevos toques, se oculta en 3 seg si ponemos 3000; Infinity = hasta cerrar el popup
+    document.querySelectorAll(`.linea-limites-efectivos[data-id-desp="${idDespegue}"]`).forEach(linea => {
+        linea.innerHTML = textoLimites; // solo números interpolados + el <br> de la traducción
+        linea.style.visibility = 'visible';
+        clearTimeout(linea._tOcultar);
+        if (isFinite(MS_VISIBLE_LINEA_LIMITES)) {
+            linea._tOcultar = setTimeout(() => { linea.style.visibility = 'hidden'; }, MS_VISIBLE_LINEA_LIMITES);
+        }
+    });
+
     // 2. Controlar estado de botones y botón de reset
     document.querySelectorAll(`.stepper-limites-menos-${idDespegue}`).forEach(btn => {
         btn.disabled = (nuevo <= 50);
@@ -9559,6 +9586,11 @@ window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
         }
     }
     
+    // 4. Si estamos en la tabla, refrescar en vivo nota y coloreado de ese despegue
+    if (!enMapa && typeof refrescarDespegueEnTabla === 'function') {
+        refrescarDespegueEnTabla(idDespegue);
+    }
+
     // Marcar para reconstruir la tabla al cerrar el popup o cambiar de vista
     window.tablaRecrearAlVolver = true;
     window.tablaNecesitaActualizarAjustes = true;
@@ -9592,8 +9624,75 @@ function generarHtmlStepperLimites(idDespegue) {
                 </div>
             </div>
         </div>
+        <div class="linea-limites-efectivos" data-id-desp="${idNum}" style="visibility: hidden; margin-bottom: 10px; line-height: 20px; color: #475569; text-align: left; white-space: nowrap;"></div>
     `;
 }
+
+// Límites efectivos de un despegue (única fuente de verdad: tabla, mapa y línea del stepper)
+function obtenerLimitesEfectivosDespegue(idDespegue) {
+    const f = obtenerFactorAjusteDespegue(idDespegue);
+    const min = VelocidadMin * f, ideal = VelocidadIdeal * f, max = VelocidadMax * f, racha = RachaMax * f;
+    return { f, min, ideal, max, racha,
+             tolSup: max - (max - ideal) / 3,
+             rachaTol: racha - (racha - max) / 3 };
+}
+
+// Refresca en vivo puntuación y colores de UN despegue en la tabla (sin reconstruirla)
+window.refrescarDespegueEnTabla = function (idDespegue) {
+    idDespegue = Number(idDespegue);
+    const filas = document.querySelectorAll(`tr[data-id-desp="${idDespegue}"]`);
+    if (!filas.length) return;
+
+    const L = obtenerLimitesEfectivosDespegue(idDespegue);
+    const claseV = v => v < L.min ? 'fondo-naranja' : (v <= L.tolSup ? 'fondo-verde' : (v < L.max ? 'fondo-naranja' : 'fondo-rojo'));
+    const claseR = r => r < L.rachaTol ? 'fondo-verde' : (r < L.racha ? 'fondo-naranja' : 'fondo-rojo');
+    const pintar = (td, clase) => { td.classList.remove('fondo-verde', 'fondo-naranja', 'fondo-rojo'); td.classList.add(clase); };
+
+    filas.forEach(tr => {
+        tr.querySelectorAll('td').forEach(td => {
+            const ds = td.dataset;
+            if (ds.vRaw !== undefined) {            // viento medio (+ "mochila" de pulsación larga)
+                pintar(td, claseV(Number(td.textContent)));
+                ds.cRaw = claseV(Number(ds.vRaw));
+                ds.cCorr = claseV(Number(ds.vCorr));
+            } else if (ds.rRaw !== undefined) {     // racha
+                pintar(td, claseR(Number(td.textContent)));
+                ds.cRaw = claseR(Number(ds.rRaw));
+                ds.cCorr = claseR(Number(ds.rCorr));
+            } else if (ds.lim10 === 'v') {          // ECMWF 10 m velocidad
+                pintar(td, claseV(Number(td.textContent)));
+            } else if (ds.lim10 === 'r') {          // ECMWF 10 m racha
+                pintar(td, claseR(Number(td.textContent)));
+            }
+        });
+    });
+
+    // Puntuaciones (condiciones y XC)
+    const ctx = window._ctxTabla && window._ctxTabla.get(idDespegue);
+    if (!ctx || !ctx.hourlyData) return;
+    try {
+        const ev = calcularPuntuacionesDespegue(ctx.d, ctx.hourlyData, ctx.hourlyEcmwf, window.indicesEvaluacionTablaActual || []);
+
+        const tdCond = document.querySelector(`td[data-celda-nota="cond"][data-id-desp="${idDespegue}"]`);
+        if (tdCond) {
+            const nota = ev.notaCondiciones !== null ? ev.notaCondiciones : 0;
+            const valor = ev.horasValidas > 0 ? Math.round(nota) : '-';
+            tdCond.textContent = valor;
+            tdCond.title = ev.horasValidas > 0 ? `Nota Condiciones despegue: ${nota.toFixed(1)} puntos` : 'Sin datos suficientes para puntuar';
+            tdCond.style.backgroundColor = valor !== '-' ? COLORES_NOTA_MAPA[valor] : '#f0f0f0';
+        }
+        const tdXC = document.querySelector(`td[data-celda-nota="xc"][data-id-desp="${idDespegue}"]`);
+        if (tdXC) {
+            const notaXC = ev.notaXC !== null ? ev.notaXC : 0;
+            const valorXC = ev.horasValidasXC > 0 ? Math.round(notaXC) : '-';
+            tdXC.textContent = valorXC;
+            tdXC.title = ev.horasValidasXC > 0 ? `Nota Condiciones XC: ${notaXC.toFixed(1)} puntos` : 'Sin datos suficientes para puntuar XC';
+            tdXC.style.backgroundColor = valorXC !== '-' ? COLORES_NOTA_MAPA[valorXC] : '#f0f0f0';
+        }
+    } catch (e) {
+        console.warn('Aviso al refrescar la nota en vivo:', e);
+    }
+};
 
 // ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
@@ -11386,6 +11485,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 instance.setContent(fragment);
             },
             onHidden(instance) {
+                instance.popper.querySelectorAll('.linea-limites-efectivos').forEach(el => { clearTimeout(el._tOcultar); el.style.visibility = 'hidden'; });
                 if (window.tablaNecesitaActualizarAjustes) {
                     window.tablaNecesitaActualizarAjustes = false;
                     construir_tabla(false, true);
@@ -15128,6 +15228,9 @@ function inicializarMapaLeaflet() {
                             btnSeg.title = esSeg ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
                             actualizarVistaOjo(btnSeg, esSeg);
                         }
+
+                        // La línea temporal de límites efectivos no debe verse al abrir el popup
+                        popupEl.querySelectorAll('.linea-limites-efectivos').forEach(el => { clearTimeout(el._tOcultar); el.style.visibility = 'hidden'; });
 
                         // Sincronizar stepper de ajuste de límites dinámicamente
                         const elPct = popupEl.querySelector(`.valor-ajuste-limites-${idDespegue}`);
