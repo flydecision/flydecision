@@ -6177,6 +6177,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
 		thFavorito.onclick = function() { gestionarClickMasivoFavoritos(); };
 
+		// Modo edición de límites: la cabecera resetea todos los límites (vacía si ya no queda ninguno)
+		if (modoEdicionLimites) {
+			const quedanLimites = obtenerIdsDespeguesConLimites().length > 0;
+			thFavorito.innerHTML = quedanLimites ? '<span style="font-size: 24px; line-height: 1; color: #555;">↺</span>' : '';
+			thFavorito.title = quedanLimites ? t('ajustes.resetearTodosLimites', { defaultValue: 'Resetear todos los límites' }) : '';
+			thFavorito.style.cursor = quedanLimites ? 'pointer' : 'default';
+			thFavorito.onclick = quedanLimites ? function() { resetearTodosLosLimites(); } : null;
+		}
+
         // ---------------------------------------------------------------
         // 🟡 CONSTRUCCIÓN DE LA TABLA Cabecera. País
         // ---------------------------------------------------------------
@@ -10069,8 +10078,8 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
         }
     }
 
-    // 4. Corazón de la cabecera (Modo edición)
-    if (modoEdicionFavoritos) {
+    // 4. Corazón de la cabecera (Modo edición de favoritos; en el de límites la cabecera es el ↺)
+    if (modoEdicionFavoritos && !modoEdicionLimites) {
         const thFavorito = document.getElementById('id-thFavorito'); 
         if(thFavorito) thFavorito.innerHTML = '<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
     }
