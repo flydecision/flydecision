@@ -9556,6 +9556,11 @@ window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
                     // 1. Guardamos la nueva definición del icono en memoria para cuando el clúster se redibuje
                     targetMarker.options.icon = window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color, actividadScore);
 
+                    // 1b. Refrescar solo los clusters que contienen este marker (color según nota máxima de sus hijos)
+                    if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues.refreshClusters) {
+                        clustergroupDespegues.refreshClusters(targetMarker);
+                    }
+
                     // 2. Si el icono está actualmente dibujado en pantalla, cambiamos su color directamente en el DOM
                     if (targetMarker._icon) {
                         const labelEl = targetMarker._icon.querySelector('.label-large-despegues');
@@ -14381,12 +14386,19 @@ function inicializarMapaLeaflet() {
     });
 
     map.on('popupclose', function (e) {
-        if (window.tablaNecesitaActualizarAjustes) {
-            window.tablaNecesitaActualizarAjustes = false;
-            construir_tabla(false, true, true); // skipMapaUpdate: el stepper ya actualizó el marker
-        }
-    });
+        if (!window.tablaNecesitaActualizarAjustes) return;
 
+        const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+        if (enMapa) {
+            // La tabla no se ve y el stepper ya dejó marcado tablaRecrearAlVolver:
+            // se reconstruirá una sola vez al volver a ella. Aquí solo apagamos el aviso.
+            window.tablaNecesitaActualizarAjustes = false;
+            return;
+        }
+
+        window.tablaNecesitaActualizarAjustes = false;
+        construir_tabla(false, true, true);
+    });
 
     // 3. Agregar el marcador si se usaron coordenadas de la URL solo si las coordenadas vinieron de la URL, agregamos el marcador y el popup
     //if (!isNaN(urlLat) && !isNaN(urlLon)) {
