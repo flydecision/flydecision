@@ -6919,7 +6919,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
                 <div style="line-height: 1.4; max-width: 232px;">
-                    <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${d.Despegue}</b></span><br><br>   
+                    <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${d.Despegue}</b></span>   
 
                     ${generarHtmlStepperLimites(d.ID)}
                     
@@ -6964,7 +6964,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         🗺️ <a href='https://nakarte.me/#m=15/${Number(latitud).toFixed(4)}/${Number(longitud).toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${Number(latitud).toFixed(4)}/${Number(longitud).toFixed(4)}/${d.Despegue} (${d.Orientación}' onclick='abrirLinkExterno(this.href); return false;'>Nakarte</a><br>
                         🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${longitud}%20${latitud}&filter[radius]=500' onclick='abrirLinkExterno(this.href); return false;'>XContest (&plusmn; 500 m)</a><br>
 
-                        <br><div style="margin-bottom: 5px;">${d.Más_información}</div>
+                        <div style="margin-bottom: 5px;">${d.Más_información}</div>
 
                     </div>
                 </div>
@@ -7007,7 +7007,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // Badge indicador si el despegue tiene límites personalizados
             const pctAjuste = (typeof obtenerPorcentajeAjusteDespegue === 'function') ? obtenerPorcentajeAjusteDespegue(d.ID) : 100;
             const badgeAjusteHTML = pctAjuste !== 100 ? `
-                <span style="font-weight: bold; color: ${pctAjuste < 100 ? '#ea580c' : '#0284c7'}; background: ${pctAjuste < 100 ? '#fff7ed' : '#f0f9ff'}; border: 1px solid ${pctAjuste < 100 ? '#fed7aa' : '#bae6fd'}; border-radius: 4px; padding: 1px 5px; display: inline-block;" title="${t('popupDespegue.ajusteLimites', { defaultValue: 'Ajuste de límites' })}: ${pctAjuste}%">${pctAjuste}%</span>
+                <span style="font-weight: bold; color: ${pctAjuste < 100 ? '#ea580c' : '#0284c7'}; background: ${pctAjuste < 100 ? '#fff7ed' : '#f0f9ff'}; border: 1px solid ${pctAjuste < 100 ? '#fed7aa' : '#bae6fd'}; border-radius: 4px; padding: 1px 5px; display: inline-block;" title="${t('popupDespegue.titleAjusteLimites', { defaultValue: 'Ajuste personalizado de límites de viento' })}: ${pctAjuste}%">${pctAjuste}%</span>
             ` : '';
 
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
@@ -9485,10 +9485,10 @@ window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
 
         // 1b. Límites efectivos en el hueco reservado sobre el stepper (no cambia el tamaño del popup)
     const LIM = obtenerLimitesEfectivosDespegue(idDespegue);
-    const fmt = n => String(Number(n.toFixed(1)));
+    const fmt = n => String(Number(n.toFixed(0)));
     const vel = fmt(LIM.max), racha = fmt(LIM.racha);
     const textoLimites = (typeof t === 'function')
-        ? t('popupDespegue.limitesEfectivos', { defaultValue: 'Viento máx. {{vel}} km/h<br>Racha máx. {{racha}} km/h', vel, racha })
+        ? t('popupDespegue.limitesEfectivos', { defaultValue: 'Viento máx.: {{vel}} km/h<br>Racha máx.: {{racha}} km/h', vel, racha })
         : `Viento máx. ${vel} km/h<br>Racha máx. ${racha} km/h`;
     const MS_VISIBLE_LINEA_LIMITES = Infinity; // sin nuevos toques, se oculta en 3 seg si ponemos 3000; Infinity = hasta cerrar el popup
     document.querySelectorAll(`.linea-limites-efectivos[data-id-desp="${idDespegue}"]`).forEach(linea => {
@@ -15188,7 +15188,7 @@ function inicializarMapaLeaflet() {
                                 🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' onclick='abrirLinkExterno(this.href); return false;'>Nakarte</a><br>
                                 🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' onclick='abrirLinkExterno(this.href); return false;'>XContest (&plusmn; 500 m)</a><br>
 
-                                <br><div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
+                                <div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
                                 
                             </div>
                         </div>

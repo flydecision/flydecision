@@ -3882,7 +3882,8 @@ h3 {
 }
 /* 2. Limita la altura máxima de todos los globos */
 .leaflet-popup-content {
-    max-height: 347px !important; /* Para que se corte a la mitad en la última fila e invite a hacer scroll */
+    /* Para que se corte a la mitad en la última fila e invite a hacer scroll */
+    max-height: 377px !important;
     overflow-y: auto !important;   /* Activa el scroll solo si el contenido supera los 300px */
     padding-right: 8px !important;  /* Margen de seguridad para el texto */
     box-sizing: border-box;

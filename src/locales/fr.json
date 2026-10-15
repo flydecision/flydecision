@@ -831,7 +831,9 @@
     "nivelActividad": "Niveau d'activité :",
     "nivelActividadTitle": "Activité du site basée sur la date du dernier vol (réf : nov. 2025) : Vert 0-6 mois, Orange 6-12, Jaune 12-24, Blanc >24 mois sans vols",
     "tooltipAjusteLimites": "Ajuste les limites générales de vent et de rafale pour ce décollage. Moins de 100 % est plus restrictif (nous voulons moins de vent sur ce décollage) et plus de 100 % est plus tolérant (nous acceptons plus de vent).",
-    "ajusteLimites": "Limites :"
+    "ajusteLimites": "Limites :",
+    "titleAjusteLimites": "Ajustement personnalisé des limites de vent",
+    "limitesEfectivos": "Vent max. : {{vel}} km/h<br>Rafale max. : {{racha}} km/h"
   },
 
   "html": {

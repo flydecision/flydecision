@@ -831,7 +831,9 @@
     "nivelActividad": "Aktivitätsniveau:",
     "nivelActividadTitle": "Standortaktivität basierend auf dem Datum des letzten Fluges (Ref: Nov 2025): Grün 0-6 Monate, Orange 6-12, Gelb 12-24, Weiß >24 Monate ohne Flüge",
     "tooltipAjusteLimites": "Passt die allgemeinen Wind- und Böengrenzwerte für diesen Startplatz an. Weniger als 100% ist restriktiver (wir wollen weniger Wind an diesem Startplatz) und mehr als 100% toleranter (wir akzeptieren mehr Wind).",
-    "ajusteLimites": "Grenzwerte:"
+    "ajusteLimites": "Grenzwerte:",
+    "titleAjusteLimites": "Individuelle Anpassung der Windgrenzwerte",
+    "limitesEfectivos": "Max. Wind: {{vel}} km/h<br>Max. Böe: {{racha}} km/h"
   },
 
   "html": {

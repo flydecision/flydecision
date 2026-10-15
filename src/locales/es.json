@@ -833,7 +833,9 @@
     "nivelActividad": "Nivel de actividad:",
     "nivelActividadTitle": "Nivel de uso del despegue según fecha del último vuelo registrado (referencia: nov-2025): Verde 0–6 meses, Naranja 6–12, Amarillo 12–24, Blanco >24 meses sin vuelos",
     "tooltipAjusteLimites": "Ajusta los límites generales de viento y racha para este despegue. Menor al 100% es más restrictivo (queremos menos viento en ese despegue) y mayor al 100% más tolerante (aceptamos más viento).",
-    "ajusteLimites": "Límites:"
+    "ajusteLimites": "Límites:",
+    "titleAjusteLimites": "Ajuste personalizado de límites de viento",
+    "limitesEfectivos": "Viento máx.: {{vel}} km/h<br>Racha máx.: {{racha}} km/h"
   },
 
   "html": {
