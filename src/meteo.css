@@ -226,6 +226,7 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
 /* 🟡 BOTONES -------------------------------- */
 
 #btn-filtro-favoritos-toggle,
+#btn-filtro-no-favoritos-toggle,
 #btn-desmarcar-favoritos,
 #btn-abrir-favoritos,
 #btn-guardar-favoritos,
@@ -385,10 +386,31 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
 }
 
 /* 🔴 MODO EDICIÓN DE LÍMITES: se oculta buscador, filtro de distancia y contador de favoritos */
-/* body.modo-edicion-limites #floating-search-container, */
+
 body.modo-edicion-limites #div-filtro-distancia,
-body.modo-edicion-limites #contador-favoritos-texto {
+body.modo-edicion-limites #contador-favoritos-texto,
+body.modo-edicion-limites #btn-desmarcar-favoritos,
+body.modo-edicion-limites #btn-abrir-favoritos,
+body.modo-edicion-limites #btn-guardar-favoritos,
+body.modo-edicion-limites #btn-guia-edicion-favoritos {
     display: none !important;
+}
+/* Filtro "solo no favoritos": solo existe en el modo edición de límites */
+#btn-filtro-no-favoritos-toggle { display: none; }
+body.modo-edicion-limites #btn-filtro-no-favoritos-toggle { display: flex; }
+
+/* Hundido, igual que el filtro de favoritos */
+#btn-filtro-no-favoritos-toggle.activo {
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+    padding-top: 2px;
+    border-color: #999;
+}
+#btn-filtro-no-favoritos-toggle.filtro-aplicado {
+    border-color: #ff0000 !important;
+    border-width: 1px !important;
+    box-shadow:
+        inset 0 0 0 2px #ff0000,
+        inset 1px 1px 3px rgba(0,0,0,0.4) !important;
 }
 
 /* 🎨 SLIDER DE LÍMITE DE VIENTO EN BALIZAS */
@@ -3893,8 +3915,8 @@ h3 {
 }
 /* 2. Limita la altura máxima de todos los globos */
 .leaflet-popup-content {
-    /* Para que se corte a la mitad en la última fila e invite a hacer scroll */
-    max-height: 377px !important;
+    /* Para que se corte a la mitad en la última fila e invite a hacer scroll. 377px antes */
+    max-height: 385px !important; 
     overflow-y: auto !important;   /* Activa el scroll solo si el contenido supera los 300px */
     padding-right: 8px !important;  /* Margen de seguridad para el texto */
     box-sizing: border-box;
