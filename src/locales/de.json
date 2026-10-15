@@ -679,7 +679,13 @@
       "descFavoritos": "Hinzufügen und Verwalten regelmäßiger Startplätze",
       "btnAjustes": "Einstellungen",
       "descAjustes": "Sprache, Grenzwerte für die Punktzahl, Anpassung der angezeigten Daten..."
-    }
+    },
+    "gestionarLimitesDespegues": "Startplätze mit benutzerdefinierten Grenzwerten bearbeiten",
+    "sinDespeguesConLimites": "Es gibt keine Startplätze mit benutzerdefinierten Grenzwerten mehr.",
+    "confirmarResetTodosLimites": "Die benutzerdefinierten Grenzwerte aller Startplätze zurücksetzen?.<br><br>Diese Aktion konfiguriert alle Startplätze mit dem ursprünglichen Grenzwert von 100 %, d. h. mit den allgemeinen Grenzwerten, die unter <i>Einstellungen > Wind- und Böengrenzwerte konfiguriert sind.",
+    "resetearTodosLimites": "Alle Grenzwerte zurücksetzen",
+    "finalizarEdicionLimites": "Bearbeitung der Grenzwerte beenden",
+    "resetearLimite": "Zurück auf 100% (allgemeine Grenzwerte)"
   },
 
   "mapa": {

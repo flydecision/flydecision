@@ -384,6 +384,27 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     line-height: 28px;
 }
 
+/* 🔴 MODO EDICIÓN DE LÍMITES: se oculta buscador, filtro de distancia y contador de favoritos */
+/* body.modo-edicion-limites #floating-search-container, */
+body.modo-edicion-limites #div-filtro-distancia,
+body.modo-edicion-limites #contador-favoritos-texto {
+    display: none !important;
+}
+#btn-resetear-todos-limites { display: none; }
+body.modo-edicion-limites #btn-resetear-todos-limites {
+    display: inline-block;
+    align-self: center;
+    padding: 5px 10px;
+    background-color: #fff;
+    color: #c2410c;
+    border: 2px solid #c2410c;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-bottom: 4px;
+}
+
 /* 🎨 SLIDER DE LÍMITE DE VIENTO EN BALIZAS */
 #viento-balizas-slider .noUi-connects .noUi-connect:nth-child(1) {
     /* Degradado de verde a rojo fuerte */

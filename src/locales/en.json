@@ -679,7 +679,13 @@
       "descFavoritos": "Add and manage regular take-offs",
       "btnAjustes": "Settings",
       "descAjustes": "Language, limits for scoring, customization of displayed data..."
-    }
+    },
+    "gestionarLimitesDespegues": "Edit take-offs with custom limits",
+    "sinDespeguesConLimites": "There are no longer any take-offs with custom limits.",
+    "confirmarResetTodosLimites": "Reset the custom limits for all take-offs?.<br><br>This action will configure all take-offs with the original 100% limit, that is, with the general limits configured in <i>Settings > Wind and gust limits.",
+    "resetearTodosLimites": "Reset all limits",
+    "finalizarEdicionLimites": "Finish editing limits",
+    "resetearLimite": "Return to 100% (general limits)"
   },
 
   "mapa": {

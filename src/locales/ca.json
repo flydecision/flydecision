@@ -679,7 +679,13 @@
       "descFavoritos": "Afegir i gestionar enlairaments habituals",
       "btnAjustes": "Ajustos",
       "descAjustes": "Idioma, límits per a la puntuació, personalització de dades mostrades..."
-    }
+    },
+    "gestionarLimitesDespegues": "Editar enlairaments amb límits personalitzats",
+    "sinDespeguesConLimites": "Ja no queden enlairaments amb límits personalitzats.",
+    "confirmarResetTodosLimites": "¿Restejar els límits personalitzats de tots els enlairaments?.<br><br>Aquesta acció configurarà tots els enlairaments amb el límit original del 100 %, és a dir, amb els límits generals configurats a <i>Ajustos > Límits de vent i ratxa.",
+    "resetearTodosLimites": "Restejar tots els límits",
+    "finalizarEdicionLimites": "Finalitzar edició de límits",
+    "resetearLimite": "Tornar al 100% (límits generals)"
   },
 
   "mapa": {

@@ -679,7 +679,13 @@
       "descFavoritos": "Ohiko aireratzeak gehitu eta kudeatu",
       "btnAjustes": "Ezarpenak",
       "descAjustes": "Hizkuntza, puntuaziorako mugak, erakutsitako datuen pertsonalizazioa..."
-    }
+    },
+    "gestionarLimitesDespegues": "Editatu muga pertsonalizatuak dituzten aireratzeak",
+    "sinDespeguesConLimites": "Jada ez dago muga pertsonalizatuak dituen aireratzerik.",
+    "confirmarResetTodosLimites": "Aireratze guztien muga pertsonalizatuak berrezarri?.<br><br>Ekintza honek aireratze guztiak jatorrizko % 100eko mugarekin konfiguratuko ditu, hau da, <i>Ezarpenak > Haize- eta bolada-mugak atalean konfiguratutako muga orokorrekin.",
+    "resetearTodosLimites": "Muga guztiak berrezarri",
+    "finalizarEdicionLimites": "Mugen edizioa amaitu",
+    "resetearLimite": "% 100era itzuli (muga orokorrak)"
   },
 
   "mapa": {

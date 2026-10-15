@@ -679,7 +679,13 @@
       "descFavoritos": "Adicionar e gerir descolagens habituais",
       "btnAjustes": "Definições",
       "descAjustes": "Idioma, limites para a pontuação, personalização de dados mostrados..."
-    }
+    },
+    "gestionarLimitesDespegues": "Editar descolagens com limites personalizados",
+    "sinDespeguesConLimites": "Já não restam descolagens com limites personalizados.",
+    "confirmarResetTodosLimites": "Repor os limites personalizados de todas as descolagens?.<br><br>Esta ação configurará todas as descolagens com o limite original de 100%, ou seja, com os limites gerais configurados em <i>Definições > Limites de vento e rajada.",
+    "resetearTodosLimites": "Repor todos os limites",
+    "finalizarEdicionLimites": "Terminar edição de limites",
+    "resetearLimite": "Voltar aos 100% (limites gerais)"
   },
 
   "mapa": {

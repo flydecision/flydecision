@@ -11,6 +11,7 @@ let soloFavoritos;
 let soloSeguimiento = false;
 //let favoritos = [];
 let modoEdicionFavoritos = false;
+let modoEdicionLimites = false; // modo aparte: edición de despegues con límites personalizados
 let totalFavoritos = 0;
 let totalDespeguesDisponibles = 0;
 let ecmwfTimeMap = new Map();
@@ -3215,6 +3216,7 @@ function confirmarSeleccionMasiva() {
 
 // Parámetro opcional 'ignorarMenu' que por defecto es false
 function finalizarEdicionFavoritos(ignorarMenu = false) {
+    if (modoEdicionLimites) return finalizarEdicionLimites(); // salida propia: sin la validación de favoritos
     favoritos = obtenerFavoritos();
 
     if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { 
@@ -6103,6 +6105,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         }
 
 		// ---------------------------------------------------------------
+        // 🔴 MODO EDICIÓN DE LÍMITES: solo despegues con límites personalizados
+		// ---------------------------------------------------------------
+
+        if (modoEdicionLimites) {
+            const idsConLimites = window.idsEdicionLimites || new Set();
+            const rMapL = new Map(), rEcmwfMapL = new Map();
+            despegues.forEach((d, i) => {
+                rMapL.set(Number(d.ID), respuestas[i]);
+                rEcmwfMapL.set(Number(d.ID), respuestasEcmwf[i]);
+            });
+            despegues = despegues.filter(d => idsConLimites.has(Number(d.ID)));
+            respuestas = despegues.map(d => rMapL.get(Number(d.ID))).filter(r => r !== undefined);
+            respuestasEcmwf = despegues.map(d => rEcmwfMapL.get(Number(d.ID))).filter(r => r !== undefined);
+        }
+
+		// ---------------------------------------------------------------
 		// 🔴 LECTURA DEL SLIDER RANGO HORARIO (necesario para la construcción de la tabla)
 		// ---------------------------------------------------------------
 		
@@ -6843,6 +6861,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     todasLasFilas.forEach(f => f.classList.toggle("favorito", nuevoEstado));
                     
                 };
+
+                                // Modo edición de límites: ↺ resetea al 100%; ya reseteado, celda vacía y sin acción
+                if (modoEdicionLimites) {
+                    if (obtenerPorcentajeAjusteDespegue(idDespegue) !== 100) {
+                        tdFavorito.title = t('ajustes.resetearLimite', { defaultValue: 'Volver al 100% (límites generales)' });
+                        tdFavorito.innerHTML = `<span style="font-size: 24px; line-height: 1; color: #555;">↺</span>`;
+                        tdFavorito.onclick = function () {
+                            resetearLimiteDespegueEnLista(idDespegue);
+                        };
+                    } else {
+                        tdFavorito.title = '';
+                        tdFavorito.innerHTML = '';
+                        tdFavorito.onclick = null;
+                        tdFavorito.classList.remove('cursor-pointer');
+                    }
+                }
 			
 				filaPrincipal.appendChild(tdFavorito);
 
@@ -9602,6 +9636,7 @@ window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
     // Marcar para reconstruir la tabla al cerrar el popup o cambiar de vista
     window.tablaRecrearAlVolver = true;
     window.tablaNecesitaActualizarAjustes = true;
+    if (typeof actualizarBotonGestionLimites === 'function') actualizarBotonGestionLimites();
 };
 
 // Ajuste de límites. Generador del bloque HTML del Stepper para popups
@@ -9693,6 +9728,150 @@ window.pintarEstadoLimitesDespegue = function (idDespegue, pct, reiniciar = fals
         }
     });
 };
+
+// ---------------------------------------------------------------
+// 🔴 EDICIÓN DE DESPEGUES CON LÍMITES PERSONALIZADOS
+// Reutiliza el formato de edición de la tabla, pero con bandera, filtro y salida propios.
+// ---------------------------------------------------------------
+
+// IDs con límite ≠ 100% que existen en la BD (ignora claves huérfanas de despegues borrados)
+function obtenerIdsDespeguesConLimites() {
+    const ajustes = obtenerAjustesLimitesDespegues();
+    const existentes = new Set((window.bdGlobalDespegues || []).map(d => Number(d.ID)));
+    return Object.keys(ajustes).map(Number)
+        .filter(id => Number(ajustes[id]) !== 100 && (existentes.size === 0 || existentes.has(id)));
+}
+
+// Contador y estado del botón de entrada en Ajustes
+window.actualizarBotonGestionLimites = function () {
+    const btn = document.getElementById('btn-gestionar-limites-despegues');
+    if (!btn) return;
+    const n = obtenerIdsDespeguesConLimites().length;
+    const span = btn.querySelector('.num-despegues-con-limites');
+    if (span) span.textContent = n;
+    btn.disabled = (n === 0);
+    btn.style.opacity = (n === 0) ? '0.5' : '';
+};
+
+// Texto del botón de finalizar (se reutiliza el de favoritos)
+function _textoBotonFinalizarEdicion(modoLimites) {
+    const btn = document.getElementById('btn-finalizar-edicion-favoritos');
+    if (!btn) return;
+    btn.textContent = modoLimites
+        ? t('ajustes.finalizarEdicionLimites', { defaultValue: 'Finalizar edición de límites' })
+        : t('html.finalizarEdicion', { defaultValue: 'Finalizar edición de despegues favoritos' });
+}
+
+window.activarEdicionLimites = function () {
+    if (modoEdicionLimites || obtenerIdsDespeguesConLimites().length === 0) return;
+
+    const overlay = document.getElementById('msgActualizando...');
+    if (overlay) overlay.classList.add('loader-activo');
+
+    setTimeout(() => {
+        // Estado previo, para restaurarlo al salir
+        window.estadoPreEdicionLimites = { soloFavoritos: soloFavoritos, soloSeguimiento: soloSeguimiento };
+
+        // Foto de la lista al entrar: las filas no desaparecen hasta finalizar, aunque se reseteen
+        window.idsEdicionLimites = new Set(obtenerIdsDespeguesConLimites());
+
+        modoEdicionLimites = true;
+        modoEdicionFavoritos = true; // la tabla ya sabe dibujar el formato de edición
+        soloFavoritos = false;
+        soloSeguimiento = false;
+        const btnFavs = document.getElementById('btn-filtro-favoritos-toggle');
+        if (btnFavs) btnFavs.classList.remove('filtro-aplicado', 'activo');
+
+        if (typeof limpiarBuscador === 'function') limpiarBuscador();
+        if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
+
+        document.body.classList.add('modo-edicion-tabla', 'modo-edicion-limites');
+        document.getElementById('div-menu')?.classList.add('mode-editing');
+        document.getElementById('div-menu2-edicion-favoritos')?.classList.add('mode-editing');
+        const panelHorario = document.querySelector('.div-filtro-horario');
+        if (panelHorario) panelHorario.style.display = 'none';
+        document.getElementById('div-configuracion')?.classList.remove('activo');
+        if (typeof setModoEnfoque === 'function') setModoEnfoque(false);
+        _textoBotonFinalizarEdicion(true);
+
+        cambiarVista('tabla');
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
+        construir_tabla();
+    }, 120);
+};
+
+// Devuelve true de forma síncrona (la navegación inferior lo usa para decidir si puede continuar)
+window.finalizarEdicionLimites = function () {
+    if (!modoEdicionLimites) return true;
+
+    const overlay = document.getElementById('msgActualizando...');
+    if (overlay) overlay.classList.add('loader-activo');
+    modoEdicionLimites = false; // evita dobles salidas
+
+    setTimeout(() => {
+        modoEdicionFavoritos = false;
+        document.body.classList.remove('modo-edicion-tabla', 'modo-edicion-limites');
+        document.getElementById('div-menu')?.classList.remove('mode-editing');
+        document.getElementById('div-menu2-edicion-favoritos')?.classList.remove('mode-editing');
+        const panelHorario = document.querySelector('.div-filtro-horario');
+        if (panelHorario) panelHorario.style.display = '';
+        _textoBotonFinalizarEdicion(false);
+
+        // Restaurar filtros previos
+        const prev = window.estadoPreEdicionLimites || {};
+        window.estadoPreEdicionLimites = null;
+        window.idsEdicionLimites = null;
+        soloFavoritos = prev.soloFavoritos;
+        const btnFavs = document.getElementById('btn-filtro-favoritos-toggle');
+        if (btnFavs && prev.soloFavoritos) btnFavs.classList.add('activo', 'filtro-aplicado');
+        soloSeguimiento = !!prev.soloSeguimiento && obtenerSeguimientos().length > 0;
+
+        if (typeof limpiarBuscador === 'function') limpiarBuscador();
+        if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
+        window.limitePaginacionMeteo = 10;
+
+        cambiarVista('tabla');
+        const navHome = document.getElementById('nav-home');
+        if (navHome && typeof window.activarMenuInferior === 'function') window.activarMenuInferior(navHome);
+
+        construir_tabla();
+        actualizarBotonGestionLimites();
+    }, 120);
+
+    return true;
+};
+
+// ↺ de una fila: vuelve ese despegue al 100%. La fila se queda hasta finalizar la edición.
+window.resetearLimiteDespegueEnLista = function (idDespegue) {
+    const ajustes = obtenerAjustesLimitesDespegues();
+    delete ajustes[idDespegue];
+    localStorage.setItem("METEO_AJUSTES_LIMITES_DESPEGUES", JSON.stringify(ajustes));
+    window.tablaRecrearAlVolver = true;
+    if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+    actualizarBotonGestionLimites();
+    construir_tabla(false, true); // pocas filas: vacía la celda y rehace badge, colores y nota de esa fila
+};
+
+// Botón "Resetear todos los límites" (con confirmación)
+window.resetearTodosLosLimites = function () {
+    GestorMensajes.mostrar({
+        tipo: 'modal',
+        htmlContenido: `<div style="text-align: center; font-size: 1.1em;">${t('ajustes.confirmarResetTodosLimites', { defaultValue: '¿Resetear los límites personalizados de todos los despegues?.<br><br>Esta acción configurará todos los despegues con el límite del 100 %, es decir, con los límites generales configurados en <i>Ajustes > Límites de viento y racha.' })}</div>`,
+        botones: [
+            { texto: t('botones.cancelar', { defaultValue: 'Cancelar' }), estilo: 'secundario', onclick: function () { GestorMensajes.ocultar(); } },
+            { texto: t('botones.aceptar', { defaultValue: 'Aceptar' }), onclick: function () {
+                GestorMensajes.ocultar();
+                const ajustes = obtenerAjustesLimitesDespegues();
+                Object.keys(ajustes).forEach(k => delete ajustes[k]); // vacía también la caché en memoria
+                localStorage.setItem("METEO_AJUSTES_LIMITES_DESPEGUES", JSON.stringify(ajustes));
+                window.tablaRecrearAlVolver = true;
+                actualizarBotonGestionLimites();
+                construir_tabla(false, true); // las filas siguen, todas con la celda vacía; se sale con "Finalizar edición de límites"
+            } }
+        ]
+    });
+};
+// ---------------------------------------------------------------
 
 // Refresca en vivo puntuación y colores de UN despegue en la tabla (sin reconstruirla)
 window.refrescarDespegueEnTabla = function (idDespegue) {

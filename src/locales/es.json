@@ -680,7 +680,14 @@
       "descFavoritos": "Añadir y gestionar despegues habituales",
       "btnAjustes": "Ajustes",
       "descAjustes": "Idioma, límites para la puntuación, personalización de datos mostrados..."
-    }
+    },
+    "gestionarLimitesDespegues": "Editar despegues con límites personalizados",
+    "sinDespeguesConLimites": "Ya no quedan despegues con límites personalizados.",
+    "confirmarResetTodosLimites": "¿Resetear los límites personalizados de todos los despegues?.<br><br>Esta acción configurará todos los despegues con el límite original del 100 %, es decir, con los límites generales configurados en <i>Ajustes > Límites de viento y racha.",
+    "resetearTodosLimites": "Resetear todos los límites",
+    "finalizarEdicionLimites": "Finalizar edición de límites",
+    "resetearLimite": "Volver al 100% (límites generales)"
+
   },
 
   "mapa": {

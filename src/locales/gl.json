@@ -679,7 +679,13 @@
       "descFavoritos": "Engadir e xestionar engalaxes habituais",
       "btnAjustes": "Axustes",
       "descAjustes": "Idioma, límites para a puntuación, personalización de datos mostrados..."
-    }
+    },
+    "gestionarLimitesDespegues": "Editar engalaxes con límites personalizados",
+    "sinDespeguesConLimites": "Xa non quedan engalaxes con límites personalizados.",
+    "confirmarResetTodosLimites": "¿Restablecer os límites personalizados de todas as engalaxes?.<br><br>Esta acción configurará todas as engalaxes co límite orixinal do 100 %, é dicir, cos límites xerais configurados en <i>Axustes > Límites de vento e refacho.",
+    "resetearTodosLimites": "Restablecer todos os límites",
+    "finalizarEdicionLimites": "Finalizar edición de límites",
+    "resetearLimite": "Volver ao 100% (límites xerais)"
   },
 
   "mapa": {
