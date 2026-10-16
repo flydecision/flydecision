@@ -19704,15 +19704,18 @@ function actualizarTooltipCursor(e, forzar) {
             map.removeLayer(marcadorChoquePlaneo);
         }
 
-        // 4. Marcador destino bajo el cursor
+        // 4. Marcador destino bajo el cursor (🎯, como en las instrucciones)
         if (!marcadorDestinoPlaneo) {
-            marcadorDestinoPlaneo = L.circleMarker(e.latlng, {
-                radius: 8,
-                color: '#ffffff',
-                weight: 2,
-                fillColor: '#0f172a',
-                fillOpacity: 0.35,
-                interactive: false
+            marcadorDestinoPlaneo = L.marker(e.latlng, {
+                icon: L.divIcon({
+                    html: '<div class="glide-destino-marker">🎯</div>',
+                    className: 'glide-destino-icon', // NO 'custom-div-icon': esa clase fuerza márgenes con !important
+                    iconSize: [26, 26],
+                    iconAnchor: [13, 13] // centro de la diana = punto exacto de aterrizaje
+                }),
+                interactive: false,
+                keyboard: false,
+                zIndexOffset: 900 // por encima de la línea, por debajo del 🪂 (1000)
             }).addTo(map);
         } else {
             marcadorDestinoPlaneo.setLatLng(e.latlng);

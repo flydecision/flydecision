@@ -4452,6 +4452,25 @@ body:has(#map.cursor-planeo-activo) .leaflet-control-geocoder {
     transform: translate(-3px, 9px);
 }
 
+/* Diana del punto de aterrizaje (modo planeo) */
+.glide-destino-marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    font-size: 22px;
+    line-height: 1;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.45));
+    pointer-events: none;
+    transform: translate(3px, -3px); /* X positivo mueve a la derecha. Y negativo mueve hacia arriba */
+}
+/* Contenedor de la diana: sin fondo ni borde por defecto de Leaflet */
+.leaflet-marker-icon.glide-destino-icon {
+    background: transparent;
+    border: none;
+}
+
 /* Tooltip ultra-ligero que sigue al cursor */
 .glide-cursor-tooltip {
     position: fixed;
