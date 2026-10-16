@@ -4463,7 +4463,7 @@ body:has(#map.cursor-planeo-activo) .leaflet-control-geocoder {
     line-height: 1;
     filter: drop-shadow(0 1px 3px rgba(0,0,0,0.45));
     pointer-events: none;
-    transform: translate(3px, -3px); /* ajusta X e Y de 1 en 1 hasta que el centro coincida */
+    transform: translate(3px, -3px); /* X positivo mueve a la derecha. Y negativo mueve hacia arriba */
 }
 /* Contenedor de la diana: sin fondo ni borde por defecto de Leaflet */
 .leaflet-marker-icon.glide-destino-icon {
