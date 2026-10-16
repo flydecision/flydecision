@@ -1945,13 +1945,13 @@ function iniciarGuiaFavoritos(forzar = false) {
                 }
             },
 
-            ...(!esModoSimple ? [{ 
+            { 
                 element: '#tabla thead tr:first-child th:first-child', 
                 popover: { 
                     title: t('guiaFavoritos.pasos.cabeceraFavorito.titulo'), 
                     description: t('guiaFavoritos.pasos.cabeceraFavorito.descripcion') 
                 } 
-            }] : []),
+            },
 
             { 
                 element: '.guia-rosa-vientos', 
@@ -2024,29 +2024,29 @@ function iniciarGuiaFavoritos(forzar = false) {
                 } 
             },
 
-            ...(!esModoSimple ? [{ 
+            { 
                 element: '#btn-desmarcar-favoritos',
                 popover: { 
                     title: t('guiaFavoritos.pasos.btnDesmarcarTodos.titulo'), 
                     description: t('guiaFavoritos.pasos.btnDesmarcarTodos.descripcion')
                 } 
-            }] : []),
+            },
 
-            ...(!esModoSimple ? [{ 
+            { 
                 element: '#btn-abrir-favoritos',
                 popover: { 
                     title: t('guiaFavoritos.pasos.btnImportar.titulo'), 
                     description: t('guiaFavoritos.pasos.btnImportar.descripcion') 
                 } 
-            }] : []),
+            },
 
-            ...(!esModoSimple ? [{ 
+            { 
                 element: '#btn-guardar-favoritos',
                 popover: { 
                     title: t('guiaFavoritos.pasos.btnExportar.titulo'), 
                     description: t('guiaFavoritos.pasos.btnExportar.descripcion') 
                 } 
-            }] : []),
+            },
 
             { 
                 element: '#btn-guia-edicion-favoritos',
