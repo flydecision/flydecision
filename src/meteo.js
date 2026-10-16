@@ -1825,7 +1825,7 @@ function sugerirGuiaFavoritos(forzar = false) {
 
     // Eliminamos el checkbox y ajustamos el texto informativo
     const htmlAyuda = !forzar 
-        ? `<p style="color: #555; margin-top: 10px;">${t('guiaFavoritos.podrasVerla')}</p>`
+        ? `<p style="color: #555; margin-top: 10px;">${t('guiaPrincipal.verEnAjustes')}</p>`
         : '';
 
     const botonesModal =[
@@ -2096,7 +2096,7 @@ function sugerirGuiaMapa(forzar = false) {
     }
 
     const htmlAyuda = !forzar 
-        ? `<p style="color: #555; margin-top: 10px;">${t('guiaPrincipal.podrasVerla')}</p>`
+        ? `<p style="color: #555; margin-top: 10px;">${t('guiaPrincipal.verEnAjustes')}</p>`
         : '';
 
     const botonesModal = [
