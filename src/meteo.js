@@ -12,7 +12,6 @@ let soloSeguimiento = false;
 //let favoritos = [];
 let modoEdicionFavoritos = false;
 let modoEdicionLimites = false; // modo aparte: edición de despegues con límites personalizados
-let soloNoFavoritosLimites = false; // filtro "ver solo los no favoritos" (solo en ese modo)
 let totalFavoritos = 0;
 let totalDespeguesDisponibles = 0;
 let ecmwfTimeMap = new Map();
@@ -2673,7 +2672,6 @@ function filtroVerSoloFavoritos() {
     if (estaActivo) {
         soloFavoritos = true; 
         btn.classList.add('filtro-aplicado');
-        if (modoEdicionLimites && soloNoFavoritosLimites) _apagarFiltroNoFavoritosLimites();
         // Pintamos el corazón de rojo relleno
         //heartSvg.setAttribute('fill', '#ff0000');
         //heartSvg.setAttribute('stroke', '#ff0000');
@@ -6111,10 +6109,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 		// ---------------------------------------------------------------
 
         if (modoEdicionLimites) {
-            const idsConLimites = new Set(window.idsEdicionLimites || []);
-            if (soloNoFavoritosLimites) {
-                obtenerFavoritos().map(Number).forEach(id => idsConLimites.delete(id));
-            }
+            const idsConLimites = window.idsEdicionLimites || new Set();
             const rMapL = new Map(), rEcmwfMapL = new Map();
             despegues.forEach((d, i) => {
                 rMapL.set(Number(d.ID), respuestas[i]);
@@ -9744,26 +9739,6 @@ window.pintarEstadoLimitesDespegue = function (idDespegue, pct, reiniciar = fals
     });
 };
 
-// Interruptor "Ver solo los no favoritos" (modo edición de límites). Excluyente con "Ver solo favoritos".
-window.filtroVerSoloNoFavoritosLimites = function () {
-    const btn = document.getElementById('btn-filtro-no-favoritos-toggle');
-    soloNoFavoritosLimites = !soloNoFavoritosLimites;
-    if (btn) btn.classList.toggle('activo', soloNoFavoritosLimites);
-    if (btn) btn.classList.toggle('filtro-aplicado', soloNoFavoritosLimites);
-
-    if (soloNoFavoritosLimites && soloFavoritos) {
-        soloFavoritos = false;
-        document.getElementById('btn-filtro-favoritos-toggle')?.classList.remove('activo', 'filtro-aplicado');
-    }
-    construir_tabla();
-};
-
-// Apaga el filtro "solo no favoritos" (al entrar o salir del modo)
-function _apagarFiltroNoFavoritosLimites() {
-    soloNoFavoritosLimites = false;
-    document.getElementById('btn-filtro-no-favoritos-toggle')?.classList.remove('activo', 'filtro-aplicado');
-}
-
 // ---------------------------------------------------------------
 // 🔴 EDICIÓN DE DESPEGUES CON LÍMITES PERSONALIZADOS
 // Reutiliza el formato de edición de la tabla, pero con bandera, filtro y salida propios.
@@ -9817,8 +9792,6 @@ window.activarEdicionLimites = function () {
         const btnFavs = document.getElementById('btn-filtro-favoritos-toggle');
         if (btnFavs) btnFavs.classList.remove('filtro-aplicado', 'activo');
 
-        _apagarFiltroNoFavoritosLimites();
-
         if (typeof limpiarBuscador === 'function') limpiarBuscador();
         if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
 
@@ -9864,7 +9837,6 @@ window.finalizarEdicionLimites = function () {
             btnFavs.classList.toggle('activo', !!prev.soloFavoritos);
             btnFavs.classList.toggle('filtro-aplicado', !!prev.soloFavoritos);
         }
-        _apagarFiltroNoFavoritosLimites();
         soloSeguimiento = !!prev.soloSeguimiento && obtenerSeguimientos().length > 0;
 
         if (typeof limpiarBuscador === 'function') limpiarBuscador();

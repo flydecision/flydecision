@@ -226,7 +226,6 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
 /* 🟡 BOTONES -------------------------------- */
 
 #btn-filtro-favoritos-toggle,
-#btn-filtro-no-favoritos-toggle,
 #btn-desmarcar-favoritos,
 #btn-abrir-favoritos,
 #btn-guardar-favoritos,
@@ -389,28 +388,8 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
 
 body.modo-edicion-limites #div-filtro-distancia,
 body.modo-edicion-limites #contador-favoritos-texto,
-body.modo-edicion-limites #btn-desmarcar-favoritos,
-body.modo-edicion-limites #btn-abrir-favoritos,
-body.modo-edicion-limites #btn-guardar-favoritos,
-body.modo-edicion-limites #btn-guia-edicion-favoritos {
+body.modo-edicion-limites #div-menu {
     display: none !important;
-}
-/* Filtro "solo no favoritos": solo existe en el modo edición de límites */
-#btn-filtro-no-favoritos-toggle { display: none; }
-body.modo-edicion-limites #btn-filtro-no-favoritos-toggle { display: flex; }
-
-/* Hundido, igual que el filtro de favoritos */
-#btn-filtro-no-favoritos-toggle.activo {
-    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
-    padding-top: 2px;
-    border-color: #999;
-}
-#btn-filtro-no-favoritos-toggle.filtro-aplicado {
-    border-color: #ff0000 !important;
-    border-width: 1px !important;
-    box-shadow:
-        inset 0 0 0 2px #ff0000,
-        inset 1px 1px 3px rgba(0,0,0,0.4) !important;
 }
 
 /* 🎨 SLIDER DE LÍMITE DE VIENTO EN BALIZAS */
