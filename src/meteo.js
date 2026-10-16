@@ -1596,6 +1596,7 @@ function iniciarGuiaPrincipal(forzar = false) {
     const driverObj = window.driver.js.driver({
         
         showProgress: true, 
+        onPopoverRender: (popover) => ajustarPopoverDriverSafeArea(popover),
         progressText: t('guiaPrincipal.progreso'),
         smoothScroll: true,
         overlayClickBehavior: () => {}, 
@@ -1914,6 +1915,7 @@ function iniciarGuiaFavoritos(forzar = false) {
     const driverObj = window.driver.js.driver({
         
         showProgress: true, 
+        onPopoverRender: (popover) => ajustarPopoverDriverSafeArea(popover),
         progressText: t('guiaPrincipal.progreso'),
         smoothScroll: true,
         overlayClickBehavior: () => {}, 
@@ -2153,7 +2155,9 @@ function iniciarGuiaMapa(forzar = false) {
     }
 
     const driverObj = window.driver.js.driver({
+
         showProgress: true, 
+        onPopoverRender: (popover) => ajustarPopoverDriverSafeArea(popover),
         progressText: t('guiaPrincipal.progreso'),
         smoothScroll: true,
         overlayClickBehavior: () => {}, 
@@ -2351,7 +2355,9 @@ function iniciarGuiaAjustes(forzar = false) {
     };
 
     const driverObj = window.driver.js.driver({
+
         showProgress: true,
+        onPopoverRender: (popover) => ajustarPopoverDriverSafeArea(popover),
         progressText: t('guiaPrincipal.progreso'),
         smoothScroll: true,
         overlayClickBehavior: () => {},
@@ -6987,8 +6993,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                     ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${latitud}N${longitud}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
 
-                    ⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${latitud}/${longitud}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a><br>
-
                     ⛅ <a href='https://meteo-fly.com/?lat=${latitud}&lon=${longitud}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a><br>
 
                     <div class="popup-toggle-header" style="cursor: pointer; border-radius: 3px; padding-top: 8px;">
@@ -8809,6 +8813,55 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 // ---------------------------------------------------------------
 // 🔴 OTRAS FUNCIONES. FUNCIONES AUXILIARES
 // ---------------------------------------------------------------
+
+// Márgenes seguros reales (barra de estado arriba, barra de navegación abajo) en px CSS.
+// Lee las mismas variables que usa el CSS (--safe-area-inset-*, con env() de respaldo).
+let _insetsSegurosCache = null;
+window.addEventListener('resize', () => { _insetsSegurosCache = null; });
+
+function obtenerInsetsSeguros() {
+    if (_insetsSegurosCache) return _insetsSegurosCache;
+    const sonda = document.createElement('div');
+    sonda.style.cssText = 'position:fixed; visibility:hidden; pointer-events:none;' +
+        'padding-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));' +
+        'padding-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));';
+    document.body.appendChild(sonda);
+    const cs = getComputedStyle(sonda);
+    const insets = { top: parseFloat(cs.paddingTop) || 0, bottom: parseFloat(cs.paddingBottom) || 0 };
+    sonda.remove();
+    _insetsSegurosCache = insets;
+    return insets;
+}
+
+// Guías (Driver.js): mete el popover entre la barra de estado y la de navegación.
+// Driver lo coloca sin tener en cuenta las barras del sistema; aquí lo corregimos tras su cálculo.
+function ajustarPopoverDriverSafeArea(popover) {
+    const el = popover && popover.wrapper;
+    if (!el) return;
+    const flecha = el.querySelector('.driver-popover-arrow');
+    if (flecha) flecha.style.display = '';
+
+    // Doble rAF: Driver posiciona el popover justo después de este hook
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        const { top: insTop, bottom: insBottom } = obtenerInsetsSeguros();
+        const minTop = insTop + 8;
+        const maxBottom = window.innerHeight - insBottom - 8;
+
+        el.style.maxHeight = (maxBottom - minTop) + 'px';
+        el.style.overflowY = 'auto';
+
+        const r = el.getBoundingClientRect();
+        let nuevoTop = null;
+        if (r.top < minTop) nuevoTop = minTop;
+        else if (r.bottom > maxBottom) nuevoTop = Math.max(minTop, maxBottom - r.height);
+
+        if (nuevoTop !== null) {
+            el.style.top = nuevoTop + 'px';
+            el.style.bottom = 'auto';
+            if (flecha) flecha.style.display = 'none'; // la flecha ya no apuntaría al elemento
+        }
+    }));
+}
 
 // Variables y Constantes
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
@@ -11648,6 +11701,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     if (typeof tippy === 'function' && typeof tippy.delegate === 'function') {
 
+        // Márgenes de seguridad dinámicos: nunca menos que los de antes, y más si la barra real es mayor.
+        // Son "getters": Popper los relee en cada recolocación.
+        const paddingSeguroTippy = {
+            get top()    { return Math.max(60, obtenerInsetsSeguros().top + 12); },
+            get bottom() { return Math.max(90, obtenerInsetsSeguros().bottom + 80); },
+            left: 10,
+            right: 10
+        };
+
         tippy.delegate('body', {
             target: '[data-tippy-content]',
             trigger: 'click',
@@ -11668,7 +11730,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                             // SOLUCIÓN: Usamos un objeto en lugar de un número único.
                             // top: 60 -> Deja 60px de "aire" arriba (suficiente para librar cualquier barra de notificaciones)
                             // left/right: 10 -> Aprovecha el ancho al máximo en los lados
-                            padding: { top: 60, bottom: 90, left: 10, right: 10 }, 
+                            padding: paddingSeguroTippy, 
                             
                             boundary: 'viewport',
                             
@@ -11683,7 +11745,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                         name: 'flip',
                         options: {
                             // Aquí también podemos proteger el top si decide voltearse
-                            padding: { top: 60, bottom: 90, left: 10, right: 10 }
+                            padding: paddingSeguroTippy
                         }
                     }
                 ],
@@ -15418,8 +15480,6 @@ function inicializarMapaLeaflet() {
 
                             ⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' onclick='abrirLinkExterno(this.href); return false;'>Meteoblue</a><br>
 
-                            ⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a><br>
-
                             ⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' onclick='abrirLinkExterno(this.href); return false;'>Meteo-fly</a><br>
 
                             <div class="popup-toggle-header" style="cursor: pointer; border-radius: 3px; padding-top: 8px; margin-bottom: 10px;">
@@ -15719,7 +15779,6 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                        <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                         <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
@@ -15921,7 +15980,6 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                        <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                         <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
@@ -16131,7 +16189,6 @@ function inicializarMapaLeaflet() {
                         <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${lat.toFixed(4)}/${lon.toFixed(4)}/wind?${lat.toFixed(4)},${lon.toFixed(4)},14' target='_blank'>Windy</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${lat.toFixed(4)},${lon.toFixed(4)},13' target='_blank'>Meteo-parapente</a></div>
                         <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${lat.toFixed(4)}N${lon.toFixed(4)}E' target='_blank'>Meteoblue</a></div>
-                        <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                         <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://maps.google.com/?q=${lat.toFixed(4)},${lon.toFixed(4)}' target='_blank'>Google Maps</a></div>
                         <div style="margin-bottom: 3px;">🗺️ <a href='https://brouter.de/brouter-web/#map=15/${lat.toFixed(4)}/${lon.toFixed(4)}/OpenTopoMap&pois=${lon.toFixed(4)},${lat.toFixed(4)}' target='_blank'>Brouter</a></div>
@@ -16508,7 +16565,6 @@ function inicializarMapaLeaflet() {
                     <div style="margin-top: 8px; margin-bottom: 3px;">⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' target='_blank'>Windy</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' target='_blank'>Meteo-parapente</a></div>
                     <div style="margin-bottom: 3px;">⛅ <a href='https://www.meteoblue.com/es/tiempo/pronostico/multimodelensemble/${escapeHtml(lat.toFixed(4))}N${escapeHtml(lon.toFixed(4))}E' target='_blank'>Meteoblue</a></div>
-                    <div style="margin-bottom: 3px;">⛅ <a href='https://maps.open-meteo.com/?domain=meteofrance_arome_france_hd&variable=wind_u_component_10m#10.78/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Open-meteo</a></div>
                     <div style="margin-bottom: 5px;">⛅ <a href='https://meteo-fly.com/?lat=${escapeHtml(lat.toFixed(4))}&lon=${escapeHtml(lon.toFixed(4))}&day=1&model=meteofrance_seamless&maxAlt=4000&cellSelection=nearest&view=wind&hour=0&daylight=1' target='_blank'>Meteo-fly</a></div>
                     
                     <div class="popup-toggle-header" 

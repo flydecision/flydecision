@@ -263,11 +263,11 @@
       },
       "rosaVientos": {
         "titulo": "🧭 Aireratzearen orientazioa",
-        "descripcion": "Zirkuluan berdez adierazten da aireratzearen orientazioa edo orientazioak. Puntuazio-sistemak iragarritako haizearen norabidea kontuan hartzen du eta orientazio posible horiekin alderatzen du.<br><br> Kontuan izan, iragarritako haizea oso ahula bada, aireratze batzuetan beste orientazio batzuetan aireratzea posible izan daitekeela, trebetasunaren, korrika egiteko espazioaren, termikaren indarraren... arabera."
+        "descripcion": "Aireratzearen orientazioa edo orientazioak adierazten ditu. Puntuazio-sistemak aurreikusitako haizearen norabidea kontuan hartzen du eta orientazio posible horiekin alderatzen du."
       },
       "nivelActividad": {
         "titulo": "📶 Aireratzearen jarduera-maila",
-        "descripcion": "Barren bidez (1etik 5era) leku honetan zenbat hegan egiten den adierazten du, erregistratutako hegaldien arabera (ospe-maila).<br><br>20 urtetan XContest-en erregistratutako hegaldien bolumen historikoan oinarritzen da, azkenaldiko jardueragatik (+1 azken hilabeteetan hegaldiak izan badira) edo luzaroko inaktibitateagatik (-1 duela 2 urte baino gehiagotik hegaldik ez badago) doikuntzak eginez."
+        "descripcion": "Barrekin (1etik 5era) ospe-maila adierazten du.<br><br>20 urtetan XContest-en erregistratutako hegaldi kopuruan oinarritzen da, azkenaldiko jardueragatik (azken hilabeteetan hegaldiak egon badira +1) edo luzaroko inaktibitateagatik (duela 2 urte baino gehiagotik hegaldirik ez badago -1) doituta."
       },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Aireratzeari buruzko informazioa</span></div>",

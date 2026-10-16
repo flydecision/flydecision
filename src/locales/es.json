@@ -263,11 +263,11 @@
       },
       "rosaVientos": {
         "titulo": "🧭 Orientación del despegue",
-        "descripcion": "En el círculo se indica en verde la orientación u orientaciones del despegue. El sistema de puntuación tiene en cuenta la dirección del viento pronosticado y la coteja con estas orientaciones posibles.<br><br> Ten en cuenta, que si el viento pronosticado es muy flojo, en algunos despegues quizá sea posible despegar en otras orientaciones, según la habilidad, espacio para correr, fuerza de la termoladera,..."
+        "descripcion": "Indica la orientación u orientaciones del despegue. El sistema de puntuación tiene en cuenta la dirección del viento pronosticado y la coteja con estas orientaciones posibles."
       },
       "nivelActividad": {
         "titulo": "📶 Nivel de actividad del despegue",
-        "descripcion": "Indica con barras (de 1 a 5) cuánto se vuela en este lugar según vuelos registrados (el nivel de popularidad).<br><br>Se basa en el volumen histórico de vuelos registrados en XContest durante 20 años, con ajustes por actividad reciente (+1 si ha habido vuelos en los últimos meses) o inactividad prolongada (-1 si no hay vuelos desde hace más de 2 años)."
+        "descripcion": "Indica con barras (de 1 a 5) el nivel de popularidad.<br><br>Se basa en el número de vuelos registrados en XContest durante 20 años, ajustado por actividad reciente (+1 si ha habido vuelos en los últimos meses) o inactividad prolongada (-1 si no hay vuelos desde hace más de 2 años)."
       },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Información del despegue</span></div>",
