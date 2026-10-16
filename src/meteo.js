@@ -11,6 +11,7 @@ let soloFavoritos;
 let soloSeguimiento = false;
 //let favoritos = [];
 let modoEdicionFavoritos = false;
+let modoEdicionLimites = false; // modo aparte: edición de despegues con límites personalizados
 let totalFavoritos = 0;
 let totalDespeguesDisponibles = 0;
 let ecmwfTimeMap = new Map();
@@ -85,9 +86,24 @@ let bdGlobalDespegues = [];
 
 const cacheSVG_Tabla = {};
 
+// Valores por defecto de la primera visita (solo usuarias nuevas; no pisa lo que ya esté guardado)
+(function sembrarDefaultsPrimeraVisita() {
+    // Misma condición que el "CASO A: Primera visita" del arranque
+    if (localStorage.getItem("METEO_PRIMERA_VISITA_HECHA") || localStorage.getItem("METEO_FAVORITOS_LISTA")) return;
+    const defaults = {
+        "METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS": "false",   // filas 20, 50 y 100 m
+        "METEO_CHECKBOX_MOSTRAR_CIZALLADURA": "false",      // cizalladura / fiabilidad
+        "METEO_CONFIG_ECMWF_MODE": "desplegable",           // viento ECMWF en modo oculto
+        "METEO_CHECKBOX_MOSTRAR_MINUTELY15": "true"         // viento Arome 15 min
+    };
+    for (const clave in defaults) {
+        if (localStorage.getItem(clave) === null) localStorage.setItem(clave, defaults[clave]);
+    }
+})();
+
 let chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false"; // Por defecto true para que lo vean
 
-let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "true"; // Por defecto falso 
+let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false"; 
 
 // ECMWF
 const chkMostrarPrecipitacion = true; // Siempre activo
@@ -654,6 +670,15 @@ function construirTablaMinutely15Html(respuestaObj, idDespegue, aromeGeneralObj)
     }
     theadHtml += '</tr>';
 
+    // Ajuste de límites por despegue
+    const f15 = obtenerFactorAjusteDespegue(idDespegue);
+    const vMin15 = VelocidadMin * f15;
+    const vIdeal15 = VelocidadIdeal * f15;
+    const vMax15 = VelocidadMax * f15;
+    const rMax15 = RachaMax * f15;
+    const vTolSup15 = vMax15 - (vMax15 - vIdeal15) / 3;
+    const rTol15 = rMax15 - (rMax15 - vMax15) / 3;
+
     let tbodyHtml = '';
     filas.forEach(fila => {
         // Detectamos si esta fila necesita borde inferior negro
@@ -676,19 +701,17 @@ function construirTablaMinutely15Html(respuestaObj, idDespegue, aromeGeneralObj)
             } 
             else if (fila.tipo === 'vel') {
                 const velocidad = Math.round(Number(valor));
-                const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
-                if (velocidad < VelocidadMin) clases += ' fondo-naranja';
-                else if (velocidad <= velocidadTolerableSuperior) clases += ' fondo-verde';
-                else if (velocidad < VelocidadMax) clases += ' fondo-naranja';
+                if (velocidad < vMin15) clases += ' fondo-naranja';
+                else if (velocidad <= vTolSup15) clases += ' fondo-verde';
+                else if (velocidad < vMax15) clases += ' fondo-naranja';
                 else clases += ' fondo-rojo';
                 contenidoCelda = velocidad;
             } 
             // LÓGICA PARA GESTIONAR EL COLOR DE LA RACHA
             else if (fila.tipo === 'racha') {
                 const racha = Math.round(Number(valor));
-                const rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3;
-                if (racha < rachaTolerable) clases += ' fondo-verde';
-                else if (racha < RachaMax) clases += ' fondo-naranja';
+                if (racha < rTol15) clases += ' fondo-verde';
+                else if (racha < rMax15) clases += ' fondo-naranja';
                 else clases += ' fondo-rojo';
                 contenidoCelda = racha;
             } 
@@ -1802,7 +1825,7 @@ function sugerirGuiaFavoritos(forzar = false) {
 
     // Eliminamos el checkbox y ajustamos el texto informativo
     const htmlAyuda = !forzar 
-        ? `<p style="color: #555; margin-top: 10px;">${t('guiaFavoritos.podrasVerla')}</p>`
+        ? `<p style="color: #555; margin-top: 10px;">${t('guiaPrincipal.verEnAjustes')}</p>`
         : '';
 
     const botonesModal =[
@@ -2073,7 +2096,7 @@ function sugerirGuiaMapa(forzar = false) {
     }
 
     const htmlAyuda = !forzar 
-        ? `<p style="color: #555; margin-top: 10px;">${t('guiaPrincipal.podrasVerla')}</p>`
+        ? `<p style="color: #555; margin-top: 10px;">${t('guiaPrincipal.verEnAjustes')}</p>`
         : '';
 
     const botonesModal = [
@@ -3193,6 +3216,7 @@ function confirmarSeleccionMasiva() {
 
 // Parámetro opcional 'ignorarMenu' que por defecto es false
 function finalizarEdicionFavoritos(ignorarMenu = false) {
+    if (modoEdicionLimites) return finalizarEdicionLimites(); // salida propia: sin la validación de favoritos
     favoritos = obtenerFavoritos();
 
     if (!localStorage.getItem("METEO_FAVORITOS_LISTA") || favoritos.length === 0) { 
@@ -4541,6 +4565,12 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         return { notaCondiciones: null, notaXC: null, horasValidas: 0, horasValidasXC: 0 };
     }
 
+    // Ajuste de límites. Aplicar factor de ajuste de límites local
+    const factorAjuste = (typeof obtenerFactorAjusteDespegue === 'function') ? obtenerFactorAjusteDespegue(despegueObj.ID) : 1.0;
+    const velMinEfectiva = VelocidadMin * factorAjuste;
+    const velMaxEfectiva = VelocidadMax * factorAjuste;
+    const rachaMaxEfectiva = RachaMax * factorAjuste;
+
     const velArray = hourlyData.wind_speed_10m;
     const rachaArray = hourlyData.wind_gusts_10m;
     const dirArray = hourlyData.wind_direction_10m;
@@ -4657,20 +4687,20 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
 
         let ptsRacha = 0;
         if (!vetoActivado) {
-            if (rachaCorregida > RachaMax * 1.5)      { ptsRacha = 0; vetoActivado = true; }
-            else if (rachaCorregida > RachaMax * 1.1) { ptsRacha = 0;  ratioCorreccionPorRacha = 0.2; }
-            else if (rachaCorregida > RachaMax)       { ptsRacha = 5;  ratioCorreccionPorRacha = 0.5; }
-            else if (rachaCorregida > RachaMax * 0.8) { ptsRacha = 20; ratioCorreccionPorRacha = 0.8; }
-            else                                      { ptsRacha = 30; }
+            if (rachaCorregida > rachaMaxEfectiva * 1.5)      { ptsRacha = 0; vetoActivado = true; }
+            else if (rachaCorregida > rachaMaxEfectiva * 1.1) { ptsRacha = 0;  ratioCorreccionPorRacha = 0.2; }
+            else if (rachaCorregida >= rachaMaxEfectiva)       { ptsRacha = 5;  ratioCorreccionPorRacha = 0.5; }
+            else if (rachaCorregida > rachaMaxEfectiva * 0.8) { ptsRacha = 20; ratioCorreccionPorRacha = 0.8; }
+            else                                              { ptsRacha = 30; }
         }
 
         let ptsVel = 0;
         if (!vetoActivado) {
-            if      (velocidad > VelocidadMax * 2)   { ptsVel = 0; vetoActivado = true; }
-            else if (velocidad > VelocidadMax * 1.5) { ptsVel = 3; }
-            else if (velocidad > VelocidadMax)       { ptsVel = 5; }
-            else if (velocidad > VelocidadMin)       { ptsVel = 20; }
-            else                                     { ptsVel = 15; }
+            if      (velocidad > velMaxEfectiva * 2)   { ptsVel = 0; vetoActivado = true; }
+            else if (velocidad > velMaxEfectiva * 1.5) { ptsVel = 3; }
+            else if (velocidad >= velMaxEfectiva)       { ptsVel = 5; }
+            else if (velocidad > velMinEfectiva)       { ptsVel = 20; }
+            else                                       { ptsVel = 15; }
         }
 
         // 💦 Veto Supremo: Lluvia
@@ -5780,9 +5810,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 localStorage.setItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ", "true");
                 localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_INICIO", "10");
                 localStorage.setItem("METEO_CONFIGURACION_RANGO_HORARIO_HORA_FIN", "20");
-                localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", "true");
-                chkMostrarVientoAlturas = true;
-                if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = true; 
+                localStorage.setItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS", "false");
+                chkMostrarVientoAlturas = false;
+                if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = false; 
                 localStorage.setItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA", "false"); // Desactivado por defecto en la primera visita
                 chkMostrarCizalladura = false;
                 if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = false; 
@@ -6075,6 +6105,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         }
 
 		// ---------------------------------------------------------------
+        // 🔴 MODO EDICIÓN DE LÍMITES: solo despegues con límites personalizados
+		// ---------------------------------------------------------------
+
+        if (modoEdicionLimites) {
+            const idsConLimites = window.idsEdicionLimites || new Set();
+            const rMapL = new Map(), rEcmwfMapL = new Map();
+            despegues.forEach((d, i) => {
+                rMapL.set(Number(d.ID), respuestas[i]);
+                rEcmwfMapL.set(Number(d.ID), respuestasEcmwf[i]);
+            });
+            despegues = despegues.filter(d => idsConLimites.has(Number(d.ID)));
+            respuestas = despegues.map(d => rMapL.get(Number(d.ID))).filter(r => r !== undefined);
+            respuestasEcmwf = despegues.map(d => rEcmwfMapL.get(Number(d.ID))).filter(r => r !== undefined);
+        }
+
+		// ---------------------------------------------------------------
 		// 🔴 LECTURA DEL SLIDER RANGO HORARIO (necesario para la construcción de la tabla)
 		// ---------------------------------------------------------------
 		
@@ -6130,6 +6176,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 		}
 
 		thFavorito.onclick = function() { gestionarClickMasivoFavoritos(); };
+
+		// Modo edición de límites: la cabecera resetea todos los límites (vacía si ya no queda ninguno)
+		if (modoEdicionLimites) {
+			const quedanLimites = obtenerIdsDespeguesConLimites().length > 0;
+			thFavorito.innerHTML = quedanLimites ? '<span style="font-size: 24px; line-height: 1; color: #555;">↺</span>' : '';
+			thFavorito.title = quedanLimites ? t('ajustes.resetearTodosLimites', { defaultValue: 'Resetear todos los límites' }) : '';
+			thFavorito.style.cursor = quedanLimites ? 'pointer' : 'default';
+			thFavorito.onclick = quedanLimites ? function() { resetearTodosLosLimites(); } : null;
+		}
 
         // ---------------------------------------------------------------
         // 🟡 CONSTRUCCIÓN DE LA TABLA Cabecera. País
@@ -6480,6 +6535,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         const cacheEsNoche = [];
         const cacheFechas = [];
         const indicesEvaluacionTabla = []; // Contendrá solo los índices válidos a evaluar
+        window.indicesEvaluacionTablaActual = indicesEvaluacionTabla; // para refrescar un despegue en vivo
+        window._ctxTabla = new Map(); // idDespegue -> { d, hourlyData, hourlyEcmwf }
 
         if (horas && horas.length > 0) {
             horas.forEach((h, i) => {
@@ -6595,10 +6652,21 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         for (let idx = 0; idx < despegues.length; idx++) {
             const d = despegues[idx];
 
+            // Ajuste límites para este despegue concreto
+            const factorDespegue = (typeof obtenerFactorAjusteDespegue === 'function') ? obtenerFactorAjusteDespegue(d.ID) : 1.0;
+            const velMinDespegue = VelocidadMin * factorDespegue;
+            const velIdealDespegue = VelocidadIdeal * factorDespegue;
+            const velMaxDespegue = VelocidadMax * factorDespegue;
+            const rachaMaxDespegue = RachaMax * factorDespegue;
+
+            const velocidadTolerableSuperior = velMaxDespegue - (velMaxDespegue - velIdealDespegue) / 3;
+            const rachaTolerable = rachaMaxDespegue - (rachaMaxDespegue - velMaxDespegue) / 3;
+
             const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
             const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
             const elevacionModeloECMWF = respuestasEcmwf[idx] ? Number(respuestasEcmwf[idx].elevation || 0) : 0; //Nota: como no hemos puesto en la URL elevation=nan, el downgrading topográfico calcula la altitud real del despegue con DEM 90m, así que este dato realmente es la altitud del despegue (no ocurre lo mismo con Arome/ICON, ya que ahí hemos puesto elevation=nan y la altitud sí que es la media de la celda)
             const hayDatosMeteo = hourlyData !== null;
+            window._ctxTabla.set(Number(d.ID), { d, hourlyData, hourlyEcmwf });
             let orientaciones = d.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()));
 
             // -----------------------------------------------------------
@@ -6719,6 +6787,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             const todasLasFilas = [...rowsGroup1, ...rowsEcmwfWind, ...rowsGroup2];
             const filaPrincipal = todasLasFilas[0];
+            todasLasFilas.forEach(f => { f.dataset.idDesp = d.ID; });
             const totalFilasRowSpan = todasLasFilas.length;
 
             // --- CALCULAMOS EL ROWSPAN REAL INICIAL ---
@@ -6801,6 +6870,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     todasLasFilas.forEach(f => f.classList.toggle("favorito", nuevoEstado));
                     
                 };
+
+                                // Modo edición de límites: ↺ resetea al 100%; ya reseteado, celda vacía y sin acción
+                if (modoEdicionLimites) {
+                    if (obtenerPorcentajeAjusteDespegue(idDespegue) !== 100) {
+                        tdFavorito.title = t('ajustes.resetearLimite', { defaultValue: 'Volver al 100% (límites generales)' });
+                        tdFavorito.innerHTML = `<span style="font-size: 24px; line-height: 1; color: #555;">↺</span>`;
+                        tdFavorito.onclick = function () {
+                            resetearLimiteDespegueEnLista(idDespegue);
+                        };
+                    } else {
+                        tdFavorito.title = '';
+                        tdFavorito.innerHTML = '';
+                        tdFavorito.onclick = null;
+                        tdFavorito.classList.remove('cursor-pointer');
+                    }
+                }
 			
 				filaPrincipal.appendChild(tdFavorito);
 
@@ -6892,7 +6977,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
                 <div style="line-height: 1.4; max-width: 232px;">
-                    <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${d.Despegue}</b></span><br><br>   
+                    <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${d.Despegue}</b></span>   
+
+                    ${generarHtmlStepperLimites(d.ID)}
                     
                     ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
 
@@ -6935,7 +7022,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         🗺️ <a href='https://nakarte.me/#m=15/${Number(latitud).toFixed(4)}/${Number(longitud).toFixed(4)}&l=Otm/Sa&n2=_gwm&r=${Number(latitud).toFixed(4)}/${Number(longitud).toFixed(4)}/${d.Despegue} (${d.Orientación}' onclick='abrirLinkExterno(this.href); return false;'>Nakarte</a><br>
                         🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${longitud}%20${latitud}&filter[radius]=500' onclick='abrirLinkExterno(this.href); return false;'>XContest (&plusmn; 500 m)</a><br>
 
-                        <br><div style="margin-bottom: 5px;">${d.Más_información}</div>
+                        <div style="margin-bottom: 5px;">${d.Más_información}</div>
 
                     </div>
                 </div>
@@ -6975,7 +7062,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 </button>
             `;
 			
-            const provinciaHTML = modoEdicionFavoritos ? "" : `<span style="display:block; color: #777; margin-top: -1px; margin-bottom: 2px;">(${d.Provincia})</span>`;
+            // Badge indicador si el despegue tiene límites personalizados
+            const pctAjuste = (typeof obtenerPorcentajeAjusteDespegue === 'function') ? obtenerPorcentajeAjusteDespegue(d.ID) : 100;
+            const badgeAjusteHTML = pctAjuste !== 100 ? `
+                <span style="font-weight: bold; color: ${pctAjuste < 100 ? '#ea580c' : '#0284c7'}; background: ${pctAjuste < 100 ? '#ffedd5' : '#e0f2fe'}; border: 1px solid ${pctAjuste < 100 ? '#fed7aa' : '#bae6fd'}; border-radius: 4px; padding: 1px 5px; display: inline-block;" title="${t('popupDespegue.titleAjusteLimites', { defaultValue: 'Ajuste personalizado de límites de viento' })}: ${pctAjuste}%">${pctAjuste}%</span>
+            ` : '';
 
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-favorito-tabla"
@@ -7043,8 +7134,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     paddingExtraBoton = 0; 
                     bottomValue = 24;
                 } else {
-                    paddingExtraBoton = 32;
-                    bottomValue = bottomNum + 32; 
+                    // El dock gris de los 4 botones mide 70 px (69 + 1 de borde, ver ::before en meteo.css):
+                    // los 2 botones tienen que empezar por encima, con ~4 px de margen
+                    paddingExtraBoton = 40;
+                    bottomValue = bottomNum + 40; 
                 }
 
                 if (initialRowSpan > 12) {
@@ -7118,7 +7211,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 ${botonToggleEcmwfHTML}
                 ${botonMinutely15HTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
-                ${provinciaHTML}
+                ${badgeAjusteHTML ? `<span class="badge-limites-wrap" style="display: block; line-height: 1; margin: 4px auto 6px auto; text-align: center;">${badgeAjusteHTML}</span>` : ''}
                 ${htmlIconosCentrales}
                 <span class="linea-divisora-edit" style="position: absolute; bottom: 34px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
@@ -7132,6 +7225,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             } else {
                 if (modoCompacto) {
                     tdDespegue.classList.add('modo-compacto');
+                    if (badgeAjusteHTML) tdDespegue.classList.add('con-badge-limites');
                     tdDespegue.style.paddingBottom = (26 + paddingExtraBoton) + 'px';
                 } else if (paddingExtraBoton > 0) {
                     tdDespegue.style.paddingBottom = (6 + paddingExtraBoton) + 'px';
@@ -7671,7 +7765,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 const factorSeguridad = limites ? limites.naranja : 1.0; 
                                 
                                 // Límite Absoluto (Tu VelMax * Factor de altura)
-                                const limiteAbsolutoUsuario = Math.round(VelocidadMax * factorSeguridad);
+                                const limiteAbsolutoUsuario = Math.round(velMaxDespegue * factorSeguridad);
                                 
                                 // CONSTANTE FÍSICA: Umbral de turbulencia baja/moderada
                                 const UMBRAL_TURBULENCIA_BAJA = 25; 
@@ -7684,7 +7778,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 // 1. REGLA DE USUARIO: ¿Supera TU límite de seguridad ajustado?
                                 if (valAltura >= limiteAbsolutoUsuario) {
                                     claseColor = "fondo-rojo";
-                                    motivo = `Supera el límite calculado para esta altura (${limiteAbsolutoUsuario} km/h)\n(Velocidad máxima configurada: ${VelocidadMax} km/h x Factor ${factorSeguridad})`;
+                                    motivo = `Supera el límite calculado para esta altura (${limiteAbsolutoUsuario} km/h)\n(Velocidad máxima ${factorDespegue !== 1 ? 'ajustada a este despegue' : 'configurada'}: ${Math.round(velMaxDespegue * 10) / 10} km/h x Factor ${factorSeguridad})`;
                                 }
                                 // 2. REGLA FÍSICA: ¿Es viento moderado (<25 km/h)?
                                 // Si no supera tu límite y es menor a 25, asumimos que no hay peligro grave de cizalladura.
@@ -7718,9 +7812,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     }
 
                     // ⚪ Velocidad 10 m *****************************
-					
-                    // Ponemos esta constante fuera del bucle para no calcularla 100 veces
-                    const velocidadTolerableSuperior = VelocidadMax - (VelocidadMax - VelocidadIdeal) / 3;
 
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
@@ -7791,13 +7882,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.classList.add("borde-grueso-izquierda");
                         }
 
-                        if (velocidad < VelocidadMin) {
+                        if (velocidad < velMinDespegue) {
                             td.classList.add("fondo-naranja");
                         } 
                         else if (velocidad <= velocidadTolerableSuperior) {
                             td.classList.add("fondo-verde");
                         } 
-                        else if (velocidad < VelocidadMax) {
+                        else if (velocidad < velMaxDespegue) {
                             td.classList.add("fondo-naranja");
                         } 
                         else { 
@@ -7819,15 +7910,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
                         td.dataset.vRaw = velOrigRound;
                         td.dataset.vCorr = velCorrRound;
-                        td.dataset.cRaw = (velOrigRound < VelocidadMin) ? "fondo-naranja" : (velOrigRound <= velocidadTolerableSuperior ? "fondo-verde" : (velOrigRound < VelocidadMax ? "fondo-naranja" : "fondo-rojo"));
-                        td.dataset.cCorr = (velCorrRound < VelocidadMin) ? "fondo-naranja" : (velCorrRound <= velocidadTolerableSuperior ? "fondo-verde" : (velCorrRound < VelocidadMax ? "fondo-naranja" : "fondo-rojo"));
+                        td.dataset.cRaw = (velOrigRound < velMinDespegue) ? "fondo-naranja" : (velOrigRound <= velocidadTolerableSuperior ? "fondo-verde" : (velOrigRound < velMaxDespegue ? "fondo-naranja" : "fondo-rojo"));
+                        td.dataset.cCorr = (velCorrRound < velMinDespegue) ? "fondo-naranja" : (velCorrRound <= velocidadTolerableSuperior ? "fondo-verde" : (velCorrRound < velMaxDespegue ? "fondo-naranja" : "fondo-rojo"));
 
                         filaVel.appendChild(td);
                     }
 
 					// ⚪ Racha *****************************
-
-                    const rachaTolerable = RachaMax - (RachaMax - VelocidadMax) / 3;
 
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                         
@@ -7876,7 +7965,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         if (racha < rachaTolerable) {
                             td.classList.add("fondo-verde");
                         } 
-                        else if (racha < RachaMax) { 
+                        else if (racha < rachaMaxDespegue) { 
                             td.classList.add("fondo-naranja");
                         } 
                         else { 
@@ -7898,8 +7987,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
                         td.dataset.rRaw = rachaOrigRound;
                         td.dataset.rCorr = rachaCorrRound;
-                        td.dataset.cRaw = (rachaOrigRound < rachaTolerable) ? "fondo-verde" : (rachaOrigRound < RachaMax ? "fondo-naranja" : "fondo-rojo");
-                        td.dataset.cCorr = (rachaCorrRound < rachaTolerable) ? "fondo-verde" : (rachaCorrRound < RachaMax ? "fondo-naranja" : "fondo-rojo");
+                        td.dataset.cRaw = (rachaOrigRound < rachaTolerable) ? "fondo-verde" : (rachaOrigRound < rachaMaxDespegue ? "fondo-naranja" : "fondo-rojo");
+                        td.dataset.cCorr = (rachaCorrRound < rachaTolerable) ? "fondo-verde" : (rachaCorrRound < rachaMaxDespegue ? "fondo-naranja" : "fondo-rojo");
 
                         filaRacha.appendChild(td);
                     }
@@ -8310,17 +8399,18 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 const v10 = Math.round(Math.max(0, Number(hourlyEcmwf.wind_speed_10m[idxEcmwf])));
                                 tdVel10.textContent = v10;
 
-                                if (v10 < VelocidadMin) {
+                                if (v10 < velMinDespegue) {
                                     tdVel10.classList.add("fondo-naranja");
                                 } else if (v10 <= velocidadTolerableSuperior) {
                                     tdVel10.classList.add("fondo-verde");
-                                } else if (v10 < VelocidadMax) {
+                                } else if (v10 < velMaxDespegue) {
                                     tdVel10.classList.add("fondo-naranja");
                                 } else {
                                     tdVel10.classList.add("fondo-rojo");
                                 }
 
                                 tdVel10.title = `${v10} km/h (Velocidad 10 m AGL ECMWF)`;
+                                tdVel10.dataset.lim10 = 'v';
                             }
                             filaEcmwfVel10.appendChild(tdVel10);
 
@@ -8342,13 +8432,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                                 if (r10 < rachaTolerable) {
                                     tdRacha10.classList.add("fondo-verde");
-                                } else if (r10 < RachaMax) {
+                                } else if (r10 < rachaMaxDespegue) {
                                     tdRacha10.classList.add("fondo-naranja");
                                 } else {
                                     tdRacha10.classList.add("fondo-rojo");
                                 }
 
                                 tdRacha10.title = `${r10} km/h (Racha máxima 10 m AGL ECMWF)`;
+                                tdRacha10.dataset.lim10 = 'r';
                             }
                             filaEcmwfRacha10.appendChild(tdRacha10);
 
@@ -8398,6 +8489,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             
             tdCondiciones.style.fontWeight = "bold";
 			tdCondiciones.classList.add("borde-grueso-izquierda", "borde-grueso-abajo", "borde-grueso-derecha", "celda-condiciones-inicio");
+            tdCondiciones.dataset.celdaNota = 'cond';
+            tdCondiciones.dataset.idDesp = idDespegue;
             //tdCondiciones.style.cursor = "help"; 
 
             if (horasValidas > 0) {
@@ -8449,6 +8542,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tdCondicionesXC.style.fontWeight = "bold";
                     tdCondicionesXC.style.textAlign = "center";
                     tdCondicionesXC.classList.add("borde-grueso-izquierda", "borde-grueso-abajo", "borde-grueso-derecha", "celda-condiciones-final");
+                    tdCondicionesXC.dataset.celdaNota = 'xc';
+                    tdCondicionesXC.dataset.idDesp = idDespegue;
 
                     if (valorVisualXC !== "-") {
                         tdCondicionesXC.style.backgroundColor = coloresNota[valorVisualXC];
@@ -9384,6 +9479,470 @@ window.resetearFiltrosMapaEnVivo = function() {
     if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
 };
 
+
+// ---------------------------------------------------------------
+// 🟡 AJUSTE DE LÍMITES POR DESPEGUE
+// ---------------------------------------------------------------
+
+let _ajustesLimitesCache = null;
+
+function obtenerAjustesLimitesDespegues() {
+    if (_ajustesLimitesCache) return _ajustesLimitesCache;
+    const limpio = {};
+    try {
+        const parsed = JSON.parse(localStorage.getItem("METEO_AJUSTES_LIMITES_DESPEGUES") || "{}");
+        if (parsed && typeof parsed === 'object') {
+            for (const k in parsed) {
+                if (parsed[k] === null || parsed[k] === '') continue;
+                const n = Number(parsed[k]);
+                if (Number.isFinite(n)) limpio[k] = Math.min(200, Math.max(50, n));
+            }
+        }
+    } catch (e) {}
+    _ajustesLimitesCache = limpio;
+    return limpio;
+}
+
+function obtenerPorcentajeAjusteDespegue(idDespegue) {
+    if (!idDespegue) return 100;
+    const ajustes = obtenerAjustesLimitesDespegues();
+    const pct = ajustes[Number(idDespegue)];
+    if (pct === undefined || isNaN(Number(pct))) return 100;
+    return Number(pct);
+}
+
+function obtenerFactorAjusteDespegue(idDespegue) {
+    return obtenerPorcentajeAjusteDespegue(idDespegue) / 100;
+}
+
+window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
+    idDespegue = Number(idDespegue);
+    if (!idDespegue) return;
+
+    const ajustes = obtenerAjustesLimitesDespegues();
+    const actual = (ajustes[idDespegue] !== undefined) ? Number(ajustes[idDespegue]) : 100;
+    let nuevo = actual + delta;
+
+    // Rango de seguridad: de 50% a 200%
+    nuevo = Math.min(200, Math.max(50, nuevo));
+
+    if (nuevo === 100) {
+        delete ajustes[idDespegue];
+    } else {
+        ajustes[idDespegue] = nuevo;
+    }
+
+    localStorage.setItem("METEO_AJUSTES_LIMITES_DESPEGUES", JSON.stringify(ajustes));
+
+    if (typeof window.vibrarDispositivo === 'function') {
+        window.vibrarDispositivo();
+    }
+
+    // 1. Actualizar el valor visual en todos los popups abiertos
+    document.querySelectorAll(`.valor-ajuste-limites-${idDespegue}`).forEach(el => {
+        el.textContent = `${nuevo}%`;
+        el.style.color = nuevo < 100 ? '#ea580c' : (nuevo > 100 ? '#0284c7' : '#333');
+    });
+
+    // 1b. Fondo del stepper y límites efectivos (siempre visibles si ≠ 100%)
+    pintarEstadoLimitesDespegue(idDespegue, nuevo);
+
+    // 2. Controlar estado de botones y botón de reset
+    document.querySelectorAll(`.stepper-limites-menos-${idDespegue}`).forEach(btn => {
+        btn.disabled = (nuevo <= 50);
+    });
+    document.querySelectorAll(`.stepper-limites-mas-${idDespegue}`).forEach(btn => {
+        btn.disabled = (nuevo >= 200);
+    });
+    document.querySelectorAll(`.btn-reset-limite-${idDespegue}`).forEach(btn => {
+        btn.style.display = nuevo !== 100 ? 'inline-flex' : 'none';
+    });
+
+    // 3. Si estamos en el mapa, refrescar en vivo SOLO el marcador afectado sin tocar clearLayers()
+    const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+    if (enMapa && typeof markersDespegues !== 'undefined' && markersDespegues.length > 0) {
+        const targetMarker = markersDespegues.find(m => m && m.metadata && Number(m.metadata.id) === idDespegue);
+        if (targetMarker && targetMarker._despObj) {
+            try {
+                const horas = window.horasCrudasRangoHorario || [];
+                const respuestas = window.respuestasGlobalMapa || [];
+                const respuestasEcmwf = window.respuestasEcmwfGlobalMapa || [];
+                const despegues = window.bdGlobalDespegues || [];
+
+                let indiceInicio = 0, indiceFin = 99999;
+                const sliderHoras = document.getElementById('horario-slider');
+                if (typeof modoVerTodosLosDias === 'undefined' || !modoVerTodosLosDias) {
+                    if (sliderHoras && sliderHoras.noUiSlider && window.indicesHorasRangoHorario?.length > 0) {
+                        const vals = sliderHoras.noUiSlider.get().map(v => Math.round(Number(v)));
+                        indiceInicio = window.indicesDiaActualSlider[vals[0]];
+                        indiceFin = window.indicesDiaActualSlider[vals[1]];
+                    }
+                }
+                const soloHorasDeLuz = localStorage.getItem("METEO_CHECKBOX_SOLO_HORAS_DE_LUZ") === "true";
+                const indicesEval = [];
+                horas.forEach((h, i) => {
+                    if (i < indiceInicio || i > indiceFin) return;
+                    const dObj = new Date(h.endsWith('Z') ? h : h + 'Z');
+                    if (soloHorasDeLuz && typeof esCeldaNoche === 'function' && esCeldaNoche(dObj)) return;
+                    indicesEval.push(i);
+                });
+
+                const idx = despegues.findIndex(d => Number(d.ID) === idDespegue);
+                if (idx >= 0 && typeof calcularPuntuacionesDespegue === 'function') {
+                    const hourlyData = respuestas[idx] ? respuestas[idx].hourly : null;
+                    const hourlyEcmwf = respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null;
+                    const evaluacion = calcularPuntuacionesDespegue(targetMarker._despObj, hourlyData, hourlyEcmwf, indicesEval);
+                    const nota = evaluacion.notaCondiciones;
+                    const color = typeof colorNotaMapa === 'function' ? colorNotaMapa(nota) : null;
+                    targetMarker._notaMapa = (nota !== null) ? nota : -1;
+
+                    const meta = targetMarker.metadata;
+                    const nombreMostrar = targetMarker._despObj.Despegue || meta.despegue;
+                    const actividadScore = targetMarker._despObj.Actividad || null;
+
+                    // 1. Guardamos la nueva definición del icono en memoria para cuando el clúster se redibuje
+                    targetMarker.options.icon = window.createIconDespegue(nombreMostrar, meta.actividad, meta.orientaciones, color, actividadScore);
+
+                    // 1b. Refrescar solo los clusters que contienen este marker (color según nota máxima de sus hijos)
+                    if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues.refreshClusters) {
+                        clustergroupDespegues.refreshClusters(targetMarker);
+                    }
+
+                    // 2. Si el icono está actualmente dibujado en pantalla, cambiamos su color directamente en el DOM
+                    if (targetMarker._icon) {
+                        const labelEl = targetMarker._icon.querySelector('.label-large-despegues');
+                        if (labelEl) {
+                            labelEl.style.backgroundColor = color || '#ffffff';
+                        }
+                    }
+                }
+            } catch (errColor) {
+                console.warn("Aviso al actualizar color en vivo:", errColor);
+            }
+
+            // Reaplicar el filtro de puntuación mínima. Con el popup abierto NO se toca el cluster:
+            // se aplica al cerrarlo (si ya no pasa el filtro, desaparece entonces).
+            if (puntuacionMinimaMapa > 0 && typeof actualizarFiltrosMapa === 'function') {
+                if (targetMarker.isPopupOpen && targetMarker.isPopupOpen()) {
+                    if (!targetMarker._filtroPendiente) {
+                        targetMarker._filtroPendiente = true;
+                        targetMarker.once('popupclose', function () {
+                            this._filtroPendiente = false;
+                            setTimeout(actualizarFiltrosMapa, 0);
+                        });
+                    }
+                } else {
+                    actualizarFiltrosMapa();
+                }
+            }
+        }
+    }
+    
+    // 4. Si estamos en la tabla, refrescar en vivo nota y coloreado de ese despegue
+    if (!enMapa && typeof refrescarDespegueEnTabla === 'function') {
+        refrescarDespegueEnTabla(idDespegue);
+    }
+
+    // Marcar para reconstruir la tabla al cerrar el popup o cambiar de vista
+    window.tablaRecrearAlVolver = true;
+    window.tablaNecesitaActualizarAjustes = true;
+    if (typeof actualizarBotonGestionLimites === 'function') actualizarBotonGestionLimites();
+};
+
+// Ajuste de límites. Generador del bloque HTML del Stepper para popups
+function generarHtmlStepperLimites(idDespegue) {
+    const idNum = Number(idDespegue);
+    if (!idNum) return '';
+    const pct = obtenerPorcentajeAjusteDespegue(idNum);
+    const fondoStepper = fondoStepperLimites(pct);
+    const fondoBloque = fondoBloqueLimites(pct);
+    const textoLim = pct !== 100 ? textoLimitesEfectivos(idNum) : '';
+    const colorValor = pct < 100 ? '#ea580c' : (pct > 100 ? '#0284c7' : '#333');
+    const labelTexto = typeof t === 'function' ? t('popupDespegue.ajusteLimites', { defaultValue: 'Límites:' }) : 'Límites:';
+    const tooltipTitle = typeof t === 'function' 
+        ? t('popupDespegue.tooltipAjusteLimites', { defaultValue: 'Ajusta los límites generales de viento y racha para este despegue. Menor al 100% es más restrictivo (queremos menos viento en ese despegue) y mayor al 100% más tolerante (aceptamos más viento).' })
+        : 'Ajusta los límites de viento y racha para este despegue. Menor al 100% es más restrictivo y mayor al 100% más tolerante.';
+
+    return `
+        <div class="bloque-ajuste-limites" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 13px 0 8px 0; padding: 3px 7px; background: ${fondoBloque}; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;" title="${tooltipTitle}">
+            <span style="font-weight: bold; color: #1e293b; white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                <span style="display: flex; align-items: center; gap: 3px;">
+                    <img src="/icons/icono_viento_60.webp" width="20" height="20" style="display: block;">
+                    <img src="/icons/icono_racha_60.webp" width="20" height="20" style="display: block;">
+                </span>
+                <span>${labelTexto}</span>
+            </span>
+            <div style="display: inline-flex; align-items: center; gap: 4px; margin-left: auto;">
+                <div class="stepper-dias-seguimiento ${pct !== 100 ? 'limites-tenido' : ''}" style="margin: 0; background: ${fondoStepper};">
+                    <button type="button" class="stepper-btn stepper-limites-menos-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, -10);" ${pct <= 50 ? 'disabled' : ''} style="cursor: pointer;">−</button>
+                    <span class="stepper-valor valor-ajuste-limites-${idNum}" style="min-width: 44px; text-align: center; font-weight: bold; border-left: 1px solid #ccc; border-right: 1px solid #ccc; height: 28px; line-height: 28px; color: ${colorValor}; padding: 0 4px; display: inline-block;">${pct}%</span>
+                    <button type="button" class="stepper-btn stepper-limites-mas-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, 10);" ${pct >= 200 ? 'disabled' : ''} style="cursor: pointer;">+</button>
+                </div>
+            </div>
+        </div>
+        <div class="linea-limites-efectivos" data-id-desp="${idNum}" style="display: ${textoLim ? 'block' : 'none'}; margin-bottom: 10px; line-height: 20px; color: #475569; text-align: left; white-space: nowrap;">${textoLim}</div>
+    `;
+}
+
+// Límites efectivos de un despegue (única fuente de verdad: tabla, mapa y línea del stepper)
+function obtenerLimitesEfectivosDespegue(idDespegue) {
+    const f = obtenerFactorAjusteDespegue(idDespegue);
+    const min = VelocidadMin * f, ideal = VelocidadIdeal * f, max = VelocidadMax * f, racha = RachaMax * f;
+    return { f, min, ideal, max, racha,
+             tolSup: max - (max - ideal) / 3,
+             rachaTol: racha - (racha - max) / 3 };
+}
+
+// Texto de los límites efectivos (usa aquí tu t() actual si ya tienes tu propia clave y formato)
+function textoLimitesEfectivos(idDespegue) {
+    const L = obtenerLimitesEfectivosDespegue(idDespegue);
+    const fmt = n => String(Number(n.toFixed(0)));
+    const vel = fmt(L.max), racha = fmt(L.racha);
+    return (typeof t === 'function')
+        ? t('popupDespegue.limitesEfectivos', { defaultValue: 'Viento máx.: {{vel}} km/h<br>Racha máx.: {{racha}} km/h', vel, racha })
+        : `Viento máx.: ${vel} km/h<br>Racha máx.: ${racha} km/h`;
+}
+
+// Fondo del stepper según el porcentaje (más claro que el color de la cifra)
+function fondoStepperLimites(pct) {
+    return pct < 100 ? '#ffedd5' : (pct > 100 ? '#e0f2fe' : '#fff');
+}
+
+// Fondo del bloque completo (más suave que el del stepper). A 100% se queda como estaba.
+function fondoBloqueLimites(pct) {
+    return pct < 100 ? '#ffedd5' : (pct > 100 ? '#e0f2fe' : '#f8fafc');
+}
+
+// Pinta fondos y línea de límites en TODOS los popups abiertos de ese despegue.
+// La línea, una vez visible, se mantiene aunque se vuelva a 100% (evita que el popup se encoja y el
+// stepper baje bajo el dedo). Con reiniciar = true (al abrir/cerrar el popup) vuelve a ocultarse a 100%.
+window.pintarEstadoLimitesDespegue = function (idDespegue, pct, reiniciar = false) {
+    const fondo = fondoStepperLimites(pct);
+    const texto = textoLimitesEfectivos(idDespegue);
+    document.querySelectorAll(`.valor-ajuste-limites-${idDespegue}`).forEach(el => {
+        const stepper = el.closest('.stepper-dias-seguimiento');
+        if (stepper) {
+            stepper.style.background = fondo;
+            stepper.classList.toggle('limites-tenido', pct !== 100);
+        }
+
+        const bloque = el.closest('.bloque-ajuste-limites');
+        if (bloque) bloque.style.background = fondoBloqueLimites(pct);
+
+        const linea = bloque && bloque.nextElementSibling;
+        if (linea && linea.classList.contains('linea-limites-efectivos')) {
+            const yaVisible = linea.style.display !== 'none';
+            const mostrar = pct !== 100 || (yaVisible && !reiniciar);
+            linea.innerHTML = texto;
+            linea.style.display = mostrar ? 'block' : 'none';
+        }
+    });
+};
+
+// ---------------------------------------------------------------
+// 🔴 EDICIÓN DE DESPEGUES CON LÍMITES PERSONALIZADOS
+// Reutiliza el formato de edición de la tabla, pero con bandera, filtro y salida propios.
+// ---------------------------------------------------------------
+
+// IDs con límite ≠ 100% que existen en la BD (ignora claves huérfanas de despegues borrados)
+function obtenerIdsDespeguesConLimites() {
+    const ajustes = obtenerAjustesLimitesDespegues();
+    const existentes = new Set((window.bdGlobalDespegues || []).map(d => Number(d.ID)));
+    return Object.keys(ajustes).map(Number)
+        .filter(id => Number(ajustes[id]) !== 100 && (existentes.size === 0 || existentes.has(id)));
+}
+
+// Contador y estado del botón de entrada en Ajustes
+window.actualizarBotonGestionLimites = function () {
+    const btn = document.getElementById('btn-gestionar-limites-despegues');
+    if (!btn) return;
+    const n = obtenerIdsDespeguesConLimites().length;
+    const span = btn.querySelector('.num-despegues-con-limites');
+    if (span) span.textContent = n;
+    btn.disabled = (n === 0);
+    btn.style.opacity = (n === 0) ? '0.5' : '';
+};
+
+// Texto del botón de finalizar (se reutiliza el de favoritos)
+function _textoBotonFinalizarEdicion(modoLimites) {
+    const btn = document.getElementById('btn-finalizar-edicion-favoritos');
+    if (!btn) return;
+    btn.textContent = modoLimites
+        ? t('ajustes.finalizarEdicionLimites', { defaultValue: 'Finalizar edición de límites' })
+        : t('html.finalizarEdicion', { defaultValue: 'Finalizar edición de despegues favoritos' });
+}
+
+window.activarEdicionLimites = function () {
+    if (modoEdicionLimites || obtenerIdsDespeguesConLimites().length === 0) return;
+
+    const overlay = document.getElementById('msgActualizando...');
+    if (overlay) overlay.classList.add('loader-activo');
+
+    setTimeout(() => {
+        // Estado previo, para restaurarlo al salir
+        window.estadoPreEdicionLimites = { soloFavoritos: soloFavoritos, soloSeguimiento: soloSeguimiento };
+
+        // Foto de la lista al entrar: las filas no desaparecen hasta finalizar, aunque se reseteen
+        window.idsEdicionLimites = new Set(obtenerIdsDespeguesConLimites());
+
+        modoEdicionLimites = true;
+        modoEdicionFavoritos = true; // la tabla ya sabe dibujar el formato de edición
+        soloFavoritos = false;
+        soloSeguimiento = false;
+        const btnFavs = document.getElementById('btn-filtro-favoritos-toggle');
+        if (btnFavs) btnFavs.classList.remove('filtro-aplicado', 'activo');
+
+        if (typeof limpiarBuscador === 'function') limpiarBuscador();
+        if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
+
+        document.body.classList.add('modo-edicion-tabla', 'modo-edicion-limites');
+        document.getElementById('div-menu')?.classList.add('mode-editing');
+        document.getElementById('div-menu2-edicion-favoritos')?.classList.add('mode-editing');
+        const panelHorario = document.querySelector('.div-filtro-horario');
+        if (panelHorario) panelHorario.style.display = 'none';
+        document.getElementById('div-configuracion')?.classList.remove('activo');
+        if (typeof setModoEnfoque === 'function') setModoEnfoque(false);
+        _textoBotonFinalizarEdicion(true);
+
+        cambiarVista('tabla');
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
+        construir_tabla();
+    }, 120);
+};
+
+// Devuelve true de forma síncrona (la navegación inferior lo usa para decidir si puede continuar)
+window.finalizarEdicionLimites = function () {
+    if (!modoEdicionLimites) return true;
+
+    const overlay = document.getElementById('msgActualizando...');
+    if (overlay) overlay.classList.add('loader-activo');
+    modoEdicionLimites = false; // evita dobles salidas
+
+    setTimeout(() => {
+        modoEdicionFavoritos = false;
+        document.body.classList.remove('modo-edicion-tabla', 'modo-edicion-limites');
+        document.getElementById('div-menu')?.classList.remove('mode-editing');
+        document.getElementById('div-menu2-edicion-favoritos')?.classList.remove('mode-editing');
+        const panelHorario = document.querySelector('.div-filtro-horario');
+        if (panelHorario) panelHorario.style.display = '';
+        _textoBotonFinalizarEdicion(false);
+
+        // Restaurar filtros previos
+        const prev = window.estadoPreEdicionLimites || {};
+        window.estadoPreEdicionLimites = null;
+        window.idsEdicionLimites = null;
+        soloFavoritos = prev.soloFavoritos;
+        const btnFavs = document.getElementById('btn-filtro-favoritos-toggle');
+        if (btnFavs) {
+            btnFavs.classList.toggle('activo', !!prev.soloFavoritos);
+            btnFavs.classList.toggle('filtro-aplicado', !!prev.soloFavoritos);
+        }
+        soloSeguimiento = !!prev.soloSeguimiento && obtenerSeguimientos().length > 0;
+
+        if (typeof limpiarBuscador === 'function') limpiarBuscador();
+        if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
+        window.limitePaginacionMeteo = 10;
+
+        cambiarVista('tabla');
+        const navHome = document.getElementById('nav-home');
+        if (navHome && typeof window.activarMenuInferior === 'function') window.activarMenuInferior(navHome);
+
+        construir_tabla();
+        actualizarBotonGestionLimites();
+    }, 120);
+
+    return true;
+};
+
+// ↺ de una fila: vuelve ese despegue al 100%. La fila se queda hasta finalizar la edición.
+window.resetearLimiteDespegueEnLista = function (idDespegue) {
+    const ajustes = obtenerAjustesLimitesDespegues();
+    delete ajustes[idDespegue];
+    localStorage.setItem("METEO_AJUSTES_LIMITES_DESPEGUES", JSON.stringify(ajustes));
+    window.tablaRecrearAlVolver = true;
+    if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+    actualizarBotonGestionLimites();
+    construir_tabla(false, true); // pocas filas: vacía la celda y rehace badge, colores y nota de esa fila
+};
+
+// Botón "Resetear todos los límites" (con confirmación)
+window.resetearTodosLosLimites = function () {
+    GestorMensajes.mostrar({
+        tipo: 'modal',
+        htmlContenido: `<div style="text-align: center; font-size: 1.1em;">${t('ajustes.confirmarResetTodosLimites', { defaultValue: '¿Resetear los límites personalizados de todos los despegues?.<br><br>Esta acción configurará todos los despegues con el límite del 100 %, es decir, con los límites generales configurados en <i>Ajustes > Límites de viento y racha.' })}</div>`,
+        botones: [
+            { texto: t('botones.cancelar', { defaultValue: 'Cancelar' }), estilo: 'secundario', onclick: function () { GestorMensajes.ocultar(); } },
+            { texto: t('botones.aceptar', { defaultValue: 'Aceptar' }), onclick: function () {
+                GestorMensajes.ocultar();
+                const ajustes = obtenerAjustesLimitesDespegues();
+                Object.keys(ajustes).forEach(k => delete ajustes[k]); // vacía también la caché en memoria
+                localStorage.setItem("METEO_AJUSTES_LIMITES_DESPEGUES", JSON.stringify(ajustes));
+                window.tablaRecrearAlVolver = true;
+                actualizarBotonGestionLimites();
+                construir_tabla(false, true); // las filas siguen, todas con la celda vacía; se sale con "Finalizar edición de límites"
+            } }
+        ]
+    });
+};
+// ---------------------------------------------------------------
+
+// Refresca en vivo puntuación y colores de UN despegue en la tabla (sin reconstruirla)
+window.refrescarDespegueEnTabla = function (idDespegue) {
+    idDespegue = Number(idDespegue);
+    const filas = document.querySelectorAll(`tr[data-id-desp="${idDespegue}"]`);
+    if (!filas.length) return;
+
+    const L = obtenerLimitesEfectivosDespegue(idDespegue);
+    const claseV = v => v < L.min ? 'fondo-naranja' : (v <= L.tolSup ? 'fondo-verde' : (v < L.max ? 'fondo-naranja' : 'fondo-rojo'));
+    const claseR = r => r < L.rachaTol ? 'fondo-verde' : (r < L.racha ? 'fondo-naranja' : 'fondo-rojo');
+    const pintar = (td, clase) => { td.classList.remove('fondo-verde', 'fondo-naranja', 'fondo-rojo'); td.classList.add(clase); };
+
+    filas.forEach(tr => {
+        tr.querySelectorAll('td').forEach(td => {
+            const ds = td.dataset;
+            if (ds.vRaw !== undefined) {            // viento medio (+ "mochila" de pulsación larga)
+                pintar(td, claseV(Number(td.textContent)));
+                ds.cRaw = claseV(Number(ds.vRaw));
+                ds.cCorr = claseV(Number(ds.vCorr));
+            } else if (ds.rRaw !== undefined) {     // racha
+                pintar(td, claseR(Number(td.textContent)));
+                ds.cRaw = claseR(Number(ds.rRaw));
+                ds.cCorr = claseR(Number(ds.rCorr));
+            } else if (ds.lim10 === 'v') {          // ECMWF 10 m velocidad
+                pintar(td, claseV(Number(td.textContent)));
+            } else if (ds.lim10 === 'r') {          // ECMWF 10 m racha
+                pintar(td, claseR(Number(td.textContent)));
+            }
+        });
+    });
+
+    // Puntuaciones (condiciones y XC)
+    const ctx = window._ctxTabla && window._ctxTabla.get(idDespegue);
+    if (!ctx || !ctx.hourlyData) return;
+    try {
+        const ev = calcularPuntuacionesDespegue(ctx.d, ctx.hourlyData, ctx.hourlyEcmwf, window.indicesEvaluacionTablaActual || []);
+
+        const tdCond = document.querySelector(`td[data-celda-nota="cond"][data-id-desp="${idDespegue}"]`);
+        if (tdCond) {
+            const nota = ev.notaCondiciones !== null ? ev.notaCondiciones : 0;
+            const valor = ev.horasValidas > 0 ? Math.round(nota) : '-';
+            tdCond.textContent = valor;
+            tdCond.title = ev.horasValidas > 0 ? `Nota Condiciones despegue: ${nota.toFixed(1)} puntos` : 'Sin datos suficientes para puntuar';
+            tdCond.style.backgroundColor = valor !== '-' ? COLORES_NOTA_MAPA[valor] : '#f0f0f0';
+        }
+        const tdXC = document.querySelector(`td[data-celda-nota="xc"][data-id-desp="${idDespegue}"]`);
+        if (tdXC) {
+            const notaXC = ev.notaXC !== null ? ev.notaXC : 0;
+            const valorXC = ev.horasValidasXC > 0 ? Math.round(notaXC) : '-';
+            tdXC.textContent = valorXC;
+            tdXC.title = ev.horasValidasXC > 0 ? `Nota Condiciones XC: ${notaXC.toFixed(1)} puntos` : 'Sin datos suficientes para puntuar XC';
+            tdXC.style.backgroundColor = valorXC !== '-' ? COLORES_NOTA_MAPA[valorXC] : '#f0f0f0';
+        }
+    } catch (e) {
+        console.warn('Aviso al refrescar la nota en vivo:', e);
+    }
+};
+
 // ---------------------------------------------------------------
 // 🔴 BUSCADOR Y FILTROS VISUALES (Texto y Distancia)
 // ---------------------------------------------------------------
@@ -9523,8 +10082,8 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
         }
     }
 
-    // 4. Corazón de la cabecera (Modo edición)
-    if (modoEdicionFavoritos) {
+    // 4. Corazón de la cabecera (Modo edición de favoritos; en el de límites la cabecera es el ↺)
+    if (modoEdicionFavoritos && !modoEdicionLimites) {
         const thFavorito = document.getElementById('id-thFavorito'); 
         if(thFavorito) thFavorito.innerHTML = '<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍">';
     }
@@ -11162,7 +11721,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 
                 // Aplicar límites de altura y scroll vertical únicamente para el botón "i" del despegue
                 if (esInfoDespegue) {
-                    scrollArea.style.maxHeight = '330px';
+                    scrollArea.style.maxHeight = '351px';
                     scrollArea.style.overflowY = 'auto';
                     scrollArea.style.paddingRight = '8px';
                     scrollArea.style.boxSizing = 'border-box';
@@ -11173,6 +11732,16 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 fragment.appendChild(scrollArea);
 
                 instance.setContent(fragment);
+            },
+            onHidden(instance) {
+                instance.popper.querySelectorAll('.linea-limites-efectivos').forEach(l => {
+                    const id = Number(l.dataset.idDesp);
+                    if (id) pintarEstadoLimitesDespegue(id, obtenerPorcentajeAjusteDespegue(id), true);
+                });
+                if (window.tablaNecesitaActualizarAjustes) {
+                    window.tablaNecesitaActualizarAjustes = false;
+                    construir_tabla(false, true);
+                }
             }
         });
     }
@@ -11400,6 +11969,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     map.closePopup();
                     return; 
                 }
+            }
+
+            // --- PRIORIDAD 1.95: Modo Edición de Límites → igual que "Finalizar edición de límites" ---
+            if (typeof modoEdicionLimites !== 'undefined' && modoEdicionLimites) {
+                finalizarEdicionLimites();
+                return;
             }
 
             // --- PRIORIDAD 2: Modo Edición Favoritos ---
@@ -13209,11 +13784,12 @@ function aplicarPuntuacionEnMapa(soloPuntuacion = false) {
     if (typeof clustergroupDespegues !== 'undefined' && clustergroupDespegues && clustergroupDespegues._map) {
         clustergroupDespegues.refreshClusters();
     }
-    if (typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || (filtrosMapaAbiertos && !soloPuntuacion))) {
+    // Si solo estamos refrescando puntuación con popup abierto, prohibido llamar a clearLayers()
+    if (!soloPuntuacion && typeof actualizarFiltrosMapa === 'function' && (puntuacionMinimaMapa > 0 || filtrosMapaAbiertos)) {
         actualizarFiltrosMapa();
     }
 
-    if (marcadorAbierto) {
+    if (marcadorAbierto && !marcadorAbierto.isPopupOpen()) {
         if (map.hasLayer(marcadorAbierto) || clustergroupDespegues.hasLayer(marcadorAbierto)) {
             marcadorAbierto.openPopup();
         }
@@ -13667,6 +14243,25 @@ function inicializarMapaLeaflet() {
         }
     });
 
+    // 🛡️ PARCHE DE SEGURIDAD LEAFLET (con diagnóstico): evita el crash "this._map is null" en _removeIcon
+    if (typeof L !== 'undefined' && L.Marker && L.Marker.prototype._removeIcon) {
+        if (!L.Marker.prototype._removeIconPatched) {
+            const originalRemoveIcon = L.Marker.prototype._removeIcon;
+            L.Marker.prototype._removeIcon = function () {
+                if (!this._map) {
+                    console.warn('[DIAG] _removeIcon sin _map:', this.metadata && this.metadata.despegue, new Error().stack);
+                    if (this._icon && this._icon.parentNode) {
+                        this._icon.parentNode.removeChild(this._icon);
+                    }
+                    this._icon = null;
+                    return;
+                }
+                return originalRemoveIcon.apply(this, arguments);
+            };
+            L.Marker.prototype._removeIconPatched = true;
+        }
+    }
+
     // 🌍 ENCUADRE DINÁMICO PREDETERMINADO (Forzado por anchura con ajuste manual)
     if (esVistaPredeterminada) {
         
@@ -13691,7 +14286,7 @@ function inicializarMapaLeaflet() {
 
     // 🛑 FUNCIONES DE ACTUALIZACIÓN DE LOS FILTROS, TANTO EJECUTIVO COMO VISUAL
 
-    window.actualizarFiltrosMapa = function actualizarFiltrosMapa() {
+    const _actualizarFiltrosMapaImpl = function () {
         // A. OBTENER ESTADOS DE LOS FILTROS
         // -------------------------------------------------------
         // 1. Obtener orientaciones
@@ -13861,21 +14456,40 @@ function inicializarMapaLeaflet() {
             if (mapCont) mapCont.classList.add('bloquear-transicion-popup');
         }
 
-        // 1. Actualizar capa LOCAL (Despegues)
-        clustergroupDespegues.clearLayers();
-        clustergroupDespegues.addLayers(markersFiltradosDespegues);
-        
-        // 2. Actualizar capa MUNDO (DespeguesMundo)
-        clustergroupDespeguesMundo.clearLayers();
-        clustergroupDespeguesMundo.addLayers(markersFiltradosDespeguesMundo);
+        // Actualización por diferencias: solo se quitan/añaden los markers que cambian de estado.
+        // (clearLayers + addLayers de ~10.000 markers con chunkedLoading se pisan si se encadenan.)
+        const aplicarDiffCapa = (grupo, listaNueva) => {
+            const nuevo = new Set(listaNueva);
+            const previo = new Set(grupo.getLayers());
+            const quitar = [];
+            previo.forEach(m => { if (!nuevo.has(m)) quitar.push(m); });
+            const anadir = listaNueva.filter(m => !previo.has(m));
+            if (quitar.length) grupo.removeLayers(quitar);
+            if (anadir.length) grupo.addLayers(anadir);
+        };
+        aplicarDiffCapa(clustergroupDespegues, markersFiltradosDespegues);
+        aplicarDiffCapa(clustergroupDespeguesMundo, markersFiltradosDespeguesMundo);
 
-        // Restaurar popup de forma instantánea y totalmente invisible durante su cálculo
-        if (marcadorAbierto) {
+        // Si el popup abierto sigue pasando el filtro no se ha tocado: no hay que reabrirlo.
+        if (marcadorAbierto && !marcadorAbierto.isPopupOpen()) {
             if (markersFiltradosDespegues.includes(marcadorAbierto) || markersFiltradosDespeguesMundo.includes(marcadorAbierto)) {
                 marcadorAbierto.openPopup();
             }
         }
-    }
+    };
+
+    window.actualizarFiltrosMapa = function actualizarFiltrosMapa() {
+        if (window._filtrandoMapa) { window._filtrarMapaOtraVez = true; return; }
+        window._filtrandoMapa = true;
+        try {
+            do {
+                window._filtrarMapaOtraVez = false;
+                _actualizarFiltrosMapaImpl();
+            } while (window._filtrarMapaOtraVez);
+        } finally {
+            window._filtrandoMapa = false;
+        }
+    };
 
     // FUNCIÓN PARA GESTIONAR EL ESTADO VISUAL DE LOS CONTROLES
     function actualizarEstadoVisualFiltros() {
@@ -14024,6 +14638,20 @@ function inicializarMapaLeaflet() {
         }
     });
 
+    map.on('popupclose', function (e) {
+        if (!window.tablaNecesitaActualizarAjustes) return;
+
+        const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
+        if (enMapa) {
+            // La tabla no se ve y el stepper ya dejó marcado tablaRecrearAlVolver:
+            // se reconstruirá una sola vez al volver a ella. Aquí solo apagamos el aviso.
+            window.tablaNecesitaActualizarAjustes = false;
+            return;
+        }
+
+        window.tablaNecesitaActualizarAjustes = false;
+        construir_tabla(false, true, true);
+    });
 
     // 3. Agregar el marcador si se usaron coordenadas de la URL solo si las coordenadas vinieron de la URL, agregamos el marcador y el popup
     //if (!isNaN(urlLat) && !isNaN(urlLon)) {
@@ -14782,6 +15410,8 @@ function inicializarMapaLeaflet() {
                             
                             ${botonesAccionPopupHTML}
 
+                            ${idDespegue ? generarHtmlStepperLimites(idDespegue) : ''}
+
                             ⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
 
                             ⛅ <a href='https://meteo-parapente.com/#/${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},13' onclick='abrirLinkExterno(this.href); return false;'>Meteo-parapente</a><br>
@@ -14823,7 +15453,7 @@ function inicializarMapaLeaflet() {
                                 🗺️ <a href='https://nakarte.me/#m=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}&l=Otm/Sa&n2=_gwm&r=${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/${escapeHtml(despegue)} (${escapeHtml(orientacion)})' onclick='abrirLinkExterno(this.href); return false;'>Nakarte</a><br>
                                 🔍 <a href='https://www.xcontest.org/world/en/flights-search/?list[sort]=time_start&filter[point]=${lon}%20${lat}&filter[radius]=500' onclick='abrirLinkExterno(this.href); return false;'>XContest (&plusmn; 500 m)</a><br>
 
-                                <br><div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
+                                <div style="margin-bottom: 5px;">${escapeHtml(info)}</div>
                                 
                             </div>
                         </div>
@@ -14862,6 +15492,24 @@ function inicializarMapaLeaflet() {
                             const esSeg = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
                             btnSeg.title = esSeg ? t('seguimiento.activar_desactivar') : t('seguimiento.activar_desactivar');
                             actualizarVistaOjo(btnSeg, esSeg);
+                        }
+
+                        // Sincronizar stepper de ajuste de límites dinámicamente
+                        const elPct = popupEl.querySelector(`.valor-ajuste-limites-${idDespegue}`);
+                        if (elPct) {
+                            const pctActual = obtenerPorcentajeAjusteDespegue(idDespegue);
+                            elPct.textContent = `${pctActual}%`;
+                            elPct.style.color = pctActual < 100 ? '#ea580c' : (pctActual > 100 ? '#0284c7' : '#333');
+                            pintarEstadoLimitesDespegue(idDespegue, pctActual, true);
+
+                            const btnMenos = popupEl.querySelector(`.stepper-limites-menos-${idDespegue}`);
+                            if (btnMenos) btnMenos.disabled = (pctActual <= 50);
+
+                            const btnMas = popupEl.querySelector(`.stepper-limites-mas-${idDespegue}`);
+                            if (btnMas) btnMas.disabled = (pctActual >= 200);
+
+                            const btnReset = popupEl.querySelector(`.btn-reset-limite-${idDespegue}`);
+                            if (btnReset) btnReset.style.display = pctActual !== 100 ? 'inline-flex' : 'none';
                         }
                     });
 

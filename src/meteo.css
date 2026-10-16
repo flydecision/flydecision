@@ -361,6 +361,10 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     transition: background 0.15s;
 }
 
+/* Stepper de límites teñido (≠ 100%): los botones dejan ver el fondo del contenedor */
+.stepper-dias-seguimiento.limites-tenido .stepper-btn { background: transparent; }
+.stepper-dias-seguimiento.limites-tenido .stepper-btn:active { background: rgba(0, 0, 0, 0.08); }
+
 .stepper-btn:active {
     background: #e0e0e0;
 }
@@ -370,7 +374,7 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     cursor: default;
 }
 
-#valor-dias-seguimiento, #valor-viento-max-balizas, #valor-planeo-referencia {
+#valor-dias-seguimiento, #valor-viento-max-balizas, #valor-planeo-referencia, .stepper-valor {
     min-width: 28px;
     text-align: center;
     font-weight: bold;
@@ -378,6 +382,14 @@ body.modo-edicion-tabla #btn-filtro-seguimiento-toggle {
     border-right: 1px solid #ccc;
     height: 28px;
     line-height: 28px;
+}
+
+/* 🔴 MODO EDICIÓN DE LÍMITES: se oculta buscador, filtro de distancia y contador de favoritos */
+
+body.modo-edicion-limites #div-filtro-distancia,
+body.modo-edicion-limites #contador-favoritos-texto,
+body.modo-edicion-limites #div-menu {
+    display: none !important;
 }
 
 /* 🎨 SLIDER DE LÍMITE DE VIENTO EN BALIZAS */
@@ -1539,6 +1551,16 @@ table.tabla-tooltip-desglose {
 }
 .columna-despegue.modo-compacto div.texto-multilinea-2 {
     margin-top: -14px;
+}
+/* Modo compacto con badge de límites: sin subir el nombre y con el badge más pequeño */
+.columna-despegue.modo-compacto.con-badge-limites div.texto-multilinea-2 {
+    margin-top: -16px;
+}
+.columna-despegue.modo-compacto .badge-limites-wrap {
+    margin: 2px auto 0 auto !important;
+}
+.columna-despegue.modo-compacto .badge-limites-wrap > span {
+    padding: 0 4px !important;
 }
 
 /* Columna Meteo (Iconos y Cabecera) */
@@ -3882,7 +3904,8 @@ h3 {
 }
 /* 2. Limita la altura máxima de todos los globos */
 .leaflet-popup-content {
-    max-height: 347px !important; /* Para que se corte a la mitad en la última fila e invite a hacer scroll */
+    /* Para que se corte a la mitad en la última fila e invite a hacer scroll. 377px antes */
+    max-height: 385px !important; 
     overflow-y: auto !important;   /* Activa el scroll solo si el contenido supera los 300px */
     padding-right: 8px !important;  /* Margen de seguridad para el texto */
     box-sizing: border-box;
