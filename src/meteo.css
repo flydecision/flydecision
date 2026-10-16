@@ -2829,6 +2829,15 @@ label.custom-checkbox {
   color: #3498db;
 }
 
+/* Tippy: nunca más alto que el espacio entre las barras del sistema (si lo es, hace scroll dentro) */
+.tippy-box[data-theme~='meteo-custom'] .tippy-scroll-area {
+    max-height: calc(100dvh
+        - var(--safe-area-inset-top, env(safe-area-inset-top, 0px))
+        - var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))
+        - 170px);
+    overflow-y: auto;
+}
+
 /* 🟡 Ventana de tippy */
 .tippy-box {
     box-sizing: border-box;
