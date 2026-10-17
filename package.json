@@ -8,7 +8,7 @@
     "sync": "npx cap sync",
     "open:android": "npx cap open android",
     "build:android": "npx cap build android",
-    "generate-icons": "capacitor-assets generate",
+    "generate-icons": "npx @capacitor/assets generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -59,8 +59,6 @@
     "@capacitor/text-zoom": "^8.0.1"
   },
   "devDependencies": {
-    "@capacitor/assets": "^3.0.5",
-    "@capacitor/cli": "^8.5.1",
-    "patch-package": "^8.0.1"
+    "@capacitor/cli": "^8.5.1"
   }
 }
