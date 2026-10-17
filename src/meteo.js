@@ -12237,7 +12237,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     if (esAndroidApp) {
         // 1. Extraemos StatusBar y TextZoom y SystemBars de los plugins
-        const { StatusBar, TextZoom, SystemBars } = window.Capacitor.Plugins;
+        const { TextZoom, SystemBars } = window.Capacitor.Plugins;
 
         // 2. Aplicamos la clase base INMEDIATAMENTE
         document.body.classList.add('modo-android-manual');
@@ -12245,39 +12245,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
         // Función asíncrona para asegurar el orden de ejecución
         const configurarAndroid = async () => {
             try {
-                // --- A. CONFIGURACIÓN DE STATUS BAR ---
-                
-                // Arriba: Transparente e iconos negros
-                if (StatusBar) {
-                    // overlaysWebView es la clave para la transparencia arriba
-                    try {
-                        await StatusBar.setOverlaysWebView({ overlay: true });
-                        // En Android 15 el overlay ya hace la barra transparente. 
-                        // Mantenemos la línea por compatibilidad con Androids antiguos, 
-                        // pero capturamos el error si el plugin se niega a ejecutarla en Android 15.
-                        try {
-                            await StatusBar.setBackgroundColor({ color: '#00000000' });
-                        } catch (e) { /* Silenciamos el error en versiones nuevas */ }
-                        
-                        await StatusBar.setStyle({ style: 'DARK' }); 
-                    } catch(err) {
-                        console.warn('Error configurando StatusBar:', err);
-                    } 
-                }
-                
+                    // --- A. BARRAS DEL SISTEMA (SystemBars, núcleo de Capacitor 8) ---
+                // En Android 15+ el borde a borde es obligatorio y las barras son transparentes.
+                // La altura de la barra de estado llega por CSS en --safe-area-inset-top (ver meteo.css).
                 if (SystemBars) {
-                    // style: 'LIGHT' pone botones de navegación negros en la nueva API
-                    await SystemBars.setStyle({ style: 'LIGHT' }); 
-                }
-
-                // Leer la altura real
-                const info = await StatusBar.getInfo();
-                const altura = info.height;
-                console.log(`📏 Altura detectada: ${altura}px`);
-
-                // Inyectar en CSS
-                if (altura > 0) {
-                    document.documentElement.style.setProperty('--android-sb-height', `${altura}px`);
+                    await SystemBars.setStyle({ style: 'LIGHT' }); // iconos oscuros en barra de estado y de navegación
                 }
 
                 // --- B. CONFIGURACIÓN DE TAMAÑO DE TEXTO (TEXTZOOM) ---
@@ -12289,9 +12261,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
             } catch (err) {
                 console.warn('Error configurando Android (StatusBar/TextZoom/SystemBars):', err);
-                
-                // Fallback de seguridad por si falla la altura
-                document.documentElement.style.setProperty('--android-sb-height', '35px');
             }
         };
 
