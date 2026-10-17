@@ -61,6 +61,13 @@ button {
 
 :root {
     --android-sb-height: 0px;
+}
+/* La altura de la barra de estado la da SystemBars (Capacitor 8) en --safe-area-inset-top.
+   Se define en body para verla tanto si el plugin la inyecta en <html> como en <body>. */
+body {
+    --android-sb-height: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+}
+:root {
     --android-nav-height: 0px;  /* JS lo calcula: 0 con gestos, ~48px con botones */
     --vv-offset-top: 0px;
 }
