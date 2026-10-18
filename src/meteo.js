@@ -305,8 +305,7 @@ if (_palabrasBalizasInit.some(p => _pathInit.includes(p) || paramsArranque.has(p
 // Lista común de checkboxes de balizas que NO se activan automáticamente
 const CHECKBOXES_BALIZAS_EXCLUIDAS = [
     'checkboxBalizasSuremet',
-    'checkboxBalizasWeatherUnderground',
-    'checkboxBalizasSiar'
+    'checkboxBalizasWeatherUnderground'
 ];
 window.CHECKBOXES_BALIZAS_EXCLUIDAS = CHECKBOXES_BALIZAS_EXCLUIDAS;
 
@@ -14074,7 +14073,86 @@ function obtenerMaxTiempoBalizas() {
 }
 
 
+// 🪂 Ajuste mínimo del popup de despegue: mueve el mapa solo lo imprescindible para que el popup
+// quepa entre el panel de filtros (si flota sobre el mapa) y la barra inferior. Si no cabe entero,
+// recorta su contenido (scroll interno) en vez de desplazar el mapa de más.
+function ajustarPopupDespegueMinimo(popup) {
+    const map = popup._map;
+    const popupEl = popup.getElement();
+    if (!map || !popupEl) return;
+
+    const MARGEN = 8;
+    const rectMapa = map.getContainer().getBoundingClientRect();
+    if (rectMapa.width === 0 || rectMapa.height === 0) return; // mapa oculto (vista tabla): no medimos nada
+
+    let limiteArriba = rectMapa.top + MARGEN;
+    const panelFiltro = document.getElementById('div-filtro-horario');
+    if (panelFiltro && panelFiltro.classList.contains('flotando-en-mapa')) {
+        const r = panelFiltro.getBoundingClientRect();
+        if (r.height > 0) limiteArriba = Math.max(limiteArriba, r.bottom + MARGEN);
+    }
+    // Con el panel plegado queda arriba el botón "Filtros meteo"
+    const btnFiltrosMapa = document.getElementById('btn-filtros-mapa');
+    if (btnFiltrosMapa) {
+        const r = btnFiltrosMapa.getBoundingClientRect();
+        if (r.height > 0) limiteArriba = Math.max(limiteArriba, r.bottom + MARGEN);
+    }
+
+    let limiteAbajo = rectMapa.bottom - MARGEN;
+    const barraInferior = document.querySelector('nav.bottom-nav');
+    if (barraInferior) {
+        const r = barraInferior.getBoundingClientRect();
+        if (r.height > 0) limiteAbajo = Math.min(limiteAbajo, r.top - MARGEN);
+    }
+
+    // Si el popup es más alto que el hueco libre, recortamos su contenido (el popup se ancla por abajo, la punta no se mueve)
+    const contenidoEl = popupEl.querySelector('.leaflet-popup-content');
+    if (contenidoEl) {
+        contenidoEl.style.maxHeight = '';
+        const sobra = popupEl.getBoundingClientRect().height - (limiteAbajo - limiteArriba);
+        if (sobra > 0) {
+            contenidoEl.style.maxHeight = Math.max(150, contenidoEl.getBoundingClientRect().height - sobra) + 'px';
+            contenidoEl.style.overflowY = 'auto';
+        }
+    }
+
+    // Desplazamiento mínimo; si hay conflicto manda que se vea la cabecera
+    const r = popupEl.getBoundingClientRect();
+    let dx = 0, dy = 0;
+    if (r.bottom > limiteAbajo) dy = r.bottom - limiteAbajo;
+    if (r.top - dy < limiteArriba) dy = r.top - limiteArriba;
+    // Límites laterales: borde del mapa o, si coinciden en altura con el popup ya desplazado, los botones izquierdos/derechos
+    let limiteIzq = rectMapa.left + MARGEN;
+    let limiteDer = rectMapa.right - MARGEN;
+    const topFinal = r.top - dy, bottomFinal = r.bottom - dy;
+    map.getContainer().querySelectorAll('.leaflet-left .leaflet-control, .leaflet-right .leaflet-control').forEach(ctrl => {
+        const c = ctrl.getBoundingClientRect();
+        if (c.width === 0 || c.height === 0) return;             // control oculto
+        if (c.bottom < topFinal || c.top > bottomFinal) return;   // no está a la altura del popup
+        if (ctrl.closest('.leaflet-left')) limiteIzq = Math.max(limiteIzq, c.right + MARGEN);
+        else limiteDer = Math.min(limiteDer, c.left - MARGEN);
+    });
+    if (limiteDer - limiteIzq < r.width) {
+        // No cabe entre los botones: lo centramos en el hueco para repartir lo que tape
+        dx = (r.left + r.width / 2) - (limiteIzq + limiteDer) / 2;
+    } else {
+        if (r.right > limiteDer) dx = r.right - limiteDer;
+        if (r.left - dx < limiteIzq) dx = r.left - limiteIzq;
+    }
+    if (dx || dy) map.panBy([dx, dy]);
+}
+
+
 function inicializarMapaLeaflet() {
+
+    // 🪂 Todos los popups del mapa (despegues, balizas, clusters, notas, AESA...) usan el ajuste mínimo
+    // en vez del autoPan de Leaflet. Leaflet llama a _adjustPan al abrir el popup y cada vez que cambia su contenido.
+    L.Popup.include({
+        _adjustPan: function () {
+            if (!this.options.autoPan || !this._map) return;
+            ajustarPopupDespegueMinimo(this);
+        }
+    });
 
     // --- BLOQUE DE SEGURIDAD ANTI-CRASH LEAFLET ---
     const mapContainer = document.getElementById('map');
@@ -15549,7 +15627,7 @@ function inicializarMapaLeaflet() {
                         className: 'popup-despegues', 
                         maxWidth: 300,
                         maxHeight: 450,
-                        autoPanPaddingTopLeft: L.point(10, 350) // el primer valor (80) es el margen a reservar por la izquierda, el segundo (170) por arriba. Con autoPanPaddingBottomRight: L.point(55, 150) // el primer valor (80) es el margen a reservar por la derecha, el segundo (150) por abajo.
+                        autoPan: false // el desplazamiento lo hace ajustarPopupDespegueMinimo() en el popupopen del marcador
                     });
 
                     // Regeneramos el popup por si venimos de consultarlo en la tabla o hemos cambiado estados.
@@ -15598,6 +15676,8 @@ function inicializarMapaLeaflet() {
                             const btnReset = popupEl.querySelector(`.btn-reset-limite-${idDespegue}`);
                             if (btnReset) btnReset.style.display = pctActual !== 100 ? 'inline-flex' : 'none';
                         }
+
+                        ajustarPopupDespegueMinimo(this.getPopup());
                     });
 
                     marker.metadata = { id: idDespegue, despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividadScore, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
@@ -18428,6 +18508,7 @@ function inicializarMapaLeaflet() {
         if (await cargarDatoLiveBaliza(marker)) {
             pintarPopupBaliza(marker);
             actualizarIconosBalizas(marker.redId);
+            if (e.popup._map) e.popup._adjustPan();
         }
     });
 
