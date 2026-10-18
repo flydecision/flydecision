@@ -382,6 +382,38 @@ function registrarUso(ev, d) {
     } catch (e) {}
 }
 
+// Registro ANÓNIMO de errores y fallos de carga (sin IP, cookies ni identificadores): qué falla, dónde y en qué versión.
+// Como mucho 10 por carga de página y sin repetir el mismo error, para no inundar el log si algo entra en bucle.
+const ERRORES_REGISTRADOS = new Set();
+function registrarError(tipo, error, origen = '') {
+    try {
+        // En local (servidor de VS Code) no registramos
+        if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !(typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform())) return;
+        const m = (error && error.name === 'AbortError') ? 'timeout' : String((error && error.message) || error || '').slice(0, 200);
+        const clave = `${tipo}|${m}|${origen}`;
+        if (!m || ERRORES_REGISTRADOS.has(clave) || ERRORES_REGISTRADOS.size >= 10) return;
+        ERRORES_REGISTRADOS.add(clave);
+        const p = (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) ? 'app' : 'web';
+        const q = new URLSearchParams({ tipo, m, o: String(origen).slice(0, 120), v: window.WEB_VERSION || '', p, t: Date.now() });
+        fetch(`https://flydecision.com/registro_error.php?${q}`, { mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
+    } catch (e) {}
+}
+
+// Primera línea útil de la pila de un error ("construir_tabla (meteo.js:442:2130)"), sin la URL completa
+function origenDeError(error) {
+    const linea = String((error && error.stack) || '').split('\n').map(l => l.trim()).find(l => /\.js/.test(l)) || '';
+    return linea.replace(/^at\s+/, '').replace(/https?:\/\/[^/]+\//g, '').replace(/\?v=[0-9.]+/g, '');
+}
+
+// Errores de JavaScript no capturados y promesas rechazadas sin catch
+window.addEventListener('error', (e) => {
+    if (!e.message || e.message === 'Script error.') return; // Fallos de carga de recursos o scripts de otro dominio: sin detalle útil
+    registrarError('js', e.message, `${String(e.filename || '').split('/').pop().split('?')[0]}:${e.lineno}:${e.colno}`);
+});
+window.addEventListener('unhandledrejection', (e) => {
+    registrarError('promesa', e.reason, origenDeError(e.reason));
+});
+
 // Marca este navegador como "no registrar" si se abre la web con ?noregistrar (se lee al cargar, antes de que updateURL reescriba la URL)
 try { if (new URLSearchParams(location.search).has('noregistrar')) localStorage.setItem('NO_REGISTRAR_USO', '1'); } catch (e) {}
 
@@ -808,6 +840,7 @@ window.abrirModalMinutely15 = async function(idDespegue, nombreDespegue) {
         }
     } catch (err) {
         console.error('Error cargando datos minutely_15:', err);
+        registrarError('carga', err, 'meteo-datos-15min');
         GestorMensajes.mostrar({
             tipo: 'modal',
             htmlContenido: `<p style="text-align:center; color:#c00;">${t('minutely15.errorCarga', { defaultValue: 'Error al cargar los datos.' })}</p>`,
@@ -5974,6 +6007,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 const cachedData = await leerDeCacheIDB('METEO_DATOS_JSON_CACHE');
                 const cachedDataEcmwf = await leerDeCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE');
+                registrarError('carga', error, (cachedData && cachedDataEcmwf) ? 'meteo-datos → offline (IndexedDB)' : 'meteo-datos → sin datos');
 
                 if (cachedData && cachedDataEcmwf) {
                     // 🛡️ Misma comprobación en la ruta offline: si hay una llamada más nueva, no pintamos con datos viejos.
@@ -8822,6 +8856,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
 	catch (error) {
 		console.error("Error en la aplicación:", error);
+        registrarError('app', error, origenDeError(error));
 		ocultarLoading();
         localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
 	}
@@ -17763,6 +17798,7 @@ function inicializarMapaLeaflet() {
             return true; 
         } catch (e) {
             console.error(`No se pudo cargar el caché de balizas ${red.nombre}`, e);
+            registrarError('carga', e, `balizas ${red.id} (cache)`);
             return false; 
         }
     }
@@ -17795,6 +17831,7 @@ function inicializarMapaLeaflet() {
             return true;
         } catch (e) {
             console.error(`No se pudo cargar el dato en vivo de ${red.nombre} ${marker.stationId}`, e);
+            registrarError('carga', e, `balizas ${red.id} (live)`);
             return false;
         }
     }
