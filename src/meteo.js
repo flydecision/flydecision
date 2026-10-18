@@ -305,8 +305,7 @@ if (_palabrasBalizasInit.some(p => _pathInit.includes(p) || paramsArranque.has(p
 // Lista común de checkboxes de balizas que NO se activan automáticamente
 const CHECKBOXES_BALIZAS_EXCLUIDAS = [
     'checkboxBalizasSuremet',
-    'checkboxBalizasWeatherUnderground',
-    'checkboxBalizasSiar'
+    'checkboxBalizasWeatherUnderground'
 ];
 window.CHECKBOXES_BALIZAS_EXCLUIDAS = CHECKBOXES_BALIZAS_EXCLUIDAS;
 
@@ -14090,6 +14089,12 @@ function ajustarPopupDespegueMinimo(popup) {
     const panelFiltro = document.getElementById('div-filtro-horario');
     if (panelFiltro && panelFiltro.classList.contains('flotando-en-mapa')) {
         const r = panelFiltro.getBoundingClientRect();
+        if (r.height > 0) limiteArriba = Math.max(limiteArriba, r.bottom + MARGEN);
+    }
+    // Con el panel plegado queda arriba el botón "Filtros meteo"
+    const btnFiltrosMapa = document.getElementById('btn-filtros-mapa');
+    if (btnFiltrosMapa) {
+        const r = btnFiltrosMapa.getBoundingClientRect();
         if (r.height > 0) limiteArriba = Math.max(limiteArriba, r.bottom + MARGEN);
     }
 
