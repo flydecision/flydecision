@@ -14084,6 +14084,7 @@ function ajustarPopupDespegueMinimo(popup) {
 
     const MARGEN = 8;
     const rectMapa = map.getContainer().getBoundingClientRect();
+    if (rectMapa.width === 0 || rectMapa.height === 0) return; // mapa oculto (vista tabla): no medimos nada
 
     let limiteArriba = rectMapa.top + MARGEN;
     const panelFiltro = document.getElementById('div-filtro-horario');
@@ -14138,6 +14139,15 @@ function ajustarPopupDespegueMinimo(popup) {
 
 
 function inicializarMapaLeaflet() {
+
+    // 🪂 Todos los popups del mapa (despegues, balizas, clusters, notas, AESA...) usan el ajuste mínimo
+    // en vez del autoPan de Leaflet. Leaflet llama a _adjustPan al abrir el popup y cada vez que cambia su contenido.
+    L.Popup.include({
+        _adjustPan: function () {
+            if (!this.options.autoPan || !this._map) return;
+            ajustarPopupDespegueMinimo(this);
+        }
+    });
 
     // --- BLOQUE DE SEGURIDAD ANTI-CRASH LEAFLET ---
     const mapContainer = document.getElementById('map');
@@ -18493,6 +18503,7 @@ function inicializarMapaLeaflet() {
         if (await cargarDatoLiveBaliza(marker)) {
             pintarPopupBaliza(marker);
             actualizarIconosBalizas(marker.redId);
+            if (e.popup._map) e.popup._adjustPan();
         }
     });
 
