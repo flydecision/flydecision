@@ -17728,12 +17728,51 @@ function inicializarMapaLeaflet() {
 
             red.ultimoJsonRaw = textoCrudo;
             red.datosCache = JSON.parse(textoCrudo);
+
+            // Sistema mixto: una lectura bajo demanda más nueva que la del cron se mantiene hasta que el cron la alcance
+            Object.entries(red.datosLive || {}).forEach(([id, live]) => {
+                const c = red.datosCache[id];
+                if (!c || typeof c.ts !== 'number' || c.ts < live.ts) red.datosCache[id] = live;
+                else delete red.datosLive[id];
+            });
             
             // Si todo va bien, retornamos TRUE (datos nuevos disponibles en memoria)
             return true; 
         } catch (e) {
             console.error(`No se pudo cargar el caché de balizas ${red.nombre}`, e);
             return false; 
+        }
+    }
+
+    // 🟡 3b. LECTURA BAJO DEMANDA DE UNA BALIZA (sistema mixto, solo redes con urlLive)
+    //___________________________________________________________________________________
+
+    async function cargarDatoLiveBaliza(marker) {
+        const red = REDES_BALIZAS[marker.redId];
+        if (!red) return false;
+
+        try {
+            // Se llama en TODAS las redes: el servidor apunta la consulta en el log y solo pide
+            // el dato en vivo al proveedor en las redes habilitadas en balizas_live.php
+            const res = await fetchConTimeout(`https://flydecision.com/balizas_live.php?red=${encodeURIComponent(red.id)}&id=${encodeURIComponent(marker.stationId)}&_=${Date.now()}`, {}, 12000);
+            if (!res.ok) return false;
+            const live = await res.json();
+
+            const actual = red.datosCache[marker.stationId];
+            if (!live || typeof live.ts !== 'number' || (actual && actual.ts >= live.ts)) return false;
+
+            red.datosLive = red.datosLive || {};
+            red.datosLive[marker.stationId] = live;
+            red.datosCache[marker.stationId] = live;
+
+            // Añadimos el punto a la gráfica si es posterior al último del histórico
+            const serie = red.datos6h && red.datos6h[marker.stationId];
+            if (serie && (serie.length === 0 || serie[serie.length - 1].ts < live.ts)) serie.push(live);
+
+            return true;
+        } catch (e) {
+            console.error(`No se pudo cargar el dato en vivo de ${red.nombre} ${marker.stationId}`, e);
+            return false;
         }
     }
 
@@ -17752,6 +17791,12 @@ function inicializarMapaLeaflet() {
         try {
             const res = await fetchConTimeout(`${red.url6h}?_=${ahora}`);
             red.datos6h = await res.json();
+
+            // Sistema mixto: volvemos a añadir a la gráfica las lecturas bajo demanda que el cron aún no tiene
+            Object.entries(red.datosLive || {}).forEach(([id, live]) => {
+                const serie = red.datos6h[id];
+                if (serie && (serie.length === 0 || serie[serie.length - 1].ts < live.ts)) serie.push(live);
+            });
             red.fetched6hAt = ahora;
         } catch (e) {
             console.error(`No se pudo cargar el histórico 6h de balizas ${red.nombre}`, e);
@@ -18317,6 +18362,12 @@ function inicializarMapaLeaflet() {
 
         if (e.popup._map) {
             e.popup._adjustPan();
+        }
+
+        // Sistema mixto: pedimos el último dato al proveedor y repintamos solo si es más nuevo
+        if (await cargarDatoLiveBaliza(marker)) {
+            pintarPopupBaliza(marker);
+            actualizarIconosBalizas(marker.redId);
         }
     });
 
