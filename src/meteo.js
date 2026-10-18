@@ -371,6 +371,27 @@ function fetchConTimeout(url, opciones = {}, timeoutMs = 8000) {
         .finally(() => clearTimeout(timeoutId));
 }
 
+// Registro ANÓNIMO de uso (sin IP, cookies ni identificadores): solo qué opción o despegue se usa.
+function registrarUso(ev, d) {
+    try {
+        // No registramos el uso propio: en local (servidor de VS Code) o si este navegador está marcado
+        if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !(typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform())) return;
+        if (localStorage.getItem('NO_REGISTRAR_USO') === '1') return;
+        const p = (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) ? 'app' : 'web';
+        fetch(`https://flydecision.com/registro_uso.php?ev=${ev}&d=${encodeURIComponent(d)}&p=${p}&t=${Date.now()}`, { mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
+    } catch (e) {}
+}
+
+// Marca este navegador como "no registrar" si se abre la web con ?noregistrar (se lee al cargar, antes de que updateURL reescriba la URL)
+try { if (new URLSearchParams(location.search).has('noregistrar')) localStorage.setItem('NO_REGISTRAR_USO', '1'); } catch (e) {}
+
+// Un solo listener para todo botón o checkbox con id (menú inferior nav-map/nav-home..., filtros, ajustes...).
+// En fase de captura, así se registra aunque el onclick del botón pare la propagación.
+document.addEventListener('click', (e) => {
+    const el = e.target.closest('button[id], a[id], input[id][type="checkbox"], input[id][type="radio"]');
+    if (el) registrarUso('clic', el.id);
+}, true);
+
 // Este mapa define el RANGO de 16 orientaciones que cubre cada una de las 8 selecciones del usuario.
 // Usamos el formato '_ORIENTACION' para coincidir con la metadata.
 const MAPA_RANGO_ORIENTACION = {
@@ -5895,8 +5916,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 DATOS_METEO_ECMWF_CACHE = null;
             }
         } 
-        else {
-            // 2. Si no está en RAM, intentamos buscarlo fuera
+        if (!data) {
+            // 2. Si no está en RAM (o estaba caducada), intentamos buscarlo fuera
             try {
                 // --- NUEVO: Cronómetro para mala conexión usando la variable global ---
                 const controller = new AbortController();
@@ -10197,6 +10218,7 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
 // Función auxiliar para el botón del buscador
 function agregarDespegueDesdeBuscador(idDespegue) {
     idDespegue = Number(idDespegue); // Aseguramos que sea un número
+    registrarUso('buscar', idDespegue);
     const misFavoritos = obtenerFavoritos().map(Number).filter(n => !isNaN(n));
     
     if (!misFavoritos.includes(idDespegue)) {
@@ -15497,6 +15519,7 @@ function inicializarMapaLeaflet() {
 
                     // Regeneramos el popup por si venimos de consultarlo en la tabla o hemos cambiado estados.
                     marker.on('popupopen', function() {
+                        registrarUso('despegue', idDespegue);
                         const popupEl = this.getPopup().getElement();
                         if (!popupEl) return;
                         
