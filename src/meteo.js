@@ -376,12 +376,14 @@ function registrarUso(ev, d) {
     try {
         // No registramos el uso propio: en local (servidor de VS Code) o si este navegador está marcado
         if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !(typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform())) return;
-        if (new URLSearchParams(location.search).has('noregistrar')) localStorage.setItem('NO_REGISTRAR_USO', '1');
         if (localStorage.getItem('NO_REGISTRAR_USO') === '1') return;
         const p = (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) ? 'app' : 'web';
         fetch(`https://flydecision.com/registro_uso.php?ev=${ev}&d=${encodeURIComponent(d)}&p=${p}&t=${Date.now()}`, { mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
     } catch (e) {}
 }
+
+// Marca este navegador como "no registrar" si se abre la web con ?noregistrar (se lee al cargar, antes de que updateURL reescriba la URL)
+try { if (new URLSearchParams(location.search).has('noregistrar')) localStorage.setItem('NO_REGISTRAR_USO', '1'); } catch (e) {}
 
 // Un solo listener para todo botón o checkbox con id (menú inferior nav-map/nav-home..., filtros, ajustes...).
 // En fase de captura, así se registra aunque el onclick del botón pare la propagación.
