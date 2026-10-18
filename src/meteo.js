@@ -5910,8 +5910,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 DATOS_METEO_ECMWF_CACHE = null;
             }
         } 
-        else {
-            // 2. Si no está en RAM, intentamos buscarlo fuera
+        if (!data) {
+            // 2. Si no está en RAM (o estaba caducada), intentamos buscarlo fuera
             try {
                 // --- NUEVO: Cronómetro para mala conexión usando la variable global ---
                 const controller = new AbortController();
