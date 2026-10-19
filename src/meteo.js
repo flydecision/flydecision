@@ -18208,6 +18208,7 @@ function inicializarMapaLeaflet() {
 
         const botonTolometHTML = prefijoTolomet ? `
             <a href="https://tolomet.app/station/${prefijoTolomet}-${marker.stationId}" 
+            target="_blank" rel="noopener"
             onclick="abrirLinkExterno(this.href); return false;" 
             title="${t('mapa.balizas.verEnTolomet')}"  
             style="display: flex; align-items: center; text-decoration: none;">
