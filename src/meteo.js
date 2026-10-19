@@ -20213,21 +20213,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => window.refrescarAterrizajeFijadoPlaneo(), 500);
             };
 
-            // Pulsación larga táctil (Android la dispara como 'contextmenu') y clic derecho
-            map.on('contextmenu', function(e) {
-                if (!modoPlaneoActivo || eventoSobreControlPlaneo(e)) return;
-                if (e.originalEvent) L.DomEvent.preventDefault(e.originalEvent);
-                ultimaPulsacionLarga = Date.now();
-                recolocarDespeguePlaneo(e.latlng);
-            });
-
             // Pulsación larga con ratón (botón izquierdo mantenido, sin mover)
             const cont = map.getContainer();
             let temporizadorPulsacion = null;
             let origenPulsacion = null;
+            let ultimoTipoPuntero = '';
             const cancelarPulsacion = () => { clearTimeout(temporizadorPulsacion); temporizadorPulsacion = null; };
 
             cont.addEventListener('pointerdown', function(ev) {
+                ultimoTipoPuntero = ev.pointerType;
                 ignorarClickTrasPulsacionLarga = false;
                 cancelarPulsacion();
                 if (!modoPlaneoActivo || ev.pointerType !== 'mouse' || ev.button !== 0) return;
@@ -20247,6 +20241,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             ['pointerup', 'pointercancel', 'pointerleave'].forEach(n => cont.addEventListener(n, cancelarPulsacion));
+
+            // Pulsación larga táctil (Android la dispara como 'contextmenu'). Se escucha en el contenedor
+            // y no con map.on, porque Leaflet bloquea el menú del navegador si el mapa tiene oyente de 'contextmenu'.
+            // Con ratón no se hace nada: el clic derecho abre el menú contextual normal.
+            cont.addEventListener('contextmenu', function(ev) {
+                if (!modoPlaneoActivo || (ev.pointerType || ultimoTipoPuntero) === 'mouse') return;
+                if (eventoSobreControlPlaneo({ originalEvent: ev })) return;
+                ev.preventDefault();
+                ultimaPulsacionLarga = Date.now();
+                recolocarDespeguePlaneo(map.mouseEventToLatLng(ev));
+            });
 
             map.on('click', function(e) {
                 if (!modoPlaneoActivo) return;
