@@ -18396,7 +18396,10 @@ function inicializarMapaLeaflet() {
             </div>
         `;
 
-        pintarGraficaBaliza(marker);
+        // La gráfica y la rosa se pintan async y hacen crecer el popup hacia arriba: reajustamos al terminar
+        pintarGraficaBaliza(marker).then(() => {
+            if (marker.isPopupOpen()) marker.getPopup()._adjustPan();
+        });
     }
 
     // ----------------------------------------------------------------------------------
