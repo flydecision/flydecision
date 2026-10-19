@@ -12455,10 +12455,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     // Apps con versión nativa: la primera vez que se abre su enlace (y la app está instalada) se pregunta web/app
     const APPS_ENLACES_EXTERNOS = [
-        { clave: 'tolomet',        dominio: 'tolomet.app',         nombre: 'Tolomet',         paquete: 'com.akrog.tolomet' },
-        { clave: 'windy',          dominio: 'windy.com',           nombre: 'Windy',           paquete: 'com.windyty.android' },
-        { clave: 'meteoparapente', dominio: 'meteo-parapente.com', nombre: 'Meteo-parapente', paquete: 'com.meteo_parapente' },
-        { clave: 'meteoblue',      dominio: 'meteoblue.com',       nombre: 'Meteoblue',       paquete: 'com.meteoblue.droid' }
+        // Solo apps que aceptan enlaces web de su dominio (probado 19-10-2026: Windy, Meteo-parapente y Meteoblue NO, abren Chrome)
+        { clave: 'tolomet',        dominio: 'tolomet.app',         nombre: 'Tolomet',         paquete: 'com.akrog.tolomet' }
     ];
 
     function leerPreferenciasEnlaces() {
@@ -12504,7 +12502,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                         <label for="chkRecordarAperturaEnlace" class="custom-checkbox">
                             <input type="checkbox" id="chkRecordarAperturaEnlace"> <span>${t('ajustes.aperturaEnlaces.recordar')}</span>
                         </label>
-                        <p style="font-size: 0.85em; opacity: 0.8;">${t('ajustes.aperturaEnlaces.notaRestaurar')}</p>
+                        <p style="opacity: 0.8;">${t('ajustes.aperturaEnlaces.notaRestaurar')}</p>
                     </div>`,
                 botones: [
                     { texto: t('ajustes.aperturaEnlaces.botonWeb'), onclick: () => elegir('web') },
@@ -12564,6 +12562,12 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     window.abrirLinkExterno = abrirLinkExterno; // Esto hace que la función sea visible para los onclick="" de tu HTML generado
     window.resetearAperturaEnlaces = resetearAperturaEnlaces;
+
+    // El botón de resetear apertura de enlaces solo tiene sentido en la app nativa
+    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+        const filaResetEnlaces = document.getElementById('fila-resetear-apertura-enlaces');
+        if (filaResetEnlaces) filaResetEnlaces.style.display = '';
+    }
 
     // ---------------------------------------------------------------
     // 🔴 FUNCIÓN PARA ABRIR EL MAPA INTEGRADO DESDE LA TABLA
