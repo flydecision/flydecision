@@ -12530,7 +12530,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         newParams.set('lon', lon);
         newParams.set('zoom', 14);
         newParams.set('q', nombreDespegue);
-        const newUrl = `${window.location.pathname}?${newParams.toString()}${window.location.hash}`;
+        const newUrl = `${window.location.pathname.replace(/\/{2,}/g, '/')}?${newParams.toString()}${window.location.hash}`;
         window.history.replaceState(null, '', newUrl);
 
         // 3. Saltamos a la vista del mapa
@@ -13090,7 +13090,7 @@ function updateURL(mapInstance) {
         newParams.set('q', currentParams.get('q'));
     }
 
-    const newUrl = `${window.location.pathname}?${newParams.toString()}${window.location.hash}`;
+    const newUrl = `${window.location.pathname.replace(/\/{2,}/g, '/')}?${newParams.toString()}${window.location.hash}`;
     window.history.replaceState(null, '', newUrl);
 }
 
@@ -13306,7 +13306,7 @@ window.cambiarVista = function(vista) {
             }
         }
 
-        window.history.replaceState(null, '', window.location.pathname);
+        window.history.replaceState(null, '', window.location.pathname.replace(/\/{2,}/g, '/'));
 
         // Devolver el slider horario al contenedor principal
         const divFH = document.getElementById('div-filtro-horario');
