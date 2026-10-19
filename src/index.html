@@ -67,9 +67,9 @@
 <!-- API Keys map layers-->
 <script src="/js/config.js" defer></script>
 
-<script>window.WEB_VERSION = "5.5.0";</script>
-<link rel="stylesheet" href="/meteo.css?v=5.5.0">
-<script src="/meteo.js?v=5.5.0" defer></script>
+<script>window.WEB_VERSION = "5.6.0b";</script>
+<link rel="stylesheet" href="/meteo.css?v=5.6.0b">
+<script src="/meteo.js?v=5.6.0b" defer></script>
 
 </head>
 
@@ -678,6 +678,15 @@
 						<button id="stepper-planeo-mas" class="stepper-btn" onclick="cambiarPlaneoReferencia(1)">+</button>
 					</div>
 					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipPlaneoReferencia" data-tippy-content="<b>Planeo de la vela (L/D)</b><br><br>Relación de planeo estimada de tu parapente utilizada para calcular la altura sobre el suelo al llegar a cada punto en el mapa.">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
+				</div>
+
+				<div id="fila-resetear-apertura-enlaces" class="linea-con-bt-info" style="display: none;">
+					<button id="btn-resetear-apertura-enlaces" class="btn-accion" onclick="resetearAperturaEnlaces()" style="height: auto; margin-top: 4px; font-weight: bold; padding-top: 4px; padding-bottom: 4px;">
+						<span data-i18n="ajustes.aperturaEnlaces.botonResetear">Resetear comportamiento de enlaces</span>
+					</button>
+					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipResetearEnlaces">
 						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>

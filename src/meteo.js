@@ -12453,6 +12453,70 @@ function comprobarAvisoCambiosPuntuacionXC() {
 	// 🔴 ANDROID: GESTOR DE ENLACES EXTERNOS (In-App Browser)
 	// ---------------------------------------------------------------
 
+    // Apps con versión nativa: la primera vez que se abre su enlace (y la app está instalada) se pregunta web/app
+    const APPS_ENLACES_EXTERNOS = [
+        // Solo apps que aceptan enlaces web de su dominio (probado 19-10-2026: Windy, Meteo-parapente y Meteoblue NO, abren Chrome)
+        { clave: 'tolomet',        dominio: 'tolomet.app',         nombre: 'Tolomet',         paquete: 'com.akrog.tolomet' }
+    ];
+
+    function leerPreferenciasEnlaces() {
+        try { return JSON.parse(localStorage.getItem('METEO_APERTURA_ENLACES')) || {}; } catch (e) { return {}; }
+    }
+
+    function guardarPreferenciaEnlace(clave, valor) {
+        const prefs = leerPreferenciasEnlaces();
+        prefs[clave] = valor;
+        localStorage.setItem('METEO_APERTURA_ENLACES', JSON.stringify(prefs));
+    }
+
+    // Devuelve 'app' o 'web'. Solo pregunta si la app nativa está instalada y no hay elección recordada.
+    async function decidirAperturaEnlace(url, AppLauncher) {
+        const app = APPS_ENLACES_EXTERNOS.find(a => url.includes(a.dominio));
+        if (!app || !AppLauncher) return 'web';
+
+        let instalada = false;
+        try {
+            // Ojo: el plugin espera el nombre del paquete a secas (sin 'package:')
+            ({ value: instalada } = await AppLauncher.canOpenUrl({ url: app.paquete }));
+        } catch (e) {
+            return 'web';
+        }
+        if (!instalada) return 'web';
+
+        const recordada = leerPreferenciasEnlaces()[app.clave];
+        if (recordada === 'app' || recordada === 'web') return recordada;
+
+        return new Promise(resolve => {
+            const elegir = (valor) => {
+                const chk = document.getElementById('chkRecordarAperturaEnlace');
+                if (chk && chk.checked) guardarPreferenciaEnlace(app.clave, valor);
+                GestorMensajes.ocultar();
+                resolve(valor);
+            };
+            GestorMensajes.mostrar({
+                tipo: 'modal',
+                htmlContenido: `
+                    <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center;">
+                        <p style="font-size: 1.4em; font-weight: bold; text-align:center;">${app.nombre}</p>
+                        <p>${t('ajustes.aperturaEnlaces.pregunta')}</p>
+                        <label for="chkRecordarAperturaEnlace" class="custom-checkbox">
+                            <input type="checkbox" id="chkRecordarAperturaEnlace"> <span>${t('ajustes.aperturaEnlaces.recordar')}</span>
+                        </label>
+                        <p style="opacity: 0.8;">${t('ajustes.aperturaEnlaces.notaRestaurar')}</p>
+                    </div>`,
+                botones: [
+                    { texto: t('ajustes.aperturaEnlaces.botonWeb'), onclick: () => elegir('web') },
+                    { texto: t('ajustes.aperturaEnlaces.botonApp'), onclick: () => elegir('app') }
+                ]
+            });
+        });
+    }
+
+    function resetearAperturaEnlaces() {
+        localStorage.removeItem('METEO_APERTURA_ENLACES');
+        mensajeModalAceptar('', t('ajustes.aperturaEnlaces.reseteoHecho'));
+    }
+
     async function abrirLinkExterno(url) {
         const isNative = window.Capacitor && window.Capacitor.isNativePlatform();
 
@@ -12462,28 +12526,11 @@ function comprobarAvisoCambiosPuntuacionXC() {
             const Browser = Plugins.Browser;
             const platform = window.Capacitor.getPlatform();
 
-            let appId = null;
-
-            // 1. Identificar AppId
-            if (url.includes('windy.com')) {
-                appId = platform === 'android' ? 'com.windyty.android' : 'windyapp://';
-            } else if (url.includes('meteo-parapente.com')) {
-                appId = platform === 'android' ? 'com.meteo_parapente' : 'meteoparapente://';
-            } else if (url.includes('meteoblue.com')) {
-                appId = platform === 'android' ? 'com.meteoblue.droid' : 'meteoblue://';
-            }
-
-            // 2. Intentar apertura nativa
-            if (appId) {
+            // 1 y 2. ¿Web o app nativa? (pregunta la primera vez si la app está instalada)
+            if (platform === 'android' && await decidirAperturaEnlace(url, AppLauncher) === 'app') {
                 try {
-                    // En Android usamos el prefijo package: para asegurar detección
-                    const checkUrl = platform === 'android' ? `package:${appId}` : appId;
-                    const { value: isInstalled } = await AppLauncher.canOpenUrl({ url: checkUrl });
-
-                    if (isInstalled) {
-                        await AppLauncher.openUrl({ url: url });
-                        return; // Abrimos la app y salimos
-                    }
+                    await AppLauncher.openUrl({ url: url });
+                    return; // Abrimos la app y salimos
                 } catch (e) {
                     console.warn("Fallo al intentar abrir app nativa", e);
                 }
@@ -12514,6 +12561,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
     }
 
     window.abrirLinkExterno = abrirLinkExterno; // Esto hace que la función sea visible para los onclick="" de tu HTML generado
+    window.resetearAperturaEnlaces = resetearAperturaEnlaces;
+
+    // El botón de resetear apertura de enlaces solo tiene sentido en la app nativa
+    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+        const filaResetEnlaces = document.getElementById('fila-resetear-apertura-enlaces');
+        if (filaResetEnlaces) filaResetEnlaces.style.display = '';
+    }
 
     // ---------------------------------------------------------------
     // 🔴 FUNCIÓN PARA ABRIR EL MAPA INTEGRADO DESDE LA TABLA
