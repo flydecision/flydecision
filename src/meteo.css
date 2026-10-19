@@ -4443,6 +4443,14 @@ body:has(#map.cursor-planeo-activo) .leaflet-control-geocoder {
     cursor: crosshair !important;
 }
 
+/* El despegue de planeo (🪂) se puede arrastrar: mano en vez de cruz */
+#map.cursor-planeo-activo .leaflet-marker-icon:has(.glide-origin-marker) {
+    cursor: grab !important;
+}
+body.leaflet-dragging #map.cursor-planeo-activo .leaflet-marker-icon:has(.glide-origin-marker) {
+    cursor: grabbing !important;
+}
+
 /* Esperando el clic de despegue: los cartelitos no responden (el clic pasa al mapa) */
 #map.cursor-planeo-activo:not(.planeo-con-despegue) .leaflet-marker-icon:has(.label-large-despegues),
 #map.cursor-planeo-activo:not(.planeo-con-despegue) .leaflet-marker-icon[title="Notas sobre despegues y aterrizajes"],
