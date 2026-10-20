@@ -793,7 +793,7 @@
       "HillShade": "High-resolution hillshade",
       "GoogleHibrido": "Google Maps Satellite (hybrid)",
       "GoogleRelieve": "Google Maps Terrain",
-      "googleNoDisponible": "Google layers are not available right now (the daily usage limit has been reached). Switched to the ESRI topographic map.",
+      "googleNoDisponible": "Google Maps layers are temporarily unavailable because the daily free usage limit offered by Google has been reached.<br><br>The limit will reset automatically tomorrow.<br><br>Switched to the default map (ESRI Topographic).",
       "GoogleMapa": "Google Maps Classic",
       "KK7_Skyways": "Flight tracks (Skyways KK7)",
       "KK7_Skyways_traslucent": "Semi-transparent flight tracks (Skyways KK7)",

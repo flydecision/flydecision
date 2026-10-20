@@ -14249,7 +14249,6 @@ function inicializarMapaLeaflet() {
     });
     const IGNOrto = crearCapaConLimiteZoom('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg', {
         maxNativeZoom: 19,
-        maxZoom: 21,
         attribution: '© <a href="https://www.ign.es" target="_blank">IGN</a>'
     });
     const ICGC = crearCapaConLimiteZoom('https://geoserveis.icgc.cat/servei/catalunya/mapa-base/wmts/topografic/{z}/{x}/{y}.png', {
@@ -14276,7 +14275,7 @@ function inicializarMapaLeaflet() {
         maxNativeZoom: 16,
         attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>',
     });
-    // Google (GoogleMutant): la API de Google solo se descarga al activar la capa (cada activación = 1 carga facturable)
+    // Google (GoogleMutant): la API de Google solo se descarga al activar la capa (cada activación = 1 carga por capa la primera vez que se activa en cada visita)
     function cargarGoogleMapsAPI() {
         if (window.google?.maps?.Map || document.getElementById('script-google-maps')) return;
         const s = document.createElement('script');
