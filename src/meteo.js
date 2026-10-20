@@ -14223,11 +14223,11 @@ function inicializarMapaLeaflet() {
     // -------------------------------------------------
 
     // 🛑 Capas
-    const ESRITopo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+    const ESRITopo = crearCapaConLimiteZoom('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
         maxNativeZoom: 19,
         attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>'
     });
-    const ESRIOrto = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    const ESRIOrto = crearCapaConLimiteZoom('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxNativeZoom: 19,
         attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>'
     });
@@ -14239,19 +14239,20 @@ function inicializarMapaLeaflet() {
         maxNativeZoom: 19,
         attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://tracestrack.com/" target="_blank">Tracestrack</a>'
     });
-    const IGNTopo = L.tileLayer('https://tms-mapa-raster.ign.es/1.0.0/mapa-raster/{z}/{x}/{-y}.jpeg', {
+    const IGNTopo = crearCapaConLimiteZoom('https://tms-mapa-raster.ign.es/1.0.0/mapa-raster/{z}/{x}/{-y}.jpeg', {
         maxNativeZoom: 17,
         attribution: '© <a href="https://www.ign.es" target="_blank">IGN</a>'
     });
-    const IGNClaro = L.tileLayer('https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg', {
+    const IGNClaro = crearCapaConLimiteZoom('https://tms-ign-base.idee.es/1.0.0/IGNBaseTodo/{z}/{x}/{-y}.jpeg', {
         maxNativeZoom: 17,
         attribution: '© <a href="https://www.ign.es" target="_blank">IGN</a>'
     });
-    const IGNOrto = L.tileLayer('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg', {
+    const IGNOrto = crearCapaConLimiteZoom('https://tms-pnoa-ma.idee.es/1.0.0/pnoa-ma/{z}/{x}/{-y}.jpeg', {
         maxNativeZoom: 19,
+        maxZoom: 21,
         attribution: '© <a href="https://www.ign.es" target="_blank">IGN</a>'
     });
-    const ICGC = L.tileLayer('https://geoserveis.icgc.cat/servei/catalunya/mapa-base/wmts/topografic/{z}/{x}/{y}.png', {
+    const ICGC = crearCapaConLimiteZoom('https://geoserveis.icgc.cat/servei/catalunya/mapa-base/wmts/topografic/{z}/{x}/{y}.png', {
         maxNativeZoom: 19,
         attribution: '<a href="https://www.icgc.cat/" target="_blank">© ICGC</a>'
     });
@@ -14259,7 +14260,7 @@ function inicializarMapaLeaflet() {
         maxZoom: 19,
         attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" target="_blank">CyclOSM</a>'
     });
-    const Thunderforest = L.tileLayer(`https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=${MAP_API_KEYS.thunderforest}`, {
+    const Thunderforest = crearCapaConLimiteZoom(`https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=${MAP_API_KEYS.thunderforest}`, {
         maxNativeZoom: 19,
         attribution: '<a href="https://openstreetmap.org/copyright" target="_blank">© OSM</a> | <a href="https://www.thunderforest.com/maps/" target="_blank">Style by Thunderforest</a>'
     });
@@ -14271,7 +14272,7 @@ function inicializarMapaLeaflet() {
         maxNativeZoom: 11,
         attribution: '<a href="https://maps-for-free.com" target="_blank">Maps-for-Free</a>'
     });
-    const HillShade = L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}', {
+    const HillShade = crearCapaConLimiteZoom('https://server.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}', {
         maxNativeZoom: 16,
         attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>',
     });
@@ -14288,7 +14289,7 @@ function inicializarMapaLeaflet() {
     const GoogleHibrido = hayGoogle ? L.gridLayer.googleMutant({ type: 'hybrid', maxZoom: 21 }).on('add', cargarGoogleMapsAPI) : null;
     const GoogleRelieve = hayGoogle ? L.gridLayer.googleMutant({ type: 'terrain', maxZoom: 21 }).on('add', cargarGoogleMapsAPI) : null;
     const GoogleMapa = hayGoogle ? L.gridLayer.googleMutant({ type: 'roadmap', maxZoom: 21 }).on('add', cargarGoogleMapsAPI) : null;
-    const GoogleStreetView = hayGoogle ? L.gridLayer.googleMutant({ type: 'roadmap', maxZoom: 21 }).addGoogleLayer('StreetViewCoverageLayer').on('add', cargarGoogleMapsAPI) : null;
+
     // 🟡 Overlays
     const KK7_Skyways = L.tileLayer('https://flydecision.com/proxy-kk7.php?z={z}&x={x}&y={y}&layer=skyways_all', {
         pane: 'overlayPane',
@@ -14335,7 +14336,7 @@ function inicializarMapaLeaflet() {
         const capa = L.tileLayer(url, {
             ...opciones,
             maxNativeZoom: maxNativo,  // upscale en vez de vacío si se supera
-            maxZoom: Math.max(maxNativo, 19)                // nunca aparece desactivada en el control
+            maxZoom: Math.max(maxNativo, 21)                // nunca aparece desactivada en el control
         });
         return capa;
     }
@@ -14355,10 +14356,9 @@ function inicializarMapaLeaflet() {
         [t('mapa.capasBase.Hipsometrico')]: Hipsometrico,
         [t('mapa.capasBase.HillShade')]: HillShade,
         ...(hayGoogle ? {
-            [t('mapa.capasBase.GoogleHibrido')]: GoogleHibrido,
-            [t('mapa.capasBase.GoogleRelieve')]: GoogleRelieve,
             [t('mapa.capasBase.GoogleMapa')]: GoogleMapa,
-            [t('mapa.capasBase.GoogleStreetView')]: GoogleStreetView
+            [t('mapa.capasBase.GoogleRelieve')]: GoogleRelieve,
+            [t('mapa.capasBase.GoogleHibrido')]: GoogleHibrido
         } : {})
     };
 
@@ -15358,14 +15358,6 @@ function inicializarMapaLeaflet() {
             localStorage.setItem('METEO_MAPA_CAPABASE_ULTIMA', e.name);
         }
     });
-
-    // Street View: con la capa GoogleStreetView activa, un clic en el mapa abre la panorámica más cercana en Google Maps (Maps URLs: sin clave ni coste)
-    if (GoogleStreetView) {
-        map.on('click', function(e) {
-            if (!map.hasLayer(GoogleStreetView) || modoPlaneoActivo) return;
-            abrirLinkExterno(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${e.latlng.lat.toFixed(6)}%2C${e.latlng.lng.toFixed(6)}`);
-        });
-    }
 
     // 2. Creamos NUESTRO propio botón físico "X"
     const btnCerrarCapas = L.DomUtil.create('div', 'cerrar-capas-btn');
