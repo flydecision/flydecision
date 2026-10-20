@@ -808,6 +808,7 @@
       "balizas_direccion": "Direcció",
       "balizas_actualizada": "Actualitzada",
       "balizas_cargando_grafico": "Carregant gràfic...",
+      "balizas_actualizando": "Actualitzant...",
       "balizas_sin_historico": "Gràfic no disponible: no hi ha dades de les últimes 4 hores.",
       "leyenda_rosa_meteorologica": "Últimes 2 h:",
       "leyenda_grafico_ultimas_4h": "Últimes 4 h:",

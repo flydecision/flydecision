@@ -18429,7 +18429,7 @@ function inicializarMapaLeaflet() {
             ${botonesBalizaHTML}
 
             <!-- min-height: 130px; para reservar el hueco siempre -->
-            <div style="display:flex; align-items:center; margin-top: 0px; min-height: 130px;">
+            <div class="baliza-datos" style="display:flex; align-items:center; margin-top: 0px; min-height: 130px;">
                 <div style="flex:1 1 auto; min-width:0;">
                     <!-- Fila 1: Viento -->
                     <div style="display: flex; align-items: center; height: 25px;">
@@ -18460,7 +18460,7 @@ function inicializarMapaLeaflet() {
             <!-- FOOTER -->
             <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: auto; padding-top: 7px; padding-bottom: 7px;">
                 
-                <small class="baliza-live-time" data-red="${red.id}" data-station="${marker.stationId}" style="color:#888; text-align: left;">
+                <small class="baliza-live-time" data-red="${red.id}" data-station="${marker.stationId}" data-actualizando="${t('mapa.balizas.balizas_actualizando', { defaultValue: 'Actualizando...' })}" style="color:#888; text-align: left;">
                     ${estadoPopup.emoji} ${horaStr}
                     <span style="margin-left: 2px;">
                         (${typeof t === 'function' ? t('actualizacion.hace', { tiempo: formatTimeAgo(d.ts * 1000, Date.now()), defaultValue: 'hace ' + formatTimeAgo(d.ts * 1000, Date.now()) }) : 'hace ' + formatTimeAgo(d.ts * 1000, Date.now())})
@@ -18595,8 +18595,14 @@ function inicializarMapaLeaflet() {
             e.popup._adjustPan();
         }
 
-        // Sistema mixto: pedimos el último dato al proveedor y repintamos solo si es más nuevo
-        if (await cargarDatoLiveBaliza(marker)) {
+        // Sistema mixto: pedimos el último dato al proveedor y repintamos solo si es más nuevo.
+        // Si tarda (redes con live), avisamos con "Actualizando..." para que no se lea un dato que va a cambiar
+        const contLive = document.getElementById(`pop-${REDES_BALIZAS[marker.redId].id}-${marker.stationId}`);
+        const avisoLive = setTimeout(() => contLive && contLive.classList.add('baliza-actualizando'), 300);
+        const hayDatoLive = await cargarDatoLiveBaliza(marker);
+        clearTimeout(avisoLive);
+        if (contLive) contLive.classList.remove('baliza-actualizando');
+        if (hayDatoLive) {
             pintarPopupBaliza(marker);
             actualizarIconosBalizas(marker.redId);
             if (e.popup._map) e.popup._adjustPan();

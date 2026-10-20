@@ -5024,3 +5024,11 @@ tr.ecmwf-oculto-temp {
     pointer-events: none;
     z-index: 22; /* sobre la fila de horas (20), bajo la de días (25) y las columnas fijas visibles */
 }
+
+/* Popup de baliza mientras llega el dato live (clase puesta en el popupopen) */
+.baliza-actualizando .baliza-datos { opacity: 0.4; transition: opacity 0.2s; }
+.baliza-actualizando .baliza-live-time::after {
+    content: "🔄 " attr(data-actualizando);
+    display: inline-block; margin: 4px 0 0 6px; padding: 1px 6px; border-radius: 4px;
+    background: #f39c12; color: #fff; font-weight: bold;
+}
