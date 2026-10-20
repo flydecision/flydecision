@@ -171,6 +171,9 @@ Note: The essential cloud base data ☁↓ (CBH = Cloud Base Height) is not avai
 - Network status detection
 - Data caching
 
+### Privacy & Anonymous Statistics
+No accounts, no ads, no cookies, no tracking. To debug errors and improve usability, the app anonymously counts which menu options and takeoffs are used and which technical errors occur (e.g. a failed forecast download). Each event is stored as a single line with date, time, option or error, app version and web/app. **No IP address, cookies or user/device identifiers are stored**, so nobody can be identified or followed across visits. See `registrarUso()` and `registrarError()` in [`src/meteo.js`](src/meteo.js). Full details in the [Privacy Policy](https://flydecision.com/privacidad/).
+
 ## Contributing
 
 1. Fork the repository
