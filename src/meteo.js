@@ -377,7 +377,7 @@ function registrarUso(ev, d) {
         if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !(typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform())) return;
         if (localStorage.getItem('NO_REGISTRAR_USO') === '1') return;
         const p = (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) ? 'app' : 'web';
-        fetch(`https://flydecision.com/registro_uso.php?ev=${ev}&d=${encodeURIComponent(d)}&p=${p}&t=${Date.now()}`, { mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
+        fetch(`https://flydecision.com/registro_uso.php?ev=${ev}&d=${encodeURIComponent(d)}&p=${p}&v=${window.WEB_VERSION || ''}&t=${Date.now()}`, { mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
     } catch (e) {}
 }
 
@@ -412,6 +412,13 @@ window.addEventListener('error', (e) => {
 window.addEventListener('unhandledrejection', (e) => {
     registrarError('promesa', e.reason, origenDeError(e.reason));
 });
+
+// Tiempo de una fase de carga, en tramos de segundos (registro anónimo de uso). fase: descarga | procesado | tabla
+function registrarTiempoCarga(fase, ms) {
+    const s = ms / 1000;
+    const tramo = s < 1 ? '0-1' : s < 2 ? '1-2' : s < 5 ? '2-5' : s < 10 ? '5-10' : 'mas10';
+    registrarUso('tiempo', `${fase}_${tramo}`);
+}
 
 // Marca este navegador como "no registrar" si se abre la web con ?noregistrar (se lee al cargar, antes de que updateURL reescriba la URL)
 try { if (new URLSearchParams(location.search).has('noregistrar')) localStorage.setItem('NO_REGISTRAR_USO', '1'); } catch (e) {}
@@ -5978,6 +5985,19 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 data = await parseJsonWithTimeout(res1);
                 dataEcmwf = await parseJsonWithTimeout(res2);
+
+                // Tiempos de descarga y de procesado de los dos JSON (una vez por carga de página, para el registro anónimo de uso)
+                if (!window.tiemposCargaRegistrados) {
+                    window.tiemposCargaRegistrados = true;
+                    try {
+                        const entradas = performance.getEntriesByType('resource').filter(e => /\/meteo-datos(-ecmwf)?\.json\?t=/.test(e.name));
+                        if (entradas.length === 2 && entradas.every(e => e.responseEnd > 0)) {
+                            const finDescarga = Math.max(...entradas.map(e => e.responseEnd));
+                            registrarTiempoCarga('descarga', finDescarga - Math.min(...entradas.map(e => e.startTime)));
+                            registrarTiempoCarga('procesado', performance.now() - finDescarga);
+                        }
+                    } catch (e) {}
+                }
                 
                 // Solo apagamos el cronómetro cuando la descarga completa ha finalizado con éxito
                 clearTimeout(timeoutId); 
@@ -8766,7 +8786,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             tbodyFragmento.appendChild(trBtn);
         }
 
-        // 5. Inyección en el HTML
+        // 5. Inyección en el HTML        tabla.appendChild(tbody);
+
+        // Tiempo desde que se abre la página hasta que se pinta la tabla por primera vez (registro anónimo de uso)
+        if (!window.tiempoTablaRegistrado) {
+            window.tiempoTablaRegistrado = true;
+            registrarTiempoCarga('tabla', performance.now());
+        }
         tbody.appendChild(tbodyFragmento);
         tabla.innerHTML = "";
         tabla.appendChild(thead);
@@ -10130,8 +10156,12 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
     if (input) {
         if (visibles === 0 && filtroLimpio.length > 0) {
             input.classList.add('buscador-despegues-sin-resultados');
+            // Búsqueda sin resultado: solo cuenta en edición de favoritos (busca en todos los despegues) y sin filtro de distancia.
+            // Se envía al salir del buscador (blur), para no registrar cada letra mientras se escribe.
+            window.busquedaSinResultadoPendiente = (modoEdicionFavoritos && distanciaLimite >= 9999) ? filtroLimpio.slice(0, 30) : null;
         } else {
             input.classList.remove('buscador-despegues-sin-resultados');
+            window.busquedaSinResultadoPendiente = null;
         }
     }
 
@@ -10599,6 +10629,11 @@ document.addEventListener('i18nReady', function() {
                 this.placeholder = '🔍';
             }
         }
+		// Registro anónimo: búsqueda que se ha quedado sin resultado al salir del buscador
+		if (window.busquedaSinResultadoPendiente) {
+			registrarUso('sinresultado', window.busquedaSinResultadoPendiente);
+			window.busquedaSinResultadoPendiente = null;
+		}
 		// Ajusta visibilidad de la X y badge según el contenido
 		gestionarBotonLimpiar();
     });
