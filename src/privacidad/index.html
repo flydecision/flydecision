@@ -131,14 +131,16 @@ pre.literal {
 <p>Bienvenida/o a <strong>Fly Decision</strong>. Esta aplicación es un proyecto abierto, gratuito y en desarrollo. El código fuente completo está disponible en GitHub como "software libre" (free software) con licencia "AGPL-3.0 license". Todos los datos se pueden consultar en <a href="https://github.com/flydecision/flydecision" target="_blank" rel="noopener noreferrer">https://github.com/flydecision/flydecision</a></p>
 
 <div class="highlight">
-    Resumen de privacidad: <strong>no recopilamos ningún tipo de dato personal tuyo ni del dispositivo</strong>. No vendemos, ni compartimos tus datos porque, sencillamente, no los tenemos y tampoco son de nuestro interés. No hay publicidad, ni usamos cookies ni cualquier otro tipo de rastreo. El acceso es libre, sin restricciones y sin requisitos de registro ni de ningún tipo.
+    Resumen de privacidad: <strong>no recopilamos ningún tipo de dato personal tuyo ni del dispositivo</strong>. No vendemos, ni compartimos tus datos porque, sencillamente, no los tenemos y tampoco son de nuestro interés. No hay publicidad, ni usamos cookies ni cualquier otro tipo de rastreo. Solo contamos de forma anónima qué opciones y despegues se usan y qué errores se producen, para depurar la aplicación y mejorar su usabilidad (ver punto 1). El acceso es libre, sin restricciones y sin requisitos de registro ni de ningún tipo.
 </div>
 
 <h2>1. Recopilación de Información</h2>
 <p>La aplicación <strong> no solicita, recoge ni almacena</strong> ningún tipo de dato personal en servidores externos ni internos. No se requiere la creación de cuentas de usuaria/o ni el registro de correos electrónicos ni ningún tipo de información para usarla.</p>
 
+<p><strong>Estadísticas anónimas de uso y errores.</strong> Con el único objetivo de depurar la aplicación de errores y mejorar su usabilidad, se cuenta de forma anónima qué opciones del menú y despegues se usan y qué errores técnicos se producen (por ejemplo, un fallo al descargar el pronóstico). Cada evento se guarda como una línea con la fecha, la hora, la opción o el error, la versión y si es la web o la app. <strong>No se guarda la IP, ni cookies, ni identificadores de usuaria/o o de dispositivo</strong>, por lo que no es posible saber quién hace qué ni seguir a nadie entre visitas. El código que lo hace es público: funciones <code>registrarUso</code> y <code>registrarError</code> en <a href="https://github.com/flydecision/flydecision/blob/main/src/meteo.js" target="_blank" rel="noopener noreferrer">src/meteo.js</a>.</p>
+
 <h2>2. Cookies</h2>
-<p>La página web www.flydecision.com no contiene cookies ni ningún sistema de rastreo de actividad ni de datos personales.</p>
+<p>La página web www.flydecision.com no contiene cookies ni ningún sistema de rastreo de actividad ni de datos personales. Las estadísticas anónimas del punto 1 no usan cookies ni identifican a nadie.</p>
 
 <h2>3. App Android</h2>
 
@@ -177,7 +179,7 @@ pre.literal {
 
 <p><b>Tampoco es necesario al servicio de leer contenidos del almacenamiento de USB (fotos, multimedia o archivos)</b>. Los despegues favoritos puedes exportarlos o importarlos si lo deseas a/o desde la carpeta universal de <i>Documentos</i> de tu móvil, que no requiere permisos especiales y puedes compartirlos con quien quieras o trasladarlos a otro dispositivo; es un archivo de texto plano que solo contiene números de despegues.</p>
 
-<p>Lógicamente la conexión a la red móvil es necesaria para la actualización del pronóstico y no se transmite ninguna información; solo se recibe el pronóstico.</p>
+<p>Lógicamente la conexión a la red móvil es necesaria para la actualización del pronóstico y no se transmite ninguna información personal; solo se recibe el pronóstico y se envían las estadísticas anónimas descritas en el punto 1.</p>
             
 <h2>4. Almacenamiento Local</h2>
 <p>Toda la información o configuración que generes dentro de la aplicación se almacena de forma exclusiva y privada en el <strong>almacenamiento local de tu dispositivo</strong> (navegador o memoria local de la app). No hay ningún acceso exterior a estos datos.</p>
