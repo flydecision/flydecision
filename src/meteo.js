@@ -14275,6 +14275,20 @@ function inicializarMapaLeaflet() {
         maxNativeZoom: 16,
         attribution: '© <a href="https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9" target="_blank">ESRI</a>',
     });
+    // Google (GoogleMutant): la API de Google solo se descarga al activar la capa (cada activación = 1 carga facturable)
+    function cargarGoogleMapsAPI() {
+        if (window.google?.maps?.Map || document.getElementById('script-google-maps')) return;
+        const s = document.createElement('script');
+        s.id = 'script-google-maps';
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${MAP_API_KEYS.google}&callback=Function.prototype`;
+        s.async = true;
+        document.head.appendChild(s);
+    }
+    const hayGoogle = !!(MAP_API_KEYS.google && L.gridLayer.googleMutant);
+    const GoogleHibrido = hayGoogle ? L.gridLayer.googleMutant({ type: 'hybrid', maxZoom: 21 }).on('add', cargarGoogleMapsAPI) : null;
+    const GoogleRelieve = hayGoogle ? L.gridLayer.googleMutant({ type: 'terrain', maxZoom: 21 }).on('add', cargarGoogleMapsAPI) : null;
+    const GoogleMapa = hayGoogle ? L.gridLayer.googleMutant({ type: 'roadmap', maxZoom: 21 }).on('add', cargarGoogleMapsAPI) : null;
+    const GoogleStreetView = hayGoogle ? L.gridLayer.googleMutant({ type: 'roadmap', maxZoom: 21 }).addGoogleLayer('StreetViewCoverageLayer').on('add', cargarGoogleMapsAPI) : null;
     // 🟡 Overlays
     const KK7_Skyways = L.tileLayer('https://flydecision.com/proxy-kk7.php?z={z}&x={x}&y={y}&layer=skyways_all', {
         pane: 'overlayPane',
@@ -14339,7 +14353,13 @@ function inicializarMapaLeaflet() {
         [t('mapa.capasBase.Thunderforest')]: Thunderforest,
         [t('mapa.capasBase.OpenStreetMap')]: OpenStreetMap,  
         [t('mapa.capasBase.Hipsometrico')]: Hipsometrico,
-        [t('mapa.capasBase.HillShade')]: HillShade
+        [t('mapa.capasBase.HillShade')]: HillShade,
+        ...(hayGoogle ? {
+            [t('mapa.capasBase.GoogleHibrido')]: GoogleHibrido,
+            [t('mapa.capasBase.GoogleRelieve')]: GoogleRelieve,
+            [t('mapa.capasBase.GoogleMapa')]: GoogleMapa,
+            [t('mapa.capasBase.GoogleStreetView')]: GoogleStreetView
+        } : {})
     };
 
     const overlayMaps = {
@@ -15338,6 +15358,14 @@ function inicializarMapaLeaflet() {
             localStorage.setItem('METEO_MAPA_CAPABASE_ULTIMA', e.name);
         }
     });
+
+    // Street View: con la capa GoogleStreetView activa, un clic en el mapa abre la panorámica más cercana en Google Maps (Maps URLs: sin clave ni coste)
+    if (GoogleStreetView) {
+        map.on('click', function(e) {
+            if (!map.hasLayer(GoogleStreetView) || modoPlaneoActivo) return;
+            abrirLinkExterno(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${e.latlng.lat.toFixed(6)}%2C${e.latlng.lng.toFixed(6)}`);
+        });
+    }
 
     // 2. Creamos NUESTRO propio botón físico "X"
     const btnCerrarCapas = L.DomUtil.create('div', 'cerrar-capas-btn');
