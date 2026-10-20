@@ -15359,6 +15359,20 @@ function inicializarMapaLeaflet() {
         }
     });
 
+    // Google: si su API falla (clave, dominio o cuota agotada) se quitan sus capas del menú hasta recargar y se vuelve a ESRI
+    window.gm_authFailure = function() {
+        const capasGoogle = [GoogleHibrido, GoogleRelieve, GoogleMapa].filter(Boolean);
+        const habiaGoogleActiva = capasGoogle.some(c => map.hasLayer(c));
+        capasGoogle.forEach(c => { controlCapas.removeLayer(c); map.removeLayer(c); });
+        if (habiaGoogleActiva) {
+            ESRITopo.addTo(map);
+            if (localStorage.getItem('METEO_RECORDAR_TIPO_MAPA') === 'true') {
+                localStorage.setItem('METEO_MAPA_CAPABASE_ULTIMA', t('mapa.capasBase.ESRITopo'));
+            }
+            mensajeModalAceptar('', t('mapa.capasBase.googleNoDisponible'));
+        }
+    };
+
     // 2. Creamos NUESTRO propio botón físico "X"
     const btnCerrarCapas = L.DomUtil.create('div', 'cerrar-capas-btn');
     btnCerrarCapas.innerHTML = '<span>❌</span>';

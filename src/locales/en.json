@@ -793,6 +793,7 @@
       "HillShade": "High-resolution hillshade",
       "GoogleHibrido": "Google Maps Satellite (hybrid)",
       "GoogleRelieve": "Google Maps Terrain",
+      "googleNoDisponible": "Google layers are not available right now (the daily usage limit has been reached). Switched to the ESRI topographic map.",
       "GoogleMapa": "Google Maps Classic",
       "KK7_Skyways": "Flight tracks (Skyways KK7)",
       "KK7_Skyways_traslucent": "Semi-transparent flight tracks (Skyways KK7)",

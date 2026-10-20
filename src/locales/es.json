@@ -795,6 +795,7 @@
       "HillShade": "Relieve sombreado de alta resolución",
       "GoogleHibrido": "Google Maps Satélite (híbrido)",
       "GoogleRelieve": "Google Maps Relieve",
+      "googleNoDisponible": "Las capas de Google no están disponibles ahora mismo (se ha alcanzado el límite diario de uso). Se ha cambiado al mapa topográfico ESRI.",
       "GoogleMapa": "Google Maps Clásico",
       "KK7_Skyways": "Tracks de vuelos (Skyways KK7)",
       "KK7_Skyways_traslucent": "Tracks de vuelos traslúcido (Skyways KK7)",

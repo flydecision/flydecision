@@ -793,6 +793,7 @@
       "HillShade": "Relleu ombrejat d'alta resolució",
       "GoogleHibrido": "Google Maps Satèl·lit (híbrid)",
       "GoogleRelieve": "Google Maps Relleu",
+      "googleNoDisponible": "Les capes de Google no estan disponibles ara mateix (s'ha assolit el límit diari d'ús). S'ha canviat al mapa topogràfic ESRI.",
       "GoogleMapa": "Google Maps Clàssic",      
       "KK7_Skyways": "Tracks de vols (Skyways KK7)",
       "KK7_Skyways_traslucent": "Tracks de vols semitransparents (Skyways KK7)",

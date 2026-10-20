@@ -793,6 +793,7 @@
       "HillShade": "Relief ombré haute résolution",
       "GoogleHibrido": "Google Maps Satellite (hybride)",
       "GoogleRelieve": "Google Maps Relief",
+      "googleNoDisponible": "Les couches Google ne sont pas disponibles pour le moment (la limite d'utilisation quotidienne a été atteinte). Passage à la carte topographique ESRI.",
       "GoogleMapa": "Google Maps Classique",
       "KK7_Skyways": "Traces de vols (Skyways KK7)",
       "KK7_Skyways_traslucent": "Traces de vols translucide (Skyways KK7)",
