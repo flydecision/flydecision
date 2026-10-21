@@ -140,6 +140,30 @@ function alternarCorreccionEstadistica() {
 }
 window.alternarCorreccionEstadistica = alternarCorreccionEstadistica;
 
+// 🍃 Viento flojo con orientación cruzada: si está activo, una dirección no apta (roja) se trata como naranja
+// cuando el viento medio y la racha son muy flojos (la brisa suele ganar y el pronóstico de dirección es poco fiable)
+const VIENTO_FLOJO_CRUZADO_MAX = 3;  // km/h viento medio
+const RACHA_FLOJA_CRUZADO_MAX = 8;   // km/h racha
+let chkAdmitirVientoFlojoCruzado = localStorage.getItem("METEO_CHECKBOX_ADMITIR_VIENTO_FLOJO_CRUZADO") === "true"; // false por defecto
+
+function esVientoFlojoCruzadoAdmisible(velocidad, racha) {
+    return chkAdmitirVientoFlojoCruzado && velocidad != null && racha != null
+        && velocidad <= VIENTO_FLOJO_CRUZADO_MAX && racha <= RACHA_FLOJA_CRUZADO_MAX;
+}
+
+function alternarAdmitirVientoFlojoCruzado() {
+    const chk = document.getElementById("chkAdmitirVientoFlojoCruzado");
+    chkAdmitirVientoFlojoCruzado = chk ? chk.checked : false;
+    localStorage.setItem("METEO_CHECKBOX_ADMITIR_VIENTO_FLOJO_CRUZADO", chkAdmitirVientoFlojoCruzado);
+    if (typeof construir_tabla === 'function') construir_tabla();
+}
+window.alternarAdmitirVientoFlojoCruzado = alternarAdmitirVientoFlojoCruzado;
+
+window.addEventListener('DOMContentLoaded', () => {
+    const chk = document.getElementById("chkAdmitirVientoFlojoCruzado");
+    if (chk) chk.checked = chkAdmitirVientoFlojoCruzado;
+});
+
 window.modalMinutely15Abierto = false; // true mientras el usuario tiene abierto el modal de detalle 15 min
 
 function alternarBotonMinutely15() {
@@ -4820,6 +4844,11 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
             }
         }
 
+        // 🍃 Viento flojo con orientación cruzada: dirección roja (> 45°) puntúa como naranja
+        if (minimoAngulo > 45 && esVientoFlojoCruzadoAdmisible(velocidad, rachaCorregida)) {
+            minimoAngulo = 45;
+        }
+
         // --- PUNTUACIÓN DE VUELO ---
         let ptsHora = 0;
         let vetoActivado = false;
@@ -7971,6 +8000,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         pintarCeldaAltura(fila20,  arr20,  "20 m", false, true);
                     }
 
+                    // 🍃 Viento y racha mostrados por hora, para la opción de viento flojo con orientación cruzada
+                    const velMostradaPorHora = {};
+                    const rachaMostradaPorHora = {};
+
                     // ⚪ Velocidad 10 m *****************************
 
                     for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
@@ -8028,6 +8061,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             velocidadModelo = corregirViento10m(velocidadModelo, hourlyData, i, d);
                         }
                         let velocidad = Math.round(Math.max(0, velocidadModelo));
+                        velMostradaPorHora[i] = velocidad;
                         const velOrigRound = Math.round(Math.max(0, rawVelOriginal));
 
                         const velCorrRound = Math.round(Math.max(0, corregirViento10m(rawVelOriginal, hourlyData, i, d)));
@@ -8108,6 +8142,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             rachaModelo = corregirRacha10m(rachaModelo, hourlyData, i, d);
                         }
                         let racha = Math.round(Math.max(0, rachaModelo));
+                        rachaMostradaPorHora[i] = racha;
                         const rachaOrigRound = Math.round(Math.max(0, rawRachaOriginal));
 
                         const rachaCorrRound = Math.round(Math.max(0, corregirRacha10m(rawRachaOriginal, hourlyData, i, d)));
@@ -8221,11 +8256,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             minimoAnguloDiferencia = Math.min(...orientaciones.map(o => diferenciaAngular(dir, o)));
                         }
 
-                        td.classList.add(colorPorDiferencia(minimoAnguloDiferencia));
+                        let claseColorDir = colorPorDiferencia(minimoAnguloDiferencia);
+                        const esVientoFlojoCruzado = claseColorDir === "fondo-rojo" && esVientoFlojoCruzadoAdmisible(velMostradaPorHora[i], rachaMostradaPorHora[i]);
+                        if (esVientoFlojoCruzado) claseColorDir = "fondo-naranja";
+                        td.classList.add(claseColorDir);
 
 						td.appendChild(crearFlechaViento(dir));
 							
-                        td.title = `${dir}º`;
+                        td.title = esVientoFlojoCruzado
+                            ? `${dir}º | ${t('tabla.tooltips.vientoFlojoCruzado', { defaultValue: 'Orientación no apta admitida por viento flojo' })}`
+                            : `${dir}º`;
 
                         filaDir.appendChild(td);
                     }
