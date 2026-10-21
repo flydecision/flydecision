@@ -377,7 +377,7 @@ function registrarUso(ev, d) {
         if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !(typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform())) return;
         if (localStorage.getItem('NO_REGISTRAR_USO') === '1') return;
         const p = (typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform()) ? 'app' : 'web';
-        fetch(`https://flydecision.com/registro_uso.php?ev=${ev}&d=${encodeURIComponent(d)}&p=${p}&t=${Date.now()}`, { mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
+        fetch(`https://flydecision.com/registro_uso.php?ev=${ev}&d=${encodeURIComponent(d)}&p=${p}&v=${window.WEB_VERSION || ''}&t=${Date.now()}`, { mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
     } catch (e) {}
 }
 
@@ -413,8 +413,97 @@ window.addEventListener('unhandledrejection', (e) => {
     registrarError('promesa', e.reason, origenDeError(e.reason));
 });
 
+// Tiempo de una fase de carga, en tramos de segundos (registro anónimo de uso). fase: descarga | procesado | tabla
+function registrarTiempoCarga(fase, ms) {
+    const s = ms / 1000;
+    const tramo = s < 1 ? '0-1' : s < 2 ? '1-2' : s < 5 ? '2-5' : s < 10 ? '5-10' : 'mas10';
+    registrarUso('tiempo', `${fase}_${tramo}`);
+}
+
+// Búsqueda sin resultado pendiente: además de en el blur del buscador, la enviamos al tocar cualquier otro sitio
+// y al ocultarse o cerrarse la página (keepalive garantiza que la petición salga aunque se cierre)
+function enviarBusquedaSinResultadoPendiente() {
+    if (!window.busquedaSinResultadoPendiente) return;
+    registrarUso('sinresultado', window.busquedaSinResultadoPendiente);
+    window.busquedaSinResultadoPendiente = null;
+}
+document.addEventListener('click', (e) => {
+    if (e.target.id !== 'buscador-despegues-provincias') enviarBusquedaSinResultadoPendiente();
+}, true);
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') enviarBusquedaSinResultadoPendiente();
+});
+
+// Foto diaria ANÓNIMA de ajustes: una vez al día por navegador se envía, en una sola petición, qué opciones
+// de una lista cerrada están activas y el nº de favoritos en tramos. El servidor (registro_ajustes.php) solo
+// suma contadores por opción: no guarda una línea por persona, así que no se puede reconstruir el perfil de nadie.
+const AJUSTES_FOTO_DIARIA = [
+    'chkMostrarProbPrecipitacion', 'chkMostrarBaseNube', 'chkMostrarTemperatura', 'chkMostrarVientoAlturas',
+    'chkMostrarCizalladura', 'chkMostrarXC', 'chkMostrarBotonMinutely15', 'chkAplicarCorreccionEstadistica',
+    'chkAbrirMapaInicio', 'chkRecordarPosicionMapa', 'chkRecordarEstadoFiltroHorario', 'chkRecordarCapasActivas',
+    'chkRecordarTipoMapa', 'chkRecordarFiltrosMapa', 'chkColorearFlechasBalizas', 'chkOcultarValoresBalizas',
+    'chkMostrarSoloHorasDiurnas', 'chkOrdenarPorXC', 'chkActivarVibracion'
+];
+function enviarFotoAjustes() {
+    try {
+        const esApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
+        if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !esApp) return;
+        if (localStorage.getItem('NO_REGISTRAR_USO') === '1') return;
+        const ahora = new Date();
+        const hoy = `${ahora.getFullYear()}-${ahora.getMonth() + 1}-${ahora.getDate()}`;
+        if (localStorage.getItem('USO_FOTO_AJUSTES_FECHA') === hoy) return;
+
+        const tramo = n => n === 0 ? '0' : n <= 5 ? '1-5' : n <= 20 ? '6-20' : 'mas20';
+        const a = [];
+        AJUSTES_FOTO_DIARIA.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) a.push(`${id}:${el.checked ? 1 : 0}`);
+        });
+        const radSimple = document.getElementById('radModoSimple');
+        if (radSimple) a.push(`modo:${radSimple.checked ? 'simple' : 'avanzado'}`);
+        const ecmwf = ['Off', 'Desplegable', 'Permanente'].find(m => document.getElementById('radEcmwf' + m)?.checked);
+        if (ecmwf) a.push(`ecmwf:${ecmwf.toLowerCase()}`);
+        a.push(`idioma:${(localStorage.getItem('i18nextLng') || 'es').slice(0, 2)}`);
+        a.push(`favoritos:${tramo(obtenerFavoritos().length)}`);
+        a.push(`seguimientos:${tramo(obtenerSeguimientos().length)}`);
+        let nLimites = 0;
+        try { nLimites = Object.keys(JSON.parse(localStorage.getItem('METEO_AJUSTES_LIMITES_DESPEGUES') || '{}')).length; } catch (e) {}
+        a.push(`limites:${tramo(nLimites)}`);
+
+        fetch(`https://flydecision.com/registro_ajustes.php?a=${encodeURIComponent(a.join(','))}&p=${esApp ? 'app' : 'web'}&t=${Date.now()}`, { mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
+        localStorage.setItem('USO_FOTO_AJUSTES_FECHA', hoy);
+    } catch (e) {}
+}
+// 15 s después de cargar, cuando los ajustes ya están aplicados en la pantalla
+window.addEventListener('load', () => setTimeout(enviarFotoAjustes, 15000));
+
 // Marca este navegador como "no registrar" si se abre la web con ?noregistrar (se lee al cargar, antes de que updateURL reescriba la URL)
 try { if (new URLSearchParams(location.search).has('noregistrar')) localStorage.setItem('NO_REGISTRAR_USO', '1'); } catch (e) {}
+
+// Embudo ANÓNIMO de primera visita: de los navegadores que entran por primera vez, cuántos llegan a guardar algún
+// favorito y cuántos vuelven otro día. Sin identificadores: solo 3 eventos sueltos ('primera': inicio, con-favoritos, vuelve).
+// USO_PRIMERA_VISITA (solo en este navegador, no se envía) guarda el día de la primera visita y qué pasos ya se enviaron.
+function fechaHoyUso() { const a = new Date(); return `${a.getFullYear()}-${a.getMonth() + 1}-${a.getDate()}`; }
+try {
+    // Misma condición que sembrarDefaultsPrimeraVisita: navegador sin primera visita hecha ni favoritos
+    if (!localStorage.getItem('USO_PRIMERA_VISITA') && !localStorage.getItem('METEO_PRIMERA_VISITA_HECHA') && !localStorage.getItem('METEO_FAVORITOS_LISTA')) {
+        localStorage.setItem('USO_PRIMERA_VISITA', JSON.stringify({ dia: fechaHoyUso(), fav: 0, vuelve: 0 }));
+        registrarUso('primera', 'inicio');
+    }
+} catch (e) {}
+function comprobarPrimeraVisita() {
+    try {
+        const estado = JSON.parse(localStorage.getItem('USO_PRIMERA_VISITA') || 'null');
+        if (!estado || estado.fin) return;
+        if (!estado.fav && obtenerFavoritos().length > 0) { estado.fav = 1; registrarUso('primera', 'con-favoritos'); }
+        if (!estado.vuelve && estado.dia !== fechaHoyUso()) { estado.vuelve = 1; registrarUso('primera', 'vuelve'); }
+        if (estado.fav && estado.vuelve) estado.fin = 1;
+        localStorage.setItem('USO_PRIMERA_VISITA', JSON.stringify(estado));
+    } catch (e) {}
+}
+// 15 s después de cargar y cada vez que se sale de la página o de la app (por si guarda favoritos y se va)
+window.addEventListener('load', () => setTimeout(comprobarPrimeraVisita, 15000));
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') comprobarPrimeraVisita(); });
 
 // Un solo listener para todo botón o checkbox con id (menú inferior nav-map/nav-home..., filtros, ajustes...).
 // En fase de captura, así se registra aunque el onclick del botón pare la propagación.
@@ -5978,6 +6067,19 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 data = await parseJsonWithTimeout(res1);
                 dataEcmwf = await parseJsonWithTimeout(res2);
+
+                // Tiempos de descarga y de procesado de los dos JSON (una vez por carga de página, para el registro anónimo de uso)
+                if (!window.tiemposCargaRegistrados) {
+                    window.tiemposCargaRegistrados = true;
+                    try {
+                        const entradas = performance.getEntriesByType('resource').filter(e => /\/meteo-datos(-ecmwf)?\.json\?t=/.test(e.name));
+                        if (entradas.length === 2 && entradas.every(e => e.responseEnd > 0)) {
+                            const finDescarga = Math.max(...entradas.map(e => e.responseEnd));
+                            registrarTiempoCarga('descarga', finDescarga - Math.min(...entradas.map(e => e.startTime)));
+                            registrarTiempoCarga('procesado', performance.now() - finDescarga);
+                        }
+                    } catch (e) {}
+                }
                 
                 // Solo apagamos el cronómetro cuando la descarga completa ha finalizado con éxito
                 clearTimeout(timeoutId); 
@@ -8766,7 +8868,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             tbodyFragmento.appendChild(trBtn);
         }
 
-        // 5. Inyección en el HTML
+        // 5. Inyección en el HTML        tabla.appendChild(tbody);
+
+        // Tiempo desde que se abre la página hasta que se pinta la tabla por primera vez (registro anónimo de uso)
+        if (!window.tiempoTablaRegistrado) {
+            window.tiempoTablaRegistrado = true;
+            registrarTiempoCarga('tabla', performance.now());
+        }
         tbody.appendChild(tbodyFragmento);
         tabla.innerHTML = "";
         tabla.appendChild(thead);
@@ -10130,8 +10238,12 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
     if (input) {
         if (visibles === 0 && filtroLimpio.length > 0) {
             input.classList.add('buscador-despegues-sin-resultados');
+            // Búsqueda sin resultado: solo cuenta en edición de favoritos (busca en todos los despegues) y sin filtro de distancia.
+            // Se envía al salir del buscador (blur), para no registrar cada letra mientras se escribe.
+            window.busquedaSinResultadoPendiente = (modoEdicionFavoritos && distanciaLimite >= 9999) ? filtroLimpio.slice(0, 30) : null;
         } else {
             input.classList.remove('buscador-despegues-sin-resultados');
+            window.busquedaSinResultadoPendiente = null;
         }
     }
 
@@ -10599,6 +10711,11 @@ document.addEventListener('i18nReady', function() {
                 this.placeholder = '🔍';
             }
         }
+		// Registro anónimo: búsqueda que se ha quedado sin resultado al salir del buscador
+		if (window.busquedaSinResultadoPendiente) {
+			registrarUso('sinresultado', window.busquedaSinResultadoPendiente);
+			window.busquedaSinResultadoPendiente = null;
+		}
 		// Ajusta visibilidad de la X y badge según el contenido
 		gestionarBotonLimpiar();
     });
