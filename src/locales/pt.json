@@ -144,6 +144,7 @@
       "viento10mUnidades": "km/h de vento médio a 10 m de altura do solo (AGL)",
       "racha10mUnidades": "km/h de rajada máxima a 10 m de altura do solo (AGL)",
       "datoOriginal": "Dado original do modelo",
+      "vientoFlojoCruzado": "Orientação não apta admitida por vento fraco",
       "mantenerPulsadoAlternar": "(Mantenha premido para alternar correção estatística)",
       "direccion10m": "Direção do vento a 10 m de altura AGL",
       "cizalladura": "Cisalhamento de Baixo Nível por velocidade / Fiabilidade da previsão do vento médio",
@@ -681,6 +682,7 @@
       "descAjustes": "Idioma, limites para a pontuação, personalização de dados mostrados..."
     },
     "gestionarLimitesDespegues": "Editar descolagens com limites personalizados",
+    "admitirVientoFlojoCruzado": "Admitir orientação não apta com vento fraco",
     "aperturaEnlaces": {
       "pregunta": "Deseja abrir na web ou na app?",
       "recordar": "Lembrar a minha escolha",
@@ -934,6 +936,7 @@
     "tooltipRachaMaxima": "<b>Rajada máxima:</b><br><br>O sistema automatizado de avaliação de condições terá em conta estes valores.<br><br>A cor dos dados na tabela indica visualmente a análise das condições com base no valor que definir aqui.<br><br>🟩 Verde: rajada máxima segura, longe do limite.<br>🟧 Laranja: rajada máxima que se aproxima do seu limite de rajada máxima.<br>🟥 Vermelho: rajada que excede o seu limite de rajada máxima.<br><br><b>Definição técnica padrão da OMM (Organização Meteorológica Mundial) da rajada máxima a 10m</b>:<br><br>É o pico máximo de velocidade instantânea (com uma duração de 3 segundos) registado em qualquer momento dentro do período da hora anterior. Representa as flutuações curtas e intensas sobrepostas ao vento médio, associadas à turbulência mecânica ou térmica (convecção).",
     "tooltipResetearEnlaces": "<b>Repor comportamento dos links</b><br><br>Na app, ao abrir pela primeira vez um link que possa ter uma app nativa instalada, é-lhe perguntado se deseja abri-lo na web (dentro do Fly Decision) ou na app. Se marcou <i>Lembrar a minha escolha</i>, já não será perguntado novamente.<br><br>Este botão apaga essas escolhas para que seja perguntado novamente.",
     "tooltipEdicionLimites": "<b>Editar descolagens com limites personalizados</b><br><br>Mostra na tabela apenas as descolagens às quais ajustou os limites de vento e rajada (diferente de 100%).<br><br>Prima ↺ numa descolagem para a repor a 100% (os limites gerais acima). O ↺ do cabeçalho repõe todos. Para alterar a percentagem, utilize o botão ⓘ de cada descolagem. Pode fazê-lo aqui, na Tabela ou no Mapa.<br><br>O botão está desativado se não tiver nenhuma descolagem com limites personalizados.",
+    "tooltipVientoFlojoCruzado": "<b>Admitir orientação não apta com vento fraco</b><br><br>Se ativar, uma hora cujo prognóstico de orientação do vento não seja adequado para as orientações possíveis de uma descolagem não é penalizada por este motivo quando o vento médio é ≤ 3 km/h e a rajada ≤ 8 km/h.<br><br>Nesse caso, a célula de direção, em vez de vermelha, é pintada a laranja e a pontuação dessa hora é calculada como se a direção fosse laranja (cruzada mas aceitável).<br><br>Útil, por exemplo, em descolagens orientadas a sul com um vento meteo muito fraco de norte, onde provavelmente acabará por ganhar a brisa, ou quando a previsão pode falhar na direção de um vento tão fraco, ou porque a descolagem é muito boa e permite descolar com ligeiro vento de cauda.<br><br>Está desativado por predefinição.",
     "tooltipProbPrecipitacion": "<b>Probabilidade de precipitação (%)</b><br><br>Probabilidade (%) de a precipitação exceder os 0,1 mm (litros/m²).<br><br>Dados originais do modelo ECMWF.",
     "tooltipBaseNube": "<b>Base de nuvem MSL (km)</b><br><br>Mostra uma linha com a altitude estimada da base da nuvem acima do nível do mar (MSL), calculada a partir da temperatura e do ponto de orvalho a 2 m originais do modelo ECMWF.<br><br>É uma aproximação válida para nuvens convectivas, mas não deteta nuvens orográficas, nevoeiros, estratos ou outros tipos de nebulosidade não originados por convecção.<br><br>Esta aproximação de 125 m/°C pode diferir em zonas de montanha em várias centenas de metros em relação à base real devido a efeitos de mistura, subsidência, humidade não homogénea e diferenças entre a temperatura real do ar e a do modelo.",
     "tooltipTemperatura": "<b>Temperatura a 2 m do solo (°C)</b><br><br>Mostra uma linha com a temperatura estimada à altitude da descolagem.",

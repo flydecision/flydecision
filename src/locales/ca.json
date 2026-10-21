@@ -144,6 +144,7 @@
       "viento10mUnidades": "km/h de vent mitjà a 10 m d'altura del terra (AGL)",
       "racha10mUnidades": "km/h de ratxa màxima a 10 m d'altura del terra (AGL)",
       "datoOriginal": "Dada original del model",
+      "vientoFlojoCruzado": "Orientació no apta admesa per vent fluix",
       "mantenerPulsadoAlternar": "(Mantingues premut per alternar correcció estadística)",
       "direccion10m": "Direcció del vent a 10 m d'altura AGL",
       "cizalladura": "Cisallament de Baix Nivell per velocitat / Fiabilitat del pronòstic de vent mitjà",
@@ -681,6 +682,7 @@
       "descAjustes": "Idioma, límits per a la puntuació, personalització de dades mostrades..."
     },
     "gestionarLimitesDespegues": "Editar enlairaments amb límits personalitzats",
+    "admitirVientoFlojoCruzado": "Admetre orientació no apta amb vent fluix",
     "aperturaEnlaces": {
       "pregunta": "¿Vols obrir-ho a la web o a l'app?",
       "recordar": "Recordar la meva elecció",
@@ -935,6 +937,7 @@
     "tooltipRachaMaxima": "<b>Ratxa màxima (km/h):</b><br><br>El sistema automatitzat d'avaluació de condicions tindrà en compte aquests valors.<br><br>El color de les dades a la taula indica visualment l'anàlisi de les condicions en funció del valor que estableixis aquí.<br><br>🟩 Verd: ratxa màxima segura, lluny del límit.<br>🟧 Taronja: ratxa màxima que s'acosta al teu límit de ratxa màxima.<br>🟥 Vermell: ratxa que supera el teu límit de ratxa màxima.<br><br><b>Definició tècnica estàndard de l'OMM (Organització Meteorològica Mundial) de la ratxa màxima a 10m</b>:<br><br>És el pic màxim de velocitat instantània (amb una durada de 3 segons) registrat en qualsevol moment dins del període de l'hora anterior. Representa les fluctuacions breus i intenses superposades al vent mitjà, associades a la turbulència mecànica o tèrmica (convecció).",
     "tooltipResetearEnlaces": "<b>Restablir el comportament dels enllaços</b><br><br>A l'app, en obrir per primera vegada un enllaç que pugui tenir una app nativa instal·lada, se't pregunta si vols obrir-ho a la web (dins de Fly Decision) o a l'app. Si vas marcar <i>Recordar la meva elecció</i>, ja no es pregunta més.<br><br>Aquest botó esborra aquestes eleccions perquè es torni a preguntar.",
     "tooltipEdicionLimites": "<b>Editar enlairaments amb límits personalitzats</b><br><br>Mostra a la taula només els enlairaments als quals has ajustat els límits de vent i ratxa (diferent del 100%).<br><br>Prem ↺ en un enlairament per a restejar-lo al 100% (els límits generals de dalt). El ↺ de la capçalera els resteja tots. Per canviar el percentatge, utilitza el botó ⓘ de cada enlairament. Pots fer-ho aquí, a la Taula o al Mapa.<br><br>El botó està desactivat si no tens cap enlairament amb límits personalitzats.",
+    "tooltipVientoFlojoCruzado": "<b>Admetre orientació no apta amb vent fluix</b><br><br>Si ho actives, una hora en què el pronòstic d'orientació del vent no sigui apte per a les orientacions possibles d'un enlairament no es penalitza per aquest motiu quan el vent mitjà és ≤ 3 km/h i la ratxa ≤ 8 km/h.<br><br>En aquest cas la cel·la de direcció, en comptes de vermella, es pinta de taronja i la puntuació d'aquesta hora es calcula com si la direcció fos taronja (creuada però acceptable).<br><br>Útil, per exemple, en enlairaments orientats al sud amb un vent meteo molt fluix de nord, on probablement acabarà guanyant la brisa, o quan el pronòstic pot fallar en la direcció d'un vent tan fluix, o perquè l'enlairament sigui molt bo i permeti enlairar-se amb lleuger vent de cua.<br><br>Està desactivat per defecte.",
     "tooltipProbPrecipitacion": "<b>Probabilitat de precipitació (%)</b><br><br>Probabilitat (%) que la precipitació superi els 0,1 mm (litres/m²).<br><br>Dades originals del model ECMWF.",
     "tooltipBaseNube": "<b>Base de núvol MSL (km)</b><br><br>Mostra una fila amb l'altitud estimada de la base del núvol sobre el nivell del mar (MSL), calculada a partir de la temperatura i el punt de rosada a 2 m originals del model ECMWF.<br><br>És una aproximació vàlida per a núvols convectius, però no detecta núvols orogràfics, boires, estrats o altres tipus de nuvolositat no originats per convecció.<br><br>Aquesta aproximació de 125 m/°C pot diferir en zones de muntanya diversos centenars de metres respecte a la base real per efectes de mescla, subsidència, humitat no homogènia i diferències entre la temperatura real de l'aire i la del model.",
     "tooltipTemperatura": "<b>Temperatura a 2 m del sòl (°C)</b><br><br>Mostra una fila amb la temperatura estimada a l'altitud de l'enlairament.",

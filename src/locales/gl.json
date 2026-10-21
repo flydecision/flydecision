@@ -144,6 +144,7 @@
       "viento10mUnidades": "km/h de vento medio a 10 m de altura do chan (AGL)",
       "racha10mUnidades": "km/h de refacho máximo a 10 m de altura do chan (AGL)",
       "datoOriginal": "Dato orixinal do modelo",
+      "vientoFlojoCruzado": "Orientación non apta admitida por vento frouxo",
       "mantenerPulsadoAlternar": "(Mantén premido para alternar corrección estatística)",
       "direccion10m": "Dirección do vento a 10 m de altura AGL",
       "cizalladura": "Cizalladura de Baixo Nivel por velocidade / Fiabilidade do pronóstico de vento medio",
@@ -681,6 +682,7 @@
       "descAjustes": "Idioma, límites para a puntuación, personalización de datos mostrados..."
     },
     "gestionarLimitesDespegues": "Editar engalaxes con límites personalizados",
+    "admitirVientoFlojoCruzado": "Admitir orientación non apta con vento frouxo",
     "aperturaEnlaces": {
       "pregunta": "¿Queres abrilo na web ou na app?",
       "recordar": "Lembrar a miña elección",
@@ -935,6 +937,7 @@
     "tooltipRachaMaxima": "<b>Refacho máximo (km/h):</b><br><br>O sistema automatizado de avaliación de condicións terá en conta estes valores.<br><br>A cor dos datos na táboa indica visualmente a análise das condicións en función do valor que establezas aquí.<br><br>🟩 Verde: refacho máximo seguro, lonxe do límite.<br>🟧 Laranxa: refacho máximo que se achega ao teu límite de refacho máximo.<br>🟥 Vermello: refacho que excede o teu límite de refacho máximo.<br><br><b>Defición técnica estándar da OMM (Organización Meteorolóxica Mundial) do refacho máximo a 10m</b>:<br><br>É o pico máximo de velocidade instantánea (cunha duración de 3 segundos) rexistrado en calquera momento dentro do período da hora anterior. Representa as flutuacións curtas e intensas superpostas ao vento medio, asociadas á turbulencia mecánica ou térmica (convección).",
     "tooltipResetearEnlaces": "<b>Restablecer o comportamento das ligazóns</b><br><br>Na app, ao abrir por primeira vez unha ligazón que poida ter unha app nativa instalada, pregúntaseche se queres abrila na web (dentro de Fly Decision) ou na app. Se marcaches <i>Lembrar a miña elección</i>, xa non se pregunta máis.<br><br>Este botón borra esas eleccións para que se volva a preguntar.",
     "tooltipEdicionLimites": "<b>Editar engalaxes con límites personalizados</b><br><br>Mostra na táboa só as engalaxes ás que axustaches os límites de vento e refacho (distinto do 100%).<br><br>Preme ↺ nunha engalaxe para restablecela ao 100% (os límites xerais de arriba). O ↺ da cabeceira restabléceos todos. Para cambiar a porcentaxe, usa o botón ⓘ de cada engalaxe. Podes facelo aquí, na Táboa ou no Mapa.<br><br>O botón está desactivado se non tes ningunha engalaxe con límites personalizados.",
+    "tooltipVientoFlojoCruzado": "<b>Admitir orientación non apta con vento frouxo</b><br><br>Se o activas, unha hora cuxo prognóstico de orientación do vento non sexa apto para as orientacións posibles dunha engalaxe non se penaliza por este motivo cando o vento medio é ≤ 3 km/h e o refacho ≤ 8 km/h.<br><br>Nese caso a cela de dirección, en lugar de vermella, píntase en laranxa e a puntuación desa hora calcúlase coma se a dirección fose laranxa (cruzada pero aceptable).<br><br>Útil, por exemplo, en engalaxes orientadas ao sur cun vento meteo moi frouxo de norte, onde probablemente acabará gañando a brisa, ou cando o prognóstico pode fallar na dirección dun vento tan frouxo, ou porque a engalaxe sexa moi boa e permita engalar con lixeiro vento de cola.<br><br>Está desactivado por defecto.",
     "tooltipProbPrecipitacion": "<b>Probabilidade de precipitación (%)</b><br><br>Probabilidade (%) de que a precipitación exceda os 0,1 mm (litros/m²).<br><br>Datos orixinais do modelo ECMWF.",
     "tooltipBaseNube": "<b>Base de nube MSL (km)</b><br><br>Amosa unha fila coa altitude estimada da base da nube sobre o nivel do mar (MSL), calculada a partir da temperatura e o punto de orballo a 2 m orixinais do modelo ECMWF.<br><br>É unha aproximación válida para nubes convectivas, pero non detecta nubes orográficas, néboas, estratos ou outros tipos de nubosidade non orixinados por convección.<br><br>Esta aproximación de 125 m/°C pode diferir en zonas de montaña varios centos de metros respecto á base real por efectos de mestura, subsidencia, humidade non homoxénea e diferenzas entre a temperatura real do aire e a do modelo.",
     "tooltipTemperatura": "<b>Temperatura a 2 m do chan (°C)</b><br><br>Mostra unha fila coa temperatura estimada á altitude do despegue.",

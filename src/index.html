@@ -68,9 +68,9 @@
 <!-- API Keys map layers-->
 <script src="/js/config.js" defer></script>
 
-<script>window.WEB_VERSION = "5.6.0";</script>
-<link rel="stylesheet" href="/meteo.css?v=5.6.0">
-<script src="/meteo.js?v=5.6.0" defer></script>
+<script>window.WEB_VERSION = "5.6.1";</script>
+<link rel="stylesheet" href="/meteo.css?v=5.6.1">
+<script src="/meteo.js?v=5.6.1" defer></script>
 
 </head>
 
@@ -395,6 +395,15 @@
 							<span data-i18n="ajustes.gestionarLimitesDespegues">Editar despegues con límites personalizados</span>&nbsp;(<span class="num-despegues-con-limites">0</span>)
 						</button>
 						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipEdicionLimites">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</div>
+
+					<div class="linea-con-bt-info">
+						<label for="chkAdmitirVientoFlojoCruzado" class="custom-checkbox">
+							<input type="checkbox" id="chkAdmitirVientoFlojoCruzado" onclick="alternarAdmitirVientoFlojoCruzado()"> <span data-i18n="ajustes.admitirVientoFlojoCruzado"> Admitir orientación no apta con viento flojo</span>
+						</label>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipVientoFlojoCruzado">
 							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 						</button>
 					</div>

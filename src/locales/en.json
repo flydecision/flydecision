@@ -144,6 +144,7 @@
       "viento10mUnidades": "km/h of mean wind at 10 m above ground level (AGL)",
       "racha10mUnidades": "km/h of maximum gust at 10 m above ground level (AGL)",
       "datoOriginal": "Original model data",
+      "vientoFlojoCruzado": "Unsuitable orientation accepted due to light wind",
       "mantenerPulsadoAlternar": "(Press and hold to toggle statistical correction)",
       "direccion10m": "Wind direction at 10 m height AGL",
       "cizalladura": "Low-Level Wind Shear by speed / Average wind forecast reliability",
@@ -681,6 +682,7 @@
       "descAjustes": "Language, limits for scoring, customization of displayed data..."
     },
     "gestionarLimitesDespegues": "Edit takeoffs with custom limits",
+    "admitirVientoFlojoCruzado": "Allow unsuitable orientation with light wind",
     "aperturaEnlaces": {
       "pregunta": "Do you want to open it in the web or in the app?",
       "recordar": "Remember my choice",
@@ -935,6 +937,7 @@
     "tooltipRachaMaxima": "<b>Maximum gust (km/h):</b><br><br>The automated condition scoring system will take these values into account.<br><br>The color of the data in the table visually indicates the condition analysis based on the value you set here.<br><br>🟩 Green: safe maximum gust, far from the limit.<br>🟧 Orange: maximum gust approaching your Maximum gust limit.<br>🟥 Red: gust exceeding your Maximum gust limit.<br><br><b>WMO (World Meteorological Organization) standard technical definition of 10m Maximum Gust</b>:<br><br>It is the maximum peak of instantaneous speed (with a duration of 3 seconds) recorded at any time within the previous hour period. It represents the brief and intense fluctuations superimposed on the mean wind, associated with mechanical or thermal turbulence (convection).",
     "tooltipResetearEnlaces": "<b>Reset link behavior</b><br><br>In the app, when opening for the first time a link that may have a native app installed, you are asked if you want to open it in the web (within Fly Decision) or in the app. If you checked <i>Remember my choice</i>, it will not be asked again.<br><br>This button clears those choices so that you are asked again.",
     "tooltipEdicionLimites": "<b>Edit takeoffs with custom limits</b><br><br>Shows in the table only the takeoffs for which you have adjusted the wind and gust limits (different from 100%).<br><br>Click ↺ on a takeoff to reset it to 100% (the general limits above). The ↺ in the header resets them all. To change the percentage, use the ⓘ button for each takeoff. You can do it here, in the Table or on the Map.<br><br>The button is disabled if you do not have any takeoffs with custom limits.",
+    "tooltipVientoFlojoCruzado": "<b>Allow unsuitable orientation with light wind</b><br><br>If enabled, an hour whose wind orientation forecast is not suitable for the possible orientations of a take-off is not penalized for this reason when the mean wind is ≤ 3 km/h and the gust ≤ 8 km/h.<br><br>In this case, the direction cell, instead of red, is painted orange and the score for that hour is calculated as if the direction were orange (crosswind but acceptable).<br><br>Useful, for example, on south-facing take-offs with very light north meteo wind, where the breeze will likely end up prevailing, or when the forecast may fail in the direction of such light wind, or because the take-off is very good and allows launching with light tailwind.<br><br>Disabled by default.",
     "tooltipProbPrecipitacion": "<b>Precipitation Probability (%)</b><br><br>Probability (%) that precipitation exceeds 0.1 mm (liters/m²).<br><br>Original data from the ECMWF model.",
     "tooltipBaseNube": "<b>Cloud base MSL (km)</b><br><br>Shows a row with the estimated altitude of the cloud base above sea level (MSL), calculated from the original 2m temperature and dew point of the ECMWF model.<br><br>It is a valid approximation for convective clouds, but it does not detect orographic clouds, fog, stratus, or other types of cloudiness not originating from convection.<br><br>This approximation of 125 m/°C may differ in mountain areas by several hundred meters from the actual base due to mixing effects, subsidence, non-homogeneous humidity, and differences between the actual air temperature and that of the model.",
     "tooltipTemperatura": "<b>Temperature at 2 m above ground (°C)</b><br><br>Shows a row with the estimated temperature at takeoff altitude.",
