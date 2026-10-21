@@ -420,6 +420,63 @@ function registrarTiempoCarga(fase, ms) {
     registrarUso('tiempo', `${fase}_${tramo}`);
 }
 
+// Búsqueda sin resultado pendiente: además de en el blur del buscador, la enviamos al tocar cualquier otro sitio
+// y al ocultarse o cerrarse la página (keepalive garantiza que la petición salga aunque se cierre)
+function enviarBusquedaSinResultadoPendiente() {
+    if (!window.busquedaSinResultadoPendiente) return;
+    registrarUso('sinresultado', window.busquedaSinResultadoPendiente);
+    window.busquedaSinResultadoPendiente = null;
+}
+document.addEventListener('click', (e) => {
+    if (e.target.id !== 'buscador-despegues-provincias') enviarBusquedaSinResultadoPendiente();
+}, true);
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') enviarBusquedaSinResultadoPendiente();
+});
+
+// Foto diaria ANÓNIMA de ajustes: una vez al día por navegador se envía, en una sola petición, qué opciones
+// de una lista cerrada están activas y el nº de favoritos en tramos. El servidor (registro_ajustes.php) solo
+// suma contadores por opción: no guarda una línea por persona, así que no se puede reconstruir el perfil de nadie.
+const AJUSTES_FOTO_DIARIA = [
+    'chkMostrarProbPrecipitacion', 'chkMostrarBaseNube', 'chkMostrarTemperatura', 'chkMostrarVientoAlturas',
+    'chkMostrarCizalladura', 'chkMostrarXC', 'chkMostrarBotonMinutely15', 'chkAplicarCorreccionEstadistica',
+    'chkAbrirMapaInicio', 'chkRecordarPosicionMapa', 'chkRecordarEstadoFiltroHorario', 'chkRecordarCapasActivas',
+    'chkRecordarTipoMapa', 'chkRecordarFiltrosMapa', 'chkColorearFlechasBalizas', 'chkOcultarValoresBalizas',
+    'chkMostrarSoloHorasDiurnas', 'chkOrdenarPorXC', 'chkActivarVibracion'
+];
+function enviarFotoAjustes() {
+    try {
+        const esApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
+        if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !esApp) return;
+        if (localStorage.getItem('NO_REGISTRAR_USO') === '1') return;
+        const ahora = new Date();
+        const hoy = `${ahora.getFullYear()}-${ahora.getMonth() + 1}-${ahora.getDate()}`;
+        if (localStorage.getItem('USO_FOTO_AJUSTES_FECHA') === hoy) return;
+
+        const tramo = n => n === 0 ? '0' : n <= 5 ? '1-5' : n <= 20 ? '6-20' : 'mas20';
+        const a = [];
+        AJUSTES_FOTO_DIARIA.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) a.push(`${id}:${el.checked ? 1 : 0}`);
+        });
+        const radSimple = document.getElementById('radModoSimple');
+        if (radSimple) a.push(`modo:${radSimple.checked ? 'simple' : 'avanzado'}`);
+        const ecmwf = ['Off', 'Desplegable', 'Permanente'].find(m => document.getElementById('radEcmwf' + m)?.checked);
+        if (ecmwf) a.push(`ecmwf:${ecmwf.toLowerCase()}`);
+        a.push(`idioma:${(localStorage.getItem('i18nextLng') || 'es').slice(0, 2)}`);
+        a.push(`favoritos:${tramo(obtenerFavoritos().length)}`);
+        a.push(`seguimientos:${tramo(obtenerSeguimientos().length)}`);
+        let nLimites = 0;
+        try { nLimites = Object.keys(JSON.parse(localStorage.getItem('METEO_AJUSTES_LIMITES_DESPEGUES') || '{}')).length; } catch (e) {}
+        a.push(`limites:${tramo(nLimites)}`);
+
+        fetch(`https://flydecision.com/registro_ajustes.php?a=${encodeURIComponent(a.join(','))}&p=${esApp ? 'app' : 'web'}&t=${Date.now()}`, { mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
+        localStorage.setItem('USO_FOTO_AJUSTES_FECHA', hoy);
+    } catch (e) {}
+}
+// 15 s después de cargar, cuando los ajustes ya están aplicados en la pantalla
+window.addEventListener('load', () => setTimeout(enviarFotoAjustes, 15000));
+
 // Marca este navegador como "no registrar" si se abre la web con ?noregistrar (se lee al cargar, antes de que updateURL reescriba la URL)
 try { if (new URLSearchParams(location.search).has('noregistrar')) localStorage.setItem('NO_REGISTRAR_USO', '1'); } catch (e) {}
 
