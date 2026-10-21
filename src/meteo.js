@@ -480,6 +480,31 @@ window.addEventListener('load', () => setTimeout(enviarFotoAjustes, 15000));
 // Marca este navegador como "no registrar" si se abre la web con ?noregistrar (se lee al cargar, antes de que updateURL reescriba la URL)
 try { if (new URLSearchParams(location.search).has('noregistrar')) localStorage.setItem('NO_REGISTRAR_USO', '1'); } catch (e) {}
 
+// Embudo ANÓNIMO de primera visita: de los navegadores que entran por primera vez, cuántos llegan a guardar algún
+// favorito y cuántos vuelven otro día. Sin identificadores: solo 3 eventos sueltos ('primera': inicio, con-favoritos, vuelve).
+// USO_PRIMERA_VISITA (solo en este navegador, no se envía) guarda el día de la primera visita y qué pasos ya se enviaron.
+function fechaHoyUso() { const a = new Date(); return `${a.getFullYear()}-${a.getMonth() + 1}-${a.getDate()}`; }
+try {
+    // Misma condición que sembrarDefaultsPrimeraVisita: navegador sin primera visita hecha ni favoritos
+    if (!localStorage.getItem('USO_PRIMERA_VISITA') && !localStorage.getItem('METEO_PRIMERA_VISITA_HECHA') && !localStorage.getItem('METEO_FAVORITOS_LISTA')) {
+        localStorage.setItem('USO_PRIMERA_VISITA', JSON.stringify({ dia: fechaHoyUso(), fav: 0, vuelve: 0 }));
+        registrarUso('primera', 'inicio');
+    }
+} catch (e) {}
+function comprobarPrimeraVisita() {
+    try {
+        const estado = JSON.parse(localStorage.getItem('USO_PRIMERA_VISITA') || 'null');
+        if (!estado || estado.fin) return;
+        if (!estado.fav && obtenerFavoritos().length > 0) { estado.fav = 1; registrarUso('primera', 'con-favoritos'); }
+        if (!estado.vuelve && estado.dia !== fechaHoyUso()) { estado.vuelve = 1; registrarUso('primera', 'vuelve'); }
+        if (estado.fav && estado.vuelve) estado.fin = 1;
+        localStorage.setItem('USO_PRIMERA_VISITA', JSON.stringify(estado));
+    } catch (e) {}
+}
+// 15 s después de cargar y cada vez que se sale de la página o de la app (por si guarda favoritos y se va)
+window.addEventListener('load', () => setTimeout(comprobarPrimeraVisita, 15000));
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') comprobarPrimeraVisita(); });
+
 // Un solo listener para todo botón o checkbox con id (menú inferior nav-map/nav-home..., filtros, ajustes...).
 // En fase de captura, así se registra aunque el onclick del botón pare la propagación.
 document.addEventListener('click', (e) => {
