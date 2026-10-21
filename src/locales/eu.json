@@ -144,6 +144,7 @@
       "viento10mUnidades": "km/h-ko batez besteko haizea lurretik 10 m-ko altueran (AGL)",
       "racha10mUnidades": "km/h-ko bolada maximoa lurretik 10 m-ko altueran (AGL)",
       "datoOriginal": "Ereduaren jatorrizko datua",
+      "vientoFlojoCruzado": "Orientazio ez-egokia onartua haize ahulagatik",
       "mantenerPulsadoAlternar": "(Eduki sakatuta zuzenketa estatistikoa txandakatzeko)",
       "direccion10m": "Haizearen norabidea AGL 10 m-ko altueran",
       "cizalladura": "Abiaduragatiko Maila Baxuko Zizailadura / Batez besteko haize-iragarpenaren fidagarritasuna",
@@ -681,6 +682,7 @@
       "descAjustes": "Hizkuntza, puntuaziorako mugak, erakutsitako datuen pertsonalizazioa..."
     },
     "gestionarLimitesDespegues": "Editatu muga pertsonalizatuak dituzten aireratzeak",
+    "admitirVientoFlojoCruzado": "Onartu orientazio ez-egokia haize ahularekin",
     "aperturaEnlaces": {
       "pregunta": "Webgunean edo aplikazioan ireki nahi duzu?",
       "recordar": "Gogoratu nire aukera",
@@ -935,6 +937,7 @@
     "tooltipRachaMaxima": "<b>Gehienezko bolada (km/h):</b><br><br>Baldintzen ebaluazio automatizatuko sistemak balio horiek kontuan hartuko ditu.<br><br>Taulako datuen koloreak baldintzen analisia ikusmenean adierazten du, hemen ezartzen duzun balioan oinarrituta.<br><br>🟩 Berdea: gehienezko bolada segurua, mugatik urrun.<br>🟧 Laranja: gehienezko bolada zure Gehienezko boladaren mugara hurbiltzen.<br>🟥 Gorria: zure Gehienezko boladaren muga gainditzen duen bolada.<br><br><b>WMOren (Munduko Erakunde Meteorologikoa) 10 metroko gehienezko boladaren definizio tekniko estandarra</b>:<br><br>Aurreko orduko epean edonoiz erregistratutako bat-bateko abiaduraren (3 segundoko iraupenekoa) gehienezko gailurra da. Batez besteko haizeari gainjartzen zaizkion gorabehera labur eta intentsiboak irudikatzen ditu, turbulentzia mekaniko edo termikoarekin (konbekzioarekin) erlazionatuta.",
     "tooltipResetearEnlaces": "<b>Esteken portaera berrezarri</b><br><br>Aplikazioan, instalatutako aplikazio natibo bat izan dezakeen esteka bat lehenengo aldiz irekitzean, webgunean (Fly Decision barruan) edo aplikazioan ireki nahi duzun galdetzen zaizu. <i>Gogoratu nire aukera</i> markatu bazenuen, ez da gehiago galdetuko.<br><br>Botoi honek aukera horiek ezabatzen ditu berriro galdetu ahal izateko.",
     "tooltipEdicionLimites": "<b>Editatu muga pertsonalizatuak dituzten aireratzeak</b><br><br>Taulan haize- eta bolada-mugak ( % 100 ez dena) doitu dizkiezun aireratzeak soilik erakusten ditu.<br><br>Sakatu ↺ aireratze batean % 100era berrezartzeko (goiko muga orokorrak). Goiburuko ↺-ak guztiak berrezartzen ditu. Ehunekoa aldatzeko, erabili aireratze bakoitzeko ⓘ botoia. Hemen, Taulan edo Mapan egin dezakezu.<br><br>Botoia desgaituta dago muga pertsonalizatuak dituen aireratzerik ez baduzu.",
+    "tooltipVientoFlojoCruzado": "<b>Onartu orientazio ez-egokia haize ahularekin</b><br><br>Aktibatzen baduzu, haizearen orientazio-iragarpena aireratze baten orientazio posibleetarako egokia ez den ordu bat ez da arrazoi honengatik zigortzen batez besteko haizea ≤ 3 km/h eta bolada ≤ 8 km/h denean.<br><br>Kasu horretan, norabide-gelaxka, gorria izan beharrean, laranjaz margotzen da eta ordu horretako puntuazioa norabidea laranja balitz bezala kalkulatzen da (zeharkakoa baina onargarria).<br><br>Erabilgarria, adibidez, hegoaldera begira dauden aireratzeetan iparraldeko haize meteo oso ahularekin, non ziur asko brisa nagusituko den, edo iragarpenak hain haize ahularen norabidean huts egin dezakeenean, edo aireratzea oso ona delako eta atzeko haize arinarekin aireratzea ahalbidetzen duelako.<br><br>Berez desgaituta dago.",
     "tooltipProbPrecipitacion": "<b>Prezipitazio probabilitatea (%)</b><br><br>Prezipitazioak 0,1 mm (litro/m²) gainditzeko probabilitatea (%).<br><br>ECMWF ereduaren jatorrizko datuak.",
     "tooltipBaseNube": "<b>Hodei-basea MSL (km)</b><br><br>Hodei-basearen itsas mailaren gaineko (MSL) estimatutako altitudea erakusten duen errenkada bat bistaratzen du, ECMWF ereduaren jatorrizko 2 m-ko tenperaturatik eta ihintz-puntutik kalkulatuta.<br><br>Hodei konbektiboetarako hurbilketa balioduna da, baina ez ditu hodei orografikoak, lainoak, estratuak edo konbekzioz sortu gabeko beste hodeitasun mota batzuk detektatzen.<br><br>125 m/°C-ko hurbilketa hau mendi-eremuetan benetako basetik ehunka metro desberdina izan daiteke, nahasketa-efektuen, subsidentziaren, hezetasun ez-homogeneoaren eta airearen benetako tenperaturaren eta ereduarenaren arteko aldeen ondorioz.",
     "tooltipTemperatura": "<b>Tenperatura lurretik 2 m-ra (°C)</b><br><br>Aireratzearen altitudean estimatutako tenperatura duen errenkada bat erakusten du.",
