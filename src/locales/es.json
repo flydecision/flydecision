@@ -862,10 +862,10 @@
     "limitesEfectivos": "Viento máx.: {{vel}} km/h<br>Racha máx.: {{racha}} km/h",
     "orientacionIdeal": "Orientación ideal: {{ori}}",
     "tooltipOrientacionIdeal": "Orientación ideal: toca o arrastra sobre un sector gris para marcarlo en verde. Vuelve a tocarlo para quitarlo. Las horas con viento de ese sector puntúan más que las del resto de orientaciones del despegue.",
-    "tooltipOrientacionUnica": "Este despegue solo tiene una orientación posible.",
+    "tooltipOrientacionUnica": "Este despegue solo tiene una orientación posible, por lo que no es posible personalizarla.",
     "personalizacion": "Personalización:",
-    "tooltipPersonalizacion": "Límites: ajusta los límites generales de viento y racha para este despegue. Menor al 100% es más restrictivo (queremos menos viento en ese despegue) y mayor al 100% más tolerante (aceptamos más viento). Rosa: toca una orientación gris para marcarla como ideal (verde); vuelve a tocarla para quitarla. El borde rojo indica que este despegue tiene algo personalizado; ↺ lo deja como estaba.",
-    "resetearPersonalizacion": "Quitar la personalización de este despegue (límites al 100% y sin orientación ideal)"
+    "tooltipPersonalizacion": "Límites: ajusta los límites generales de viento y racha para este despegue. Menor al 100% es más restrictivo (queremos menos viento en ese despegue) y mayor al 100% más tolerante (aceptamos más viento). Rosa de orientaciones: toca una orientación gris para marcarla como ideal (verde); vuelve a tocarla para quitarla. El borde rojo de Personalizaciones indica que este despegue tiene algo personalizado; ↺ elimina las personalizaciones.",
+    "resetearPersonalizacion": "Elimina la personalización de este despegue (límites al 100% y sin orientación ideal)"
   },
 
   "html": {

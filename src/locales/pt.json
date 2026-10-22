@@ -681,7 +681,7 @@
       "btnAjustes": "Definições",
       "descAjustes": "Idioma, limites para a pontuação, personalização de dados mostrados..."
     },
-    "gestionarLimitesDespegues": "Editar descolagens com limites personalizados",
+    "gestionarLimitesDespegues": "Editar descolagens com limites ou orientação personalizados",
     "admitirVientoFlojoCruzado": "Admitir orientação não apta com vento fraco",
     "aperturaEnlaces": {
       "pregunta": "Deseja abrir na web ou na app?",
@@ -693,10 +693,10 @@
       "reseteoHecho": "Feito. Da próxima vez que abrir um link com app instalada ser-lhe-á perguntado novamente se deseja abri-lo na web ou na app."
     },
     "sinDespeguesConLimites": "Já não restam descolagens com limites personalizados.",
-    "confirmarResetTodosLimites": "Repor os limites personalizados de todas as descolagens?.<br><br>Esta ação configurará todas as descolagens com o limite original de 100%, ou seja, com os limites gerais configurados em <i>Definições > Limites de vento e rajada.",
-    "resetearTodosLimites": "Repor todos os limites",
+    "confirmarResetTodosLimites": "Repor os limites e orientações ideais personalizados de todas as descolagens?<br><br>Esta ação configurará todas as descolagens com o limite original de 100%, ou seja, com os limites gerais configurados em <i>Definições > Limites de vento e rajada</i>, e sem orientação ideal.",
+    "resetearTodosLimites": "Repor todos os limites e orientações ideais",
     "finalizarEdicionLimites": "Terminar edição de limites",
-    "resetearLimite": "Voltar aos 100% (limites gerais)",
+    "resetearLimite": "Voltar aos 100% (limites gerais) e remover a orientação ideal",
     "verSoloNoFavoritos": "Ver apenas os não favoritos"
   },
 
@@ -855,7 +855,13 @@
     "tooltipAjusteLimites": "Ajusta os limites gerais de vento e rajada para esta descolagem. Menor que 100% é mais restritivo (queremos menos vento nessa descolagem) e maior que 100% é mais tolerante (aceitamos mais vento).",
     "ajusteLimites": "Limites:",
     "titleAjusteLimites": "Ajuste personalizado de limites de vento",
-    "limitesEfectivos": "Vento máx.: {{vel}} km/h<br>Rajada máx.: {{racha}} km/h"
+    "limitesEfectivos": "Vento máx.: {{vel}} km/h<br>Rajada máx.: {{racha}} km/h",
+    "orientacionIdeal": "Orientação ideal: {{ori}}",
+    "tooltipOrientacionIdeal": "Orientação ideal: toque ou arraste sobre um setor cinzento para o marcar a verde. Toque novamente para o remover. As horas com vento desse setor pontuam mais do que as do resto das orientações da descolagem.",
+    "tooltipOrientacionUnica": "Esta descolagem tem apenas uma orientação possível, pelo que não é possível personalizá-la.",
+    "personalizacion": "Personalização:",
+    "tooltipPersonalizacion": "Limites: ajuste os limites gerais de vento e rajada para esta descolagem. Inferior a 100% é mais restritivo (queremos menos vento nessa descolagem) e superior a 100% mais tolerante (aceitamos mais vento). Rosa de orientações: toque numa orientação cinzenta para a marcar como ideal (verde); toque novamente para a remover. A borda vermelha de Personalizações indica que esta descolagem tem algo personalizado; ↺ elimina as personalizações.",
+    "resetearPersonalizacion": "Elimina a personalização desta descolagem (limites a 100% e sem orientação ideal)"
   },
 
   "html": {
@@ -935,7 +941,7 @@
     "filtroDistanciaCompleto": "<b>Filtro de distância de descolagens:</b><br><br>Mostra apenas as descolagens dentro do raio de distância que selecionar.<br><br>Utilize o botão <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 50%; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> para definir a posição de origem. Pode utilizar o mapa ou a localização atual do seu dispositivo.<span class='texto-oculto-en-edicion'><br><br>Utilize o botão <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> para incluir descolagens não favoritas no filtro, o que significa <b>incluir temporariamente todas as descolagens</b> disponíveis na base de dados.<br><br>Quando ativado, é aplicado um filtro inicial de 100 km para evitar sobrecarregar a tabela. Pode ajustá-lo consoante as suas necessidades e o desempenho do seu dispositivo.</span>",
     "tooltipRachaMaxima": "<b>Rajada máxima:</b><br><br>O sistema automatizado de avaliação de condições terá em conta estes valores.<br><br>A cor dos dados na tabela indica visualmente a análise das condições com base no valor que definir aqui.<br><br>🟩 Verde: rajada máxima segura, longe do limite.<br>🟧 Laranja: rajada máxima que se aproxima do seu limite de rajada máxima.<br>🟥 Vermelho: rajada que excede o seu limite de rajada máxima.<br><br><b>Definição técnica padrão da OMM (Organização Meteorológica Mundial) da rajada máxima a 10m</b>:<br><br>É o pico máximo de velocidade instantânea (com uma duração de 3 segundos) registado em qualquer momento dentro do período da hora anterior. Representa as flutuações curtas e intensas sobrepostas ao vento médio, associadas à turbulência mecânica ou térmica (convecção).",
     "tooltipResetearEnlaces": "<b>Repor comportamento dos links</b><br><br>Na app, ao abrir pela primeira vez um link que possa ter uma app nativa instalada, é-lhe perguntado se deseja abri-lo na web (dentro do Fly Decision) ou na app. Se marcou <i>Lembrar a minha escolha</i>, já não será perguntado novamente.<br><br>Este botão apaga essas escolhas para que seja perguntado novamente.",
-    "tooltipEdicionLimites": "<b>Editar descolagens com limites personalizados</b><br><br>Mostra na tabela apenas as descolagens às quais ajustou os limites de vento e rajada (diferente de 100%).<br><br>Prima ↺ numa descolagem para a repor a 100% (os limites gerais acima). O ↺ do cabeçalho repõe todos. Para alterar a percentagem, utilize o botão ⓘ de cada descolagem. Pode fazê-lo aqui, na Tabela ou no Mapa.<br><br>O botão está desativado se não tiver nenhuma descolagem com limites personalizados.",
+    "tooltipEdicionLimites": "<b>Editar descolagens com limites ou orientação personalizados</b><br><br>Mostra na tabela apenas as descolagens às quais ajustou os limites de vento e rajada (diferente de 100%) ou marcou uma orientação ideal.<br><br>Prima ↺ numa descolagem para a repor: volta aos 100% (os limites gerais acima) e sem orientação ideal. O ↺ do cabeçalho repõe todos. Para alterar a percentagem ou a orientação ideal, utilize o botão ⓘ de cada descolagem. Pode fazê-lo aqui, na Tabela ou no Mapa.<br><br>O botão está desativado se não tiver nenhuma descolagem personalizada.",
     "tooltipVientoFlojoCruzado": "<b>Admitir orientação não apta com vento fraco</b><br><br>Se ativar, uma hora cujo prognóstico de orientação do vento não seja adequado para as orientações possíveis de uma descolagem não é penalizada por este motivo quando o vento médio é ≤ 3 km/h e a rajada ≤ 8 km/h.<br><br>Nesse caso, a célula de direção, em vez de vermelha, é pintada a laranja e a pontuação dessa hora é calculada como se a direção fosse laranja (cruzada mas aceitável).<br><br>Útil, por exemplo, em descolagens orientadas a sul com um vento meteo muito fraco de norte, onde provavelmente acabará por ganhar a brisa, ou quando a previsão pode falhar na direção de um vento tão fraco, ou porque a descolagem é muito boa e permite descolar com ligeiro vento de cauda.<br><br>Está desativado por predefinição.",
     "tooltipProbPrecipitacion": "<b>Probabilidade de precipitação (%)</b><br><br>Probabilidade (%) de a precipitação exceder os 0,1 mm (litros/m²).<br><br>Dados originais do modelo ECMWF.",
     "tooltipBaseNube": "<b>Base de nuvem MSL (km)</b><br><br>Mostra uma linha com a altitude estimada da base da nuvem acima do nível do mar (MSL), calculada a partir da temperatura e do ponto de orvalho a 2 m originais do modelo ECMWF.<br><br>É uma aproximação válida para nuvens convectivas, mas não deteta nuvens orográficas, nevoeiros, estratos ou outros tipos de nebulosidade não originados por convecção.<br><br>Esta aproximação de 125 m/°C pode diferir em zonas de montanha em várias centenas de metros em relação à base real devido a efeitos de mistura, subsidência, humidade não homogénea e diferenças entre a temperatura real do ar e a do modelo.",
