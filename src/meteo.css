@@ -5032,3 +5032,5 @@ tr.ecmwf-oculto-temp {
     display: inline-block; margin: 4px 0 0 6px; padding: 1px 6px; border-radius: 4px;
     background: #f39c12; color: #fff; font-weight: bold;
 }
+/* Orientación ideal: si también se ve la línea de límites, la de orientación va pegada debajo como una línea más */
+.linea-limites-efectivos:not([style*="none"]) + .linea-orientacion-ideal { margin-top: -10px; }

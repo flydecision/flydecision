@@ -172,7 +172,7 @@ Note: The essential cloud base data ☁↓ (CBH = Cloud Base Height) is not avai
 - Data caching
 
 ### Privacy & Anonymous Statistics
-No accounts, no ads, no cookies, no tracking. To debug errors and improve usability, the app anonymously counts which menu options and takeoffs are used and which technical errors occur (e.g. a failed forecast download). Each event is stored as a single line with date, time, option or error, app version and web/app. **No IP address, cookies or user/device identifiers are stored**, so nobody can be identified or followed across visits. See `registrarUso()` and `registrarError()` in [`src/meteo.js`](src/meteo.js). Full details in the [Privacy Policy](https://flydecision.com/privacidad/).
+No accounts, no ads, no cookies, no tracking. To debug errors and improve usability, the app anonymously counts which menu options and takeoffs are used and which technical errors occur (e.g. a failed forecast download). Each event is stored as a single line with date, time, option or error, app version and web/app. **No IP address, cookies or user/device identifiers are stored**, so nobody can be identified or followed across visits. See `registrarUso()` and `registrarError()` in [`src/meteo.js`](src/meteo.js). If you mark an ideal orientation for a takeoff, the takeoff and the chosen sector (N, NNE, NE...) are sent anonymously to improve the takeoff database; the server only keeps a vote count per sector and takeoff, never a line per person (see `enviarOrientacionIdeal()`). Full details in the [Privacy Policy](https://flydecision.com/privacidad/).
 
 ## Contributing
 
