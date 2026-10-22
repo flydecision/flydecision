@@ -9918,6 +9918,7 @@ window.pintarEstadoOrientacionIdeal = function (idDespegue, reiniciar = false) {
         linea.innerHTML = textoOrientacionIdeal(idDespegue);
         linea.style.display = (s !== null || (yaVisible && !reiniciar)) ? 'block' : 'none';
     });
+    pintarBordePersonalizacionDespegue(idDespegue);
 };
 
 // Fija (sector 0-15) o quita (null) la orientación ideal y recalcula nota y colores del despegue
@@ -10164,35 +10165,37 @@ function generarHtmlStepperLimites(idDespegue, gradosOrientaciones) {
     const htmlRosa = generarHtmlRosaOrientacionIdeal(idNum, grados);
     const hayIdeal = obtenerSectorIdealDespegue(idNum) !== null;
     const pct = obtenerPorcentajeAjusteDespegue(idNum);
+    const personalizado = pct !== 100 || hayIdeal;
     const fondoStepper = fondoStepperLimites(pct);
-    const fondoBloque = fondoBloqueLimites(pct);
     const textoLim = pct !== 100 ? textoLimitesEfectivos(idNum) : '';
     const colorValor = pct < 100 ? '#ea580c' : (pct > 100 ? '#0284c7' : '#333');
-    const labelTexto = typeof t === 'function' ? t('popupDespegue.ajusteLimites', { defaultValue: 'Límites:' }) : 'Límites:';
-    const tooltipTitle = typeof t === 'function' 
-        ? t('popupDespegue.tooltipAjusteLimites', { defaultValue: 'Ajusta los límites generales de viento y racha para este despegue. Menor al 100% es más restrictivo (queremos menos viento en ese despegue) y mayor al 100% más tolerante (aceptamos más viento).' })
-        : 'Ajusta los límites de viento y racha para este despegue. Menor al 100% es más restrictivo y mayor al 100% más tolerante.';
+    const tituloTexto = t('popupDespegue.personalizacion', { defaultValue: 'Personalización:' });
+    const tooltipTitle = t('popupDespegue.tooltipPersonalizacion', { defaultValue: 'Límites: ajusta los límites generales de viento y racha para este despegue. Menor al 100% es más restrictivo (queremos menos viento en ese despegue) y mayor al 100% más tolerante (aceptamos más viento). Rosa: toca una orientación gris para marcarla como ideal (verde); vuelve a tocarla para quitarla. El borde rojo indica que este despegue tiene algo personalizado; ↺ lo deja como estaba.' }).replace(/"/g, "'");
+    const tituloReset = t('popupDespegue.resetearPersonalizacion', { defaultValue: 'Quitar la personalización de este despegue (límites al 100% y sin orientación ideal)' }).replace(/"/g, "'");
 
     return `
-        <div class="bloque-ajuste-limites" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 13px 0 8px 0; padding: 3px 7px; background: ${fondoBloque}; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;" title="${tooltipTitle}">
-            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
-                <span style="font-weight: bold; color: #1e293b; white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                    <span style="display: flex; align-items: center; gap: 3px;">
-                        <img src="/icons/icono_viento_60.webp" width="20" height="20" style="display: block;">
-                        <img src="/icons/icono_racha_60.webp" width="20" height="20" style="display: block;">
-                    </span>
-                    <span>${labelTexto}</span>
-                </span>
+        <div class="bloque-ajuste-limites ${personalizado ? 'bloque-personalizado' : ''}" data-id-desp="${idNum}" style="margin: 13px 0 8px 0; padding: 3px 7px 5px 7px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;">
+            <div style="display: flex; align-items: center; justify-content: space-between; min-height: 26px;">
+                <span style="font-weight: bold; color: #1e293b; white-space: nowrap;" title="${tooltipTitle}">${tituloTexto}</span>
+                <button type="button" class="btn-reset-personalizacion btn-reset-personalizacion-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} resetearPersonalizacionDespegue(${idNum});" title="${tituloReset}"
+                    style="display: ${personalizado ? 'inline-flex' : 'none'}; align-items: center; border: none; background: none; padding: 0 4px; font-size: 22px; line-height: 1; color: #555; cursor: pointer;">↺</button>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
                 <div class="stepper-dias-seguimiento ${pct !== 100 ? 'limites-tenido' : ''}" style="margin: 0; background: ${fondoStepper};">
                     <button type="button" class="stepper-btn stepper-limites-menos-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, -10);" ${pct <= 50 ? 'disabled' : ''} style="cursor: pointer;">−</button>
-                    <span class="stepper-valor valor-ajuste-limites-${idNum}" style="min-width: 44px; text-align: center; font-weight: bold; border-left: 1px solid #ccc; border-right: 1px solid #ccc; height: 28px; line-height: 28px; color: ${colorValor}; padding: 0 4px; display: inline-block;">${pct}%</span>
+                    <span style="display: inline-flex; align-items: center; gap: 3px; border-left: 1px solid #ccc; border-right: 1px solid #ccc; height: 28px; padding: 0 5px;">
+                        <span class="stepper-valor valor-ajuste-limites-${idNum}" style="min-width: 44px; text-align: right; font-weight: bold; line-height: 28px; color: ${colorValor};">${pct}%</span>
+                        <img src="/icons/icono_viento_60.webp" width="20" height="20" style="display: block;" alt="">
+                    </span>
                     <button type="button" class="stepper-btn stepper-limites-mas-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, 10);" ${pct >= 200 ? 'disabled' : ''} style="cursor: pointer;">+</button>
                 </div>
+                ${htmlRosa}
             </div>
-            ${htmlRosa}
+            <div class="lineas-personalizacion" style="display: ${personalizado ? 'block' : 'none'}; margin-top: 6px; padding-top: 4px; border-top: 1px solid #e2e8f0;">
+                <div class="linea-limites-efectivos" data-id-desp="${idNum}" style="display: ${textoLim ? 'block' : 'none'}; line-height: 20px; color: #475569; text-align: left; white-space: nowrap;">${textoLim}</div>
+                <div class="linea-orientacion-ideal" data-id-desp="${idNum}" style="display: ${hayIdeal ? 'block' : 'none'}; line-height: 20px; color: #475569; text-align: left; white-space: nowrap;">${hayIdeal ? textoOrientacionIdeal(idNum) : ''}</div>
+            </div>
         </div>
-        <div class="linea-limites-efectivos" data-id-desp="${idNum}" style="display: ${textoLim ? 'block' : 'none'}; margin-bottom: 10px; line-height: 20px; color: #475569; text-align: left; white-space: nowrap;">${textoLim}</div>
-        <div class="linea-orientacion-ideal" data-id-desp="${idNum}" style="display: ${hayIdeal ? 'block' : 'none'}; margin-bottom: 10px; line-height: 20px; color: #475569; text-align: left; white-space: nowrap;">${hayIdeal ? textoOrientacionIdeal(idNum) : ''}</div>
     `;
 }
 
@@ -10220,10 +10223,26 @@ function fondoStepperLimites(pct) {
     return pct < 100 ? '#ffedd5' : (pct > 100 ? '#e0f2fe' : '#fff');
 }
 
-// Fondo del bloque completo (más suave que el del stepper). A 100% se queda como estaba.
-function fondoBloqueLimites(pct) {
-    return pct < 100 ? '#ffedd5' : (pct > 100 ? '#e0f2fe' : '#f8fafc');
+// Borde rojo (como los filtros aplicados) si el despegue tiene algo personalizado, ↺ visible y, si hay
+// alguna línea de datos visible, su recuadro. Se llama tras cambiar límites u orientación ideal.
+function pintarBordePersonalizacionDespegue(idDespegue) {
+    const personalizado = obtenerPorcentajeAjusteDespegue(idDespegue) !== 100 || obtenerSectorIdealDespegue(idDespegue) !== null;
+    document.querySelectorAll(`.bloque-ajuste-limites[data-id-desp="${idDespegue}"]`).forEach(bloque => {
+        bloque.classList.toggle('bloque-personalizado', personalizado);
+        const btn = bloque.querySelector('.btn-reset-personalizacion');
+        if (btn) btn.style.display = personalizado ? 'inline-flex' : 'none';
+        const lineas = bloque.querySelector('.lineas-personalizacion');
+        if (lineas) lineas.style.display = [...lineas.children].some(l => l.style.display !== 'none') ? 'block' : 'none';
+    });
 }
+
+// ↺ del popup: límites al 100% y sin orientación ideal para ese despegue
+window.resetearPersonalizacionDespegue = function (idDespegue) {
+    idDespegue = Number(idDespegue);
+    const pct = obtenerPorcentajeAjusteDespegue(idDespegue);
+    if (pct !== 100) cambiarAjusteLimitesDespegue(idDespegue, 100 - pct);
+    if (obtenerSectorIdealDespegue(idDespegue) !== null) fijarOrientacionIdealDespegue(idDespegue, null);
+};
 
 // Pinta fondos y línea de límites en TODOS los popups abiertos de ese despegue.
 // La línea, una vez visible, se mantiene aunque se vuelva a 100% (evita que el popup se encoja y el
@@ -10239,16 +10258,15 @@ window.pintarEstadoLimitesDespegue = function (idDespegue, pct, reiniciar = fals
         }
 
         const bloque = el.closest('.bloque-ajuste-limites');
-        if (bloque) bloque.style.background = fondoBloqueLimites(pct);
-
-        const linea = bloque && bloque.nextElementSibling;
-        if (linea && linea.classList.contains('linea-limites-efectivos')) {
+        const linea = bloque && bloque.querySelector('.linea-limites-efectivos');
+        if (linea) {
             const yaVisible = linea.style.display !== 'none';
             const mostrar = pct !== 100 || (yaVisible && !reiniciar);
             linea.innerHTML = texto;
             linea.style.display = mostrar ? 'block' : 'none';
         }
     });
+    pintarBordePersonalizacionDespegue(idDespegue);
 };
 
 // ---------------------------------------------------------------
