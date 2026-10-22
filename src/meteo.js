@@ -9828,13 +9828,24 @@ function obtenerSectorIdealDespegue(idDespegue) {
     return s === undefined ? null : s;
 }
 
-// Sectores (0-15) de las orientaciones posibles a partir de Orientaciones_Grados ("0, 45, 315")
+// Sectores (0-15) de las orientaciones posibles a partir de Orientaciones_Grados ("0, 45, 315").
+// Como la ladera continua de la puntuación (UMBRAL_CONTIGUAS = 46°), dos orientaciones seguidas incluyen
+// las intermedias: N y NE dan también NNE.
 function sectoresDesdeGrados(gradosStr) {
     const sectores = new Set();
     String(gradosStr || '').split(',').forEach(g => {
         const n = parseFloat(g);
         if (Number.isFinite(n)) sectores.add(((Math.round(n / 22.5) % 16) + 16) % 16);
     });
+    const base = [...sectores].sort((a, b) => a - b);
+    if (base.length > 1) {
+        base.forEach((a, j) => {
+            const salto = (base[(j + 1) % base.length] - a + 16) % 16;
+            if (salto > 1 && salto * 22.5 <= 46) {
+                for (let k = 1; k < salto; k++) sectores.add((a + k) % 16);
+            }
+        });
+    }
     return [...sectores];
 }
 
