@@ -7418,7 +7418,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 ${botonToggleEcmwfHTML}
                 ${botonMinutely15HTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
-                ${badgesPersonalizadosHTML ? `<span class="badge-limites-wrap" style="display: block; line-height: 1; margin: 4px auto 6px auto; text-align: center;">${badgesPersonalizadosHTML}</span>` : ''}
+                ${badgesPersonalizadosHTML ? `<span class="badge-limites-wrap" style="display: flex; justify-content: center; align-items: center; gap: 4px; line-height: 1; margin: 4px auto 6px auto; text-align: center;">${badgesPersonalizadosHTML}</span>` : ''}
                 ${htmlIconosCentrales}
                 <span class="linea-divisora-edit" style="position: absolute; bottom: 34px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
@@ -10184,7 +10184,7 @@ function generarHtmlStepperLimites(idDespegue, gradosOrientaciones) {
                 <div class="stepper-dias-seguimiento ${pct !== 100 ? 'limites-tenido' : ''}" style="margin: 0; background: ${fondoStepper};">
                     <button type="button" class="stepper-btn stepper-limites-menos-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, -10);" ${pct <= 50 ? 'disabled' : ''} style="cursor: pointer;">−</button>
                     <span style="display: inline-flex; align-items: center; gap: 3px; border-left: 1px solid #ccc; border-right: 1px solid #ccc; height: 28px; padding: 0 5px;">
-                        <span class="stepper-valor valor-ajuste-limites-${idNum}" style="min-width: 44px; text-align: right; font-weight: bold; line-height: 28px; color: ${colorValor};">${pct}%</span>
+                        <span class="stepper-valor valor-ajuste-limites-${idNum}" style="min-width: 44px; text-align: right; font-weight: bold; line-height: 28px; border: none; color: ${colorValor};">${pct}%</span>
                         <img src="/icons/icono_viento_60.webp" width="20" height="20" style="display: block;" alt="">
                     </span>
                     <button type="button" class="stepper-btn stepper-limites-mas-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, 10);" ${pct >= 200 ? 'disabled' : ''} style="cursor: pointer;">+</button>
