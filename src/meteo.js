@@ -4756,6 +4756,11 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         ? despegueObj.Orientaciones_Grados.split(",").map(n => parseFloat(n.trim()))
         : [];
 
+    // 🧭 Orientación ideal personalizada (sector 0-15), solo si es una de las orientaciones posibles del despegue
+    const sectorIdeal = (typeof obtenerSectorIdealDespegue === 'function') ? obtenerSectorIdealDespegue(despegueObj.ID) : null;
+    const gradosIdeal = (sectorIdeal !== null && sectoresDesdeGrados(despegueObj.Orientaciones_Grados).includes(sectorIdeal))
+        ? sectorIdeal * 22.5 : null;
+
     indicesEvaluacion.forEach(i => {
         let vRaw = (velArray && velArray[i] !== undefined) ? velArray[i] : null;
         let rRaw = (rachaArray && rachaArray[i] !== undefined) ? rachaArray[i] : null;
@@ -4861,6 +4866,17 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
         else if (minimoAngulo > 22)  { ptsDir = 35; ratioCorreccionPorDireccion = 0.6; }
         else if (minimoAngulo > 10)  { ptsDir = 45; ratioCorreccionPorDireccion = 0.9; }
         else                         { ptsDir = 50; ratioCorreccionPorDireccion = 1; }
+
+        // 🧭 Orientación ideal: solo en horas verdes (≤ 22°), reparte por sectores respecto al ideal.
+        // Sector ideal (±11,25°) 50 y 1 · sectores vecinos (≤ 33,75°) 45 y 0,9 · resto del verde 40 y 0,8. Nunca sube una hora.
+        if (gradosIdeal !== null && minimoAngulo <= 22) {
+            const dIdeal = diferenciaAngular(dirCorregida, gradosIdeal);
+            let ptsIdeal = 40, ratioIdeal = 0.8;
+            if (dIdeal <= 11.25)      { ptsIdeal = 50; ratioIdeal = 1; }
+            else if (dIdeal <= 33.75) { ptsIdeal = 45; ratioIdeal = 0.9; }
+            ptsDir = Math.min(ptsDir, ptsIdeal);
+            ratioCorreccionPorDireccion = Math.min(ratioCorreccionPorDireccion, ratioIdeal);
+        }
 
         let ptsRacha = 0;
         if (!vetoActivado) {
@@ -6372,7 +6388,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 		if (modoEdicionLimites) {
 			const quedanLimites = obtenerIdsDespeguesConLimites().length > 0;
 			thFavorito.innerHTML = quedanLimites ? '<span style="font-size: 24px; line-height: 1; color: #555;">↺</span>' : '';
-			thFavorito.title = quedanLimites ? t('ajustes.resetearTodosLimites', { defaultValue: 'Resetear todos los límites' }) : '';
+			thFavorito.title = quedanLimites ? t('ajustes.resetearTodosLimites', { defaultValue: 'Resetear todos los límites y orientaciones ideales' }) : '';
 			thFavorito.style.cursor = quedanLimites ? 'pointer' : 'default';
 			thFavorito.onclick = quedanLimites ? function() { resetearTodosLosLimites(); } : null;
 		}
@@ -7064,8 +7080,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                                 // Modo edición de límites: ↺ resetea al 100%; ya reseteado, celda vacía y sin acción
                 if (modoEdicionLimites) {
-                    if (obtenerPorcentajeAjusteDespegue(idDespegue) !== 100) {
-                        tdFavorito.title = t('ajustes.resetearLimite', { defaultValue: 'Volver al 100% (límites generales)' });
+                    if (obtenerPorcentajeAjusteDespegue(idDespegue) !== 100 || obtenerSectorIdealDespegue(idDespegue) !== null) {
+                        tdFavorito.title = t('ajustes.resetearLimite', { defaultValue: 'Volver al 100% (límites generales) y quitar la orientación ideal' });
                         tdFavorito.innerHTML = `<span style="font-size: 24px; line-height: 1; color: #555;">↺</span>`;
                         tdFavorito.onclick = function () {
                             resetearLimiteDespegueEnLista(idDespegue);
@@ -7170,7 +7186,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 <div style="line-height: 1.4; max-width: 232px;">
                     <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${d.Despegue}</b></span>   
 
-                    ${generarHtmlStepperLimites(d.ID)}
+                    ${generarHtmlStepperLimites(d.ID, d.Orientaciones_Grados || '')}
                     
                     ⛅ <a href='https://www.windy.com/${latitud}/${longitud}/wind?${latitud},${longitud},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
 
@@ -7256,6 +7272,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const badgeAjusteHTML = pctAjuste !== 100 ? `
                 <span style="font-weight: bold; color: ${pctAjuste < 100 ? '#ea580c' : '#0284c7'}; background: ${pctAjuste < 100 ? '#ffedd5' : '#e0f2fe'}; border: 1px solid ${pctAjuste < 100 ? '#fed7aa' : '#bae6fd'}; border-radius: 4px; padding: 1px 5px; display: inline-block;" title="${t('popupDespegue.titleAjusteLimites', { defaultValue: 'Ajuste personalizado de límites de viento' })}: ${pctAjuste}%">${pctAjuste}%</span>
             ` : '';
+            const badgeOrientacionHTML = generarHtmlBadgeOrientacionIdeal(d.ID, d.Orientaciones_Grados);
+            const badgesPersonalizadosHTML = [badgeAjusteHTML.trim(), badgeOrientacionHTML].filter(Boolean).join(' ');
 
             const botonFavoritoHTML = modoEdicionFavoritos ? "" : `
                 <button class="btn-info btn-favorito-tabla"
@@ -7400,7 +7418,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 ${botonToggleEcmwfHTML}
                 ${botonMinutely15HTML}
                 <div class="texto-multilinea-2" title="${d.Despegue}"><strong>${d.Despegue}</strong></div>
-                ${badgeAjusteHTML ? `<span class="badge-limites-wrap" style="display: block; line-height: 1; margin: 4px auto 6px auto; text-align: center;">${badgeAjusteHTML}</span>` : ''}
+                ${badgesPersonalizadosHTML ? `<span class="badge-limites-wrap" style="display: flex; justify-content: center; align-items: center; gap: 4px; line-height: 1; margin: 4px auto 6px auto; text-align: center;">${badgesPersonalizadosHTML}</span>` : ''}
                 ${htmlIconosCentrales}
                 <span class="linea-divisora-edit" style="position: absolute; bottom: 34px; left: 8px; right: 8px; border-top: 1px solid #d1d1d1; display: none;"></span>
             `;
@@ -7414,7 +7432,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             } else {
                 if (modoCompacto) {
                     tdDespegue.classList.add('modo-compacto');
-                    if (badgeAjusteHTML) tdDespegue.classList.add('con-badge-limites');
+                    if (badgesPersonalizadosHTML) tdDespegue.classList.add('con-badge-limites');
                     tdDespegue.style.paddingBottom = (26 + paddingExtraBoton) + 'px';
                 } else if (paddingExtraBoton > 0) {
                     tdDespegue.style.paddingBottom = (6 + paddingExtraBoton) + 'px';
@@ -9771,6 +9789,233 @@ function obtenerFactorAjusteDespegue(idDespegue) {
     return obtenerPorcentajeAjusteDespegue(idDespegue) / 100;
 }
 
+// ---------------------------------------------------------------
+// 🧭 ORIENTACIÓN IDEAL POR DESPEGUE (personal, uno de los 16 sectores de 22,5°)
+// Se elige en la rosa del popup, solo entre las orientaciones posibles del despegue (sectores grises).
+// Guardado en localStorage METEO_ORIENTACION_IDEAL_DESPEGUES = { id: sector 0-15 } (0 = N, 4 = E, 8 = S, 12 = O).
+// ---------------------------------------------------------------
+
+const SECTORES_ORIENTACION = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSO', 'SO', 'OSO', 'O', 'ONO', 'NO', 'NNO'];
+const COLOR_ROSA_POSIBLE = '#5b5b5b'; // mismo gris que las rosas de la tabla
+const COLOR_ROSA_IDEAL = '#6befaf';   // mismo verde que la puntuación máxima
+
+let _orientacionIdealCache = null;
+
+function obtenerOrientacionesIdealesDespegues() {
+    if (_orientacionIdealCache) return _orientacionIdealCache;
+    const limpio = {};
+    try {
+        const parsed = JSON.parse(localStorage.getItem("METEO_ORIENTACION_IDEAL_DESPEGUES") || "{}");
+        if (parsed && typeof parsed === 'object') {
+            for (const k in parsed) {
+                const n = Number(parsed[k]);
+                if (parsed[k] !== null && parsed[k] !== '' && Number.isInteger(n) && n >= 0 && n < 16) limpio[k] = n;
+            }
+        }
+    } catch (e) {}
+    _orientacionIdealCache = limpio;
+    return limpio;
+}
+
+function guardarOrientacionesIdealesDespegues() {
+    localStorage.setItem("METEO_ORIENTACION_IDEAL_DESPEGUES", JSON.stringify(obtenerOrientacionesIdealesDespegues()));
+}
+
+// Sector (0-15) de la orientación ideal del despegue, o null si no tiene
+function obtenerSectorIdealDespegue(idDespegue) {
+    if (!idDespegue) return null;
+    const s = obtenerOrientacionesIdealesDespegues()[Number(idDespegue)];
+    return s === undefined ? null : s;
+}
+
+// Sectores (0-15) de las orientaciones posibles a partir de Orientaciones_Grados ("0, 45, 315").
+// Como la ladera continua de la puntuación (UMBRAL_CONTIGUAS = 46°), dos orientaciones seguidas incluyen
+// las intermedias: N y NE dan también NNE.
+function sectoresDesdeGrados(gradosStr) {
+    const sectores = new Set();
+    String(gradosStr || '').split(',').forEach(g => {
+        const n = parseFloat(g);
+        if (Number.isFinite(n)) sectores.add(((Math.round(n / 22.5) % 16) + 16) % 16);
+    });
+    const base = [...sectores].sort((a, b) => a - b);
+    if (base.length > 1) {
+        base.forEach((a, j) => {
+            const salto = (base[(j + 1) % base.length] - a + 16) % 16;
+            if (salto > 1 && salto * 22.5 <= 46) {
+                for (let k = 1; k < salto; k++) sectores.add((a + k) % 16);
+            }
+        });
+    }
+    return [...sectores];
+}
+
+// Orientaciones_Grados de un despegue por su ID (tabla o, si aún no está cargada, marcadores del mapa)
+function obtenerGradosOrientacionesDespegue(idDespegue) {
+    const id = Number(idDespegue);
+    const d = (window.bdGlobalDespegues || []).find(x => Number(x.ID) === id);
+    if (d) return d.Orientaciones_Grados || '';
+    const m = (typeof markersDespegues !== 'undefined') ? markersDespegues.find(x => x && x.metadata && Number(x.metadata.id) === id) : null;
+    return m ? (m.metadata.OrientacionesGrados || '') : '';
+}
+
+// SVG de la rosa: 16 quesitos de 22,5°; posibles en gris, el ideal en verde, el resto en blanco
+function svgRosaOrientacionIdeal(sectoresPosibles, sectorIdeal, size) {
+    const r = 9;
+    const punto = a => `${(r * Math.sin(a * Math.PI / 180)).toFixed(3)} ${(-r * Math.cos(a * Math.PI / 180)).toFixed(3)}`;
+    let svg = `<svg width="${size}" height="${size}" viewBox="-10 -10 20 20" style="display: block;">`;
+    svg += `<circle cx="0" cy="0" r="${r}" fill="white" />`;
+    for (let i = 0; i < 16; i++) {
+        const fill = (i === sectorIdeal) ? COLOR_ROSA_IDEAL : (sectoresPosibles.includes(i) ? COLOR_ROSA_POSIBLE : 'none');
+        if (fill === 'none') continue;
+        svg += `<path d="M0 0 L${punto(i * 22.5 - 11.25)} A${r} ${r} 0 0 1 ${punto(i * 22.5 + 11.25)} Z" fill="${fill}" stroke="white" stroke-width="0.3" />`;
+    }
+    svg += `<circle cx="0" cy="0" r="${r}" fill="none" stroke="#666" stroke-width="1" />`;
+    svg += `</svg>`;
+    return svg;
+}
+
+// Columna derecha del bloque de límites: la rosa (tocable solo si hay 2 o más orientaciones posibles)
+function generarHtmlRosaOrientacionIdeal(idDespegue, gradosStr) {
+    const grados = String(gradosStr || '').replace(/[^0-9.,\s-]/g, '');
+    const sectores = sectoresDesdeGrados(grados);
+    if (sectores.length === 0) return '';
+    const interactiva = sectores.length > 1;
+    const title = interactiva
+        ? t('popupDespegue.tooltipOrientacionIdeal', { defaultValue: 'Orientación ideal: toca o arrastra sobre un sector gris para marcarlo en verde. Vuelve a tocarlo para quitarlo. Las horas con viento de ese sector puntúan más que las del resto de orientaciones del despegue.' })
+        : t('popupDespegue.tooltipOrientacionUnica', { defaultValue: 'Este despegue solo tiene una orientación posible.' });
+    return `
+        <div class="rosa-orientacion-ideal rosa-ideal-${idDespegue}" data-id="${idDespegue}" data-grados="${grados}" title="${title.replace(/"/g, "'")}"
+            style="flex: 0 0 auto; width: 44px; height: 44px; ${interactiva ? 'cursor: pointer; touch-action: none;' : ''}"
+            ${interactiva ? 'onpointerdown="rosaIdealPointerDown(event, this)" onclick="event.stopPropagation();"' : ''}>
+            ${svgRosaOrientacionIdeal(sectores, obtenerSectorIdealDespegue(idDespegue), 44)}
+        </div>
+    `;
+}
+
+// Texto de la línea bajo el bloque ("Orientación ideal: NE")
+function textoOrientacionIdeal(idDespegue) {
+    const s = obtenerSectorIdealDespegue(idDespegue);
+    const ori = s !== null ? t(`orientaciones.${SECTORES_ORIENTACION[s]}`, { defaultValue: SECTORES_ORIENTACION[s] }) : '—';
+    return t('popupDespegue.orientacionIdeal', { defaultValue: 'Orientación ideal: {{ori}}', ori });
+}
+
+// Badge pequeño de la tabla (a la derecha del de límites)
+function generarHtmlBadgeOrientacionIdeal(idDespegue, gradosStr) {
+    const s = obtenerSectorIdealDespegue(idDespegue);
+    if (s === null) return '';
+    return `<span class="badge-orientacion-ideal" style="display: inline-block; vertical-align: middle;" title="${textoOrientacionIdeal(idDespegue)}">${svgRosaOrientacionIdeal(sectoresDesdeGrados(gradosStr), s, 22)}</span>`;
+}
+
+// Repinta rosas y línea en TODOS los popups abiertos de ese despegue. Como la de límites: la línea, una vez
+// visible, se mantiene aunque se quite el ideal (no encoge el popup bajo el dedo) salvo con reiniciar = true.
+window.pintarEstadoOrientacionIdeal = function (idDespegue, reiniciar = false) {
+    const s = obtenerSectorIdealDespegue(idDespegue);
+    document.querySelectorAll(`.rosa-ideal-${idDespegue}`).forEach(el => {
+        el.innerHTML = svgRosaOrientacionIdeal(sectoresDesdeGrados(el.dataset.grados), s, 44);
+    });
+    document.querySelectorAll(`.linea-orientacion-ideal[data-id-desp="${idDespegue}"]`).forEach(linea => {
+        const yaVisible = linea.style.display !== 'none';
+        linea.innerHTML = textoOrientacionIdeal(idDespegue);
+        linea.style.display = (s !== null || (yaVisible && !reiniciar)) ? 'block' : 'none';
+    });
+    pintarBordePersonalizacionDespegue(idDespegue);
+};
+
+// Fija (sector 0-15) o quita (null) la orientación ideal y recalcula nota y colores del despegue
+window.fijarOrientacionIdealDespegue = function (idDespegue, sector) {
+    idDespegue = Number(idDespegue);
+    if (!idDespegue) return;
+    const ideales = obtenerOrientacionesIdealesDespegues();
+    if (sector === null) delete ideales[idDespegue];
+    else ideales[idDespegue] = sector;
+    guardarOrientacionesIdealesDespegues();
+
+    if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
+    pintarEstadoOrientacionIdeal(idDespegue);
+    programarEnvioOrientacionIdeal(idDespegue);
+    refrescarDespegueTrasAjuste(idDespegue);
+};
+
+// Sector (0-15) bajo el dedo o el ratón, o null si está en el centro de la rosa
+function sectorRosaDesdeEvento(ev, el) {
+    const r = el.getBoundingClientRect();
+    const dx = ev.clientX - (r.left + r.width / 2);
+    const dy = ev.clientY - (r.top + r.height / 2);
+    if (Math.hypot(dx, dy) < r.width * 0.12) return null;
+    const angulo = (Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360;
+    return Math.round(angulo / 22.5) % 16;
+}
+
+// Tocar un sector gris lo marca; tocar el verde lo quita. Arrastrar va marcando el sector gris bajo el dedo.
+window.rosaIdealPointerDown = function (ev, el) {
+    ev.stopPropagation();
+    ev.preventDefault();
+    const idDespegue = Number(el.dataset.id);
+    const posibles = sectoresDesdeGrados(el.dataset.grados);
+    if (!idDespegue || posibles.length < 2) return;
+
+    const inicio = sectorRosaDesdeEvento(ev, el);
+    let arrastrado = false;
+    try { el.setPointerCapture(ev.pointerId); } catch (e) {}
+
+    const mover = e => {
+        const s = sectorRosaDesdeEvento(e, el);
+        if (s === null || (s === inicio && !arrastrado)) return;
+        arrastrado = true;
+        if (posibles.includes(s) && s !== obtenerSectorIdealDespegue(idDespegue)) fijarOrientacionIdealDespegue(idDespegue, s);
+    };
+    const soltar = e => {
+        el.removeEventListener('pointermove', mover);
+        el.removeEventListener('pointerup', soltar);
+        el.removeEventListener('pointercancel', soltar);
+        if (e.type === 'pointerup' && !arrastrado && inicio !== null && posibles.includes(inicio)) {
+            fijarOrientacionIdealDespegue(idDespegue, obtenerSectorIdealDespegue(idDespegue) === inicio ? null : inicio);
+        }
+    };
+    el.addEventListener('pointermove', mover);
+    el.addEventListener('pointerup', soltar);
+    el.addEventListener('pointercancel', soltar);
+};
+
+// Registro ANÓNIMO de orientaciones ideales (sin IP, cookies ni identificadores). Se envía el despegue, el sector
+// nuevo (g) y el que este navegador había enviado antes (q), para que el servidor reste el voto viejo: solo guarda
+// cuántos votos tiene cada sector de cada despegue (registro_orientacion.php), nunca una línea por persona.
+// METEO_ORIENTACION_IDEAL_ENVIADA (solo en este navegador) recuerda qué sector se envió por despegue.
+const _temporizadoresEnvioOrientacion = {};
+
+function programarEnvioOrientacionIdeal(idDespegue) {
+    clearTimeout(_temporizadoresEnvioOrientacion[idDespegue]);
+    _temporizadoresEnvioOrientacion[idDespegue] = setTimeout(() => enviarOrientacionIdeal(idDespegue), 3000);
+}
+
+function enviarOrientacionIdeal(idDespegue) {
+    clearTimeout(_temporizadoresEnvioOrientacion[idDespegue]);
+    delete _temporizadoresEnvioOrientacion[idDespegue];
+    try {
+        const esApp = typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform();
+        if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !esApp) return;
+        if (localStorage.getItem('NO_REGISTRAR_USO') === '1') return;
+
+        const enviadas = JSON.parse(localStorage.getItem('METEO_ORIENTACION_IDEAL_ENVIADA') || '{}') || {};
+        const antes = Number.isInteger(enviadas[idDespegue]) ? enviadas[idDespegue] : null;
+        const ahora = obtenerSectorIdealDespegue(idDespegue);
+        if (antes === ahora) return;
+
+        const q = antes !== null ? SECTORES_ORIENTACION[antes] : '';
+        const g = ahora !== null ? SECTORES_ORIENTACION[ahora] : '';
+        fetch(`https://flydecision.com/registro_orientacion.php?d=${idDespegue}&g=${g}&q=${q}&p=${esApp ? 'app' : 'web'}&t=${Date.now()}`, { mode: 'no-cors', keepalive: true, cache: 'no-store' }).catch(() => {});
+
+        if (ahora === null) delete enviadas[idDespegue];
+        else enviadas[idDespegue] = ahora;
+        localStorage.setItem('METEO_ORIENTACION_IDEAL_ENVIADA', JSON.stringify(enviadas));
+    } catch (e) {}
+}
+
+// Si se oculta o cierra la página con envíos pendientes, se mandan ya (keepalive)
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') Object.keys(_temporizadoresEnvioOrientacion).forEach(id => enviarOrientacionIdeal(Number(id)));
+});
+
 window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
     idDespegue = Number(idDespegue);
     if (!idDespegue) return;
@@ -9814,6 +10059,13 @@ window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
         btn.style.display = nuevo !== 100 ? 'inline-flex' : 'none';
     });
 
+    // 3 y 4. Recalcular nota y colores de ese despegue en el mapa o en la tabla
+    refrescarDespegueTrasAjuste(idDespegue);
+};
+
+// Tras cambiar un ajuste personal de un despegue (límites u orientación ideal): recalcula en vivo su nota y colores
+window.refrescarDespegueTrasAjuste = function (idDespegue) {
+    idDespegue = Number(idDespegue);
     // 3. Si estamos en el mapa, refrescar en vivo SOLO el marcador afectado sin tocar clearLayers()
     const enMapa = document.getElementById('vista-mapa')?.style.display === 'flex';
     if (enMapa && typeof markersDespegues !== 'undefined' && markersDespegues.length > 0) {
@@ -9906,37 +10158,44 @@ window.cambiarAjusteLimitesDespegue = function(idDespegue, delta) {
 };
 
 // Ajuste de límites. Generador del bloque HTML del Stepper para popups
-function generarHtmlStepperLimites(idDespegue) {
+function generarHtmlStepperLimites(idDespegue, gradosOrientaciones) {
     const idNum = Number(idDespegue);
     if (!idNum) return '';
+    const grados = (gradosOrientaciones !== undefined) ? gradosOrientaciones : obtenerGradosOrientacionesDespegue(idNum);
+    const htmlRosa = generarHtmlRosaOrientacionIdeal(idNum, grados);
+    const hayIdeal = obtenerSectorIdealDespegue(idNum) !== null;
     const pct = obtenerPorcentajeAjusteDespegue(idNum);
+    const personalizado = pct !== 100 || hayIdeal;
     const fondoStepper = fondoStepperLimites(pct);
-    const fondoBloque = fondoBloqueLimites(pct);
     const textoLim = pct !== 100 ? textoLimitesEfectivos(idNum) : '';
     const colorValor = pct < 100 ? '#ea580c' : (pct > 100 ? '#0284c7' : '#333');
-    const labelTexto = typeof t === 'function' ? t('popupDespegue.ajusteLimites', { defaultValue: 'Límites:' }) : 'Límites:';
-    const tooltipTitle = typeof t === 'function' 
-        ? t('popupDespegue.tooltipAjusteLimites', { defaultValue: 'Ajusta los límites generales de viento y racha para este despegue. Menor al 100% es más restrictivo (queremos menos viento en ese despegue) y mayor al 100% más tolerante (aceptamos más viento).' })
-        : 'Ajusta los límites de viento y racha para este despegue. Menor al 100% es más restrictivo y mayor al 100% más tolerante.';
+    const tituloTexto = t('popupDespegue.personalizacion', { defaultValue: 'Personalización:' });
+    const tooltipTitle = t('popupDespegue.tooltipPersonalizacion', { defaultValue: 'Límites: ajusta los límites generales de viento y racha para este despegue. Menor al 100% es más restrictivo (queremos menos viento en ese despegue) y mayor al 100% más tolerante (aceptamos más viento). Rosa: toca una orientación gris para marcarla como ideal (verde); vuelve a tocarla para quitarla. El borde rojo indica que este despegue tiene algo personalizado; ↺ lo deja como estaba.' }).replace(/"/g, "'");
+    const tituloReset = t('popupDespegue.resetearPersonalizacion', { defaultValue: 'Quitar la personalización de este despegue (límites al 100% y sin orientación ideal)' }).replace(/"/g, "'");
 
     return `
-        <div class="bloque-ajuste-limites" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 13px 0 8px 0; padding: 3px 7px; background: ${fondoBloque}; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;" title="${tooltipTitle}">
-            <span style="font-weight: bold; color: #1e293b; white-space: nowrap; display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                <span style="display: flex; align-items: center; gap: 3px;">
-                    <img src="/icons/icono_viento_60.webp" width="20" height="20" style="display: block;">
-                    <img src="/icons/icono_racha_60.webp" width="20" height="20" style="display: block;">
-                </span>
-                <span>${labelTexto}</span>
-            </span>
-            <div style="display: inline-flex; align-items: center; gap: 4px; margin-left: auto;">
+        <div class="bloque-ajuste-limites ${personalizado ? 'bloque-personalizado' : ''}" data-id-desp="${idNum}" style="margin: 13px 0 8px 0; padding: 3px 7px 5px 7px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;">
+            <div style="display: flex; align-items: center; justify-content: space-between; min-height: 26px;">
+                <span style="font-weight: bold; color: #1e293b; white-space: nowrap;" title="${tooltipTitle}">${tituloTexto}</span>
+                <button type="button" class="btn-reset-personalizacion btn-reset-personalizacion-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} resetearPersonalizacionDespegue(${idNum});" title="${tituloReset}"
+                    style="display: ${personalizado ? 'inline-flex' : 'none'}; align-items: center; border: none; background: none; padding: 0 0 0 4px; font-size: 22px; line-height: 1; color: #555; cursor: pointer;">↺</button>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
                 <div class="stepper-dias-seguimiento ${pct !== 100 ? 'limites-tenido' : ''}" style="margin: 0; background: ${fondoStepper};">
                     <button type="button" class="stepper-btn stepper-limites-menos-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, -10);" ${pct <= 50 ? 'disabled' : ''} style="cursor: pointer;">−</button>
-                    <span class="stepper-valor valor-ajuste-limites-${idNum}" style="min-width: 44px; text-align: center; font-weight: bold; border-left: 1px solid #ccc; border-right: 1px solid #ccc; height: 28px; line-height: 28px; color: ${colorValor}; padding: 0 4px; display: inline-block;">${pct}%</span>
+                    <span style="display: inline-flex; align-items: center; gap: 4px; border-left: 1px solid #ccc; border-right: 1px solid #ccc; height: 28px; padding: 0 5px;">
+                        <span class="stepper-valor valor-ajuste-limites-${idNum}" style="min-width: 44px; text-align: right; font-weight: bold; line-height: 28px; border: none; color: ${colorValor};">${pct}%</span>
+                        <img src="/icons/icono_viento_60.webp" width="20" height="20" style="display: block;" alt="">
+                    </span>
                     <button type="button" class="stepper-btn stepper-limites-mas-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} cambiarAjusteLimitesDespegue(${idNum}, 10);" ${pct >= 200 ? 'disabled' : ''} style="cursor: pointer;">+</button>
                 </div>
+                ${htmlRosa}
+            </div>
+            <div class="lineas-personalizacion" style="display: ${personalizado ? 'block' : 'none'}; margin-top: 6px; padding-top: 4px; border-top: 1px solid #e2e8f0;">
+                <div class="linea-limites-efectivos" data-id-desp="${idNum}" style="display: ${textoLim ? 'block' : 'none'}; line-height: 20px; color: #475569; text-align: left; white-space: nowrap;">${textoLim}</div>
+                <div class="linea-orientacion-ideal" data-id-desp="${idNum}" style="display: ${hayIdeal ? 'block' : 'none'}; line-height: 20px; color: #475569; text-align: left; white-space: nowrap;">${hayIdeal ? textoOrientacionIdeal(idNum) : ''}</div>
             </div>
         </div>
-        <div class="linea-limites-efectivos" data-id-desp="${idNum}" style="display: ${textoLim ? 'block' : 'none'}; margin-bottom: 10px; line-height: 20px; color: #475569; text-align: left; white-space: nowrap;">${textoLim}</div>
     `;
 }
 
@@ -9964,10 +10223,26 @@ function fondoStepperLimites(pct) {
     return pct < 100 ? '#ffedd5' : (pct > 100 ? '#e0f2fe' : '#fff');
 }
 
-// Fondo del bloque completo (más suave que el del stepper). A 100% se queda como estaba.
-function fondoBloqueLimites(pct) {
-    return pct < 100 ? '#ffedd5' : (pct > 100 ? '#e0f2fe' : '#f8fafc');
+// Borde rojo (como los filtros aplicados) si el despegue tiene algo personalizado, ↺ visible y, si hay
+// alguna línea de datos visible, su recuadro. Se llama tras cambiar límites u orientación ideal.
+function pintarBordePersonalizacionDespegue(idDespegue) {
+    const personalizado = obtenerPorcentajeAjusteDespegue(idDespegue) !== 100 || obtenerSectorIdealDespegue(idDespegue) !== null;
+    document.querySelectorAll(`.bloque-ajuste-limites[data-id-desp="${idDespegue}"]`).forEach(bloque => {
+        bloque.classList.toggle('bloque-personalizado', personalizado);
+        const btn = bloque.querySelector('.btn-reset-personalizacion');
+        if (btn) btn.style.display = personalizado ? 'inline-flex' : 'none';
+        const lineas = bloque.querySelector('.lineas-personalizacion');
+        if (lineas) lineas.style.display = [...lineas.children].some(l => l.style.display !== 'none') ? 'block' : 'none';
+    });
 }
+
+// ↺ del popup: límites al 100% y sin orientación ideal para ese despegue
+window.resetearPersonalizacionDespegue = function (idDespegue) {
+    idDespegue = Number(idDespegue);
+    const pct = obtenerPorcentajeAjusteDespegue(idDespegue);
+    if (pct !== 100) cambiarAjusteLimitesDespegue(idDespegue, 100 - pct);
+    if (obtenerSectorIdealDespegue(idDespegue) !== null) fijarOrientacionIdealDespegue(idDespegue, null);
+};
 
 // Pinta fondos y línea de límites en TODOS los popups abiertos de ese despegue.
 // La línea, una vez visible, se mantiene aunque se vuelva a 100% (evita que el popup se encoja y el
@@ -9983,16 +10258,15 @@ window.pintarEstadoLimitesDespegue = function (idDespegue, pct, reiniciar = fals
         }
 
         const bloque = el.closest('.bloque-ajuste-limites');
-        if (bloque) bloque.style.background = fondoBloqueLimites(pct);
-
-        const linea = bloque && bloque.nextElementSibling;
-        if (linea && linea.classList.contains('linea-limites-efectivos')) {
+        const linea = bloque && bloque.querySelector('.linea-limites-efectivos');
+        if (linea) {
             const yaVisible = linea.style.display !== 'none';
             const mostrar = pct !== 100 || (yaVisible && !reiniciar);
             linea.innerHTML = texto;
             linea.style.display = mostrar ? 'block' : 'none';
         }
     });
+    pintarBordePersonalizacionDespegue(idDespegue);
 };
 
 // ---------------------------------------------------------------
@@ -10000,12 +10274,13 @@ window.pintarEstadoLimitesDespegue = function (idDespegue, pct, reiniciar = fals
 // Reutiliza el formato de edición de la tabla, pero con bandera, filtro y salida propios.
 // ---------------------------------------------------------------
 
-// IDs con límite ≠ 100% que existen en la BD (ignora claves huérfanas de despegues borrados)
+// IDs con límite ≠ 100% o con orientación ideal que existen en la BD (ignora claves huérfanas de despegues borrados)
 function obtenerIdsDespeguesConLimites() {
     const ajustes = obtenerAjustesLimitesDespegues();
     const existentes = new Set((window.bdGlobalDespegues || []).map(d => Number(d.ID)));
-    return Object.keys(ajustes).map(Number)
-        .filter(id => Number(ajustes[id]) !== 100 && (existentes.size === 0 || existentes.has(id)));
+    const ids = new Set(Object.keys(ajustes).map(Number).filter(id => Number(ajustes[id]) !== 100));
+    Object.keys(obtenerOrientacionesIdealesDespegues()).forEach(id => ids.add(Number(id)));
+    return [...ids].filter(id => existentes.size === 0 || existentes.has(id));
 }
 
 // Contador y estado del botón de entrada en Ajustes
@@ -10024,7 +10299,7 @@ function _textoBotonFinalizarEdicion(modoLimites) {
     const btn = document.getElementById('btn-finalizar-edicion-favoritos');
     if (!btn) return;
     btn.textContent = modoLimites
-        ? t('ajustes.finalizarEdicionLimites', { defaultValue: 'Finalizar edición de límites' })
+        ? t('ajustes.finalizarEdicionLimites', { defaultValue: 'Finalizar edición de despegues personalizados' })
         : t('html.finalizarEdicion', { defaultValue: 'Finalizar edición de despegues favoritos' });
 }
 
@@ -10110,11 +10385,16 @@ window.finalizarEdicionLimites = function () {
     return true;
 };
 
-// ↺ de una fila: vuelve ese despegue al 100%. La fila se queda hasta finalizar la edición.
+// ↺ de una fila: vuelve ese despegue al 100% y sin orientación ideal. La fila se queda hasta finalizar la edición.
 window.resetearLimiteDespegueEnLista = function (idDespegue) {
     const ajustes = obtenerAjustesLimitesDespegues();
     delete ajustes[idDespegue];
     localStorage.setItem("METEO_AJUSTES_LIMITES_DESPEGUES", JSON.stringify(ajustes));
+    if (obtenerSectorIdealDespegue(idDespegue) !== null) {
+        delete obtenerOrientacionesIdealesDespegues()[Number(idDespegue)];
+        guardarOrientacionesIdealesDespegues();
+        programarEnvioOrientacionIdeal(Number(idDespegue));
+    }
     window.tablaRecrearAlVolver = true;
     if (typeof window.vibrarDispositivo === 'function') window.vibrarDispositivo();
     actualizarBotonGestionLimites();
@@ -10125,7 +10405,7 @@ window.resetearLimiteDespegueEnLista = function (idDespegue) {
 window.resetearTodosLosLimites = function () {
     GestorMensajes.mostrar({
         tipo: 'modal',
-        htmlContenido: `<div style="text-align: center; font-size: 1.1em;">${t('ajustes.confirmarResetTodosLimites', { defaultValue: '¿Resetear los límites personalizados de todos los despegues?.<br><br>Esta acción configurará todos los despegues con el límite del 100 %, es decir, con los límites generales configurados en <i>Ajustes > Límites de viento y racha.' })}</div>`,
+        htmlContenido: `<div style="text-align: center; font-size: 1.1em;">${t('ajustes.confirmarResetTodosLimites', { defaultValue: '¿Resetear los límites y orientaciones ideales personalizados de todos los despegues?<br><br>Esta acción configurará todos los despegues con el límite del 100 %, es decir, con los límites generales configurados en <i>Ajustes > Límites de viento y racha</i>, y sin orientación ideal.' })}</div>`,
         botones: [
             { texto: t('botones.cancelar', { defaultValue: 'Cancelar' }), estilo: 'secundario', onclick: function () { GestorMensajes.ocultar(); } },
             { texto: t('botones.aceptar', { defaultValue: 'Aceptar' }), onclick: function () {
@@ -10133,9 +10413,12 @@ window.resetearTodosLosLimites = function () {
                 const ajustes = obtenerAjustesLimitesDespegues();
                 Object.keys(ajustes).forEach(k => delete ajustes[k]); // vacía también la caché en memoria
                 localStorage.setItem("METEO_AJUSTES_LIMITES_DESPEGUES", JSON.stringify(ajustes));
+                const ideales = obtenerOrientacionesIdealesDespegues();
+                Object.keys(ideales).forEach(k => { delete ideales[k]; programarEnvioOrientacionIdeal(Number(k)); });
+                guardarOrientacionesIdealesDespegues();
                 window.tablaRecrearAlVolver = true;
                 actualizarBotonGestionLimites();
-                construir_tabla(false, true); // las filas siguen, todas con la celda vacía; se sale con "Finalizar edición de límites"
+                construir_tabla(false, true); // las filas siguen, todas con la celda vacía; se sale con "Finalizar edición de despegues personalizados"
             } }
         ]
     });
@@ -12013,6 +12296,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     const id = Number(l.dataset.idDesp);
                     if (id) pintarEstadoLimitesDespegue(id, obtenerPorcentajeAjusteDespegue(id), true);
                 });
+                instance.popper.querySelectorAll('.linea-orientacion-ideal').forEach(l => {
+                    const id = Number(l.dataset.idDesp);
+                    if (id) pintarEstadoOrientacionIdeal(id, true);
+                });
                 if (window.tablaNecesitaActualizarAjustes) {
                     window.tablaNecesitaActualizarAjustes = false;
                     construir_tabla(false, true);
@@ -12246,7 +12533,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 }
             }
 
-            // --- PRIORIDAD 1.95: Modo Edición de Límites → igual que "Finalizar edición de límites" ---
+            // --- PRIORIDAD 1.95: Modo Edición de Límites → igual que "Finalizar edición de despegues personalizados" ---
             if (typeof modoEdicionLimites !== 'undefined' && modoEdicionLimites) {
                 finalizarEdicionLimites();
                 return;
@@ -15820,7 +16107,7 @@ function inicializarMapaLeaflet() {
                             
                             ${botonesAccionPopupHTML}
 
-                            ${idDespegue ? generarHtmlStepperLimites(idDespegue) : ''}
+                            ${idDespegue ? generarHtmlStepperLimites(idDespegue, OrientacionesGrados) : ''}
 
                             ⛅ <a href='https://www.windy.com/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/wind?${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))},14' onclick='abrirLinkExterno(this.href); return false;'>Windy</a><br>
 
@@ -15920,6 +16207,9 @@ function inicializarMapaLeaflet() {
                             const btnReset = popupEl.querySelector(`.btn-reset-limite-${idDespegue}`);
                             if (btnReset) btnReset.style.display = pctActual !== 100 ? 'inline-flex' : 'none';
                         }
+
+                        // Sincronizar rosa y línea de orientación ideal
+                        if (idDespegue) pintarEstadoOrientacionIdeal(Number(idDespegue), true);
 
                         ajustarPopupDespegueMinimo(this.getPopup());
                     });

@@ -681,7 +681,7 @@
       "btnAjustes": "Settings",
       "descAjustes": "Language, limits for scoring, customization of displayed data..."
     },
-    "gestionarLimitesDespegues": "Edit takeoffs with custom limits",
+    "gestionarLimitesDespegues": "Edit takeoffs with custom limits or orientation",
     "admitirVientoFlojoCruzado": "Allow unsuitable orientation with light wind",
     "aperturaEnlaces": {
       "pregunta": "Do you want to open it in the web or in the app?",
@@ -693,10 +693,10 @@
       "reseteoHecho": "Done. The next time you open a link with an installed app, you will be asked again if you want to open it in the web or in the app."
     },
     "sinDespeguesConLimites": "There are no longer any takeoffs with custom limits.",
-    "confirmarResetTodosLimites": "Reset the custom limits for all takeoffs?.<br><br>This action will configure all takeoffs with the original 100% limit, that is, with the general limits configured in <i>Settings > Wind and gust limits.",
-    "resetearTodosLimites": "Reset all limits",
-    "finalizarEdicionLimites": "Finish editing limits",
-    "resetearLimite": "Return to 100% (general limits)",
+    "confirmarResetTodosLimites": "Reset custom limits and ideal orientations for all take-offs?<br><br>This action will configure all take-offs with the original 100% limit, that is, with the general limits configured in <i>Settings > Wind and gust limits</i>, and without ideal orientation.",
+    "resetearTodosLimites": "Reset all limits and ideal orientations",
+    "finalizarEdicionLimites": "Finish editing custom takeoffs",
+    "resetearLimite": "Return to 100% (general limits) and remove ideal orientation",
     "verSoloNoFavoritos": "Show only non-favorites"
   },
 
@@ -856,7 +856,13 @@
     "tooltipAjusteLimites": "Adjusts the general wind and gust limits for this takeoff. Less than 100% is more restrictive (we want less wind at that takeoff) and greater than 100% is more tolerant (we accept more wind).",
     "ajusteLimites": "Limits:",
     "titleAjusteLimites": "Custom wind limits adjustment",
-    "limitesEfectivos": "Max wind: {{vel}} km/h<br>Max gust: {{racha}} km/h"
+    "limitesEfectivos": "Max wind: {{vel}} km/h<br>Max gust: {{racha}} km/h",
+    "orientacionIdeal": "Ideal orientation: {{ori}}",
+    "tooltipOrientacionIdeal": "Ideal orientation: tap or drag over a gray sector to mark it green. Tap it again to remove it. Hours with wind from this sector score higher than those from the other orientations of the take-off.",
+    "tooltipOrientacionUnica": "This take-off only has one possible orientation, so it cannot be customized.",
+    "personalizacion": "Customization:",
+    "tooltipPersonalizacion": "Limits: adjust the general wind and gust limits for this take-off. Below 100% is more restrictive (we want less wind at this take-off) and above 100% is more tolerant (we accept more wind). Orientation rose: tap a gray orientation to mark it as ideal (green); tap it again to remove it. The red border of Customizations indicates that this take-off has something customized; ↺ removes the customizations.",
+    "resetearPersonalizacion": "Removes the customization of this take-off (limits at 100% and no ideal orientation)"    
   },
 
   "html": {
@@ -936,7 +942,7 @@
     "filtroDistanciaCompleto": "<b>Takeoff distance filter:</b><br><br>Shows only takeoffs within the distance radius you select.<br><br>Use the button <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 50%; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> to set the origin position. You can use the map or your device's current location.<span class='texto-oculto-en-edicion'><br><br>Use the button <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> to include non-favorite takeoffs in the filter, meaning to <b>temporarily include all takeoffs</b> available in the database.<br><br>When activated, an initial 100 km filter is applied to avoid overloading the table. You can adjust it based on your needs and device performance.</span>",
     "tooltipRachaMaxima": "<b>Maximum gust (km/h):</b><br><br>The automated condition scoring system will take these values into account.<br><br>The color of the data in the table visually indicates the condition analysis based on the value you set here.<br><br>🟩 Green: safe maximum gust, far from the limit.<br>🟧 Orange: maximum gust approaching your Maximum gust limit.<br>🟥 Red: gust exceeding your Maximum gust limit.<br><br><b>WMO (World Meteorological Organization) standard technical definition of 10m Maximum Gust</b>:<br><br>It is the maximum peak of instantaneous speed (with a duration of 3 seconds) recorded at any time within the previous hour period. It represents the brief and intense fluctuations superimposed on the mean wind, associated with mechanical or thermal turbulence (convection).",
     "tooltipResetearEnlaces": "<b>Reset link behavior</b><br><br>In the app, when opening for the first time a link that may have a native app installed, you are asked if you want to open it in the web (within Fly Decision) or in the app. If you checked <i>Remember my choice</i>, it will not be asked again.<br><br>This button clears those choices so that you are asked again.",
-    "tooltipEdicionLimites": "<b>Edit takeoffs with custom limits</b><br><br>Shows in the table only the takeoffs for which you have adjusted the wind and gust limits (different from 100%).<br><br>Click ↺ on a takeoff to reset it to 100% (the general limits above). The ↺ in the header resets them all. To change the percentage, use the ⓘ button for each takeoff. You can do it here, in the Table or on the Map.<br><br>The button is disabled if you do not have any takeoffs with custom limits.",
+    "tooltipEdicionLimites": "<b>Edit take-offs with custom limits or orientation</b><br><br>Shows in the table only the take-offs for which you have adjusted the wind and gust limits (different from 100%) or marked an ideal orientation.<br><br>Click ↺ on a take-off to reset it: it returns to 100% (the general limits above) and without ideal orientation. The ↺ in the header resets them all. To change the percentage or the ideal orientation, use the ⓘ button for each take-off. You can do it here, in the Table or on the Map.<br><br>The button is disabled if you do not have any customized take-offs.",
     "tooltipVientoFlojoCruzado": "<b>Allow unsuitable orientation with light wind</b><br><br>If enabled, an hour whose wind orientation forecast is not suitable for the possible orientations of a take-off is not penalized for this reason when the mean wind is ≤ 3 km/h and the gust ≤ 8 km/h.<br><br>In this case, the direction cell, instead of red, is painted orange and the score for that hour is calculated as if the direction were orange (crosswind but acceptable).<br><br>Useful, for example, on south-facing take-offs with very light north meteo wind, where the breeze will likely end up prevailing, or when the forecast may fail in the direction of such light wind, or because the take-off is very good and allows launching with light tailwind.<br><br>Disabled by default.",
     "tooltipProbPrecipitacion": "<b>Precipitation Probability (%)</b><br><br>Probability (%) that precipitation exceeds 0.1 mm (liters/m²).<br><br>Original data from the ECMWF model.",
     "tooltipBaseNube": "<b>Cloud base MSL (km)</b><br><br>Shows a row with the estimated altitude of the cloud base above sea level (MSL), calculated from the original 2m temperature and dew point of the ECMWF model.<br><br>It is a valid approximation for convective clouds, but it does not detect orographic clouds, fog, stratus, or other types of cloudiness not originating from convection.<br><br>This approximation of 125 m/°C may differ in mountain areas by several hundred meters from the actual base due to mixing effects, subsidence, non-homogeneous humidity, and differences between the actual air temperature and that of the model.",

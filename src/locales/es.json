@@ -682,7 +682,7 @@
       "btnAjustes": "Ajustes",
       "descAjustes": "Idioma, límites para la puntuación, personalización de datos mostrados..."
     },
-    "gestionarLimitesDespegues": "Editar despegues con límites personalizados",
+    "gestionarLimitesDespegues": "Editar despegues con límites u orientación personalizados",
     "admitirVientoFlojoCruzado": "Admitir orientación no apta con viento flojo",
     "aperturaEnlaces": {
       "pregunta": "¿Quieres abrirlo en la web o en la app?",
@@ -694,10 +694,10 @@
       "reseteoHecho": "Hecho. La próxima vez que abras un enlace con app instalada se te volverá a preguntar si quieres abrirlo en la web o en la app."
     },
     "sinDespeguesConLimites": "Ya no quedan despegues con límites personalizados.",
-    "confirmarResetTodosLimites": "¿Resetear los límites personalizados de todos los despegues?.<br><br>Esta acción configurará todos los despegues con el límite original del 100 %, es decir, con los límites generales configurados en <i>Ajustes > Límites de viento y racha.",
-    "resetearTodosLimites": "Resetear todos los límites",
-    "finalizarEdicionLimites": "Finalizar edición de límites",
-    "resetearLimite": "Volver al 100% (límites generales)",
+    "confirmarResetTodosLimites": "¿Resetear los límites y orientaciones ideales personalizados de todos los despegues?<br><br>Esta acción configurará todos los despegues con el límite original del 100 %, es decir, con los límites generales configurados en <i>Ajustes > Límites de viento y racha</i>, y sin orientación ideal.",
+    "resetearTodosLimites": "Resetear todos los límites y orientaciones ideales",
+    "finalizarEdicionLimites": "Finalizar edición de despegues personalizados",
+    "resetearLimite": "Volver al 100% (límites generales) y quitar la orientación ideal",
     "verSoloNoFavoritos": "Ver solo los no favoritos"
 
   },
@@ -859,7 +859,13 @@
     "tooltipAjusteLimites": "Ajusta los límites generales de viento y racha para este despegue. Menor al 100% es más restrictivo (queremos menos viento en ese despegue) y mayor al 100% más tolerante (aceptamos más viento).",
     "ajusteLimites": "Límites:",
     "titleAjusteLimites": "Ajuste personalizado de límites de viento",
-    "limitesEfectivos": "Viento máx.: {{vel}} km/h<br>Racha máx.: {{racha}} km/h"
+    "limitesEfectivos": "Viento máx.: {{vel}} km/h<br>Racha máx.: {{racha}} km/h",
+    "orientacionIdeal": "Orientación ideal: {{ori}}",
+    "tooltipOrientacionIdeal": "Orientación ideal: toca o arrastra sobre un sector gris para marcarlo en verde. Vuelve a tocarlo para quitarlo. Las horas con viento de ese sector puntúan más que las del resto de orientaciones del despegue.",
+    "tooltipOrientacionUnica": "Este despegue solo tiene una orientación posible, por lo que no es posible personalizarla.",
+    "personalizacion": "Personalización:",
+    "tooltipPersonalizacion": "Límites: ajusta los límites generales de viento y racha para este despegue. Menor al 100% es más restrictivo (queremos menos viento en ese despegue) y mayor al 100% más tolerante (aceptamos más viento). Rosa de orientaciones: toca una orientación gris para marcarla como ideal (verde); vuelve a tocarla para quitarla. El borde rojo de Personalizaciones indica que este despegue tiene algo personalizado; ↺ elimina las personalizaciones.",
+    "resetearPersonalizacion": "Elimina la personalización de este despegue (límites al 100% y sin orientación ideal)"
   },
 
   "html": {
@@ -939,7 +945,7 @@
     "filtroDistanciaCompleto": "<b>Filtro de distancia al despegue:</b><br><br>Muestra solo despegues dentro del radio de distancia que selecciones.<br><br>Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 50%; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> para establecer la posición de origen. Puedes usar el mapa o la ubicación actual de tu dispositivo.<span class='texto-oculto-en-edicion'><br><br>Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> para incluir despegues no favoritos en el filtro, es decir, para <b>incluir temporalmente todos los despegues</b> disponibles en la base de datos.<br><br>Al activarlo, se aplica un filtro inicial de 100 km para evitar sobrecargar la tabla. Puedes ajustarlo según tus necesidades y el rendimiento de tu dispositivo.</span>",
     "tooltipRachaMaxima": "<b>Racha máxima (km/h):</b><br><br>El sistema automático de puntuación de condiciones tendrá en cuenta estos valores.<br><br>El color del dato en la tabla indica visualmente el análisis de las condiciones para el valor que configures aquí.<br><br>🟩 Verde: racha máxima segura, lejos del límite.<br>🟧 Naranja: racha máxima acercándose a tu racha Máxima.<br>🟥 Rojo: racha superando tu racha Máxima.<br><br><b>Definición técnica estándar OMM (Organización Meteorológica Mundial) de la Racha máxima 10 m</b>:<br><br>Es el pico máximo de velocidad instantánea (con una duración de 3 segundos) registrado en cualquier momento dentro del periodo de la hora anterior. Representa las fluctuaciones breves e intensas superpuestas al viento medio, asociada a turbulencia mecánica o térmica (convección).",
     "tooltipResetearEnlaces": "<b>Resetear comportamiento de enlaces</b><br><br>En la app, al abrir por primera vez un enlace que pueda tener una app nativa instalada, se te pregunta si quieres abrirlo en la web (dentro de Fly Decision) o en la app. Si marcaste <i>Recordar mi elección</i>, ya no se pregunta más.<br><br>Este botón borra esas elecciones para que se vuelva a preguntar.",
-    "tooltipEdicionLimites": "<b>Editar despegues con límites personalizados</b><br><br>Muestra en la tabla solo los despegues a los que has ajustado los límites de viento y racha (distinto de 100%).<br><br>Pulsa ↺ en un despegue para resetearlo al 100% (los límites generales de arriba). El ↺ de la cabecera los resetea todos. Para cambiar el porcentaje, usa el botón ⓘ de cada despegue. Puedes hacerlo aquí, en la Tabla o en el Mapa.<br><br>El botón está desactivado si no tienes ningún despegue con límites personalizados.",
+    "tooltipEdicionLimites": "<b>Editar despegues con límites u orientación personalizados</b><br><br>Muestra en la tabla solo los despegues a los que has ajustado los límites de viento y racha (distinto de 100%) o marcado una orientación ideal.<br><br>Pulsa ↺ en un despegue para resetearlo: vuelve al 100% (los límites generales de arriba) y sin orientación ideal. El ↺ de la cabecera los resetea todos. Para cambiar el porcentaje o la orientación ideal, usa el botón ⓘ de cada despegue. Puedes hacerlo aquí, en la Tabla o en el Mapa.<br><br>El botón está desactivado si no tienes ningún despegue personalizado.",
     "tooltipVientoFlojoCruzado": "<b>Admitir orientación no apta con viento flojo</b><br><br>Si lo activas, una hora cuyo pronóstico de orientación del viento no sea apta para las orientaciones posibles de un despegue no se penaliza por este motivo cuando el viento medio es ≤ 3 km/h y la racha ≤ 8 km/h.<br><br>En ese caso la celda de dirección, en lugar de roja, se pinta en naranja y la puntuación de esa hora se calcula como si la dirección fuese naranja (cruzada pero aceptable).<br><br>Útil, por ejemplo, en despegues orientados al sur con un viento meteo muy flojo de norte, donde probablemente acabará ganando la brisa, o cuando el pronóstico puede fallar en la dirección de un viento tan flojo, o porque el despegue sea muy bueno y permita despegar con ligero viento en cola.<br><br>Está desactivado por defecto.",
     "tooltipProbPrecipitacion": "<b>Probabilidad de Precipitación (%)</b><br><br>Probabilidad (%) de que la precipitación supere 0.1 mm (litros/m²).<br><br>Dato original del modelo ECMWF.",
     "tooltipBaseNube": "<b>Base de nube MSL (km)</b><br><br>Muestra una fila con la altitud estimada de la base de la nube sobre el nivel del mar (MSL), calculada a partir de la temperatura y el punto de rocío a 2 m originales del modelo ECMWF.<br><br>Es una aproximación válida para nubes convectivas, pero no detecta nubes orográficas, nieblas, estratos u otros tipos de nubosidad no originados por convección.<br><br>Esta aproximación de 125 m/°C puede diferir en zonas de montaña varios cientos de metros respecto a la base real por efectos de mezcla, subsidencia, humedad no homogénea y diferencias entre la temperatura real del aire y la del modelo.",
