@@ -695,7 +695,7 @@
     "sinDespeguesConLimites": "Ja no queden enlairaments amb límits personalitzats.",
     "confirmarResetTodosLimites": "Restejar els límits i orientacions ideals personalitzats de tots els enlairaments?<br><br>Aquesta acció configurarà tots els enlairaments amb el límit original del 100 %, és a dir, amb els límits generals configurats a <i>Ajustos > Límits de vent i ratxa</i>, i sense orientació ideal.",
     "resetearTodosLimites": "Restejar tots els límits i orientacions ideals",
-    "finalizarEdicionLimites": "Finalitzar edició de límits",
+    "finalizarEdicionLimites": "Finalitzar edició d'enlairaments personalitzats",
     "resetearLimite": "Tornar al 100% (límits generals) i treure l'orientació ideal",
     "verSoloNoFavoritos": "Veure només els no favorits"
   },

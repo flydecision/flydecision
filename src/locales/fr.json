@@ -695,7 +695,7 @@
     "sinDespeguesConLimites": "Il ne reste plus de décollages avec des limites personnalisées.",
     "confirmarResetTodosLimites": "Réinitialiser les limites et orientations idéales personnalisées de tous les décollages ?<br><br>Cette action configurera tous les décollages avec la limite originale de 100 %, c'est-à-dire avec les limites générales configurées dans <i>Paramètres > Limites de vent et de rafale</i>, et sans orientation idéale.",
     "resetearTodosLimites": "Réinitialiser toutes les limites et orientations idéales",
-    "finalizarEdicionLimites": "Terminer l'édition des limites",
+    "finalizarEdicionLimites": "Terminer l'édition des décollages personnalisés",
     "resetearLimite": "Revenir à 100 % (limites générales) et retirer l'orientation idéale",
     "verSoloNoFavoritos": "Voir uniquement les non-favoris"
   },

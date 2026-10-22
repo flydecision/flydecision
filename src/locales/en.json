@@ -695,7 +695,7 @@
     "sinDespeguesConLimites": "There are no longer any takeoffs with custom limits.",
     "confirmarResetTodosLimites": "Reset custom limits and ideal orientations for all take-offs?<br><br>This action will configure all take-offs with the original 100% limit, that is, with the general limits configured in <i>Settings > Wind and gust limits</i>, and without ideal orientation.",
     "resetearTodosLimites": "Reset all limits and ideal orientations",
-    "finalizarEdicionLimites": "Finish editing limits",
+    "finalizarEdicionLimites": "Finish editing custom takeoffs",
     "resetearLimite": "Return to 100% (general limits) and remove ideal orientation",
     "verSoloNoFavoritos": "Show only non-favorites"
   },

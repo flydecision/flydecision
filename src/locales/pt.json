@@ -695,7 +695,7 @@
     "sinDespeguesConLimites": "Já não restam descolagens com limites personalizados.",
     "confirmarResetTodosLimites": "Repor os limites e orientações ideais personalizados de todas as descolagens?<br><br>Esta ação configurará todas as descolagens com o limite original de 100%, ou seja, com os limites gerais configurados em <i>Definições > Limites de vento e rajada</i>, e sem orientação ideal.",
     "resetearTodosLimites": "Repor todos os limites e orientações ideais",
-    "finalizarEdicionLimites": "Terminar edição de limites",
+    "finalizarEdicionLimites": "Terminar edição de descolagens personalizadas",
     "resetearLimite": "Voltar aos 100% (limites gerais) e remover a orientação ideal",
     "verSoloNoFavoritos": "Ver apenas os não favoritos"
   },

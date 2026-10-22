@@ -696,7 +696,7 @@
     "sinDespeguesConLimites": "Ya no quedan despegues con límites personalizados.",
     "confirmarResetTodosLimites": "¿Resetear los límites y orientaciones ideales personalizados de todos los despegues?<br><br>Esta acción configurará todos los despegues con el límite original del 100 %, es decir, con los límites generales configurados en <i>Ajustes > Límites de viento y racha</i>, y sin orientación ideal.",
     "resetearTodosLimites": "Resetear todos los límites y orientaciones ideales",
-    "finalizarEdicionLimites": "Finalizar edición de límites",
+    "finalizarEdicionLimites": "Finalizar edición de despegues personalizados",
     "resetearLimite": "Volver al 100% (límites generales) y quitar la orientación ideal",
     "verSoloNoFavoritos": "Ver solo los no favoritos"
 

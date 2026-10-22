@@ -695,7 +695,7 @@
     "sinDespeguesConLimites": "Es gibt keine Startplätze mit benutzerdefinierten Grenzwerten mehr.",
     "confirmarResetTodosLimites": "Die benutzerdefinierten Grenzwerte und idealen Ausrichtungen aller Startplätze zurücksetzen?<br><br>Diese Aktion konfiguriert alle Startplätze mit dem ursprünglichen Grenzwert von 100 %, d. h. mit den allgemeinen Grenzwerten, die unter <i>Einstellungen > Wind- und Böengrenzwerte</i> konfiguriert sind, und ohne ideale Ausrichtung.",
     "resetearTodosLimites": "Alle Grenzwerte und idealen Ausrichtungen zurücksetzen",
-    "finalizarEdicionLimites": "Bearbeitung der Grenzwerte beenden",
+    "finalizarEdicionLimites": "Bearbeitung der benutzerdefinierten Startplätze beenden",
     "resetearLimite": "Zurück auf 100% (allgemeine Grenzwerte) und ideale Ausrichtung entfernen",
     "verSoloNoFavoritos": "Nur Nicht-Favoriten anzeigen"
   },

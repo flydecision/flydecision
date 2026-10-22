@@ -695,7 +695,7 @@
     "sinDespeguesConLimites": "Jada ez dago muga pertsonalizatuak dituen aireratzerik.",
     "confirmarResetTodosLimites": "Aireratze guztien muga eta orientazio ideal pertsonalizatuak berrezarri?<br><br>Ekintza honek aireratze guztiak jatorrizko % 100eko mugarekin konfiguratuko ditu, hau da, <i>Ezarpenak > Haize- eta bolada-mugak</i> atalean konfiguratutako muga orokorrekin, eta orientazio idealik gabe.",
     "resetearTodosLimites": "Muga eta orientazio ideal guztiak berrezarri",
-    "finalizarEdicionLimites": "Mugen edizioa amaitu",
+    "finalizarEdicionLimites": "Pertsonalizatutako aireratzeen edizioa amaitu",
     "resetearLimite": "% 100era itzuli (muga orokorrak) eta orientazio ideala kendu",
     "verSoloNoFavoritos": "Ikusi ez gogokoak soilik"
   },

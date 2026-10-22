@@ -695,7 +695,7 @@
     "sinDespeguesConLimites": "Xa non quedan engalaxes con límites personalizados.",
     "confirmarResetTodosLimites": "¿Restablecer os límites e orientacións ideais personalizados de todas as engalaxes?<br><br>Esta acción configurará todas as engalaxes co límite orixinal do 100 %, é dicir, cos límites xerais configurados en <i>Axustes > Límites de vento e refacho</i>, e sen orientación ideal.",
     "resetearTodosLimites": "Restablecer todos os límites e orientacións ideais",
-    "finalizarEdicionLimites": "Finalizar edición de límites",
+    "finalizarEdicionLimites": "Finalizar edición de engalaxes personalizadas",
     "resetearLimite": "Volver ao 100% (límites xerais) e retirar a orientación ideal",
     "verSoloNoFavoritos": "Ver só os non favoritos"
   },

@@ -10299,7 +10299,7 @@ function _textoBotonFinalizarEdicion(modoLimites) {
     const btn = document.getElementById('btn-finalizar-edicion-favoritos');
     if (!btn) return;
     btn.textContent = modoLimites
-        ? t('ajustes.finalizarEdicionLimites', { defaultValue: 'Finalizar edición de límites' })
+        ? t('ajustes.finalizarEdicionLimites', { defaultValue: 'Finalizar edición de despegues personalizados' })
         : t('html.finalizarEdicion', { defaultValue: 'Finalizar edición de despegues favoritos' });
 }
 
@@ -10418,7 +10418,7 @@ window.resetearTodosLosLimites = function () {
                 guardarOrientacionesIdealesDespegues();
                 window.tablaRecrearAlVolver = true;
                 actualizarBotonGestionLimites();
-                construir_tabla(false, true); // las filas siguen, todas con la celda vacía; se sale con "Finalizar edición de límites"
+                construir_tabla(false, true); // las filas siguen, todas con la celda vacía; se sale con "Finalizar edición de despegues personalizados"
             } }
         ]
     });
@@ -12533,7 +12533,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 }
             }
 
-            // --- PRIORIDAD 1.95: Modo Edición de Límites → igual que "Finalizar edición de límites" ---
+            // --- PRIORIDAD 1.95: Modo Edición de Límites → igual que "Finalizar edición de despegues personalizados" ---
             if (typeof modoEdicionLimites !== 'undefined' && modoEdicionLimites) {
                 finalizarEdicionLimites();
                 return;
