@@ -5245,6 +5245,7 @@ function importarConfiguracion() {
 
 function mostrarAvisoActualizacionMeteo(modelos) {
     if (!modelos || modelos.length === 0) return;
+    if (window.esModoBalizasDirecto) return; // /balizas: sin avisos de modelos meteo
 
     // Unimos los nombres de los modelos con "y" (Ej: "Météo-France" o "Météo-France y ECMWF")
     const textoModelos = modelos.join(' y ');
@@ -12004,7 +12005,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
             // LÓGICA DE AVISO DE RETRASO INUSUAL
             // Usamos sessionStorage para que solo salga una vez mientras la pestaña/app esté abierta
-            if (!sessionStorage.getItem('METEO_AVISO_RETRASO_VISTO')) {
+            if (!window.esModoBalizasDirecto && !sessionStorage.getItem('METEO_AVISO_RETRASO_VISTO')) {
                 let modelosRetrasados = [];
                 
                 // Comprobamos si el texto original del servidor incluye la alerta
