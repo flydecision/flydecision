@@ -14725,7 +14725,8 @@ function inicializarMapaLeaflet() {
         if (window.google?.maps?.Map || document.getElementById('script-google-maps')) return;
         const s = document.createElement('script');
         s.id = 'script-google-maps';
-        s.src = `https://maps.googleapis.com/maps/api/js?key=${MAP_API_KEYS.google}&callback=Function.prototype`;
+        window.googleMapsCargada = () => google.maps.importLibrary('maps');
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${MAP_API_KEYS.google}&loading=async&callback=googleMapsCargada`;
         s.async = true;
         document.head.appendChild(s);
     }
