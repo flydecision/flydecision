@@ -382,7 +382,7 @@ let actualizacionesPendientes = [];
 let autoSeleccionInicialHecha = false; // bandera de control para la selección o no automática de un día de la semana al arrancar
 
 // Tiempo máximo (en milisegundos) que la app intentará descargar los datos si la conexión es lenta. Pasado este tiempo, forzará el uso de la caché offline.
-const TIMEOUT_DESCARGA_DATOS_MS = 5000;
+const TIMEOUT_DESCARGA_DATOS_MS = 10000;
 
 // Envuelve fetch con un timeout duro, para que nunca se quede colgado indefinidamente
 // (evita el bloqueo tipo "Esperando conexión" cuando el WebView de Android
@@ -6084,6 +6084,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         } 
         if (!data) {
             // 2. Si no está en RAM (o estaba caducada), intentamos buscarlo fuera
+            // Aviso "Red lenta" si la descarga tarda más de 3 s (solo en cargas visibles; ocultarLoading lo borra)
+            const timerRedLenta = silencioso ? null : setTimeout(() => {
+                const textoRedLenta = document.getElementById('textoRedLenta');
+                if (textoRedLenta) textoRedLenta.textContent = t('actualizacion.redLenta');
+                document.getElementById('msgActualizando...')?.classList.add('loader-activo');
+            }, 3000);
             try {
                 // --- NUEVO: Cronómetro para mala conexión usando la variable global ---
                 const controller = new AbortController();
@@ -6106,12 +6112,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const parseJsonWithTimeout = async (res) => {
                     return Promise.race([
                         res.json(),
-                        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout al parsear JSON")), 8000))
+                        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout al parsear JSON")), 25000))
                     ]);
                 };
 
                 data = await parseJsonWithTimeout(res1);
                 dataEcmwf = await parseJsonWithTimeout(res2);
+                clearTimeout(timerRedLenta);
 
                 // Tiempos de descarga y de procesado de los dos JSON (una vez por carga de página, para el registro anónimo de uso)
                 if (!window.tiemposCargaRegistrados) {
@@ -6148,6 +6155,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (typeof refrescoPanelInfoActualizaciones === 'function') refrescoPanelInfoActualizaciones();
 
             } catch (error) {
+                clearTimeout(timerRedLenta);
                 // 3. PLAN DE EMERGENCIA: Falló la red, miramos en IndexedDB
                 console.warn("⚠️ Fallo de conexión. Buscando en BD offline (IndexedDB)...");
 
@@ -9287,6 +9295,9 @@ const ocultarLoading = () => {
         timerLoader = null;
     }
     
+    const textoRedLenta = document.getElementById('textoRedLenta');
+    if (textoRedLenta) textoRedLenta.textContent = '';
+
     const overlay = document.getElementById('msgActualizando...');
     if (overlay) {
         overlay.classList.remove('loader-activo');
@@ -14724,7 +14735,8 @@ function inicializarMapaLeaflet() {
         if (window.google?.maps?.Map || document.getElementById('script-google-maps')) return;
         const s = document.createElement('script');
         s.id = 'script-google-maps';
-        s.src = `https://maps.googleapis.com/maps/api/js?key=${MAP_API_KEYS.google}&callback=Function.prototype`;
+        window.googleMapsCargada = () => google.maps.importLibrary('maps');
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${MAP_API_KEYS.google}&loading=async&callback=googleMapsCargada`;
         s.async = true;
         document.head.appendChild(s);
     }
