@@ -382,7 +382,7 @@ let actualizacionesPendientes = [];
 let autoSeleccionInicialHecha = false; // bandera de control para la selección o no automática de un día de la semana al arrancar
 
 // Tiempo máximo (en milisegundos) que la app intentará descargar los datos si la conexión es lenta. Pasado este tiempo, forzará el uso de la caché offline.
-const TIMEOUT_DESCARGA_DATOS_MS = 5000;
+const TIMEOUT_DESCARGA_DATOS_MS = 10000;
 
 // Envuelve fetch con un timeout duro, para que nunca se quede colgado indefinidamente
 // (evita el bloqueo tipo "Esperando conexión" cuando el WebView de Android
@@ -6107,7 +6107,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const parseJsonWithTimeout = async (res) => {
                     return Promise.race([
                         res.json(),
-                        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout al parsear JSON")), 8000))
+                        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout al parsear JSON")), 25000))
                     ]);
                 };
 
