@@ -435,7 +435,9 @@ window.addEventListener('error', (e) => {
     registrarError('js', e.message, `${String(e.filename || '').split('/').pop().split('?')[0]}:${e.lineno}:${e.colno}`);
 });
 window.addEventListener('unhandledrejection', (e) => {
-    registrarError('promesa', e.reason, origenDeError(e.reason));
+    const origen = origenDeError(e.reason);
+    if (/-extension:\/\//.test(origen)) return; // Errores de extensiones del navegador (chrome-extension://, moz-extension://): no son nuestros
+    registrarError('promesa', e.reason, origen);
 });
 
 // Tiempo de una fase de carga, en tramos de segundos (registro anónimo de uso). fase: descarga | procesado | tabla
@@ -7203,14 +7205,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			const nombreParaURL = encodeURIComponent(d.Despegue);
 			
             const svgOrientaciones = createOrientationSVG(d["Orientación"]);
-            const svgParaTooltip = svgOrientaciones.replaceAll('"', "'");
+            const svgParaTooltip = svgOrientaciones.replace(/"/g, "'");
             
             // 1. Preparamos el nombre para que sea seguro dentro de la función JS (escapa comillas simples)
             const safeDespegue = d.Despegue.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
             // Generamos el micro-gráfico de actividad antes de montar el tooltip
             const iconoActividad = d.Actividad ? crearIconoActividad(d.Actividad) : '';
-            const iconoActividadParaTooltip = iconoActividad.replaceAll('"', "'");
+            const iconoActividadParaTooltip = iconoActividad.replace(/"/g, "'");
 
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
@@ -7336,7 +7338,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             // Preparamos el texto del tooltip limpiando las comillas dobles
             const textoCrudoActividad = t('tabla.tooltips.tooltipNivelDeActividad');
-            const tooltipActividadSeguro = textoCrudoActividad ? textoCrudoActividad.replaceAll('"', "'") : '';
+            const tooltipActividadSeguro = textoCrudoActividad ? textoCrudoActividad.replace(/"/g, "'") : '';
 
             // Preparamos el HTML de los iconos centrales según el espacio/modo
             const htmlIconosCentrales = mostrarRosayActividad ? `
