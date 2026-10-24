@@ -5584,9 +5584,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         return; 
     }
 
-    // Ponemos la bandera de "Carga en proceso". Si el navegador peta durante esta función, esta bandera se quedará grabada.
-    localStorage.setItem('METEO_FLAG_CRASH_DETECTADO', 'true');
-
 	try {
 
         if (forzarRecarga) {
@@ -6209,6 +6206,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 }
             }
         }
+
+        // Bandera de "Pintado en proceso" (después de la descarga: la red lenta no debe contar como cuelgue). Si el navegador peta pintando, se quedará grabada.
+        localStorage.setItem('METEO_FLAG_CRASH_DETECTADO', 'true');
 
         // Guardamos todos los despegues en la variable global para el buscador
 		window.bdGlobalDespegues = data.despegues;
