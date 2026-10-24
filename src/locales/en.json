@@ -570,6 +570,7 @@
 
   "actualizacion": {
     "cargando": "Loading...",
+    "redLenta": "Slow connection. Downloading data...",
     "esperando": "next: <span style='color:#e39300; font-weight:bold;'>Waiting...⌛</span>",
     "proximaEn": "next: <b>{{tiempo}}</b>",
     "horas": "~{{h}} h {{m}} min",

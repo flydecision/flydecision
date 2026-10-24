@@ -570,6 +570,7 @@
 
   "actualizacion": {
     "cargando": "Carregant...",
+    "redLenta": "Xarxa lenta. Descarregant dades...",
     "esperando": "següent: <span style='color:#e39300; font-weight:bold;'>Esperant...⌛</span>",
     "proximaEn": "següent: <b>{{tiempo}}</b>",
     "horas": "~{{h}} h {{m}} min",
