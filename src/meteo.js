@@ -11531,7 +11531,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     avisoOfflineActivo = false;
                     esModoOffline = false;
                     cicloActualizacion();
-                    construir_tabla(true);
+                    construir_tabla(true, true); // silenciosa: ya hay tabla en pantalla
                 }, TIEMPO_CONFIRMACION_ONLINE);
             }
         }
@@ -12118,7 +12118,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 avisoOfflineActivo = false;
                 esModoOffline = false;
                 cicloActualizacion();
-                construir_tabla(true);
+                construir_tabla(true, true); // silenciosa: ya hay tabla en pantalla
             }
         }
     }, 30000);
