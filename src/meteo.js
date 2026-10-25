@@ -390,6 +390,11 @@ function prepararJsonEcmwfLigero(dataEcmwf) {
 // Los niveles de presión de ECMWF (filas «Viento ECMWF (sinóptico)») van en meteo-datos-ecmwf-sinoptico.json y solo se
 // descargan cuando hacen falta: modo permanente, o modo desplegable con algún despegue desplegado.
 // Solo se juntan si son de la misma ejecución que el JSON ligero (mismo timestamp); después se repinta la tabla en silencio.
+// Si el sinóptico no llega (error o de otra ejecución), los spinners de sus celdas pasan a guiones sin repintar la tabla
+function quitarSpinnersSinoptico() {
+    document.querySelectorAll('.spinner-sinoptico').forEach(sp => sp.replaceWith('—'));
+}
+
 function cargarSinopticoEcmwf(dataEcmwf) {
     const hacenFalta = chkMostrarVientoEcmwf || (chkMostrarVientoEcmwfDesplegable && window.sessionExpandedEcmwfTakeoffs.size > 0);
     if (!hacenFalta || !dataEcmwf || !Array.isArray(dataEcmwf.respuestas) || descargaSinopticoEcmwfEnCurso || dataEcmwf.sinopticoNoCoincide) return;
@@ -404,6 +409,7 @@ function cargarSinopticoEcmwf(dataEcmwf) {
         .then(sinoptico => {
             if (!sinoptico || sinoptico.timestamp !== dataEcmwf.timestamp || !Array.isArray(sinoptico.respuestas)) {
                 dataEcmwf.sinopticoNoCoincide = true; // De otra ejecución: no se reintenta hasta que llegue un JSON ligero nuevo
+                quitarSpinnersSinoptico();
                 return;
             }
             dataEcmwf.respuestas.forEach((r, i) => {
@@ -412,7 +418,7 @@ function cargarSinopticoEcmwf(dataEcmwf) {
             guardarEnCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE', dataEcmwf);
             if (DATOS_METEO_ECMWF_CACHE === dataEcmwf) construir_tabla(false, true);
         })
-        .catch(error => registrarError('carga', error, 'meteo-datos-ecmwf-sinoptico'))
+        .catch(error => { quitarSpinnersSinoptico(); registrarError('carga', error, 'meteo-datos-ecmwf-sinoptico'); })
         .finally(() => { descargaSinopticoEcmwfEnCurso = null; });
 }
 
@@ -8648,7 +8654,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     hourlyEcmwf.wind_direction_700hPa ? hourlyEcmwf.wind_direction_700hPa[idxEcmwf] : null
                                 );
 
-                                if (interp === null) {
+                                if (interp === null && descargaSinopticoEcmwfEnCurso) {
+                                    // Sinóptico aún descargándose (primera vez que se despliega): spinner en vez de guiones
+                                    tdVel.innerHTML = '<span class="spinner-sinoptico"></span>';
+                                    tdDir.innerHTML = '<span class="spinner-sinoptico"></span>';
+                                    if (!cacheEsNoche[indiceHoraArome]) {
+                                        tdVel.style.backgroundColor = "#ffffff";
+                                        tdDir.style.backgroundColor = "#ffffff";
+                                    }
+                                } else if (interp === null) {
                                     tdVel.textContent = "—";
                                     tdDir.textContent = "—";
                                     if (!cacheEsNoche[indiceHoraArome]) {

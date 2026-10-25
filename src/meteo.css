@@ -3040,6 +3040,18 @@ label.custom-checkbox {
     100% { transform: rotate(360deg); }
 }
 
+/* Spinner mini en las celdas «Viento ECMWF (sinóptico)» mientras se descarga meteo-datos-ecmwf-sinoptico.json */
+.spinner-sinoptico {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border: 2px solid #e0e0e0;
+    border-top: 2px solid #0078d4;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+}
+
 /* Spinner no bloqueante para el buscador */
 [id="msgActualizando..."].spinner-transparente {
     background-color: transparent !important;
