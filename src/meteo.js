@@ -432,6 +432,16 @@ let autoSeleccionInicialHecha = false; // bandera de control para la selección 
 // Tiempo máximo (en milisegundos) que la app intentará descargar los datos si la conexión es lenta. Pasado este tiempo, forzará el uso de la caché offline.
 const TIMEOUT_DESCARGA_DATOS_MS = 10000;
 
+// Descarga y lee uno de los JSON meteo. Si falla, el error lleva el nombre del fichero (ficheroMeteo) para el registro de errores
+function bajarJsonMeteo(url, nombre) {
+    return fetchConTimeout(`${url}?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
+        .then(res => {
+            if (!res.ok) throw new Error(`⚠️ Error al cargar archivos JSON`);
+            return res.json();
+        })
+        .catch(error => { try { error.ficheroMeteo = nombre; } catch (e) {} throw error; });
+}
+
 // Envuelve fetch con un timeout duro, para que nunca se quede colgado indefinidamente
 // (evita el bloqueo tipo "Esperando conexión" cuando el WebView de Android
 // deja un fetch a medias tras salir de Doze/cambio de red)
@@ -6154,14 +6164,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     const anticipada = window.descargaMeteoAnticipada;
                     window.descargaMeteoAnticipada = null;
                     const descarga = anticipada ? anticipada.then(([d1, d2]) => [d1, prepararJsonEcmwfLigero(d2)]) : Promise.all([
-                        fetchConTimeout(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS),
-                        fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf-ligero.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
-                    ]).then(([res1, res2]) => {
-                        if (!res1.ok || !res2.ok) {
-                            throw new Error(`⚠️ Error al cargar archivos JSON`);
-                        }
-                        return Promise.all([res1.json(), res2.json().then(prepararJsonEcmwfLigero)]);
-                    });
+                        bajarJsonMeteo('https://flydecision.com/meteo-datos.json', 'meteo-datos'),
+                        bajarJsonMeteo('https://flydecision.com/meteo-datos-ecmwf-ligero.json', 'ecmwf-ligero').then(prepararJsonEcmwfLigero)
+                    ]);
                     descargaMeteoEnCurso = descarga;
                     descarga.catch(() => {}).finally(() => { if (descargaMeteoEnCurso === descarga) descargaMeteoEnCurso = null; });
                 }
@@ -6235,7 +6240,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 const cachedData = await leerDeCacheIDB('METEO_DATOS_JSON_CACHE');
                 const cachedDataEcmwf = await leerDeCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE');
-                registrarError('carga', error, (cachedData && cachedDataEcmwf) ? 'meteo-datos → offline (IndexedDB)' : 'meteo-datos → sin datos');
+                const ficheroFallido = (error && error.ficheroMeteo) ? ` [${error.ficheroMeteo}]` : ''; // Qué JSON se cortó o falló
+                registrarError('carga', error, (cachedData && cachedDataEcmwf) ? `meteo-datos${ficheroFallido} → offline (IndexedDB)` : `meteo-datos${ficheroFallido} → sin datos`);
+                try { if (error) error.registradoComoCarga = true; } catch (e) {} // Para no apuntarlo otra vez como 'app' al relanzarlo
 
                 if (cachedData && cachedDataEcmwf) {
                     // 🛡️ Misma comprobación en la ruta offline: si hay una llamada más nueva, no pintamos con datos viejos.
@@ -9117,7 +9124,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
 	catch (error) {
 		console.error("Error en la aplicación:", error);
-        registrarError('app', error, origenDeError(error));
+        if (!(error && error.registradoComoCarga)) registrarError('app', error, origenDeError(error));
 		ocultarLoading();
         localStorage.removeItem('METEO_FLAG_CRASH_DETECTADO');
 	}
