@@ -121,8 +121,22 @@
 <div id="spinnerArranque" class="loader-container loader-activo">
     <div class="loader-box">
         <div class="spinner"></div>
+        <span id="textoRedLentaArranque"></span>
     </div>
 </div>
+<script>
+// Aviso "Red lenta" si el arranque tarda más de 3 s (i18next aún no está cargado: mismos textos que actualizacion.redLenta de locales/*.json)
+setTimeout(function () {
+    try {
+        var el = document.getElementById('textoRedLentaArranque');
+        if (!el) return; // meteo.js ya arrancó
+        var textos = { es: 'Red lenta. Descargando datos...', en: 'Slow connection. Downloading data...', ca: 'Xarxa lenta. Descarregant dades...', gl: 'Rede lenta. Descargando datos...', eu: 'Sare motela. Datuak deskargatzen...', fr: 'Réseau lent. Téléchargement des données...', de: 'Langsames Netz. Daten werden geladen...', pt: 'Rede lenta. A transferir dados...' };
+        var idioma = String(localStorage.getItem('i18nextLng') || navigator.language || 'es').slice(0, 2).toLowerCase();
+        el.textContent = textos[idioma] || textos.es;
+        window.redLentaEnArranque = true; // construir_tabla mostrará su aviso sin esperar otros 3 s
+    } catch (e) {}
+}, 3000);
+</script>
 
 <!-- BOTÓN "CONFIGURAR APLICACIÓN" para usuarias sin favoritos -->
 <button id="btn-configurar-app-mapa" class="bottom-nav compact-nav" style="display: none; justify-content: center; background-color: #0078d4; color: white; border: 2px solid white; cursor: pointer;" onclick="if(typeof window.mostrarPaso1General === 'function') window.mostrarPaso1General();">

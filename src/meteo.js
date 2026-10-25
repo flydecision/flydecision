@@ -6137,7 +6137,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const textoRedLenta = document.getElementById('textoRedLenta');
                 if (textoRedLenta) textoRedLenta.textContent = t('actualizacion.redLenta');
                 document.getElementById('msgActualizando...')?.classList.add('loader-activo');
-            }, 3000);
+            }, window.redLentaEnArranque ? 0 : 3000);
+            window.redLentaEnArranque = false; // Solo vale para la primera carga
             try {
                 // --- NUEVO: Cronómetro para mala conexión usando la variable global ---
                 const controller = new AbortController();

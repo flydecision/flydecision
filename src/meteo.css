@@ -3021,7 +3021,8 @@ label.custom-checkbox {
 }
 
 /* Texto opcional junto al spinner (aviso "Red lenta"); sin texto no ocupa sitio */
-#textoRedLenta:empty {
+#textoRedLenta:empty,
+#textoRedLentaArranque:empty {
     display: none;
 }
 
