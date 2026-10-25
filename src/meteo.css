@@ -3020,6 +3020,11 @@ label.custom-checkbox {
     gap: 10px;
 }
 
+/* Texto opcional junto al spinner (aviso "Red lenta"); sin texto no ocupa sitio */
+#textoRedLenta:empty {
+    display: none;
+}
+
 /* Spinner un poco más pequeño para que sea elegante */
 .spinner {
     width: 20px;

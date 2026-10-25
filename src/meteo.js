@@ -373,6 +373,7 @@ function calcularSemaforoAntiguedad(timestampMs, umbralAmarilloMin, umbralRojoMi
 }
 
 let esModoOffline = false; // Nueva variable para controlar el estado de red
+let descargaMeteoEnCurso = null; // Descarga de los 2 JSON aún en marcha (red lenta): se reutiliza en vez de lanzar otra
 
 const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
 
@@ -382,7 +383,7 @@ let actualizacionesPendientes = [];
 let autoSeleccionInicialHecha = false; // bandera de control para la selección o no automática de un día de la semana al arrancar
 
 // Tiempo máximo (en milisegundos) que la app intentará descargar los datos si la conexión es lenta. Pasado este tiempo, forzará el uso de la caché offline.
-const TIMEOUT_DESCARGA_DATOS_MS = 5000;
+const TIMEOUT_DESCARGA_DATOS_MS = 10000;
 
 // Envuelve fetch con un timeout duro, para que nunca se quede colgado indefinidamente
 // (evita el bloqueo tipo "Esperando conexión" cuando el WebView de Android
@@ -434,7 +435,9 @@ window.addEventListener('error', (e) => {
     registrarError('js', e.message, `${String(e.filename || '').split('/').pop().split('?')[0]}:${e.lineno}:${e.colno}`);
 });
 window.addEventListener('unhandledrejection', (e) => {
-    registrarError('promesa', e.reason, origenDeError(e.reason));
+    const origen = origenDeError(e.reason);
+    if (/-extension:\/\//.test(origen)) return; // Errores de extensiones del navegador (chrome-extension://, moz-extension://): no son nuestros
+    registrarError('promesa', e.reason, origen);
 });
 
 // Tiempo de una fase de carga, en tramos de segundos (registro anónimo de uso). fase: descarga | procesado | tabla
@@ -5583,9 +5586,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         return; 
     }
 
-    // Ponemos la bandera de "Carga en proceso". Si el navegador peta durante esta función, esta bandera se quedará grabada.
-    localStorage.setItem('METEO_FLAG_CRASH_DETECTADO', 'true');
-
 	try {
 
         if (forzarRecarga) {
@@ -6085,6 +6085,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         } 
         if (!data) {
             // 2. Si no está en RAM (o estaba caducada), intentamos buscarlo fuera
+            // Aviso "Red lenta" si la descarga tarda más de 3 s (solo en cargas visibles; ocultarLoading lo borra)
+            const timerRedLenta = silencioso ? null : setTimeout(() => {
+                const textoRedLenta = document.getElementById('textoRedLenta');
+                if (textoRedLenta) textoRedLenta.textContent = t('actualizacion.redLenta');
+                document.getElementById('msgActualizando...')?.classList.add('loader-activo');
+            }, 3000);
             try {
                 // --- NUEVO: Cronómetro para mala conexión usando la variable global ---
                 const controller = new AbortController();
@@ -6093,26 +6099,30 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     console.warn(`⏳ Red muy lenta (${TIMEOUT_DESCARGA_DATOS_MS/1000}s). Abortando descarga...`);
                 }, TIMEOUT_DESCARGA_DATOS_MS); 
 
-                // Intentamos descargar (Petición de red real con protección anti-cuelgue al parsear):
-                const[res1, res2] = await Promise.all([
-                    fetchConTimeout(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS),
-                    fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
-                ]);
-
-                if (!res1.ok || !res2.ok) {
-                    throw new Error(`⚠️ Error al cargar archivos JSON`);
+                // Intentamos descargar (Petición de red real con protección anti-cuelgue al parsear).
+                // Si ya hay una descarga en marcha (red lenta), la reutilizamos en vez de lanzar otra.
+                if (!descargaMeteoEnCurso) {
+                    const descarga = Promise.all([
+                        fetchConTimeout(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS),
+                        fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
+                    ]).then(([res1, res2]) => {
+                        if (!res1.ok || !res2.ok) {
+                            throw new Error(`⚠️ Error al cargar archivos JSON`);
+                        }
+                        return Promise.all([res1.json(), res2.json()]);
+                    });
+                    descargaMeteoEnCurso = descarga;
+                    descarga.catch(() => {}).finally(() => { if (descargaMeteoEnCurso === descarga) descargaMeteoEnCurso = null; });
                 }
 
-                // 🛡️ Protección anti-cuelgue al leer el JSON (muy común al despertar de suspensión)
-                const parseJsonWithTimeout = async (res) => {
-                    return Promise.race([
-                        res.json(),
-                        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout al parsear JSON")), 8000))
-                    ]);
-                };
-
-                data = await parseJsonWithTimeout(res1);
-                dataEcmwf = await parseJsonWithTimeout(res2);
+                // 🛡️ Protección anti-cuelgue al leer el JSON (muy común al despertar de suspensión). La descarga no se corta: sigue en descargaMeteoEnCurso
+                const [datosDescargados, datosEcmwfDescargados] = await Promise.race([
+                    descargaMeteoEnCurso,
+                    new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout al parsear JSON")), 25000))
+                ]);
+                data = datosDescargados;
+                dataEcmwf = datosEcmwfDescargados;
+                clearTimeout(timerRedLenta);
 
                 // Tiempos de descarga y de procesado de los dos JSON (una vez por carga de página, para el registro anónimo de uso)
                 if (!window.tiemposCargaRegistrados) {
@@ -6149,6 +6159,25 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (typeof refrescoPanelInfoActualizaciones === 'function') refrescoPanelInfoActualizaciones();
 
             } catch (error) {
+                clearTimeout(timerRedLenta);
+
+                
+                // Red lenta: la descarga sigue en marcha. Cuando termine, guardamos los datos y repintamos en silencio (una sola vez por descarga)
+                if (descargaMeteoEnCurso && !descargaMeteoEnCurso.repintadoPendiente) {
+                    descargaMeteoEnCurso.repintadoPendiente = true;
+                    descargaMeteoEnCurso.then(([datosTardios, datosEcmwfTardios]) => {
+                        DATOS_METEO_CACHE = datosTardios;
+                        DATOS_METEO_ECMWF_CACHE = datosEcmwfTardios;
+                        esModoOffline = false;
+                        guardarEnCacheIDB('METEO_DATOS_JSON_CACHE', datosTardios);
+                        guardarEnCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE', datosEcmwfTardios);
+                        if (datosTardios.timestamp) lastDataGenerationTimestamp = new Date(datosTardios.timestamp).getTime();
+                        if (datosTardios.model_run_ref_time) jsonModelInitTimestamp = new Date(datosTardios.model_run_ref_time).getTime();
+                        if (typeof refrescoPanelInfoActualizaciones === 'function') refrescoPanelInfoActualizaciones();
+                        construir_tabla(false, true);
+                    }).catch(() => {});
+                }
+
                 // 3. PLAN DE EMERGENCIA: Falló la red, miramos en IndexedDB
                 console.warn("⚠️ Fallo de conexión. Buscando en BD offline (IndexedDB)...");
 
@@ -6179,6 +6208,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 }
             }
         }
+
+        // Bandera de "Pintado en proceso" (después de la descarga: la red lenta no debe contar como cuelgue). Si el navegador peta pintando, se quedará grabada.
+        localStorage.setItem('METEO_FLAG_CRASH_DETECTADO', 'true');
 
         // Guardamos todos los despegues en la variable global para el buscador
 		window.bdGlobalDespegues = data.despegues;
@@ -7173,14 +7205,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			const nombreParaURL = encodeURIComponent(d.Despegue);
 			
             const svgOrientaciones = createOrientationSVG(d["Orientación"]);
-            const svgParaTooltip = svgOrientaciones.replaceAll('"', "'");
+            const svgParaTooltip = svgOrientaciones.replace(/"/g, "'");
             
             // 1. Preparamos el nombre para que sea seguro dentro de la función JS (escapa comillas simples)
             const safeDespegue = d.Despegue.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
             // Generamos el micro-gráfico de actividad antes de montar el tooltip
             const iconoActividad = d.Actividad ? crearIconoActividad(d.Actividad) : '';
-            const iconoActividadParaTooltip = iconoActividad.replaceAll('"', "'");
+            const iconoActividadParaTooltip = iconoActividad.replace(/"/g, "'");
 
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
@@ -7306,7 +7338,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
             // Preparamos el texto del tooltip limpiando las comillas dobles
             const textoCrudoActividad = t('tabla.tooltips.tooltipNivelDeActividad');
-            const tooltipActividadSeguro = textoCrudoActividad ? textoCrudoActividad.replaceAll('"', "'") : '';
+            const tooltipActividadSeguro = textoCrudoActividad ? textoCrudoActividad.replace(/"/g, "'") : '';
 
             // Preparamos el HTML de los iconos centrales según el espacio/modo
             const htmlIconosCentrales = mostrarRosayActividad ? `
@@ -9288,6 +9320,9 @@ const ocultarLoading = () => {
         timerLoader = null;
     }
     
+    const textoRedLenta = document.getElementById('textoRedLenta');
+    if (textoRedLenta) textoRedLenta.textContent = '';
+
     const overlay = document.getElementById('msgActualizando...');
     if (overlay) {
         overlay.classList.remove('loader-activo');
@@ -11520,7 +11555,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     avisoOfflineActivo = false;
                     esModoOffline = false;
                     cicloActualizacion();
-                    construir_tabla(true);
+                    construir_tabla(true, true); // silenciosa: ya hay tabla en pantalla
                 }, TIEMPO_CONFIRMACION_ONLINE);
             }
         }
@@ -12107,7 +12142,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 avisoOfflineActivo = false;
                 esModoOffline = false;
                 cicloActualizacion();
-                construir_tabla(true);
+                construir_tabla(true, true); // silenciosa: ya hay tabla en pantalla
             }
         }
     }, 30000);
@@ -14725,7 +14760,8 @@ function inicializarMapaLeaflet() {
         if (window.google?.maps?.Map || document.getElementById('script-google-maps')) return;
         const s = document.createElement('script');
         s.id = 'script-google-maps';
-        s.src = `https://maps.googleapis.com/maps/api/js?key=${MAP_API_KEYS.google}&callback=Function.prototype`;
+        window.googleMapsCargada = () => google.maps.importLibrary('maps');
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${MAP_API_KEYS.google}&loading=async&callback=googleMapsCargada`;
         s.async = true;
         document.head.appendChild(s);
     }
