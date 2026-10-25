@@ -6143,7 +6143,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // Intentamos descargar (Petición de red real con protección anti-cuelgue al parsear).
                 // Si ya hay una descarga en marcha (red lenta), la reutilizamos en vez de lanzar otra.
                 if (!descargaMeteoEnCurso) {
-                    const descarga = Promise.all([
+                    // Descarga anticipada lanzada desde index.html al abrir la página: se aprovecha una sola vez
+                    const anticipada = window.descargaMeteoAnticipada;
+                    window.descargaMeteoAnticipada = null;
+                    const descarga = anticipada ? anticipada.then(([d1, d2]) => [d1, prepararJsonEcmwfLigero(d2)]) : Promise.all([
                         fetchConTimeout(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS),
                         fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf-ligero.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
                     ]).then(([res1, res2]) => {
@@ -6156,6 +6159,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     descarga.catch(() => {}).finally(() => { if (descargaMeteoEnCurso === descarga) descargaMeteoEnCurso = null; });
                 }
 
+                const inicioEsperaDescarga = performance.now(); // Con la descarga anticipada, los JSON pueden llegar antes de que meteo.js empiece a esperarlos
                 // 🛡️ Protección anti-cuelgue al leer el JSON (muy común al despertar de suspensión). La descarga no se corta: sigue en descargaMeteoEnCurso
                 const [datosDescargados, datosEcmwfDescargados] = await Promise.race([
                     descargaMeteoEnCurso,
@@ -6173,7 +6177,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         if (entradas.length === 2 && entradas.every(e => e.responseEnd > 0)) {
                             const finDescarga = Math.max(...entradas.map(e => e.responseEnd));
                             registrarTiempoCarga('descarga', finDescarga - Math.min(...entradas.map(e => e.startTime)));
-                            registrarTiempoCarga('procesado', performance.now() - finDescarga);
+                            registrarTiempoCarga('procesado', performance.now() - Math.max(finDescarga, inicioEsperaDescarga));
                         }
                     } catch (e) {}
                 }
