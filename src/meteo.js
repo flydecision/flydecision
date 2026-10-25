@@ -10873,6 +10873,8 @@ function limpiarBuscador() {
 // En lugar de DOMContentLoaded, esperamos a nuestro evento personalizado
 document.addEventListener('i18nReady', function() {
 
+    document.getElementById('spinnerArranque')?.remove(); // Spinner de index.html: a partir de aquí manda mostrarLoading/ocultarLoading
+
     aplicarModoSimpleUI();
 
     // --- ASIGNACIÓN DE TRADUCCIONES DIFERIDAS ---

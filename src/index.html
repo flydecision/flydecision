@@ -117,6 +117,13 @@
     </div> 
 </div>
 
+<!-- SPINNER DE ARRANQUE: visible desde el primer pintado, mientras bajan los JS. meteo.js lo quita al arrancar (i18nReady) y sigue con su propio spinner -->
+<div id="spinnerArranque" class="loader-container loader-activo">
+    <div class="loader-box">
+        <div class="spinner"></div>
+    </div>
+</div>
+
 <!-- BOTÓN "CONFIGURAR APLICACIÓN" para usuarias sin favoritos -->
 <button id="btn-configurar-app-mapa" class="bottom-nav compact-nav" style="display: none; justify-content: center; background-color: #0078d4; color: white; border: 2px solid white; cursor: pointer;" onclick="if(typeof window.mostrarPaso1General === 'function') window.mostrarPaso1General();">
 	<span style="font-weight: bold; font-size: 1.2em;" data-i18n="botones.marcarFavoritos">⚙️ Configurar la aplicación</span>
