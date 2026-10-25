@@ -5599,6 +5599,9 @@ const leerDeCacheIDB = async (key) => {
 
 async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
 
+    // /balizas: no hay tabla ni previsiones, así que no se descargan ni se procesan los datos meteo
+    if (window.esModoBalizasDirecto) return;
+
     window.ultimoConstruirTablaSilencioso = silencioso;
 	
     // 1. REGISTRO DE CONCURRENCIA: Asignamos un número único a esta llamada
@@ -16102,8 +16105,9 @@ function inicializarMapaLeaflet() {
 
     window.cargarMarcadoresCSV = function() {
         // Si ya los hemos cargado, o si el JSON de la meteo aún no está listo, no hacemos nada
+        // (en /balizas no hay JSON meteo: se cargan sin él al marcar la capa de despegues)
         if (window.marcadoresCSVCargados) return;
-        if (!window.bdGlobalDespegues || window.bdGlobalDespegues.length === 0) return;
+        if ((!window.bdGlobalDespegues || window.bdGlobalDespegues.length === 0) && !window.esModoBalizasDirecto) return;
 
         window.marcadoresCSVCargados = true;
 
@@ -16331,7 +16335,7 @@ function inicializarMapaLeaflet() {
                 // Restaurar el estado de visibilidad si el check de "Recordar capas activas" está ON
                 const recordarCapas = localStorage.getItem('METEO_RECORDAR_CAPAS_ACTIVAS') === 'true';
                 const chkDespeguesPersist = document.getElementById('checkboxDespegues');
-                let despeguesDebenVerse = window.esModoBalizasDirecto ? false : (recordarCapas ? (localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false') : true);
+                let despeguesDebenVerse = window.esModoBalizasDirecto ? (chkDespeguesPersist?.checked === true) : (recordarCapas ? (localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false') : true);
 
                 if (chkDespeguesPersist) chkDespeguesPersist.checked = despeguesDebenVerse;
 
@@ -17668,6 +17672,8 @@ function inicializarMapaLeaflet() {
     document.getElementById('checkboxDespegues').addEventListener('change', function () {
         localStorage.setItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE', this.checked);
         if (this.checked) {
+            // /balizas: los despegues no se cargan al arrancar, solo la primera vez que se marca la capa
+            if (window.esModoBalizasDirecto && typeof window.cargarMarcadoresCSV === 'function') window.cargarMarcadoresCSV();
             map.addLayer(clustergroupDespegues);
         } else {
             map.removeLayer(clustergroupDespegues);
