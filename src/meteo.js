@@ -374,6 +374,47 @@ function calcularSemaforoAntiguedad(timestampMs, umbralAmarilloMin, umbralRojoMi
 
 let esModoOffline = false; // Nueva variable para controlar el estado de red
 let descargaMeteoEnCurso = null; // Descarga de los 2 JSON aún en marcha (red lenta): se reutiliza en vez de lanzar otra
+let descargaSinopticoEcmwfEnCurso = null; // Descarga de meteo-datos-ecmwf-sinoptico.json en marcha (solo se pide una vez)
+
+// meteo-datos-ecmwf-ligero.json trae la lista de horas una sola vez (en "time"): la volvemos a colgar de cada despegue
+// (la misma lista compartida, sin copiarla) para que el resto del código siga leyendo hourly.time como antes
+function prepararJsonEcmwfLigero(dataEcmwf) {
+    if (dataEcmwf && Array.isArray(dataEcmwf.time) && Array.isArray(dataEcmwf.respuestas)) {
+        dataEcmwf.respuestas.forEach(r => {
+            if (r && r.hourly && !Array.isArray(r.hourly) && !r.hourly.time) r.hourly.time = dataEcmwf.time;
+        });
+    }
+    return dataEcmwf;
+}
+
+// Los niveles de presión de ECMWF (filas «Viento ECMWF (sinóptico)») van en meteo-datos-ecmwf-sinoptico.json y solo se
+// descargan cuando hacen falta: modo permanente, o modo desplegable con algún despegue desplegado.
+// Solo se juntan si son de la misma ejecución que el JSON ligero (mismo timestamp); después se repinta la tabla en silencio.
+function cargarSinopticoEcmwf(dataEcmwf) {
+    const hacenFalta = chkMostrarVientoEcmwf || (chkMostrarVientoEcmwfDesplegable && window.sessionExpandedEcmwfTakeoffs.size > 0);
+    if (!hacenFalta || !dataEcmwf || !Array.isArray(dataEcmwf.respuestas) || descargaSinopticoEcmwfEnCurso || dataEcmwf.sinopticoNoCoincide) return;
+    // Ya están (sinóptico ya juntado, o caché antigua en formato completo)
+    if (dataEcmwf.respuestas.some(r => r && r.hourly && r.hourly.wind_speed_850hPa)) return;
+
+    descargaSinopticoEcmwfEnCurso = fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf-sinoptico.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
+        .then(res => {
+            if (!res.ok) throw new Error(`⚠️ Error al cargar meteo-datos-ecmwf-sinoptico.json`);
+            return res.json();
+        })
+        .then(sinoptico => {
+            if (!sinoptico || sinoptico.timestamp !== dataEcmwf.timestamp || !Array.isArray(sinoptico.respuestas)) {
+                dataEcmwf.sinopticoNoCoincide = true; // De otra ejecución: no se reintenta hasta que llegue un JSON ligero nuevo
+                return;
+            }
+            dataEcmwf.respuestas.forEach((r, i) => {
+                if (r && r.hourly && !Array.isArray(r.hourly) && sinoptico.respuestas[i]) Object.assign(r.hourly, sinoptico.respuestas[i]);
+            });
+            guardarEnCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE', dataEcmwf);
+            if (DATOS_METEO_ECMWF_CACHE === dataEcmwf) construir_tabla(false, true);
+        })
+        .catch(error => registrarError('carga', error, 'meteo-datos-ecmwf-sinoptico'))
+        .finally(() => { descargaSinopticoEcmwfEnCurso = null; });
+}
 
 const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
 
@@ -6104,12 +6145,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (!descargaMeteoEnCurso) {
                     const descarga = Promise.all([
                         fetchConTimeout(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS),
-                        fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
+                        fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf-ligero.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
                     ]).then(([res1, res2]) => {
                         if (!res1.ok || !res2.ok) {
                             throw new Error(`⚠️ Error al cargar archivos JSON`);
                         }
-                        return Promise.all([res1.json(), res2.json()]);
+                        return Promise.all([res1.json(), res2.json().then(prepararJsonEcmwfLigero)]);
                     });
                     descargaMeteoEnCurso = descarga;
                     descarga.catch(() => {}).finally(() => { if (descargaMeteoEnCurso === descarga) descargaMeteoEnCurso = null; });
@@ -6128,7 +6169,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (!window.tiemposCargaRegistrados) {
                     window.tiemposCargaRegistrados = true;
                     try {
-                        const entradas = performance.getEntriesByType('resource').filter(e => /\/meteo-datos(-ecmwf)?\.json\?t=/.test(e.name));
+                        const entradas = performance.getEntriesByType('resource').filter(e => /\/meteo-datos(-ecmwf-ligero)?\.json\?t=/.test(e.name));
                         if (entradas.length === 2 && entradas.every(e => e.responseEnd > 0)) {
                             const finDescarga = Math.max(...entradas.map(e => e.responseEnd));
                             registrarTiempoCarga('descarga', finDescarga - Math.min(...entradas.map(e => e.startTime)));
@@ -6224,6 +6265,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // 🗺️ Guardar datos para puntuación en mapa
         window.respuestasGlobalMapa = data.respuestas;
         window.respuestasEcmwfGlobalMapa = dataEcmwf.respuestas;
+
+        // Niveles de presión de ECMWF bajo demanda (solo si se ven las filas del sinóptico)
+        cargarSinopticoEcmwf(dataEcmwf);
 		
 		totalDespeguesDisponibles = data.despegues.length;
 		
