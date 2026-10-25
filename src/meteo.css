@@ -3021,7 +3021,8 @@ label.custom-checkbox {
 }
 
 /* Texto opcional junto al spinner (aviso "Red lenta"); sin texto no ocupa sitio */
-#textoRedLenta:empty {
+#textoRedLenta:empty,
+#textoRedLentaArranque:empty {
     display: none;
 }
 
@@ -3038,6 +3039,18 @@ label.custom-checkbox {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Spinner mini en las celdas «Viento ECMWF (sinóptico)» mientras se descarga meteo-datos-ecmwf-sinoptico.json */
+.spinner-sinoptico {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border: 2px solid #e0e0e0;
+    border-top: 2px solid #0078d4;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
 }
 
 /* Spinner no bloqueante para el buscador */

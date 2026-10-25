@@ -390,6 +390,11 @@ function prepararJsonEcmwfLigero(dataEcmwf) {
 // Los niveles de presión de ECMWF (filas «Viento ECMWF (sinóptico)») van en meteo-datos-ecmwf-sinoptico.json y solo se
 // descargan cuando hacen falta: modo permanente, o modo desplegable con algún despegue desplegado.
 // Solo se juntan si son de la misma ejecución que el JSON ligero (mismo timestamp); después se repinta la tabla en silencio.
+// Si el sinóptico no llega (error o de otra ejecución), los spinners de sus celdas pasan a guiones sin repintar la tabla
+function quitarSpinnersSinoptico() {
+    document.querySelectorAll('.spinner-sinoptico').forEach(sp => sp.replaceWith('—'));
+}
+
 function cargarSinopticoEcmwf(dataEcmwf) {
     const hacenFalta = chkMostrarVientoEcmwf || (chkMostrarVientoEcmwfDesplegable && window.sessionExpandedEcmwfTakeoffs.size > 0);
     if (!hacenFalta || !dataEcmwf || !Array.isArray(dataEcmwf.respuestas) || descargaSinopticoEcmwfEnCurso || dataEcmwf.sinopticoNoCoincide) return;
@@ -404,6 +409,7 @@ function cargarSinopticoEcmwf(dataEcmwf) {
         .then(sinoptico => {
             if (!sinoptico || sinoptico.timestamp !== dataEcmwf.timestamp || !Array.isArray(sinoptico.respuestas)) {
                 dataEcmwf.sinopticoNoCoincide = true; // De otra ejecución: no se reintenta hasta que llegue un JSON ligero nuevo
+                quitarSpinnersSinoptico();
                 return;
             }
             dataEcmwf.respuestas.forEach((r, i) => {
@@ -412,7 +418,7 @@ function cargarSinopticoEcmwf(dataEcmwf) {
             guardarEnCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE', dataEcmwf);
             if (DATOS_METEO_ECMWF_CACHE === dataEcmwf) construir_tabla(false, true);
         })
-        .catch(error => registrarError('carga', error, 'meteo-datos-ecmwf-sinoptico'))
+        .catch(error => { quitarSpinnersSinoptico(); registrarError('carga', error, 'meteo-datos-ecmwf-sinoptico'); })
         .finally(() => { descargaSinopticoEcmwfEnCurso = null; });
 }
 
@@ -6131,7 +6137,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 const textoRedLenta = document.getElementById('textoRedLenta');
                 if (textoRedLenta) textoRedLenta.textContent = t('actualizacion.redLenta');
                 document.getElementById('msgActualizando...')?.classList.add('loader-activo');
-            }, 3000);
+            }, window.redLentaEnArranque ? 0 : 3000);
+            window.redLentaEnArranque = false; // Solo vale para la primera carga
             try {
                 // --- NUEVO: Cronómetro para mala conexión usando la variable global ---
                 const controller = new AbortController();
@@ -6143,7 +6150,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // Intentamos descargar (Petición de red real con protección anti-cuelgue al parsear).
                 // Si ya hay una descarga en marcha (red lenta), la reutilizamos en vez de lanzar otra.
                 if (!descargaMeteoEnCurso) {
-                    const descarga = Promise.all([
+                    // Descarga anticipada lanzada desde index.html al abrir la página: se aprovecha una sola vez
+                    const anticipada = window.descargaMeteoAnticipada;
+                    window.descargaMeteoAnticipada = null;
+                    const descarga = anticipada ? anticipada.then(([d1, d2]) => [d1, prepararJsonEcmwfLigero(d2)]) : Promise.all([
                         fetchConTimeout(`https://flydecision.com/meteo-datos.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS),
                         fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf-ligero.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
                     ]).then(([res1, res2]) => {
@@ -6156,6 +6166,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     descarga.catch(() => {}).finally(() => { if (descargaMeteoEnCurso === descarga) descargaMeteoEnCurso = null; });
                 }
 
+                const inicioEsperaDescarga = performance.now(); // Con la descarga anticipada, los JSON pueden llegar antes de que meteo.js empiece a esperarlos
                 // 🛡️ Protección anti-cuelgue al leer el JSON (muy común al despertar de suspensión). La descarga no se corta: sigue en descargaMeteoEnCurso
                 const [datosDescargados, datosEcmwfDescargados] = await Promise.race([
                     descargaMeteoEnCurso,
@@ -6173,7 +6184,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         if (entradas.length === 2 && entradas.every(e => e.responseEnd > 0)) {
                             const finDescarga = Math.max(...entradas.map(e => e.responseEnd));
                             registrarTiempoCarga('descarga', finDescarga - Math.min(...entradas.map(e => e.startTime)));
-                            registrarTiempoCarga('procesado', performance.now() - finDescarga);
+                            registrarTiempoCarga('procesado', performance.now() - Math.max(finDescarga, inicioEsperaDescarga));
                         }
                     } catch (e) {}
                 }
@@ -8644,7 +8655,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     hourlyEcmwf.wind_direction_700hPa ? hourlyEcmwf.wind_direction_700hPa[idxEcmwf] : null
                                 );
 
-                                if (interp === null) {
+                                if (interp === null && descargaSinopticoEcmwfEnCurso) {
+                                    // Sinóptico aún descargándose (primera vez que se despliega): spinner en vez de guiones
+                                    tdVel.innerHTML = '<span class="spinner-sinoptico"></span>';
+                                    tdDir.innerHTML = '<span class="spinner-sinoptico"></span>';
+                                    if (!cacheEsNoche[indiceHoraArome]) {
+                                        tdVel.style.backgroundColor = "#ffffff";
+                                        tdDir.style.backgroundColor = "#ffffff";
+                                    }
+                                } else if (interp === null) {
                                     tdVel.textContent = "—";
                                     tdDir.textContent = "—";
                                     if (!cacheEsNoche[indiceHoraArome]) {
@@ -10854,6 +10873,8 @@ function limpiarBuscador() {
  */
 // En lugar de DOMContentLoaded, esperamos a nuestro evento personalizado
 document.addEventListener('i18nReady', function() {
+
+    document.getElementById('spinnerArranque')?.remove(); // Spinner de index.html: a partir de aquí manda mostrarLoading/ocultarLoading
 
     aplicarModoSimpleUI();
 
