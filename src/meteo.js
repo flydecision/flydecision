@@ -5599,6 +5599,9 @@ const leerDeCacheIDB = async (key) => {
 
 async function construir_tabla(forzarRecarga = false, silencioso = false, skipMapaUpdate = false) {
 
+    // /balizas: no hay tabla ni previsiones, así que no se descargan ni se procesan los datos meteo
+    if (window.esModoBalizasDirecto) return;
+
     window.ultimoConstruirTablaSilencioso = silencioso;
 	
     // 1. REGISTRO DE CONCURRENCIA: Asignamos un número único a esta llamada
