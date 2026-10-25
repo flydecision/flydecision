@@ -18,19 +18,22 @@
 (function () {
     try {
         var t = Date.now();
-        var bajar = function (url) {
+        // Cada JSON se descarga y se lee por separado; si falla, el error lleva el nombre del fichero (ficheroMeteo) para el registro de errores
+        var bajar = function (url, nombre) {
             var controller = new AbortController();
             var timeoutId = setTimeout(function () { controller.abort(); }, 10000); // = TIMEOUT_DESCARGA_DATOS_MS
             return fetch(url + '?t=' + t, { cache: 'no-store', signal: controller.signal })
-                .finally(function () { clearTimeout(timeoutId); });
+                .finally(function () { clearTimeout(timeoutId); })
+                .then(function (res) {
+                    if (!res.ok) throw new Error('⚠️ Error al cargar archivos JSON');
+                    return res.json();
+                })
+                .catch(function (e) { try { e.ficheroMeteo = nombre; } catch (_) {} throw e; });
         };
         var descarga = Promise.all([
-            bajar('https://flydecision.com/meteo-datos.json'),
-            bajar('https://flydecision.com/meteo-datos-ecmwf-ligero.json')
-        ]).then(function (res) {
-            if (!res[0].ok || !res[1].ok) throw new Error('⚠️ Error al cargar archivos JSON');
-            return Promise.all([res[0].json(), res[1].json()]);
-        });
+            bajar('https://flydecision.com/meteo-datos.json', 'meteo-datos'),
+            bajar('https://flydecision.com/meteo-datos-ecmwf-ligero.json', 'ecmwf-ligero')
+        ]);
         descarga.catch(function () {}); // Si falla antes de que meteo.js la recoja, que no salga como error sin capturar
         window.descargaMeteoAnticipada = descarga;
     } catch (e) {}
@@ -93,9 +96,9 @@
 <!-- API Keys map layers-->
 <script src="/js/config.js" defer></script>
 
-<script>window.WEB_VERSION = "5.8.2";</script>
-<link rel="stylesheet" href="/meteo.css?v=5.8.2">
-<script src="/meteo.js?v=5.8.2" defer></script>
+<script>window.WEB_VERSION = "5.8.3";</script>
+<link rel="stylesheet" href="/meteo.css?v=5.8.3">
+<script src="/meteo.js?v=5.8.3" defer></script>
 
 </head>
 
