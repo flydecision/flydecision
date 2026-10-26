@@ -9353,7 +9353,9 @@ function btnRestablecerConfiguración() {
                 texto: t('botones.aceptar'), 
 				onclick: function() {
                 GestorMensajes.ocultar();
+				const noRegistrarUso = localStorage.getItem('NO_REGISTRAR_USO');
 				localStorage.clear();
+				if (noRegistrarUso) localStorage.setItem('NO_REGISTRAR_USO', noRegistrarUso);
                 sessionStorage.removeItem('METEO_ENTRO_POR_MAPA_YA_VISITADO');
                 window.location.replace(window.location.pathname.replace(/\/{2,}/g, '/')); // Recarga sin ?lat/lon para que salga el selector de idioma
             }
