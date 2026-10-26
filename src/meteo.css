@@ -3939,7 +3939,7 @@ h3 {
 /* 2. Limita la altura máxima de todos los globos */
 .leaflet-popup-content {
     /* Para que se corte a la mitad en la última fila e invite a hacer scroll. 377px antes */
-    max-height: 405px !important; 
+    max-height: 412px !important; 
     overflow-y: auto !important;   /* Activa el scroll solo si el contenido supera los 300px */
     padding-right: 8px !important;  /* Margen de seguridad para el texto */
     box-sizing: border-box;
@@ -3968,6 +3968,30 @@ h3 {
 }
 .leaflet-popup-content::-webkit-scrollbar-thumb:hover {
     background: #888 !important;
+}
+/* 4. Degradado gris arriba/abajo cuando el popup de despegue tiene más contenido (mismo truco que .tippy-scroll-area) */
+.leaflet-popup.popup-despegues .leaflet-popup-content,
+.leaflet-popup.popup-notaspersonales .leaflet-popup-content {
+    background:
+        linear-gradient(#ffffff 30%, rgba(255, 255, 255, 0)) local,
+        linear-gradient(rgba(255, 255, 255, 0), #ffffff 70%) local,
+        linear-gradient(rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0)) scroll,
+        linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.30)) scroll,
+        #ffffff !important;
+    background-size: 100% 30px, 100% 30px, 100% 18px, 100% 18px !important;
+    background-position: 0 0, 0 100%, 0 0, 0 100% !important;
+    background-repeat: no-repeat !important;
+}
+.leaflet-popup.popup-despeguesmundo .leaflet-popup-content {
+    background:
+        linear-gradient(#dadada 30%, rgba(218, 218, 218, 0)) local,
+        linear-gradient(rgba(218, 218, 218, 0), #dadada 70%) local,
+        linear-gradient(rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0)) scroll,
+        linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.30)) scroll,
+        #dadada !important;
+    background-size: 100% 30px, 100% 30px, 100% 18px, 100% 18px !important;
+    background-position: 0 0, 0 100%, 0 0, 0 100% !important;
+    background-repeat: no-repeat !important;
 }
 
 /* Evita el parpadeo del globo del mapa al actualizar iconos/filtros en segundo plano */
