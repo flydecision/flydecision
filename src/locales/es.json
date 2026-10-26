@@ -570,7 +570,7 @@
 
   "actualizacion": {
     "cargando": "Cargando...",
-    "redLenta": "Red lenta. Descargando datos...",
+    "redLenta": "Conexión lenta. Descargando datos...",
     "esperando": "próxima: <span style='color:#e39300; font-weight:bold;'>Esperando...⌛</span>",
     "proximaEn": "próxima: <b>{{tiempo}}</b>",
     "horas": "~{{h}} h {{m}} min",

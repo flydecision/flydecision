@@ -10884,7 +10884,10 @@ function limpiarBuscador() {
 // En lugar de DOMContentLoaded, esperamos a nuestro evento personalizado
 document.addEventListener('i18nReady', function() {
 
-    document.getElementById('spinnerArranque')?.remove(); // Spinner de index.html: a partir de aquí manda mostrarLoading/ocultarLoading
+    // Spinner de index.html: a partir de aquí manda mostrarLoading/ocultarLoading. Si ya decía «Red lenta», el normal sigue con el mismo texto (ocultarLoading lo borra)
+    const textoArranque = document.getElementById('textoRedLentaArranque')?.textContent;
+    if (textoArranque) { const textoRedLenta = document.getElementById('textoRedLenta'); if (textoRedLenta) textoRedLenta.textContent = textoArranque; }
+    document.getElementById('spinnerArranque')?.remove();
 
     aplicarModoSimpleUI();
 
