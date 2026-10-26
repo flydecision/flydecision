@@ -570,7 +570,7 @@
 
   "actualizacion": {
     "cargando": "Kargatzen...",
-    "redLenta": "Sare motela. Datuak deskargatzen...",
+    "redLenta": "Konexio motela. Datuak deskargatzen...",
     "esperando": "hurrengoa: <span style='color:#e39300; font-weight:bold;'>Itxaroten...⌛</span>",
     "proximaEn": "hurrengoa: <b>{{tiempo}}</b>",
     "horas": "~{{h}} ordu {{m}} min",

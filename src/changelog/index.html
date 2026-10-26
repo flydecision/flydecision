@@ -150,15 +150,14 @@ footer { text-align: center; font-size: 0.8rem; color: #777; margin-top: 20px; m
 
 <!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
 <div class="release">
-<div class="v-header"><span class="v-number">v5.8.4</span><span class="v-date">XXXXXXXXXXXXXXXXXXXX</span></div>
+<div class="v-header"><span class="v-number">v5.9.0</span><span class="v-date">26 Oct 2026</span></div>
 
 <div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
 <ul class="lista">
-<li><span class="badge cambio">Cambio</span><span class="desc"><b>Descarga de datos de ECMWF más de un 50 % más ligera</b> (de 3,4 MB a unos 1,5 MB comprimidos), con lo que la carga inicial será bastante más rápida en conexiones lentas. Los datos del viento ECMWF en altura (filas «Viento ECMWF (sinóptico)») se descargan aparte y solo cuando se muestran.</span></li>
-<li><span class="badge cambio">Cambio</span><span class="desc"><b>Los datos meteorológicos empiezan a descargarse nada más abrir la página</b>, a la vez que el resto de la web, en lugar de esperar a que termine de cargar. La tabla aparece unos segundos antes, sobre todo con conexiones lentas.</span></li>
-<li><span class="badge cambio">Cambio</span><span class="desc">Al desplegar por primera vez las filas «Viento ECMWF (sinóptico)» se muestra un indicador de carga en lugar de guiones mientras llegan los datos.</span></li>
-<li><span class="badge cambio">Cambio</span><span class="desc">Indicador de carga visible desde el primer momento al abrir la web, en lugar de una pantalla vacía hasta que aparece la tabla.</span></li>
-<li><span class="badge cambio">Cambio</span><span class="desc">En el modo balizas (<a href="https://flydecision.com/balizas" target="_blank" rel="noopener noreferrer">flydecision.com/balizas</a>) ya no se descargan ni se procesan los datos meteorológicos, que en ese modo no se usan: el mapa de balizas aparece antes y se ahorran datos móviles.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc"><b>Carga más rápida y con menos datos</b>: la descarga de ECMWF pesa más de un 50 % menos (de 3,4 MB a unos 1,5 MB comprimidos), y el viento en altura («Viento ECMWF (sinóptico)») solo se descarga al mostrar esas filas. Además, los datos meteo empiezan a bajar nada más abrir la página, así que la tabla aparece unos segundos antes, sobre todo con conexiones lentas.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc"><b>Carga mucho más rápida del modo directo a balizas</b> (<a href="https://flydecision.com/balizas" target="_blank" rel="noopener noreferrer">flydecision.com/balizas</a>), porque ya no se descargan los datos meteorológicos innecesarios.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">Al abrir un enlace compartido del mapa sin tener la aplicación configurada, se muestra directamente, sin sugerir la guía del mapa, que solo la ofrecerá la segunda vez, así se simplifica el uso de ese enlace para alguien que nunca haya tenido la aplicación en su navegador.</span></li>
+<li><span class="badge correccion">Corregido</span><span class="desc">Al restablecer la configuración desde el mapa y finalizarla, si se pulsaba el botón atrás de Android devolvía a la pantalla de bienvenida; además vuelve a salir el selector de idioma, igual que desde la tabla.</span></li>
 </ul>
 </div>
 

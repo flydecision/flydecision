@@ -570,7 +570,7 @@
 
   "actualizacion": {
     "cargando": "Chargement...",
-    "redLenta": "Réseau lent. Téléchargement des données...",
+    "redLenta": "Connexion lent. Téléchargement des données...",
     "esperando": "prochain : <span style='color:#e39300; font-weight:bold;'>En attente...⌛</span>",
     "proximaEn": "prochain : <b>{{tiempo}}</b>",
     "horas": "~{{h}} h {{m}} min",

@@ -316,6 +316,13 @@ aplicarReglasModoSimpleAVariables(modoSimpleInicial);
 const paramsArranque = new URLSearchParams(window.location.search);
 if (paramsArranque.has('lat') && paramsArranque.has('lon')) {
     sessionStorage.setItem('METEO_ENTRO_POR_MAPA_YA_VISITADO', 'true');
+
+    // Quien no tiene la app configurada y entra por un enlace al mapa: la primera vez no le sugerimos la guía del mapa
+    if (!localStorage.getItem("METEO_PRIMERA_VISITA_HECHA")) {
+        const entradasEnlaceMapa = Number(localStorage.getItem('METEO_ENTRADAS_ENLACE_MAPA') || 0) + 1;
+        localStorage.setItem('METEO_ENTRADAS_ENLACE_MAPA', String(entradasEnlaceMapa));
+        window.primeraEntradaPorEnlaceMapa = (entradasEnlaceMapa === 1);
+    }
 }
 
 // Si entra por URL directa de balizas, activar recordar la posición del mapa
@@ -9347,7 +9354,8 @@ function btnRestablecerConfiguración() {
 				onclick: function() {
                 GestorMensajes.ocultar();
 				localStorage.clear();
-                location.reload();
+                sessionStorage.removeItem('METEO_ENTRO_POR_MAPA_YA_VISITADO');
+                window.location.replace(window.location.pathname.replace(/\/{2,}/g, '/')); // Recarga sin ?lat/lon para que salga el selector de idioma
             }
             }
 		]
@@ -10884,7 +10892,11 @@ function limpiarBuscador() {
 // En lugar de DOMContentLoaded, esperamos a nuestro evento personalizado
 document.addEventListener('i18nReady', function() {
 
-    document.getElementById('spinnerArranque')?.remove(); // Spinner de index.html: a partir de aquí manda mostrarLoading/ocultarLoading
+    // Spinner de index.html: a partir de aquí manda mostrarLoading/ocultarLoading. Si ya decía «Red lenta», el normal sigue con el mismo texto (ocultarLoading lo borra)
+    const textoArranque = document.getElementById('textoRedLentaArranque')?.textContent;
+    if (textoArranque) { const textoRedLenta = document.getElementById('textoRedLenta'); if (textoRedLenta) textoRedLenta.textContent = textoArranque; }
+    // Se quita cuando el spinner normal ya ha hecho su fundido (0,1 s), para que no haya parpadeo
+    setTimeout(() => document.getElementById('spinnerArranque')?.remove(), 200);
 
     aplicarModoSimpleUI();
 
@@ -12594,7 +12606,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             if (modalAbierto) {
                 
                 // Si el modal abierto es el de Idioma (Paso 0) y pulsan "Atrás"
-                if (!localStorage.getItem("METEO_IDIOMA_ELEGIDO")) { // El selector de idioma es el único modal que se muestra cuando la variable METEO_IDIOMA_ELEGIDO no existe
+                if (modalAbierto.querySelector('[onclick*="guardarIdiomaInicial"]')) { // Se reconoce el selector de idioma por sus botones (el flag puede faltar si se entró por el mapa)
                     localStorage.setItem("METEO_IDIOMA_ELEGIDO", "true"); // Lo marcamos como elegido
                     GestorMensajes.ocultar(); // Cerramos Paso 0
                     
@@ -13866,8 +13878,8 @@ window.cambiarVista = function(vista) {
             }
         }
 
-        // SUGERIR GUÍA DEL MAPA LA PRIMERA VEZ (no aplica en modo balizas directo)
-        if (!window.esModoBalizasDirecto) {
+        // SUGERIR GUÍA DEL MAPA LA PRIMERA VEZ (no aplica en modo balizas directo ni en la primera entrada por enlace compartido)
+        if (!window.esModoBalizasDirecto && !window.primeraEntradaPorEnlaceMapa) {
             setTimeout(() => {
                 if (typeof sugerirGuiaMapa === 'function') {
                     sugerirGuiaMapa();
