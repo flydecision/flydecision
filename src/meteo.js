@@ -27,24 +27,23 @@ let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 28;
 // Estructura: [modelo][horizonte_horas] -> { vm_m, vm_b, racha_m, racha_b }
 const CORRECCIONES_ESTADISTICAS = {
     'AromeHD': {
-        '6':   { vm_m: 0.92, vm_b: 2.7, racha_m: 0.60, racha_b: 3.0 },
-        '24':  { vm_m: 0.94, vm_b: 2.5, racha_m: 0.59, racha_b: 3.7 }
+        '6':   { vm_m: 1.00, vm_b: 2.4, racha_m: 0.63, racha_b: 2.6 },
+        '24':  { vm_m: 1.01, vm_b: 2.3, racha_m: 0.62, racha_b: 3.4 }
     },
     'ICON-EU': {
-        '6':   { vm_m: 0.75, vm_b: 4.0, racha_m: 0.48, racha_b: 4.3 },
-        '24':  { vm_m: 0.78, vm_b: 3.7, racha_m: 0.48, racha_b: 3.9 },
-        '48':  { vm_m: 0.76, vm_b: 3.8, racha_m: 0.47, racha_b: 4.1 },
-        '72':  { vm_m: 0.75, vm_b: 4.0, racha_m: 0.47, racha_b: 4.2 }
+        '6':   { vm_m: 0.81, vm_b: 3.8, racha_m: 0.49, racha_b: 4.0 },
+        '24':  { vm_m: 0.82, vm_b: 3.6, racha_m: 0.49, racha_b: 3.8 },
+        '48':  { vm_m: 0.79, vm_b: 3.9, racha_m: 0.47, racha_b: 4.3 },
+        '72':  { vm_m: 0.78, vm_b: 4.1, racha_m: 0.47, racha_b: 4.4 }
     },
     'ECMWF': {
-        '6':   { vm_m: 0.48, vm_b: 5.6, racha_m: 0.65, racha_b: -1.3 },
-        '24':  { vm_m: 0.52, vm_b: 4.4, racha_m: 0.58, racha_b: 0.9 },
-        '48':  { vm_m: 0.51, vm_b: 4.4, racha_m: 0.59, racha_b: 1.0 },
-        '72':  { vm_m: 0.50, vm_b: 4.7, racha_m: 0.58, racha_b: 1.2 },
-        '96':  { vm_m: 0.48, vm_b: 4.0, racha_m: 0.60, racha_b: -1.3 },
-        '120': { vm_m: 0.58, vm_b: 4.4, racha_m: 0.53, racha_b: 1.0 },
-        // +144h (+6 días) usa provisionalmente +120h hasta acumular muestras suficientes
-        '144': { vm_m: 0.58, vm_b: 4.4, racha_m: 0.53, racha_b: 1.0 }
+        '6':   { vm_m: 0.51, vm_b: 4.9, racha_m: 0.63, racha_b: -0.1 },
+        '24':  { vm_m: 0.53, vm_b: 4.0, racha_m: 0.61, racha_b: 0.8 },
+        '48':  { vm_m: 0.53, vm_b: 4.1, racha_m: 0.60, racha_b: 1.2 },
+        '72':  { vm_m: 0.52, vm_b: 4.3, racha_m: 0.58, racha_b: 1.5 },
+        '96':  { vm_m: 0.47, vm_b: 4.2, racha_m: 0.52, racha_b: 2.0 },
+        '120': { vm_m: 0.41, vm_b: 5.2, racha_m: 0.48, racha_b: 3.6 },
+        '144': { vm_m: 0.39, vm_b: 6.0, racha_m: 0.44, racha_b: 4.4 }
     }
 };
 // ─────────────────────────────────────────────────────────────────────
@@ -18524,6 +18523,7 @@ function inicializarMapaLeaflet() {
         const red = REDES_BALIZAS[redId];
         if (!red || !red.urlCache) return false; // Evita la petición si no hay URL
 
+        const inicioPeticion = Date.now();
         try {
             const res = await fetchConTimeout(`${red.urlCache}?_=${Date.now()}`);
             const textoCrudo = await res.text();
@@ -18547,7 +18547,8 @@ function inicializarMapaLeaflet() {
             return true; 
         } catch (e) {
             console.error(`No se pudo cargar el caché de balizas ${red.nombre}`, e);
-            registrarError('carga', e, `balizas ${red.id} (cache)`);
+            // Sin red, o petición congelada en segundo plano (tardó mucho más que los 8 s del timeout): no es un fallo nuestro
+            if (navigator.onLine !== false && !document.hidden && Date.now() - inicioPeticion < 15000) registrarError('carga', e, `balizas ${red.id} (cache)`);
             return false; 
         }
     }
@@ -19213,6 +19214,7 @@ function inicializarMapaLeaflet() {
 
         if (!red.intervalo && red.urlCache) {
             red.intervalo = setInterval(async () => {
+                if (document.hidden) return; // En segundo plano no consultamos: el navegador congela la petición y al volver salta como timeout
                 // 1. Consultamos si ha cambiado el tiempo real
                 const haCambiado = await cargarDatosBalizas(redId); 
                 
