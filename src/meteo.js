@@ -6167,6 +6167,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     console.warn(`⏳ Red muy lenta (${TIMEOUT_DESCARGA_DATOS_MS/1000}s). Abortando descarga...`);
                 }, TIMEOUT_DESCARGA_DATOS_MS); 
 
+                // Descarga colgada (el WebView la congeló en segundo plano): no se reutiliza, se lanza otra
+                if (descargaMeteoEnCurso && Date.now() - descargaMeteoEnCurso.inicio > 60000) descargaMeteoEnCurso = null;
+
                 // Intentamos descargar (Petición de red real con protección anti-cuelgue al parsear).
                 // Si ya hay una descarga en marcha (red lenta), la reutilizamos en vez de lanzar otra.
                 if (!descargaMeteoEnCurso) {
@@ -6178,6 +6181,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         bajarJsonMeteo('https://flydecision.com/meteo-datos-ecmwf-ligero.json', 'ecmwf-ligero').then(prepararJsonEcmwfLigero)
                     ]);
                     descargaMeteoEnCurso = descarga;
+                    descarga.inicio = Date.now();
                     descarga.catch(() => {}).finally(() => { if (descargaMeteoEnCurso === descarga) descargaMeteoEnCurso = null; });
                 }
 
@@ -6208,7 +6212,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 clearTimeout(timeoutId); 
 
                 // 🛡️ Re-comprobamos aquí: si otra llamada más reciente arrancó mientras esperábamos esta descarga, abortamos — sus datos ya están obsoletos.
-                if (miIdLlamada !== ultimoIdLlamadaTabla) return;
+                if (miIdLlamada !== ultimoIdLlamadaTabla) { if (window.ultimoConstruirTablaSilencioso) ocultarLoading(); return; }
 
                 DATOS_METEO_CACHE = data; 
                 DATOS_METEO_ECMWF_CACHE = dataEcmwf;
@@ -6256,7 +6260,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 if (cachedData && cachedDataEcmwf) {
                     // 🛡️ Misma comprobación en la ruta offline: si hay una llamada más nueva, no pintamos con datos viejos.
-                    if (miIdLlamada !== ultimoIdLlamadaTabla) return;
+                    if (miIdLlamada !== ultimoIdLlamadaTabla) { if (window.ultimoConstruirTablaSilencioso) ocultarLoading(); return; }
 
                     data = cachedData; // En IndexedDB ya viene como objeto JS limpio, no hace falta JSON.parse
                     dataEcmwf = cachedDataEcmwf;
@@ -12906,6 +12910,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA");
             const entroPorMapa = sessionStorage.getItem("METEO_ENTRO_POR_MAPA_YA_VISITADO");
             if (!configHecha && !entroPorMapa) return;
+            if (window.esModoBalizasDirecto) return; // /balizas: sin datos meteo que refrescar (si no, el spinner se queda fijo)
 
             const ahora = Date.now();
             // Si lastDataGenerationTimestamp es 0 o null, forzamos antigüedad máxima
