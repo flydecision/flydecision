@@ -12910,6 +12910,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
             const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA");
             const entroPorMapa = sessionStorage.getItem("METEO_ENTRO_POR_MAPA_YA_VISITADO");
             if (!configHecha && !entroPorMapa) return;
+            
+            // Si al volver seguimos como "sin conexión" (consulta cortada en segundo plano), comprobamos ya en vez de esperar al siguiente ciclo (hasta 15 s)
+            if (avisoOfflineActivo || esModoOffline) cicloActualizacion();
+
             if (window.esModoBalizasDirecto) return; // /balizas: sin datos meteo que refrescar (si no, el spinner se queda fijo)
 
             const ahora = Date.now();
