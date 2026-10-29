@@ -39,6 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch((err) => {
             console.error("Error cargando el motor de idiomas (probablemente offline):", err);
+            // Sin 't' meteo.js revienta en la primera traducción: devolvemos la clave (o el texto por defecto) para que siga funcionando
+            if (typeof window.t !== 'function') window.t = (clave, opciones) => (opciones && opciones.defaultValue) || clave;
+            if (typeof registrarError === 'function') registrarError('carga', err, 'i18n');
             // Salva la app: aunque falle el idioma, dile a meteo.js que arranque ya
             document.dispatchEvent(new Event('i18nReady'));
         });
