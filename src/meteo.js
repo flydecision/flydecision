@@ -20844,6 +20844,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const tip = document.getElementById('glide-cursor-tooltip');
     if (!tip) return;
+    if (!window.L || !L.DomEvent) { registrarError('carga', 'leaflet.js no cargó', 'leaflet.js'); return; }
 
     L.DomEvent.disableClickPropagation(tip); // un toque en el tooltip no llega al mapa
 
