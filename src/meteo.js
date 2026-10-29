@@ -27,24 +27,23 @@ let RachaMax = Number(localStorage.getItem("METEO_RACHA_MAX")) || 28;
 // Estructura: [modelo][horizonte_horas] -> { vm_m, vm_b, racha_m, racha_b }
 const CORRECCIONES_ESTADISTICAS = {
     'AromeHD': {
-        '6':   { vm_m: 0.92, vm_b: 2.7, racha_m: 0.60, racha_b: 3.0 },
-        '24':  { vm_m: 0.94, vm_b: 2.5, racha_m: 0.59, racha_b: 3.7 }
+        '6':   { vm_m: 1.00, vm_b: 2.4, racha_m: 0.63, racha_b: 2.6 },
+        '24':  { vm_m: 1.01, vm_b: 2.3, racha_m: 0.62, racha_b: 3.4 }
     },
     'ICON-EU': {
-        '6':   { vm_m: 0.75, vm_b: 4.0, racha_m: 0.48, racha_b: 4.3 },
-        '24':  { vm_m: 0.78, vm_b: 3.7, racha_m: 0.48, racha_b: 3.9 },
-        '48':  { vm_m: 0.76, vm_b: 3.8, racha_m: 0.47, racha_b: 4.1 },
-        '72':  { vm_m: 0.75, vm_b: 4.0, racha_m: 0.47, racha_b: 4.2 }
+        '6':   { vm_m: 0.81, vm_b: 3.8, racha_m: 0.49, racha_b: 4.0 },
+        '24':  { vm_m: 0.82, vm_b: 3.6, racha_m: 0.49, racha_b: 3.8 },
+        '48':  { vm_m: 0.79, vm_b: 3.9, racha_m: 0.47, racha_b: 4.3 },
+        '72':  { vm_m: 0.78, vm_b: 4.1, racha_m: 0.47, racha_b: 4.4 }
     },
     'ECMWF': {
-        '6':   { vm_m: 0.48, vm_b: 5.6, racha_m: 0.65, racha_b: -1.3 },
-        '24':  { vm_m: 0.52, vm_b: 4.4, racha_m: 0.58, racha_b: 0.9 },
-        '48':  { vm_m: 0.51, vm_b: 4.4, racha_m: 0.59, racha_b: 1.0 },
-        '72':  { vm_m: 0.50, vm_b: 4.7, racha_m: 0.58, racha_b: 1.2 },
-        '96':  { vm_m: 0.48, vm_b: 4.0, racha_m: 0.60, racha_b: -1.3 },
-        '120': { vm_m: 0.58, vm_b: 4.4, racha_m: 0.53, racha_b: 1.0 },
-        // +144h (+6 días) usa provisionalmente +120h hasta acumular muestras suficientes
-        '144': { vm_m: 0.58, vm_b: 4.4, racha_m: 0.53, racha_b: 1.0 }
+        '6':   { vm_m: 0.51, vm_b: 4.9, racha_m: 0.63, racha_b: -0.1 },
+        '24':  { vm_m: 0.53, vm_b: 4.0, racha_m: 0.61, racha_b: 0.8 },
+        '48':  { vm_m: 0.53, vm_b: 4.1, racha_m: 0.60, racha_b: 1.2 },
+        '72':  { vm_m: 0.52, vm_b: 4.3, racha_m: 0.58, racha_b: 1.5 },
+        '96':  { vm_m: 0.47, vm_b: 4.2, racha_m: 0.52, racha_b: 2.0 },
+        '120': { vm_m: 0.41, vm_b: 5.2, racha_m: 0.48, racha_b: 3.6 },
+        '144': { vm_m: 0.39, vm_b: 6.0, racha_m: 0.44, racha_b: 4.4 }
     }
 };
 // ─────────────────────────────────────────────────────────────────────
@@ -382,6 +381,7 @@ function calcularSemaforoAntiguedad(timestampMs, umbralAmarilloMin, umbralRojoMi
 let esModoOffline = false; // Nueva variable para controlar el estado de red
 let descargaMeteoEnCurso = null; // Descarga de los 2 JSON aún en marcha (red lenta): se reutiliza en vez de lanzar otra
 let descargaSinopticoEcmwfEnCurso = null; // Descarga de meteo-datos-ecmwf-sinoptico.json en marcha (solo se pide una vez)
+let ultimoSinopticoEcmwf = null; // Último sinóptico descargado: si llega otra vez el mismo JSON ligero, se junta sin volver a pedirlo
 
 // meteo-datos-ecmwf-ligero.json trae la lista de horas una sola vez (en "time"): la volvemos a colgar de cada despegue
 // (la misma lista compartida, sin copiarla) para que el resto del código siga leyendo hourly.time como antes
@@ -407,6 +407,13 @@ function cargarSinopticoEcmwf(dataEcmwf) {
     if (!hacenFalta || !dataEcmwf || !Array.isArray(dataEcmwf.respuestas) || descargaSinopticoEcmwfEnCurso || dataEcmwf.sinopticoNoCoincide) return;
     // Ya están (sinóptico ya juntado, o caché antigua en formato completo)
     if (dataEcmwf.respuestas.some(r => r && r.hourly && r.hourly.wind_speed_850hPa)) return;
+        // Ya lo bajamos antes para esta misma ejecución: lo juntamos aquí mismo (sin descargar ni repintar, aún no se ha pintado la tabla)
+    if (ultimoSinopticoEcmwf && ultimoSinopticoEcmwf.timestamp === dataEcmwf.timestamp) {
+        dataEcmwf.respuestas.forEach((r, i) => {
+            if (r && r.hourly && !Array.isArray(r.hourly) && ultimoSinopticoEcmwf.respuestas[i]) Object.assign(r.hourly, ultimoSinopticoEcmwf.respuestas[i]);
+        });
+        return;
+    }
 
     descargaSinopticoEcmwfEnCurso = fetchConTimeout(`https://flydecision.com/meteo-datos-ecmwf-sinoptico.json?t=${Date.now()}`, { cache: "no-store" }, TIMEOUT_DESCARGA_DATOS_MS)
         .then(res => {
@@ -422,7 +429,9 @@ function cargarSinopticoEcmwf(dataEcmwf) {
             dataEcmwf.respuestas.forEach((r, i) => {
                 if (r && r.hourly && !Array.isArray(r.hourly) && sinoptico.respuestas[i]) Object.assign(r.hourly, sinoptico.respuestas[i]);
             });
+            ultimoSinopticoEcmwf = sinoptico;
             guardarEnCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE', dataEcmwf);
+            descargaSinopticoEcmwfEnCurso = null; // Antes de repintar: si no, las celdas sin dato volverían a salir con spinner
             if (DATOS_METEO_ECMWF_CACHE === dataEcmwf) construir_tabla(false, true);
         })
         .catch(error => { quitarSpinnersSinoptico(); registrarError('carga', error, 'meteo-datos-ecmwf-sinoptico'); })
@@ -6138,7 +6147,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // 1. ¿Lo tenemos ya en RAM? (Velocidad instantánea)
         if (DATOS_METEO_CACHE && DATOS_METEO_ECMWF_CACHE) {
             // 🛡️ Comprobamos si la caché en RAM tiene más de 6 horas
-            const timestampCache = DATOS_METEO_CACHE.timestamp ? new Date(DATOS_METEO_CACHE.timestamp).getTime() : 0;
+            // Contamos desde que se bajaron (si Météo-France lleva horas caído, el fichero del servidor es igual de viejo y no sirve volver a bajarlo)
+            const timestampCache = DATOS_METEO_CACHE.descargadoEn || (DATOS_METEO_CACHE.timestamp ? new Date(DATOS_METEO_CACHE.timestamp).getTime() : 0);
             const esCadenaAntigua = (Date.now() - timestampCache) > (6 * 60 * 60 * 1000); 
 
             if (!esCadenaAntigua) {
@@ -6214,6 +6224,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // 🛡️ Re-comprobamos aquí: si otra llamada más reciente arrancó mientras esperábamos esta descarga, abortamos — sus datos ya están obsoletos.
                 if (miIdLlamada !== ultimoIdLlamadaTabla) { if (window.ultimoConstruirTablaSilencioso) ocultarLoading(); return; }
 
+                data.descargadoEn = Date.now();
                 DATOS_METEO_CACHE = data; 
                 DATOS_METEO_ECMWF_CACHE = dataEcmwf;
                 esModoOffline = false;
@@ -6237,6 +6248,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 if (descargaMeteoEnCurso && !descargaMeteoEnCurso.repintadoPendiente) {
                     descargaMeteoEnCurso.repintadoPendiente = true;
                     descargaMeteoEnCurso.then(([datosTardios, datosEcmwfTardios]) => {
+                        datosTardios.descargadoEn = Date.now();
                         DATOS_METEO_CACHE = datosTardios;
                         DATOS_METEO_ECMWF_CACHE = datosEcmwfTardios;
                         esModoOffline = false;
@@ -18524,6 +18536,7 @@ function inicializarMapaLeaflet() {
         const red = REDES_BALIZAS[redId];
         if (!red || !red.urlCache) return false; // Evita la petición si no hay URL
 
+        const inicioPeticion = Date.now();
         try {
             const res = await fetchConTimeout(`${red.urlCache}?_=${Date.now()}`);
             const textoCrudo = await res.text();
@@ -18547,7 +18560,8 @@ function inicializarMapaLeaflet() {
             return true; 
         } catch (e) {
             console.error(`No se pudo cargar el caché de balizas ${red.nombre}`, e);
-            registrarError('carga', e, `balizas ${red.id} (cache)`);
+            // Sin red, o petición congelada en segundo plano (tardó mucho más que los 8 s del timeout): no es un fallo nuestro
+            if (navigator.onLine !== false && !document.hidden && Date.now() - inicioPeticion < 15000) registrarError('carga', e, `balizas ${red.id} (cache)`);
             return false; 
         }
     }
@@ -19213,6 +19227,7 @@ function inicializarMapaLeaflet() {
 
         if (!red.intervalo && red.urlCache) {
             red.intervalo = setInterval(async () => {
+                if (document.hidden) return; // En segundo plano no consultamos: el navegador congela la petición y al volver salta como timeout
                 // 1. Consultamos si ha cambiado el tiempo real
                 const haCambiado = await cargarDatosBalizas(redId); 
                 
@@ -20844,6 +20859,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const tip = document.getElementById('glide-cursor-tooltip');
     if (!tip) return;
+    if (!window.L || !L.DomEvent) { registrarError('carga', 'leaflet.js no cargó', 'leaflet.js'); return; }
 
     L.DomEvent.disableClickPropagation(tip); // un toque en el tooltip no llega al mapa
 
