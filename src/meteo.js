@@ -12910,6 +12910,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             const configHecha = localStorage.getItem("METEO_PRIMERA_VISITA_HECHA");
             const entroPorMapa = sessionStorage.getItem("METEO_ENTRO_POR_MAPA_YA_VISITADO");
             if (!configHecha && !entroPorMapa) return;
+            if (window.esModoBalizasDirecto) return; // /balizas: sin datos meteo que refrescar (si no, el spinner se queda fijo)
 
             const ahora = Date.now();
             // Si lastDataGenerationTimestamp es 0 o null, forzamos antigüedad máxima
