@@ -13839,6 +13839,7 @@ window.cambiarVista = function(vista) {
             if (window.venirDeEdicionActiva === true && !window.onboardingMapaActivo) {
                 btnVolver.style.display = 'flex';
                 btnVolver.classList.remove('en-tabla');
+                requestAnimationFrame(colocarBtnVolverBajoDespegue);
             } else {
                 btnVolver.style.display = 'none';
             }
@@ -13959,6 +13960,7 @@ window.cambiarVista = function(vista) {
             if (window.venirDeEdicionActiva === true && !modoEdicionFavoritos) {
                 btnVolver.style.display = 'flex';
                 btnVolver.classList.add('en-tabla'); // <-- AÑADE LA CLASE (baja a 490px)
+                btnVolver.classList.remove('bajo-despegue');
             } else {
                 btnVolver.style.display = 'none';
             }
@@ -14811,6 +14813,39 @@ function ajustarPopupDespegueMinimo(popup) {
     if (dx || dy) map.panBy([dx, dy]);
 }
 
+// 🔙 Coloca el botón "Volver a Editar favoritos" justo bajo la etiqueta del despegue cuyo popup está abierto.
+// Sin popup de despegue abierto (o en la tabla) el botón vuelve a su sitio del CSS (tercio inferior).
+function colocarBtnVolverBajoDespegue() {
+    const btn = document.getElementById('btn-volver-edicion-mapa');
+    if (!btn) return;
+    const quitar = () => btn.classList.remove('bajo-despegue');
+    if (btn.style.display === 'none' || btn.classList.contains('en-tabla') || typeof map === 'undefined' || !map) return quitar();
+
+    let etiqueta = null;
+    map.eachLayer(capa => {
+        if (!etiqueta && capa instanceof L.Popup && capa.isOpen && capa.isOpen()
+            && capa.options.className === 'popup-despegues' && capa._source && capa._source.getElement) {
+            etiqueta = capa._source.getElement()?.querySelector('.label-large-despegues');
+        }
+    });
+    if (!etiqueta) return quitar();
+
+    const r = etiqueta.getBoundingClientRect();
+    if (r.width === 0) return quitar();
+    const anchoBtn = btn.offsetWidth || 260;
+    const altoBtn = btn.offsetHeight || 44;
+    let top = r.bottom + 20; // deja ver la puntita de la etiqueta
+    const barraInferior = document.querySelector('nav.bottom-nav');
+    if (barraInferior) {
+        const rb = barraInferior.getBoundingClientRect();
+        if (rb.height > 0 && top + altoBtn > rb.top - 8) return quitar(); // no cabe sobre la barra: posición por defecto
+    }
+    const mitad = anchoBtn / 2 + 8;
+    const left = Math.min(Math.max(r.left + r.width / 2, mitad), window.innerWidth - mitad);
+    btn.style.setProperty('--btn-volver-top', top + 'px');
+    btn.style.setProperty('--btn-volver-left', left + 'px');
+    btn.classList.add('bajo-despegue');
+}
 
 function inicializarMapaLeaflet() {
 
@@ -15491,6 +15526,11 @@ function inicializarMapaLeaflet() {
             popupNode.querySelector('.leaflet-popup-content-wrapper')?.classList.add(clase);
             popupNode.querySelector('.leaflet-popup-tip')?.classList.add(clase);
         }
+    });
+    
+    // 🔙 El botón "Volver a Editar favoritos" sigue a la etiqueta del despegue con el popup abierto
+    map.on('popupopen popupclose move zoomend', function () {
+        requestAnimationFrame(colocarBtnVolverBajoDespegue);
     });
 
     map.on('popupclose', function (e) {
