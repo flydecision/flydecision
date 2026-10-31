@@ -4668,6 +4668,8 @@ body.leaflet-dragging #map.cursor-planeo-activo .leaflet-marker-icon:has(.glide-
     top: var(--btn-volver-top);
     left: var(--btn-volver-left);
     bottom: auto;
+    width: max-content;              /* que no se estreche cerca del borde derecho */
+    max-width: 50vw;                 /* mismo ancho que cuando está abajo (left: 50%) */
 }
 
 /* Modificador: baja el botón cuando está flotando sobre la tabla */

@@ -14821,30 +14821,40 @@ function colocarBtnVolverBajoDespegue() {
     const quitar = () => btn.classList.remove('bajo-despegue');
     if (btn.style.display === 'none' || btn.classList.contains('en-tabla') || typeof map === 'undefined' || !map) return quitar();
 
-    let etiqueta = null;
+    let etiqueta = null, popupEl = null;
     map.eachLayer(capa => {
         if (!etiqueta && capa instanceof L.Popup && capa.isOpen && capa.isOpen()
             && capa.options.className === 'popup-despegues' && capa._source && capa._source.getElement) {
             etiqueta = capa._source.getElement()?.querySelector('.label-large-despegues');
+            popupEl = capa.getElement();
         }
     });
-    if (!etiqueta) return quitar();
+    if (!etiqueta || !popupEl) return quitar();
 
     const r = etiqueta.getBoundingClientRect();
-    if (r.width === 0) return quitar();
-    const anchoBtn = btn.offsetWidth || 260;
+    const rp = popupEl.getBoundingClientRect();
+    if (r.width === 0 || rp.width === 0) return quitar();
+
+    const top = r.bottom + 60; // deja ver la puntita de la etiqueta (+40 px más abajo)
+    const rectMapa = map.getContainer().getBoundingClientRect();
+    if (top < rectMapa.top + 8) return quitar(); // la etiqueta se ha ido por arriba: posición por defecto
+
+    // Aplicamos la clase primero para medir el botón con su ancho real (una línea)
+    btn.style.setProperty('--btn-volver-top', top + 'px');
+    btn.classList.add('bajo-despegue');
+    const anchoBtn = btn.offsetWidth || 280;
     const altoBtn = btn.offsetHeight || 44;
-    let top = r.bottom + 20; // deja ver la puntita de la etiqueta
+
     const barraInferior = document.querySelector('nav.bottom-nav');
     if (barraInferior) {
         const rb = barraInferior.getBoundingClientRect();
         if (rb.height > 0 && top + altoBtn > rb.top - 8) return quitar(); // no cabe sobre la barra: posición por defecto
     }
+
+    // Centrado con el popup (la etiqueta empieza en la punta del popup, no está centrada con él)
     const mitad = anchoBtn / 2 + 8;
-    const left = Math.min(Math.max(r.left + r.width / 2, mitad), window.innerWidth - mitad);
-    btn.style.setProperty('--btn-volver-top', top + 'px');
+    const left = Math.min(Math.max(rp.left + rp.width / 2, mitad), window.innerWidth - mitad);
     btn.style.setProperty('--btn-volver-left', left + 'px');
-    btn.classList.add('bajo-despegue');
 }
 
 function inicializarMapaLeaflet() {
@@ -15527,7 +15537,7 @@ function inicializarMapaLeaflet() {
             popupNode.querySelector('.leaflet-popup-tip')?.classList.add(clase);
         }
     });
-    
+
     // 🔙 El botón "Volver a Editar favoritos" sigue a la etiqueta del despegue con el popup abierto
     map.on('popupopen popupclose move zoomend', function () {
         requestAnimationFrame(colocarBtnVolverBajoDespegue);
