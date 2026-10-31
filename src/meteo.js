@@ -513,7 +513,11 @@ window.addEventListener('unhandledrejection', (e) => {
     registrarError('promesa', e.reason, origen);
 });
 
-// Tiempo de una fase de carga, en tramos de segundos (registro anónimo de uso). fase: descarga | procesado | tabla
+// Si la página pasa a segundo plano antes de pintar la tabla, el tiempo de pintado no vale (el reloj sigue corriendo con la app o la pestaña ocultas)
+window.paginaOcultaAntesDeTabla = document.visibilityState === 'hidden';
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') window.paginaOcultaAntesDeTabla = true; });
+
+// Tiempo de una fase de carga, en tramos de segundos (registro anónimo de uso). fase: descarga | procesado | pintado | tabla
 function registrarTiempoCarga(fase, ms) {
     const s = ms / 1000;
     const tramo = s < 1 ? '0-1' : s < 2 ? '1-2' : s < 5 ? '2-5' : s < 10 ? '5-10' : 'mas10';
@@ -6303,6 +6307,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
         // Bandera de "Pintado en proceso" (después de la descarga: la red lenta no debe contar como cuelgue). Si el navegador peta pintando, se quedará grabada.
         localStorage.setItem('METEO_FLAG_CRASH_DETECTADO', 'true');
+        if (!window.tiempoTablaRegistrado) window.inicioPintadoTabla = performance.now(); // Datos listos: empieza el pintado de la primera tabla
 
         // Guardamos todos los despegues en la variable global para el buscador
 		window.bdGlobalDespegues = data.despegues;
@@ -9079,6 +9084,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         if (!window.tiempoTablaRegistrado) {
             window.tiempoTablaRegistrado = true;
             registrarTiempoCarga('tabla', performance.now());
+            if (window.inicioPintadoTabla && !window.paginaOcultaAntesDeTabla) registrarTiempoCarga('pintado', performance.now() - window.inicioPintadoTabla);
         }
         tbody.appendChild(tbodyFragmento);
         tabla.innerHTML = "";
