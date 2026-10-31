@@ -5709,35 +5709,35 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 
                 <div style="display: flex; flex-direction: column; gap: 6px; align-items: center; margin-bottom: 20px;">
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('es-ES')">
-                        <img src="/icons/flag_es_ES.webp" alt="Español" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_es_ES.webp" alt="" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Español</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('eu-ES')">
-                        <img src="/icons/flag_eu_ES.webp" alt="Euskara" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_eu_ES.webp" alt="" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Euskara</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('ca-ES')">
-                        <img src="/icons/flag_ca_ES.webp" alt="Català" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_ca_ES.webp" alt="" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Català</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('gl-ES')">
-                        <img src="/icons/flag_gl_ES.webp" alt="Galego" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_gl_ES.webp" alt="" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Galego</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('en-GB')">
-                        <img src="/icons/flag_en_GB.webp" alt="English" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_en_GB.webp" alt="" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">English</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('fr-FR')">
-                        <img src="/icons/flag_fr_FR.webp" alt="Français" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_fr_FR.webp" alt="" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Français</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('de-DE')">
-                        <img src="/icons/flag_de_DE.webp" alt="Deutsch" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_de_DE.webp" alt="" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Deutsch</span>
                     </button>
                     <button class="boton-mensajes" style="width: 100%; max-width: 220px; display: flex; align-items: center; justify-content: flex-start; padding: 10px 20px; margin: 0;" onclick="window.guardarIdiomaInicial('pt-PT')">
-                        <img src="/icons/flag_pt_PT.webp" alt="Português" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
+                        <img src="/icons/flag_pt_PT.webp" alt="" style="width: 24px; height: 18px; object-fit: cover; margin-right: 15px; border-radius: 2px;"> 
                         <span style="font-size: 1.1em; font-weight: bold;">Português</span>
                     </button>
                 </div>
@@ -6230,8 +6230,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 esModoOffline = false;
 
                 // Guardamos en la Base de Datos del navegador (Sin límite de espacio de 5MB y sin bloquear la pantalla)
-                guardarEnCacheIDB('METEO_DATOS_JSON_CACHE', data);
-                guardarEnCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE', dataEcmwf);
+                // Solo si los datos son nuevos: guardar ~10 MB bloquea el móvil unas décimas y al reabrir la app suelen ser los mismos
+                const marcaIDB = `${data.timestamp}|${dataEcmwf.timestamp}`;
+                if (localStorage.getItem('METEO_IDB_TIMESTAMPS') !== marcaIDB) {
+                    localStorage.removeItem('METEO_IDB_TIMESTAMPS');
+                    Promise.all([
+                        guardarEnCacheIDB('METEO_DATOS_JSON_CACHE', data),
+                        guardarEnCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE', dataEcmwf)
+                    ]).then(([ok1, ok2]) => { if (ok1 && ok2) localStorage.setItem('METEO_IDB_TIMESTAMPS', marcaIDB); });
+                }
 
                 // Extraemos los timestamps de los JSON recién bajados y pintamos el panel YA ---
                 if(data.timestamp) lastDataGenerationTimestamp = new Date(data.timestamp).getTime();
@@ -7531,7 +7538,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 }
             }
 
-            tdDespegue.innerHTML = `
+            // El HTML de los botones (con SVG) se mete al añadir la fila a la tabla (paso 4 de la paginación): así los despegues
+            // que no se llegan a mostrar no lo crean, que es lo que más tarda. Mientras, el nombre queda como texto para el buscador.
+            tdDespegue.textContent = d.Despegue;
+            tdDespegue.htmlPendiente = `
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
                 ${botonFavoritoHTML}
@@ -8913,7 +8923,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			listaFilasParaOrdenar.push({
 				nota: horasValidas > 0 ? notaFinal : -1, 
 				notaXC: horasValidasXC > 0 ? notaFinalXC : -1, // Guardamos también la nota XC
-				elementos: todasLasFilas 
+				elementos: todasLasFilas,
+				tdDespegue: tdDespegue // Para meterle su HTML pendiente solo si se muestra
 			});
 
 		} // <--- FIN DEL BUCLE despegues.forEach
@@ -8975,15 +8986,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // 4. PAGINACIÓN ("MOSTRAR TODOS")
         const LIMITE_INICIAL = 10;
         
-        // Si estamos editando favoritos, NO paginamos. Mostramos la lista completa.
-        const usarPaginacion = !modoEdicionFavoritos;
+        // Editando favoritos también paginamos, pero con más despegues de inicio: con los ~1.000 despegues de golpe
+        // la primera visita (y el botón Editar favoritos) dejaba el móvil bloqueado varios segundos
+        const LIMITE_INICIAL_EDICION = 50;
+        const usarPaginacion = true;
 
-        const maxMostrar = usarPaginacion 
-            ? Math.min(window.limitePaginacionMeteo || LIMITE_INICIAL, filasValidas.length)
-            : filasValidas.length;
+        const maxMostrar = modoEdicionFavoritos
+            ? Math.min(Math.max(window.limitePaginacionMeteo || LIMITE_INICIAL, LIMITE_INICIAL_EDICION), filasValidas.length)
+            : Math.min(window.limitePaginacionMeteo || LIMITE_INICIAL, filasValidas.length);
 
         // Solo metemos en el DOM el bloque permitido (o todos si la paginación está desactivada)
         for (let i = 0; i < maxMostrar; i++) {
+            const tdPendiente = filasValidas[i].tdDespegue;
+            if (tdPendiente && tdPendiente.htmlPendiente !== undefined) {
+                tdPendiente.innerHTML = tdPendiente.htmlPendiente;
+                tdPendiente.htmlPendiente = undefined;
+            }
             filasValidas[i].elementos.forEach(fila => {
                 tbodyFragmento.appendChild(fila);
             });
@@ -11239,6 +11257,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
     if (distanciaSlider) {
         noUiSlider.create(distanciaSlider, {
+            handleAttributes: [{ 'aria-label': 'Distancia' }],
             start: MAX_INDEX,    
             direction: 'rtl',    
             step: 1,             

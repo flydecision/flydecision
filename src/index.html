@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes, maximum-scale=2.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes, maximum-scale=5.0"/>
 <title>Fly Decision | Análisis automático del pronóstico meteorológico para volar en parapente. Mapa de despegues. Balizas de viento</title>
 <meta name="description" content="Análisis automático del pronóstico de tiempo y orientaciones para despegues de parapente. Tabla y mapa con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente. Mapa de despegues y balizas de viento.">
 <meta property="og:description" content="Análisis automático del pronóstico y orientaciones para despegues de parapente. Tabla y mapa con lugares de vuelo y predicciones por horas para los próximos días, con evaluación visual por colores 🟩🟨🟥 según límites de seguridad personalizables. Ayuda para decidir dónde puedes ir a volar en parapente.">
@@ -87,9 +87,9 @@
 <script src="/js/driver.js.iife.js" defer></script>
 
 <!-- Librerías idiomas i18next -->
-<script src="/js/i18next.min.js"></script>
-<script src="/js/i18nextHttpBackend.min.js"></script>
-<script src="/js/i18nextBrowserLanguageDetector.min.js"></script>
+<script src="/js/i18next.min.js" defer></script>
+<script src="/js/i18nextHttpBackend.min.js" defer></script>
+<script src="/js/i18nextBrowserLanguageDetector.min.js" defer></script>
 <!-- fuentes (referencia) -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/i18next@23.10.1/i18next.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/i18next-http-backend@2.5.0/i18nextHttpBackend.min.js"></script>
@@ -188,7 +188,7 @@ setTimeout(function () {
 		</button>
 
 		<button id="btn-guia-edicion-favoritos" class="group-edit" data-i18n="[title]html.guiaEdicionTitle" onclick="sugerirGuiaFavoritos(true)" style="position: relative; margin-left: auto;"> 
-			<img src="/icons/icono_ayuda_60.webp" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
+			<img src="/icons/icono_ayuda_60.webp" alt="Ayuda" width="20" height="20" style="position: absolute; bottom: 4px; right: 9px;">
 		</button>
 
 	</div>
@@ -260,7 +260,7 @@ setTimeout(function () {
 				</button>
 			</div>	
 			
-			<div id="distancia-slider" role="slider" aria-labelledby="titulo-distancia-slider"></div>
+			<div id="distancia-slider"></div>
 
 		</div>
 			
