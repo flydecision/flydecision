@@ -7531,7 +7531,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 }
             }
 
-            tdDespegue.innerHTML = `
+            // El HTML de los botones (con SVG) se mete al añadir la fila a la tabla (paso 4 de la paginación): así los despegues
+            // que no se llegan a mostrar no lo crean, que es lo que más tarda. Mientras, el nombre queda como texto para el buscador.
+            tdDespegue.textContent = d.Despegue;
+            tdDespegue.htmlPendiente = `
                 ${botonInfoHTML}
                 ${botonMapaDirectoHTML}
                 ${botonFavoritoHTML}
@@ -8913,7 +8916,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 			listaFilasParaOrdenar.push({
 				nota: horasValidas > 0 ? notaFinal : -1, 
 				notaXC: horasValidasXC > 0 ? notaFinalXC : -1, // Guardamos también la nota XC
-				elementos: todasLasFilas 
+				elementos: todasLasFilas,
+				tdDespegue: tdDespegue // Para meterle su HTML pendiente solo si se muestra
 			});
 
 		} // <--- FIN DEL BUCLE despegues.forEach
@@ -8975,15 +8979,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         // 4. PAGINACIÓN ("MOSTRAR TODOS")
         const LIMITE_INICIAL = 10;
         
-        // Si estamos editando favoritos, NO paginamos. Mostramos la lista completa.
-        const usarPaginacion = !modoEdicionFavoritos;
+        // Editando favoritos también paginamos, pero con más despegues de inicio: con los ~1.000 despegues de golpe
+        // la primera visita (y el botón Editar favoritos) dejaba el móvil bloqueado varios segundos
+        const LIMITE_INICIAL_EDICION = 50;
+        const usarPaginacion = true;
 
-        const maxMostrar = usarPaginacion 
-            ? Math.min(window.limitePaginacionMeteo || LIMITE_INICIAL, filasValidas.length)
-            : filasValidas.length;
+        const maxMostrar = modoEdicionFavoritos
+            ? Math.min(Math.max(window.limitePaginacionMeteo || LIMITE_INICIAL, LIMITE_INICIAL_EDICION), filasValidas.length)
+            : Math.min(window.limitePaginacionMeteo || LIMITE_INICIAL, filasValidas.length);
 
         // Solo metemos en el DOM el bloque permitido (o todos si la paginación está desactivada)
         for (let i = 0; i < maxMostrar; i++) {
+            const tdPendiente = filasValidas[i].tdDespegue;
+            if (tdPendiente && tdPendiente.htmlPendiente !== undefined) {
+                tdPendiente.innerHTML = tdPendiente.htmlPendiente;
+                tdPendiente.htmlPendiente = undefined;
+            }
             filasValidas[i].elementos.forEach(fila => {
                 tbodyFragmento.appendChild(fila);
             });
