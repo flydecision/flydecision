@@ -4644,7 +4644,7 @@ body.leaflet-dragging #map.cursor-planeo-activo .leaflet-marker-icon:has(.glide-
 /* 🛑 BOTÓN FLOTANTE "VOLVER" (Módulo Mapa) */
 .btn-volver-flotante {
     position: fixed;
-    top: calc(var(--android-sb-height, 0px) + 170px); 
+    bottom: calc(var(--safe-area-inset-bottom, 0px) + 90px); /* Mapa: tercio inferior, justo encima de la barra Tabla/Mapa/Ajustes */
     left: 50%;
     transform: translateX(-50%);
     z-index: 2000; /* Por encima de los controles de Leaflet */
@@ -4654,7 +4654,7 @@ body.leaflet-dragging #map.cursor-planeo-activo .leaflet-marker-icon:has(.glide-
     font-size: 16px;
     padding: 8px 16px;
     border-radius: 20px;
-    border: 2px solid white;
+    border: 2px solid #e53935; /* Mapa: borde rojo */
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     display: flex;
     align-items: center;
@@ -4663,9 +4663,20 @@ body.leaflet-dragging #map.cursor-planeo-activo .leaflet-marker-icon:has(.glide-
     transition: background-color 0.2s, transform 0.1s;
 }
 
+/* Mapa con popup de despegue abierto: justo bajo la etiqueta (top/left los calcula colocarBtnVolverBajoDespegue en meteo.js) */
+.btn-volver-flotante.bajo-despegue {
+    top: var(--btn-volver-top);
+    left: var(--btn-volver-left);
+    bottom: auto;
+    width: max-content;              /* que no se estreche cerca del borde derecho */
+    max-width: 50vw;                 /* mismo ancho que cuando está abajo (left: 50%) */
+}
+
 /* Modificador: baja el botón cuando está flotando sobre la tabla */
 .btn-volver-flotante.en-tabla {
     top: calc(var(--android-sb-height, 0px) + 525px);
+    bottom: auto;
+    border-color: white;
 }
 
 .btn-volver-flotante:active {
