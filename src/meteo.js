@@ -15578,7 +15578,7 @@ function inicializarMapaLeaflet() {
             const input = L.DomUtil.create('input', 'leaflet-text-search-input');
             input.type = 'search';
             
-            input.placeholder = '';
+            input.placeholder = ' '; // Espacio (no vacío): Safari/iOS no aplica :placeholder-shown con placeholder vacío y ocultaba los iconos
             input.title = t('mapa.titleBuscadorDespegue');
 
             // Dejamos un margen de 50px a la izquierda del texto para no tapar los iconos flotantes
@@ -15628,7 +15628,7 @@ function inicializarMapaLeaflet() {
             // Limpieza al Foco ---
             L.DomEvent.addListener(input, 'focus', function() {
                 input.value = '';
-                input.placeholder = '';
+                input.placeholder = ' ';
                 // Oculta la lista al empezar a escribir/enfocar
                 autocompleteList.style.display = 'none'; 
                 retraerOpciones()
@@ -15636,7 +15636,7 @@ function inicializarMapaLeaflet() {
             
             // Evento BLUR (Al perder el foco/hacer clic fuera)
             L.DomEvent.addListener(input, 'blur', function() {
-                input.placeholder = '';
+                input.placeholder = ' ';
             });
 
             // Autocompletado (al presionar una tecla) ---

@@ -4104,6 +4104,9 @@ h3 {
 }
 
 .leaflet-text-search-input {
+	-webkit-appearance: none;
+	appearance: none;
+	background-color: transparent;
 	border: none;
 	width: 133px;
 	outline: none;
