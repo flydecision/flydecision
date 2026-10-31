@@ -120,6 +120,10 @@ body.modo-simple #infoPanelPlaneo {
     display: none !important;
 }
 
+body.modo-simple .titulo-popup-despegue {
+    margin-bottom: 6px;
+}
+
 /* 🔴 Mensaje "Esperando conexión..."  -------------------------------- */ 
 
 .offline-badge {

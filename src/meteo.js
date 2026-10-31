@@ -213,7 +213,9 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // Controlador dinámico de variables para el Modo Básico/Avanzado
+let modoSimpleAplicado = false; // En modo simple se ignoran (sin borrarlas) las personalizaciones de despegues en el cálculo
 function aplicarReglasModoSimpleAVariables(esSimple) {
+    modoSimpleAplicado = esSimple;
     if (esSimple) {
         // En modo básico: Forzamos a falso las variables para que la tabla no las dibuje
         chkMostrarVientoAlturas = false;
@@ -228,6 +230,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkColorearFlechasBalizas = false; 
         chkOcultarValoresBalizas = false;
         chkAplicarCorreccionEstadistica = false;
+        chkAdmitirVientoFlojoCruzado = false;
     } else {
         // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
@@ -244,6 +247,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkColorearFlechasBalizas = localStorage.getItem("METEO_CHECKBOX_COLOREAR_FLECHAS_BALIZAS") === "true"; 
         chkOcultarValoresBalizas = localStorage.getItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS") === "true";
         chkAplicarCorreccionEstadistica = localStorage.getItem("METEO_CHECKBOX_APLICAR_CORRECCION_ESTADISTICA") === "true";
+        chkAdmitirVientoFlojoCruzado = localStorage.getItem("METEO_CHECKBOX_ADMITIR_VIENTO_FLOJO_CRUZADO") === "true";
     }
 
     // Sincronizar los checkboxes ocultos del menú Ajustes
@@ -257,6 +261,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkColorearFlechasBalizas")) document.getElementById("chkColorearFlechasBalizas").checked = chkColorearFlechasBalizas;
     if (document.getElementById("chkOcultarValoresBalizas")) document.getElementById("chkOcultarValoresBalizas").checked = chkOcultarValoresBalizas;
     if (document.getElementById("chkAplicarCorreccionEstadistica")) document.getElementById("chkAplicarCorreccionEstadistica").checked = chkAplicarCorreccionEstadistica;
+    if (document.getElementById("chkAdmitirVientoFlojoCruzado")) document.getElementById("chkAdmitirVientoFlojoCruzado").checked = chkAdmitirVientoFlojoCruzado;
 
     // Inicialización del slider de viento máximo para balizas (Rango de 20 a 80 km/h)
     const vientoBalizasSlider = document.getElementById('viento-balizas-slider');
@@ -7317,7 +7322,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // 2. Construimos el contenido HTML del tooltip
             const contenidoTooltip = `
                 <div style="line-height: 1.4; max-width: 232px;">
-                    <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${d.Despegue}</b></span>   
+                    <b><span class='titulo-popup-despegue' style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><span style='float: right; width: 24px; height: 28px;'></span><icon-despegue></icon-despegue>${d.Despegue}</b></span><br>   
 
                     ${generarHtmlStepperLimites(d.ID, d.Orientaciones_Grados || '')}
                     
@@ -9937,7 +9942,7 @@ function obtenerAjustesLimitesDespegues() {
 }
 
 function obtenerPorcentajeAjusteDespegue(idDespegue) {
-    if (!idDespegue) return 100;
+    if (!idDespegue || modoSimpleAplicado) return 100;
     const ajustes = obtenerAjustesLimitesDespegues();
     const pct = ajustes[Number(idDespegue)];
     if (pct === undefined || isNaN(Number(pct))) return 100;
@@ -9982,7 +9987,7 @@ function guardarOrientacionesIdealesDespegues() {
 
 // Sector (0-15) de la orientación ideal del despegue, o null si no tiene
 function obtenerSectorIdealDespegue(idDespegue) {
-    if (!idDespegue) return null;
+    if (!idDespegue || modoSimpleAplicado) return null;
     const s = obtenerOrientacionesIdealesDespegues()[Number(idDespegue)];
     return s === undefined ? null : s;
 }
@@ -10333,7 +10338,7 @@ function generarHtmlStepperLimites(idDespegue, gradosOrientaciones) {
     const tituloReset = t('popupDespegue.resetearPersonalizacion', { defaultValue: 'Quitar la personalización de este despegue (límites al 100% y sin orientación ideal)' }).replace(/"/g, "'");
 
     return `
-        <div class="bloque-ajuste-limites ${personalizado ? 'bloque-personalizado' : ''}" data-id-desp="${idNum}" style="margin: 13px 0 8px 0; padding: 3px 7px 5px 7px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;">
+        <div class="bloque-ajuste-limites solo-modo-avanzado ${personalizado ? 'bloque-personalizado' : ''}" data-id-desp="${idNum}" style="margin: 13px 0 8px 0; padding: 3px 7px 5px 7px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box;">
             <div style="display: flex; align-items: center; justify-content: space-between; min-height: 26px;">
                 <span style="font-weight: bold; color: #1e293b; white-space: nowrap;" title="${tooltipTitle}">${tituloTexto}</span>
                 <button type="button" class="btn-reset-personalizacion btn-reset-personalizacion-${idNum}" onclick="if(event){event.stopPropagation();event.preventDefault();} resetearPersonalizacionDespegue(${idNum});" title="${tituloReset}"
@@ -12445,7 +12450,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 
                 // Aplicar límites de altura y scroll vertical únicamente para el botón "i" del despegue
                 if (esInfoDespegue) {
-                    scrollArea.style.maxHeight = '351px';
+                    scrollArea.style.maxHeight = '357px';
                     scrollArea.style.overflowY = 'auto';
                     scrollArea.style.paddingRight = '8px';
                     scrollArea.style.boxSizing = 'border-box';
