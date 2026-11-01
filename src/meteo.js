@@ -18270,7 +18270,7 @@ function inicializarMapaLeaflet() {
             intervalo: null,
             umbralAmarilloMin: 60,
             umbralRojoMin: 90,
-            urlWeb: (id) => `https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?k=arn&l=${id}&w=0&datos=img&x=h24&f=vel_viento`,
+            urlWeb: (id) => `https://www.aemet.es/es/eltiempo/observacion/ultimosdatos?l=${id}&w=1`,
             idProveedorTolomet: 'AE'
         },
         'meteoclimatic': {
