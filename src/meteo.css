@@ -1718,7 +1718,7 @@ span.grados {
 .fondo-naranja { background-color: #f0c16a; }
 .fondo-rojo { background-color: #fb796e; }
 /* 🌬️ Viento fuerte en altura (ECMWF a la altitud del despegue): banda rayada naranja/negra arriba, sin tapar el color del modelo */
-.aviso-viento-altura { background-image: repeating-linear-gradient(135deg, #ff9800 0 3px, #000 3px 5px); background-size: 100% 4px; background-repeat: no-repeat; background-position: top; }
+.aviso-viento-altura { background-image: repeating-linear-gradient(135deg, #ff9800 0 3px, #000 3px 5px); background-size: 100% 3px; background-repeat: no-repeat; background-position: top; }
 
 /* Calibración: Celda interactiva para comparar modelo original / calibrado */
 .celda-meteo-interactiva {
