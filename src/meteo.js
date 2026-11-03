@@ -158,9 +158,49 @@ function alternarAdmitirVientoFlojoCruzado() {
 }
 window.alternarAdmitirVientoFlojoCruzado = alternarAdmitirVientoFlojoCruzado;
 
+// 🌬️ Viento fuerte en altura: viento ECMWF de atmósfera libre interpolado a la altitud del despegue
+// (hourly.wind_speed_despegue del JSON ligero, lo calcula el generador). Arome/ICON a 10 m pueden no verlo cuando hay
+// mucho gradiente con la altura. Si supera la velocidad máxima del despegue y además es mayor que el viento del modelo,
+// la hora se penaliza (sin veto: según el estudio, solo ~1 de cada 5 horas así acaba con viento fuerte de verdad)
+const FACTOR_VIENTO_ALTURA_FUERTE = 0.8;      // viento en altura >= velocidad máxima (como una hora naranja)
+const FACTOR_VIENTO_ALTURA_MUY_FUERTE = 0.6;  // viento en altura >= 1,5 veces la velocidad máxima
+
+let chkPenalizarVientoAltura = localStorage.getItem("METEO_CHECKBOX_PENALIZAR_VIENTO_ALTURA") !== "false"; // true por defecto
+
+function alternarPenalizarVientoAltura() {
+    const chk = document.getElementById("chkPenalizarVientoAltura");
+    chkPenalizarVientoAltura = chk ? chk.checked : true;
+    localStorage.setItem("METEO_CHECKBOX_PENALIZAR_VIENTO_ALTURA", chkPenalizarVientoAltura);
+    if (typeof construir_tabla === 'function') construir_tabla();
+}
+window.alternarPenalizarVientoAltura = alternarPenalizarVientoAltura;
+
+// Con la opción desactivada devuelve null: sin penalización, sin banda y sin línea en el tooltip
+function obtenerVientoAlturaDespegue(hourlyEcmwf, idxE) {
+    if (!chkPenalizarVientoAltura || !hourlyEcmwf || idxE === undefined || !hourlyEcmwf.wind_speed_despegue) return null;
+    const v = hourlyEcmwf.wind_speed_despegue[idxE];
+    return v == null ? null : Number(v);
+}
+
+// Línea del tooltip de la celda de velocidad, con la máxima usada (la del despegue, con su ajuste personal)
+function textoAvisoVientoAltura(altitud, vientoAltura, velMax) {
+    const max = Math.round(velMax * 10) / 10;
+    return `🌬️ ${t('tabla.tooltips.vientoAlturaDespegue', { defaultValue: 'Viento ECMWF a la altitud del despegue' })} (${altitud} m): ${vientoAltura} km/h`
+        + ` (${t('tabla.tooltips.vientoAlturaMax', { defaultValue: 'máx. {{max}} km/h', max })})`;
+}
+
+function factorVientoAlturaDespegue(vientoAltura, velocidad, velMax) {
+    if (vientoAltura == null || velocidad == null || !(velMax > 0) || vientoAltura <= velocidad) return 1;
+    if (vientoAltura >= velMax * 1.5) return FACTOR_VIENTO_ALTURA_MUY_FUERTE;
+    if (vientoAltura >= velMax) return FACTOR_VIENTO_ALTURA_FUERTE;
+    return 1;
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     const chk = document.getElementById("chkAdmitirVientoFlojoCruzado");
     if (chk) chk.checked = chkAdmitirVientoFlojoCruzado;
+    const chkAltura = document.getElementById("chkPenalizarVientoAltura");
+    if (chkAltura) chkAltura.checked = chkPenalizarVientoAltura;
 });
 
 window.modalMinutely15Abierto = false; // true mientras el usuario tiene abierto el modal de detalle 15 min
@@ -231,6 +271,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkOcultarValoresBalizas = false;
         chkAplicarCorreccionEstadistica = false;
         chkAdmitirVientoFlojoCruzado = false;
+        chkPenalizarVientoAltura = true; // En modo simple siempre activo (es su valor por defecto)
     } else {
         // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
@@ -248,6 +289,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkOcultarValoresBalizas = localStorage.getItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS") === "true";
         chkAplicarCorreccionEstadistica = localStorage.getItem("METEO_CHECKBOX_APLICAR_CORRECCION_ESTADISTICA") === "true";
         chkAdmitirVientoFlojoCruzado = localStorage.getItem("METEO_CHECKBOX_ADMITIR_VIENTO_FLOJO_CRUZADO") === "true";
+        chkPenalizarVientoAltura = localStorage.getItem("METEO_CHECKBOX_PENALIZAR_VIENTO_ALTURA") !== "false";
     }
 
     // Sincronizar los checkboxes ocultos del menú Ajustes
@@ -262,6 +304,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkOcultarValoresBalizas")) document.getElementById("chkOcultarValoresBalizas").checked = chkOcultarValoresBalizas;
     if (document.getElementById("chkAplicarCorreccionEstadistica")) document.getElementById("chkAplicarCorreccionEstadistica").checked = chkAplicarCorreccionEstadistica;
     if (document.getElementById("chkAdmitirVientoFlojoCruzado")) document.getElementById("chkAdmitirVientoFlojoCruzado").checked = chkAdmitirVientoFlojoCruzado;
+    if (document.getElementById("chkPenalizarVientoAltura")) document.getElementById("chkPenalizarVientoAltura").checked = chkPenalizarVientoAltura;
 
     // Inicialización del slider de viento máximo para balizas (Rango de 20 a 80 km/h)
     const vientoBalizasSlider = document.getElementById('viento-balizas-slider');
@@ -4997,6 +5040,8 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
 
         if (!vetoActivado) {
             ptsHora = (ptsDir + ptsRacha + ptsVel) * ratioCorreccionPorDireccion * ratioCorreccionPorRacha;
+            // 🌬️ Viento fuerte en altura (ECMWF a la altitud del despegue)
+            ptsHora *= factorVientoAlturaDespegue(obtenerVientoAlturaDespegue(hourlyEcmwf, idxE), velocidad, velMaxEfectiva);
         }
         puntosAcumulados += ptsHora;
 
@@ -8260,6 +8305,16 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.title = `${velocidad} ${t('tabla.tooltips.viento10mUnidades')} [${etiquetaModelo}]`;
                         }
 
+                        // 🌬️ Viento fuerte en altura: banda rayada arriba y aviso en el tooltip (el color de la celda sigue siendo el del modelo)
+                        const vientoAltura = obtenerVientoAlturaDespegue(hourlyEcmwf, ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined);
+                        if (vientoAltura !== null) {
+                            td.dataset.vAltura = vientoAltura;
+                            td.dataset.altDesp = Number(d.Altitud) || 0;
+                            td.dataset.tituloBase = td.title; // para rehacer el aviso si cambian los límites en vivo
+                            if (factorVientoAlturaDespegue(vientoAltura, velocidad, velMaxDespegue) < 1) td.classList.add("aviso-viento-altura");
+                            td.title += `\n${textoAvisoVientoAltura(td.dataset.altDesp, vientoAltura, velMaxDespegue)}`;
+                        }
+
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
                         td.dataset.vRaw = velOrigRound;
                         td.dataset.vCorr = velCorrRound;
@@ -10607,6 +10662,10 @@ window.refrescarDespegueEnTabla = function (idDespegue) {
                 pintar(td, claseV(Number(td.textContent)));
                 ds.cRaw = claseV(Number(ds.vRaw));
                 ds.cCorr = claseV(Number(ds.vCorr));
+                if (ds.vAltura !== undefined) {
+                    td.classList.toggle('aviso-viento-altura', factorVientoAlturaDespegue(Number(ds.vAltura), Number(td.textContent), L.max) < 1);
+                    td.title = `${ds.tituloBase}\n${textoAvisoVientoAltura(ds.altDesp, ds.vAltura, L.max)}`;
+                }
             } else if (ds.rRaw !== undefined) {     // racha
                 pintar(td, claseR(Number(td.textContent)));
                 ds.cRaw = claseR(Number(ds.rRaw));
