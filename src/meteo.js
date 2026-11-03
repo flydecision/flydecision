@@ -165,8 +165,19 @@ window.alternarAdmitirVientoFlojoCruzado = alternarAdmitirVientoFlojoCruzado;
 const FACTOR_VIENTO_ALTURA_FUERTE = 0.8;      // viento en altura >= velocidad máxima (como una hora naranja)
 const FACTOR_VIENTO_ALTURA_MUY_FUERTE = 0.6;  // viento en altura >= 1,5 veces la velocidad máxima
 
+let chkPenalizarVientoAltura = localStorage.getItem("METEO_CHECKBOX_PENALIZAR_VIENTO_ALTURA") !== "false"; // true por defecto
+
+function alternarPenalizarVientoAltura() {
+    const chk = document.getElementById("chkPenalizarVientoAltura");
+    chkPenalizarVientoAltura = chk ? chk.checked : true;
+    localStorage.setItem("METEO_CHECKBOX_PENALIZAR_VIENTO_ALTURA", chkPenalizarVientoAltura);
+    if (typeof construir_tabla === 'function') construir_tabla();
+}
+window.alternarPenalizarVientoAltura = alternarPenalizarVientoAltura;
+
+// Con la opción desactivada devuelve null: sin penalización, sin banda y sin línea en el tooltip
 function obtenerVientoAlturaDespegue(hourlyEcmwf, idxE) {
-    if (!hourlyEcmwf || idxE === undefined || !hourlyEcmwf.wind_speed_despegue) return null;
+    if (!chkPenalizarVientoAltura || !hourlyEcmwf || idxE === undefined || !hourlyEcmwf.wind_speed_despegue) return null;
     const v = hourlyEcmwf.wind_speed_despegue[idxE];
     return v == null ? null : Number(v);
 }
@@ -188,6 +199,8 @@ function factorVientoAlturaDespegue(vientoAltura, velocidad, velMax) {
 window.addEventListener('DOMContentLoaded', () => {
     const chk = document.getElementById("chkAdmitirVientoFlojoCruzado");
     if (chk) chk.checked = chkAdmitirVientoFlojoCruzado;
+    const chkAltura = document.getElementById("chkPenalizarVientoAltura");
+    if (chkAltura) chkAltura.checked = chkPenalizarVientoAltura;
 });
 
 window.modalMinutely15Abierto = false; // true mientras el usuario tiene abierto el modal de detalle 15 min
@@ -258,6 +271,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkOcultarValoresBalizas = false;
         chkAplicarCorreccionEstadistica = false;
         chkAdmitirVientoFlojoCruzado = false;
+        chkPenalizarVientoAltura = true; // En modo simple siempre activo (es su valor por defecto)
     } else {
         // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
@@ -275,6 +289,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkOcultarValoresBalizas = localStorage.getItem("METEO_CHECKBOX_OCULTAR_VALORES_BALIZAS") === "true";
         chkAplicarCorreccionEstadistica = localStorage.getItem("METEO_CHECKBOX_APLICAR_CORRECCION_ESTADISTICA") === "true";
         chkAdmitirVientoFlojoCruzado = localStorage.getItem("METEO_CHECKBOX_ADMITIR_VIENTO_FLOJO_CRUZADO") === "true";
+        chkPenalizarVientoAltura = localStorage.getItem("METEO_CHECKBOX_PENALIZAR_VIENTO_ALTURA") !== "false";
     }
 
     // Sincronizar los checkboxes ocultos del menú Ajustes
@@ -289,6 +304,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkOcultarValoresBalizas")) document.getElementById("chkOcultarValoresBalizas").checked = chkOcultarValoresBalizas;
     if (document.getElementById("chkAplicarCorreccionEstadistica")) document.getElementById("chkAplicarCorreccionEstadistica").checked = chkAplicarCorreccionEstadistica;
     if (document.getElementById("chkAdmitirVientoFlojoCruzado")) document.getElementById("chkAdmitirVientoFlojoCruzado").checked = chkAdmitirVientoFlojoCruzado;
+    if (document.getElementById("chkPenalizarVientoAltura")) document.getElementById("chkPenalizarVientoAltura").checked = chkPenalizarVientoAltura;
 
     // Inicialización del slider de viento máximo para balizas (Rango de 20 a 80 km/h)
     const vientoBalizasSlider = document.getElementById('viento-balizas-slider');
