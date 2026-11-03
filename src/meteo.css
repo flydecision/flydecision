@@ -2642,6 +2642,7 @@ body.modo-edicion-tabla #nav-distance {
     color: #1e3a8a !important;
     font-size: 18px !important;
     margin-bottom: 8px !important;
+    padding-right: 40px !important; /* Que el título no quede debajo del botón ✕ */
 }
 
 /* 3. TEXTO EXPLICATIVO (Scroll automático si no cabe) */
