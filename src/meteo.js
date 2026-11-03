@@ -8171,7 +8171,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         renderEcmwfData(filaBaseNubeHumedad, arrBaseNube,
                             (v) => {
                                 if (v == null) return "";
-                                if (Number(v) < 0) return "–";
+                                if (Number(v) < 0) return ">3"; // sin nube hasta 700 hPa (~3 km)
                                 const km = (Number(v) / 1000).toFixed(1);
                                 return km === "0.0" ? "0" : km;
                             },
