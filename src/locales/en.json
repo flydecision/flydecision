@@ -258,7 +258,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Strong wind aloft warning",
-        "descripcion": "When the ECMWF wind at takeoff altitude reaches your maximum speed and is also higher than Arome/ICON's, the 10 m wind cell is marked with a striped band <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> at the top and that hour's score drops by 20% (40% if it reaches 1.5 times your maximum).<br><br>It usually happens when the wind increases a lot with height: Arome/ICON may underestimate it at the takeoff. Hold your finger or mouse over the cell to see the wind aloft.<br><br>💡 It can be disabled in <i>⚙️ Settings</i>."
+        "descripcion": "The 10 m wind cell is marked with <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> when the ECMWF wind at takeoff altitude exceeds your maximum speed. That hour scores less.<br><br>💡 More details in the ⓘ button of this option in <i>⚙️ Settings</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Shear / Reliability Row",

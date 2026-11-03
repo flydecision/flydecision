@@ -258,7 +258,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Alerte vent fort en altitude",
-        "descripcion": "Quand le vent ECMWF à l'altitude du décollage atteint votre vitesse maximale et est en plus supérieur à celui d'Arome/ICON, la cellule de vent à 10 m est marquée d'une bande rayée <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> en haut et le score de cette heure baisse de 20 % (40 % s'il atteint 1,5 fois votre maximale).<br><br>Cela arrive surtout quand le vent augmente beaucoup avec l'altitude : Arome/ICON peuvent le sous-estimer au décollage. Laissez le doigt ou la souris sur la cellule pour voir le vent en altitude.<br><br>💡 Désactivable dans <i>⚙️ Paramètres</i>."
+        "descripcion": "La cellule de vent à 10 m est marquée de <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> quand le vent ECMWF à l'altitude du décollage dépasse votre vitesse maximale. Cette heure vaut moins.<br><br>💡 Plus de détails dans le bouton ⓘ de cette option dans <i>⚙️ Paramètres</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Ligne Cisaillement / Fiabilité",

@@ -258,7 +258,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Aviso de viento fuerte en altura",
-        "descripcion": "Cuando el viento de ECMWF a la altitud del despegue llega a tu velocidad máxima y además es mayor que el que dan Arome/ICON, la celda de viento a 10 m se marca con una banda rayada <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> arriba y la puntuación de esa hora baja un 20 % (un 40 % si llega a 1,5 veces tu máxima).<br><br>Suele pasar cuando el viento aumenta mucho con la altura: Arome/ICON pueden quedarse cortos en el despegue. Deja el dedo o el ratón sobre la celda para ver el viento en altura.<br><br>💡 Se puede desactivar en <i>⚙️ Ajustes</i>."
+        "descripcion": "La celda de viento a 10 m se marca con <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> cuando el viento ECMWF a la altitud del despegue supera tu velocidad máxima. Esa hora puntúa menos.<br><br>💡 Más detalles en el botón ⓘ de esta opción en <i>⚙️ Ajustes</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Fila de Cizalladura / Fiabilidad",

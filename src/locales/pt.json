@@ -258,7 +258,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Aviso de vento forte em altitude",
-        "descripcion": "Quando o vento do ECMWF à altitude da descolagem chega à sua velocidade máxima e é ainda maior do que o do Arome/ICON, a célula de vento a 10 m é marcada com uma faixa listrada <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> em cima e a pontuação dessa hora desce 20 % (40 % se chegar a 1,5 vezes a sua máxima).<br><br>Costuma acontecer quando o vento aumenta muito com a altura: o Arome/ICON pode ficar aquém na descolagem. Deixe o dedo ou o rato sobre a célula para ver o vento em altitude.<br><br>💡 Pode ser desativado em <i>⚙️ Definições</i>."
+        "descripcion": "A célula de vento a 10 m é marcada com <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> quando o vento ECMWF à altitude da descolagem ultrapassa a sua velocidade máxima. Essa hora pontua menos.<br><br>💡 Mais detalhes no botão ⓘ desta opção em <i>⚙️ Definições</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Linha Cisalhamento / Fiabilidade",
