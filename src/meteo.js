@@ -271,7 +271,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkOcultarValoresBalizas = false;
         chkAplicarCorreccionEstadistica = false;
         chkAdmitirVientoFlojoCruzado = false;
-        chkPenalizarVientoAltura = true; // En modo simple siempre activo (es su valor por defecto)
+        chkPenalizarVientoAltura = localStorage.getItem("METEO_CHECKBOX_PENALIZAR_VIENTO_ALTURA") !== "false"; // Visible también en modo simple: se respeta lo elegido
     } else {
         // En modo avanzado: Recuperamos la preferencia real del usuario desde la memoria
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
