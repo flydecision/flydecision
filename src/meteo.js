@@ -2003,6 +2003,15 @@ function iniciarGuiaPrincipal(forzar = false) {
                     setTimeout(() => { if (typeof driverObj !== 'undefined') driverObj.refresh(); }, 100);
                 }
             },
+            // 🌬️ Aviso de viento fuerte en altura: señala una celda con aviso si la hay; si no, la primera celda de viento a 10 m
+            // (la descripción incluye una muestra de la banda, así se entiende aunque hoy no haya ningún aviso)
+            ...(chkPenalizarVientoAltura ? [{ 
+                element: () => document.querySelector('#tabla td.aviso-viento-altura') || document.querySelector('#tabla td[data-v-raw]'), 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.avisoVientoAltura.titulo'), 
+                    description: t('guiaPrincipal.pasos.avisoVientoAltura.descripcion')
+                } 
+            }] : []),
             ...(chkMostrarCizalladura ? [{ 
                 element: '.columna-meteo.columna-simbolo-fija.borde-grueso-izquierda.celda-altura-4px', 
                 popover: { 
