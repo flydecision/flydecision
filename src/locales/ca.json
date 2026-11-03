@@ -258,7 +258,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Avís de vent fort en altura",
-        "descripcion": "Quan el vent d'ECMWF a l'altitud de l'enlairament arriba a la teva velocitat màxima i a més és superior al que donen Arome/ICON, la cel·la de vent a 10 m es marca amb una banda ratllada <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> a dalt i la puntuació d'aquella hora baixa un 20 % (un 40 % si arriba a 1,5 vegades la teva màxima).<br><br>Sol passar quan el vent augmenta molt amb l'altura: Arome/ICON es poden quedar curts a l'enlairament. Deixa el dit o el ratolí sobre la cel·la per veure el vent en altura.<br><br>💡 Es pot desactivar a <i>⚙️ Ajustos</i>."
+        "descripcion": "La cel·la de vent a 10 m es marca amb <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> quan el vent ECMWF a l'altitud de l'enlairament supera la teva velocitat màxima. Aquella hora puntua menys.<br><br>💡 Més detalls al botó ⓘ d'aquesta opció a <i>⚙️ Ajustos</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Fila Cisallament / Fiabilitat",

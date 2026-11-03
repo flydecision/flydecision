@@ -258,7 +258,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Warnung vor starkem Höhenwind",
-        "descripcion": "Wenn der ECMWF-Wind in Startplatzhöhe deine Maximalgeschwindigkeit erreicht und zudem stärker ist als bei Arome/ICON, wird die 10-m-Windzelle oben mit einem gestreiften Band <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> markiert und die Bewertung dieser Stunde sinkt um 20 % (40 %, wenn er das 1,5-Fache deines Maximums erreicht).<br><br>Das passiert meist, wenn der Wind mit der Höhe stark zunimmt: Arome/ICON können ihn am Startplatz unterschätzen. Halte Finger oder Maus über die Zelle, um den Höhenwind zu sehen.<br><br>💡 Kann in <i>⚙️ Einstellungen</i> deaktiviert werden."
+        "descripcion": "Die 10-m-Windzelle wird mit <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> markiert, wenn der ECMWF-Wind in Startplatzhöhe deine Maximalgeschwindigkeit übersteigt. Diese Stunde zählt weniger.<br><br>💡 Mehr dazu über den ⓘ-Button dieser Option in <i>⚙️ Einstellungen</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Zeile Scherung / Zuverlässigkeit",

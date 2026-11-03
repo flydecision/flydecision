@@ -258,7 +258,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Goiko haize indartsuaren abisua",
-        "descripcion": "Aireratze-lekuaren altuerako ECMWF haizeak zure gehienezko abiadura lortzen duenean eta, gainera, Arome/ICON-ek ematen dutena baino handiagoa denean, 10 m-ko haize-gelaxka goian marradun banda batekin <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> markatzen da eta ordu horren puntuazioa % 20 jaisten da (% 40, zure gehienezkoaren 1,5 aldiz lortzen badu).<br><br>Haizea altuerarekin asko handitzen denean gertatu ohi da: Arome/ICON motz gera daitezke aireratze-lekuan. Utzi hatza edo sagua gelaxkaren gainean goiko haizea ikusteko.<br><br>💡 <i>⚙️ Ezarpenak</i> atalean desaktibatu daiteke."
+        "descripcion": "10 m-ko haize-gelaxka <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> batekin markatzen da aireratze-lekuaren altuerako ECMWF haizeak zure gehienezko abiadura gainditzen duenean. Ordu horrek gutxiago puntuatzen du.<br><br>💡 Xehetasun gehiago aukera honen ⓘ botoian, <i>⚙️ Ezarpenak</i> atalean."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Zizailadura / Fidagarritasuna lerroa",

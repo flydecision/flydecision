@@ -258,7 +258,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Aviso de vento forte en altura",
-        "descripcion": "Cando o vento de ECMWF á altitude do despegue chega á túa velocidade máxima e ademais é maior que o que dan Arome/ICON, a cela de vento a 10 m márcase cunha banda raiada <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> arriba e a puntuación desa hora baixa un 20 % (un 40 % se chega a 1,5 veces a túa máxima).<br><br>Adoita pasar cando o vento aumenta moito coa altura: Arome/ICON poden quedarse curtos no despegue. Deixa o dedo ou o rato sobre a cela para ver o vento en altura.<br><br>💡 Pódese desactivar en <i>⚙️ Axustes</i>."
+        "descripcion": "A cela de vento a 10 m márcase con <span style='display:inline-block;width:22px;height:9px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> cando o vento ECMWF á altitude do despegue supera a túa velocidade máxima. Esa hora puntúa menos.<br><br>💡 Máis detalles no botón ⓘ desta opción en <i>⚙️ Axustes</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Fila Cisalladura / Fiabilidade",
