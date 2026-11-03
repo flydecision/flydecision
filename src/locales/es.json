@@ -142,6 +142,7 @@
       "viento10m": "Viento medio a 10 m altura AGL (km/h)",
       "racha10m": "Racha máxima a 10 m altura AGL (km/h)",
       "viento10mUnidades": "km/h de viento medio a 10 m altura suelo (AGL)",
+      "vientoAlturaDespegue": "Viento ECMWF a la altitud del despegue",
       "racha10mUnidades": "km/h de racha máxima a 10 m altura suelo (AGL)",
       "datoOriginal": "Dato original del modelo",
       "vientoFlojoCruzado": "Orientación no apta admitida por viento flojo",

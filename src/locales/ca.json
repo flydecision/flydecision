@@ -142,6 +142,7 @@
       "viento10m": "Vent mitjà a 10 m d'altura AGL (km/h)",
       "racha10m": "Ràfega màxima a 10 m d'altura AGL (km/h)",
       "viento10mUnidades": "km/h de vent mitjà a 10 m d'altura del terra (AGL)",
+      "vientoAlturaDespegue": "Vent ECMWF a l'altitud de l'enlairament",
       "racha10mUnidades": "km/h de ratxa màxima a 10 m d'altura del terra (AGL)",
       "datoOriginal": "Dada original del model",
       "vientoFlojoCruzado": "Orientació no apta admesa per vent fluix",

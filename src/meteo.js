@@ -158,6 +158,26 @@ function alternarAdmitirVientoFlojoCruzado() {
 }
 window.alternarAdmitirVientoFlojoCruzado = alternarAdmitirVientoFlojoCruzado;
 
+// 🌬️ Viento fuerte en altura: viento ECMWF de atmósfera libre interpolado a la altitud del despegue
+// (hourly.wind_speed_despegue del JSON ligero, lo calcula el generador). Arome/ICON a 10 m pueden no verlo cuando hay
+// mucho gradiente con la altura. Si supera la velocidad máxima del despegue y además es mayor que el viento del modelo,
+// la hora se penaliza (sin veto: según el estudio, solo ~1 de cada 5 horas así acaba con viento fuerte de verdad)
+const FACTOR_VIENTO_ALTURA_FUERTE = 0.6;      // viento en altura >= velocidad máxima (como una hora naranja)
+const FACTOR_VIENTO_ALTURA_MUY_FUERTE = 0.3;  // viento en altura >= 1,5 veces la velocidad máxima
+
+function obtenerVientoAlturaDespegue(hourlyEcmwf, idxE) {
+    if (!hourlyEcmwf || idxE === undefined || !hourlyEcmwf.wind_speed_despegue) return null;
+    const v = hourlyEcmwf.wind_speed_despegue[idxE];
+    return v == null ? null : Number(v);
+}
+
+function factorVientoAlturaDespegue(vientoAltura, velocidad, velMax) {
+    if (vientoAltura == null || velocidad == null || !(velMax > 0) || vientoAltura <= velocidad) return 1;
+    if (vientoAltura >= velMax * 1.5) return FACTOR_VIENTO_ALTURA_MUY_FUERTE;
+    if (vientoAltura >= velMax) return FACTOR_VIENTO_ALTURA_FUERTE;
+    return 1;
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     const chk = document.getElementById("chkAdmitirVientoFlojoCruzado");
     if (chk) chk.checked = chkAdmitirVientoFlojoCruzado;
@@ -4997,6 +5017,8 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
 
         if (!vetoActivado) {
             ptsHora = (ptsDir + ptsRacha + ptsVel) * ratioCorreccionPorDireccion * ratioCorreccionPorRacha;
+            // 🌬️ Viento fuerte en altura (ECMWF a la altitud del despegue)
+            ptsHora *= factorVientoAlturaDespegue(obtenerVientoAlturaDespegue(hourlyEcmwf, idxE), velocidad, velMaxEfectiva);
         }
         puntosAcumulados += ptsHora;
 
@@ -8260,6 +8282,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.title = `${velocidad} ${t('tabla.tooltips.viento10mUnidades')} [${etiquetaModelo}]`;
                         }
 
+                        // 🌬️ Viento fuerte en altura: esquina naranja y aviso en el tooltip (el color de la celda sigue siendo el del modelo)
+                        const vientoAltura = obtenerVientoAlturaDespegue(hourlyEcmwf, ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined);
+                        if (vientoAltura !== null) {
+                            td.dataset.vAltura = vientoAltura;
+                            if (factorVientoAlturaDespegue(vientoAltura, velocidad, velMaxDespegue) < 1) td.classList.add("aviso-viento-altura");
+                            td.title += `\n🌬️ ${t('tabla.tooltips.vientoAlturaDespegue', { defaultValue: 'Viento ECMWF a la altitud del despegue' })} (${Number(d.Altitud) || 0} m): ${vientoAltura} km/h`;
+                        }
+
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
                         td.dataset.vRaw = velOrigRound;
                         td.dataset.vCorr = velCorrRound;
@@ -10607,6 +10637,7 @@ window.refrescarDespegueEnTabla = function (idDespegue) {
                 pintar(td, claseV(Number(td.textContent)));
                 ds.cRaw = claseV(Number(ds.vRaw));
                 ds.cCorr = claseV(Number(ds.vCorr));
+                if (ds.vAltura !== undefined) td.classList.toggle('aviso-viento-altura', factorVientoAlturaDespegue(Number(ds.vAltura), Number(td.textContent), L.max) < 1);
             } else if (ds.rRaw !== undefined) {     // racha
                 pintar(td, claseR(Number(td.textContent)));
                 ds.cRaw = claseR(Number(ds.rRaw));
