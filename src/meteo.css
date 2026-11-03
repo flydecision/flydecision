@@ -5099,3 +5099,9 @@ tr.ecmwf-oculto-temp {
     border-color: #ff0000 !important;
     box-shadow: inset 0 0 0 2px #ff0000;
 }
+
+/* Cifras en cursiva (corrección estadística): compensar la inclinación para que no se corten ni se vean desplazadas */
+td[data-v-raw][style*="italic"], td[data-r-raw][style*="italic"] {
+    letter-spacing: -1px;
+    padding-right: 2px !important;
+}
