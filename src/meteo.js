@@ -162,8 +162,8 @@ window.alternarAdmitirVientoFlojoCruzado = alternarAdmitirVientoFlojoCruzado;
 // (hourly.wind_speed_despegue del JSON ligero, lo calcula el generador). Arome/ICON a 10 m pueden no verlo cuando hay
 // mucho gradiente con la altura. Si supera la velocidad máxima del despegue y además es mayor que el viento del modelo,
 // la hora se penaliza (sin veto: según el estudio, solo ~1 de cada 5 horas así acaba con viento fuerte de verdad)
-const FACTOR_VIENTO_ALTURA_FUERTE = 0.6;      // viento en altura >= velocidad máxima (como una hora naranja)
-const FACTOR_VIENTO_ALTURA_MUY_FUERTE = 0.3;  // viento en altura >= 1,5 veces la velocidad máxima
+const FACTOR_VIENTO_ALTURA_FUERTE = 0.8;      // viento en altura >= velocidad máxima (como una hora naranja)
+const FACTOR_VIENTO_ALTURA_MUY_FUERTE = 0.6;  // viento en altura >= 1,5 veces la velocidad máxima
 
 function obtenerVientoAlturaDespegue(hourlyEcmwf, idxE) {
     if (!hourlyEcmwf || idxE === undefined || !hourlyEcmwf.wind_speed_despegue) return null;
