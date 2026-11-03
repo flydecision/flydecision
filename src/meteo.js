@@ -7151,7 +7151,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // GRUPO 1: Meteo Base + Precipitaciones + Alturas
             const filaNubesTotal = document.createElement("tr");
 
-            let filaPreci, filaProbPreci, filaBaseNube, filaBaseNubeHumedad, filaTemperatura;
+            let filaPreci, filaProbPreci, filaBaseNubeHumedad, filaBaseNube, filaTemperatura;
             if (chkMostrarPrecipitacion) filaPreci = document.createElement("tr");
             if (chkMostrarProbPrecipitacion) filaProbPreci = document.createElement("tr");
             if (chkMostrarBaseNube) filaBaseNube = document.createElement("tr");
@@ -7220,7 +7220,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 });
             }
 
-            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, filaBaseNubeHumedad, filaTemperatura, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
+            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNubeHumedad, filaBaseNube, filaTemperatura, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, 
                 filaEcmwfVel2000, filaEcmwfDir2000,
@@ -7707,8 +7707,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', tituloMeteoGeneral);
                 addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', tituloPrecipitacion);
                 addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', tituloProbPrecipitacion);
-                addIconCell(filaBaseNube, '<span style="font-size:15px; font-weight:bold;">☁️↕</span>', tituloBaseNube);
-                addIconCell(filaBaseNubeHumedad, '<span style="font-size:15px; font-weight:bold;">☁️↓</span>', tituloBaseNubeHumedad);
+                addIconCell(filaBaseNube, '<span style="font-size:15px; font-weight:bold;">🌤️↥</span>', tituloBaseNube);
+                addIconCell(filaBaseNubeHumedad, '<span style="font-size:15px; font-weight:bold;">☁️↥</span>', tituloBaseNubeHumedad);
                 addIconCell(filaTemperatura, '<span style="font-size:15px; font-weight:bold;">🌡️</span>', tituloTemperatura);
 
                 // Velocidades alturas
