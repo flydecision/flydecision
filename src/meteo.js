@@ -3969,6 +3969,16 @@ function nubeEnDespegue(base, altitud) {
     return base !== null && base >= 0 && base <= altitud;
 }
 
+// Penalización de la hora por la base de nube (siempre activa, como la lluvia; sin veto porque es una estimación)
+const FACTOR_NUBE_EN_DESPEGUE = 0.2;   // despegue dentro de la nube
+const FACTOR_BASE_NUBE_BAJA = 0.8;     // base a menos de MARGEN_BASE_NUBE_NARANJA m por encima del despegue
+function factorBaseNubeDespegue(base, altitud) {
+    if (base === null || base < 0) return 1;
+    if (base <= altitud) return FACTOR_NUBE_EN_DESPEGUE;
+    if (base - altitud < MARGEN_BASE_NUBE_NARANJA) return FACTOR_BASE_NUBE_BAJA;
+    return 1;
+}
+
 function alternarMostrarTemperatura() {
     chkMostrarTemperatura = document.getElementById("chkMostrarTemperatura").checked;
     localStorage.setItem("METEO_CHECKBOX_MOSTRAR_TEMPERATURA", chkMostrarTemperatura);
@@ -5079,6 +5089,8 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
             ptsHora = (ptsDir + ptsRacha + ptsVel) * ratioCorreccionPorDireccion * ratioCorreccionPorRacha;
             // 🌬️ Viento fuerte en altura (ECMWF a la altitud del despegue)
             ptsHora *= factorVientoAlturaDespegue(obtenerVientoAlturaDespegue(hourlyEcmwf, idxE), velocidad, velMaxEfectiva);
+            // ☁️ Base de nube (ICON-EU): dentro de la nube o base muy baja
+            ptsHora *= factorBaseNubeDespegue(obtenerBaseNubeHumedad(hourlyData, i), Number(despegueObj.Altitud) || 0);
         }
         puntosAcumulados += ptsHora;
 
@@ -5098,6 +5110,11 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
                     : ((hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[i] != null) ? hourlyEcmwf.boundary_layer_height[i] : 0);
                 let techoRaw = Number(blhVal);
                 let techoUtil = techoRaw * RATIO_TECHO_UTIL;
+                // ☁️ El techo útil no puede pasar de la base de nube (ICON-EU) sobre el despegue
+                const baseNubeXC = obtenerBaseNubeHumedad(hourlyData, i);
+                if (baseNubeXC !== null && baseNubeXC >= 0) {
+                    techoUtil = Math.min(techoUtil, Math.max(0, baseNubeXC - (Number(despegueObj.Altitud) || 0)));
+                }
 
                 let cinVal = (idxE !== undefined && hourlyEcmwf.convective_inhibition && hourlyEcmwf.convective_inhibition[idxE] != null)
                     ? hourlyEcmwf.convective_inhibition[idxE]
