@@ -143,6 +143,7 @@
       "racha10m": "Rafale maximale à 10 m de hauteur AGL (km/h)",
       "viento10mUnidades": "km/h de vent moyen à 10 m de hauteur du sol (AGL)",
       "vientoAlturaDespegue": "Vent ECMWF à l'altitude du décollage",
+      "vientoAlturaMax": "max. {{max}} km/h",
       "racha10mUnidades": "km/h de rafale maximale à 10 m de hauteur du sol (AGL)",
       "datoOriginal": "Donnée originale du modèle",
       "vientoFlojoCruzado": "Orientation non adaptée admise par vent faible",

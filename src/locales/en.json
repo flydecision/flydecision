@@ -143,6 +143,7 @@
       "racha10m": "Maximum gust at 10 m height AGL (km/h)",
       "viento10mUnidades": "km/h of mean wind at 10 m above ground level (AGL)",
       "vientoAlturaDespegue": "ECMWF wind at takeoff altitude",
+      "vientoAlturaMax": "max. {{max}} km/h",
       "racha10mUnidades": "km/h of maximum gust at 10 m above ground level (AGL)",
       "datoOriginal": "Original model data",
       "vientoFlojoCruzado": "Unsuitable orientation accepted due to light wind",

@@ -171,6 +171,13 @@ function obtenerVientoAlturaDespegue(hourlyEcmwf, idxE) {
     return v == null ? null : Number(v);
 }
 
+// Línea del tooltip de la celda de velocidad, con la máxima usada (la del despegue, con su ajuste personal)
+function textoAvisoVientoAltura(altitud, vientoAltura, velMax) {
+    const max = Math.round(velMax * 10) / 10;
+    return `🌬️ ${t('tabla.tooltips.vientoAlturaDespegue', { defaultValue: 'Viento ECMWF a la altitud del despegue' })} (${altitud} m): ${vientoAltura} km/h`
+        + ` (${t('tabla.tooltips.vientoAlturaMax', { defaultValue: 'máx. {{max}} km/h', max })})`;
+}
+
 function factorVientoAlturaDespegue(vientoAltura, velocidad, velMax) {
     if (vientoAltura == null || velocidad == null || !(velMax > 0) || vientoAltura <= velocidad) return 1;
     if (vientoAltura >= velMax * 1.5) return FACTOR_VIENTO_ALTURA_MUY_FUERTE;
@@ -8282,12 +8289,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.title = `${velocidad} ${t('tabla.tooltips.viento10mUnidades')} [${etiquetaModelo}]`;
                         }
 
-                        // 🌬️ Viento fuerte en altura: esquina naranja y aviso en el tooltip (el color de la celda sigue siendo el del modelo)
+                        // 🌬️ Viento fuerte en altura: banda rayada arriba y aviso en el tooltip (el color de la celda sigue siendo el del modelo)
                         const vientoAltura = obtenerVientoAlturaDespegue(hourlyEcmwf, ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined);
                         if (vientoAltura !== null) {
                             td.dataset.vAltura = vientoAltura;
+                            td.dataset.altDesp = Number(d.Altitud) || 0;
+                            td.dataset.tituloBase = td.title; // para rehacer el aviso si cambian los límites en vivo
                             if (factorVientoAlturaDespegue(vientoAltura, velocidad, velMaxDespegue) < 1) td.classList.add("aviso-viento-altura");
-                            td.title += `\n🌬️ ${t('tabla.tooltips.vientoAlturaDespegue', { defaultValue: 'Viento ECMWF a la altitud del despegue' })} (${Number(d.Altitud) || 0} m): ${vientoAltura} km/h`;
+                            td.title += `\n${textoAvisoVientoAltura(td.dataset.altDesp, vientoAltura, velMaxDespegue)}`;
                         }
 
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
@@ -10637,7 +10646,10 @@ window.refrescarDespegueEnTabla = function (idDespegue) {
                 pintar(td, claseV(Number(td.textContent)));
                 ds.cRaw = claseV(Number(ds.vRaw));
                 ds.cCorr = claseV(Number(ds.vCorr));
-                if (ds.vAltura !== undefined) td.classList.toggle('aviso-viento-altura', factorVientoAlturaDespegue(Number(ds.vAltura), Number(td.textContent), L.max) < 1);
+                if (ds.vAltura !== undefined) {
+                    td.classList.toggle('aviso-viento-altura', factorVientoAlturaDespegue(Number(ds.vAltura), Number(td.textContent), L.max) < 1);
+                    td.title = `${ds.tituloBase}\n${textoAvisoVientoAltura(ds.altDesp, ds.vAltura, L.max)}`;
+                }
             } else if (ds.rRaw !== undefined) {     // racha
                 pintar(td, claseR(Number(td.textContent)));
                 ds.cRaw = claseR(Number(ds.rRaw));
