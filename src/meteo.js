@@ -7220,7 +7220,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 });
             }
 
-            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNubeHumedad, filaBaseNube, filaTemperatura, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
+            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, filaBaseNubeHumedad, filaTemperatura, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, 
                 filaEcmwfVel2000, filaEcmwfDir2000,
