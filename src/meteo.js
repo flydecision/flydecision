@@ -2048,14 +2048,14 @@ function iniciarGuiaPrincipal(forzar = false) {
             ...(document.querySelector('#tabla .btn-guia-minutely15') ? [{ 
                 element: '#tabla .btn-guia-minutely15', 
                 popover: { 
-                    title: t('guiaPrincipal.pasos.btnMinutely15.titulo'), 
+                    title: `<div style='display: flex; align-items: center; gap: 8px;'><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span>${t('guiaPrincipal.pasos.btnMinutely15.titulo')}</span></div>`, 
                     description: t('guiaPrincipal.pasos.btnMinutely15.descripcion') 
                 } 
             }] : []),
             ...(document.querySelector('#tabla .btn-guia-ecmwf-desplegable') ? [{ 
                 element: '#tabla .btn-guia-ecmwf-desplegable', 
                 popover: { 
-                    title: t('guiaPrincipal.pasos.btnEcmwfDesplegable.titulo'), 
+                    title: `<div style='display: flex; align-items: center; gap: 8px;'><svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0;"><g stroke="#e00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="4" y2="20"/><polyline points="1 7 4 4 7 7"/><polyline points="1 17 4 20 7 17"/></g><g stroke="#555" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.59 4.59A2 2 0 1 1 17 8H11"/><path d="M17.59 19.41A2 2 0 1 0 19 16H11"/><path d="M13 12h9a2 2 0 1 1 0 4"/></g></svg><span>${t('guiaPrincipal.pasos.btnEcmwfDesplegable.titulo')}</span></div>`, 
                     description: t('guiaPrincipal.pasos.btnEcmwfDesplegable.descripcion') 
                 } 
             }] : []),
