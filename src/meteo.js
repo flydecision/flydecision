@@ -107,7 +107,8 @@ let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLA
 // ECMWF
 const chkMostrarPrecipitacion = true; // Siempre activo
 let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION") !== "false";
-let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") !== "false"; // Base de nube inicializada
+let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") === "true"; // Base de nube convectiva: desactivada por defecto (la principal es la de ICON-EU)
+let chkMostrarBaseNubeHumedad = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE_HUMEDAD") !== "false"; // ☁️ Base de nubes ICON-EU (humedad por niveles), true por defecto
 let chkMostrarTemperatura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_TEMPERATURA") !== "false";
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
 let chkOrdenarPorXC = localStorage.getItem("METEO_CHECKBOX_ORDENAR_POR_XC") === "true"; // false por defecto
@@ -185,8 +186,30 @@ function obtenerVientoAlturaDespegue(hourlyEcmwf, idxE) {
 // Línea del tooltip de la celda de velocidad, con la máxima usada (la del despegue, con su ajuste personal)
 function textoAvisoVientoAltura(altitud, vientoAltura, velMax) {
     const max = Math.round(velMax * 10) / 10;
-    return `🌬️ ${t('tabla.tooltips.vientoAlturaDespegue', { defaultValue: 'Viento ECMWF a la altitud del despegue' })} (${altitud} m): ${vientoAltura} km/h`
-        + ` (${t('tabla.tooltips.vientoAlturaMax', { defaultValue: 'máx. {{max}} km/h', max })})`;
+    return [
+        t('tabla.tooltips.vientoAlturaInterpolado', { v: vientoAltura, altitud, defaultValue: '{{v}} km/h de viento interpolado a la altitud del despegue ({{altitud}} m). Dato original del modelo ECMWF.' }),
+        t('tabla.tooltips.limiteVientoMaximo', { max, defaultValue: 'Límite máximo de viento medio a 10 m configurado: {{max}} km/h' })
+    ];
+}
+
+// Líneas del aviso de viento en altura para el globo; si se ve la barra rayada, añade una frase que la explica
+function lineasAvisoVientoAltura(altitud, vientoAltura, velocidad, velMax) {
+    const lineas = textoAvisoVientoAltura(altitud, vientoAltura, velMax);
+    if (factorVientoAlturaDespegue(vientoAltura, velocidad, velMax) < 1) {
+        // Mini dibujo de la barra (mismo rayado que .aviso-viento-altura) dentro de la frase
+        const barra = '<span style="display:inline-block; width:22px; height:4px; vertical-align:middle; background:repeating-linear-gradient(135deg, #ff9800 0 3px, #000 3px 5px);"></span>';
+        lineas.push(t('tabla.tooltips.vientoAlturaExplicacion', { barra, interpolation: { escapeValue: false }, defaultValue: 'La barra rayada de arriba {{barra}} avisa de que a la altitud del despegue el viento puede superar el máximo y baja la puntuación.' }));
+    }
+    return lineas;
+}
+
+// Globo (Tippy, al tocar) de la celda de viento medio: mismas líneas que el antiguo title, en lista como el de nubosidad
+function ponerTooltipVientoMedio(td, lineas) {
+    if (td._tippy) td._tippy.destroy(); // si ya se abrió antes, que se regenere con el texto nuevo
+    td.removeAttribute('title');
+    td.setAttribute('data-tippy-content', `<ul style="margin: 4px 0; padding-left: 16px; text-align: left;">${lineas.map(l => `<li>${l}</li>`).join('')}</ul>`);
+    td.setAttribute('tabindex', '0');
+    td.style.cursor = 'help';
 }
 
 function factorVientoAlturaDespegue(vientoAltura, velocidad, velMax) {
@@ -262,6 +285,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarCizalladura = false;
         chkMostrarProbPrecipitacion = false;
         chkMostrarBaseNube = false; 
+        chkMostrarBaseNubeHumedad = false;
         chkMostrarTemperatura = false;
         chkMostrarXC = false;
         chkMostrarVientoEcmwf = false;
@@ -277,7 +301,8 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
         chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false";
         chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION") !== "false";
-        chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") !== "false";
+        chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") === "true";
+        chkMostrarBaseNubeHumedad = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE_HUMEDAD") !== "false";
         chkMostrarTemperatura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_TEMPERATURA") !== "false";
         chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false";
         
@@ -297,6 +322,7 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
     if (document.getElementById("chkMostrarProbPrecipitacion")) document.getElementById("chkMostrarProbPrecipitacion").checked = chkMostrarProbPrecipitacion;
     if (document.getElementById("chkMostrarBaseNube")) document.getElementById("chkMostrarBaseNube").checked = chkMostrarBaseNube; 
+    if (document.getElementById("chkMostrarBaseNubeHumedad")) document.getElementById("chkMostrarBaseNubeHumedad").checked = chkMostrarBaseNubeHumedad;
     if (document.getElementById("chkMostrarTemperatura")) document.getElementById("chkMostrarTemperatura").checked = chkMostrarTemperatura;
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     if (document.getElementById("chkMostrarBotonMinutely15")) document.getElementById("chkMostrarBotonMinutely15").checked = chkMostrarBotonMinutely15;
@@ -2040,6 +2066,21 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.nivelActividad.descripcion') 
                 } 
             }] : []),
+            // Botones bajo el nombre del despegue: solo si se ven en la tabla (dependen de los ajustes)
+            ...(document.querySelector('#tabla .btn-guia-minutely15') ? [{ 
+                element: '#tabla .btn-guia-minutely15', 
+                popover: { 
+                    title: `<div style='display: flex; align-items: center; gap: 8px;'><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span>${t('guiaPrincipal.pasos.btnMinutely15.titulo')}</span></div>`, 
+                    description: t('guiaPrincipal.pasos.btnMinutely15.descripcion') 
+                } 
+            }] : []),
+            ...(document.querySelector('#tabla .btn-guia-ecmwf-desplegable') ? [{ 
+                element: '#tabla .btn-guia-ecmwf-desplegable', 
+                popover: { 
+                    title: `<div style='display: flex; align-items: center; gap: 8px;'><svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0;"><g stroke="#e00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="4" x2="4" y2="20"/><polyline points="1 7 4 4 7 7"/><polyline points="1 17 4 20 7 17"/></g><g stroke="#555" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.59 4.59A2 2 0 1 1 17 8H11"/><path d="M17.59 19.41A2 2 0 1 0 19 16H11"/><path d="M13 12h9a2 2 0 1 1 0 4"/></g></svg><span>${t('guiaPrincipal.pasos.btnEcmwfDesplegable.titulo')}</span></div>`, 
+                    description: t('guiaPrincipal.pasos.btnEcmwfDesplegable.descripcion') 
+                } 
+            }] : []),
             { 
                 element: '.columna-despegue .btn-info', 
                 popover: { 
@@ -3382,7 +3423,8 @@ function gestionarClickMasivoFavoritos() {
     if (!modoEdicionFavoritos) {
         filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
         if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-        if (chkMostrarBaseNube) filasPorDespegue++;
+        if (chkMostrarBaseNube && chkMostrarXC) filasPorDespegue++; // la convectiva va en el bloque XC
+        if (chkMostrarBaseNubeHumedad) filasPorDespegue++;
         if (chkMostrarTemperatura) filasPorDespegue++;
         if (chkMostrarVientoAlturas) filasPorDespegue += 3;
         if (chkMostrarXC) filasPorDespegue += 3;
@@ -3473,7 +3515,8 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     if (!modoEdicionFavoritos) {
         filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
         if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-        if (chkMostrarBaseNube) filasPorDespegue++;
+        if (chkMostrarBaseNube && chkMostrarXC) filasPorDespegue++; // la convectiva va en el bloque XC
+        if (chkMostrarBaseNubeHumedad) filasPorDespegue++;
         if (chkMostrarTemperatura) filasPorDespegue++;
         if (chkMostrarVientoAlturas) filasPorDespegue += 3;
         if (chkMostrarXC) filasPorDespegue += 3;
@@ -3940,6 +3983,38 @@ function alternarMostrarBaseNube() {
     construir_tabla();
 }
 window.alternarMostrarBaseNube = alternarMostrarBaseNube;
+
+function alternarMostrarBaseNubeHumedad() {
+    chkMostrarBaseNubeHumedad = document.getElementById("chkMostrarBaseNubeHumedad").checked;
+    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE_HUMEDAD", chkMostrarBaseNubeHumedad);
+    construir_tabla();
+}
+window.alternarMostrarBaseNubeHumedad = alternarMostrarBaseNubeHumedad;
+
+// ☁️ Base de nubes (todas, no solo la convectiva) estimada por el generador con la humedad por niveles de ICON-EU.
+// hourly.base_nube de meteo-datos.json: altitud MSL (m) de la base; <= altitud del despegue si el despegue está dentro
+// de la nube; -1 si no hay nubes bajas (hasta ~3000 m); null sin dato.
+const MARGEN_BASE_NUBE_NARANJA = 300; // m por encima del despegue por debajo de los cuales la base sale en naranja
+
+function obtenerBaseNubeHumedad(hourlyData, i) {
+    if (!hourlyData || !Array.isArray(hourlyData.base_nube)) return null;
+    const v = hourlyData.base_nube[i];
+    return v == null ? null : Number(v);
+}
+
+function nubeEnDespegue(base, altitud) {
+    return base !== null && base >= 0 && base <= altitud;
+}
+
+// Penalización de la hora por la base de nube (siempre activa, como la lluvia; sin veto porque es una estimación)
+const FACTOR_NUBE_EN_DESPEGUE = 0.2;   // despegue dentro de la nube
+const FACTOR_BASE_NUBE_BAJA = 0.8;     // base a menos de MARGEN_BASE_NUBE_NARANJA m por encima del despegue
+function factorBaseNubeDespegue(base, altitud) {
+    if (base === null || base < 0) return 1;
+    if (base <= altitud) return FACTOR_NUBE_EN_DESPEGUE;
+    if (base - altitud < MARGEN_BASE_NUBE_NARANJA) return FACTOR_BASE_NUBE_BAJA;
+    return 1;
+}
 
 function alternarMostrarTemperatura() {
     chkMostrarTemperatura = document.getElementById("chkMostrarTemperatura").checked;
@@ -5051,6 +5126,8 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
             ptsHora = (ptsDir + ptsRacha + ptsVel) * ratioCorreccionPorDireccion * ratioCorreccionPorRacha;
             // 🌬️ Viento fuerte en altura (ECMWF a la altitud del despegue)
             ptsHora *= factorVientoAlturaDespegue(obtenerVientoAlturaDespegue(hourlyEcmwf, idxE), velocidad, velMaxEfectiva);
+            // ☁️ Base de nube (ICON-EU): dentro de la nube o base muy baja
+            ptsHora *= factorBaseNubeDespegue(obtenerBaseNubeHumedad(hourlyData, i), Number(despegueObj.Altitud) || 0);
         }
         puntosAcumulados += ptsHora;
 
@@ -5070,6 +5147,11 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
                     : ((hourlyEcmwf.boundary_layer_height && hourlyEcmwf.boundary_layer_height[i] != null) ? hourlyEcmwf.boundary_layer_height[i] : 0);
                 let techoRaw = Number(blhVal);
                 let techoUtil = techoRaw * RATIO_TECHO_UTIL;
+                // ☁️ El techo útil no puede pasar de la base de nube (ICON-EU) sobre el despegue
+                const baseNubeXC = obtenerBaseNubeHumedad(hourlyData, i);
+                if (baseNubeXC !== null && baseNubeXC >= 0) {
+                    techoUtil = Math.min(techoUtil, Math.max(0, baseNubeXC - (Number(despegueObj.Altitud) || 0)));
+                }
 
                 let cinVal = (idxE !== undefined && hourlyEcmwf.convective_inhibition && hourlyEcmwf.convective_inhibition[idxE] != null)
                     ? hourlyEcmwf.convective_inhibition[idxE]
@@ -6994,6 +7076,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         const tituloPrecipitacion = t('tabla.tooltips.precipitacion');
         const tituloProbPrecipitacion = t('tabla.tooltips.probPrecipitacion');
         const tituloBaseNube = t('tabla.tooltips.baseNube');
+        const tituloBaseNubeHumedad = t('tabla.tooltips.baseNubeHumedad', { defaultValue: 'Base de nube (km) estimada con la humedad por niveles de ICON-EU. Detecta también estratos, nieblas y nubes orográficas.' });
         const tituloTemperatura = t('tabla.tooltips.temperatura');
         const tituloEcmwf3000 = t('tabla.tooltips.3000mECMWF');
         const tituloEcmwfDir3000 = t('tabla.tooltips.Direccion3000mECMWF');
@@ -7105,10 +7188,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // GRUPO 1: Meteo Base + Precipitaciones + Alturas
             const filaNubesTotal = document.createElement("tr");
 
-            let filaPreci, filaProbPreci, filaBaseNube, filaTemperatura;
+            let filaPreci, filaProbPreci, filaBaseNubeHumedad, filaBaseNube, filaTemperatura;
             if (chkMostrarPrecipitacion) filaPreci = document.createElement("tr");
             if (chkMostrarProbPrecipitacion) filaProbPreci = document.createElement("tr");
-            if (chkMostrarBaseNube) filaBaseNube = document.createElement("tr");
+            if (chkMostrarBaseNube && chkMostrarXC) filaBaseNube = document.createElement("tr"); // va en el bloque XC (encima de Techo)
+            if (chkMostrarBaseNubeHumedad) filaBaseNubeHumedad = document.createElement("tr");
             if (chkMostrarTemperatura) filaTemperatura = document.createElement("tr");
 
             let fila100, fila50, fila20;
@@ -7173,7 +7257,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 });
             }
 
-            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, filaTemperatura, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
+            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNubeHumedad, filaTemperatura, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, 
                 filaEcmwfVel2000, filaEcmwfDir2000,
@@ -7182,7 +7266,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaEcmwfVel500, filaEcmwfDir500,
                 filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10
             ].filter(Boolean);
-            const rowsGroup2 = [filaTecho, filaCape, filaCin].filter(Boolean);
+            const rowsGroup2 = [filaBaseNube, filaTecho, filaCape, filaCin].filter(Boolean); // convectiva encima de Techo
 
             const todasLasFilas = [...rowsGroup1, ...rowsEcmwfWind, ...rowsGroup2];
             const filaPrincipal = todasLasFilas[0];
@@ -7561,7 +7645,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     const chevron = estaAmpliando ? '▲' : '▼';
 
                     botonToggleEcmwfHTML = `
-                        <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
+                        <button class="btn-guia-ecmwf-desplegable" onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
                             style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${posEcmwf} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; color:#4a6785; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: inline-flex; align-items: center;"
                             title="${t('tabla.tooltips.botonToggleEcmwfHTML', { defaultValue: 'Viento sinóptico ECMWF a varias altitudes' })}">
 
@@ -7588,7 +7672,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // --- BOTÓN 15 MIN ---
                 if (show15min) {
                     botonMinutely15HTML = `
-                        <button onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
+                        <button class="btn-guia-minutely15" onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
                             style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; padding-bottom: 1px;"
                             title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Ver tabla de previsión de viento y direcciones según predicción inmediata del modelo Arome 15min' })}">
                             
@@ -7660,7 +7744,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', tituloMeteoGeneral);
                 addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', tituloPrecipitacion);
                 addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', tituloProbPrecipitacion);
-                addIconCell(filaBaseNube, '<span style="font-size:15px; font-weight:bold;">☁️↕</span>', tituloBaseNube);
+                addIconCell(filaBaseNube, '<span style="font-size:15px; font-weight:bold;">🌤️↥</span>', tituloBaseNube);
+                addIconCell(filaBaseNubeHumedad, '<span style="font-size:15px; font-weight:bold;">☁️↥</span>', tituloBaseNubeHumedad);
                 addIconCell(filaTemperatura, '<span style="font-size:15px; font-weight:bold;">🌡️</span>', tituloTemperatura);
 
                 // Velocidades alturas
@@ -8116,6 +8201,41 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         renderEcmwfData(filaTemperatura, emptyArr, () => "", "9px", () => "");
                     }
 
+                    // ☁️ Base de nubes ICON-EU (humedad por niveles). Va por índice de hora de meteo-datos.json
+                    if (filaBaseNubeHumedad) {
+                        const altDespNube = Number(d.Altitud || 0);
+                        const arrBaseNube = (hourlyData && Array.isArray(hourlyData.base_nube)) ? hourlyData.base_nube : new Array(horas.length).fill(null);
+                        renderEcmwfData(filaBaseNubeHumedad, arrBaseNube,
+                            (v) => {
+                                if (v == null) return "";
+                                if (Number(v) < 0) return ">3"; // sin nube hasta 700 hPa (~3 km)
+                                const km = (Number(v) / 1000).toFixed(1);
+                                return km === "0.0" ? "0" : km;
+                            },
+                            "12px",
+                            (v) => {
+                                if (v == null) return "";
+                                if (Number(v) < 0) return "fondo-verde";
+                                const margen = Number(v) - altDespNube;
+                                if (margen <= 0) return "fondo-rojo";
+                                if (margen < MARGEN_BASE_NUBE_NARANJA) return "fondo-naranja";
+                                return "fondo-verde";
+                            },
+                            "0px",
+                            (v) => {
+                                if (v == null) return "";
+                                if (Number(v) < 0) return t('tabla.tooltips.baseNubeHumedadSinNubes', { defaultValue: 'Sin nubes bajas (hasta unos 3000 m)' });
+                                const base = Number(v);
+                                if (base <= altDespNube) {
+                                    return t('tabla.tooltips.baseNubeHumedadDentro', { base_m: base, altitud_despegue: altDespNube,
+                                        defaultValue: '<b>☁️ Despegue dentro de la nube</b><ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Base estimada de la nube: <b>{{base_m}} m</b> MSL</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b> MSL</li></ul>' });
+                                }
+                                return t('tabla.tooltips.baseNubeHumedadValor', { base_m: base, altitud_despegue: altDespNube, margen: base - altDespNube,
+                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Base estimada de la nube: <b>{{base_m}} m</b> MSL</li><li>Altura libre sobre despegue: <b>{{margen}} m</b> AGL</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b> MSL</li></ul>' });
+                            }
+                        );
+                    }
+
 					// ⚪ Velocidades alturas 20, 50, 100 m *****************************
 
                     if (chkMostrarVientoAlturas) {
@@ -8309,20 +8429,21 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         if (chkAplicarCorreccionEstadistica) {
                             td.style.fontWeight = "bold";
                             td.style.fontStyle = "italic";
-                            td.title = `${velocidad} ${t('tabla.tooltips.viento10mUnidades')} | ${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}: ${velOrigRound} km/h`;
-                        } else {
-                            td.title = `${velocidad} ${t('tabla.tooltips.viento10mUnidades')} [${etiquetaModelo}]`;
                         }
+                        const lineasTooltipVel = chkAplicarCorreccionEstadistica
+                            ? [`${velocidad} ${t('tabla.tooltips.viento10mUnidades')}. ${t('tabla.tooltips.datoCorregido', { defaultValue: 'Dato corregido estadísticamente' })}`, `${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}: ${velOrigRound} km/h`]
+                            : [`${velocidad} ${t('tabla.tooltips.viento10mUnidades')}. ${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}`];
 
                         // 🌬️ Viento fuerte en altura: banda rayada arriba y aviso en el tooltip (el color de la celda sigue siendo el del modelo)
                         const vientoAltura = obtenerVientoAlturaDespegue(hourlyEcmwf, ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined);
                         if (vientoAltura !== null) {
                             td.dataset.vAltura = vientoAltura;
                             td.dataset.altDesp = Number(d.Altitud) || 0;
-                            td.dataset.tituloBase = td.title; // para rehacer el aviso si cambian los límites en vivo
+                            td.dataset.tituloBase = JSON.stringify(lineasTooltipVel); // para rehacer el aviso si cambian los límites en vivo
                             if (factorVientoAlturaDespegue(vientoAltura, velocidad, velMaxDespegue) < 1) td.classList.add("aviso-viento-altura");
-                            td.title += `\n${textoAvisoVientoAltura(td.dataset.altDesp, vientoAltura, velMaxDespegue)}`;
+                            lineasTooltipVel.push(...lineasAvisoVientoAltura(td.dataset.altDesp, vientoAltura, velocidad, velMaxDespegue));
                         }
+                        ponerTooltipVientoMedio(td, lineasTooltipVel);
 
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
                         td.dataset.vRaw = velOrigRound;
@@ -8665,8 +8786,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     }
 
                     // Borde superior del grupo XC
-                    if (!chkMostrarCizalladura && chkMostrarXC && filaTecho) {
-                        Array.from(filaTecho.children).forEach(td => {
+                    if (!chkMostrarCizalladura && chkMostrarXC && rowsGroup2[0]) {
+                        Array.from(rowsGroup2[0].children).forEach(td => { // primera fila del bloque (convectiva o Techo)
                             td.style.borderTop = "1px solid #000";
                         });
                     }
@@ -10673,7 +10794,7 @@ window.refrescarDespegueEnTabla = function (idDespegue) {
                 ds.cCorr = claseV(Number(ds.vCorr));
                 if (ds.vAltura !== undefined) {
                     td.classList.toggle('aviso-viento-altura', factorVientoAlturaDespegue(Number(ds.vAltura), Number(td.textContent), L.max) < 1);
-                    td.title = `${ds.tituloBase}\n${textoAvisoVientoAltura(ds.altDesp, ds.vAltura, L.max)}`;
+                    ponerTooltipVientoMedio(td, [...JSON.parse(ds.tituloBase), ...lineasAvisoVientoAltura(ds.altDesp, Number(ds.vAltura), Number(td.textContent), L.max)]);
                 }
             } else if (ds.rRaw !== undefined) {     // racha
                 pintar(td, claseR(Number(td.textContent)));
