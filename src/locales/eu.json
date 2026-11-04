@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h-ko batez besteko haizea lurretik 10 m-ko altueran (AGL)",
       "vientoAlturaDespegue": "ECMWF haizea aireratze-lekuaren altueran",
       "vientoAlturaMax": "geh. {{max}} km/h",
-      "vientoAlturaExplicacion": "Goiko barra marradunak {{barra}} ohartarazten du aireratzearen altitudean haizeak maximoa gainditzen duela: bat-batean sar daiteke eta puntuazioa jaisten du.",
+      "vientoAlturaExplicacion": "Goiko barra marradunak {{barra}} ohartarazten du aireratzearen altitudean haizeak maximoa gaindi dezakeela: bat-batean sar daiteke eta puntuazioa jaisten du.",
       "racha10mUnidades": "km/h-ko bolada maximoa lurretik 10 m-ko altueran (AGL)",
       "datoOriginal": "Ereduaren jatorrizko datua",
       "vientoFlojoCruzado": "Orientazio ez-egokia onartua haize ahulagatik",
@@ -263,7 +263,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Goiko haize indartsuaren abisua",
-        "descripcion": "10 m-ko haize-gelaxka <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> batekin markatzen da aireratze-lekuaren altuerako ECMWF haizeak zure gehienezko abiadura gainditzen duenean. Ordu horrek gutxiago puntuatzen du.<br><br>💡 Xehetasun gehiago aukera honen ⓘ botoian, <i>⚙️ Ezarpenak</i> atalean."
+        "descripcion": "10 m-ko haize-gelaxka <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> batekin markatzen da aireratze-lekuaren altuerako ECMWF haizeak zure gehienezko abiadura gaindi dezakeenean. Ordu horrek gutxiago puntuatzen du.<br><br>💡 Xehetasun gehiago aukera honen ⓘ botoian, <i>⚙️ Ezarpenak</i> atalean."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Zizailadura / Fidagarritasuna lerroa",

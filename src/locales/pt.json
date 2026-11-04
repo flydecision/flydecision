@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h de vento médio a 10 m de altura do solo (AGL)",
       "vientoAlturaDespegue": "Vento ECMWF à altitude da descolagem",
       "vientoAlturaMax": "máx. {{max}} km/h",
-      "vientoAlturaExplicacion": "A barra listrada em cima {{barra}} avisa-o de que, na altitude da descolagem, o vento ultrapassa o máximo: pode entrar de repente e baixa a pontuação.",
+      "vientoAlturaExplicacion": "A barra listrada em cima {{barra}} avisa-o de que, na altitude da descolagem, o vento pode ultrapassar o máximo: pode entrar de repente e baixa a pontuação.",
       "racha10mUnidades": "km/h de rajada máxima a 10 m de altura do solo (AGL)",
       "datoOriginal": "Dado original do modelo",
       "vientoFlojoCruzado": "Orientação não apta admitida por vento fraco",
@@ -263,7 +263,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Aviso de vento forte em altitude",
-        "descripcion": "A célula de vento a 10 m é marcada com <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> quando o vento ECMWF à altitude da descolagem ultrapassa a sua velocidade máxima. Essa hora pontua menos.<br><br>💡 Mais detalhes no botão ⓘ desta opção em <i>⚙️ Definições</i>."
+        "descripcion": "A célula de vento a 10 m é marcada com <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> quando o vento ECMWF à altitude da descolagem pode ultrapassar a sua velocidade máxima. Essa hora pontua menos.<br><br>💡 Mais detalhes no botão ⓘ desta opção em <i>⚙️ Definições</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Linha Cisalhamento / Fiabilidade",

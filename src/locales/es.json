@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h de viento medio a 10 m altura suelo (AGL)",
       "vientoAlturaDespegue": "Viento ECMWF a la altitud del despegue",
       "vientoAlturaMax": "máx. {{max}} km/h",
-      "vientoAlturaExplicacion": "La barra rayada de arriba {{barra}} avisa de que a la altitud del despegue el viento supera el máximo: puede entrar de golpe y baja la puntuación.",
+      "vientoAlturaExplicacion": "La barra rayada de arriba {{barra}} avisa de que a la altitud del despegue el viento puede superar el máximo: puede entrar de golpe y baja la puntuación.",
       "racha10mUnidades": "km/h de racha máxima a 10 m altura suelo (AGL)",
       "datoOriginal": "Dato original del modelo",
       "vientoFlojoCruzado": "Orientación no apta admitida por viento flojo",
@@ -263,7 +263,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Aviso de viento fuerte en altura",
-        "descripcion": "La celda de viento a 10 m se marca con <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> cuando el viento ECMWF a la altitud del despegue supera tu velocidad máxima. Esa hora puntúa menos.<br><br>💡 Más detalles en el botón ⓘ de esta opción en <i>⚙️ Ajustes</i>."
+        "descripcion": "La celda de viento a 10 m se marca con <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> cuando el viento ECMWF a la altitud del despegue puede superar tu velocidad máxima. Esa hora puntúa menos.<br><br>💡 Más detalles en el botón ⓘ de esta opción en <i>⚙️ Ajustes</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Fila de Cizalladura / Fiabilidad",

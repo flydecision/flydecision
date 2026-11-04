@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h of mean wind at 10 m above ground level (AGL)",
       "vientoAlturaDespegue": "ECMWF wind at takeoff altitude",
       "vientoAlturaMax": "max. {{max}} km/h",
-      "vientoAlturaExplicacion": "The striped bar at the top {{barra}} warns that at takeoff altitude the wind exceeds the maximum: it may kick in suddenly and lowers the score.",
+      "vientoAlturaExplicacion": "The striped bar at the top {{barra}} warns that at takeoff altitude the wind may exceed the maximum: it may kick in suddenly and lowers the score.",
       "racha10mUnidades": "km/h of maximum gust at 10 m above ground level (AGL)",
       "datoOriginal": "Original model data",
       "vientoFlojoCruzado": "Unsuitable orientation accepted due to light wind",
@@ -263,7 +263,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Strong wind aloft warning",
-        "descripcion": "The 10 m wind cell is marked with <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> when the ECMWF wind at takeoff altitude exceeds your maximum speed. That hour scores less.<br><br>💡 More details in the ⓘ button of this option in <i>⚙️ Settings</i>."
+        "descripcion": "The 10 m wind cell is marked with <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> when the ECMWF wind at takeoff altitude may exceed your maximum speed. That hour scores less.<br><br>💡 More details in the ⓘ button of this option in <i>⚙️ Settings</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Shear / Reliability Row",

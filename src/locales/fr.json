@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h de vent moyen à 10 m de hauteur du sol (AGL)",
       "vientoAlturaDespegue": "Vent ECMWF à l'altitude du décollage",
       "vientoAlturaMax": "max. {{max}} km/h",
-      "vientoAlturaExplicacion": "La barre hachurée en haut {{barra}} vous avertit qu'à l'altitude du décollage le vent dépasse le maximum : il peut rentrer d'un coup et la note baisse.",
+      "vientoAlturaExplicacion": "La barre hachurée en haut {{barra}} vous avertit qu'à l'altitude du décollage le vent peut dépasser le maximum : il peut rentrer d'un coup et la note baisse.",
       "racha10mUnidades": "km/h de rafale maximale à 10 m de hauteur du sol (AGL)",
       "datoOriginal": "Donnée originale du modèle",
       "vientoFlojoCruzado": "Orientation non adaptée admise par vent faible",
@@ -263,7 +263,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Alerte vent fort en altitude",
-        "descripcion": "La cellule de vent à 10 m est marquée de <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> quand le vent ECMWF à l'altitude du décollage dépasse votre vitesse maximale. Cette heure vaut moins.<br><br>💡 Plus de détails dans le bouton ⓘ de cette option dans <i>⚙️ Paramètres</i>."
+        "descripcion": "La cellule de vent à 10 m est marquée de <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> quand le vent ECMWF à l'altitude du décollage peut dépasser votre vitesse maximale. Cette heure vaut moins.<br><br>💡 Plus de détails dans le bouton ⓘ de cette option dans <i>⚙️ Paramètres</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Ligne Cisaillement / Fiabilité",

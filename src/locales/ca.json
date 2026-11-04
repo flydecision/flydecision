@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h de vent mitjà a 10 m d'altura del terra (AGL)",
       "vientoAlturaDespegue": "Vent ECMWF a l'altitud de l'enlairament",
       "vientoAlturaMax": "màx. {{max}} km/h",
-      "vientoAlturaExplicacion": "La barra ratllada de dalt {{barra}} avisa que a l'altitud de l'enlairament el vent supera el màxim: pot entrar de cop i baixa la puntuació.",
+      "vientoAlturaExplicacion": "La barra ratllada de dalt {{barra}} avisa que a l'altitud de l'enlairament el vent pot superar el màxim: pot entrar de cop i baixa la puntuació.",
       "racha10mUnidades": "km/h de ratxa màxima a 10 m d'altura del terra (AGL)",
       "datoOriginal": "Dada original del model",
       "vientoFlojoCruzado": "Orientació no apta admesa per vent fluix",
@@ -263,7 +263,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Avís de vent fort en altura",
-        "descripcion": "La cel·la de vent a 10 m es marca amb <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> quan el vent ECMWF a l'altitud de l'enlairament supera la teva velocitat màxima. Aquella hora puntua menys.<br><br>💡 Més detalls al botó ⓘ d'aquesta opció a <i>⚙️ Ajustos</i>."
+        "descripcion": "La cel·la de vent a 10 m es marca amb <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> quan el vent ECMWF a l'altitud de l'enlairament pot superar la teva velocitat màxima. Aquella hora puntua menys.<br><br>💡 Més detalls al botó ⓘ d'aquesta opció a <i>⚙️ Ajustos</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Fila Cisallament / Fiabilitat",

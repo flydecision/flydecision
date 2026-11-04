@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h mittlerer Wind in 10 m Höhe über Grund (AGL)",
       "vientoAlturaDespegue": "ECMWF-Wind in Startplatzhöhe",
       "vientoAlturaMax": "max. {{max}} km/h",
-      "vientoAlturaExplicacion": "Der gestreifte Balken oben {{barra}} warnt Sie, dass der Wind in Startplatzhöhe das Maximum überschreitet: Er kann plötzlich durchgreifen und senkt die Bewertung.",
+      "vientoAlturaExplicacion": "Der gestreifte Balken oben {{barra}} warnt Sie, dass der Wind in Startplatzhöhe das Maximum überschreiten kann: Er kann plötzlich durchgreifen und senkt die Bewertung.",
       "racha10mUnidades": "km/h maximale Böe in 10 m Höhe über Grund (AGL)",
       "datoOriginal": "Originalwert des Modells",
       "vientoFlojoCruzado": "Ungeeignete Ausrichtung wegen schwachem Wind akzeptiert",
@@ -263,7 +263,7 @@
       },
       "avisoVientoAltura": {
         "titulo": "🌬️ Warnung vor starkem Höhenwind",
-        "descripcion": "Die 10-m-Windzelle wird mit <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> markiert, wenn der ECMWF-Wind in Startplatzhöhe deine Maximalgeschwindigkeit übersteigt. Diese Stunde zählt weniger.<br><br>💡 Mehr dazu über den ⓘ-Button dieser Option in <i>⚙️ Einstellungen</i>."
+        "descripcion": "Die 10-m-Windzelle wird mit <span style='display:inline-block;width:30px;height:7px;vertical-align:middle;border:1px solid #888;background:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);'></span> markiert, wenn der ECMWF-Wind in Startplatzhöhe Ihre Maximalgeschwindigkeit übersteigen kann. Diese Stunde zählt weniger.<br><br>💡 Mehr dazu über den ⓘ-Button dieser Option in <i>⚙️ Einstellungen</i>."
       },
       "filaCizalladura": {
         "titulo": "🟩🟧🟥 Zeile Scherung / Zuverlässigkeit",
