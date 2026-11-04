@@ -3386,7 +3386,7 @@ function gestionarClickMasivoFavoritos() {
     if (!modoEdicionFavoritos) {
         filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
         if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-        if (chkMostrarBaseNube) filasPorDespegue++;
+        if (chkMostrarBaseNube && chkMostrarXC) filasPorDespegue++; // la convectiva va en el bloque XC
         if (chkMostrarBaseNubeHumedad) filasPorDespegue++;
         if (chkMostrarTemperatura) filasPorDespegue++;
         if (chkMostrarVientoAlturas) filasPorDespegue += 3;
@@ -3478,7 +3478,7 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     if (!modoEdicionFavoritos) {
         filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
         if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-        if (chkMostrarBaseNube) filasPorDespegue++;
+        if (chkMostrarBaseNube && chkMostrarXC) filasPorDespegue++; // la convectiva va en el bloque XC
         if (chkMostrarBaseNubeHumedad) filasPorDespegue++;
         if (chkMostrarTemperatura) filasPorDespegue++;
         if (chkMostrarVientoAlturas) filasPorDespegue += 3;
@@ -7154,7 +7154,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             let filaPreci, filaProbPreci, filaBaseNubeHumedad, filaBaseNube, filaTemperatura;
             if (chkMostrarPrecipitacion) filaPreci = document.createElement("tr");
             if (chkMostrarProbPrecipitacion) filaProbPreci = document.createElement("tr");
-            if (chkMostrarBaseNube) filaBaseNube = document.createElement("tr");
+            if (chkMostrarBaseNube && chkMostrarXC) filaBaseNube = document.createElement("tr"); // va en el bloque XC (debajo de Techo)
             if (chkMostrarBaseNubeHumedad) filaBaseNubeHumedad = document.createElement("tr");
             if (chkMostrarTemperatura) filaTemperatura = document.createElement("tr");
 
@@ -7220,7 +7220,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 });
             }
 
-            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNube, filaBaseNubeHumedad, filaTemperatura, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
+            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNubeHumedad, filaTemperatura, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, 
                 filaEcmwfVel2000, filaEcmwfDir2000,
@@ -7229,7 +7229,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaEcmwfVel500, filaEcmwfDir500,
                 filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10
             ].filter(Boolean);
-            const rowsGroup2 = [filaTecho, filaCape, filaCin].filter(Boolean);
+            const rowsGroup2 = [filaTecho, filaBaseNube, filaCape, filaCin].filter(Boolean);
 
             const todasLasFilas = [...rowsGroup1, ...rowsEcmwfWind, ...rowsGroup2];
             const filaPrincipal = todasLasFilas[0];
