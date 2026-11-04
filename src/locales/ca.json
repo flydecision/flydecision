@@ -150,7 +150,7 @@
       "vientoAlturaMax": "màx. {{max}} km/h",
       "datoCorregido": "Dada corregida estadísticament",
       "vientoAlturaInterpolado": "{{v}} km/h de vent interpolat a l'altitud de l'enlairament ({{altitud}} m). Dada original del model ECMWF.",
-      "limiteVientoMaximo": "Límit de vent mitjà a 10 m màxim configurat: {{max}} km/h",
+      "limiteVientoMaximo": "Límit màxim de vent mitjà a 10 m configurat: {{max}} km/h",
       "vientoAlturaExplicacion": "La barra ratllada de dalt {{barra}} avisa que a l'altitud de l'enlairament el vent pot superar el màxim i baixa la puntuació.",
       "racha10mUnidades": "km/h de ratxa màxima a 10 m d'altura del terra (AGL)",
       "datoOriginal": "Dada original del model",

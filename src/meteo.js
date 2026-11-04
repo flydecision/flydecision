@@ -188,7 +188,7 @@ function textoAvisoVientoAltura(altitud, vientoAltura, velMax) {
     const max = Math.round(velMax * 10) / 10;
     return [
         t('tabla.tooltips.vientoAlturaInterpolado', { v: vientoAltura, altitud, defaultValue: '{{v}} km/h de viento interpolado a la altitud del despegue ({{altitud}} m). Dato original del modelo ECMWF.' }),
-        t('tabla.tooltips.limiteVientoMaximo', { max, defaultValue: 'Límite de viento medio a 10 m máximo configurado: {{max}} km/h' })
+        t('tabla.tooltips.limiteVientoMaximo', { max, defaultValue: 'Límite máximo de viento medio a 10 m configurado: {{max}} km/h' })
     ];
 }
 
