@@ -3995,6 +3995,7 @@ window.alternarMostrarBaseNubeHumedad = alternarMostrarBaseNubeHumedad;
 // hourly.base_nube de meteo-datos.json: altitud MSL (m) de la base; <= altitud del despegue si el despegue está dentro
 // de la nube; -1 si no hay nubes bajas (hasta ~3000 m); null sin dato.
 const MARGEN_BASE_NUBE_NARANJA = 300; // m por encima del despegue por debajo de los cuales la base sale en naranja
+const MARGEN_RANGO_BASE_NUBE = 100;    // m arriba y abajo del valor estimado en el tooltip de «Base de nube» (rango de 200 m)
 
 function obtenerBaseNubeHumedad(hourlyData, i) {
     if (!hourlyData || !Array.isArray(hourlyData.base_nube)) return null;
@@ -8226,11 +8227,18 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (v == null) return "";
                                 if (Number(v) < 0) return t('tabla.tooltips.baseNubeHumedadSinNubes', { defaultValue: 'Sin nubes bajas (hasta unos 3000 m)' });
                                 const base = Number(v);
+                                // La base sale de interpolar entre niveles de presión separados 250-1000 m: se muestra como rango
+                                // de ±MARGEN_RANGO_BASE_NUBE (redondeado a 100 m) para no dar una precisión falsa
+                                const centro = Math.round(base / 100) * 100;
+                                const rango = (c, tope = Infinity) => {
+                                    const lo = Math.max(0, c - MARGEN_RANGO_BASE_NUBE), hi = Math.min(c + MARGEN_RANGO_BASE_NUBE, tope);
+                                    return hi > lo ? `${lo}-${hi}` : `${hi}`;
+                                };
                                 if (base <= altDespNube) {
-                                    return t('tabla.tooltips.baseNubeHumedadDentro', { base_m: base, altitud_despegue: altDespNube,
+                                    return t('tabla.tooltips.baseNubeHumedadDentro', { base_m: rango(centro, altDespNube), altitud_despegue: altDespNube,
                                         defaultValue: '<b>☁️ Despegue dentro de la nube</b><ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Base estimada de la nube: <b>{{base_m}} m</b> MSL</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b> MSL</li></ul>' });
                                 }
-                                return t('tabla.tooltips.baseNubeHumedadValor', { base_m: base, altitud_despegue: altDespNube, margen: base - altDespNube,
+                                return t('tabla.tooltips.baseNubeHumedadValor', { base_m: rango(centro), altitud_despegue: altDespNube, margen: rango(Math.round((base - altDespNube) / 100) * 100),
                                     defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Base estimada de la nube: <b>{{base_m}} m</b> MSL</li><li>Altura libre sobre despegue: <b>{{margen}} m</b> AGL</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b> MSL</li></ul>' });
                             }
                         );
