@@ -8230,14 +8230,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 // La base sale de interpolar entre niveles de presión separados 250-1000 m: se muestra como rango
                                 // de ±MARGEN_RANGO_BASE_NUBE (redondeado a 100 m) para no dar una precisión falsa
                                 const centro = Math.round(base / 100) * 100;
-                                const rango = (c) => `${Math.max(0, c - MARGEN_RANGO_BASE_NUBE)}-${c + MARGEN_RANGO_BASE_NUBE}`;
+                                const rango = (c) => `${Math.max(0, c - MARGEN_RANGO_BASE_NUBE)} -${c + MARGEN_RANGO_BASE_NUBE}`;
                                 // Dentro de la nube se redondea hacia abajo (la base está en el despegue o por debajo), para que el rango no acabe justo en su altitud
                                 if (base <= altDespNube) {
                                     return t('tabla.tooltips.baseNubeHumedadDentro', { base_m: rango(Math.floor(base / 100) * 100), altitud_despegue: altDespNube,
-                                        defaultValue: '<b>☁️ Despegue dentro de la nube</b><ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Base estimada de la nube: <b>{{base_m}} m</b> MSL</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b> MSL</li></ul>' });
+                                        defaultValue: '<b>☁️ Despegue dentro de la nube</b><ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Base de nube estimada: <b>{{base_m}} m</b> MSL</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b> MSL</li></ul>' });
                                 }
                                 return t('tabla.tooltips.baseNubeHumedadValor', { base_m: rango(centro), altitud_despegue: altDespNube, margen: rango(Math.round((base - altDespNube) / 100) * 100),
-                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Base estimada de la nube: <b>{{base_m}} m</b> MSL</li><li>Altura libre sobre despegue: <b>{{margen}} m</b> AGL</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b> MSL</li></ul>' });
+                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Base de nube estimada: <b>{{base_m}} m</b> MSL</li><li>Altura libre sobre despegue: <b>{{margen}} m</b> AGL</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b> MSL</li></ul>' });
                             }
                         );
                     }
