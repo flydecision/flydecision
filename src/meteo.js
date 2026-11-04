@@ -187,7 +187,7 @@ function obtenerVientoAlturaDespegue(hourlyEcmwf, idxE) {
 function textoAvisoVientoAltura(altitud, vientoAltura, velMax) {
     const max = Math.round(velMax * 10) / 10;
     return [
-        t('tabla.tooltips.vientoAlturaInterpolado', { v: vientoAltura, altitud, defaultValue: '{{v}} km/h de viento interpolado a la altitud del despegue ({{altitud}} m). Dato original del modelo ECMWF.' }),
+        t('tabla.tooltips.vientoAlturaInterpolado', { v: vientoAltura, altitud, defaultValue: '{{v}} km/h de viento sinóptico (libre) interpolado a la altitud del despegue ({{altitud}} m). Dato original del modelo ECMWF.' }),
         t('tabla.tooltips.limiteVientoMaximo', { max, defaultValue: 'Límite máximo de viento medio a 10 m configurado: {{max}} km/h' })
     ];
 }
@@ -8431,7 +8431,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.style.fontStyle = "italic";
                         }
                         const lineasTooltipVel = chkAplicarCorreccionEstadistica
-                            ? [`${velocidad} ${t('tabla.tooltips.viento10mUnidades')}. ${t('tabla.tooltips.datoCorregido', { defaultValue: 'Dato corregido estadísticamente' })}`, `${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}: ${velOrigRound} km/h`]
+                            ? [`${velocidad} ${t('tabla.tooltips.viento10mUnidades')}. ${t('tabla.tooltips.datoCorregido', { defaultValue: 'Dato corregido estadísticamente' })}`, `${velOrigRound} ${t('tabla.tooltips.viento10mUnidades')}. ${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}`]
                             : [`${velocidad} ${t('tabla.tooltips.viento10mUnidades')}. ${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}`];
 
                         // 🌬️ Viento fuerte en altura: banda rayada arriba y aviso en el tooltip (el color de la celda sigue siendo el del modelo)

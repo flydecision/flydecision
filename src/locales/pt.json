@@ -149,7 +149,7 @@
       "vientoAlturaDespegue": "Vento ECMWF à altitude da descolagem",
       "vientoAlturaMax": "máx. {{max}} km/h",
       "datoCorregido": "Dado corrigido estatisticamente",
-      "vientoAlturaInterpolado": "{{v}} km/h de vento interpolado à altitude da descolagem ({{altitud}} m). Dado original do modelo ECMWF.",
+      "vientoAlturaInterpolado": "{{v}} km/h de vento sinóptico (livre) interpolado à altitude da descolagem ({{altitud}} m). Dado original do modelo ECMWF.",
       "limiteVientoMaximo": "Limite máximo de vento médio a 10 m que configurou: {{max}} km/h",
       "vientoAlturaExplicacion": "A barra listrada em cima {{barra}} avisa-o de que, na altitude da descolagem, o vento pode ultrapassar o máximo e baixa a pontuação.",
       "racha10mUnidades": "km/h de rajada máxima a 10 m de altura do solo (AGL)",

@@ -149,7 +149,7 @@
       "vientoAlturaDespegue": "Vent ECMWF à l'altitude du décollage",
       "vientoAlturaMax": "max. {{max}} km/h",
       "datoCorregido": "Valeur corrigée statistiquement",
-      "vientoAlturaInterpolado": "{{v}} km/h de vent interpolé à l'altitude du décollage ({{altitud}} m). Donnée originale du modèle ECMWF.",
+      "vientoAlturaInterpolado": "{{v}} km/h de vent synoptique (libre) interpolé à l'altitude du décollage ({{altitud}} m). Donnée originale du modèle ECMWF.",
       "limiteVientoMaximo": "Limite maximale de vent moyen à 10 m que vous avez configurée : {{max}} km/h",
       "vientoAlturaExplicacion": "La barre hachurée en haut {{barra}} vous avertit qu'à l'altitude du décollage le vent peut dépasser le maximum, et la note baisse.",
       "racha10mUnidades": "km/h de rafale maximale à 10 m de hauteur du sol (AGL)",
