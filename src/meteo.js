@@ -7154,7 +7154,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             let filaPreci, filaProbPreci, filaBaseNubeHumedad, filaBaseNube, filaTemperatura;
             if (chkMostrarPrecipitacion) filaPreci = document.createElement("tr");
             if (chkMostrarProbPrecipitacion) filaProbPreci = document.createElement("tr");
-            if (chkMostrarBaseNube && chkMostrarXC) filaBaseNube = document.createElement("tr"); // va en el bloque XC (debajo de Techo)
+            if (chkMostrarBaseNube && chkMostrarXC) filaBaseNube = document.createElement("tr"); // va en el bloque XC (encima de Techo)
             if (chkMostrarBaseNubeHumedad) filaBaseNubeHumedad = document.createElement("tr");
             if (chkMostrarTemperatura) filaTemperatura = document.createElement("tr");
 
@@ -7229,7 +7229,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaEcmwfVel500, filaEcmwfDir500,
                 filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10
             ].filter(Boolean);
-            const rowsGroup2 = [filaTecho, filaBaseNube, filaCape, filaCin].filter(Boolean);
+            const rowsGroup2 = [filaBaseNube, filaTecho, filaCape, filaCin].filter(Boolean); // convectiva encima de Techo
 
             const todasLasFilas = [...rowsGroup1, ...rowsEcmwfWind, ...rowsGroup2];
             const filaPrincipal = todasLasFilas[0];
@@ -8748,8 +8748,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     }
 
                     // Borde superior del grupo XC
-                    if (!chkMostrarCizalladura && chkMostrarXC && filaTecho) {
-                        Array.from(filaTecho.children).forEach(td => {
+                    if (!chkMostrarCizalladura && chkMostrarXC && rowsGroup2[0]) {
+                        Array.from(rowsGroup2[0].children).forEach(td => { // primera fila del bloque (convectiva o Techo)
                             td.style.borderTop = "1px solid #000";
                         });
                     }
