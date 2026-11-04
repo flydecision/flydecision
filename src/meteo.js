@@ -190,6 +190,15 @@ function textoAvisoVientoAltura(altitud, vientoAltura, velMax) {
         + ` (${t('tabla.tooltips.vientoAlturaMax', { defaultValue: 'máx. {{max}} km/h', max })})`;
 }
 
+// Líneas del aviso de viento en altura para el globo; si se ve la barra rayada, añade una frase que la explica
+function lineasAvisoVientoAltura(altitud, vientoAltura, velocidad, velMax) {
+    const lineas = [textoAvisoVientoAltura(altitud, vientoAltura, velMax)];
+    if (factorVientoAlturaDespegue(vientoAltura, velocidad, velMax) < 1) {
+        lineas.push(t('tabla.tooltips.vientoAlturaExplicacion', { defaultValue: 'La barra rayada de arriba avisa de que a la altitud del despegue el viento supera el máximo: puede entrar de golpe y baja la puntuación.' }));
+    }
+    return lineas;
+}
+
 // Globo (Tippy, al tocar) de la celda de viento medio: mismas líneas que el antiguo title, en lista como el de nubosidad
 function ponerTooltipVientoMedio(td, lineas) {
     if (td._tippy) td._tippy.destroy(); // si ya se abrió antes, que se regenere con el texto nuevo
@@ -8428,7 +8437,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.dataset.altDesp = Number(d.Altitud) || 0;
                             td.dataset.tituloBase = JSON.stringify(lineasTooltipVel); // para rehacer el aviso si cambian los límites en vivo
                             if (factorVientoAlturaDespegue(vientoAltura, velocidad, velMaxDespegue) < 1) td.classList.add("aviso-viento-altura");
-                            lineasTooltipVel.push(textoAvisoVientoAltura(td.dataset.altDesp, vientoAltura, velMaxDespegue));
+                            lineasTooltipVel.push(...lineasAvisoVientoAltura(td.dataset.altDesp, vientoAltura, velocidad, velMaxDespegue));
                         }
                         ponerTooltipVientoMedio(td, lineasTooltipVel);
 
@@ -10781,7 +10790,7 @@ window.refrescarDespegueEnTabla = function (idDespegue) {
                 ds.cCorr = claseV(Number(ds.vCorr));
                 if (ds.vAltura !== undefined) {
                     td.classList.toggle('aviso-viento-altura', factorVientoAlturaDespegue(Number(ds.vAltura), Number(td.textContent), L.max) < 1);
-                    ponerTooltipVientoMedio(td, [...JSON.parse(ds.tituloBase), textoAvisoVientoAltura(ds.altDesp, ds.vAltura, L.max)]);
+                    ponerTooltipVientoMedio(td, [...JSON.parse(ds.tituloBase), ...lineasAvisoVientoAltura(ds.altDesp, Number(ds.vAltura), Number(td.textContent), L.max)]);
                 }
             } else if (ds.rRaw !== undefined) {     // racha
                 pintar(td, claseR(Number(td.textContent)));

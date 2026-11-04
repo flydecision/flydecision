@@ -148,6 +148,7 @@
       "viento10mUnidades": "km/h mittlerer Wind in 10 m Höhe über Grund (AGL)",
       "vientoAlturaDespegue": "ECMWF-Wind in Startplatzhöhe",
       "vientoAlturaMax": "max. {{max}} km/h",
+      "vientoAlturaExplicacion": "Der gestreifte Balken oben warnt Sie, dass der Wind in Startplatzhöhe das Maximum überschreitet: Er kann plötzlich durchgreifen und senkt die Bewertung.",
       "racha10mUnidades": "km/h maximale Böe in 10 m Höhe über Grund (AGL)",
       "datoOriginal": "Originalwert des Modells",
       "vientoFlojoCruzado": "Ungeeignete Ausrichtung wegen schwachem Wind akzeptiert",

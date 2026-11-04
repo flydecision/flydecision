@@ -148,6 +148,7 @@
       "viento10mUnidades": "km/h de vento medio a 10 m de altura do chan (AGL)",
       "vientoAlturaDespegue": "Vento ECMWF á altitude do despegue",
       "vientoAlturaMax": "máx. {{max}} km/h",
+      "vientoAlturaExplicacion": "A barra raiada de arriba avisa de que á altitude do despegue o vento supera o máximo: pode entrar de golpe e baixa a puntuación.",
       "racha10mUnidades": "km/h de refacho máximo a 10 m de altura do chan (AGL)",
       "datoOriginal": "Dato orixinal do modelo",
       "vientoFlojoCruzado": "Orientación non apta admitida por vento frouxo",
