@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h de vent mitjà a 10 m d'altura del terra (AGL)",
       "vientoAlturaDespegue": "Vent ECMWF a l'altitud de l'enlairament",
       "vientoAlturaMax": "màx. {{max}} km/h",
-      "vientoAlturaExplicacion": "La barra ratllada de dalt avisa que a l'altitud de l'enlairament el vent supera el màxim: pot entrar de cop i baixa la puntuació.",
+      "vientoAlturaExplicacion": "La barra ratllada de dalt {{barra}} avisa que a l'altitud de l'enlairament el vent supera el màxim: pot entrar de cop i baixa la puntuació.",
       "racha10mUnidades": "km/h de ratxa màxima a 10 m d'altura del terra (AGL)",
       "datoOriginal": "Dada original del model",
       "vientoFlojoCruzado": "Orientació no apta admesa per vent fluix",

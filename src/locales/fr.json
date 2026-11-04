@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h de vent moyen à 10 m de hauteur du sol (AGL)",
       "vientoAlturaDespegue": "Vent ECMWF à l'altitude du décollage",
       "vientoAlturaMax": "max. {{max}} km/h",
-      "vientoAlturaExplicacion": "La barre hachurée en haut vous avertit qu'à l'altitude du décollage le vent dépasse le maximum : il peut rentrer d'un coup et la note baisse.",
+      "vientoAlturaExplicacion": "La barre hachurée en haut {{barra}} vous avertit qu'à l'altitude du décollage le vent dépasse le maximum : il peut rentrer d'un coup et la note baisse.",
       "racha10mUnidades": "km/h de rafale maximale à 10 m de hauteur du sol (AGL)",
       "datoOriginal": "Donnée originale du modèle",
       "vientoFlojoCruzado": "Orientation non adaptée admise par vent faible",
