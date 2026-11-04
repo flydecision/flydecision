@@ -149,7 +149,7 @@
       "vientoAlturaDespegue": "ECMWF haizea aireratze-lekuaren altueran",
       "vientoAlturaMax": "geh. {{max}} km/h",
       "datoCorregido": "Estatistikoki zuzendutako datua",
-      "vientoAlturaInterpolado": "{{v}} km/h-ko haizea aireratzearen altitudera interpolatuta ({{altitud}} m). ECMWF ereduaren jatorrizko datua.",
+      "vientoAlturaInterpolado": "{{v}} km/h-ko haize sinoptikoa (librea) aireratzearen altitudera interpolatuta ({{altitud}} m). ECMWF ereduaren jatorrizko datua.",
       "limiteVientoMaximo": "10 m-ko batez besteko haizearen gehienezko muga konfiguratua: {{max}} km/h",
       "vientoAlturaExplicacion": "Goiko barra marradunak {{barra}} ohartarazten du aireratzearen altitudean haizeak maximoa gaindi dezakeela, eta puntuazioa jaisten du.",
       "racha10mUnidades": "km/h-ko bolada maximoa lurretik 10 m-ko altueran (AGL)",
