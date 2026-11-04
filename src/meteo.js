@@ -190,6 +190,15 @@ function textoAvisoVientoAltura(altitud, vientoAltura, velMax) {
         + ` (${t('tabla.tooltips.vientoAlturaMax', { defaultValue: 'máx. {{max}} km/h', max })})`;
 }
 
+// Globo (Tippy, al tocar) de la celda de viento medio: mismas líneas que el antiguo title, en lista como el de nubosidad
+function ponerTooltipVientoMedio(td, lineas) {
+    if (td._tippy) td._tippy.destroy(); // si ya se abrió antes, que se regenere con el texto nuevo
+    td.removeAttribute('title');
+    td.setAttribute('data-tippy-content', `<ul style="margin: 4px 0; padding-left: 16px; text-align: left;">${lineas.map(l => `<li>${l}</li>`).join('')}</ul>`);
+    td.setAttribute('tabindex', '0');
+    td.style.cursor = 'help';
+}
+
 function factorVientoAlturaDespegue(vientoAltura, velocidad, velMax) {
     if (vientoAltura == null || velocidad == null || !(velMax > 0) || vientoAltura <= velocidad) return 1;
     if (vientoAltura >= velMax * 1.5) return FACTOR_VIENTO_ALTURA_MUY_FUERTE;
@@ -8407,20 +8416,21 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         if (chkAplicarCorreccionEstadistica) {
                             td.style.fontWeight = "bold";
                             td.style.fontStyle = "italic";
-                            td.title = `${velocidad} ${t('tabla.tooltips.viento10mUnidades')} | ${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}: ${velOrigRound} km/h`;
-                        } else {
-                            td.title = `${velocidad} ${t('tabla.tooltips.viento10mUnidades')} [${etiquetaModelo}]`;
                         }
+                        const lineasTooltipVel = chkAplicarCorreccionEstadistica
+                            ? [`${velocidad} ${t('tabla.tooltips.viento10mUnidades')}`, `${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}: ${velOrigRound} km/h`]
+                            : [`${velocidad} ${t('tabla.tooltips.viento10mUnidades')} [${etiquetaModelo}]`];
 
                         // 🌬️ Viento fuerte en altura: banda rayada arriba y aviso en el tooltip (el color de la celda sigue siendo el del modelo)
                         const vientoAltura = obtenerVientoAlturaDespegue(hourlyEcmwf, ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined);
                         if (vientoAltura !== null) {
                             td.dataset.vAltura = vientoAltura;
                             td.dataset.altDesp = Number(d.Altitud) || 0;
-                            td.dataset.tituloBase = td.title; // para rehacer el aviso si cambian los límites en vivo
+                            td.dataset.tituloBase = JSON.stringify(lineasTooltipVel); // para rehacer el aviso si cambian los límites en vivo
                             if (factorVientoAlturaDespegue(vientoAltura, velocidad, velMaxDespegue) < 1) td.classList.add("aviso-viento-altura");
-                            td.title += `\n${textoAvisoVientoAltura(td.dataset.altDesp, vientoAltura, velMaxDespegue)}`;
+                            lineasTooltipVel.push(textoAvisoVientoAltura(td.dataset.altDesp, vientoAltura, velMaxDespegue));
                         }
+                        ponerTooltipVientoMedio(td, lineasTooltipVel);
 
                         // Guardar datos en la "mochila" para que funcione el mantener pulsado
                         td.dataset.vRaw = velOrigRound;
@@ -10771,7 +10781,7 @@ window.refrescarDespegueEnTabla = function (idDespegue) {
                 ds.cCorr = claseV(Number(ds.vCorr));
                 if (ds.vAltura !== undefined) {
                     td.classList.toggle('aviso-viento-altura', factorVientoAlturaDespegue(Number(ds.vAltura), Number(td.textContent), L.max) < 1);
-                    td.title = `${ds.tituloBase}\n${textoAvisoVientoAltura(ds.altDesp, ds.vAltura, L.max)}`;
+                    ponerTooltipVientoMedio(td, [...JSON.parse(ds.tituloBase), textoAvisoVientoAltura(ds.altDesp, ds.vAltura, L.max)]);
                 }
             } else if (ds.rRaw !== undefined) {     // racha
                 pintar(td, claseR(Number(td.textContent)));
