@@ -8230,7 +8230,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 // La base sale de interpolar entre niveles de presión separados 250-1000 m: se muestra como rango
                                 // de ±MARGEN_RANGO_BASE_NUBE (redondeado a 100 m) para no dar una precisión falsa
                                 const centro = Math.round(base / 100) * 100;
-                                const rango = (c) => `${Math.max(0, c - MARGEN_RANGO_BASE_NUBE)} -${c + MARGEN_RANGO_BASE_NUBE}`;
+                                const rango = (c) => `${Math.max(0, c - MARGEN_RANGO_BASE_NUBE)}-${c + MARGEN_RANGO_BASE_NUBE}`;
                                 // Dentro de la nube se redondea hacia abajo (la base está en el despegue o por debajo), para que el rango no acabe justo en su altitud
                                 if (base <= altDespNube) {
                                     return t('tabla.tooltips.baseNubeHumedadDentro', { base_m: rango(Math.floor(base / 100) * 100), altitud_despegue: altDespNube,
