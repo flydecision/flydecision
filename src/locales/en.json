@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h of mean wind at 10 m above ground level (AGL)",
       "vientoAlturaDespegue": "ECMWF wind at takeoff altitude",
       "vientoAlturaMax": "max. {{max}} km/h",
-      "vientoAlturaExplicacion": "The striped bar at the top {{barra}} warns that at takeoff altitude the wind may exceed the maximum: it may kick in suddenly and lowers the score.",
+      "vientoAlturaExplicacion": "The striped bar at the top {{barra}} warns that at takeoff altitude the wind may exceed the maximum, which lowers the score.",
       "racha10mUnidades": "km/h of maximum gust at 10 m above ground level (AGL)",
       "datoOriginal": "Original model data",
       "vientoFlojoCruzado": "Unsuitable orientation accepted due to light wind",

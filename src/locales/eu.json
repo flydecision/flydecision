@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h-ko batez besteko haizea lurretik 10 m-ko altueran (AGL)",
       "vientoAlturaDespegue": "ECMWF haizea aireratze-lekuaren altueran",
       "vientoAlturaMax": "geh. {{max}} km/h",
-      "vientoAlturaExplicacion": "Goiko barra marradunak {{barra}} ohartarazten du aireratzearen altitudean haizeak maximoa gaindi dezakeela: bat-batean sar daiteke eta puntuazioa jaisten du.",
+      "vientoAlturaExplicacion": "Goiko barra marradunak {{barra}} ohartarazten du aireratzearen altitudean haizeak maximoa gaindi dezakeela, eta puntuazioa jaisten du.",
       "racha10mUnidades": "km/h-ko bolada maximoa lurretik 10 m-ko altueran (AGL)",
       "datoOriginal": "Ereduaren jatorrizko datua",
       "vientoFlojoCruzado": "Orientazio ez-egokia onartua haize ahulagatik",

@@ -148,7 +148,7 @@
       "viento10mUnidades": "km/h de vento médio a 10 m de altura do solo (AGL)",
       "vientoAlturaDespegue": "Vento ECMWF à altitude da descolagem",
       "vientoAlturaMax": "máx. {{max}} km/h",
-      "vientoAlturaExplicacion": "A barra listrada em cima {{barra}} avisa-o de que, na altitude da descolagem, o vento pode ultrapassar o máximo: pode entrar de repente e baixa a pontuação.",
+      "vientoAlturaExplicacion": "A barra listrada em cima {{barra}} avisa-o de que, na altitude da descolagem, o vento pode ultrapassar o máximo e baixa a pontuação.",
       "racha10mUnidades": "km/h de rajada máxima a 10 m de altura do solo (AGL)",
       "datoOriginal": "Dado original do modelo",
       "vientoFlojoCruzado": "Orientação não apta admitida por vento fraco",

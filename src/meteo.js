@@ -196,7 +196,7 @@ function lineasAvisoVientoAltura(altitud, vientoAltura, velocidad, velMax) {
     if (factorVientoAlturaDespegue(vientoAltura, velocidad, velMax) < 1) {
         // Mini dibujo de la barra (mismo rayado que .aviso-viento-altura) dentro de la frase
         const barra = '<span style="display:inline-block; width:22px; height:4px; vertical-align:middle; background:repeating-linear-gradient(135deg, #ff9800 0 3px, #000 3px 5px);"></span>';
-        lineas.push(t('tabla.tooltips.vientoAlturaExplicacion', { barra, interpolation: { escapeValue: false }, defaultValue: 'La barra rayada de arriba {{barra}} avisa de que a la altitud del despegue el viento puede superar el máximo: puede entrar de golpe y baja la puntuación.' }));
+        lineas.push(t('tabla.tooltips.vientoAlturaExplicacion', { barra, interpolation: { escapeValue: false }, defaultValue: 'La barra rayada de arriba {{barra}} avisa de que a la altitud del despegue el viento puede superar el máximo y baja la puntuación.' }));
     }
     return lineas;
 }
