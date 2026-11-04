@@ -186,13 +186,15 @@ function obtenerVientoAlturaDespegue(hourlyEcmwf, idxE) {
 // Línea del tooltip de la celda de velocidad, con la máxima usada (la del despegue, con su ajuste personal)
 function textoAvisoVientoAltura(altitud, vientoAltura, velMax) {
     const max = Math.round(velMax * 10) / 10;
-    return `🌬️ ${t('tabla.tooltips.vientoAlturaDespegue', { defaultValue: 'Viento ECMWF a la altitud del despegue' })} (${altitud} m): ${vientoAltura} km/h`
-        + ` (${t('tabla.tooltips.vientoAlturaMax', { defaultValue: 'máx. {{max}} km/h', max })})`;
+    return [
+        t('tabla.tooltips.vientoAlturaInterpolado', { v: vientoAltura, altitud, defaultValue: '{{v}} km/h de viento interpolado a la altitud del despegue ({{altitud}} m). Dato original del modelo ECMWF.' }),
+        t('tabla.tooltips.limiteVientoMaximo', { max, defaultValue: 'Límite de viento medio a 10 m máximo configurado: {{max}} km/h' })
+    ];
 }
 
 // Líneas del aviso de viento en altura para el globo; si se ve la barra rayada, añade una frase que la explica
 function lineasAvisoVientoAltura(altitud, vientoAltura, velocidad, velMax) {
-    const lineas = [textoAvisoVientoAltura(altitud, vientoAltura, velMax)];
+    const lineas = textoAvisoVientoAltura(altitud, vientoAltura, velMax);
     if (factorVientoAlturaDespegue(vientoAltura, velocidad, velMax) < 1) {
         // Mini dibujo de la barra (mismo rayado que .aviso-viento-altura) dentro de la frase
         const barra = '<span style="display:inline-block; width:22px; height:4px; vertical-align:middle; background:repeating-linear-gradient(135deg, #ff9800 0 3px, #000 3px 5px);"></span>';
@@ -8429,8 +8431,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             td.style.fontStyle = "italic";
                         }
                         const lineasTooltipVel = chkAplicarCorreccionEstadistica
-                            ? [`${velocidad} ${t('tabla.tooltips.viento10mUnidades')}`, `${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}: ${velOrigRound} km/h`]
-                            : [`${velocidad} ${t('tabla.tooltips.viento10mUnidades')} [${etiquetaModelo}]`];
+                            ? [`${velocidad} ${t('tabla.tooltips.viento10mUnidades')}. ${t('tabla.tooltips.datoCorregido', { defaultValue: 'Dato corregido estadísticamente' })}`, `${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}: ${velOrigRound} km/h`]
+                            : [`${velocidad} ${t('tabla.tooltips.viento10mUnidades')}. ${t('tabla.tooltips.datoOriginal')} ${etiquetaModelo}`];
 
                         // 🌬️ Viento fuerte en altura: banda rayada arriba y aviso en el tooltip (el color de la celda sigue siendo el del modelo)
                         const vientoAltura = obtenerVientoAlturaDespegue(hourlyEcmwf, ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined);
