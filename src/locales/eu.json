@@ -280,6 +280,14 @@
         "titulo": "📶 Aireratzearen jarduera-maila",
         "descripcion": "Barrekin (1etik 5era) ospe-maila adierazten du.<br><br>20 urtetan XContest-en erregistratutako hegaldi kopuruan oinarritzen da, azkenaldiko jardueragatik (azken hilabeteetan hegaldiak egon badira +1) edo luzaroko inaktibitateagatik (duela 2 urte baino gehiagotik hegaldirik ez badago -1) doituta."
       },
+      "btnMinutely15": {
+        "titulo": "Haizearen xehetasuna 15 minuturo",
+        "descripcion": "Arome ereduaren batez besteko haizea, bolada eta norabidea 15 minuturo hurrengo orduetarako erakusten dituen taula irekitzen du, lurretik hainbat altueratan. Aireratzeko ordu zehatza doitzeko erabilgarria."
+      },
+      "btnEcmwfDesplegable": {
+        "titulo": "ECMWF haize sinoptikoa",
+        "descripcion": "Aireratze honetan bakarrik, ECMWF haizearen errenkadak 500, 1000, 1500, 2000 eta 3000 m-ko altitudean eta lurretik 10 m-ra zabaldu edo ezkutatzen ditu. Goian haizea aireratzean baino indartsuagoa den ikusteko balio du."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Aireratzeari buruzko informazioa</span></div>",
         "descripcion": "Aireratzeari buruzko informazio osatuagoa eta Windy, Meteo-parapente eta Meteoblue webguneetako iragarpenetarako estekak erakusten ditu."

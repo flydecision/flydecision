@@ -2044,6 +2044,21 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.nivelActividad.descripcion') 
                 } 
             }] : []),
+            // Botones bajo el nombre del despegue: solo si se ven en la tabla (dependen de los ajustes)
+            ...(document.querySelector('#tabla .btn-guia-minutely15') ? [{ 
+                element: '#tabla .btn-guia-minutely15', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnMinutely15.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnMinutely15.descripcion') 
+                } 
+            }] : []),
+            ...(document.querySelector('#tabla .btn-guia-ecmwf-desplegable') ? [{ 
+                element: '#tabla .btn-guia-ecmwf-desplegable', 
+                popover: { 
+                    title: t('guiaPrincipal.pasos.btnEcmwfDesplegable.titulo'), 
+                    description: t('guiaPrincipal.pasos.btnEcmwfDesplegable.descripcion') 
+                } 
+            }] : []),
             { 
                 element: '.columna-despegue .btn-info', 
                 popover: { 
@@ -7608,7 +7623,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     const chevron = estaAmpliando ? '▲' : '▼';
 
                     botonToggleEcmwfHTML = `
-                        <button onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
+                        <button class="btn-guia-ecmwf-desplegable" onclick="if(event){event.stopPropagation(); event.preventDefault();} toggleEcmwfDesplegable(event, ${idDespegue}); return false;"
                             style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${posEcmwf} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; color:#4a6785; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: inline-flex; align-items: center;"
                             title="${t('tabla.tooltips.botonToggleEcmwfHTML', { defaultValue: 'Viento sinóptico ECMWF a varias altitudes' })}">
 
@@ -7635,7 +7650,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 // --- BOTÓN 15 MIN ---
                 if (show15min) {
                     botonMinutely15HTML = `
-                        <button onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
+                        <button class="btn-guia-minutely15" onclick="if(event){event.stopPropagation(); event.preventDefault();} abrirModalMinutely15(${idDespegue}, '${safeDespegue}'); return false;"
                             style="width: 40px; height: 30px; position:absolute; bottom: ${bottomValue}px; ${pos15min} cursor:pointer; background:#fff; border:1.5px solid #ccc; border-radius:8px; box-shadow:1px 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; padding-bottom: 1px;"
                             title="${t('tabla.tooltips.detalle15min', { defaultValue: 'Ver tabla de previsión de viento y direcciones según predicción inmediata del modelo Arome 15min' })}">
                             

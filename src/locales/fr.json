@@ -280,6 +280,14 @@
         "titulo": "📶 Niveau d'activité du décollage",
         "descripcion": "Indique avec des barres (de 1 à 5) le niveau de popularité.<br><br>Il est basé sur le nombre de vols enregistrés sur XContest sur 20 ans, ajusté pour l'activité récente (+1 s'il y a eu des vols ces derniers mois) ou l'inactivité prolongée (-1 s'il n'y a pas de vols depuis plus de 2 ans)."
       },
+      "btnMinutely15": {
+        "titulo": "Détail du vent toutes les 15 min",
+        "descripcion": "Ouvre un tableau avec le vent moyen, la rafale et la direction du modèle Arome toutes les 15 minutes pour les prochaines heures, à plusieurs hauteurs au-dessus du sol. Utile pour affiner l'heure exacte de décollage."
+      },
+      "btnEcmwfDesplegable": {
+        "titulo": "Vent synoptique ECMWF",
+        "descripcion": "Affiche ou masque, pour ce décollage uniquement, les lignes de vent ECMWF à 500, 1000, 1500, 2000 et 3000 m d'altitude et à 10 m au-dessus du sol. Utile pour voir si le vent en altitude est plus fort qu'au décollage."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Informations sur le décollage</span></div>",
         "descripcion": "Affiche des informations plus complètes sur le décollage et des liens vers ses prévisions sur Windy, Meteo-parapente et Meteoblue."

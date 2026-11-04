@@ -280,6 +280,14 @@
         "titulo": "📶 Aktivitätsniveau des Startplatzes",
         "descripcion": "Gibt mit Balken (von 1 bis 5) den Beliebtheitsgrad an.<br><br>Basiert auf der Anzahl der in XContest registrierten Flüge über 20 Jahre, angepasst an aktuelle Aktivität (+1, wenn es in den letzten Monaten Flüge gab) oder längere Inaktivität (-1, wenn es seit mehr als 2 Jahren keine Flüge gab)."
       },
+      "btnMinutely15": {
+        "titulo": "Winddetail alle 15 Min.",
+        "descripcion": "Öffnet eine Tabelle mit mittlerem Wind, Böe und Richtung des Arome-Modells alle 15 Minuten für die nächsten Stunden, in mehreren Höhen über Grund. Nützlich, um die genaue Startzeit abzustimmen."
+      },
+      "btnEcmwfDesplegable": {
+        "titulo": "Synoptischer ECMWF-Wind",
+        "descripcion": "Blendet nur für diesen Startplatz die ECMWF-Windzeilen in 500, 1000, 1500, 2000 und 3000 m Höhe sowie 10 m über Grund ein oder aus. Zeigt, ob der Wind in der Höhe stärker ist als am Startplatz."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Startplatz-Informationen</span></div>",
         "descripcion": "Zeigt vollständigere Startplatz-Informationen und Links zur Vorhersage auf Windy, Meteo-parapente und Meteoblue an."

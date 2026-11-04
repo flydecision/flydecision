@@ -280,6 +280,14 @@
         "titulo": "📶 Nivel de actividad del despegue",
         "descripcion": "Indica con barras (de 1 a 5) el nivel de popularidad.<br><br>Se basa en el número de vuelos registrados en XContest durante 20 años, ajustado por actividad reciente (+1 si ha habido vuelos en los últimos meses) o inactividad prolongada (-1 si no hay vuelos desde hace más de 2 años)."
       },
+      "btnMinutely15": {
+        "titulo": "Detalle del viento cada 15 min",
+        "descripcion": "Abre una tabla con el viento medio, la racha y la dirección del modelo Arome cada 15 minutos para las próximas horas, a varias alturas sobre el suelo. Útil para afinar la hora exacta de despegue."
+      },
+      "btnEcmwfDesplegable": {
+        "titulo": "Viento sinóptico ECMWF",
+        "descripcion": "Despliega u oculta, solo en este despegue, las filas del viento ECMWF a 500, 1000, 1500, 2000 y 3000 m de altitud y a 10 m sobre el terreno. Sirve para ver si en altura el viento es más fuerte que en el despegue."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Información del despegue</span></div>",
         "descripcion": "Muestra información más completa del despegue y enlaces a su pronóstico en Windy, Meteo-parapente y Meteoblue."

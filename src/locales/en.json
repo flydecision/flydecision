@@ -280,6 +280,14 @@
         "titulo": "📶 Take-off activity level",
         "descripcion": "Indicates with bars (from 1 to 5) the popularity level.<br><br>It is based on the number of flights logged in XContest over 20 years, adjusted for recent activity (+1 if there have been flights in recent months) or prolonged inactivity (-1 if there have been no flights for more than 2 years)."
       },
+      "btnMinutely15": {
+        "titulo": "15-min wind detail",
+        "descripcion": "Opens a table with the Arome mean wind, gust and direction every 15 minutes for the next hours, at several heights above ground. Useful to fine-tune the exact takeoff time."
+      },
+      "btnEcmwfDesplegable": {
+        "titulo": "ECMWF synoptic wind",
+        "descripcion": "Shows or hides, for this takeoff only, the ECMWF wind rows at 500, 1000, 1500, 2000 and 3000 m altitude and at 10 m above the ground. Useful to see if the wind aloft is stronger than at the takeoff."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Takeoff Information</span></div>",
         "descripcion": "Shows more complete takeoff information and links to its forecast on Windy, Meteo-parapente, and Meteoblue."

@@ -280,6 +280,14 @@
         "titulo": "📶 Nivel de actividade da engalaxe",
         "descripcion": "Indica con barras (de 1 a 5) o nivel de popularidade.<br><br>Baséase no número de voos rexistrados en XContest durante 20 anos, axustado por actividade recente (+1 se houbo voos nos últimos meses) ou inactividade prolongada (-1 se non hai voos desde hai máis de 2 anos)."
       },
+      "btnMinutely15": {
+        "titulo": "Detalle do vento cada 15 min",
+        "descripcion": "Abre unha táboa co vento medio, o refacho e a dirección do modelo Arome cada 15 minutos para as próximas horas, a varias alturas sobre o chan. Útil para afinar a hora exacta de descolaxe."
+      },
+      "btnEcmwfDesplegable": {
+        "titulo": "Vento sinóptico ECMWF",
+        "descripcion": "Desprega ou oculta, só nesta engalaxe, as filas do vento ECMWF a 500, 1000, 1500, 2000 e 3000 m de altitude e a 10 m sobre o terreo. Serve para ver se en altura o vento é máis forte ca na engalaxe."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Información da engalaxe</span></div>",
         "descripcion": "Mostra información máis completa sobre a engalaxe e ligazóns á súa previsión en Windy, Meteo-parapente e Meteoblue."

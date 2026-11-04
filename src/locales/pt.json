@@ -280,6 +280,14 @@
         "titulo": "📶 Nível de atividade da descolagem",
         "descripcion": "Indica com barras (de 1 a 5) o nível de popularidade.<br><br>Baseia-se no número de voos registados no XContest durante 20 anos, ajustado por atividade recente (+1 se houve voos nos últimos meses) ou inatividade prolongada (-1 se não há voos há mais de 2 anos)."
       },
+      "btnMinutely15": {
+        "titulo": "Detalhe do vento a cada 15 min",
+        "descripcion": "Abre uma tabela com o vento médio, a rajada e a direção do modelo Arome a cada 15 minutos para as próximas horas, a várias alturas acima do solo. Útil para afinar a hora exata de descolagem."
+      },
+      "btnEcmwfDesplegable": {
+        "titulo": "Vento sinótico ECMWF",
+        "descripcion": "Mostra ou oculta, só nesta descolagem, as linhas do vento ECMWF a 500, 1000, 1500, 2000 e 3000 m de altitude e a 10 m acima do solo. Serve para ver se em altitude o vento é mais forte do que na descolagem."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Informação da descolagem</span></div>",
         "descripcion": "Mostra informações mais completas sobre a descolagem e links para a sua previsão no Windy, Meteo-parapente e Meteoblue."

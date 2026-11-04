@@ -280,6 +280,14 @@
         "titulo": "📶 Nivell d'activitat de l'enlairament",
         "descripcion": "Indica amb barres (d'1 a 5) el nivell de popularitat.<br><br>Es basa en el nombre de vols registrats a XContest durant 20 anys, ajustat per activitat recent (+1 si hi ha hagut vols en els últims mesos) o inactivitat perllongada (-1 si no hi ha vols des de fa més de 2 anys)."
       },
+      "btnMinutely15": {
+        "titulo": "Detall del vent cada 15 min",
+        "descripcion": "Obre una taula amb el vent mitjà, la ratxa i la direcció del model Arome cada 15 minuts per a les properes hores, a diverses alçades sobre el terra. Útil per afinar l'hora exacta d'enlairament."
+      },
+      "btnEcmwfDesplegable": {
+        "titulo": "Vent sinòptic ECMWF",
+        "descripcion": "Desplega o amaga, només en aquest enlairament, les files del vent ECMWF a 500, 1000, 1500, 2000 i 3000 m d'altitud i a 10 m sobre el terreny. Serveix per veure si en alçada el vent és més fort que a l'enlairament."
+      },
       "btnInfo": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><img src='icons/info.svg' width='20' height='20' style='display: block;'><span>Informació de l'enlairament</span></div>",
         "descripcion": "Mostra informació més completa sobre l'enlairament i enllaços a la seva previsió a Windy, Meteo-parapente i Meteoblue."
