@@ -8825,9 +8825,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (n <= XCCinLims.verde) colorCin = "fondo-verde";
                                 else if (n <= XCCinLims.rojo) colorCin = "fondo-naranja";
                                 else colorCin = "fondo-rojo";
+                            } else if (idxEcmwf !== undefined && hourlyEcmwf.convective_inhibition) {
+                                // ECMWF deja el CIN sin definir cuando no hay nivel de convección libre (casi siempre CAPE 0): en la puntuación cuenta como 0
+                                txtCin = "–";
+                                colorCin = "fondo-verde";
                             }
                             bgCin = (!cacheEsNoche[i] && !colorCin) ? 'background-color: #ffffff;' : '';
-                            htmlCin += `<td class="${clasesBase} ${colorCin}" style="padding-bottom: 0px; font-size: 11px !important; ${bgCin}" title="CIN: ${vCin != null ? Math.max(0, Math.round(Number(vCin))) : 0} J/kg">${txtCin}</td>`;
+                            htmlCin += `<td class="${clasesBase} ${colorCin}" style="padding-bottom: 0px; font-size: 11px !important; ${bgCin}" title="CIN: ${(vCin != null && vCin !== "") ? Math.max(0, Math.round(Number(vCin))) + ' J/kg' : '–'}">${txtCin}</td>`;
                         }
 
                         // Inyección (El DOM se toca 1 sola vez por fila)
