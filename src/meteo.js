@@ -3995,6 +3995,7 @@ window.alternarMostrarBaseNubeHumedad = alternarMostrarBaseNubeHumedad;
 // de la nube; -1 si no hay nubes bajas (hasta ~3000 m); null sin dato.
 const MARGEN_BASE_NUBE_NARANJA = 300; // m por encima del despegue por debajo de los cuales la base sale en naranja
 const MARGEN_RANGO_BASE_NUBE = 100;    // m arriba y abajo del valor estimado en el tooltip de «Base de nube» (rango de 200 m)
+const MARGEN_TERMICA_AZUL = 200;       // m: la base convectiva sale en blanco si la cima de la capa límite queda más de esto por debajo
 
 // Base de nube por hora: ICON-EU (meteo-datos.json, días 1 a 5; el día 5 va a continuación de las horas del viento)
 // y, donde ICON-EU no llega, ECMWF 0,25° (JSON ligero, días 6 y 7, dato aproximado). idxE = índice de la hora en ECMWF.
@@ -8156,9 +8157,26 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         );
 
                         // Base de nubes estimada MSL
+                        // 🌤️ Térmica azul: si la cima de la capa límite (cota + espesor al 100 %, no el techo útil ×0,85) queda más de
+                        // MARGEN_TERMICA_AZUL por debajo de la base convectiva teórica, la térmica no llega a condensar: celda en blanco
+                        // Tres casos según la cima frente a la base: 'azul' (> margen por debajo), 'justo' (± margen) o 'cumulos' (> margen por encima)
+                        const datosConvectiva = (temp, idxE) => {
+                            if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return null;
+                            const blh = hourlyEcmwf.boundary_layer_height ? hourlyEcmwf.boundary_layer_height[idxE] : null;
+                            if (blh == null) return null;
+                            const baseMsl = Number(d.Altitud || 0) + Math.max(0, Math.round((Number(temp) - Number(hourlyEcmwf.dew_point_2m[idxE])) * 125));
+                            const cimaMsl = Math.round(elevacionModeloECMWF + Number(blh));
+                            const techoUtilMsl = Math.round(elevacionModeloECMWF + Number(blh) * RATIO_TECHO_UTIL); // el de la fila Techo
+                            const estado = (cimaMsl < baseMsl - MARGEN_TERMICA_AZUL) ? 'azul' : (cimaMsl <= baseMsl + MARGEN_TERMICA_AZUL ? 'justo' : 'cumulos');
+                            return { baseMsl, cimaMsl, techoUtilMsl, estado };
+                        };
+                        const datosTermicaAzul = (temp, idxE) => { const c = datosConvectiva(temp, idxE); return (c && c.estado === 'azul') ? c : null; };
+                        const kmTxt = (m) => { const v = (m / 1000).toFixed(1); return v === "0.0" ? "0" : v; };
+
                         renderEcmwfData(filaBaseNube, hourlyEcmwf.temperature_2m, 
                             (temp, idxE) => {
                                 if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
+                                if (datosTermicaAzul(temp, idxE)) return "";
                                 let t_val = Number(temp);
                                 let roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
                                 let altRealDespegue = Number(d.Altitud || 0); 
@@ -8172,6 +8190,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
                                 let t_val = Number(temp);
                                 let roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
+                                if (datosTermicaAzul(temp, idxE)) return "fondo-verde";
                                 let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
                                 if (espesorMts < 100) return "fondo-rojo";     
                                 if (espesorMts <= 300) return "fondo-naranja"; 
@@ -8180,6 +8199,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             "0px",
                             (temp, idxE) => { 
                                 if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
+                                const azul = datosTermicaAzul(temp, idxE);
+                                if (azul) {
+                                    return t('tabla.tooltips.baseNubeTermicaAzul', { cima_km: kmTxt(azul.cimaMsl), techo_km: kmTxt(azul.techoUtilMsl), base_km: kmTxt(azul.baseMsl),
+                                        defaultValue: '<b>Térmica azul:</b> no se esperan cúmulos de origen convectivo.' });
+                                }
                                 const t_val = Number(temp);
                                 const roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
                                 const altRealDespegue = Number(d.Altitud || 0);
@@ -8188,13 +8212,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 const valorFinal = (baseMslMts / 1000).toFixed(1);
                                 const baseKm = valorFinal === "0.0" ? "0" : valorFinal;
                                 
-                                return t('tabla.tooltips.baseNubeValor', { 
+                                const textoBase = t('tabla.tooltips.baseNubeValor', { 
                                     base_km: baseKm, 
                                     base_m: baseMslMts,
                                     altitud_despegue: altRealDespegue,
                                     espesor: espesorMts, 
                                     defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)</li><li>Altitud del despegue: {{altitud_despegue}} m</li><li>Altura libre sobre despegue: {{espesor}} m</li></ul>' 
                                 });
+                                // Nota según llegue o no la térmica a la base (sin dato de capa límite, solo el texto base)
+                                const conv = datosConvectiva(temp, idxE);
+                                if (!conv) return textoBase;
+                                const nota = conv.estado === 'justo'
+                                    ? t('tabla.tooltips.baseNubeCasoJusto', { cima_km: kmTxt(conv.cimaMsl), base_km: kmTxt(conv.baseMsl),
+                                        defaultValue: '<b>Caso dudoso:</b> podría haber algún cúmulo aislado.' })
+                                    : t('tabla.tooltips.baseNubeCumulosProbables', { cima_km: kmTxt(conv.cimaMsl), base_km: kmTxt(conv.baseMsl),
+                                        defaultValue: '<b>Cúmulos probables:</b> es probable que se formen cúmulos de origen convectivo.' });
+                                return `${textoBase}<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #ccc; text-align: left;">${nota}</div>`;
                             }
                         );
 
@@ -8792,9 +8825,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (n <= XCCinLims.verde) colorCin = "fondo-verde";
                                 else if (n <= XCCinLims.rojo) colorCin = "fondo-naranja";
                                 else colorCin = "fondo-rojo";
+                            } else if (idxEcmwf !== undefined && hourlyEcmwf.convective_inhibition) {
+                                // ECMWF deja el CIN sin definir cuando no hay nivel de convección libre (casi siempre CAPE 0): en la puntuación cuenta como 0
+                                txtCin = "–";
+                                colorCin = "fondo-verde";
                             }
                             bgCin = (!cacheEsNoche[i] && !colorCin) ? 'background-color: #ffffff;' : '';
-                            htmlCin += `<td class="${clasesBase} ${colorCin}" style="padding-bottom: 0px; font-size: 11px !important; ${bgCin}" title="CIN: ${vCin != null ? Math.max(0, Math.round(Number(vCin))) : 0} J/kg">${txtCin}</td>`;
+                            htmlCin += `<td class="${clasesBase} ${colorCin}" style="padding-bottom: 0px; font-size: 11px !important; ${bgCin}" title="CIN: ${(vCin != null && vCin !== "") ? Math.max(0, Math.round(Number(vCin))) + ' J/kg' : '–'}">${txtCin}</td>`;
                         }
 
                         // Inyección (El DOM se toca 1 sola vez por fila)
