@@ -8190,7 +8190,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
                                 let t_val = Number(temp);
                                 let roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
-                                if (datosTermicaAzul(temp, idxE)) return "";
+                                if (datosTermicaAzul(temp, idxE)) return "fondo-verde";
                                 let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
                                 if (espesorMts < 100) return "fondo-rojo";     
                                 if (espesorMts <= 300) return "fondo-naranja"; 
