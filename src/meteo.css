@@ -4831,6 +4831,16 @@ body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa {
     box-shadow: 0 1px 6px rgba(0,0,0,0.65);
 }
 
+/* Móviles de menos de 400 px (p. ej. muchos Samsung de 360 px): en el mapa, el 7.º día quedaba
+   debajo de la X de cerrar. Se reserva el hueco de la X a la derecha y se aprovecha el margen
+   izquierdo; los días se siguen centrando en el espacio que queda. En la tabla no cambia nada. */
+@media (max-width: 399px) {
+    #div-filtro-horario.flotando-en-mapa #botones-dias-slider {
+        margin-left: 0 !important;
+        margin-right: 34px !important;
+    }
+}
+
 body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
     top: calc(var(--safe-area-inset-top, 25px) - 2px);
 }
