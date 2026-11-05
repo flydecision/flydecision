@@ -19218,7 +19218,7 @@ function inicializarMapaLeaflet() {
         let tooltipHTML = `<div style="text-align: left; line-height: 1.4; padding: 2px;">`;
         
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.baliza', { defaultValue: 'Baliza' }) : 'Baliza'}:</b> ${stName}<br>`;
-        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.proveedor', { defaultValue: 'Proveedor' }) : 'Proveedor'}:</b> ${stProvider}<br>`;
+        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.proveedor', { defaultValue: 'Proveedor' }) : 'Proveedor'}:</b> ${urlFinal ? `<a href="${urlFinal}" target="_blank" rel="noopener" onclick="abrirLinkExterno(this.href); return false;" style="color: #007bff; text-decoration: underline;">${stProvider}</a>` : stProvider}<br>`;
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.coordenadas', { defaultValue: 'Coordenadas' }) : 'Coordenadas'}:</b> ${stLat}, ${stLon}<br>`;
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.altitud', { defaultValue: 'Altitud' }) : 'Altitud'}:</b> ${altitud}<br>`;
         
