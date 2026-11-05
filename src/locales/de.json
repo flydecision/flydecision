@@ -140,7 +140,7 @@
       "baseNubeHumedadDentro": "<b>☁️ Startplatz in der Wolke</b><ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Geschätzte Wolkenbasis: <b>{{base_m}} m</b> MSL</li><li>Höhe des Startplatzes: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadSinNubes": "Keine tiefen Wolken (bis etwa 3000 m)",
       "baseNubeTermicaAzul": "Blauthermik: Die theoretische Thermikobergrenze ({{cima_km}} km; die nutzbare Basis für Gleitschirme, mit der Korrektur von −15 %, liegt bei {{techo_km}} km) erreicht die theoretische Konvektionsbasis ({{base_km}} km) nicht; keine Cumuli konvektiven Ursprungs zu erwarten.",
-      "baseNubeCasoJusto": "Grenzfall: Die theoretische Thermikobergrenze ({{cima_km}} km) erreicht die Konvektionsbasis ({{base_km}} km) gerade so. Höchstens vereinzelte Cumuli.",
+      "baseNubeCasoJusto": "Unsicherer Fall: Die Obergrenze ({{cima_km}} km MSL) liegt nahe an der theoretischen konvektiven Wolkenbasis ({{base_km}} km MSL). Es könnten vereinzelte Cumuli entstehen.",
       "baseNubeCumulosProbables": "Die theoretische Thermikobergrenze ({{cima_km}} km) liegt über der Konvektionsbasis: wahrscheinlich Cumuli konvektiven Ursprungs mit Basis um {{base_km}} km.",
       "baseNubeEcmwf": "Näherungswert aus dem ECMWF-Modell für die Tage 6 und 7, mit 25-km-Gitter und weniger vertikalen Rechenebenen als an den Vortagen.",
       "temperatura": "Temperatur (°C): Lufttemperatur in 2 Metern Höhe über dem Boden (AGL)",

@@ -140,7 +140,7 @@
       "baseNubeHumedadDentro": "<b>☁️ Aireratzea hodeiaren barruan</b><ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Hodeiaren oinarri estimatua: <b>{{base_m}} m</b> MSL</li><li>Aireratzearen altitudea: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadSinNubes": "Behe-hodeirik gabe (3000 m inguru arte)",
       "baseNubeTermicaAzul": "Termika urdina: termikaren gailur teorikoa ({{cima_km}} km; parapenterako sabai erabilgarria, −15 %-ko doikuntzarekin, {{techo_km}} km da) ez da oinarri konbektibo teorikora iristen ({{base_km}} km); ez da jatorri konbektiboko kumulurik espero.",
-      "baseNubeCasoJusto": "Kasu estua: termikaren gailur teorikoa ({{cima_km}} km) oinarri konbektibora iristear dago ({{base_km}} km). Gehienez, kumulu isolatuak.",
+      "baseNubeCasoJusto": "Kasu zalantzazkoa: sabaia ({{cima_km}} km MSL) Hodei konbektiboaren oinarri teorikotik gertu dago ({{base_km}} km MSL). Kumulu isolatuak egon litezke.",
       "baseNubeCumulosProbables": "Termikaren gailur teorikoak ({{cima_km}} km) oinarri konbektiboa gainditzen du: litekeena da jatorri konbektiboko kumuluak egotea, {{base_km}} km inguruko oinarriarekin.",
       "baseNubeEcmwf": "6. eta 7. egunetarako ECMWF eredutik datorren gutxi gorabeherako datua, 25 km-ko sarearekin eta aurreko egunek baino kalkulu-maila bertikal gutxiagorekin.",
       "temperatura": "Tenperatura (°C): Airearen tenperatura lurraren gainetik 2 metroko altueran (AGL)",

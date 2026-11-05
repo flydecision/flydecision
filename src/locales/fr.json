@@ -140,7 +140,7 @@
       "baseNubeHumedadDentro": "<b>☁️ Décollage dans le nuage</b><ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Base de nuage estimée : <b>{{base_m}} m</b> MSL</li><li>Altitude du décollage: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadSinNubes": "Pas de nuages bas (jusqu'à environ 3000 m)",
       "baseNubeTermicaAzul": "Thermique bleue : le sommet théorique de la thermique ({{cima_km}} km ; le plafond utile en parapente, avec l'ajustement de −15 %, est de {{techo_km}} km) n'atteint pas la base convective théorique ({{base_km}} km) ; pas de cumulus d'origine convective attendus.",
-      "baseNubeCasoJusto": "Cas limite : le sommet théorique de la thermique ({{cima_km}} km) atteint à peine la base convective ({{base_km}} km). Au mieux, des cumulus isolés.",
+      "baseNubeCasoJusto": "Cas incertain : le plafond ({{cima_km}} km MSL) est proche de la Base des nuages convectifs théorique ({{base_km}} km MSL). Des cumulus isolés pourraient se former.",
       "baseNubeCumulosProbables": "Le sommet théorique de la thermique ({{cima_km}} km) dépasse la base convective : cumulus d'origine convective probables, avec une base vers {{base_km}} km.",
       "baseNubeEcmwf": "Valeur approximative issue du modèle ECMWF pour les jours 6 et 7, avec une maille de 25 km et moins de niveaux verticaux de calcul que les jours précédents.",
       "temperatura": "Température (°C) : Température de l'air à 2 mètres de hauteur au-dessus du sol (AGL)",

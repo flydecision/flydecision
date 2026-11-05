@@ -140,7 +140,7 @@
       "baseNubeHumedadDentro": "<b>☁️ Takeoff inside the cloud</b><ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Estimated cloud base: <b>{{base_m}} m</b> MSL</li><li>Takeoff altitude: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadSinNubes": "No low clouds (up to about 3000 m)",
       "baseNubeTermicaAzul": "Blue thermal: the theoretical thermal top ({{cima_km}} km; the usable ceiling for paragliding, with the −15 % adjustment, is {{techo_km}} km) does not reach the theoretical convective base ({{base_km}} km); no cumulus of convective origin expected.",
-      "baseNubeCasoJusto": "Borderline case: the theoretical thermal top ({{cima_km}} km) barely reaches the convective base ({{base_km}} km). At most, isolated cumulus.",
+      "baseNubeCasoJusto": "Uncertain case: the ceiling ({{cima_km}} km MSL) is close to the theoretical Convective cloud base ({{base_km}} km MSL). There could be isolated cumulus.",
       "baseNubeCumulosProbables": "The theoretical thermal top ({{cima_km}} km) exceeds the convective base: cumulus of convective origin likely, with base around {{base_km}} km.",
       "baseNubeEcmwf": "Approximate value from the ECMWF model for days 6 and 7, with a 25 km grid and fewer vertical calculation levels than the previous days.",
       "temperatura": "Temperature (°C): Air temperature at 2 meters above ground level (AGL)",
