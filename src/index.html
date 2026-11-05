@@ -948,6 +948,8 @@ setTimeout(function () {
 				<span data-i18n="mapa.balizas.marcar_todas" style="margin-left: 2px;">Marcar todas</span>
 			</label>
 			
+			<!-- Lista de redes: con scroll si no cabe en pantalla (alto fijado en ajustarAlturaListaBalizas) -->
+			<div id="listaRedesBalizas">
 			<!-- 🚩 Balizas -->
 			<div class="linea-con-bt-info" style="margin-top: 12px;" title="Estaciones meteorológicas de viento">
 				<label for="checkboxBalizasEuskalmet" class="custom-checkbox">
@@ -1101,6 +1103,7 @@ setTimeout(function () {
 				<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.tooltipcheckboxBalizasWeatherUnderground">
 					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
+			</div>
 			</div>
 			<!-- 🚩 Fin Balizas -->
 		</div>

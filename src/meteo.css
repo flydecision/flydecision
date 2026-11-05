@@ -3427,6 +3427,30 @@ details.config-accordion .accordion-content {
 #infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-max { display: block; }
 #infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-min { display: none; }
 
+/* Panel de balizas: la lista de redes hace scroll si no cabe (móviles). El alto máximo lo pone
+   ajustarAlturaListaBalizas() en meteo.js; si cabe entera, no se limita. Sombras arriba/abajo
+   con el mismo truco que .tippy-scroll-area y los popups de despegue. */
+#listaRedesBalizas {
+    overflow-y: hidden;
+}
+#listaRedesBalizas.con-scroll {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    background:
+        linear-gradient(#ffffff 30%, rgba(255, 255, 255, 0)) local,
+        linear-gradient(rgba(255, 255, 255, 0), #ffffff 70%) local,
+        linear-gradient(rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0)) scroll,
+        linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.30)) scroll,
+        #ffffff;
+    background-size: 100% 30px, 100% 30px, 100% 18px, 100% 18px;
+    background-position: 0 0, 0 100%, 0 0, 0 100%;
+    background-repeat: no-repeat;
+}
+#listaRedesBalizas.con-scroll::-webkit-scrollbar { width: 5px; }
+#listaRedesBalizas.con-scroll::-webkit-scrollbar-track { background: transparent; }
+#listaRedesBalizas.con-scroll::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
+
 /* Ajustar el ancho del panel de balizas SOLO cuando está EXPANDIDO (no retraído) */
 /* #infoPanel3.info-panel:not(.retraido) {
     width: 180px !important;
