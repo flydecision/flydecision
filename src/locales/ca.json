@@ -140,7 +140,7 @@
       "baseNubeHumedadDentro": "<b>☁️ Enlairament dins del núvol</b><ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Base de núvol estimada: <b>{{base_m}} m</b> MSL</li><li>Altitud de l'enlairament: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadSinNubes": "Sense núvols baixos (fins a uns 3000 m)",
       "baseNubeTermicaAzul": "Tèrmica blava: el cim teòric de la tèrmica ({{cima_km}} km; el sostre útil per a parapent, amb l'ajust del −15 %, és {{techo_km}} km) no arriba a la base convectiva teòrica ({{base_km}} km); no s'esperen cúmuls d'origen convectiu.",
-      "baseNubeCasoJusto": "Cas dubtós: el sostre ({{cima_km}} km MSL) queda a prop de la teòrica Base de núvol convectiu ({{base_km}} km MSL). Podria haver-hi cúmuls aïllats.",
+      "baseNubeCasoJusto": "Cas dubtós: l'altitud màxima de la capa límit ({{cima_km}} km MSL) queda a prop de la Base de núvol convectiu ({{base_km}} km MSL). Podria haver-hi algun cúmul aïllat.",
       "baseNubeCumulosProbables": "El cim teòric de la tèrmica ({{cima_km}} km) supera la base convectiva: probables cúmuls d'origen convectiu amb base cap a {{base_km}} km.",
       "baseNubeEcmwf": "Dada aproximada procedent del model ECMWF per als dies 6 i 7, amb malla de 25 km i menys nivells verticals de càlcul que els dies anteriors.",
       "temperatura": "Temperatura (°C): Temperatura de l'aire a 2 metres d'altura sobre el sòl (AGL)",

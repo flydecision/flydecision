@@ -140,7 +140,7 @@
       "baseNubeHumedadDentro": "<b>☁️ Descolagem dentro da nuvem</b><ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Base de nuvem estimada: <b>{{base_m}} m</b> MSL</li><li>Altitude da descolagem: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadSinNubes": "Sem nuvens baixas (até cerca de 3000 m)",
       "baseNubeTermicaAzul": "Térmica azul: o topo teórico da térmica ({{cima_km}} km; o teto útil para parapente, com o ajuste de −15 %, é {{techo_km}} km) não chega à base convectiva teórica ({{base_km}} km); não se esperam cúmulos de origem convectiva.",
-      "baseNubeCasoJusto": "Caso duvidoso: o teto ({{cima_km}} km MSL) fica perto da Base de nuvem convectiva teórica ({{base_km}} km MSL). Poderá haver cúmulos isolados.",
+      "baseNubeCasoJusto": "Caso duvidoso: a altitude máxima da camada limite ({{cima_km}} km MSL) fica perto da Base de nuvem convectiva ({{base_km}} km MSL). Poderá haver algum cúmulo isolado.",
       "baseNubeCumulosProbables": "O topo teórico da térmica ({{cima_km}} km) supera a base convectiva: prováveis cúmulos de origem convectiva com base perto de {{base_km}} km.",
       "baseNubeEcmwf": "Dado aproximado proveniente do modelo ECMWF para os dias 6 e 7, com malha de 25 km e menos níveis verticais de cálculo do que os dias anteriores.",
       "temperatura": "Temperatura (°C): Temperatura do ar a 2 metros de altura acima do solo (AGL)",
