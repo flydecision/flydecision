@@ -8202,7 +8202,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 const azul = datosTermicaAzul(temp, idxE);
                                 if (azul) {
                                     return t('tabla.tooltips.baseNubeTermicaAzul', { cima_km: kmTxt(azul.cimaMsl), techo_km: kmTxt(azul.techoUtilMsl), base_km: kmTxt(azul.baseMsl),
-                                        defaultValue: 'Térmica azul: la cima teórica de la térmica ({{cima_km}} km; el techo útil para parapente, con el ajuste del −15 %, es {{techo_km}} km) no llega a la base convectiva teórica ({{base_km}} km); no se esperan cúmulos de origen convectivo.' });
+                                        defaultValue: '<b>Térmica azul:</b> no se esperan cúmulos de origen convectivo.' });
                                 }
                                 const t_val = Number(temp);
                                 const roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
@@ -8224,9 +8224,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (!conv) return textoBase;
                                 const nota = conv.estado === 'justo'
                                     ? t('tabla.tooltips.baseNubeCasoJusto', { cima_km: kmTxt(conv.cimaMsl), base_km: kmTxt(conv.baseMsl),
-                                        defaultValue: 'Caso justo: la cima teórica de la térmica ({{cima_km}} km) roza la base convectiva ({{base_km}} km). Como mucho, cúmulos aislados.' })
+                                        defaultValue: '<b>Caso dudoso:</b> podría haber algún cúmulo aislado.' })
                                     : t('tabla.tooltips.baseNubeCumulosProbables', { cima_km: kmTxt(conv.cimaMsl), base_km: kmTxt(conv.baseMsl),
-                                        defaultValue: 'La cima teórica de la térmica ({{cima_km}} km) supera la base convectiva: probables cúmulos de origen convectivo con base hacia {{base_km}} km.' });
+                                        defaultValue: '<b>Cúmulos probables:</b> es probable que se formen cúmulos de origen convectivo.' });
                                 return `${textoBase}<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #ccc; text-align: left;">${nota}</div>`;
                             }
                         );
