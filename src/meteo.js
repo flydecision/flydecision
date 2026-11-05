@@ -408,7 +408,6 @@ if (_palabrasBalizasInit.some(p => _pathInit.includes(p) || paramsArranque.has(p
 }
 // Lista común de checkboxes de balizas que NO se activan automáticamente
 const CHECKBOXES_BALIZAS_EXCLUIDAS = [
-    'checkboxBalizasSuremet',
     'checkboxBalizasWeatherUnderground'
 ];
 window.CHECKBOXES_BALIZAS_EXCLUIDAS = CHECKBOXES_BALIZAS_EXCLUIDAS;
