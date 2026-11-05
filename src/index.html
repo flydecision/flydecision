@@ -1127,6 +1127,8 @@ setTimeout(function () {
 			<button id="buttonResetFiltros2" data-i18n="[title]mapa.resetearFiltrosMapa" onclick="resetearFiltrosMapaEnVivo()"><span id="iconoResetFiltros2">🔄</span></button>
 			<button id="buttonFijar2" data-i18n="[title]mapa.fijarPanel"><span id="iconoFijar2">📌</span></button>			 
 			
+			<!-- Contenido con scroll si no cabe en pantalla (alto fijado en ajustarAlturaListaPanel) -->
+			<div id="contenidoFiltrosMapa">
 			<!-- Contenedor Principal en 2 Columnas -->
 			<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 8px; margin-bottom: 8px;">
 
@@ -1265,6 +1267,7 @@ setTimeout(function () {
 					<label class="filtro-orientacion" data-orientacion="SE" data-i18n="[title]orientaciones.sureste"> <input type="checkbox" class="filtro-orientacion-checkbox" value="SE"><span data-i18n="orientaciones.SE">SE</span></label>
 				</div>
 
+			</div>
 			</div>
 				
 		</div>

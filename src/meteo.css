@@ -3427,13 +3427,15 @@ details.config-accordion .accordion-content {
 #infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-max { display: block; }
 #infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-min { display: none; }
 
-/* Panel de balizas: la lista de redes hace scroll si no cabe (móviles). El alto máximo lo pone
-   ajustarAlturaListaBalizas() en meteo.js; si cabe entera, no se limita. Sombras arriba/abajo
+/* Paneles de balizas y filtros: la lista de redes / el contenido hace scroll si no cabe (móviles). El alto máximo lo pone
+   ajustarAlturaListaPanel() en meteo.js; si cabe entera, no se limita. Sombras arriba/abajo
    con el mismo truco que .tippy-scroll-area y los popups de despegue. */
-#listaRedesBalizas {
+#listaRedesBalizas,
+#contenidoFiltrosMapa {
     overflow-y: hidden;
 }
-#listaRedesBalizas.con-scroll {
+#listaRedesBalizas.con-scroll,
+#contenidoFiltrosMapa.con-scroll {
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
@@ -3447,9 +3449,12 @@ details.config-accordion .accordion-content {
     background-position: 0 0, 0 100%, 0 0, 0 100%;
     background-repeat: no-repeat;
 }
-#listaRedesBalizas.con-scroll::-webkit-scrollbar { width: 5px; }
-#listaRedesBalizas.con-scroll::-webkit-scrollbar-track { background: transparent; }
-#listaRedesBalizas.con-scroll::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
+#listaRedesBalizas.con-scroll::-webkit-scrollbar,
+#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar { width: 5px; }
+#listaRedesBalizas.con-scroll::-webkit-scrollbar-track,
+#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar-track { background: transparent; }
+#listaRedesBalizas.con-scroll::-webkit-scrollbar-thumb,
+#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
 
 /* Ajustar el ancho del panel de balizas SOLO cuando está EXPANDIDO (no retraído) */
 /* #infoPanel3.info-panel:not(.retraido) {

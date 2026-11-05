@@ -17941,15 +17941,14 @@ function inicializarMapaLeaflet() {
         divOpciones3.classList.remove('oculto');
         infoPanel3.classList.remove('retraido');
         L.DomEvent.off(infoPanel3, 'click', expandirAlClicar3);	
-        requestAnimationFrame(ajustarAlturaListaBalizas);
-        setTimeout(ajustarAlturaListaBalizas, 400); // por si cambian fuentes/traducciones al abrir
+        requestAnimationFrame(ajustarAlturasPanelesMapa);
+        setTimeout(ajustarAlturasPanelesMapa, 400); // por si cambian fuentes/traducciones al abrir
     }
 
-    // Limita el alto de la lista de redes de balizas para que no quede tapada por la barra inferior
-    // (o se salga de la pantalla) en móviles; si cabe entera, no se limita y no hay scroll.
-    function ajustarAlturaListaBalizas() {
-        const lista = document.getElementById('listaRedesBalizas');
-        if (!lista || !infoPanel3 || infoPanel3.classList.contains('retraido')) return;
+    // Limita el alto del contenido de un panel del mapa (lista de redes de balizas, filtros) para que no
+    // quede tapado por la barra inferior (o se salga de la pantalla) en móviles; si cabe entero, no hay scroll.
+    function ajustarAlturaListaPanel(lista, panel) {
+        if (!lista || !panel || panel.classList.contains('retraido')) return;
         lista.style.maxHeight = '';
         const margen = 20; // padding inferior del panel + aire
         let limiteInferior = window.innerHeight;
@@ -17964,7 +17963,11 @@ function inicializarMapaLeaflet() {
         // Scroll y sombras solo si de verdad no cabe (margen de 2 px por redondeos)
         lista.classList.toggle('con-scroll', lista.scrollHeight > lista.clientHeight + 2);
     }
-    window.addEventListener('resize', () => requestAnimationFrame(ajustarAlturaListaBalizas));
+    function ajustarAlturasPanelesMapa() {
+        ajustarAlturaListaPanel(document.getElementById('listaRedesBalizas'), infoPanel3);
+        ajustarAlturaListaPanel(document.getElementById('contenidoFiltrosMapa'), infoPanel2);
+    }
+    window.addEventListener('resize', () => requestAnimationFrame(ajustarAlturasPanelesMapa));
 
     // --- FUNCIONES EXPANSIÓN/RETRACCIÓN PANEL 2 ---
     function expandirAlClicar2(event) {
@@ -17984,6 +17987,8 @@ function inicializarMapaLeaflet() {
         divOpciones2.classList.remove('oculto');
         infoPanel2.classList.remove('retraido');
         L.DomEvent.off(infoPanel2, 'click', expandirAlClicar2);	
+        requestAnimationFrame(ajustarAlturasPanelesMapa);
+        setTimeout(ajustarAlturasPanelesMapa, 400);
     }
 
     // --- SINCRONIZACIÓN INICIAL DEL PANEL INTERNO DEL MAPA ---
