@@ -139,7 +139,7 @@
       "baseNubeHumedadValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Base de nuage estimée : <b>{{base_m}} m</b> MSL</li><li>Hauteur libre au-dessus du décollage: <b>{{margen}} m</b> AGL</li><li>Altitude du décollage: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadDentro": "<b>☁️ Décollage dans le nuage</b><ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Base de nuage estimée : <b>{{base_m}} m</b> MSL</li><li>Altitude du décollage: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadSinNubes": "Pas de nuages bas (jusqu'à environ 3000 m)",
-      "baseNubeTermicaAzul": "Thermique bleue : le sommet de la thermique ({{cima_km}} km) n'atteint pas la base convective théorique ({{base_km}} km) ; pas de cumulus attendus.",
+      "baseNubeTermicaAzul": "Thermique bleue : le sommet théorique de la thermique ({{cima_km}} km ; le plafond utile en parapente, avec l'ajustement de −15 %, est de {{techo_km}} km) n'atteint pas la base convective théorique ({{base_km}} km) ; pas de cumulus attendus.",
       "baseNubeEcmwf": "Valeur approximative issue du modèle ECMWF pour les jours 6 et 7, avec une maille de 25 km et moins de niveaux verticaux de calcul que les jours précédents.",
       "temperatura": "Température (°C) : Température de l'air à 2 mètres de hauteur au-dessus du sol (AGL)",
       "viento100m": "Vent moyen à 100 m de hauteur AGL (km/h)",

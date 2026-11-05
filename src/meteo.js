@@ -8165,7 +8165,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             if (blh == null) return null;
                             const baseMsl = Number(d.Altitud || 0) + Math.max(0, Math.round((Number(temp) - Number(hourlyEcmwf.dew_point_2m[idxE])) * 125));
                             const cimaMsl = Math.round(elevacionModeloECMWF + Number(blh));
-                            return (cimaMsl < baseMsl - MARGEN_TERMICA_AZUL) ? { baseMsl, cimaMsl } : null;
+                            const techoUtilMsl = Math.round(elevacionModeloECMWF + Number(blh) * RATIO_TECHO_UTIL); // el de la fila Techo
+                            return (cimaMsl < baseMsl - MARGEN_TERMICA_AZUL) ? { baseMsl, cimaMsl, techoUtilMsl } : null;
                         };
                         const kmTxt = (m) => { const v = (m / 1000).toFixed(1); return v === "0.0" ? "0" : v; };
 
@@ -8197,8 +8198,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
                                 const azul = datosTermicaAzul(temp, idxE);
                                 if (azul) {
-                                    return t('tabla.tooltips.baseNubeTermicaAzul', { cima_km: kmTxt(azul.cimaMsl), base_km: kmTxt(azul.baseMsl),
-                                        defaultValue: 'Térmica azul: la cima de la térmica ({{cima_km}} km) no llega a la base convectiva teórica ({{base_km}} km); no se esperan cúmulos.' });
+                                    return t('tabla.tooltips.baseNubeTermicaAzul', { cima_km: kmTxt(azul.cimaMsl), techo_km: kmTxt(azul.techoUtilMsl), base_km: kmTxt(azul.baseMsl),
+                                        defaultValue: 'Térmica azul: la cima teórica de la térmica ({{cima_km}} km; el techo útil para parapente, con el ajuste del −15 %, es {{techo_km}} km) no llega a la base convectiva teórica ({{base_km}} km); no se esperan cúmulos.' });
                                 }
                                 const t_val = Number(temp);
                                 const roc = Number(hourlyEcmwf.dew_point_2m[idxE]);

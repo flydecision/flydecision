@@ -139,7 +139,7 @@
       "baseNubeHumedadValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Hodeiaren oinarri estimatua: <b>{{base_m}} m</b> MSL</li><li>Altuera librea aireratzearen gainetik: <b>{{margen}} m</b> AGL</li><li>Aireratzearen altitudea: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadDentro": "<b>☁️ Aireratzea hodeiaren barruan</b><ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Hodeiaren oinarri estimatua: <b>{{base_m}} m</b> MSL</li><li>Aireratzearen altitudea: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadSinNubes": "Behe-hodeirik gabe (3000 m inguru arte)",
-      "baseNubeTermicaAzul": "Termika urdina: termikaren gailurra ({{cima_km}} km) ez da oinarri konbektibo teorikora iristen ({{base_km}} km); ez da kumulurik espero.",
+      "baseNubeTermicaAzul": "Termika urdina: termikaren gailur teorikoa ({{cima_km}} km; parapenterako sabai erabilgarria, −15 %-ko doikuntzarekin, {{techo_km}} km da) ez da oinarri konbektibo teorikora iristen ({{base_km}} km); ez da kumulurik espero.",
       "baseNubeEcmwf": "6. eta 7. egunetarako ECMWF eredutik datorren gutxi gorabeherako datua, 25 km-ko sarearekin eta aurreko egunek baino kalkulu-maila bertikal gutxiagorekin.",
       "temperatura": "Tenperatura (°C): Airearen tenperatura lurraren gainetik 2 metroko altueran (AGL)",
       "viento100m": "Batez besteko haizea AGL 100 m-ko altueran (km/h)",
