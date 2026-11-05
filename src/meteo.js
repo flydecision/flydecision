@@ -408,7 +408,6 @@ if (_palabrasBalizasInit.some(p => _pathInit.includes(p) || paramsArranque.has(p
 }
 // Lista común de checkboxes de balizas que NO se activan automáticamente
 const CHECKBOXES_BALIZAS_EXCLUIDAS = [
-    'checkboxBalizasSuremet',
     'checkboxBalizasWeatherUnderground'
 ];
 window.CHECKBOXES_BALIZAS_EXCLUIDAS = CHECKBOXES_BALIZAS_EXCLUIDAS;
@@ -16238,6 +16237,20 @@ function inicializarMapaLeaflet() {
     const controlCapas = L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(map);
     window.capasLeaflet = controlCapas; // exposición global para poder cerrarlo con Atrás Android
 
+    // Lista de capas: mismo scroll con sombras que los paneles de balizas y filtros si no cabe encima de la
+    // barra inferior en móviles (Leaflet solo lo limita al alto del mapa, sin contar la barra).
+    if (controlCapas._section) controlCapas._section.id = 'listaCapasMapa';
+    const expandirCapasOriginal = controlCapas.expand;
+    controlCapas.expand = function () {
+        expandirCapasOriginal.call(this);
+        if (this._section) {
+            this._section.style.height = '';
+            this._section.classList.remove('leaflet-control-layers-scrollbar');
+            ajustarAlturaListaPanel(this._section, this._container);
+        }
+        return this;
+    };
+
     // Solo clic: quitar apertura/cierre por hover (igual que los infoPanel)
     L.DomEvent.off(controlCapas.getContainer(), {
         mouseenter: controlCapas._expandSafely || controlCapas.expand,
@@ -17942,7 +17955,35 @@ function inicializarMapaLeaflet() {
         divOpciones3.classList.remove('oculto');
         infoPanel3.classList.remove('retraido');
         L.DomEvent.off(infoPanel3, 'click', expandirAlClicar3);	
+        requestAnimationFrame(ajustarAlturasPanelesMapa);
+        setTimeout(ajustarAlturasPanelesMapa, 400); // por si cambian fuentes/traducciones al abrir
     }
+
+    // Limita el alto del contenido de un panel del mapa (lista de redes de balizas, filtros) para que no
+    // quede tapado por la barra inferior (o se salga de la pantalla) en móviles; si cabe entero, no hay scroll.
+    function ajustarAlturaListaPanel(lista, panel) {
+        if (!lista || !panel || panel.classList.contains('retraido')) return;
+        lista.style.maxHeight = '';
+        const margen = 20; // padding inferior del panel + aire
+        let limiteInferior = window.innerHeight;
+        const navBottom = Array.from(document.querySelectorAll('.bottom-nav'))
+            .find(n => window.getComputedStyle(n).display !== 'none');
+        if (navBottom) {
+            const navTop = navBottom.getBoundingClientRect().top;
+            if (navTop > 100 && navTop < limiteInferior) limiteInferior = navTop;
+        }
+        const disponible = Math.floor(limiteInferior - lista.getBoundingClientRect().top - margen);
+        lista.style.maxHeight = Math.max(120, disponible) + 'px';
+        // Scroll y sombras solo si de verdad no cabe (margen de 2 px por redondeos)
+        lista.classList.toggle('con-scroll', lista.scrollHeight > lista.clientHeight + 2);
+    }
+    function ajustarAlturasPanelesMapa() {
+        ajustarAlturaListaPanel(document.getElementById('listaRedesBalizas'), infoPanel3);
+        ajustarAlturaListaPanel(document.getElementById('contenidoFiltrosMapa'), infoPanel2);
+        const capas = document.querySelector('.leaflet-control-layers-expanded');
+        if (capas) ajustarAlturaListaPanel(document.getElementById('listaCapasMapa'), capas);
+    }
+    window.addEventListener('resize', () => requestAnimationFrame(ajustarAlturasPanelesMapa));
 
     // --- FUNCIONES EXPANSIÓN/RETRACCIÓN PANEL 2 ---
     function expandirAlClicar2(event) {
@@ -17962,6 +18003,8 @@ function inicializarMapaLeaflet() {
         divOpciones2.classList.remove('oculto');
         infoPanel2.classList.remove('retraido');
         L.DomEvent.off(infoPanel2, 'click', expandirAlClicar2);	
+        requestAnimationFrame(ajustarAlturasPanelesMapa);
+        setTimeout(ajustarAlturasPanelesMapa, 400);
     }
 
     // --- SINCRONIZACIÓN INICIAL DEL PANEL INTERNO DEL MAPA ---
@@ -18707,10 +18750,8 @@ function inicializarMapaLeaflet() {
             id: 'suremet',
             nombre: 'Suremet',
             estaciones: [],
-            //urlCache: 'https://flydecision.com/balizas_suremet_cache.json',
-            //url6h:    'https://flydecision.com/balizas_suremet_6h.json',
-            urlCache: null, 
-            url6h:    null, 
+            urlCache: 'https://flydecision.com/balizas_suremet_cache.json',
+            url6h:    'https://flydecision.com/balizas_suremet_6h.json',
             checkboxId: 'checkboxBalizasSuremet',
             lsKey: 'METEO_MAPA_CAPA_BALIZAS_SUREMET_VISIBLE',
             layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
@@ -19221,7 +19262,7 @@ function inicializarMapaLeaflet() {
         let tooltipHTML = `<div style="text-align: left; line-height: 1.4; padding: 2px;">`;
         
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.baliza', { defaultValue: 'Baliza' }) : 'Baliza'}:</b> ${stName}<br>`;
-        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.proveedor', { defaultValue: 'Proveedor' }) : 'Proveedor'}:</b> ${stProvider}<br>`;
+        tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.proveedor', { defaultValue: 'Proveedor' }) : 'Proveedor'}:</b> ${urlFinal ? `<a href="${urlFinal}" target="_blank" rel="noopener" onclick="abrirLinkExterno(this.href); return false;" style="color: #007bff; text-decoration: underline;">${stProvider}</a>` : stProvider}<br>`;
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.coordenadas', { defaultValue: 'Coordenadas' }) : 'Coordenadas'}:</b> ${stLat}, ${stLon}<br>`;
         tooltipHTML += `<b>${typeof t === 'function' ? t('mapa.balizas.altitud', { defaultValue: 'Altitud' }) : 'Altitud'}:</b> ${altitud}<br>`;
         

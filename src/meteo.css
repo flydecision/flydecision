@@ -3427,6 +3427,44 @@ details.config-accordion .accordion-content {
 #infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-max { display: block; }
 #infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-min { display: none; }
 
+/* Paneles de balizas, filtros y capas: la lista / el contenido hace scroll si no cabe (móviles). El alto máximo lo pone
+   ajustarAlturaListaPanel() en meteo.js; si cabe entera, no se limita. Sombras arriba/abajo
+   con el mismo truco que .tippy-scroll-area y los popups de despegue. */
+#listaRedesBalizas,
+#contenidoFiltrosMapa {
+    overflow-y: hidden;
+}
+/* Capas: si cabe, todo como estaba (sin recortar nada, el texto puede salirse un poco como antes) */
+#listaCapasMapa:not(.con-scroll) {
+    overflow: visible;
+}
+#listaRedesBalizas.con-scroll,
+#contenidoFiltrosMapa.con-scroll,
+#listaCapasMapa.con-scroll {
+    overflow-x: hidden; /* nunca barra horizontal */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    background:
+        linear-gradient(#ffffff 30%, rgba(255, 255, 255, 0)) local,
+        linear-gradient(rgba(255, 255, 255, 0), #ffffff 70%) local,
+        linear-gradient(rgba(0, 0, 0, 0.30), rgba(0, 0, 0, 0)) scroll,
+        linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.30)) scroll,
+        #ffffff;
+    background-size: 100% 30px, 100% 30px, 100% 18px, 100% 18px;
+    background-position: 0 0, 0 100%, 0 0, 0 100%;
+    background-repeat: no-repeat;
+}
+#listaRedesBalizas.con-scroll::-webkit-scrollbar,
+#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar,
+#listaCapasMapa.con-scroll::-webkit-scrollbar { width: 5px; }
+#listaRedesBalizas.con-scroll::-webkit-scrollbar-track,
+#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar-track,
+#listaCapasMapa.con-scroll::-webkit-scrollbar-track { background: transparent; }
+#listaRedesBalizas.con-scroll::-webkit-scrollbar-thumb,
+#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar-thumb,
+#listaCapasMapa.con-scroll::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
+
 /* Ajustar el ancho del panel de balizas SOLO cuando está EXPANDIDO (no retraído) */
 /* #infoPanel3.info-panel:not(.retraido) {
     width: 180px !important;
@@ -4795,6 +4833,21 @@ body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa {
     max-width: 410px;
     border: 1px solid #6e6e6e;
     box-shadow: 0 1px 6px rgba(0,0,0,0.65);
+}
+
+/* Móviles de menos de 400 px (p. ej. muchos Samsung de 360 px): en el mapa, el 7.º día quedaba
+   debajo de la X de cerrar. Se reserva el hueco de la X a la derecha y se aprovecha el margen
+   izquierdo; los días se siguen centrando en el espacio que queda. */
+@media (max-width: 399px) {
+    #div-filtro-horario.flotando-en-mapa #botones-dias-slider {
+        margin-left: 0 !important;
+        margin-right: 34px !important;
+    }
+    /* En la tabla pasa lo mismo con el botón del calendario (solo en modo avanzado, que es cuando se ve) */
+    body:not(.modo-simple) #div-filtro-horario:not(.flotando-en-mapa) #botones-dias-slider {
+        margin-left: 0 !important;
+        margin-right: 38px !important;
+    }
 }
 
 body.modo-android-manual #div-filtro-horario.flotando-en-mapa {
