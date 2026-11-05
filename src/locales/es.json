@@ -140,6 +140,8 @@
       "baseNubeHumedadDentro": "<b>☁️ Despegue dentro de la nube</b><ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Base de nube estimada: <b>{{base_m}} m</b> MSL</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadSinNubes": "Sin nubes bajas (hasta unos 3000 m)",
       "baseNubeTermicaAzul": "Térmica azul: la cima teórica de la térmica ({{cima_km}} km; el techo útil para parapente, con el ajuste del −15 %, es {{techo_km}} km) no llega a la base convectiva teórica ({{base_km}} km); no se esperan cúmulos de origen convectivo.",
+      "baseNubeCasoJusto": "Caso justo: la cima teórica de la térmica ({{cima_km}} km) roza la base convectiva ({{base_km}} km). Como mucho, cúmulos aislados.",
+      "baseNubeCumulosProbables": "La cima teórica de la térmica ({{cima_km}} km) supera la base convectiva: probables cúmulos de origen convectivo con base hacia {{base_km}} km.",
       "baseNubeEcmwf": "Dato aproximado procedente del modelo ECMWF para los días 6 y 7, con malla de 25 km y menos niveles verticales de cálculo que los días anteriores.",
       "temperatura": "Temperatura (°C): Temperatura del aire a 2 metros de altura sobre el suelo (AGL)",
       "viento100m": "Viento medio a 100 m altura AGL (km/h)",

@@ -8159,15 +8159,18 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         // Base de nubes estimada MSL
                         // 🌤️ Térmica azul: si la cima de la capa límite (cota + espesor al 100 %, no el techo útil ×0,85) queda más de
                         // MARGEN_TERMICA_AZUL por debajo de la base convectiva teórica, la térmica no llega a condensar: celda en blanco
-                        const datosTermicaAzul = (temp, idxE) => {
+                        // Tres casos según la cima frente a la base: 'azul' (> margen por debajo), 'justo' (± margen) o 'cumulos' (> margen por encima)
+                        const datosConvectiva = (temp, idxE) => {
                             if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return null;
                             const blh = hourlyEcmwf.boundary_layer_height ? hourlyEcmwf.boundary_layer_height[idxE] : null;
                             if (blh == null) return null;
                             const baseMsl = Number(d.Altitud || 0) + Math.max(0, Math.round((Number(temp) - Number(hourlyEcmwf.dew_point_2m[idxE])) * 125));
                             const cimaMsl = Math.round(elevacionModeloECMWF + Number(blh));
                             const techoUtilMsl = Math.round(elevacionModeloECMWF + Number(blh) * RATIO_TECHO_UTIL); // el de la fila Techo
-                            return (cimaMsl < baseMsl - MARGEN_TERMICA_AZUL) ? { baseMsl, cimaMsl, techoUtilMsl } : null;
+                            const estado = (cimaMsl < baseMsl - MARGEN_TERMICA_AZUL) ? 'azul' : (cimaMsl <= baseMsl + MARGEN_TERMICA_AZUL ? 'justo' : 'cumulos');
+                            return { baseMsl, cimaMsl, techoUtilMsl, estado };
                         };
+                        const datosTermicaAzul = (temp, idxE) => { const c = datosConvectiva(temp, idxE); return (c && c.estado === 'azul') ? c : null; };
                         const kmTxt = (m) => { const v = (m / 1000).toFixed(1); return v === "0.0" ? "0" : v; };
 
                         renderEcmwfData(filaBaseNube, hourlyEcmwf.temperature_2m, 
@@ -8209,13 +8212,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 const valorFinal = (baseMslMts / 1000).toFixed(1);
                                 const baseKm = valorFinal === "0.0" ? "0" : valorFinal;
                                 
-                                return t('tabla.tooltips.baseNubeValor', { 
+                                const textoBase = t('tabla.tooltips.baseNubeValor', { 
                                     base_km: baseKm, 
                                     base_m: baseMslMts,
                                     altitud_despegue: altRealDespegue,
                                     espesor: espesorMts, 
                                     defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)</li><li>Altitud del despegue: {{altitud_despegue}} m</li><li>Altura libre sobre despegue: {{espesor}} m</li></ul>' 
                                 });
+                                // Nota según llegue o no la térmica a la base (sin dato de capa límite, solo el texto base)
+                                const conv = datosConvectiva(temp, idxE);
+                                if (!conv) return textoBase;
+                                const nota = conv.estado === 'justo'
+                                    ? t('tabla.tooltips.baseNubeCasoJusto', { cima_km: kmTxt(conv.cimaMsl), base_km: kmTxt(conv.baseMsl),
+                                        defaultValue: 'Caso justo: la cima teórica de la térmica ({{cima_km}} km) roza la base convectiva ({{base_km}} km). Como mucho, cúmulos aislados.' })
+                                    : t('tabla.tooltips.baseNubeCumulosProbables', { cima_km: kmTxt(conv.cimaMsl), base_km: kmTxt(conv.baseMsl),
+                                        defaultValue: 'La cima teórica de la térmica ({{cima_km}} km) supera la base convectiva: probables cúmulos de origen convectivo con base hacia {{base_km}} km.' });
+                                return `${textoBase}<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #ccc; text-align: left;">${nota}</div>`;
                             }
                         );
 
