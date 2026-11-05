@@ -8199,7 +8199,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 const azul = datosTermicaAzul(temp, idxE);
                                 if (azul) {
                                     return t('tabla.tooltips.baseNubeTermicaAzul', { cima_km: kmTxt(azul.cimaMsl), techo_km: kmTxt(azul.techoUtilMsl), base_km: kmTxt(azul.baseMsl),
-                                        defaultValue: 'Térmica azul: la cima teórica de la térmica ({{cima_km}} km; el techo útil para parapente, con el ajuste del −15 %, es {{techo_km}} km) no llega a la base convectiva teórica ({{base_km}} km); no se esperan cúmulos.' });
+                                        defaultValue: 'Térmica azul: la cima teórica de la térmica ({{cima_km}} km; el techo útil para parapente, con el ajuste del −15 %, es {{techo_km}} km) no llega a la base convectiva teórica ({{base_km}} km); no se esperan cúmulos de origen convectivo.' });
                                 }
                                 const t_val = Number(temp);
                                 const roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
