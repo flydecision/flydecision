@@ -8260,7 +8260,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             }
                         );
                         // Días 6-7 (ECMWF): cursiva y aviso de dato aproximado en el globo
-                        const avisoEcmwf = t('tabla.tooltips.baseNubeEcmwf', { defaultValue: '<i>Dato aproximado de ECMWF (días 6 y 7): menos niveles de humedad y celdas de unos 25 km.</i>' });
+                        const avisoEcmwf = `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #ccc; font-style: italic; text-align: left;">${t('tabla.tooltips.baseNubeEcmwf', { defaultValue: 'Dato aproximado procedente del modelo ECMWF para los días 6 y 7, con malla de 25 km y menos niveles verticales de cálculo que los días anteriores.' })}</div>`;
                         Array.from(filaBaseNubeHumedad.children).slice(numCeldasAntes).forEach((td, k) => {
                             if (!baseNubeEsEcmwf[indiceInicioRangoHorario + k]) return;
                             td.style.fontStyle = 'italic';

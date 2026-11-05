@@ -139,7 +139,7 @@
       "baseNubeHumedadValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Estimated cloud base: <b>{{base_m}} m</b> MSL</li><li>Clearance above takeoff: <b>{{margen}} m</b> AGL</li><li>Takeoff altitude: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadDentro": "<b>☁️ Takeoff inside the cloud</b><ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Estimated cloud base: <b>{{base_m}} m</b> MSL</li><li>Takeoff altitude: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadSinNubes": "No low clouds (up to about 3000 m)",
-      "baseNubeEcmwf": "<i>Approximate ECMWF value (days 6 and 7): fewer humidity levels and cells of about 25 km.</i>",
+      "baseNubeEcmwf": "Approximate value from the ECMWF model for days 6 and 7, with a 25 km grid and fewer vertical calculation levels than the previous days.",
       "temperatura": "Temperature (°C): Air temperature at 2 meters above ground level (AGL)",
       "viento100m": "Average wind at 100 m height AGL (km/h)",
       "viento50m": "Average wind at 50 m height AGL (km/h)",

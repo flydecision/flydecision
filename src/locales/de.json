@@ -139,7 +139,7 @@
       "baseNubeHumedadValor": "<ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Geschätzte Wolkenbasis: <b>{{base_m}} m</b> MSL</li><li>Freie Höhe über dem Startplatz: <b>{{margen}} m</b> AGL</li><li>Höhe des Startplatzes: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadDentro": "<b>☁️ Startplatz in der Wolke</b><ul style='margin: 4px 0; padding-left: 16px; text-align: left;'><li>Geschätzte Wolkenbasis: <b>{{base_m}} m</b> MSL</li><li>Höhe des Startplatzes: <b>{{altitud_despegue}} m</b> MSL</li></ul>",
       "baseNubeHumedadSinNubes": "Keine tiefen Wolken (bis etwa 3000 m)",
-      "baseNubeEcmwf": "<i>Näherungswert von ECMWF (Tage 6 und 7): weniger Feuchteniveaus und Zellen von etwa 25 km.</i>",
+      "baseNubeEcmwf": "Näherungswert aus dem ECMWF-Modell für die Tage 6 und 7, mit 25-km-Gitter und weniger vertikalen Rechenebenen als an den Vortagen.",
       "temperatura": "Temperatur (°C): Lufttemperatur in 2 Metern Höhe über dem Boden (AGL)",
       "viento100m": "Durchschnittlicher Wind in 100 m Höhe AGL (km/h)",
       "viento50m": "Durchschnittlicher Wind in 50 m Höhe AGL (km/h)",
