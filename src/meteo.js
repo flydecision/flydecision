@@ -3995,6 +3995,7 @@ window.alternarMostrarBaseNubeHumedad = alternarMostrarBaseNubeHumedad;
 // de la nube; -1 si no hay nubes bajas (hasta ~3000 m); null sin dato.
 const MARGEN_BASE_NUBE_NARANJA = 300; // m por encima del despegue por debajo de los cuales la base sale en naranja
 const MARGEN_RANGO_BASE_NUBE = 100;    // m arriba y abajo del valor estimado en el tooltip de «Base de nube» (rango de 200 m)
+const MARGEN_TERMICA_AZUL = 200;       // m: la base convectiva sale en blanco si la cima de la capa límite queda más de esto por debajo
 
 // Base de nube por hora: ICON-EU (meteo-datos.json, días 1 a 5; el día 5 va a continuación de las horas del viento)
 // y, donde ICON-EU no llega, ECMWF 0,25° (JSON ligero, días 6 y 7, dato aproximado). idxE = índice de la hora en ECMWF.
@@ -8156,9 +8157,22 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         );
 
                         // Base de nubes estimada MSL
+                        // 🌤️ Térmica azul: si la cima de la capa límite (cota + espesor al 100 %, no el techo útil ×0,85) queda más de
+                        // MARGEN_TERMICA_AZUL por debajo de la base convectiva teórica, la térmica no llega a condensar: celda en blanco
+                        const datosTermicaAzul = (temp, idxE) => {
+                            if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return null;
+                            const blh = hourlyEcmwf.boundary_layer_height ? hourlyEcmwf.boundary_layer_height[idxE] : null;
+                            if (blh == null) return null;
+                            const baseMsl = Number(d.Altitud || 0) + Math.max(0, Math.round((Number(temp) - Number(hourlyEcmwf.dew_point_2m[idxE])) * 125));
+                            const cimaMsl = Math.round(elevacionModeloECMWF + Number(blh));
+                            return (cimaMsl < baseMsl - MARGEN_TERMICA_AZUL) ? { baseMsl, cimaMsl } : null;
+                        };
+                        const kmTxt = (m) => { const v = (m / 1000).toFixed(1); return v === "0.0" ? "0" : v; };
+
                         renderEcmwfData(filaBaseNube, hourlyEcmwf.temperature_2m, 
                             (temp, idxE) => {
                                 if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
+                                if (datosTermicaAzul(temp, idxE)) return "";
                                 let t_val = Number(temp);
                                 let roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
                                 let altRealDespegue = Number(d.Altitud || 0); 
@@ -8172,6 +8186,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
                                 let t_val = Number(temp);
                                 let roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
+                                if (datosTermicaAzul(temp, idxE)) return "";
                                 let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
                                 if (espesorMts < 100) return "fondo-rojo";     
                                 if (espesorMts <= 300) return "fondo-naranja"; 
@@ -8180,6 +8195,11 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             "0px",
                             (temp, idxE) => { 
                                 if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
+                                const azul = datosTermicaAzul(temp, idxE);
+                                if (azul) {
+                                    return t('tabla.tooltips.baseNubeTermicaAzul', { cima_km: kmTxt(azul.cimaMsl), base_km: kmTxt(azul.baseMsl),
+                                        defaultValue: 'Térmica azul: la cima de la térmica ({{cima_km}} km) no llega a la base convectiva teórica ({{base_km}} km); no se esperan cúmulos.' });
+                                }
                                 const t_val = Number(temp);
                                 const roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
                                 const altRealDespegue = Number(d.Altitud || 0);
