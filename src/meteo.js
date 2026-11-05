@@ -16237,6 +16237,20 @@ function inicializarMapaLeaflet() {
     const controlCapas = L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(map);
     window.capasLeaflet = controlCapas; // exposición global para poder cerrarlo con Atrás Android
 
+    // Lista de capas: mismo scroll con sombras que los paneles de balizas y filtros si no cabe encima de la
+    // barra inferior en móviles (Leaflet solo lo limita al alto del mapa, sin contar la barra).
+    if (controlCapas._section) controlCapas._section.id = 'listaCapasMapa';
+    const expandirCapasOriginal = controlCapas.expand;
+    controlCapas.expand = function () {
+        expandirCapasOriginal.call(this);
+        if (this._section) {
+            this._section.style.height = '';
+            this._section.classList.remove('leaflet-control-layers-scrollbar');
+            ajustarAlturaListaPanel(this._section, this._container);
+        }
+        return this;
+    };
+
     // Solo clic: quitar apertura/cierre por hover (igual que los infoPanel)
     L.DomEvent.off(controlCapas.getContainer(), {
         mouseenter: controlCapas._expandSafely || controlCapas.expand,
@@ -17966,6 +17980,8 @@ function inicializarMapaLeaflet() {
     function ajustarAlturasPanelesMapa() {
         ajustarAlturaListaPanel(document.getElementById('listaRedesBalizas'), infoPanel3);
         ajustarAlturaListaPanel(document.getElementById('contenidoFiltrosMapa'), infoPanel2);
+        const capas = document.querySelector('.leaflet-control-layers-expanded');
+        if (capas) ajustarAlturaListaPanel(document.getElementById('listaCapasMapa'), capas);
     }
     window.addEventListener('resize', () => requestAnimationFrame(ajustarAlturasPanelesMapa));
 

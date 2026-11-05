@@ -3427,15 +3427,17 @@ details.config-accordion .accordion-content {
 #infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-max { display: block; }
 #infoPanelPlaneo.minimizado #buttonMinMaxPlaneo .ico-min { display: none; }
 
-/* Paneles de balizas y filtros: la lista de redes / el contenido hace scroll si no cabe (móviles). El alto máximo lo pone
+/* Paneles de balizas, filtros y capas: la lista / el contenido hace scroll si no cabe (móviles). El alto máximo lo pone
    ajustarAlturaListaPanel() en meteo.js; si cabe entera, no se limita. Sombras arriba/abajo
    con el mismo truco que .tippy-scroll-area y los popups de despegue. */
 #listaRedesBalizas,
-#contenidoFiltrosMapa {
+#contenidoFiltrosMapa,
+#listaCapasMapa {
     overflow-y: hidden;
 }
 #listaRedesBalizas.con-scroll,
-#contenidoFiltrosMapa.con-scroll {
+#contenidoFiltrosMapa.con-scroll,
+#listaCapasMapa.con-scroll {
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
@@ -3450,11 +3452,14 @@ details.config-accordion .accordion-content {
     background-repeat: no-repeat;
 }
 #listaRedesBalizas.con-scroll::-webkit-scrollbar,
-#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar { width: 5px; }
+#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar,
+#listaCapasMapa.con-scroll::-webkit-scrollbar { width: 5px; }
 #listaRedesBalizas.con-scroll::-webkit-scrollbar-track,
-#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar-track { background: transparent; }
+#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar-track,
+#listaCapasMapa.con-scroll::-webkit-scrollbar-track { background: transparent; }
 #listaRedesBalizas.con-scroll::-webkit-scrollbar-thumb,
-#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
+#contenidoFiltrosMapa.con-scroll::-webkit-scrollbar-thumb,
+#listaCapasMapa.con-scroll::-webkit-scrollbar-thumb { background: #bbb; border-radius: 3px; }
 
 /* Ajustar el ancho del panel de balizas SOLO cuando está EXPANDIDO (no retraído) */
 /* #infoPanel3.info-panel:not(.retraido) {
