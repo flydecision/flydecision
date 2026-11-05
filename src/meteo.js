@@ -3997,10 +3997,22 @@ window.alternarMostrarBaseNubeHumedad = alternarMostrarBaseNubeHumedad;
 const MARGEN_BASE_NUBE_NARANJA = 300; // m por encima del despegue por debajo de los cuales la base sale en naranja
 const MARGEN_RANGO_BASE_NUBE = 100;    // m arriba y abajo del valor estimado en el tooltip de «Base de nube» (rango de 200 m)
 
-function obtenerBaseNubeHumedad(hourlyData, i) {
-    if (!hourlyData || !Array.isArray(hourlyData.base_nube)) return null;
-    const v = hourlyData.base_nube[i];
+// Base de nube por hora: ICON-EU (meteo-datos.json, días 1 a 5; el día 5 va a continuación de las horas del viento)
+// y, donde ICON-EU no llega, ECMWF 0,25° (JSON ligero, días 6 y 7, dato aproximado). idxE = índice de la hora en ECMWF.
+function obtenerBaseNubeIcon(hourlyData, i) {
+    const v = (hourlyData && Array.isArray(hourlyData.base_nube)) ? hourlyData.base_nube[i] : null;
     return v == null ? null : Number(v);
+}
+
+function obtenerBaseNubeEcmwf(hourlyEcmwf, idxE) {
+    if (!hourlyEcmwf || idxE === undefined || !Array.isArray(hourlyEcmwf.base_nube)) return null;
+    const v = hourlyEcmwf.base_nube[idxE];
+    return v == null ? null : Number(v);
+}
+
+function obtenerBaseNubeHumedad(hourlyData, i, hourlyEcmwf = null, idxE = undefined) {
+    const icon = obtenerBaseNubeIcon(hourlyData, i);
+    return icon !== null ? icon : obtenerBaseNubeEcmwf(hourlyEcmwf, idxE);
 }
 
 function nubeEnDespegue(base, altitud) {
@@ -5128,7 +5140,7 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
             // 🌬️ Viento fuerte en altura (ECMWF a la altitud del despegue)
             ptsHora *= factorVientoAlturaDespegue(obtenerVientoAlturaDespegue(hourlyEcmwf, idxE), velocidad, velMaxEfectiva);
             // ☁️ Base de nube (ICON-EU): dentro de la nube o base muy baja
-            ptsHora *= factorBaseNubeDespegue(obtenerBaseNubeHumedad(hourlyData, i), Number(despegueObj.Altitud) || 0);
+            ptsHora *= factorBaseNubeDespegue(obtenerBaseNubeHumedad(hourlyData, i, hourlyEcmwf, idxE), Number(despegueObj.Altitud) || 0);
         }
         puntosAcumulados += ptsHora;
 
@@ -5149,7 +5161,7 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
                 let techoRaw = Number(blhVal);
                 let techoUtil = techoRaw * RATIO_TECHO_UTIL;
                 // ☁️ El techo útil no puede pasar de la base de nube (ICON-EU) sobre el despegue
-                const baseNubeXC = obtenerBaseNubeHumedad(hourlyData, i);
+                const baseNubeXC = obtenerBaseNubeHumedad(hourlyData, i, hourlyEcmwf, idxE);
                 if (baseNubeXC !== null && baseNubeXC >= 0) {
                     techoUtil = Math.min(techoUtil, Math.max(0, baseNubeXC - (Number(despegueObj.Altitud) || 0)));
                 }
@@ -8202,10 +8214,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         renderEcmwfData(filaTemperatura, emptyArr, () => "", "9px", () => "");
                     }
 
-                    // ☁️ Base de nubes ICON-EU (humedad por niveles). Va por índice de hora de meteo-datos.json
+                    // ☁️ Base de nubes por humedad: ICON-EU días 1-5 (por índice de hora de meteo-datos.json) y ECMWF días 6-7 (aproximado, en cursiva)
                     if (filaBaseNubeHumedad) {
                         const altDespNube = Number(d.Altitud || 0);
-                        const arrBaseNube = (hourlyData && Array.isArray(hourlyData.base_nube)) ? hourlyData.base_nube : new Array(horas.length).fill(null);
+                        const arrBaseNube = new Array(horas.length).fill(null);
+                        const baseNubeEsEcmwf = new Array(horas.length).fill(false);
+                        for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
+                            const idxE = ecmwfTimeMap ? ecmwfTimeMap.get(horas[i]) : undefined;
+                            arrBaseNube[i] = obtenerBaseNubeHumedad(hourlyData, i, hourlyEcmwf, idxE);
+                            baseNubeEsEcmwf[i] = arrBaseNube[i] !== null && obtenerBaseNubeIcon(hourlyData, i) === null;
+                        }
+                        const numCeldasAntes = filaBaseNubeHumedad.children.length;
                         renderEcmwfData(filaBaseNubeHumedad, arrBaseNube,
                             (v) => {
                                 if (v == null) return "";
@@ -8240,6 +8259,13 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Base de nube estimada: <b>{{base_m}} m</b> MSL</li><li>Altura libre sobre despegue: <b>{{margen}} m</b> AGL</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b> MSL</li></ul>' });
                             }
                         );
+                        // Días 6-7 (ECMWF): cursiva y aviso de dato aproximado en el globo
+                        const avisoEcmwf = t('tabla.tooltips.baseNubeEcmwf', { defaultValue: '<i>Dato aproximado de ECMWF (días 6 y 7): menos niveles de humedad y celdas de unos 25 km.</i>' });
+                        Array.from(filaBaseNubeHumedad.children).slice(numCeldasAntes).forEach((td, k) => {
+                            if (!baseNubeEsEcmwf[indiceInicioRangoHorario + k]) return;
+                            td.style.fontStyle = 'italic';
+                            if (td.dataset.tippyContent) td.setAttribute('data-tippy-content', td.dataset.tippyContent + avisoEcmwf);
+                        });
                     }
 
 					// ⚪ Velocidades alturas 20, 50, 100 m *****************************
