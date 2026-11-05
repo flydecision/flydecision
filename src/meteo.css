@@ -3431,13 +3431,17 @@ details.config-accordion .accordion-content {
    ajustarAlturaListaPanel() en meteo.js; si cabe entera, no se limita. Sombras arriba/abajo
    con el mismo truco que .tippy-scroll-area y los popups de despegue. */
 #listaRedesBalizas,
-#contenidoFiltrosMapa,
-#listaCapasMapa {
+#contenidoFiltrosMapa {
     overflow-y: hidden;
+}
+/* Capas: si cabe, todo como estaba (sin recortar nada, el texto puede salirse un poco como antes) */
+#listaCapasMapa:not(.con-scroll) {
+    overflow: visible;
 }
 #listaRedesBalizas.con-scroll,
 #contenidoFiltrosMapa.con-scroll,
 #listaCapasMapa.con-scroll {
+    overflow-x: hidden; /* nunca barra horizontal */
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
