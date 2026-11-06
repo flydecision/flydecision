@@ -7270,7 +7270,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 });
             }
 
-            const rowsGroup1 =[filaNubesTotal, filaPreci, filaProbPreci, filaBaseNubeHumedad, filaTemperatura, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
+            const rowsGroup1 =[filaNubesTotal, filaTemperatura, filaPreci, filaProbPreci, filaBaseNubeHumedad, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, 
                 filaEcmwfVel2000, filaEcmwfDir2000,
@@ -8233,7 +8233,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         // Temperatura a 2 metros
                         renderEcmwfData(filaTemperatura, hourlyEcmwf.temperature_2m, 
-                            v => v == null ? "" : Math.round(Number(v)), "12px",
+                            v => v == null ? "" : Math.round(Number(v)) + "°", "12px",
                             () => "", "0px"
                         );
                         
