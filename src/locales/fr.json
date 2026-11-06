@@ -597,6 +597,7 @@
   "actualizacion": {
     "cargando": "Chargement...",
     "redLenta": "Connexion lent. Téléchargement des données...",
+    "actualizandoDatos": "Mise à jour des données...",
     "esperando": "prochain : <span style='color:#e39300; font-weight:bold;'>En attente...⌛</span>",
     "proximaEn": "prochain : <b>{{tiempo}}</b>",
     "horas": "~{{h}} h {{m}} min",

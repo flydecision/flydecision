@@ -597,6 +597,7 @@
   "actualizacion": {
     "cargando": "Laden...",
     "redLenta": "Langsames Verbindung. Daten werden geladen...",
+    "actualizandoDatos": "Daten werden aktualisiert...",
     "esperando": "nächstes: <span style='color:#e39300; font-weight:bold;'>Warten...⌛</span>",
     "proximaEn": "nächstes: <b>{{tiempo}}</b>",
     "horas": "~{{h}} Std. {{m}} Min.",

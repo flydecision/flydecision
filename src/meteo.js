@@ -5761,13 +5761,108 @@ const leerDeCacheIDB = async (key) => {
             };
         });
     } catch(e) { 
-        console.error("Fallo crítico en initDB al leer:", e); 
-        return null; 
+        console.error("Fallo crítico en initDB al leer:", e);
+        return null;
     }
 };
 
+// ---------------------------------------------------------------
+// 🔴 PINTADO RÁPIDO CON DATOS GUARDADOS
+// Al abrir la web o la app, si la copia de IndexedDB es reciente, la primera tabla se pinta con ella sin esperar la descarga.
+// La descarga sigue por detrás: si trae datos nuevos, la tabla se repinta en silencio; si son los mismos, no se toca.
+// ---------------------------------------------------------------
+const EDAD_MAX_DATOS_GUARDADOS_MS = 3 * 60 * 60 * 1000; // Datos generados hace más de 3 h: mejor esperar la descarga
+const AVISO_ACTUALIZANDO_TRAS_MS = 1000; // Si la descarga llega antes, no se enseña el aviso «Actualizando datos...»
+
+// Devuelve [data, dataEcmwf] de IndexedDB si son recientes, o null
+const leerDatosGuardadosRecientes = async () => {
+    // METEO_IDB_TIMESTAMPS solo existe si las dos copias se guardaron bien. Su primera parte es el timestamp de meteo-datos
+    const marca = localStorage.getItem('METEO_IDB_TIMESTAMPS');
+    if (!marca) return null;
+    const generadoEn = new Date(marca.split('|')[0]).getTime();
+    if (!generadoEn || Date.now() - generadoEn > EDAD_MAX_DATOS_GUARDADOS_MS) return null; // Sin leer IndexedDB: leer ~10 MB cuesta en móviles lentos
+    const [guardado, guardadoEcmwf] = await Promise.all([
+        leerDeCacheIDB('METEO_DATOS_JSON_CACHE'),
+        leerDeCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE')
+    ]);
+    if (!guardado || !guardadoEcmwf || !Array.isArray(guardado.despegues) || !Array.isArray(guardadoEcmwf.respuestas)) return null;
+    if (`${guardado.timestamp}|${guardadoEcmwf.timestamp}` !== marca) return null; // La copia no es la que dice la marca
+    return [guardado, guardadoEcmwf];
+};
+
+// Tiempos de descarga y de procesado de los dos JSON (una vez por carga de página, para el registro anónimo de uso)
+function registrarTiemposDescargaMeteo(inicioEsperaDescarga) {
+    if (window.tiemposCargaRegistrados) return;
+    window.tiemposCargaRegistrados = true;
+    try {
+        const entradas = performance.getEntriesByType('resource').filter(e => /\/meteo-datos(-ecmwf-ligero)?\.json\?t=/.test(e.name));
+        if (entradas.length === 2 && entradas.every(e => e.responseEnd > 0)) {
+            const finDescarga = Math.max(...entradas.map(e => e.responseEnd));
+            registrarTiempoCarga('descarga', finDescarga - Math.min(...entradas.map(e => e.startTime)));
+            registrarTiempoCarga('procesado', performance.now() - Math.max(finDescarga, inicioEsperaDescarga));
+        }
+    } catch (e) {}
+}
+
+// Ya hay tabla pintada con los datos guardados: cuando llegue la descarga en curso, la cambiamos por los datos nuevos
+function esperarDescargaTrasPintadoRapido(descarga, guardado, guardadoEcmwf, inicioEsperaDescarga) {
+    const aviso = document.getElementById('aviso-actualizando-datos');
+    const timerAviso = setTimeout(() => {
+        if (!aviso) return;
+        aviso.querySelector('span').textContent = t('actualizacion.actualizandoDatos', { defaultValue: 'Actualizando datos...' });
+        aviso.style.display = 'flex';
+    }, AVISO_ACTUALIZANDO_TRAS_MS);
+    const quitarAviso = () => {
+        clearTimeout(timerAviso);
+        if (aviso) aviso.style.display = 'none';
+    };
+    setTimeout(quitarAviso, 60000); // Descarga colgada (app en segundo plano...): el aviso no se queda para siempre
+
+    descarga.then(([nuevo, nuevoEcmwf]) => {
+        quitarAviso();
+        registrarTiemposDescargaMeteo(inicioEsperaDescarga);
+        nuevo.descargadoEn = Date.now();
+        // Si mientras tanto otra llamada ya cambió los datos de la RAM (recarga, vuelta a la app...), no los pisamos
+        if (DATOS_METEO_CACHE !== guardado || DATOS_METEO_ECMWF_CACHE !== guardadoEcmwf) return;
+        esModoOffline = false;
+
+        // Mismos datos que los guardados (lo normal si se abre dos veces en la misma hora): no se repinta nada
+        if (nuevo.timestamp === guardado.timestamp && nuevoEcmwf.timestamp === guardadoEcmwf.timestamp) {
+            guardado.descargadoEn = nuevo.descargadoEn;
+            if (typeof refrescoPanelInfoActualizaciones === 'function') refrescoPanelInfoActualizaciones();
+            return;
+        }
+
+        DATOS_METEO_CACHE = nuevo;
+        DATOS_METEO_ECMWF_CACHE = nuevoEcmwf;
+        const marcaIDB = `${nuevo.timestamp}|${nuevoEcmwf.timestamp}`;
+        localStorage.removeItem('METEO_IDB_TIMESTAMPS');
+        Promise.all([
+            guardarEnCacheIDB('METEO_DATOS_JSON_CACHE', nuevo),
+            guardarEnCacheIDB('METEO_DATOS_ECMWF_JSON_CACHE', nuevoEcmwf)
+        ]).then(([ok1, ok2]) => { if (ok1 && ok2) localStorage.setItem('METEO_IDB_TIMESTAMPS', marcaIDB); });
+        if (nuevo.timestamp) lastDataGenerationTimestamp = new Date(nuevo.timestamp).getTime();
+        if (nuevo.model_run_ref_time) jsonModelInitTimestamp = new Date(nuevo.model_run_ref_time).getTime();
+        if (typeof refrescoPanelInfoActualizaciones === 'function') refrescoPanelInfoActualizaciones();
+
+        // Repintado silencioso conservando por dónde iba la persona en la tabla
+        const wrapper = document.querySelector('.tabla-wrapper');
+        const scrollAntes = wrapper ? wrapper.scrollTop : 0;
+        construir_tabla(false, true).then(() => {
+            if (wrapper && wrapper.scrollTop !== scrollAntes) wrapper.scrollTop = scrollAntes;
+        });
+    }).catch((error) => {
+        // Sin red: la tabla ya está pintada con los datos guardados, así que solo avisamos de que son de antes
+        quitarAviso();
+        if (DATOS_METEO_CACHE !== guardado) return;
+        registrarError('carga', error, `meteo-datos${(error && error.ficheroMeteo) ? ` [${error.ficheroMeteo}]` : ''} → datos guardados (pintado rápido)`);
+        esModoOffline = true;
+        if (typeof refrescoPanelInfoActualizaciones === 'function') refrescoPanelInfoActualizaciones();
+    });
+}
+
 //*********************************************************************
-// 🟦🟦🟦🟦🟦 FUNCIÓN PRINCIPAL: CONTRUIR LA TABLA 
+// 🟦🟦🟦🟦🟦 FUNCIÓN PRINCIPAL: CONTRUIR LA TABLA
 //*********************************************************************
 
 
@@ -6354,38 +6449,41 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 }
 
                 const inicioEsperaDescarga = performance.now(); // Con la descarga anticipada, los JSON pueden llegar antes de que meteo.js empiece a esperarlos
+                const descargaEsperada = descargaMeteoEnCurso;
+
+                // Pintado rápido: solo en la primera tabla de la página. Si la descarga llega antes que la lectura de IndexedDB, gana la descarga
+                let datosGuardados = null;
+                if (!window.pintadoRapidoIntentado && !forzarRecarga) {
+                    window.pintadoRapidoIntentado = true;
+                    datosGuardados = await Promise.race([
+                        leerDatosGuardadosRecientes().catch(() => null),
+                        descargaEsperada.then(() => null, () => null)
+                    ]);
+                }
+
                 // 🛡️ Protección anti-cuelgue al leer el JSON (muy común al despertar de suspensión). La descarga no se corta: sigue en descargaMeteoEnCurso
-                const [datosDescargados, datosEcmwfDescargados] = await Promise.race([
-                    descargaMeteoEnCurso,
+                const [datosDescargados, datosEcmwfDescargados] = datosGuardados || await Promise.race([
+                    descargaEsperada,
                     new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout al parsear JSON")), 25000))
                 ]);
                 data = datosDescargados;
                 dataEcmwf = datosEcmwfDescargados;
                 clearTimeout(timerRedLenta);
 
-                // Tiempos de descarga y de procesado de los dos JSON (una vez por carga de página, para el registro anónimo de uso)
-                if (!window.tiemposCargaRegistrados) {
-                    window.tiemposCargaRegistrados = true;
-                    try {
-                        const entradas = performance.getEntriesByType('resource').filter(e => /\/meteo-datos(-ecmwf-ligero)?\.json\?t=/.test(e.name));
-                        if (entradas.length === 2 && entradas.every(e => e.responseEnd > 0)) {
-                            const finDescarga = Math.max(...entradas.map(e => e.responseEnd));
-                            registrarTiempoCarga('descarga', finDescarga - Math.min(...entradas.map(e => e.startTime)));
-                            registrarTiempoCarga('procesado', performance.now() - Math.max(finDescarga, inicioEsperaDescarga));
-                        }
-                    } catch (e) {}
-                }
-                
+                // Tiempos de descarga y de procesado (con datos guardados se apuntan cuando llegue la descarga)
+                if (!datosGuardados) registrarTiemposDescargaMeteo(inicioEsperaDescarga);
+
                 // Solo apagamos el cronómetro cuando la descarga completa ha finalizado con éxito
-                clearTimeout(timeoutId); 
+                clearTimeout(timeoutId);
 
                 // 🛡️ Re-comprobamos aquí: si otra llamada más reciente arrancó mientras esperábamos esta descarga, abortamos — sus datos ya están obsoletos.
                 if (miIdLlamada !== ultimoIdLlamadaTabla) { if (window.ultimoConstruirTablaSilencioso) ocultarLoading(); return; }
 
-                data.descargadoEn = Date.now();
-                DATOS_METEO_CACHE = data; 
+                if (!datosGuardados) data.descargadoEn = Date.now(); // Los guardados conservan cuándo se bajaron
+                DATOS_METEO_CACHE = data;
                 DATOS_METEO_ECMWF_CACHE = dataEcmwf;
                 esModoOffline = false;
+                if (datosGuardados) esperarDescargaTrasPintadoRapido(descargaEsperada, data, dataEcmwf, inicioEsperaDescarga);
 
                 // Guardamos en la Base de Datos del navegador (Sin límite de espacio de 5MB y sin bloquear la pantalla)
                 // Solo si los datos son nuevos: guardar ~10 MB bloquea el móvil unas décimas y al reabrir la app suelen ser los mismos
