@@ -8096,7 +8096,15 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (fontSize) td.style.setProperty('font-size', fontSize, 'important');
                                 if (paddingBottom) td.style.paddingBottom = paddingBottom;
                                 
-                                td.textContent = formatFn(val, idxEcmwf);
+                                const textoCelda = formatFn(val, idxEcmwf);
+                                if (tr === filaNubesTotal && textoCelda) {
+                                    const spanEmoji = document.createElement("span");
+                                    spanEmoji.className = "emoji-centrado";
+                                    spanEmoji.textContent = textoCelda;
+                                    td.appendChild(spanEmoji);
+                                } else {
+                                    td.textContent = textoCelda;
+                                }
                                 tr.appendChild(td);
                             }
                         };
