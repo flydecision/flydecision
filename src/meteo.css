@@ -1304,6 +1304,13 @@ td {
     line-height: 18px !important; /* Fuerza a que la línea mida exactamente lo mismo que la celda */
 }
 
+/* Emoji de nubosidad: algo más ancho que la celda de 20px; así sobresale igual por ambos lados y queda centrado */
+td span.emoji-centrado {
+	display: block;
+	margin: 0 -6px;
+	text-align: center;
+}
+
 th.day-start {
 	border-left: 2px solid #000;	
 }
