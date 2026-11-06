@@ -2,6 +2,14 @@
 
 // 1. Configuración inicial del motor i18next
 document.addEventListener("DOMContentLoaded", () => {
+
+// Si no llegó a cargar alguno de los scripts de idiomas (fallo de red), arrancamos igual sin traducciones
+if (typeof i18next === 'undefined' || typeof i18nextHttpBackend === 'undefined' || typeof i18nextBrowserLanguageDetector === 'undefined') {
+    if (typeof window.t !== 'function') window.t = (clave, opciones) => (opciones && opciones.defaultValue) || clave;
+    if (typeof registrarError === 'function') registrarError('carga', 'scripts de i18n no cargaron', 'i18n');
+    document.dispatchEvent(new Event('i18nReady'));
+    return;
+}
     
     i18next
         .use(i18nextHttpBackend)           // Permite cargar archivos .json externos
