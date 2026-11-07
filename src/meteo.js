@@ -8209,9 +8209,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (c.estado === 'azul') return t('tabla.tooltips.baseNubeTermicaAzul', { ...params,
                                     defaultValue: '<b>Sin cúmulos de buen tiempo. Térmicas azules.</b>' });
                                 if (c.estado === 'justo') return t('tabla.tooltips.baseNubeCasoJusto', { ...params,
-                                    defaultValue: '<b>Posibilidad de algún cúmulo aislado.</b>' });
+                                    defaultValue: '<b>Posibilidad de algún cúmulo de buen tiempo aislado.</b>' });
                                 return t('tabla.tooltips.baseNubeCumulosProbables', { ...params,
-                                    defaultValue: '<b>Cúmulos probables:</b> es probable que se formen cúmulos de buen tiempo.' });
+                                    defaultValue: '<b>Probables cúmulos de buen tiempo.</b>' });
                             }
                         );
 
