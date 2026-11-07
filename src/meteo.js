@@ -107,7 +107,6 @@ let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLA
 // ECMWF
 const chkMostrarPrecipitacion = true; // Siempre activo
 let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION") !== "false";
-let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") === "true"; // Base de nube convectiva: desactivada por defecto (la principal es la de ICON-EU)
 let chkMostrarBaseNubeHumedad = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE_HUMEDAD") !== "false"; // ☁️ Base de nubes ICON-EU (humedad por niveles), true por defecto
 let chkMostrarTemperatura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_TEMPERATURA") !== "false";
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
@@ -284,7 +283,6 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarVientoAlturas = false;
         chkMostrarCizalladura = false;
         chkMostrarProbPrecipitacion = false;
-        chkMostrarBaseNube = false; 
         chkMostrarBaseNubeHumedad = false;
         chkMostrarTemperatura = false;
         chkMostrarXC = false;
@@ -301,7 +299,6 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
         chkMostrarVientoAlturas = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_VIENTO_ALTURAS") !== "false";
         chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLADURA") !== "false";
         chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION") !== "false";
-        chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") === "true";
         chkMostrarBaseNubeHumedad = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE_HUMEDAD") !== "false";
         chkMostrarTemperatura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_TEMPERATURA") !== "false";
         chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false";
@@ -321,7 +318,6 @@ function aplicarReglasModoSimpleAVariables(esSimple) {
     if (document.getElementById("chkMostrarVientoAlturas")) document.getElementById("chkMostrarVientoAlturas").checked = chkMostrarVientoAlturas;
     if (document.getElementById("chkMostrarCizalladura")) document.getElementById("chkMostrarCizalladura").checked = chkMostrarCizalladura;
     if (document.getElementById("chkMostrarProbPrecipitacion")) document.getElementById("chkMostrarProbPrecipitacion").checked = chkMostrarProbPrecipitacion;
-    if (document.getElementById("chkMostrarBaseNube")) document.getElementById("chkMostrarBaseNube").checked = chkMostrarBaseNube; 
     if (document.getElementById("chkMostrarBaseNubeHumedad")) document.getElementById("chkMostrarBaseNubeHumedad").checked = chkMostrarBaseNubeHumedad;
     if (document.getElementById("chkMostrarTemperatura")) document.getElementById("chkMostrarTemperatura").checked = chkMostrarTemperatura;
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
@@ -615,7 +611,7 @@ document.addEventListener('visibilitychange', () => {
 // de una lista cerrada están activas y el nº de favoritos en tramos. El servidor (registro_ajustes.php) solo
 // suma contadores por opción: no guarda una línea por persona, así que no se puede reconstruir el perfil de nadie.
 const AJUSTES_FOTO_DIARIA = [
-    'chkMostrarProbPrecipitacion', 'chkMostrarBaseNube', 'chkMostrarTemperatura', 'chkMostrarVientoAlturas',
+    'chkMostrarProbPrecipitacion', 'chkMostrarTemperatura', 'chkMostrarVientoAlturas',
     'chkMostrarCizalladura', 'chkMostrarXC', 'chkMostrarBotonMinutely15', 'chkAplicarCorreccionEstadistica',
     'chkAbrirMapaInicio', 'chkRecordarPosicionMapa', 'chkRecordarEstadoFiltroHorario', 'chkRecordarCapasActivas',
     'chkRecordarTipoMapa', 'chkRecordarFiltrosMapa', 'chkColorearFlechasBalizas', 'chkOcultarValoresBalizas',
@@ -3422,7 +3418,6 @@ function gestionarClickMasivoFavoritos() {
     if (!modoEdicionFavoritos) {
         filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
         if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-        if (chkMostrarBaseNube && chkMostrarXC) filasPorDespegue++; // la convectiva va en el bloque XC
         if (chkMostrarBaseNubeHumedad) filasPorDespegue++;
         if (chkMostrarTemperatura) filasPorDespegue++;
         if (chkMostrarVientoAlturas) filasPorDespegue += 3;
@@ -3514,7 +3509,6 @@ function aplicarCambiosMasivos(idsAfectados, nuevoEstadoEsFavorito) {
     if (!modoEdicionFavoritos) {
         filasPorDespegue = 5; // Base: Meteo general + Precipitación + Vel + Racha + Dir
         if (chkMostrarProbPrecipitacion) filasPorDespegue++;
-        if (chkMostrarBaseNube && chkMostrarXC) filasPorDespegue++; // la convectiva va en el bloque XC
         if (chkMostrarBaseNubeHumedad) filasPorDespegue++;
         if (chkMostrarTemperatura) filasPorDespegue++;
         if (chkMostrarVientoAlturas) filasPorDespegue += 3;
@@ -3976,13 +3970,6 @@ function alternarMostrarProbPrecipitacion() {
     construir_tabla();
 }
 
-function alternarMostrarBaseNube() {
-    chkMostrarBaseNube = document.getElementById("chkMostrarBaseNube").checked;
-    localStorage.setItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE", chkMostrarBaseNube);
-    construir_tabla();
-}
-window.alternarMostrarBaseNube = alternarMostrarBaseNube;
-
 function alternarMostrarBaseNubeHumedad() {
     chkMostrarBaseNubeHumedad = document.getElementById("chkMostrarBaseNubeHumedad").checked;
     localStorage.setItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE_HUMEDAD", chkMostrarBaseNubeHumedad);
@@ -3995,7 +3982,6 @@ window.alternarMostrarBaseNubeHumedad = alternarMostrarBaseNubeHumedad;
 // de la nube; -1 si no hay nubes bajas (hasta ~3000 m); null sin dato.
 const MARGEN_BASE_NUBE_NARANJA = 300; // m por encima del despegue por debajo de los cuales la base sale en naranja
 const MARGEN_RANGO_BASE_NUBE = 100;    // m arriba y abajo del valor estimado en el tooltip de «Base de nube» (rango de 200 m)
-const MARGEN_TERMICA_AZUL = 200;       // m: la base convectiva sale en blanco si la cima de la capa límite queda más de esto por debajo
 
 // Base de nube por hora: ICON-EU (meteo-datos.json, días 1 a 5; el día 5 va a continuación de las horas del viento)
 // y, donde ICON-EU no llega, ECMWF 0,25° (JSON ligero, días 6 y 7, dato aproximado). idxE = índice de la hora en ECMWF.
@@ -7088,7 +7074,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         const tituloMeteoGeneral = t('tabla.tooltips.meteoGeneral');
         const tituloPrecipitacion = t('tabla.tooltips.precipitacion');
         const tituloProbPrecipitacion = t('tabla.tooltips.probPrecipitacion');
-        const tituloBaseNube = t('tabla.tooltips.baseNube');
         const tituloBaseNubeHumedad = t('tabla.tooltips.baseNubeHumedad', { defaultValue: 'Base de nube (km) estimada con la humedad por niveles de ICON-EU. Detecta también estratos, nieblas y nubes orográficas.' });
         const tituloTemperatura = t('tabla.tooltips.temperatura');
         const tituloEcmwf3000 = t('tabla.tooltips.3000mECMWF');
@@ -7201,10 +7186,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // GRUPO 1: Meteo Base + Precipitaciones + Alturas
             const filaNubesTotal = document.createElement("tr");
 
-            let filaPreci, filaProbPreci, filaBaseNubeHumedad, filaBaseNube, filaTemperatura;
+            let filaPreci, filaProbPreci, filaBaseNubeHumedad, filaTemperatura;
             if (chkMostrarPrecipitacion) filaPreci = document.createElement("tr");
             if (chkMostrarProbPrecipitacion) filaProbPreci = document.createElement("tr");
-            if (chkMostrarBaseNube && chkMostrarXC) filaBaseNube = document.createElement("tr"); // va en el bloque XC (encima de Techo)
             if (chkMostrarBaseNubeHumedad) filaBaseNubeHumedad = document.createElement("tr");
             if (chkMostrarTemperatura) filaTemperatura = document.createElement("tr");
 
@@ -7279,7 +7263,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaEcmwfVel500, filaEcmwfDir500,
                 filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10
             ].filter(Boolean);
-            const rowsGroup2 = [filaBaseNube, filaTecho, filaCape, filaCin].filter(Boolean); // convectiva encima de Techo
+            const rowsGroup2 = [filaTecho, filaCape, filaCin].filter(Boolean);
 
             const todasLasFilas = [...rowsGroup1, ...rowsEcmwfWind, ...rowsGroup2];
             const filaPrincipal = todasLasFilas[0];
@@ -7757,7 +7741,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', tituloMeteoGeneral);
                 addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', tituloPrecipitacion);
                 addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', tituloProbPrecipitacion);
-                addIconCell(filaBaseNube, '<span style="font-size:15px; font-weight:bold;">🌤️↥</span>', tituloBaseNube);
                 addIconCell(filaBaseNubeHumedad, '<span style="font-size:15px; font-weight:bold;">☁️↥</span>', tituloBaseNubeHumedad);
                 addIconCell(filaTemperatura, '<span style="font-size:15px; font-weight:bold;">🌡️</span>', tituloTemperatura);
 
@@ -8164,81 +8147,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             }
                         );
 
-                        // Base de nubes estimada MSL
-                        // 🌤️ Térmica azul: si la cima de la capa límite (cota + espesor al 100 %, no el techo útil ×0,85) queda más de
-                        // MARGEN_TERMICA_AZUL por debajo de la base convectiva teórica, la térmica no llega a condensar: celda en blanco
-                        // Tres casos según la cima frente a la base: 'azul' (> margen por debajo), 'justo' (± margen) o 'cumulos' (> margen por encima)
-                        const datosConvectiva = (temp, idxE) => {
-                            if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return null;
-                            const blh = hourlyEcmwf.boundary_layer_height ? hourlyEcmwf.boundary_layer_height[idxE] : null;
-                            if (blh == null) return null;
-                            const baseMsl = Number(d.Altitud || 0) + Math.max(0, Math.round((Number(temp) - Number(hourlyEcmwf.dew_point_2m[idxE])) * 125));
-                            const cimaMsl = Math.round(elevacionModeloECMWF + Number(blh));
-                            const techoUtilMsl = Math.round(elevacionModeloECMWF + Number(blh) * RATIO_TECHO_UTIL); // el de la fila Techo
-                            const estado = (cimaMsl < baseMsl - MARGEN_TERMICA_AZUL) ? 'azul' : (cimaMsl <= baseMsl + MARGEN_TERMICA_AZUL ? 'justo' : 'cumulos');
-                            return { baseMsl, cimaMsl, techoUtilMsl, estado };
-                        };
-                        const datosTermicaAzul = (temp, idxE) => { const c = datosConvectiva(temp, idxE); return (c && c.estado === 'azul') ? c : null; };
-                        const kmTxt = (m) => { const v = (m / 1000).toFixed(1); return v === "0.0" ? "0" : v; };
-
-                        renderEcmwfData(filaBaseNube, hourlyEcmwf.temperature_2m, 
-                            (temp, idxE) => {
-                                if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
-                                if (datosTermicaAzul(temp, idxE)) return "";
-                                let t_val = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
-                                let altRealDespegue = Number(d.Altitud || 0); 
-                                let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
-                                let baseMslMts = altRealDespegue + espesorMts;
-                                let baseMslKm = (baseMslMts / 1000).toFixed(1);
-                                return baseMslKm === "0.0" ? "0" : baseMslKm;
-                            }, 
-                            "12px", 
-                            (temp, idxE) => {
-                                if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
-                                let t_val = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
-                                if (datosTermicaAzul(temp, idxE)) return "fondo-verde";
-                                let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
-                                if (espesorMts < 100) return "fondo-rojo";     
-                                if (espesorMts <= 300) return "fondo-naranja"; 
-                                return "fondo-verde";                          
-                            },
-                            "0px",
-                            (temp, idxE) => { 
-                                if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
-                                const azul = datosTermicaAzul(temp, idxE);
-                                if (azul) {
-                                    return t('tabla.tooltips.baseNubeTermicaAzul', { cima_km: kmTxt(azul.cimaMsl), techo_km: kmTxt(azul.techoUtilMsl), base_km: kmTxt(azul.baseMsl),
-                                        defaultValue: '<b>Térmica azul:</b> no se esperan cúmulos de origen convectivo.' });
-                                }
-                                const t_val = Number(temp);
-                                const roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
-                                const altRealDespegue = Number(d.Altitud || 0);
-                                const espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
-                                const baseMslMts = altRealDespegue + espesorMts;
-                                const valorFinal = (baseMslMts / 1000).toFixed(1);
-                                const baseKm = valorFinal === "0.0" ? "0" : valorFinal;
-                                
-                                const textoBase = t('tabla.tooltips.baseNubeValor', { 
-                                    base_km: baseKm, 
-                                    base_m: baseMslMts,
-                                    altitud_despegue: altRealDespegue,
-                                    espesor: espesorMts, 
-                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)</li><li>Altitud del despegue: {{altitud_despegue}} m</li><li>Altura libre sobre despegue: {{espesor}} m</li></ul>' 
-                                });
-                                // Nota según llegue o no la térmica a la base (sin dato de capa límite, solo el texto base)
-                                const conv = datosConvectiva(temp, idxE);
-                                if (!conv) return textoBase;
-                                const nota = conv.estado === 'justo'
-                                    ? t('tabla.tooltips.baseNubeCasoJusto', { cima_km: kmTxt(conv.cimaMsl), base_km: kmTxt(conv.baseMsl),
-                                        defaultValue: '<b>Caso dudoso:</b> podría haber algún cúmulo aislado.' })
-                                    : t('tabla.tooltips.baseNubeCumulosProbables', { cima_km: kmTxt(conv.cimaMsl), base_km: kmTxt(conv.baseMsl),
-                                        defaultValue: '<b>Cúmulos probables:</b> es probable que se formen cúmulos de origen convectivo.' });
-                                return `${textoBase}<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #ccc; text-align: left;">${nota}</div>`;
-                            }
-                        );
-
                         // Temperatura a 2 metros
                         renderEcmwfData(filaTemperatura, hourlyEcmwf.temperature_2m, 
                             v => v == null ? "" : Math.round(Number(v)) + "°", "12px",
@@ -8250,7 +8158,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         renderEcmwfData(filaNubesTotal, emptyArr, () => "", "9px", () => "");
                         renderEcmwfData(filaPreci, emptyArr, () => "", "9px", () => "");
                         renderEcmwfData(filaProbPreci, emptyArr, () => "", "9px", () => "");
-                        renderEcmwfData(filaBaseNube, emptyArr, () => "", "9px", () => ""); 
                         renderEcmwfData(filaTemperatura, emptyArr, () => "", "9px", () => "");
                     }
 
@@ -8863,7 +8770,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                     // Borde superior del grupo XC
                     if (!chkMostrarCizalladura && chkMostrarXC && rowsGroup2[0]) {
-                        Array.from(rowsGroup2[0].children).forEach(td => { // primera fila del bloque (convectiva o Techo)
+                        Array.from(rowsGroup2[0].children).forEach(td => { // primera fila del bloque (Techo)
                             td.style.borderTop = "1px solid #000";
                         });
                     }
@@ -12762,7 +12669,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // ECMWF Checks
     //if (document.getElementById("chkMostrarPrecipitacion")) document.getElementById("chkMostrarPrecipitacion").checked = chkMostrarPrecipitacion;
     if (document.getElementById("chkMostrarProbPrecipitacion")) document.getElementById("chkMostrarProbPrecipitacion").checked = chkMostrarProbPrecipitacion;
-    //if (document.getElementById("chkMostrarBaseNube")) document.getElementById("chkMostrarBaseNube").checked = chkMostrarBaseNube;
     if (document.getElementById("chkMostrarXC")) document.getElementById("chkMostrarXC").checked = chkMostrarXC;
     
     // --- 2. Sincronizar el estado visual de los botones de radio ECMWF ---
