@@ -4704,7 +4704,7 @@ function gestionarSliderHoras(respuestas, respuestasEcmwf, soloHorasDeLuz) {
         if (!autoSeleccionInicialHecha) {
             //const ahora = new Date();
             //const horaActual = ahora.getHours();
-            let diaObjetivo = 0; // Siempre hoy (día 0). Antes: (horaActual >= 16) ? 1 : 0;
+            let diaObjetivo = diaObjetivoInicial; // Día guardado (o hoy si no hay ninguno)
 
             if (pipIndices && pipIndices.length > diaObjetivo) {
                 const idxInicioDia = pipIndices[diaObjetivo];
