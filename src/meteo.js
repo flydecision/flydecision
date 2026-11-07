@@ -107,7 +107,7 @@ let chkMostrarCizalladura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_CIZALLA
 // ECMWF
 const chkMostrarPrecipitacion = true; // Siempre activo
 let chkMostrarProbPrecipitacion = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_PROB_PRECIPITACION") !== "false";
-let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") === "true"; // Base de nube convectiva: desactivada por defecto (la principal es la de ICON-EU)
+let chkMostrarBaseNube = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE") === "true"; // 🌤️ Cúmulos de buen tiempo (bloque XC): desactivada por defecto
 let chkMostrarBaseNubeHumedad = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_BASE_NUBE_HUMEDAD") !== "false"; // ☁️ Base de nubes ICON-EU (humedad por niveles), true por defecto
 let chkMostrarTemperatura = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_TEMPERATURA") !== "false";
 let chkMostrarXC = localStorage.getItem("METEO_CHECKBOX_MOSTRAR_XC") !== "false"; // true por defecto
@@ -3995,7 +3995,25 @@ window.alternarMostrarBaseNubeHumedad = alternarMostrarBaseNubeHumedad;
 // de la nube; -1 si no hay nubes bajas (hasta ~3000 m); null sin dato.
 const MARGEN_BASE_NUBE_NARANJA = 300; // m por encima del despegue por debajo de los cuales la base sale en naranja
 const MARGEN_RANGO_BASE_NUBE = 100;    // m arriba y abajo del valor estimado en el tooltip de «Base de nube» (rango de 200 m)
-const MARGEN_TERMICA_AZUL = 200;       // m: la base convectiva sale en blanco si la cima de la capa límite queda más de esto por debajo
+const MARGEN_TERMICA_AZUL = 200;       // m: margen entre la cima de la capa límite y la base convectiva teórica para los cúmulos de buen tiempo
+const BONUS_XC_CUMULOS_PROBABLES = 10;  // puntos XC (sobre 100) en horas con cúmulos de buen tiempo probables
+const BONUS_XC_CUMULOS_DUDOSOS = 5;     // puntos XC en horas con posibilidad de algún cúmulo aislado
+
+// 🌤️ Cúmulos de buen tiempo (Cumulus humilis): compara la cima de la capa límite (cota + BLH al 100 %, no el techo útil ×0,85)
+// con la base convectiva teórica (altitud del despegue + (T − Td) × 125). Devuelve null sin datos, o
+// { estado: 'azul' (> margen por debajo) | 'justo' (± margen) | 'cumulos' (> margen por encima), baseMsl, cimaMsl, techoUtilMsl }
+function estadoCumulosBuenTiempo(hourlyEcmwf, idxE, altitudDespegue, elevacionModelo) {
+    if (!hourlyEcmwf || idxE === undefined) return null;
+    const temp = hourlyEcmwf.temperature_2m ? hourlyEcmwf.temperature_2m[idxE] : null;
+    const rocio = hourlyEcmwf.dew_point_2m ? hourlyEcmwf.dew_point_2m[idxE] : null;
+    const blh = hourlyEcmwf.boundary_layer_height ? hourlyEcmwf.boundary_layer_height[idxE] : null;
+    if (temp == null || rocio == null || blh == null) return null;
+    const baseMsl = Number(altitudDespegue || 0) + Math.max(0, Math.round((Number(temp) - Number(rocio)) * 125));
+    const cimaMsl = Math.round(Number(elevacionModelo || 0) + Number(blh));
+    const techoUtilMsl = Math.round(Number(elevacionModelo || 0) + Number(blh) * RATIO_TECHO_UTIL); // el de la fila Techo
+    const estado = (cimaMsl < baseMsl - MARGEN_TERMICA_AZUL) ? 'azul' : (cimaMsl <= baseMsl + MARGEN_TERMICA_AZUL ? 'justo' : 'cumulos');
+    return { estado, baseMsl, cimaMsl, techoUtilMsl };
+}
 
 // Base de nube por hora: ICON-EU (meteo-datos.json, días 1 a 5; el día 5 va a continuación de las horas del viento)
 // y, donde ICON-EU no llega, ECMWF 0,25° (JSON ligero, días 6 y 7, dato aproximado). idxE = índice de la hora en ECMWF.
@@ -5185,6 +5203,11 @@ function calcularPuntuacionesDespegue(despegueObj, hourlyData, hourlyEcmwf, indi
                 else if (cin < XCCinLims.rojo) ptsCin = 20 * (1 - (cin - XCCinLims.verde) / (XCCinLims.rojo - XCCinLims.verde));
 
                 ptsXC_hora = ptsTecho + ptsCape + ptsCin;
+
+                // 🌤️ Bonus por cúmulos de buen tiempo (marcan las térmicas), con tope en 100
+                const cumulos = estadoCumulosBuenTiempo(hourlyEcmwf, idxE, despegueObj.Altitud, despegueObj.Altitud);
+                if (cumulos && cumulos.estado === 'cumulos') ptsXC_hora = Math.min(100, ptsXC_hora + BONUS_XC_CUMULOS_PROBABLES);
+                else if (cumulos && cumulos.estado === 'justo') ptsXC_hora = Math.min(100, ptsXC_hora + BONUS_XC_CUMULOS_DUDOSOS);
             }
             puntosAcumuladosXC += ptsXC_hora;
             horasValidasXC++;
@@ -7855,7 +7878,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', tituloMeteoGeneral);
                 addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', tituloPrecipitacion);
                 addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', tituloProbPrecipitacion);
-                addIconCell(filaBaseNube, '<span style="font-size:15px; font-weight:bold;">🌤️↥</span>', tituloBaseNube);
+                addIconCell(filaBaseNube, '<span style="font-size:12px; font-weight:bold; display:block; line-height:20px;">Cu</span>', tituloBaseNube);
                 addIconCell(filaBaseNubeHumedad, '<span style="font-size:15px; font-weight:bold;">☁️↥</span>', tituloBaseNubeHumedad);
                 addIconCell(filaTemperatura, '<span style="font-size:15px; font-weight:bold;">🌡️</span>', tituloTemperatura);
 
@@ -8049,9 +8072,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 // Iconos Grupo 2: XC
                 // Nota: He creado claves para los nombres de las etiquetas (Techo, CAPE, CIN) para que cambien en inglés
-                addIconCell(filaTecho, `<span style="font-size:10px; font-weight:bold;">${labelTecho}</span>`, tituloTecho);
-                addIconCell(filaCape, `<span style="font-size:10px; font-weight:bold;">${labelCape}</span>`, tituloCape);
-                addIconCell(filaCin, `<span style="font-size:10px; font-weight:bold;">${labelCin}</span>`, tituloCin);
+                addIconCell(filaTecho, `<span style="font-size:10px; font-weight:bold; display:block; line-height:20px;">${labelTecho}</span>`, tituloTecho);
+                addIconCell(filaCape, `<span style="font-size:10px; font-weight:bold; display:block; line-height:20px;">${labelCape}</span>`, tituloCape);
+                addIconCell(filaCin, `<span style="font-size:10px; font-weight:bold; display:block; line-height:20px;">${labelCin}</span>`, tituloCin);
 
                 // Iconos del Grupo: Viento ECMWF (beta) con clase ecmwf-neutral
                 const addIconCellEcmwf = (tr, html, title, bordeTopPx, bordeBottomPx) => {
@@ -8262,78 +8285,31 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             }
                         );
 
-                        // Base de nubes estimada MSL
-                        // 🌤️ Térmica azul: si la cima de la capa límite (cota + espesor al 100 %, no el techo útil ×0,85) queda más de
-                        // MARGEN_TERMICA_AZUL por debajo de la base convectiva teórica, la térmica no llega a condensar: celda en blanco
-                        // Tres casos según la cima frente a la base: 'azul' (> margen por debajo), 'justo' (± margen) o 'cumulos' (> margen por encima)
-                        const datosConvectiva = (temp, idxE) => {
-                            if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return null;
-                            const blh = hourlyEcmwf.boundary_layer_height ? hourlyEcmwf.boundary_layer_height[idxE] : null;
-                            if (blh == null) return null;
-                            const baseMsl = Number(d.Altitud || 0) + Math.max(0, Math.round((Number(temp) - Number(hourlyEcmwf.dew_point_2m[idxE])) * 125));
-                            const cimaMsl = Math.round(elevacionModeloECMWF + Number(blh));
-                            const techoUtilMsl = Math.round(elevacionModeloECMWF + Number(blh) * RATIO_TECHO_UTIL); // el de la fila Techo
-                            const estado = (cimaMsl < baseMsl - MARGEN_TERMICA_AZUL) ? 'azul' : (cimaMsl <= baseMsl + MARGEN_TERMICA_AZUL ? 'justo' : 'cumulos');
-                            return { baseMsl, cimaMsl, techoUtilMsl, estado };
-                        };
-                        const datosTermicaAzul = (temp, idxE) => { const c = datosConvectiva(temp, idxE); return (c && c.estado === 'azul') ? c : null; };
+                        // Cu: cúmulos de buen tiempo, sin cifras. Blanca = térmica azul; verde = posible cúmulo aislado; verde con «Cu» = cúmulos probables
                         const kmTxt = (m) => { const v = (m / 1000).toFixed(1); return v === "0.0" ? "0" : v; };
+                        const cumulosHora = (idxE) => estadoCumulosBuenTiempo(hourlyEcmwf, idxE, d.Altitud, elevacionModeloECMWF);
 
-                        renderEcmwfData(filaBaseNube, hourlyEcmwf.temperature_2m, 
+                        renderEcmwfData(filaBaseNube, hourlyEcmwf.temperature_2m,
                             (temp, idxE) => {
-                                if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
-                                if (datosTermicaAzul(temp, idxE)) return "";
-                                let t_val = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
-                                let altRealDespegue = Number(d.Altitud || 0); 
-                                let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
-                                let baseMslMts = altRealDespegue + espesorMts;
-                                let baseMslKm = (baseMslMts / 1000).toFixed(1);
-                                return baseMslKm === "0.0" ? "0" : baseMslKm;
-                            }, 
-                            "12px", 
+                                const c = cumulosHora(idxE);
+                                return (c && c.estado === 'cumulos') ? "Cu" : "";
+                            },
+                            "12px",
                             (temp, idxE) => {
-                                if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
-                                let t_val = Number(temp);
-                                let roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
-                                if (datosTermicaAzul(temp, idxE)) return "fondo-verde";
-                                let espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
-                                if (espesorMts < 100) return "fondo-rojo";     
-                                if (espesorMts <= 300) return "fondo-naranja"; 
-                                return "fondo-verde";                          
+                                const c = cumulosHora(idxE);
+                                return (c && c.estado !== 'azul') ? "fondo-verde" : "";
                             },
                             "0px",
-                            (temp, idxE) => { 
-                                if (temp == null || idxE === undefined || !hourlyEcmwf.dew_point_2m || hourlyEcmwf.dew_point_2m[idxE] == null) return "";
-                                const azul = datosTermicaAzul(temp, idxE);
-                                if (azul) {
-                                    return t('tabla.tooltips.baseNubeTermicaAzul', { cima_km: kmTxt(azul.cimaMsl), techo_km: kmTxt(azul.techoUtilMsl), base_km: kmTxt(azul.baseMsl),
-                                        defaultValue: '<b>Térmica azul:</b> no se esperan cúmulos de origen convectivo.' });
-                                }
-                                const t_val = Number(temp);
-                                const roc = Number(hourlyEcmwf.dew_point_2m[idxE]);
-                                const altRealDespegue = Number(d.Altitud || 0);
-                                const espesorMts = Math.max(0, Math.round((t_val - roc) * 125));
-                                const baseMslMts = altRealDespegue + espesorMts;
-                                const valorFinal = (baseMslMts / 1000).toFixed(1);
-                                const baseKm = valorFinal === "0.0" ? "0" : valorFinal;
-                                
-                                const textoBase = t('tabla.tooltips.baseNubeValor', { 
-                                    base_km: baseKm, 
-                                    base_m: baseMslMts,
-                                    altitud_despegue: altRealDespegue,
-                                    espesor: espesorMts, 
-                                    defaultValue: '<ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Altitud de la base estimada de la nube convectiva: {{base_km}} km ({{base_m}} m)</li><li>Altitud del despegue: {{altitud_despegue}} m</li><li>Altura libre sobre despegue: {{espesor}} m</li></ul>' 
-                                });
-                                // Nota según llegue o no la térmica a la base (sin dato de capa límite, solo el texto base)
-                                const conv = datosConvectiva(temp, idxE);
-                                if (!conv) return textoBase;
-                                const nota = conv.estado === 'justo'
-                                    ? t('tabla.tooltips.baseNubeCasoJusto', { cima_km: kmTxt(conv.cimaMsl), base_km: kmTxt(conv.baseMsl),
-                                        defaultValue: '<b>Caso dudoso:</b> podría haber algún cúmulo aislado.' })
-                                    : t('tabla.tooltips.baseNubeCumulosProbables', { cima_km: kmTxt(conv.cimaMsl), base_km: kmTxt(conv.baseMsl),
-                                        defaultValue: '<b>Cúmulos probables:</b> es probable que se formen cúmulos de origen convectivo.' });
-                                return `${textoBase}<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #ccc; text-align: left;">${nota}</div>`;
+                            (temp, idxE) => {
+                                const c = cumulosHora(idxE);
+                                if (!c) return "";
+                                const params = { cima_km: kmTxt(c.cimaMsl), techo_km: kmTxt(c.techoUtilMsl), base_km: kmTxt(c.baseMsl) };
+                                if (c.estado === 'azul') return t('tabla.tooltips.baseNubeTermicaAzul', { ...params,
+                                    defaultValue: '<b>Sin cúmulos de buen tiempo. Térmicas azules.</b>' });
+                                if (c.estado === 'justo') return t('tabla.tooltips.baseNubeCasoJusto', { ...params,
+                                    defaultValue: '<b>Posibilidad de algún cúmulo de buen tiempo aislado.</b>' });
+                                return t('tabla.tooltips.baseNubeCumulosProbables', { ...params,
+                                    defaultValue: '<b>Probables cúmulos de buen tiempo.</b>' });
                             }
                         );
 
