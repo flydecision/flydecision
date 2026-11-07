@@ -7780,7 +7780,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', tituloMeteoGeneral);
                 addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', tituloPrecipitacion);
                 addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', tituloProbPrecipitacion);
-                addIconCell(filaBaseNube, '<span style="font-size:10px; font-weight:bold;">Cu</span>', tituloBaseNube);
+                addIconCell(filaBaseNube, '<span style="font-size:12px; font-weight:bold;">Cu</span>', tituloBaseNube);
                 addIconCell(filaBaseNubeHumedad, '<span style="font-size:15px; font-weight:bold;">☁️↥</span>', tituloBaseNubeHumedad);
                 addIconCell(filaTemperatura, '<span style="font-size:15px; font-weight:bold;">🌡️</span>', tituloTemperatura);
 
