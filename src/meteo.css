@@ -5166,3 +5166,31 @@ td[data-v-raw][style*="italic"], td[data-r-raw][style*="italic"] {
     letter-spacing: -1px;
     padding-right: 2px !important;
 }
+/* Aviso discreto «Comprobando actualización de datos...»: la tabla ya está pintada con los datos guardados y llegan los nuevos (no bloquea nada) */
+.aviso-actualizando-datos {
+    position: fixed;
+    left: 50%;
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid #0078d4;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    color: #0056b3;
+    font-size: 13px;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.aviso-actualizando-datos .spinner-mini {
+    width: 12px;
+    height: 12px;
+    border: 2px solid #b3d4f0;
+    border-top-color: #0078d4;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
