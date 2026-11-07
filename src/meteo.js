@@ -80,6 +80,26 @@ let indicesHorasRangoHorario = []; // Contiene los índices válidos (ej: [5, 6,
 window.indicesDiaActualSlider = []; // Índices del día visible en el slider
 window.diaSeleccionadoSlider = null; // null = usar el automático inicial
 
+window.fechaDiaSeleccionadoSlider = null; // 📅 Fecha real del día seleccionado (para no depender del índice al cambiar de día)
+
+// 📅 Devuelve la fecha (toDateString) del día diaIndex del slider
+function claveDiaSlider(slider, diaIndex) {
+    const r = slider.dayRanges && slider.dayRanges[diaIndex];
+    if (!r) return null;
+    const h = window.horasCrudasRangoHorario[window.indicesHorasRangoHorario[r.startPos]];
+    if (!h) return null;
+    return new Date(h.endsWith('Z') ? h : h + 'Z').toDateString();
+}
+
+// 📅 Recoloca el índice del día seleccionado según su fecha real. Si esa fecha ya pasó, selecciona hoy (0)
+function recolocarDiaSeleccionadoPorFecha(slider) {
+    if (!window.fechaDiaSeleccionadoSlider || !slider.dayRanges) return;
+    const idx = slider.dayRanges.findIndex((_, i) => claveDiaSlider(slider, i) === window.fechaDiaSeleccionadoSlider);
+    window.diaSeleccionadoSlider = idx >= 0 ? idx : 0;
+    window.fechaDiaSeleccionadoSlider = claveDiaSlider(slider, window.diaSeleccionadoSlider);
+    if (modoVerTodosLosDias) ultimoDiaSeleccionado = window.diaSeleccionadoSlider;
+}
+
 // Variable global para almacenar todos los despegues (sin filtrar)
 let bdGlobalDespegues = [];
 
@@ -4283,6 +4303,7 @@ function clickOnDia(sliderElement, diaIndex) {
     
     ejecutarOperacionPesada(() => {
         window.diaSeleccionadoSlider = diaIndex;
+        window.fechaDiaSeleccionadoSlider = claveDiaSlider(sliderElement, diaIndex);
         const dayRanges = sliderElement.dayRanges;
         if (!dayRanges || !dayRanges[diaIndex]) return;
 
@@ -4611,6 +4632,7 @@ function gestionarSliderHoras(respuestas, respuestasEcmwf, soloHorasDeLuz) {
     }));
 
     // Día inicial
+    recolocarDiaSeleccionadoPorFecha(sliderHoras);
     const ahora = new Date();
     const diaAutoInicial = 0; // Siempre arranca en hoy (día 0). Antes: (!autoSeleccionInicialHecha && ahora.getHours() >= 16) ? 1 : 0;
     const diaObjetivoInicial = (window.diaSeleccionadoSlider !== null) 
@@ -4621,6 +4643,8 @@ function gestionarSliderHoras(respuestas, respuestasEcmwf, soloHorasDeLuz) {
     if (window.diaSeleccionadoSlider === null) {
         window.diaSeleccionadoSlider = diaObjetivoInicial;
     }
+    window.fechaDiaSeleccionadoSlider = claveDiaSlider(sliderHoras, Math.min(window.diaSeleccionadoSlider, sliderHoras.dayRanges.length - 1));
+
     const rangoInicial = sliderHoras.dayRanges[Math.min(diaObjetivoInicial, sliderHoras.dayRanges.length - 1)];
     window.indicesDiaActualSlider = window.indicesHorasRangoHorario.slice(rangoInicial.startPos, rangoInicial.endPos + 1);
     
@@ -4802,7 +4826,8 @@ function gestionarSliderHoras(respuestas, respuestasEcmwf, soloHorasDeLuz) {
                 endPos: pipIndices[i + 1] !== undefined ? pipIndices[i + 1] - 1 : maxSteps
             }));
 
-            // Respetar día seleccionado o usar el primero
+            // Respetar día seleccionado (por su fecha real) o usar el primero
+            recolocarDiaSeleccionadoPorFecha(sliderHoras);
             const diaActual = (window.diaSeleccionadoSlider !== null)
                 ? Math.min(window.diaSeleccionadoSlider, sliderHoras.dayRanges.length - 1)
                 : 0;
