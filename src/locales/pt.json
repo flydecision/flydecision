@@ -597,7 +597,7 @@
   "actualizacion": {
     "cargando": "A carregar...",
     "redLenta": "Ligação lenta. A transferir dados...",
-    "actualizandoDatos": "A atualizar dados...",
+    "actualizandoDatos": "A verificar atualização de dados...",
     "esperando": "seguinte: <span style='color:#e39300; font-weight:bold;'>A aguardar...⌛</span>",
     "proximaEn": "seguinte: <b>{{tiempo}}</b>",
     "horas": "~{{h}} h {{m}} min",

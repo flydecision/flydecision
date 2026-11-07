@@ -5795,7 +5795,7 @@ const leerDeCacheIDB = async (key) => {
 // La descarga sigue por detrás: si trae datos nuevos, la tabla se repinta en silencio; si son los mismos, no se toca.
 // ---------------------------------------------------------------
 const EDAD_MAX_DATOS_GUARDADOS_MS = 3 * 60 * 60 * 1000; // Datos generados hace más de 3 h: mejor esperar la descarga
-const AVISO_ACTUALIZANDO_TRAS_MS = 1000; // Si la descarga llega antes, no se enseña el aviso «Actualizando datos...»
+const AVISO_ACTUALIZANDO_TRAS_MS = 1000; // Si la descarga llega antes, no se enseña el aviso «Comprobando actualización de datos...»
 
 // Devuelve [data, dataEcmwf] de IndexedDB si son recientes, o null
 const leerDatosGuardadosRecientes = async () => {
@@ -5832,7 +5832,7 @@ function esperarDescargaTrasPintadoRapido(descarga, guardado, guardadoEcmwf, ini
     const aviso = document.getElementById('aviso-actualizando-datos');
     const timerAviso = setTimeout(() => {
         if (!aviso) return;
-        aviso.querySelector('span').textContent = t('actualizacion.actualizandoDatos', { defaultValue: 'Actualizando datos...' });
+        aviso.querySelector('span').textContent = t('actualizacion.actualizandoDatos', { defaultValue: 'Comprobando actualización de datos...' });
         aviso.style.display = 'flex';
     }, AVISO_ACTUALIZANDO_TRAS_MS);
     const quitarAviso = () => {

@@ -5166,7 +5166,7 @@ td[data-v-raw][style*="italic"], td[data-r-raw][style*="italic"] {
     letter-spacing: -1px;
     padding-right: 2px !important;
 }
-/* Aviso discreto «Actualizando datos...»: la tabla ya está pintada con los datos guardados y llegan los nuevos (no bloquea nada) */
+/* Aviso discreto «Comprobando actualización de datos...»: la tabla ya está pintada con los datos guardados y llegan los nuevos (no bloquea nada) */
 .aviso-actualizando-datos {
     position: fixed;
     left: 50%;
