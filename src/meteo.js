@@ -81,6 +81,7 @@ window.indicesDiaActualSlider = []; // Índices del día visible en el slider
 window.diaSeleccionadoSlider = null; // null = usar el automático inicial
 
 window.fechaDiaSeleccionadoSlider = null; // 📅 Fecha real del día seleccionado (para no depender del índice al cambiar de día)
+try { window.fechaDiaSeleccionadoSlider = localStorage.getItem('fechaDiaSeleccionado') || null; } catch (e) {}
 
 // 📅 Devuelve la fecha (toDateString) del día diaIndex del slider
 function claveDiaSlider(slider, diaIndex) {
@@ -4304,6 +4305,7 @@ function clickOnDia(sliderElement, diaIndex) {
     ejecutarOperacionPesada(() => {
         window.diaSeleccionadoSlider = diaIndex;
         window.fechaDiaSeleccionadoSlider = claveDiaSlider(sliderElement, diaIndex);
+        try { localStorage.setItem('fechaDiaSeleccionado', window.fechaDiaSeleccionadoSlider || ''); } catch (e) {}
         const dayRanges = sliderElement.dayRanges;
         if (!dayRanges || !dayRanges[diaIndex]) return;
 
