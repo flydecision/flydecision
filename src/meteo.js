@@ -7780,7 +7780,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 addIconCell(filaNubesTotal, '<span style="font-size:16px; font-weight:bold; padding-bottom: 2px; display: inline-block; box-sizing: border-box;">🌦️</span>', tituloMeteoGeneral);
                 addIconCell(filaPreci, '<span style="font-size:15px; font-weight:bold;">💦</span>', tituloPrecipitacion);
                 addIconCell(filaProbPreci, '<span style="font-size:15px; font-weight:bold;">💦?</span>', tituloProbPrecipitacion);
-                addIconCell(filaBaseNube, '<span style="font-size:15px; font-weight:bold;">Cu</span>', tituloBaseNube);
+                addIconCell(filaBaseNube, '<span style="font-size:10px; font-weight:bold;">Cu</span>', tituloBaseNube);
                 addIconCell(filaBaseNubeHumedad, '<span style="font-size:15px; font-weight:bold;">☁️↥</span>', tituloBaseNubeHumedad);
                 addIconCell(filaTemperatura, '<span style="font-size:15px; font-weight:bold;">🌡️</span>', tituloTemperatura);
 
@@ -8191,7 +8191,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         const kmTxt = (m) => { const v = (m / 1000).toFixed(1); return v === "0.0" ? "0" : v; };
                         const cumulosHora = (idxE) => estadoCumulosBuenTiempo(hourlyEcmwf, idxE, d.Altitud, elevacionModeloECMWF);
 
-                        const numCeldasCumulosAntes = filaBaseNube ? filaBaseNube.children.length : 0;
                         renderEcmwfData(filaBaseNube, hourlyEcmwf.temperature_2m,
                             (temp, idxE) => {
                                 const c = cumulosHora(idxE);
@@ -8215,7 +8214,6 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     defaultValue: '<b>Probables cúmulos de buen tiempo.</b>' });
                             }
                         );
-                        if (filaBaseNube) Array.from(filaBaseNube.children).slice(numCeldasCumulosAntes).forEach(td => { if (td.textContent === "Cu") td.style.fontWeight = "bold"; });
 
                         // Temperatura a 2 metros
                         renderEcmwfData(filaTemperatura, hourlyEcmwf.temperature_2m, 
