@@ -2893,9 +2893,6 @@ label.custom-checkbox {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     
-    /* Soporte nativo para Firefox */
-    scrollbar-width: thin; 
-    scrollbar-color: #bbb transparent; 
     margin: 0px 0px 0px 0px;
 
     /* Gradientes de Sombras + Sólido Blanco de fondo */
@@ -2912,6 +2909,14 @@ label.custom-checkbox {
     background-size: 100% 30px, 100% 30px, 100% 18px, 100% 18px !important;
     background-position: 0 0, 0 100%, 0 0, 0 100% !important;
     background-repeat: no-repeat !important;
+}
+
+/* Barra fina solo en Firefox: en Chrome/Edge estas propiedades anulan ::-webkit-scrollbar y sacan las flechas nativas */
+@supports (-moz-appearance: none) {
+    .tippy-scroll-area {
+        scrollbar-width: thin;
+        scrollbar-color: #bbb transparent;
+    }
 }
 
 /* TRUCO DE FUSIÓN PARA TOOLTIPS (Permite que las sombras dinámicas se proyecten sobre las tablas de datos) */
