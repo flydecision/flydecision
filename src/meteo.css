@@ -2205,12 +2205,27 @@ span.grados {
 }
 
 /* Filtro de distancia en el panel de filtros del mapa (mismo filtro que la tabla) */
-.control-distancia-mapa-container {
-    margin-top: 8px;
-    margin-bottom: 4px;
-    padding: 4px 6px 8px 6px;
-    border-radius: 8px;
-    box-sizing: border-box;
+/* (ancho 96% y padding lateral en el grupo .control-actividad-mapa-container...; aquí solo lo propio) */
+#control-distancia-mapa-container {
+    margin-top: 8px !important;
+    margin-bottom: 8px;
+    padding-top: 4px !important;
+    padding-bottom: 8px !important;
+}
+/* Botón 📍 igual que en la tabla (el panel del mapa pone fondo blanco a sus botones) */
+#btn-abrir-geo-menu-mapa {
+    background-color: #f0f0f0 !important;
+    border: 1px solid #333 !important;
+    border-radius: 50% !important;
+    width: 24px !important;
+    height: 24px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+#btn-abrir-geo-menu-mapa svg {
+    margin-top: 0 !important;
 }
 #distancia-slider-mapa.noUi-horizontal {
     margin-top: 30px;
@@ -4430,6 +4445,7 @@ body:not(.modo-simple) .control-orientacion-container {
 .control-vuelos-container,
 .control-ultimovuelo-container,
 .control-actividad-mapa-container,
+.control-distancia-mapa-container,
 .control-altitudbalizas-container,
 .control-tiempobalizas-container,
 .control-orientacion-container {  
