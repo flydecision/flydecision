@@ -532,7 +532,33 @@ function cargarSinopticoEcmwf(dataEcmwf) {
         .finally(() => { descargaSinopticoEcmwfEnCurso = null; });
 }
 
-const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
+// Cortes del deslizador de tiempo al despegue, en MINUTOS (desde 2026-11; el nombre es histórico, antes eran km en línea recta)
+const CORTES_DISTANCIA_GLOBAL =[10, 15, 20, 25, 30, 40, 50, 60, 75, 90, 105, 120, 150, 180, 240, 300, 9999];
+// Mientras no haya tiempos reales en coche: minutos estimados = km en línea recta × este factor (1 km ≈ 1 min)
+const FACTOR_MIN_POR_KM_RECTA = 1;
+// Cortes del deslizador del tramo a pie, según la unidad elegida (0 = se llega en coche al despegue)
+const CORTES_PIE_GLOBAL = {
+    min: [0, 5, 10, 15, 20, 30, 45, 60, 90, 9999],
+    km:  [0, 0.5, 1, 2, 3, 5, 8, 9999],
+    m:   [0, 50, 100, 200, 300, 500, 800, 9999]
+};
+let modoTiempoDespegue = 'coche'; // 'coche' | 'total' (coche + tramo a pie)
+let unidadFiltroPie = 'min';      // 'min' | 'km' | 'm'
+// Datos del tramo a pie por ID de despegue: { min, km, m }. Se rellenará en la fase 2 (precálculo en el servidor).
+window.datosAccesoPie = window.datosAccesoPie || {};
+
+// Texto del tooltip de los deslizadores de tiempo / a pie (∞, "45 min", "1 h 30 min", "0,5 km", "200 m")
+function formatearTooltipFiltroTiempo(val, unidad) {
+    if (val >= 9999) return '<span class="simbolo-infinito" style="font-size: 1.4em; line-height: 1; vertical-align: -2px; display: inline-block;">∞</span>';
+    const u = (txt) => `<span class="unidad-tooltip">${txt}</span>`;
+    if (unidad === 'km') return `${String(val).replace('.', ',')}${u('km')}`;
+    if (unidad === 'm') return `↑${val}${u('m')}`;
+    if (val >= 60) {
+        const h = Math.floor(val / 60), m = val % 60;
+        return m ? `${h}${u('h')}&nbsp;${m}${u('min')}` : `${h}${u('h')}`;
+    }
+    return `${val}${u('min')}`;
+}
 
 let guiaActiva = false;
 let actualizacionesPendientes = [];
@@ -2014,13 +2040,14 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.btnOrigen.descripcion')
                 }
             }] : []),
-            ...(!esModoSimple ? [{ 
-                element: '#btn-incluir-no-favs-distancia',
-                popover: { 
-                    title: t('guiaPrincipal.pasos.btnIncNoFavs.titulo'), 
-                    description: t('guiaPrincipal.pasos.btnIncNoFavs.descripcion')
-                }
-            }] : []),
+            // Botón ❤️+🤍 desactivado (2026-11): paso de la guía comentado
+            // ...(!esModoSimple ? [{ 
+            //     element: '#btn-incluir-no-favs-distancia',
+            //     popover: { 
+            //         title: t('guiaPrincipal.pasos.btnIncNoFavs.titulo'), 
+            //         description: t('guiaPrincipal.pasos.btnIncNoFavs.descripcion')
+            //     }
+            // }] : []),
             ...(!esModoSimple ? [{ 
                 element: '#distancia-slider',
                 popover: { 
@@ -9330,16 +9357,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             txtCelda = txtCelda.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
             const pasaTexto = filtroTexto === "" || txtCelda.includes(filtroTexto);
 
-            // Comprobar Distancia usando 'distanciaLimite'
+            // Comprobar tiempo al despegue y tramo a pie (mismo filtro que el mapa)
             let pasaDistancia = true;
-            if (distanciaLimite < 9999 && centroLatFiltro !== null && centroLonFiltro !== null) {
-                const lat = parseFloat(filaPrincipal.dataset.lat);
-                const lon = parseFloat(filaPrincipal.dataset.lon);
-                if (!isNaN(lat) && !isNaN(lon)) {
-                    if (obtenerDistanciaKm(centroLatFiltro, centroLonFiltro, lat, lon) > distanciaLimite) {
-                        pasaDistancia = false;
-                    }
-                }
+            if (typeof window.pasaFiltroTiempoDespegue === 'function') {
+                pasaDistancia = window.pasaFiltroTiempoDespegue(filaPrincipal.dataset.idDesp, parseFloat(filaPrincipal.dataset.lat), parseFloat(filaPrincipal.dataset.lon));
             }
             return pasaTexto && pasaDistancia;
         });
@@ -11186,14 +11207,9 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
             const yaEsFavorito = favoritos.includes(Number(d.ID));
             if (yaEsFavorito || !nombreSolo.includes(filtroLimpio)) return false;
 
-            if (distanciaLimite < 9999 && centroLatFiltro !== null && centroLonFiltro !== null) {
-                const latSpot = parseFloat(d.Latitud);
-                const lonSpot = parseFloat(d.Longitud);
-                if (!isNaN(latSpot) && !isNaN(lonSpot)) {
-                    if (obtenerDistanciaKm(centroLatFiltro, centroLonFiltro, latSpot, lonSpot) > distanciaLimite) {
-                        return false; 
-                    }
-                }
+            if (typeof window.pasaFiltroTiempoDespegue === 'function' &&
+                !window.pasaFiltroTiempoDespegue(d.ID, parseFloat(d.Latitud), parseFloat(d.Longitud))) {
+                return false;
             }
             return true;
         });
@@ -11646,9 +11662,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             connect: 'lower',    
             tooltips:[{
                 to: function (index) {
-                    const val = CORTES_DISTANCIA_GLOBAL[Math.round(index)];
-                    if (val >= 9999) return '<span class="simbolo-infinito" style="font-size: 1.4em; line-height: 1; vertical-align: -2px; display: inline-block;">∞</span>';
-                    return `${val}`; 
+                    return formatearTooltipFiltroTiempo(CORTES_DISTANCIA_GLOBAL[Math.round(index)], 'min');
                 }
             }],
             range: {
@@ -11751,78 +11765,186 @@ function comprobarAvisoCambiosPuntuacionXC() {
 	}
 
 	// ---------------------------------------------------------------
-	// 🔴 SLIDERS. DISTANCIA EN EL PANEL DE FILTROS DEL MAPA
-	// Es el MISMO filtro que el de la tabla: el valor "de verdad" vive en #distancia-slider.
-	// Mover el del mapa mueve el de la tabla (con su lógica de origen y avisos) y viceversa.
+	// 🔴 SLIDERS. TIEMPO AL DESPEGUE + TRAMO A PIE (tabla y panel de filtros del mapa)
+	// El valor "de verdad" vive en los deslizadores de la tabla (#distancia-slider y #pie-slider).
+	// Los del mapa (#distancia-slider-mapa y #pie-slider-mapa) son copias sincronizadas.
 	// ---------------------------------------------------------------
 	const distanciaSliderMapa = document.getElementById('distancia-slider-mapa');
+	const pieSlider = document.getElementById('pie-slider');
+	const pieSliderMapa = document.getElementById('pie-slider-mapa');
 	let sincronizandoDistanciaMapa = false;
 
+	const maxIndicePie = () => CORTES_PIE_GLOBAL[unidadFiltroPie].length - 1;
+	const indiceSlider = (el) => Math.round(parseFloat(el.noUiSlider.get()));
+
+	const opcionesSliderPie = () => ({
+		handleAttributes: [{ 'aria-label': 'A pie' }],
+		start: maxIndicePie(),
+		direction: 'rtl',
+		step: 1,
+		connect: 'lower',
+		tooltips: [{ to: (index) => formatearTooltipFiltroTiempo(CORTES_PIE_GLOBAL[unidadFiltroPie][Math.round(index)], unidadFiltroPie) }],
+		range: { 'min': 0, 'max': maxIndicePie() }
+	});
+
+	// Deslizador de minutos del mapa (copia de #distancia-slider)
 	if (distanciaSlider && distanciaSlider.noUiSlider && distanciaSliderMapa) {
 		noUiSlider.create(distanciaSliderMapa, {
 			handleAttributes: [{ 'aria-label': 'Distancia' }],
-			start: Math.round(parseFloat(distanciaSlider.noUiSlider.get())),
+			start: indiceSlider(distanciaSlider),
 			direction: 'rtl',
 			step: 1,
 			connect: 'lower',
-			tooltips: [{
-				to: function (index) {
-					const val = CORTES_DISTANCIA_GLOBAL[Math.round(index)];
-					if (val >= 9999) return '<span class="simbolo-infinito" style="font-size: 1.4em; line-height: 1; vertical-align: -2px; display: inline-block;">∞</span>';
-					return `${val}`;
-				}
-			}],
+			tooltips: [{ to: (index) => formatearTooltipFiltroTiempo(CORTES_DISTANCIA_GLOBAL[Math.round(index)], 'min') }],
 			range: { 'min': 0, 'max': MAX_INDEX }
 		});
+		distanciaSliderMapa.noUiSlider.on('slide', function () { window.vibrarDispositivo(); });
 
-		distanciaSliderMapa.noUiSlider.on('slide', function () {
-			window.vibrarDispositivo();
-		});
-
-		// Al soltar en el mapa: se lo pasamos al slider de la tabla, que decide (origen, aviso, filtrado)
+		// Al soltar en el mapa: se lo pasamos al de la tabla, que decide (origen, aviso, filtrado)
 		distanciaSliderMapa.noUiSlider.on('set', function (values) {
 			if (sincronizandoDistanciaMapa) return;
 			const idx = Math.round(values[0]);
-			if (idx !== Math.round(parseFloat(distanciaSlider.noUiSlider.get()))) {
+			if (idx !== indiceSlider(distanciaSlider)) {
 				distanciaSlider.noUiSlider.set(idx); // dispara 'set' de la tabla y, tras él, 'set.mapa'
 			} else {
 				window.sincronizarFiltroDistanciaMapa();
 			}
 		});
 
-		// Cualquier cambio del slider de la tabla (incluido resetFiltroDistancia) se refleja en el mapa
+		// Cualquier cambio del de la tabla (incluido resetFiltroDistancia) se refleja en el mapa
 		distanciaSlider.noUiSlider.on('set.mapa', function () {
 			window.sincronizarFiltroDistanciaMapa();
 		});
 	}
 
-	// Devuelve { km, lat, lon } si hay filtro de distancia aplicado, o null
-	window.obtenerFiltroDistanciaActivo = function () {
-		if (!distanciaSlider || !distanciaSlider.noUiSlider) return null;
-		const km = CORTES_DISTANCIA_GLOBAL[Math.round(parseFloat(distanciaSlider.noUiSlider.get()))];
-		const lat = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL'));
-		const lon = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL'));
-		if (!(km < 9999) || isNaN(lat) || isNaN(lon)) return null;
-		return { km, lat, lon };
+	// Deslizadores del tramo a pie (no necesitan origen)
+	if (pieSlider) {
+		noUiSlider.create(pieSlider, opcionesSliderPie());
+		pieSlider.noUiSlider.on('slide', function () { window.vibrarDispositivo(); });
+		let ultimoPieConfirmado = maxIndicePie();
+		pieSlider.noUiSlider.on('set', function (values) {
+			const idx = Math.round(values[0]);
+			if (idx === ultimoPieConfirmado) { window.sincronizarFiltroDistanciaMapa(); return; }
+			ultimoPieConfirmado = idx;
+			window.sincronizarFiltroDistanciaMapa();
+			if (!window.reseteandoFiltroPie) ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
+		});
+		window.resetUltimoPieConfirmado = () => { ultimoPieConfirmado = maxIndicePie(); };
+	}
+	if (pieSlider && pieSlider.noUiSlider && pieSliderMapa) {
+		noUiSlider.create(pieSliderMapa, opcionesSliderPie());
+		pieSliderMapa.noUiSlider.on('slide', function () { window.vibrarDispositivo(); });
+		pieSliderMapa.noUiSlider.on('set', function (values) {
+			if (sincronizandoDistanciaMapa) return;
+			const idx = Math.round(values[0]);
+			if (idx !== indiceSlider(pieSlider)) pieSlider.noUiSlider.set(idx);
+		});
+	}
+
+	// Pone el deslizador de a pie a ∞ (sin refiltrar: lo hace quien llama)
+	window.resetFiltroPie = function () {
+		if (!pieSlider || !pieSlider.noUiSlider) return;
+		window.reseteandoFiltroPie = true;
+		if (typeof window.resetUltimoPieConfirmado === 'function') window.resetUltimoPieConfirmado();
+		pieSlider.noUiSlider.set(maxIndicePie());
+		window.reseteandoFiltroPie = false;
 	};
 
-	// Copia el valor de la tabla al slider del mapa y refresca los marcadores
-	window.sincronizarFiltroDistanciaMapa = function () {
-		if (!distanciaSlider || !distanciaSlider.noUiSlider) return;
-		const idx = Math.round(parseFloat(distanciaSlider.noUiSlider.get()));
+	// Botones alternos 🚗 Coche / 🚗+🚶 Total y ⏱️ min / ↔︎ km / ↑ m (tabla y mapa a la vez)
+	const pintarBotonesAlternos = () => {
+		document.querySelectorAll('.btn-modo-tiempo').forEach(b => b.classList.toggle('hundido', b.dataset.modo === modoTiempoDespegue));
+		document.querySelectorAll('.btn-unidad-pie').forEach(b => b.classList.toggle('hundido', b.dataset.unidad === unidadFiltroPie));
+	};
+	document.addEventListener('click', function (e) {
+		const btnModo = e.target.closest('.btn-modo-tiempo');
+		const btnUnidad = e.target.closest('.btn-unidad-pie');
+		if (!btnModo && !btnUnidad) return;
+		e.preventDefault();
+		e.stopPropagation();
+		window.vibrarDispositivo();
 
-		if (distanciaSliderMapa && distanciaSliderMapa.noUiSlider &&
-			Math.round(parseFloat(distanciaSliderMapa.noUiSlider.get())) !== idx) {
-			sincronizandoDistanciaMapa = true;
-			distanciaSliderMapa.noUiSlider.set(idx);
-			sincronizandoDistanciaMapa = false;
+		if (btnModo) {
+			if (btnModo.dataset.modo === modoTiempoDespegue) return;
+			modoTiempoDespegue = btnModo.dataset.modo;
+			pintarBotonesAlternos();
+			if (indiceSlider(distanciaSlider) < MAX_INDEX) ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
+			window.sincronizarFiltroDistanciaMapa();
+			return;
 		}
 
+		if (btnUnidad.dataset.unidad === unidadFiltroPie) return;
+		const habiaFiltroPie = pieSlider && pieSlider.noUiSlider && indiceSlider(pieSlider) < maxIndicePie();
+		unidadFiltroPie = btnUnidad.dataset.unidad;
+		pintarBotonesAlternos();
+		// Escala distinta: los dos deslizadores de a pie se rehacen y vuelven a ∞
+		window.reseteandoFiltroPie = true;
+		[pieSlider, pieSliderMapa].forEach(el => { if (el && el.noUiSlider) el.noUiSlider.updateOptions(opcionesSliderPie(), false); });
+		if (typeof window.resetUltimoPieConfirmado === 'function') window.resetUltimoPieConfirmado();
+		window.reseteandoFiltroPie = false;
+		window.sincronizarFiltroDistanciaMapa();
+		if (habiaFiltroPie) ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
+	});
+
+	// Minutos al despegue: { min, estimado }. De momento siempre estimado en línea recta (fase 3: tiempos reales en coche)
+	window.obtenerMinutosAlDespegue = function (id, lat, lon) {
+		const latO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL'));
+		const lonO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL'));
+		if (isNaN(latO) || isNaN(lonO) || isNaN(lat) || isNaN(lon)) return null;
+		let min = obtenerDistanciaKm(latO, lonO, lat, lon) * FACTOR_MIN_POR_KM_RECTA;
+		if (modoTiempoDespegue === 'total') {
+			const pie = window.datosAccesoPie[Number(id)];
+			if (pie && Number.isFinite(Number(pie.min))) min += Number(pie.min); // sin dato a pie: cuenta 0
+		}
+		return { min, estimado: true };
+	};
+
+	// ¿Hay algún filtro de tiempo / a pie aplicado?
+	window.hayFiltroTiempoActivo = function () {
+		const hayTiempo = distanciaSlider && distanciaSlider.noUiSlider && indiceSlider(distanciaSlider) < MAX_INDEX &&
+			localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL') !== null;
+		const hayPie = pieSlider && pieSlider.noUiSlider && indiceSlider(pieSlider) < maxIndicePie();
+		return !!(hayTiempo || hayPie);
+	};
+
+	// ¿Pasa el despegue los filtros de tiempo al despegue y de tramo a pie? (tabla, sugerencias y mapa)
+	window.pasaFiltroTiempoDespegue = function (id, lat, lon) {
+		if (distanciaSlider && distanciaSlider.noUiSlider) {
+			const limiteMin = CORTES_DISTANCIA_GLOBAL[indiceSlider(distanciaSlider)];
+			if (limiteMin < 9999) {
+				const t = window.obtenerMinutosAlDespegue(id, lat, lon);
+				if (t && t.min > limiteMin) return false;
+			}
+		}
+		if (pieSlider && pieSlider.noUiSlider) {
+			const limitePie = CORTES_PIE_GLOBAL[unidadFiltroPie][indiceSlider(pieSlider)];
+			if (limitePie < 9999) {
+				const pie = window.datosAccesoPie[Number(id)];
+				const valor = pie ? Number(pie[unidadFiltroPie]) : NaN;
+				if (Number.isFinite(valor) && valor > limitePie) return false; // sin dato a pie: nunca se oculta
+			}
+		}
+		return true;
+	};
+
+	// Copia los valores de la tabla a los deslizadores del mapa, pinta indicadores y refresca los marcadores
+	window.sincronizarFiltroDistanciaMapa = function () {
+		if (!distanciaSlider || !distanciaSlider.noUiSlider) return;
+		const idx = indiceSlider(distanciaSlider);
+		const idxPie = (pieSlider && pieSlider.noUiSlider) ? indiceSlider(pieSlider) : null;
+
+		sincronizandoDistanciaMapa = true;
+		if (distanciaSliderMapa && distanciaSliderMapa.noUiSlider && indiceSlider(distanciaSliderMapa) !== idx) distanciaSliderMapa.noUiSlider.set(idx);
+		if (idxPie !== null && pieSliderMapa && pieSliderMapa.noUiSlider && indiceSlider(pieSliderMapa) !== idxPie) pieSliderMapa.noUiSlider.set(idxPie);
+		sincronizandoDistanciaMapa = false;
+
+		const hayFiltro = window.hayFiltroTiempoActivo();
 		// Si se filtra desde el mapa, el panel de la tabla queda abierto para verlo al volver
-		if (idx < MAX_INDEX) {
+		if (hayFiltro) {
 			const divDistancia = document.getElementById('div-filtro-distancia');
 			if (divDistancia) divDistancia.classList.add('activo');
 		}
+		const navDistance = document.getElementById('nav-distance');
+		if (navDistance) navDistance.classList.toggle('filtrado', hayFiltro);
 
 		if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
 			if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
@@ -12998,6 +13120,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
         if (typeof distanciaSlider !== 'undefined' && distanciaSlider.noUiSlider) {
             distanciaSlider.noUiSlider.set(MAX_INDEX);
         }
+        // A2. Resetear también el tramo a pie
+        if (typeof window.resetFiltroPie === 'function') window.resetFiltroPie();
+        if (typeof window.sincronizarFiltroDistanciaMapa === 'function') window.sincronizarFiltroDistanciaMapa();
 
         // --- NUEVO: Desmarcar botón de "incluir no favoritos" al resetear ---
         const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
@@ -13288,6 +13413,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     const currentValue = Math.round(parseFloat(sliderDistancia.noUiSlider.get()));
                     if (currentValue < maxIndex) filtrandoCosas = true;
                 }
+                // El tramo a pie también cuenta como filtro aplicado
+                if (typeof window.hayFiltroTiempoActivo === 'function' && window.hayFiltroTiempoActivo()) filtrandoCosas = true;
 
                 if (filtrandoCosas) {
                     if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(); 
@@ -15689,8 +15816,8 @@ function inicializarMapaLeaflet() {
         const chkDespegues = document.getElementById('checkboxDespegues');
         const mostrarDespegues = chkDespegues ? chkDespegues.checked : true;
         
-        // Filtro de distancia compartido con la tabla ({ km, lat, lon } o null)
-        const filtroDistanciaMapa = (typeof window.obtenerFiltroDistanciaActivo === 'function') ? window.obtenerFiltroDistanciaActivo() : null;
+        // Filtro de tiempo al despegue / tramo a pie compartido con la tabla
+        const hayFiltroTiempoMapa = (typeof window.hayFiltroTiempoActivo === 'function') && window.hayFiltroTiempoActivo();
 
         // C. PREPARAR PATRONES DE BÚSQUEDA (OPTIMIZACIÓN)
         // -------------------------------------------------------
@@ -15711,10 +15838,10 @@ function inicializarMapaLeaflet() {
         // Se extrae la lógica de filtrado para aplicarla dos veces sin repetir código.
         const pasaFiltros = (marker, esDespegueMundo = false) => {
 
-            // --- FILTRO DE DISTANCIA (el mismo de la tabla, también para despegues del mundo) ---
-            if (filtroDistanciaMapa && marker.getLatLng) {
+            // --- FILTRO DE TIEMPO AL DESPEGUE Y TRAMO A PIE (el mismo de la tabla, también para despegues del mundo) ---
+            if (hayFiltroTiempoMapa && marker.getLatLng) {
                 const ll = marker.getLatLng();
-                if (obtenerDistanciaKm(filtroDistanciaMapa.lat, filtroDistanciaMapa.lon, ll.lat, ll.lng) > filtroDistanciaMapa.km) return false;
+                if (!window.pasaFiltroTiempoDespegue(marker.metadata ? marker.metadata.id : null, ll.lat, ll.lng)) return false;
             }
 
             // Los despegues del mundo NO tienen pronóstico meteo, por lo que 
@@ -15979,7 +16106,7 @@ function inicializarMapaLeaflet() {
         }
 
         // Contenedor Distancia (mismo filtro que la tabla)
-        const hayFiltroDistancia = (typeof window.obtenerFiltroDistanciaActivo === 'function') && window.obtenerFiltroDistanciaActivo() !== null;
+        const hayFiltroDistancia = (typeof window.hayFiltroTiempoActivo === 'function') && window.hayFiltroTiempoActivo();
         const contDistancia = document.getElementById('control-distancia-mapa-container');
         if (contDistancia) contDistancia.classList.toggle('borde-rojo-externo', hayFiltroDistancia);
 

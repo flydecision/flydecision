@@ -248,25 +248,43 @@ setTimeout(function () {
 	<div id="div-filtro-distancia" class="div-filtro-distancia solo-modo-avanzado">
 
 		<div id="div-filtro-distancia-interno" class="div-paneles-controles-transparente" style="position: relative;">
-		
-			<!-- Fila de título y botones unificada -->
-			<div id="titulo-distancia-slider" style="display: flex; align-items: center; gap: 7px; margin-bottom: 5px; width: 100%;">
-				<span style="cursor: pointer;" data-i18n="html.distanciaDesde">Distancia desde:</span>
+
+			<!-- Botón ❤️+🤍 (incluir no favoritos) desactivado 2026-11: se deja comentado por si se reutiliza.
+			     Su JS sigue en meteo.js protegido con if (btnIncNoFavsDistancia).
+				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" data-i18n="[title]html.incluirNoFavs"><img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
+			-->
+
+			<!-- Fila 1: tiempo al despegue (🚗 Coche / 🚗+🚶 Total) -->
+			<div id="titulo-distancia-slider" class="fila-filtro-tiempo">
+				<span data-i18n="html.tiempoDesde">⏱️ Desde</span>
 				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" data-i18n="[title]html.seleccionarOrigen">
 					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
 				</button>
-				
-				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" data-i18n="[title]html.incluirNoFavs"><img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
-				
-				<!-- Botón "i" integrado con margin-left: auto para alineación vertical perfecta -->
-				<button class="btn-info btn-inline"
-						style="margin-left: 20px; background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; align-items: center;"
-						data-tippy-content-i18n="btn_info.filtroDistanciaCompleto">
+				<span class="grupo-botones-alternos">
+					<button type="button" class="btn-alterno btn-modo-tiempo hundido" data-modo="coche" data-i18n="html.modoCoche">🚗 Coche</button>
+					<button type="button" class="btn-alterno btn-modo-tiempo" data-modo="total" data-i18n="html.modoTotal">🚗+🚶 Total</button>
+				</span>
+				<button class="btn-info btn-inline" style="margin-left: auto;" data-tippy-content-i18n="btn_info.filtroTiempoDespegue">
 					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 				</button>
-			</div>	
-			
+			</div>
+			<!-- Fila 2: deslizador de minutos -->
 			<div id="distancia-slider"></div>
+			<div class="nota-estimado-recta" data-i18n="html.estimadoLineaRecta">📏 estimado en línea recta</div>
+			<!-- Fila 3: tramo a pie (min / km / ↑m) -->
+			<div class="fila-filtro-tiempo">
+				<span data-i18n="html.aPie">🚶 A pie:</span>
+				<span class="grupo-botones-alternos">
+					<button type="button" class="btn-alterno btn-unidad-pie hundido" data-unidad="min" data-i18n="html.unidadPieMin">⏱️ min</button>
+					<button type="button" class="btn-alterno btn-unidad-pie" data-unidad="km" data-i18n="html.unidadPieKm">↔︎ km</button>
+					<button type="button" class="btn-alterno btn-unidad-pie" data-unidad="m" data-i18n="html.unidadPieM">↑ m</button>
+				</span>
+				<button class="btn-info btn-inline" style="margin-left: auto;" data-tippy-content-i18n="btn_info.filtroAPie">
+					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+				</button>
+			</div>
+			<!-- Fila 4: deslizador del tramo a pie -->
+			<div id="pie-slider"></div>
 
 		</div>
 			
@@ -1138,16 +1156,37 @@ setTimeout(function () {
 
 			<!-- Filtro Distancia (el mismo filtro que la tabla: se sincroniza con #distancia-slider) -->
 			<div id="control-distancia-mapa-container" class="control-distancia-mapa-container solo-modo-avanzado">
-				<div class="linea-con-bt-info" style="display: flex; align-items: center; gap: 7px;">
-					<span style="font-weight: bold;" data-i18n="html.distanciaDesde">Distancia desde:</span>
+				<!-- Fila 1: tiempo al despegue (🚗 Coche / 🚗+🚶 Total) -->
+				<div id="titulo-distancia-slider-mapa" class="fila-filtro-tiempo">
+					<span data-i18n="html.tiempoDesde">⏱️ Desde</span>
 					<button id="btn-abrir-geo-menu-mapa" class="btn-icon-trigger" data-i18n="[title]html.seleccionarOrigen" onclick="if(event){event.stopPropagation(); event.preventDefault();} document.getElementById('btn-abrir-geo-menu')?.click();">
 						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
 					</button>
-					<button class="btn-info btn-inline" style="margin-left: auto;" data-tippy-content-i18n="btn_info.filtroDistanciaMapa">
+					<span class="grupo-botones-alternos">
+						<button type="button" class="btn-alterno btn-modo-tiempo hundido" data-modo="coche" data-i18n="html.modoCoche">🚗 Coche</button>
+						<button type="button" class="btn-alterno btn-modo-tiempo" data-modo="total" data-i18n="html.modoTotal">🚗+🚶 Total</button>
+					</span>
+					<button class="btn-info btn-inline" style="margin-left: auto;" data-tippy-content-i18n="btn_info.filtroTiempoDespegue">
 						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
+				<!-- Fila 2: deslizador de minutos -->
 				<div id="distancia-slider-mapa"></div>
+				<div class="nota-estimado-recta" data-i18n="html.estimadoLineaRecta">📏 estimado en línea recta</div>
+				<!-- Fila 3: tramo a pie (min / km / ↑m) -->
+				<div class="fila-filtro-tiempo">
+					<span data-i18n="html.aPie">🚶 A pie:</span>
+					<span class="grupo-botones-alternos">
+						<button type="button" class="btn-alterno btn-unidad-pie hundido" data-unidad="min" data-i18n="html.unidadPieMin">⏱️ min</button>
+						<button type="button" class="btn-alterno btn-unidad-pie" data-unidad="km" data-i18n="html.unidadPieKm">↔︎ km</button>
+						<button type="button" class="btn-alterno btn-unidad-pie" data-unidad="m" data-i18n="html.unidadPieM">↑ m</button>
+					</span>
+					<button class="btn-info btn-inline" style="margin-left: auto;" data-tippy-content-i18n="btn_info.filtroAPie">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
+				</div>
+				<!-- Fila 4: deslizador del tramo a pie -->
+				<div id="pie-slider-mapa"></div>
 			</div>
 
 			<!-- Contenedor Principal en 2 Columnas -->

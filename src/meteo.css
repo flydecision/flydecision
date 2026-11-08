@@ -652,7 +652,7 @@ input[type="search"]::-webkit-search-cancel-button {
 /* 🔴 FILTRO DISTANCIA -------------------------------- */
 
 .div-filtro-distancia {
-    height: 99px;
+    height: auto; /* antes 99px: ahora tiene 4 filas (tiempo + a pie) */
     z-index: 9998;
     display: flex; 
     flex-wrap: wrap;
@@ -685,7 +685,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .div-filtro-distancia.activo {
-    max-height: 120px; /* Un valor superior al contenido real */
+    max-height: 300px; /* Un valor superior al contenido real */
     opacity: 1;
     margin-top: -15px;
     padding: 4px;
@@ -1105,9 +1105,7 @@ details.config-accordion .accordion-content {
     z-index: 15;             /* Asegura que quede por encima si roza algo */
 }
 #titulo-distancia-slider {
-    position: absolute !important;
-    top: 55px; 
-    left: 0 !important;    /* Pegado a la izquierda del contenedor */
+    position: static !important; /* antes absolute bajo el deslizador; ahora es la fila 1 */
     width: 100%;           /* Forzamos que la caja ocupe el 100% de ancho */
     display: flex !important;
     justify-content: center;
@@ -2138,7 +2136,8 @@ span.grados {
 /* 🟡 SLIDERS. Personalizados. Distancia -------------------------------- */
 
 
-#div-filtro-distancia-interno #distancia-slider.noUi-horizontal {
+#div-filtro-distancia-interno #distancia-slider.noUi-horizontal,
+#div-filtro-distancia-interno #pie-slider.noUi-horizontal {
     margin-top: 30px !important;
     width: 247px !important; /* Deja unos 25px por lado respecto a los 365px del contenedor */
     margin-left: auto !important;
@@ -2146,12 +2145,16 @@ span.grados {
 }
 
 #distancia-slider .noUi-connect,
-#distancia-slider-mapa .noUi-connect {
+#distancia-slider-mapa .noUi-connect,
+#pie-slider .noUi-connect,
+#pie-slider-mapa .noUi-connect {
 	background: #0078d4;
 }
 
 #distancia-slider .noUi-pips-horizontal,
-#distancia-slider-mapa .noUi-pips-horizontal {
+#distancia-slider-mapa .noUi-pips-horizontal,
+#pie-slider .noUi-pips-horizontal,
+#pie-slider-mapa .noUi-pips-horizontal {
     padding: 0px !important;
     height: 45px !important;
     top: 100% !important;
@@ -2159,13 +2162,17 @@ span.grados {
     width: 100% !important;
 }
 #distancia-slider .noUi-value,
-#distancia-slider-mapa .noUi-value {
+#distancia-slider-mapa .noUi-value,
+#pie-slider .noUi-value,
+#pie-slider-mapa .noUi-value {
     margin-top: -62px;   /* separación pips y su texto*/
 	color: black;
 	padding-left: 0px;
 }
 #distancia-slider,
-#distancia-slider-mapa {
+#distancia-slider-mapa,
+#pie-slider,
+#pie-slider-mapa {
     border: none;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
 }
@@ -2173,18 +2180,26 @@ span.grados {
 #distancia-slider .noUi-marker,
 #distancia-slider .noUi-marker-large,
 #distancia-slider-mapa .noUi-marker,
-#distancia-slider-mapa .noUi-marker-large {
+#distancia-slider-mapa .noUi-marker-large,
+#pie-slider .noUi-marker,
+#pie-slider .noUi-marker-large,
+#pie-slider-mapa .noUi-marker,
+#pie-slider-mapa .noUi-marker-large {
     height: 6px;
 }
 #distancia-slider .noUi-tooltip,
-#distancia-slider-mapa .noUi-tooltip {
+#distancia-slider-mapa .noUi-tooltip,
+#pie-slider .noUi-tooltip,
+#pie-slider-mapa .noUi-tooltip {
 	background: transparent;
 	border: none;
 }
 /* Añadimos la "km" automáticamente detrás del número */
 #distancia-slider.noUi-horizontal .noUi-tooltip::after,
-#distancia-slider-mapa.noUi-horizontal .noUi-tooltip::after {
-    content: " km";
+#distancia-slider-mapa.noUi-horizontal .noUi-tooltip::after,
+#pie-slider.noUi-horizontal .noUi-tooltip::after,
+#pie-slider-mapa.noUi-horizontal .noUi-tooltip::after {
+    content: ""; /* la unidad la pone el JS (formatearTooltipFiltroTiempo) */
     font-weight: normal;
     font-size: 0.85em;
     margin-left: 2px;
@@ -2194,14 +2209,71 @@ span.grados {
 }
 /* Que desaparezca el cuadro y también el "km" cuando la función devuelve "" */
 #distancia-slider.noUi-horizontal .noUi-tooltip:empty,
-#distancia-slider-mapa.noUi-horizontal .noUi-tooltip:empty {
+#distancia-slider-mapa.noUi-horizontal .noUi-tooltip:empty,
+#pie-slider.noUi-horizontal .noUi-tooltip:empty,
+#pie-slider-mapa.noUi-horizontal .noUi-tooltip:empty {
     display: none !important;
 }
 
 /* Oculta las letras "km" únicamente cuando el tooltip muestra el símbolo de infinito */
 #distancia-slider.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after,
-#distancia-slider-mapa.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after {
+#distancia-slider-mapa.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after,
+#pie-slider.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after,
+#pie-slider-mapa.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after {
     content: "" !important;
+}
+
+/* Filas de los filtros de tiempo al despegue y tramo a pie (tabla y mapa) */
+.fila-filtro-tiempo {
+    display: flex;
+    flex-wrap: wrap; /* en el panel del mapa (más estrecho) los botones bajan a otra línea */
+    align-items: center;
+    row-gap: 4px;
+    column-gap: 6px;
+    width: 100%;
+    margin-top: 4px;
+    font-size: 16px;
+}
+.grupo-botones-alternos {
+    display: inline-flex;
+    gap: 4px;
+}
+.fila-filtro-tiempo > span {
+    white-space: nowrap;
+}
+.btn-alterno {
+    font-size: 16px;
+    line-height: 1.2;
+    padding: 2px 7px;
+    border: 1px solid #999;
+    border-radius: 6px;
+    background: #fff;
+    color: #222;
+    cursor: pointer;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+.btn-alterno.hundido {
+    background: #dde3ea;
+    border-color: #555;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.35);
+    font-weight: bold;
+}
+.nota-estimado-recta {
+    font-size: 16px;
+    color: #888;
+    text-align: center;
+    margin-top: 2px;
+}
+.unidad-tooltip {
+    font-weight: normal;
+    color: #555;
+    margin-left: 2px;
+    font-size: 16px;
+}
+#div-filtro-distancia-interno .fila-filtro-tiempo {
+    padding: 0 6px;
+    box-sizing: border-box;
 }
 
 /* Filtro de distancia en el panel de filtros del mapa (mismo filtro que la tabla) */
@@ -2227,7 +2299,8 @@ span.grados {
 #btn-abrir-geo-menu-mapa svg {
     margin-top: 0 !important;
 }
-#distancia-slider-mapa.noUi-horizontal {
+#distancia-slider-mapa.noUi-horizontal,
+#pie-slider-mapa.noUi-horizontal {
     margin-top: 30px;
     margin-left: 22px;
     margin-right: 22px;
