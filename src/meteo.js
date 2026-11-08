@@ -15154,6 +15154,7 @@ function inicializarSliderPuntuacionMapa() {
         tooltips: [{
             to: function(val) {
                 const num = Math.round(val);
+                if (num >= 10) return `=${num}⭐`; // 10 es el máximo: «igual», no «mayor o igual»
                 return num >= 0 ? `≥${num}⭐` : '⭐';
             }
         }],
