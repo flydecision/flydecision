@@ -2244,6 +2244,7 @@ span.grados {
     white-space: nowrap;
 }
 .btn-alterno {
+    height: 24px; /* igual que el botón de origen */
     display: inline-flex;
     justify-content: center; /* contenido centrado en botones de igual anchura */
     align-items: center;
@@ -2270,6 +2271,13 @@ span.grados {
 #control-distancia-mapa-container .grupo-con-info {
     gap: 2px;
 }
+/* En el mapa no caben botones de 58 px ni 20 px hasta la ⓘ: más estrechos y 6 px */
+#control-distancia-mapa-container .grupo-botones-alternos .btn-alterno {
+    width: 48px;
+}
+#control-distancia-mapa-container .grupo-con-info .grupo-botones-alternos {
+    margin-right: 6px;
+}
 .btn-alterno.hundido {
     background: #007aff; /* igual que .pip-dia-btn.pip-activo */
     color: #fff;
@@ -2277,6 +2285,9 @@ span.grados {
     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
 /* Resplandor blanco fino alrededor de los emojis para que se distingan sobre el azul */
+.texto-unidad {
+    font-size: 12px; /* excepción pedida por Alberto (min, km, m) para que quepa el grupo «A pie» en el mapa */
+}
 .btn-alterno.hundido .emoji-boton {
     text-shadow: 0 0 2px #fff, 0 0 2px #fff;
 }
@@ -2307,8 +2318,13 @@ span.grados {
     flex: 1 0 auto;
     white-space: nowrap;
 }
+/* Grupo de botones alineado a la derecha, a 20 px de la ⓘ */
+.grupo-con-info .grupo-botones-alternos {
+    margin-left: auto;
+    margin-right: 20px;
+}
 .grupo-con-info .btn-info {
-    margin-left: auto; /* ⓘ pegada a la derecha */
+    margin-left: 0; /* ⓘ pegada a la derecha */
     align-self: center;
     display: inline-flex;
     align-items: center;
