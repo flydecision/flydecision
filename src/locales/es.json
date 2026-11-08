@@ -881,6 +881,7 @@
   },
 
   "popupDespegue": {
+    "enCocheHastaDespegue": "Se llega en coche al despegue",
     "region": "Región:",
     "provincia": "Provincia:",
     "orientacion": "Orientación:",

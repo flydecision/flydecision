@@ -878,6 +878,7 @@
   },
 
   "popupDespegue": {
+    "enCocheHastaDespegue": "Accessible en voiture",
     "region": "Région :",
     "provincia": "Province :",
     "orientacion": "Orientation :",

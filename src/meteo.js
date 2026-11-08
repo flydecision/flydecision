@@ -574,6 +574,17 @@ function cargarDatosAccesoPie() {
 }
 window.addEventListener('DOMContentLoaded', cargarDatosAccesoPie);
 
+// Texto del tramo a pie para la ficha del despegue: "🚶 25 min · 1,2 km · ↑300 m" ('' si no hay dato)
+function textoAccesoPieDespegue(id) {
+    const pie = window.datosAccesoPie[Number(id)];
+    if (!pie || !Number.isFinite(Number(pie.min))) return '';
+    if (Number(pie.min) === 0 && !Number(pie.km)) return `🚗 ${t('popupDespegue.enCocheHastaDespegue')}`;
+    const partes = [`🚶 ${formatearTooltipFiltroTiempo(Number(pie.min), 'min').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()}`];
+    if (Number.isFinite(Number(pie.km))) partes.push(`${String(Number(pie.km)).replace('.', ',')} km`);
+    if (Number.isFinite(Number(pie.m)) && Number(pie.m) > 0) partes.push(`↑${Number(pie.m)} m`);
+    return partes.join(' · ');
+}
+
 // Texto del tooltip de los deslizadores de tiempo / a pie (∞, "45 min", "1 h 30 min", "0,5 km", "200 m")
 function formatearTooltipFiltroTiempo(val, unidad) {
     if (val >= 9999) return ''; // sin filtro: no se muestra nada (el CSS oculta el tooltip vacío)
@@ -16966,6 +16977,8 @@ function inicializarMapaLeaflet() {
                         <div style="line-height: 1.4;">
                             <b><span style='font-size: 20px; padding-right: 20px; max-width: 212px; display: inline-block;'><icon-despegue></icon-despegue>${escapeHtml(despegue)}</b></span><br>
                             
+                            <div class="acceso-pie-popup" style="display: none; margin: 2px 0 4px 0;"></div>
+
                             ${botonesAccionPopupHTML}
 
                             ${idDespegue ? generarHtmlStepperLimites(idDespegue, OrientacionesGrados) : ''}
@@ -17030,6 +17043,14 @@ function inicializarMapaLeaflet() {
                         
                         const btn = popupEl.querySelector('.btn-accion');
                         if (btn) btn.innerHTML = `${t('mapa.verEnTabla')}`;
+
+                        // Tramo a pie (acceso-pie.json): se pinta al abrir porque los datos pueden llegar después de crear el popup
+                        const divPie = popupEl.querySelector('.acceso-pie-popup');
+                        if (divPie) {
+                            const txtPie = textoAccesoPieDespegue(idDespegue);
+                            divPie.innerHTML = txtPie;
+                            divPie.style.display = txtPie ? 'block' : 'none';
+                        }
 
                         // Actualizar estado del botón Favorito dinámicamente
                         const btnFav = popupEl.querySelector('.btn-favorito-tabla');

@@ -878,6 +878,7 @@
   },
 
   "popupDespegue": {
+    "enCocheHastaDespegue": "You can drive to the take-off",
     "region": "Region:",
     "provincia": "Province:",
     "orientacion": "Orientation:",
