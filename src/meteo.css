@@ -2238,7 +2238,7 @@ span.grados {
     display: inline-grid;
     grid-auto-flow: column;
     grid-auto-columns: 1fr; /* todos los botones del grupo con la misma anchura */
-    gap: 8px;
+    gap: 4px;
 }
 .fila-filtro-tiempo > span {
     white-space: nowrap;
@@ -2270,19 +2270,19 @@ span.grados {
 }
 /* Misma anchura para los botones de los dos grupos (🚗 / 🚗+🚶 y min / km / m) */
 .grupo-botones-alternos .btn-alterno {
-    width: 58px;
+    width: 55px;
     padding: 0;
 }
 /* Panel del mapa (más estrecho): huecos mínimos para que la fila 1 quepa en una línea */
 #control-distancia-mapa-container .fila-filtro-tiempo {
-    column-gap: 2px;
+    column-gap: 4px; /* igual que en la tabla: «Desde» separado del botón de origen */
 }
 #control-distancia-mapa-container .grupo-con-info {
     gap: 2px;
 }
 /* En el mapa no caben botones de 58 px ni 20 px hasta la ⓘ: más estrechos y 6 px */
 #control-distancia-mapa-container .grupo-botones-alternos .btn-alterno {
-    width: 48px;
+    width: 50px;
 }
 #control-distancia-mapa-container .grupo-con-info .grupo-botones-alternos {
     margin-right: 6px;
