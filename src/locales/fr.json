@@ -901,7 +901,7 @@
     "tiempoDesde": "🚗 Depuis",
     "modoCoche": "🚗 Voiture",
     "modoTotal": "🚗+🚶 Total",
-    "estimadoLineaRecta": "Pas de données de temps/distance. Estimation approximative à vol d'oiseau.",
+    "estimadoLineaRecta": "Pas de données de temps/distance. Estimation très approximative.",
     "aPie": "🚶 À pied",
     "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
     "unidadPieKm": "↔︎&nbsp;<span class=\"texto-unidad\">km</span>",

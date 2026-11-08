@@ -901,7 +901,7 @@
     "tiempoDesde": "🚗 Ab",
     "modoCoche": "🚗 Auto",
     "modoTotal": "🚗+🚶 Gesamt",
-    "estimadoLineaRecta": "Keine Zeit-/Entfernungsdaten. Ungefähre Schätzung per Luftlinie.",
+    "estimadoLineaRecta": "Keine Zeit-/Entfernungsdaten. Sehr grobe Schätzung.",
     "aPie": "🚶 Zu Fuß",
     "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
     "unidadPieKm": "↔︎&nbsp;<span class=\"texto-unidad\">km</span>",
