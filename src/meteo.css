@@ -2250,7 +2250,6 @@ span.grados {
     font-size: 16px;
     font-weight: normal;
     line-height: 1.2;
-    padding: 3px 4px;
     border: 1.5px solid #ccc; /* mismo estilo que los botones de los días (.pip-dia-btn) */
     border-radius: 8px;
     background: #fff;
@@ -2258,6 +2257,17 @@ span.grados {
     cursor: pointer;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
     white-space: nowrap;
+}
+/* Misma anchura para los botones de los dos grupos (🚗 / 🚗+🚶 y min / km / m) */
+.grupo-botones-alternos .btn-alterno {
+    width: 64px;
+}
+/* Panel del mapa (más estrecho): huecos mínimos para que la fila 1 quepa en una línea */
+#control-distancia-mapa-container .fila-filtro-tiempo {
+    column-gap: 2px;
+}
+#control-distancia-mapa-container .grupo-con-info {
+    gap: 2px;
 }
 .btn-alterno.hundido {
     background: #007aff; /* igual que .pip-dia-btn.pip-activo */
@@ -2273,7 +2283,7 @@ span.grados {
     font-size: 13px; /* excepción pedida por Alberto: aviso provisional hasta tener tiempos reales */
     color: #888;
     text-align: center;
-    margin-top: 2px;
+    margin-top: 8px;
 }
 .unidad-tooltip {
     font-weight: normal;
@@ -2282,7 +2292,6 @@ span.grados {
     font-size: 16px;
 }
 #div-filtro-distancia-interno .fila-filtro-tiempo {
-    padding: 0 6px;
     box-sizing: border-box;
 }
 /* Botones + ⓘ van juntos: si no caben, bajan los dos a la línea siguiente (nunca la ⓘ sola) */
