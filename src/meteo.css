@@ -2295,11 +2295,11 @@ span.grados {
 }
 /* Resplandor blanco fino alrededor de los emojis para que se distingan sobre el azul */
 .texto-unidad {
-    margin-left: 2px;
-    font-size: 12px; /* excepción pedida por Alberto (min, km, m) para que quepa el grupo «A pie» en el mapa */
+    margin-left: 0px;
+    font-size: 14px; /* excepción pedida por Alberto (min, km, m) para que quepa el grupo «A pie» en el mapa */
 }
 .signo-mas {
-    margin: 0 -2px; /* 🚗+🚶 más juntos */
+    margin: 0 -3px; /* 🚗+🚶 más juntos */
 }
 .btn-alterno.hundido .emoji-boton {
     text-shadow: 0 0 2px #fff, 0 0 2px #fff;
@@ -2354,8 +2354,8 @@ span.grados {
     margin-bottom: 8px;
     padding-top: 4px !important;
     padding-bottom: 8px !important;
-    padding-left: 2px !important;  /* para que la fila «⏱️ Desde · 🚗 · 🚗+🚶 ⓘ» quepa en una línea */
-    padding-right: 2px !important;
+    padding-left: 0px !important;  /* para que la fila «⏱️ Desde · 🚗 · 🚗+🚶 ⓘ» quepa en una línea */
+    padding-right: 0px !important;
 }
 /* Botón 📍 igual que en la tabla (el panel del mapa pone fondo blanco a sus botones) */
 #btn-abrir-geo-menu-mapa {
@@ -2368,6 +2368,10 @@ span.grados {
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
+}
+/* Misma separación «Desde»–origen que en la tabla (#titulo-distancia-slider usa gap 10px) */
+#titulo-distancia-slider-mapa #btn-abrir-geo-menu-mapa {
+    margin-left: 6px !important;
 }
 #btn-abrir-geo-menu-mapa svg {
     margin-top: 0 !important;
