@@ -2229,13 +2229,15 @@ span.grados {
     flex-wrap: wrap; /* en el panel del mapa (más estrecho) los botones bajan a otra línea */
     align-items: center;
     row-gap: 4px;
-    column-gap: 6px;
+    column-gap: 5px;
     width: 100%;
     margin-top: 4px;
     font-size: 16px;
 }
 .grupo-botones-alternos {
-    display: inline-flex;
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr; /* todos los botones del grupo con la misma anchura */
     gap: 4px;
 }
 .fila-filtro-tiempo > span {
@@ -2243,21 +2245,26 @@ span.grados {
 }
 .btn-alterno {
     font-size: 16px;
+    font-weight: normal;
     line-height: 1.2;
-    padding: 2px 7px;
-    border: 1px solid #999;
-    border-radius: 6px;
+    padding: 3px 6px;
+    border: 1.5px solid #ccc; /* mismo estilo que los botones de los días (.pip-dia-btn) */
+    border-radius: 8px;
     background: #fff;
     color: #222;
     cursor: pointer;
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
     white-space: nowrap;
 }
 .btn-alterno.hundido {
-    background: #dde3ea;
-    border-color: #555;
-    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.35);
-    font-weight: bold;
+    background: #007aff; /* igual que .pip-dia-btn.pip-activo */
+    color: #fff;
+    border-color: #007aff;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+/* En el panel del mapa, .leaflet-bar button fuerza fondo blanco con !important */
+.leaflet-bar .btn-alterno.hundido {
+    background-color: #007aff !important;
 }
 .nota-estimado-recta {
     font-size: 16px;
@@ -2274,6 +2281,20 @@ span.grados {
 #div-filtro-distancia-interno .fila-filtro-tiempo {
     padding: 0 6px;
     box-sizing: border-box;
+}
+/* Botones + ⓘ van juntos: si no caben, bajan los dos a la línea siguiente (nunca la ⓘ sola) */
+.grupo-con-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1 0 auto;
+    white-space: nowrap;
+}
+.grupo-con-info .btn-info {
+    margin-left: auto;
+}
+#div-filtro-distancia-interno #pie-slider {
+    margin-bottom: 14px;
 }
 
 /* Filtro de distancia en el panel de filtros del mapa (mismo filtro que la tabla) */
