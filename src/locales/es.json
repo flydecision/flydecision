@@ -904,7 +904,7 @@
     "tiempoDesde": "🚗 Desde",
     "modoCoche": "🚗 Coche",
     "modoTotal": "🚗+🚶 Total",
-    "estimadoLineaRecta": "No hay datos de tiempo/distancia. Estimación muy aproximada.",
+    "estimadoLineaRecta": "Sin datos tiempo/distancia. Estimación aproximada.",
     "aPie": "🚶 A pie",
     "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
     "unidadPieKm": "↔︎&nbsp;<span class=\"texto-unidad\">km</span>",

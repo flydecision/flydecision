@@ -901,7 +901,7 @@
     "tiempoDesde": "🚗 Des de",
     "modoCoche": "🚗 Cotxe",
     "modoTotal": "🚗+🚶 Total",
-    "estimadoLineaRecta": "No hi ha dades de temps/distància. Estimació molt aproximada.",
+    "estimadoLineaRecta": "Sense dades temps/distància. Estimació aproximada.",
     "aPie": "🚶 A peu",
     "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
     "unidadPieKm": "↔︎&nbsp;<span class=\"texto-unidad\">km</span>",
