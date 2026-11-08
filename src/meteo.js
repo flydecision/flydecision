@@ -549,7 +549,7 @@ window.datosAccesoPie = window.datosAccesoPie || {};
 
 // Texto del tooltip de los deslizadores de tiempo / a pie (∞, "45 min", "1 h 30 min", "0,5 km", "200 m")
 function formatearTooltipFiltroTiempo(val, unidad) {
-    if (val >= 9999) return '<span class="simbolo-infinito" style="font-size: 1.4em; line-height: 1; vertical-align: -2px; display: inline-block;">∞</span>';
+    if (val >= 9999) return ''; // sin filtro: no se muestra nada (el CSS oculta el tooltip vacío)
     const u = (txt) => `<span class="unidad-tooltip">${txt}</span>`;
     if (unidad === 'km') return `${String(val).replace('.', ',')}${u('km')}`;
     if (unidad === 'm') return `↑${val}${u('m')}`;
