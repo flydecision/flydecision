@@ -2229,7 +2229,7 @@ span.grados {
     flex-wrap: wrap; /* en el panel del mapa (más estrecho) los botones bajan a otra línea */
     align-items: center;
     row-gap: 4px;
-    column-gap: 5px;
+    column-gap: 4px;
     width: 100%;
     margin-top: 4px;
     font-size: 16px;
@@ -2244,10 +2244,13 @@ span.grados {
     white-space: nowrap;
 }
 .btn-alterno {
+    display: inline-flex;
+    justify-content: center; /* contenido centrado en botones de igual anchura */
+    align-items: center;
     font-size: 16px;
     font-weight: normal;
     line-height: 1.2;
-    padding: 3px 6px;
+    padding: 3px 4px;
     border: 1.5px solid #ccc; /* mismo estilo que los botones de los días (.pip-dia-btn) */
     border-radius: 8px;
     background: #fff;
@@ -2267,7 +2270,7 @@ span.grados {
     background-color: #007aff !important;
 }
 .nota-estimado-recta {
-    font-size: 16px;
+    font-size: 13px; /* excepción pedida por Alberto: aviso provisional hasta tener tiempos reales */
     color: #888;
     text-align: center;
     margin-top: 2px;
@@ -2286,12 +2289,16 @@ span.grados {
 .grupo-con-info {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     flex: 1 0 auto;
     white-space: nowrap;
 }
 .grupo-con-info .btn-info {
-    margin-left: auto;
+    margin-left: auto; /* ⓘ pegada a la derecha */
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
 }
 #div-filtro-distancia-interno #pie-slider {
     margin-bottom: 14px;
@@ -2304,6 +2311,8 @@ span.grados {
     margin-bottom: 8px;
     padding-top: 4px !important;
     padding-bottom: 8px !important;
+    padding-left: 2px !important;  /* para que la fila «⏱️ Desde · 🚗 · 🚗+🚶 ⓘ» quepa en una línea */
+    padding-right: 2px !important;
 }
 /* Botón 📍 igual que en la tabla (el panel del mapa pone fondo blanco a sus botones) */
 #btn-abrir-geo-menu-mapa {
