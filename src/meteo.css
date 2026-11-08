@@ -2339,6 +2339,7 @@ span.grados {
 }
 .grupo-con-info .btn-info {
     margin-left: 0; /* ⓘ pegada a la derecha */
+    margin-right: 2px;
     align-self: center;
     display: inline-flex;
     align-items: center;
