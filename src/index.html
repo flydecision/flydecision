@@ -231,7 +231,8 @@ setTimeout(function () {
 				<button id="limpiar-buscador" class="div-mapa-close-btn" type="button" style="display: none; box-shadow: none; background: none; backdrop-filter: none;">❌</button>
 			</div>
 			<button id="nav-distance" onclick="clicBotonDistancia()" class="btn-distancia-buscador solo-modo-avanzado" data-i18n="[title]menu.distancia">
-				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+				<!-- <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> -->
+				<span class="emoji-nav-distancia">🚗🚶</span>
 				<span class="distancia-x">❌</span>
 			</button>
 			<button id="btn-filtro-seguimiento-toggle" class="btn-distancia-buscador solo-modo-avanzado" data-i18n="[title]seguimiento.filtroTitle" onclick="filtroVerSoloSeguimiento()">
@@ -256,7 +257,7 @@ setTimeout(function () {
 
 			<!-- Fila 1: tiempo al despegue (🚗 Coche / 🚗+🚶 Total) -->
 			<div id="titulo-distancia-slider" class="fila-filtro-tiempo">
-				<span data-i18n="html.tiempoDesde">⏱️ Desde</span>
+				<span data-i18n="html.tiempoDesde">🚗 Desde</span>
 				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" data-i18n="[title]html.seleccionarOrigen">
 					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -5px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
 				</button>
@@ -1162,7 +1163,7 @@ setTimeout(function () {
 			<div id="control-distancia-mapa-container" class="control-distancia-mapa-container solo-modo-avanzado">
 				<!-- Fila 1: tiempo al despegue (🚗 Coche / 🚗+🚶 Total) -->
 				<div id="titulo-distancia-slider-mapa" class="fila-filtro-tiempo">
-					<span data-i18n="html.tiempoDesde">⏱️ Desde</span>
+					<span data-i18n="html.tiempoDesde">🚗 Desde</span>
 					<button id="btn-abrir-geo-menu-mapa" class="btn-icon-trigger" data-i18n="[title]html.seleccionarOrigen" onclick="if(event){event.stopPropagation(); event.preventDefault();} document.getElementById('btn-abrir-geo-menu')?.click();">
 						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
 					</button>
