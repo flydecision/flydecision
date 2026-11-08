@@ -2351,7 +2351,7 @@ span.grados {
 /* Filtro de distancia en el panel de filtros del mapa (mismo filtro que la tabla) */
 /* (ancho 96% y padding lateral en el grupo .control-actividad-mapa-container...; aquí solo lo propio) */
 #control-distancia-mapa-container {
-    margin-top: 8px !important;
+    margin-top: 14px !important;
     margin-bottom: 8px;
     padding-top: 4px !important;
     padding-bottom: 8px !important;
