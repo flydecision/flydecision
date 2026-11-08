@@ -544,8 +544,35 @@ const CORTES_PIE_GLOBAL = {
 };
 let modoTiempoDespegue = 'coche'; // 'coche' | 'total' (coche + tramo a pie)
 let unidadFiltroPie = 'min';      // 'min' | 'km' | 'm'
-// Datos del tramo a pie por ID de despegue: { min, km, m }. Se rellenará en la fase 2 (precálculo en el servidor).
+// Datos del tramo a pie por ID de despegue: { min, km, m }. Precalculados en el servidor (INTERNO_acceso_pie_generador.php → acceso-pie.json)
 window.datosAccesoPie = window.datosAccesoPie || {};
+
+// Carga acceso-pie.json (~40 KB, cambia muy poco): primero lo guardado en localStorage y luego la versión del servidor (1 vez al día)
+function cargarDatosAccesoPie() {
+    try {
+        const guardado = JSON.parse(localStorage.getItem('METEO_ACCESO_PIE_CACHE') || 'null');
+        if (guardado && guardado.despegues) window.datosAccesoPie = guardado.despegues;
+    } catch (e) { /* caché corrupta: se ignora */ }
+    const dia = new Date().toISOString().slice(0, 10);
+    fetchConTimeout(`https://flydecision.com/acceso-pie.json?d=${dia}`, {}, TIMEOUT_DESCARGA_DATOS_MS)
+        .then(res => {
+            if (!res.ok) throw new Error(`⚠️ Error al cargar acceso-pie.json (HTTP ${res.status})`);
+            return res.json();
+        })
+        .then(datos => {
+            if (!datos || !datos.despegues) return;
+            const cambia = JSON.stringify(datos.despegues) !== JSON.stringify(window.datosAccesoPie);
+            window.datosAccesoPie = datos.despegues;
+            try { localStorage.setItem('METEO_ACCESO_PIE_CACHE', JSON.stringify(datos)); } catch (e) { /* sin espacio: da igual */ }
+            // Si ya hay un filtro de tiempo/a pie aplicado, se vuelve a filtrar con los datos nuevos
+            if (cambia && typeof window.hayFiltroTiempoActivo === 'function' && window.hayFiltroTiempoActivo()) {
+                if (typeof window.aplicarFiltrosVisuales === 'function') ejecutarOperacionPesada(() => { window.aplicarFiltrosVisuales(); });
+                if (typeof window.sincronizarFiltroDistanciaMapa === 'function') window.sincronizarFiltroDistanciaMapa();
+            }
+        })
+        .catch(error => registrarError('carga', error, 'acceso-pie'));
+}
+window.addEventListener('DOMContentLoaded', cargarDatosAccesoPie);
 
 // Texto del tooltip de los deslizadores de tiempo / a pie (∞, "45 min", "1 h 30 min", "0,5 km", "200 m")
 function formatearTooltipFiltroTiempo(val, unidad) {
