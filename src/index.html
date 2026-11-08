@@ -1135,6 +1135,21 @@ setTimeout(function () {
 			
 			<!-- Contenido con scroll si no cabe en pantalla (alto fijado en ajustarAlturaListaPanel) -->
 			<div id="contenidoFiltrosMapa">
+
+			<!-- Filtro Distancia (el mismo filtro que la tabla: se sincroniza con #distancia-slider) -->
+			<div id="control-distancia-mapa-container" class="control-distancia-mapa-container solo-modo-avanzado">
+				<div class="linea-con-bt-info" style="display: flex; align-items: center; gap: 7px;">
+					<span style="font-weight: bold;" data-i18n="html.distanciaDesde">Distancia desde:</span>
+					<button id="btn-abrir-geo-menu-mapa" class="btn-icon-trigger" data-i18n="[title]html.seleccionarOrigen" onclick="if(event){event.stopPropagation(); event.preventDefault();} document.getElementById('btn-abrir-geo-menu')?.click();">
+						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+					</button>
+					<button class="btn-info btn-inline" style="margin-left: auto;" data-tippy-content-i18n="btn_info.filtroDistanciaMapa">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
+				</div>
+				<div id="distancia-slider-mapa"></div>
+			</div>
+
 			<!-- Contenedor Principal en 2 Columnas -->
 			<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 8px; margin-bottom: 8px;">
 

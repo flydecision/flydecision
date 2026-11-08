@@ -1228,6 +1228,8 @@ function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
     } else {
         // Si no había intención previa, solo aplicamos filtros normales
         ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
+        // El mapa usa el mismo origen: refrescamos sus marcadores
+        if (typeof window.sincronizarFiltroDistanciaMapa === 'function') window.sincronizarFiltroDistanciaMapa();
     }
 }
 
@@ -10268,6 +10270,9 @@ window.resetearFiltrosMapaEnVivo = function() {
     orientaciones.forEach(chk => chk.checked = false);
     if (typeof actualizarEstadoMaestro === 'function') actualizarEstadoMaestro();
 
+    // 4b. Filtro de distancia (compartido con la tabla; la tabla se regenera al volver)
+    if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
+
     // 5. Re-calcular el mapa al instante con los filtros limpios
     if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
     if (typeof actualizarEstadoVisualFiltros === 'function') actualizarEstadoVisualFiltros();
@@ -11740,11 +11745,91 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     // if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo'); // Comentado
                 }
 
-				ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); }); 
+				ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
 			}
 		});
 	}
-	
+
+	// ---------------------------------------------------------------
+	// 🔴 SLIDERS. DISTANCIA EN EL PANEL DE FILTROS DEL MAPA
+	// Es el MISMO filtro que el de la tabla: el valor "de verdad" vive en #distancia-slider.
+	// Mover el del mapa mueve el de la tabla (con su lógica de origen y avisos) y viceversa.
+	// ---------------------------------------------------------------
+	const distanciaSliderMapa = document.getElementById('distancia-slider-mapa');
+	let sincronizandoDistanciaMapa = false;
+
+	if (distanciaSlider && distanciaSlider.noUiSlider && distanciaSliderMapa) {
+		noUiSlider.create(distanciaSliderMapa, {
+			handleAttributes: [{ 'aria-label': 'Distancia' }],
+			start: Math.round(parseFloat(distanciaSlider.noUiSlider.get())),
+			direction: 'rtl',
+			step: 1,
+			connect: 'lower',
+			tooltips: [{
+				to: function (index) {
+					const val = CORTES_DISTANCIA_GLOBAL[Math.round(index)];
+					if (val >= 9999) return '<span class="simbolo-infinito" style="font-size: 1.4em; line-height: 1; vertical-align: -2px; display: inline-block;">∞</span>';
+					return `${val}`;
+				}
+			}],
+			range: { 'min': 0, 'max': MAX_INDEX }
+		});
+
+		distanciaSliderMapa.noUiSlider.on('slide', function () {
+			window.vibrarDispositivo();
+		});
+
+		// Al soltar en el mapa: se lo pasamos al slider de la tabla, que decide (origen, aviso, filtrado)
+		distanciaSliderMapa.noUiSlider.on('set', function (values) {
+			if (sincronizandoDistanciaMapa) return;
+			const idx = Math.round(values[0]);
+			if (idx !== Math.round(parseFloat(distanciaSlider.noUiSlider.get()))) {
+				distanciaSlider.noUiSlider.set(idx); // dispara 'set' de la tabla y, tras él, 'set.mapa'
+			} else {
+				window.sincronizarFiltroDistanciaMapa();
+			}
+		});
+
+		// Cualquier cambio del slider de la tabla (incluido resetFiltroDistancia) se refleja en el mapa
+		distanciaSlider.noUiSlider.on('set.mapa', function () {
+			window.sincronizarFiltroDistanciaMapa();
+		});
+	}
+
+	// Devuelve { km, lat, lon } si hay filtro de distancia aplicado, o null
+	window.obtenerFiltroDistanciaActivo = function () {
+		if (!distanciaSlider || !distanciaSlider.noUiSlider) return null;
+		const km = CORTES_DISTANCIA_GLOBAL[Math.round(parseFloat(distanciaSlider.noUiSlider.get()))];
+		const lat = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL'));
+		const lon = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL'));
+		if (!(km < 9999) || isNaN(lat) || isNaN(lon)) return null;
+		return { km, lat, lon };
+	};
+
+	// Copia el valor de la tabla al slider del mapa y refresca los marcadores
+	window.sincronizarFiltroDistanciaMapa = function () {
+		if (!distanciaSlider || !distanciaSlider.noUiSlider) return;
+		const idx = Math.round(parseFloat(distanciaSlider.noUiSlider.get()));
+
+		if (distanciaSliderMapa && distanciaSliderMapa.noUiSlider &&
+			Math.round(parseFloat(distanciaSliderMapa.noUiSlider.get())) !== idx) {
+			sincronizandoDistanciaMapa = true;
+			distanciaSliderMapa.noUiSlider.set(idx);
+			sincronizandoDistanciaMapa = false;
+		}
+
+		// Si se filtra desde el mapa, el panel de la tabla queda abierto para verlo al volver
+		if (idx < MAX_INDEX) {
+			const divDistancia = document.getElementById('div-filtro-distancia');
+			if (divDistancia) divDistancia.classList.add('activo');
+		}
+
+		if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
+			if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
+			if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
+		}
+	};
+
 	// ---------------------------------------------------------------
 	// 🔴 SLIDERS. VELOCIDAD y RACHA. Construcción
 	// ---------------------------------------------------------------
@@ -15604,6 +15689,9 @@ function inicializarMapaLeaflet() {
         const chkDespegues = document.getElementById('checkboxDespegues');
         const mostrarDespegues = chkDespegues ? chkDespegues.checked : true;
         
+        // Filtro de distancia compartido con la tabla ({ km, lat, lon } o null)
+        const filtroDistanciaMapa = (typeof window.obtenerFiltroDistanciaActivo === 'function') ? window.obtenerFiltroDistanciaActivo() : null;
+
         // C. PREPARAR PATRONES DE BÚSQUEDA (OPTIMIZACIÓN)
         // -------------------------------------------------------
         // Solo generamos los patrones si hay filtro de orientación activo
@@ -15622,6 +15710,12 @@ function inicializarMapaLeaflet() {
         // FUNCIÓN AUXILIAR DE FILTRADO (Lógica central reutilizable)
         // Se extrae la lógica de filtrado para aplicarla dos veces sin repetir código.
         const pasaFiltros = (marker, esDespegueMundo = false) => {
+
+            // --- FILTRO DE DISTANCIA (el mismo de la tabla, también para despegues del mundo) ---
+            if (filtroDistanciaMapa && marker.getLatLng) {
+                const ll = marker.getLatLng();
+                if (obtenerDistanciaKm(filtroDistanciaMapa.lat, filtroDistanciaMapa.lon, ll.lat, ll.lng) > filtroDistanciaMapa.km) return false;
+            }
 
             // Los despegues del mundo NO tienen pronóstico meteo, por lo que 
             // ignoramos los filtros de puntuación y operatividad para ellos.
@@ -15884,8 +15978,13 @@ function inicializarMapaLeaflet() {
             }
         }
 
+        // Contenedor Distancia (mismo filtro que la tabla)
+        const hayFiltroDistancia = (typeof window.obtenerFiltroDistanciaActivo === 'function') && window.obtenerFiltroDistanciaActivo() !== null;
+        const contDistancia = document.getElementById('control-distancia-mapa-container');
+        if (contDistancia) contDistancia.classList.toggle('borde-rojo-externo', hayFiltroDistancia);
+
         // 6. ACTUALIZAR PANEL GLOBAL (Borde rojo externo al estar retraído)
-        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos || filtroFavoritosBalizasMapa !== 0 || filtroSeguimientoBalizasMapa !== 0 || hayFiltroAltitudBalizas || hayFiltroTiempoBalizas;
+        const hayCualquierFiltro = hayFiltroDistancia || hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos || filtroFavoritosBalizasMapa !== 0 || filtroSeguimientoBalizasMapa !== 0 || hayFiltroAltitudBalizas || hayFiltroTiempoBalizas;
         const infoPanelFiltros = document.getElementById('infoPanel2');
         
         if (infoPanelFiltros) {

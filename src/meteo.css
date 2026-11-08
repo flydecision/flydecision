@@ -2145,37 +2145,45 @@ span.grados {
     margin-right: auto !important;
 }
 
-#distancia-slider .noUi-connect {
+#distancia-slider .noUi-connect,
+#distancia-slider-mapa .noUi-connect {
 	background: #0078d4;
 }
 
-#distancia-slider .noUi-pips-horizontal {
+#distancia-slider .noUi-pips-horizontal,
+#distancia-slider-mapa .noUi-pips-horizontal {
     padding: 0px !important;
     height: 45px !important;
     top: 100% !important;
     left: 0 !important;
     width: 100% !important;
 }
-#distancia-slider .noUi-value {
+#distancia-slider .noUi-value,
+#distancia-slider-mapa .noUi-value {
     margin-top: -62px;   /* separación pips y su texto*/
 	color: black;
 	padding-left: 0px;
 }
-#distancia-slider {
+#distancia-slider,
+#distancia-slider-mapa {
     border: none;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
 }
 
 #distancia-slider .noUi-marker,
-#distancia-slider .noUi-marker-large {
+#distancia-slider .noUi-marker-large,
+#distancia-slider-mapa .noUi-marker,
+#distancia-slider-mapa .noUi-marker-large {
     height: 6px;
 }
-#distancia-slider .noUi-tooltip {
+#distancia-slider .noUi-tooltip,
+#distancia-slider-mapa .noUi-tooltip {
 	background: transparent;
 	border: none;
 }
 /* Añadimos la "km" automáticamente detrás del número */
-#distancia-slider.noUi-horizontal .noUi-tooltip::after {
+#distancia-slider.noUi-horizontal .noUi-tooltip::after,
+#distancia-slider-mapa.noUi-horizontal .noUi-tooltip::after {
     content: " km";
     font-weight: normal;
     font-size: 0.85em;
@@ -2185,13 +2193,29 @@ span.grados {
     top: 1px;
 }
 /* Que desaparezca el cuadro y también el "km" cuando la función devuelve "" */
-#distancia-slider.noUi-horizontal .noUi-tooltip:empty {
+#distancia-slider.noUi-horizontal .noUi-tooltip:empty,
+#distancia-slider-mapa.noUi-horizontal .noUi-tooltip:empty {
     display: none !important;
 }
 
 /* Oculta las letras "km" únicamente cuando el tooltip muestra el símbolo de infinito */
-#distancia-slider.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after {
+#distancia-slider.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after,
+#distancia-slider-mapa.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after {
     content: "" !important;
+}
+
+/* Filtro de distancia en el panel de filtros del mapa (mismo filtro que la tabla) */
+.control-distancia-mapa-container {
+    margin-top: 8px;
+    margin-bottom: 4px;
+    padding: 4px 6px 8px 6px;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+#distancia-slider-mapa.noUi-horizontal {
+    margin-top: 30px;
+    margin-left: 22px;
+    margin-right: 22px;
 }
 
 /* MODO EDICIÓN FAVORITOS: Bloquear cierre del panel de distancia */
