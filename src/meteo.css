@@ -2243,6 +2243,15 @@ span.grados {
 .fila-filtro-tiempo > span {
     white-space: nowrap;
 }
+/* «⏱️ Desde» y «🚶 A pie» en negrita, como los títulos del resto de filtros */
+.fila-filtro-tiempo > span[data-i18n] {
+    font-weight: bold;
+}
+/* En el panel del mapa el tooltip heredaba line-height 16px y quedaba más pegado al handle que en la tabla */
+#distancia-slider-mapa .noUi-tooltip,
+#pie-slider-mapa .noUi-tooltip {
+    line-height: normal;
+}
 .btn-alterno {
     height: 24px; /* igual que el botón de origen */
     display: inline-flex;
@@ -2286,7 +2295,11 @@ span.grados {
 }
 /* Resplandor blanco fino alrededor de los emojis para que se distingan sobre el azul */
 .texto-unidad {
+    margin-left: 2px;
     font-size: 12px; /* excepción pedida por Alberto (min, km, m) para que quepa el grupo «A pie» en el mapa */
+}
+.signo-mas {
+    margin: 0 -2px; /* 🚗+🚶 más juntos */
 }
 .btn-alterno.hundido .emoji-boton {
     text-shadow: 0 0 2px #fff, 0 0 2px #fff;
@@ -2361,7 +2374,7 @@ span.grados {
 }
 #distancia-slider-mapa.noUi-horizontal,
 #pie-slider-mapa.noUi-horizontal {
-    margin-top: 30px;
+    margin-top: 30px !important; /* .noUi-horizontal general pone 40px !important */
     margin-left: 22px;
     margin-right: 22px;
 }

@@ -903,7 +903,7 @@
     "modoTotal": "🚗+🚶 Total",
     "estimadoLineaRecta": "Non hai datos de tempo/distancia. Estimación aproximada en liña recta.",
     "aPie": "🚶 A pé",
-    "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span>&nbsp;<span class=\"texto-unidad\">min</span>",
+    "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
     "unidadPieKm": "↔︎&nbsp;<span class=\"texto-unidad\">km</span>",
     "unidadPieM": "↑&nbsp;<span class=\"texto-unidad\">m</span>",
     "seleccionarOrigen": "Seleccionar orixe",

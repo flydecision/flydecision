@@ -903,7 +903,7 @@
     "modoTotal": "🚗+🚶 Gesamt",
     "estimadoLineaRecta": "Keine Zeit-/Entfernungsdaten. Ungefähre Schätzung per Luftlinie.",
     "aPie": "🚶 Zu Fuß",
-    "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span>&nbsp;<span class=\"texto-unidad\">min</span>",
+    "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
     "unidadPieKm": "↔︎&nbsp;<span class=\"texto-unidad\">km</span>",
     "unidadPieM": "↑&nbsp;<span class=\"texto-unidad\">m</span>",
     "seleccionarOrigen": "Ursprung auswählen",
