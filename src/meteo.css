@@ -2238,7 +2238,7 @@ span.grados {
     display: inline-grid;
     grid-auto-flow: column;
     grid-auto-columns: 1fr; /* todos los botones del grupo con la misma anchura */
-    gap: 4px;
+    gap: 8px;
 }
 .fila-filtro-tiempo > span {
     white-space: nowrap;
@@ -2260,7 +2260,8 @@ span.grados {
 }
 /* Misma anchura para los botones de los dos grupos (🚗 / 🚗+🚶 y min / km / m) */
 .grupo-botones-alternos .btn-alterno {
-    width: 64px;
+    width: 58px;
+    padding: 0;
 }
 /* Panel del mapa (más estrecho): huecos mínimos para que la fila 1 quepa en una línea */
 #control-distancia-mapa-container .fila-filtro-tiempo {
@@ -2274,6 +2275,10 @@ span.grados {
     color: #fff;
     border-color: #007aff;
     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+/* Resplandor blanco fino alrededor de los emojis para que se distingan sobre el azul */
+.btn-alterno.hundido .emoji-boton {
+    text-shadow: 0 0 2px #fff, 0 0 2px #fff;
 }
 /* En el panel del mapa, .leaflet-bar button fuerza fondo blanco con !important */
 .leaflet-bar .btn-alterno.hundido {
