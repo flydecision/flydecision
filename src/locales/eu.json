@@ -910,6 +910,7 @@
   "html": {
     "verTodosDiasTitle": "Egun guztiak ikusi",
     "distanciaDesde": "Distantzia hemendik:",
+    "sinLimite": "Mugarik gabe",
     "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> Hemendik",
     "modoCoche": "🚗 Autoa",
     "modoTotal": "🚗+🚶 Guztira",

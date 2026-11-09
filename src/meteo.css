@@ -2138,10 +2138,10 @@ span.grados {
 
 #div-filtro-distancia-interno #distancia-slider.noUi-horizontal,
 #div-filtro-distancia-interno #pie-slider.noUi-horizontal {
-    margin-top: 30px !important;
-    width: auto !important; /* misma anchura que el deslizador del rango horario (18 px por lado, como .noUi-horizontal) */
-    margin-left: 18px !important;
-    margin-right: 18px !important;
+    margin-top: 12px !important; /* el valor va fijo encima (.valor-filtro-tiempo) */
+    width: auto !important; /* misma anchura que el deslizador del rango horario: 10 px de la tarjeta + 8 px = 18 px por lado */
+    margin-left: 8px !important;
+    margin-right: 8px !important;
 }
 
 #distancia-slider .noUi-connect,
@@ -2320,10 +2320,58 @@ span.grados {
 .leaflet-bar .btn-alterno.hundido {
     background-color: #007aff !important;
 }
-/* Fila «🚶 A pie»: separación con el deslizador del coche (antes la daba la nota de estimación, ya quitada) */
-#distancia-slider ~ .fila-filtro-tiempo,
-#distancia-slider-mapa ~ .fila-filtro-tiempo {
-    margin-top: 20px;
+/* Tarjetas: cada filtro (🚗 tiempo / 🚶 a pie) en su caja con fondo suave, para leerlos como dos bloques */
+.tarjeta-filtro {
+    background: #f3f5f9;
+    border-radius: 10px;
+    padding: 8px 10px 14px 10px;
+    margin-top: 8px;
+}
+.tarjeta-filtro .fila-filtro-tiempo {
+    margin-top: 0;
+}
+/* Valor elegido, fijo encima del deslizador («1 h 30 min», «Sin límite»): sustituye a la etiqueta que seguía al tirador */
+.valor-filtro-tiempo {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #222;
+    margin-top: 8px;
+    min-height: 20px;
+}
+.valor-filtro-tiempo.sin-limite {
+    font-weight: normal;
+    color: #777;
+}
+.valor-filtro-tiempo .unidad-tooltip {
+    margin: 0 0 0 2px !important;
+    padding: 0 !important;
+}
+.tarjeta-filtro .noUi-tooltip {
+    display: none !important;
+}
+/* Botones de opciones unidos en un solo control (🚗 | 🚗+🚶 y min | km | m) */
+.tarjeta-filtro .grupo-botones-alternos {
+    gap: 0;
+    border-radius: 8px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+.tarjeta-filtro .grupo-botones-alternos .btn-alterno {
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+}
+.tarjeta-filtro .grupo-botones-alternos .btn-alterno + .btn-alterno {
+    border-left-width: 0;
+}
+.tarjeta-filtro .grupo-botones-alternos .btn-alterno:first-child {
+    border-radius: 8px 0 0 8px;
+}
+.tarjeta-filtro .grupo-botones-alternos .btn-alterno:last-child {
+    border-radius: 0 8px 8px 0;
+}
+.tarjeta-filtro .grupo-botones-alternos .btn-alterno.hundido {
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
 .nota-estimado-recta {
     font-size: 13px; /* excepción pedida por Alberto: aviso provisional hasta tener tiempos reales */
@@ -2407,9 +2455,9 @@ span.grados {
 }
 #distancia-slider-mapa.noUi-horizontal,
 #pie-slider-mapa.noUi-horizontal {
-    margin-top: 30px !important; /* .noUi-horizontal general pone 40px !important */
-    margin-left: 22px;
-    margin-right: 22px;
+    margin-top: 12px !important; /* .noUi-horizontal general pone 40px !important; el valor va fijo encima */
+    margin-left: 12px !important;
+    margin-right: 12px !important;
 }
 
 /* MODO EDICIÓN FAVORITOS: Bloquear cierre del panel de distancia */

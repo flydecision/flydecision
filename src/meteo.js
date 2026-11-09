@@ -11944,6 +11944,24 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		});
 	}
 
+	// Valor elegido, fijo encima de cada deslizador (en su tarjeta): «1 h 30 min», «500 m»… o «Sin límite»
+	const pintarValorFiltroTiempo = (el) => {
+		if (!el || !el.noUiSlider) return;
+		const caja = el.parentElement && el.parentElement.querySelector('.valor-filtro-tiempo');
+		if (!caja) return;
+		const idx = indiceSlider(el);
+		const esPie = el === pieSlider || el === pieSliderMapa;
+		const valor = esPie ? CORTES_PIE_GLOBAL[unidadFiltroPie][idx] : CORTES_DISTANCIA_GLOBAL[idx];
+		const html = formatearTooltipFiltroTiempo(valor, esPie ? unidadFiltroPie : 'min');
+		caja.innerHTML = html || t('html.sinLimite');
+		caja.classList.toggle('sin-limite', !html);
+	};
+	window.pintarValoresFiltroTiempo = () => [distanciaSlider, distanciaSliderMapa, pieSlider, pieSliderMapa].forEach(pintarValorFiltroTiempo);
+	[distanciaSlider, distanciaSliderMapa, pieSlider, pieSliderMapa].forEach(el => {
+		if (el && el.noUiSlider) el.noUiSlider.on('update.valor', () => pintarValorFiltroTiempo(el));
+	});
+	window.pintarValoresFiltroTiempo();
+
 	// Pone el deslizador de a pie a ∞ (sin refiltrar: lo hace quien llama)
 	window.resetFiltroPie = function () {
 		if (!pieSlider || !pieSlider.noUiSlider) return;
@@ -11984,6 +12002,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		[pieSlider, pieSliderMapa].forEach(el => { if (el && el.noUiSlider) el.noUiSlider.updateOptions(opcionesSliderPie(), false); });
 		if (typeof window.resetUltimoPieConfirmado === 'function') window.resetUltimoPieConfirmado();
 		window.reseteandoFiltroPie = false;
+		window.pintarValoresFiltroTiempo();
 		window.sincronizarFiltroDistanciaMapa();
 		if (habiaFiltroPie) ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
 	});

@@ -255,6 +255,7 @@ setTimeout(function () {
 				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" data-i18n="[title]html.incluirNoFavs"><img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
 			-->
 
+			<div class="tarjeta-filtro">
 			<!-- Fila 1: tiempo al despegue (🚗 Coche / 🚗+🚶 Total) -->
 			<div id="titulo-distancia-slider" class="fila-filtro-tiempo">
 				<span data-i18n="html.tiempoDesde"><span class="emoji-titulo-coche">🚗</span> Desde</span>
@@ -272,9 +273,12 @@ setTimeout(function () {
 				</span>
 			</div>
 			<!-- Fila 2: deslizador de minutos -->
-			<div id="distancia-slider"></div>
+			<div class="valor-filtro-tiempo"></div>
+				<div id="distancia-slider"></div>
+			</div>
 			<!-- Aviso de estimación en línea recta: oculto hasta la fase 3 (se mostrará solo si faltan tiempos reales en coche) -->
 			<!-- <div class="nota-estimado-recta" data-i18n="html.estimadoLineaRecta">Sin datos tiempo/distancia. Estimación aproximada.</div> -->
+			<div class="tarjeta-filtro">
 			<!-- Fila 3: tramo a pie (min / km / ↑m) -->
 			<div class="fila-filtro-tiempo">
 				<span data-i18n="html.aPie">🚶 A pie</span>
@@ -290,7 +294,9 @@ setTimeout(function () {
 				</span>
 			</div>
 			<!-- Fila 4: deslizador del tramo a pie -->
-			<div id="pie-slider"></div>
+			<div class="valor-filtro-tiempo"></div>
+				<div id="pie-slider"></div>
+			</div>
 
 		</div>
 			
@@ -1162,6 +1168,7 @@ setTimeout(function () {
 
 			<!-- Filtro Distancia (el mismo filtro que la tabla: se sincroniza con #distancia-slider) -->
 			<div id="control-distancia-mapa-container" class="control-distancia-mapa-container solo-modo-avanzado">
+				<div class="tarjeta-filtro">
 				<!-- Fila 1: tiempo al despegue (🚗 Coche / 🚗+🚶 Total) -->
 				<div id="titulo-distancia-slider-mapa" class="fila-filtro-tiempo">
 					<span data-i18n="html.tiempoDesde"><span class="emoji-titulo-coche">🚗</span> Desde</span>
@@ -1179,9 +1186,12 @@ setTimeout(function () {
 					</span>
 				</div>
 				<!-- Fila 2: deslizador de minutos -->
-				<div id="distancia-slider-mapa"></div>
+				<div class="valor-filtro-tiempo"></div>
+					<div id="distancia-slider-mapa"></div>
+				</div>
 				<!-- Aviso de estimación en línea recta: oculto hasta la fase 3 (se mostrará solo si faltan tiempos reales en coche) -->
 			<!-- <div class="nota-estimado-recta" data-i18n="html.estimadoLineaRecta">Sin datos tiempo/distancia. Estimación aproximada.</div> -->
+				<div class="tarjeta-filtro">
 				<!-- Fila 3: tramo a pie (min / km / ↑m) -->
 				<div class="fila-filtro-tiempo">
 					<span data-i18n="html.aPie">🚶 A pie</span>
@@ -1197,7 +1207,9 @@ setTimeout(function () {
 					</span>
 				</div>
 				<!-- Fila 4: deslizador del tramo a pie -->
-				<div id="pie-slider-mapa"></div>
+				<div class="valor-filtro-tiempo"></div>
+					<div id="pie-slider-mapa"></div>
+				</div>
 			</div>
 
 			<!-- Contenedor Principal en 2 Columnas -->

@@ -909,6 +909,7 @@
   "html": {
     "verTodosDiasTitle": "Ver todos os dias",
     "distanciaDesde": "Distância desde:",
+    "sinLimite": "Sem limite",
     "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> Desde",
     "modoCoche": "🚗 Carro",
     "modoTotal": "🚗+🚶 Total",
