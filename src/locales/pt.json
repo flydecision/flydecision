@@ -878,6 +878,8 @@
 
   "popupDespegue": {
     "aPie": "A pé 🚶:",
+    "rutaVerificada": "Percurso verificado manualmente",
+    "rutaAutomatica": "Percurso calculado automaticamente (pode conter erros)",
     "enCocheHastaDespegue": "Chega-se de carro à descolagem",
     "region": "Região:",
     "provincia": "Província:",

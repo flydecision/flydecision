@@ -879,6 +879,8 @@
 
   "popupDespegue": {
     "aPie": "À pied 🚶 :",
+    "rutaVerificada": "Itinéraire vérifié manuellement",
+    "rutaAutomatica": "Itinéraire calculé automatiquement (peut contenir des erreurs)",
     "enCocheHastaDespegue": "Accessible en voiture",
     "region": "Région :",
     "provincia": "Province :",

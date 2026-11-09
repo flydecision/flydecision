@@ -580,7 +580,8 @@ function textoAccesoPieDespegue(id) {
     if (!pie || !Number.isFinite(Number(pie.min))) return '';
     let datos;
     // ✅ = ruta comprobada (pie.c), 🤖 = cálculo automático: «A pie 🚶 (✅):»
-    const titulo = t('popupDespegue.aPie').replace(/\s*:\s*$/, '') + ` (${pie.c ? '✅' : '🤖'}):`;
+    const marca = `<span title="${t(pie.c ? 'popupDespegue.rutaVerificada' : 'popupDespegue.rutaAutomatica')}" style="cursor: help;">${pie.c ? '✅' : '🤖'}</span>`;
+    const titulo = t('popupDespegue.aPie').replace(/\s*:\s*$/, '') + ` (${marca}):`;
     if (Number(pie.min) === 0 && !Number(pie.km)) {
         datos = t('popupDespegue.enCocheHastaDespegue');
     } else {

@@ -879,6 +879,8 @@
 
   "popupDespegue": {
     "aPie": "On foot 🚶:",
+    "rutaVerificada": "Route manually verified",
+    "rutaAutomatica": "Route calculated automatically (may contain errors)",
     "enCocheHastaDespegue": "You can drive to the take-off",
     "region": "Region:",
     "provincia": "Province:",

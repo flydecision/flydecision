@@ -879,6 +879,8 @@
 
   "popupDespegue": {
     "aPie": "A pé 🚶:",
+    "rutaVerificada": "Ruta verificada manualmente",
+    "rutaAutomatica": "Ruta calculada automaticamente (pode conter erros)",
     "enCocheHastaDespegue": "Chégase en coche á engalaxe",
     "region": "Rexión:",
     "provincia": "Provincia:",
