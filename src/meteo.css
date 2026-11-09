@@ -1972,6 +1972,16 @@ span.grados {
 #horario-slider .noUi-connect {
 	background: #0078d4;
 }
+/* El tirador no sobresale de la barra (como en los demás deslizadores): la zona útil se mete 14 px (medio tirador)
+   por cada lado; esos 14 px quedan del color vacío porque la franja azul va entre los dos tiradores */
+#horario-slider.noUi-horizontal {
+	padding: 0 14px;
+	background: #FAFAFA;
+	box-shadow: 0 3px 6px -5px #BBB;
+}
+#horario-slider .noUi-connects {
+	border-radius: 0;
+}
 /* Hide the first and last pip markers while keeping labels */
 #horario-slider .noUi-pips .noUi-marker:first-of-type,
 #horario-slider .noUi-pips .noUi-marker:last-of-type {
@@ -5323,7 +5333,16 @@ body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa .leaflet-top {
         #fb796e, #f9876d, #f7966c, #f4a46c, #f2b36b,
         #f0c16a, #d5ca78, #bbd386, #a0dd93, #86e6a1, #6befaf
     );
-    border-radius: 3px;
+    border-radius: 0;
+}
+/* El tirador no sobresale de la barra: zona útil 14 px (medio tirador) hacia dentro por cada lado.
+   Esos 14 px los pinta la barra: a la izquierda blanco (como el tramo antes del tirador) y a la derecha el último verde */
+#puntuacion-mapa-slider.noUi-horizontal {
+    padding: 0 14px;
+    background: linear-gradient(to right, #fff 14px, #6befaf 14px);
+}
+#puntuacion-mapa-slider .noUi-connects {
+    border-radius: 0;
 }
 
 /* ==========================================================================
