@@ -677,7 +677,7 @@ setTimeout(function () {
 				<div class="linea-con-bt-info" style="margin-bottom: 12px;">
 					<label for="chkRecordarFiltrosMapa" class="custom-checkbox">
 						<input type="checkbox" id="chkRecordarFiltrosMapa" onclick="alternarAjusteMemoriaMapa('chkRecordarFiltrosMapa', 'METEO_RECORDAR_FILTROS_MAPA')"> 
-						<span data-i18n="ajustes.recordarFiltrosMapa">Recordar los filtros (favoritos, seguimiento, actividad...)</span>
+						<span data-i18n="ajustes.recordarFiltrosMapa">Recordar filtro de despegues favoritos</span>
 					</label>
 				</div>
 				
@@ -1283,7 +1283,7 @@ setTimeout(function () {
 						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-				<input type="range" id="sliderActividad" min="1" max="5" value="1" step="1" style="width:98%;">
+				<input type="range" id="sliderActividad" autocomplete="off" min="1" max="5" value="1" step="1" style="width:98%;">
 			</div>
 
 			<div class="control-vuelos-container solo-modo-avanzado" style="margin-bottom:9px;" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
@@ -1293,7 +1293,7 @@ setTimeout(function () {
 						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-				<input type="range" id="sliderVuelos" min="0" max="9" value="0" step="1" style="width:98%;">
+				<input type="range" id="sliderVuelos" autocomplete="off" min="0" max="9" value="0" step="1" style="width:98%;">
 			</div>
 
 			<!-- <div class="control-ultimovuelo-container solo-modo-avanzado" style="margin-bottom:9px;" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
@@ -1307,7 +1307,7 @@ setTimeout(function () {
 			     data-i18n="[title]mapa.titleTiempoBalizas" 
 			     title="Mostrar solo las balizas con datos actualizados dentro del tiempo seleccionado">
 				<label for="sliderTiempoBalizas" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.TiempoBalizas">Actualización balizas &lt;= </label><span id="valorTiempoBalizasTexto">Todas</span>
-				<input type="range" id="sliderTiempoBalizas" min="0" max="7" value="0" step="1" style="width:98%;">
+				<input type="range" id="sliderTiempoBalizas" autocomplete="off" min="0" max="7" value="0" step="1" style="width:98%;">
 			</div>
 
 			<!-- 2. Filtro Altitud Balizas (Volátil / Sesión) -->
@@ -1315,11 +1315,7 @@ setTimeout(function () {
 			     style="margin-bottom:9px;" 
 			     title="Mostrar solo las balizas con una altitud mayor o igual a la cifra seleccionada">
 				<label for="sliderAltitudBalizas" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.AltitudBalizas">Altitud balizas >= </label><span id="valorAltitudBalizasTexto">0 m</span>
-				<span class="chip-sesion-volatil" 
-				      style="font-weight:normal; font-size:0.75em; color:#6c757d; background:#eef1f4; border:1px solid #dce1e6; padding:1px 0px; border-radius:10px; margin-left:0px; vertical-align:1px;" 
-				      data-i18n="[title]mapa.titleSesion;mapa.sesion" 
-				      title="Filtro no memorizado: no se guarda aunque tengas activado recordar filtros">(sesión)</span>
-				<input type="range" id="sliderAltitudBalizas" min="0" max="30" value="0" step="1" style="width:98%;">
+				<input type="range" id="sliderAltitudBalizas" autocomplete="off" min="0" max="30" value="0" step="1" style="width:98%;">
 			</div>
 
 			<!-- 3. Rosa de los vientos (Volátil / Sesión) -->
@@ -1329,25 +1325,21 @@ setTimeout(function () {
 				<!-- Columna Izquierda -->
 				<div style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; padding-right: 8px !important;">
 					<span style="font-weight: bold; line-height: 1.2;" data-i18n="mapa.orientacion">Orientación:</span>
-					<span class="chip-sesion-volatil" 
-						style="font-weight: normal; font-size: 0.75em; color: #6c757d; background: #eef1f4; border: 1px solid #dce1e6; padding: 1px 0px; border-radius: 10px; margin-top: 3px;" 
-						data-i18n="[title]mapa.titleSesion;mapa.sesion" 
-						title="Filtro no memorizado: no se guarda aunque tengas activado recordar filtros">(sesión)</span>
 				</div>
 
 				<!-- Columna Derecha: Rosa -->
 				<div id="rosaDeLosVientos" style="margin: 0 !important; align-self: center !important;">
-					<label class="filtro-orientacion" data-orientacion="NO" data-i18n="[title]orientaciones.noroeste"><input type="checkbox" class="filtro-orientacion-checkbox" value="NO"><span data-i18n="orientaciones.NO">NO</span></label>
-					<label class="filtro-orientacion" data-orientacion="N"  data-i18n="[title]orientaciones.norte">  <input type="checkbox" class="filtro-orientacion-checkbox" value="N"> <span data-i18n="orientaciones.N">N</span></label>
-					<label class="filtro-orientacion" data-orientacion="NE" data-i18n="[title]orientaciones.noreste"><input type="checkbox" class="filtro-orientacion-checkbox" value="NE"><span data-i18n="orientaciones.NE">NE</span></label>
-					<label class="filtro-orientacion" data-orientacion="O"  data-i18n="[title]orientaciones.oeste">  <input type="checkbox" class="filtro-orientacion-checkbox" value="O"> <span data-i18n="orientaciones.O">O</span></label>
+					<label class="filtro-orientacion" data-orientacion="NO" data-i18n="[title]orientaciones.noroeste"><input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="NO"><span data-i18n="orientaciones.NO">NO</span></label>
+					<label class="filtro-orientacion" data-orientacion="N"  data-i18n="[title]orientaciones.norte">  <input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="N"> <span data-i18n="orientaciones.N">N</span></label>
+					<label class="filtro-orientacion" data-orientacion="NE" data-i18n="[title]orientaciones.noreste"><input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="NE"><span data-i18n="orientaciones.NE">NE</span></label>
+					<label class="filtro-orientacion" data-orientacion="O"  data-i18n="[title]orientaciones.oeste">  <input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="O"> <span data-i18n="orientaciones.O">O</span></label>
 					<label class="centro-rosa filtro-maestro" data-i18n="[title]orientaciones.todos_title">
-						<input type="checkbox" id="filtroMaestroOrientacion" class="filtro-orientacion-checkbox" value="TODOS">
+						<input type="checkbox" id="filtroMaestroOrientacion" class="filtro-orientacion-checkbox" autocomplete="off" value="TODOS">
 					</label>
-					<label class="filtro-orientacion" data-orientacion="E"  data-i18n="[title]orientaciones.este">    <input type="checkbox" class="filtro-orientacion-checkbox" value="E"> <span data-i18n="orientaciones.E">E</span></label>
-					<label class="filtro-orientacion" data-orientacion="SO" data-i18n="[title]orientaciones.suroeste"><input type="checkbox" class="filtro-orientacion-checkbox" value="SO"><span data-i18n="orientaciones.SO">SO</span></label>
-					<label class="filtro-orientacion" data-orientacion="S"  data-i18n="[title]orientaciones.sur">    <input type="checkbox" class="filtro-orientacion-checkbox" value="S"> <span data-i18n="orientaciones.S">S</span></label>
-					<label class="filtro-orientacion" data-orientacion="SE" data-i18n="[title]orientaciones.sureste"> <input type="checkbox" class="filtro-orientacion-checkbox" value="SE"><span data-i18n="orientaciones.SE">SE</span></label>
+					<label class="filtro-orientacion" data-orientacion="E"  data-i18n="[title]orientaciones.este">    <input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="E"> <span data-i18n="orientaciones.E">E</span></label>
+					<label class="filtro-orientacion" data-orientacion="SO" data-i18n="[title]orientaciones.suroeste"><input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="SO"><span data-i18n="orientaciones.SO">SO</span></label>
+					<label class="filtro-orientacion" data-orientacion="S"  data-i18n="[title]orientaciones.sur">    <input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="S"> <span data-i18n="orientaciones.S">S</span></label>
+					<label class="filtro-orientacion" data-orientacion="SE" data-i18n="[title]orientaciones.sureste"> <input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="SE"><span data-i18n="orientaciones.SE">SE</span></label>
 				</div>
 
 			</div>

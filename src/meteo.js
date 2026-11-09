@@ -10321,15 +10321,7 @@ window.resetearFiltrosMapaEnVivo = function() {
 
     // Si recordar filtros está activo, vaciamos también la memoria de esta sesión
     if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-        localStorage.setItem('METEO_MAPA_MINIMOVUELOS', '0');
-        localStorage.setItem('METEO_MINIMO_ANO_ULTIMO_VUELO', '0');
-        localStorage.setItem('METEO_MAPA_FILTRO_FAV', '0');
-        localStorage.setItem('METEO_MAPA_FILTRO_SEG', '0');
-        localStorage.setItem('METEO_MAPA_FILTRO_FAV_BALIZAS', '0');
-        localStorage.setItem('METEO_MAPA_FILTRO_SEG_BALIZAS', '0');
-        localStorage.setItem('METEO_MAPA_FILTRO_ACT', '1');
-        localStorage.setItem('METEO_MAPA_FILTRO_ORI', '[]');
-        localStorage.setItem('METEO_MAPA_FILTRO_TIEMPO_BALIZAS', '0'); 
+        localStorage.setItem('METEO_MAPA_FILTRO_FAV', '0'); // el único filtro del mapa que se recuerda
     }
 
     // 2. Resetear Sliders visuales del mapa
@@ -14838,10 +14830,11 @@ window.evaluarEstadoNuevosUsuarios = function() {
 const recordarFiltros = localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true';
 
 let filtroFavoritosMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_FAV') || '0') : 0; // 0 = Todos, 1 = Solo Favoritos, 2 = Solo No Favoritos
-let filtroSeguimientoMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_SEG') || '0') : 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
-let filtroFavoritosBalizasMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_FAV_BALIZAS') || '0') : 0;
-let filtroSeguimientoBalizasMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_SEG_BALIZAS') || '0') : 0;
-let filtroActividadMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_ACT') || '1') : 1; // El valor inicial de actividad mínima es 1 (Todos)
+// «Recordar filtro de despegues favoritos» (Ajustes) solo afecta al ❤️ de despegues; el resto de filtros del mapa son temporales
+let filtroSeguimientoMapa = 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
+let filtroFavoritosBalizasMapa = 0;
+let filtroSeguimientoBalizasMapa = 0;
+let filtroActividadMapa = 1; // El valor inicial de actividad mínima es 1 (Todos)
 
 // SVGs del Botón Favorito (Todos / Solo Favs / Excluir Favs)
 const SVG_FAV_TODOS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
@@ -14879,10 +14872,6 @@ window.actualizarBotonFavoritosMapa = function() {
 window.ciclarFiltroSeguimientoMapa = function() {
     filtroSeguimientoMapa = (filtroSeguimientoMapa + 1) % 2; 
 
-    // Si la opción de recordar filtros está activa, guardamos el estado (0 o 1)
-    if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-        localStorage.setItem('METEO_MAPA_FILTRO_SEG', filtroSeguimientoMapa);
-    }
 
     actualizarBotonSeguimientoMapa();
     actualizarFiltrosMapa();
@@ -14985,9 +14974,6 @@ window.toggleBalizaSeguimientoDesdeMapa = function(redId, id, btnElement) {
 
 window.ciclarFiltroFavoritosBalizasMapa = function() {
     filtroFavoritosBalizasMapa = (filtroFavoritosBalizasMapa === 1) ? 0 : 1;
-    if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-        localStorage.setItem('METEO_MAPA_FILTRO_FAV_BALIZAS', filtroFavoritosBalizasMapa);
-    }
     actualizarBotonFavoritosBalizasMapa();
     Object.keys(REDES_BALIZAS).forEach(redId => {
         actualizarIconosBalizas(redId);
@@ -15009,9 +14995,6 @@ window.actualizarBotonFavoritosBalizasMapa = function() {
 
 window.ciclarFiltroSeguimientoBalizasMapa = function() {
     filtroSeguimientoBalizasMapa = (filtroSeguimientoBalizasMapa + 1) % 2;
-    if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-        localStorage.setItem('METEO_MAPA_FILTRO_SEG_BALIZAS', filtroSeguimientoBalizasMapa);
-    }
     actualizarBotonSeguimientoBalizasMapa();
     Object.keys(REDES_BALIZAS).forEach(redId => {
         actualizarIconosBalizas(redId);
@@ -18518,20 +18501,20 @@ function inicializarMapaLeaflet() {
     }
 
     // --- SINCRONIZACIÓN INICIAL DEL PANEL INTERNO DEL MAPA ---
-    const recordarFiltrosMapa = localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true';
-
+    // Filtros temporales: se ponen a cero al arrancar (el navegador, al recargar, restaura por su cuenta
+    // checkboxes y sliders; por eso orientación y altitud de balizas parecían «recordarse»)
     const sliderVuelosFiltro = document.getElementById('sliderVuelos');
     const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
     const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
     const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
 
-    const indiceVuelos = recordarFiltrosMapa ? (localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0') : '0';
+    const indiceVuelos = '0';
     if (sliderVuelosFiltro && textoVuelosFiltro) {
         sliderVuelosFiltro.value = indiceVuelos;
         textoVuelosFiltro.innerText = ESCALA_VUELOS[parseInt(indiceVuelos, 10)] || 0;
     }
 
-    const indiceUltimoVuelo = recordarFiltrosMapa ? (localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0') : '0';
+    const indiceUltimoVuelo = '0';
     if (sliderUltimoVueloFiltro && textoUltimoVueloFiltro) {
         sliderUltimoVueloFiltro.value = indiceUltimoVuelo;
         let val = ESCALA_ULTIMO_VUELO[parseInt(indiceUltimoVuelo, 10)] || ESCALA_ULTIMO_VUELO[0];
@@ -18539,11 +18522,19 @@ function inicializarMapaLeaflet() {
     }
 
     const sliderTiempoFiltro = document.getElementById('sliderTiempoBalizas');
-    const indiceTiempo = recordarFiltrosMapa ? (localStorage.getItem('METEO_MAPA_FILTRO_TIEMPO_BALIZAS') || '0') : '0';
+    const indiceTiempo = '0';
     if (sliderTiempoFiltro) {
         sliderTiempoFiltro.value = indiceTiempo;
         obtenerMaxTiempoBalizas(); // Lee el valor e inyecta el texto ("Todas", "1 h", etc.)
     }
+
+    const sliderAltitudInicial = document.getElementById('sliderAltitudBalizas');
+    if (sliderAltitudInicial) {
+        sliderAltitudInicial.value = '0';
+        obtenerMinAltitudBalizas(); // pone el texto «0 m»
+    }
+    document.querySelectorAll('.filtro-orientacion-checkbox').forEach(cb => { cb.checked = false; });
+    if (typeof actualizarEstadoMaestro === 'function') actualizarEstadoMaestro();
 
     // Ejecutamos el motor de filtros y la interfaz para aplicar los datos recién leídos
     if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
@@ -18696,10 +18687,6 @@ function inicializarMapaLeaflet() {
             // Usamos 'input' para que filtre en tiempo real mientras arrastras
             // Si va muy lento el mapa, cámbialo por 'change' (filtra al soltar el ratón)
             sliderVuelos.addEventListener('input', function() {
-                // Guardamos la posición del slider de vuelos si recordar filtros está activo
-                if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-                    localStorage.setItem('METEO_MAPA_MINIMOVUELOS', this.value);
-                }
                 ejecutarOperacionPesada(() => {
                     actualizarFiltrosMapa();
                     actualizarEstadoVisualFiltros();
@@ -18711,10 +18698,6 @@ function inicializarMapaLeaflet() {
         const sliderUltimoVuelo = document.getElementById('sliderUltimoVuelo');
         if(sliderUltimoVuelo) {
             sliderUltimoVuelo.addEventListener('input', function() {
-                // Guardamos la posición del slider de último vuelo si recordar filtros está activo
-                if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-                    localStorage.setItem('METEO_MINIMO_ANO_ULTIMO_VUELO', this.value);
-                }
                 // Se actualiza el texto y se llama al filtro principal
                 obtenerMinAnioUltimoVuelo(); 
                 actualizarFiltrosMapa();
@@ -18749,9 +18732,6 @@ function inicializarMapaLeaflet() {
         const sliderTiempoBalizas = document.getElementById('sliderTiempoBalizas');
         if (sliderTiempoBalizas) {
             sliderTiempoBalizas.addEventListener('input', function() {
-                if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-                    localStorage.setItem('METEO_MAPA_FILTRO_TIEMPO_BALIZAS', this.value);
-                }
                 obtenerMaxTiempoBalizas();
                 Object.keys(REDES_BALIZAS).forEach(redId => {
                     actualizarIconosBalizas(redId);
@@ -18789,10 +18769,6 @@ function inicializarMapaLeaflet() {
         sliderAct.addEventListener('input', function() {
             filtroActividadMapa = parseInt(this.value, 10);
 
-            // Si la opción de recordar filtros está activa, guardamos el nivel seleccionado (1 a 5)
-            if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-                localStorage.setItem('METEO_MAPA_FILTRO_ACT', filtroActividadMapa);
-            }
 
             // Inyectamos el HTML de las barras + el texto
             txtAct.innerHTML = renderizarTextoActividad(filtroActividadMapa);
