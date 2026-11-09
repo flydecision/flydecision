@@ -12068,6 +12068,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		}
 		const navDistance = document.getElementById('nav-distance');
 		if (navDistance) navDistance.classList.toggle('filtrado', hayFiltro);
+		// Borde rojo alrededor de los dos filtros de la tabla (igual que en el mapa)
+		const contFiltrosTabla = document.getElementById('div-filtro-distancia-interno');
+		if (contFiltrosTabla) contFiltrosTabla.classList.toggle('borde-rojo-externo', hayFiltro);
 
 		if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
 			if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();

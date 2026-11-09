@@ -1023,7 +1023,12 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 #div-filtro-distancia .div-paneles-controles-transparente {
-    padding-bottom: 5px;
+    padding-bottom: 0;      /* sin hueco: el borde rojo (filtro activo) rodea las tarjetas, como en el mapa */
+    margin-top: 8px;        /* antes lo daba el margen de la 1.ª tarjeta */
+    margin-bottom: 5px;     /* antes padding-bottom */
+}
+#div-filtro-distancia .div-paneles-controles-transparente > .tarjeta-filtro:first-of-type {
+    margin-top: 0;
 }
 
 .div-paneles-controles-botones {
