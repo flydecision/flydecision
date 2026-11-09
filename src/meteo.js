@@ -11861,6 +11861,17 @@ function comprobarAvisoCambiosPuntuacionXC() {
 	const maxIndicePie = () => CORTES_PIE_GLOBAL[unidadFiltroPie].length - 1;
 	const indiceSlider = (el) => Math.round(parseFloat(el.noUiSlider.get()));
 
+	// Filtrado en vivo del mapa mientras se arrastra su deslizador: valor provisional que manda sobre el de la tabla
+	// hasta soltar (al soltar, 'set' lo borra y sincroniza tabla y mapa como siempre). Solo repinta al cambiar de paso.
+	window.filtroMapaEnVivo = null;
+	function filtrarMapaEnVivo(tipo, idx) {
+		if (typeof mapaInicializado === 'undefined' || !mapaInicializado || typeof window.actualizarFiltrosMapa !== 'function') return;
+		window.filtroMapaEnVivo = window.filtroMapaEnVivo || {};
+		if (window.filtroMapaEnVivo[tipo] === idx) return;
+		window.filtroMapaEnVivo[tipo] = idx;
+		window.actualizarFiltrosMapa();
+	}
+
 	const opcionesSliderPie = () => ({
 		handleAttributes: [{ 'aria-label': 'A pie' }],
 		start: maxIndicePie(),
@@ -11883,9 +11894,15 @@ function comprobarAvisoCambiosPuntuacionXC() {
 			range: { 'min': 0, 'max': MAX_INDEX }
 		});
 		distanciaSliderMapa.noUiSlider.on('slide', function () { window.vibrarDispositivo(); });
+		// Mientras se arrastra: filtra los marcadores en vivo (solo con origen elegido; la tabla espera a soltar)
+		distanciaSliderMapa.noUiSlider.on('slide.vivo', function (values) {
+			if (localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL') === null) return;
+			filtrarMapaEnVivo('coche', Math.round(values[0]));
+		});
 
 		// Al soltar en el mapa: se lo pasamos al de la tabla, que decide (origen, aviso, filtrado)
 		distanciaSliderMapa.noUiSlider.on('set', function (values) {
+			window.filtroMapaEnVivo = null;
 			if (sincronizandoDistanciaMapa) return;
 			const idx = Math.round(values[0]);
 			if (idx !== indiceSlider(distanciaSlider)) {
@@ -11918,7 +11935,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
 	if (pieSlider && pieSlider.noUiSlider && pieSliderMapa) {
 		noUiSlider.create(pieSliderMapa, opcionesSliderPie());
 		pieSliderMapa.noUiSlider.on('slide', function () { window.vibrarDispositivo(); });
+		pieSliderMapa.noUiSlider.on('slide.vivo', function (values) { filtrarMapaEnVivo('pie', Math.round(values[0])); });
 		pieSliderMapa.noUiSlider.on('set', function (values) {
+			window.filtroMapaEnVivo = null;
 			if (sincronizandoDistanciaMapa) return;
 			const idx = Math.round(values[0]);
 			if (idx !== indiceSlider(pieSlider)) pieSlider.noUiSlider.set(idx);
@@ -11984,23 +12003,25 @@ function comprobarAvisoCambiosPuntuacionXC() {
 
 	// ¿Hay algún filtro de tiempo / a pie aplicado?
 	window.hayFiltroTiempoActivo = function () {
-		const hayTiempo = distanciaSlider && distanciaSlider.noUiSlider && indiceSlider(distanciaSlider) < MAX_INDEX &&
+		const vivo = window.filtroMapaEnVivo || {}; // valor provisional mientras se arrastra el deslizador del mapa
+		const hayTiempo = distanciaSlider && distanciaSlider.noUiSlider && (vivo.coche ?? indiceSlider(distanciaSlider)) < MAX_INDEX &&
 			localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL') !== null;
-		const hayPie = pieSlider && pieSlider.noUiSlider && indiceSlider(pieSlider) < maxIndicePie();
+		const hayPie = pieSlider && pieSlider.noUiSlider && (vivo.pie ?? indiceSlider(pieSlider)) < maxIndicePie();
 		return !!(hayTiempo || hayPie);
 	};
 
 	// ¿Pasa el despegue los filtros de tiempo al despegue y de tramo a pie? (tabla, sugerencias y mapa)
 	window.pasaFiltroTiempoDespegue = function (id, lat, lon) {
+		const vivo = window.filtroMapaEnVivo || {};
 		if (distanciaSlider && distanciaSlider.noUiSlider) {
-			const limiteMin = CORTES_DISTANCIA_GLOBAL[indiceSlider(distanciaSlider)];
+			const limiteMin = CORTES_DISTANCIA_GLOBAL[vivo.coche ?? indiceSlider(distanciaSlider)];
 			if (limiteMin < 9999) {
 				const t = window.obtenerMinutosAlDespegue(id, lat, lon);
 				if (t && t.min > limiteMin) return false;
 			}
 		}
 		if (pieSlider && pieSlider.noUiSlider) {
-			const limitePie = CORTES_PIE_GLOBAL[unidadFiltroPie][indiceSlider(pieSlider)];
+			const limitePie = CORTES_PIE_GLOBAL[unidadFiltroPie][vivo.pie ?? indiceSlider(pieSlider)];
 			if (limitePie < 9999) {
 				const pie = window.datosAccesoPie[Number(id)];
 				const valor = pie ? Number(pie[unidadFiltroPie]) : NaN;
