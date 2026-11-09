@@ -2105,6 +2105,13 @@ function iniciarGuiaPrincipal(forzar = false) {
                 popover: { 
                     title: t('guiaPrincipal.pasos.sliderDistancia.titulo'), 
                     description: t('guiaPrincipal.pasos.sliderDistancia.descripcion') 
+                }
+            }] : []),
+            ...(!esModoSimple ? [{ 
+                element: '#pie-slider',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.sliderPie.titulo'), 
+                    description: t('guiaPrincipal.pasos.sliderPie.descripcion') 
                 },
                 onDeselected: () => {
                     const panel = document.getElementById('div-filtro-distancia');
@@ -2460,6 +2467,14 @@ function iniciarGuiaFavoritos(forzar = false) {
                 popover: { 
                     title: t('guiaFavoritos.pasos.sliderDistancia.titulo'), 
                     description: t('guiaFavoritos.pasos.sliderDistancia.descripcion')
+                } 
+            }] : []),
+
+            ...(!esModoSimple ? [{ 
+                element: '#pie-slider',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.sliderPie.titulo'), 
+                    description: t('guiaFavoritos.pasos.sliderPie.descripcion')
                 } 
             }] : []),
 

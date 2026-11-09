@@ -302,7 +302,7 @@
       },
       "btnOrigen": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Origin Point",
-        "descripcion": "Here you choose the origin point for the distance filter.<br><br>You can choose the point using a map or your current location."
+        "descripcion": "Here you choose the starting point of the driving-time filter.<br><br>You can pick the point on a map or use your current location."
       },
       "btnIncNoFavs": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Include non-favorites",
@@ -325,16 +325,20 @@
         "descripcion": "Search here for takeoffs by name or province.<br><br>💡 You can type without accents for faster searching."
       },
       "navDistance": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",
-        "descripcion": "Shows a slider to filter takeoffs within a radius around a point.<br><br>👉🏽 I will press this button now to open the filter."
+        "titulo": "🚗🚶 Time to take-off",
+        "descripcion": "Opens the time filters: by car from a point, and on foot from the road to the take-off.<br><br>👉🏽 I will now tap that button to open the filter."
       },
       "filtroDistancia": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",
-        "descripcion": "This filter lets you see only the takeoffs around a specific point.<br><br>💡 Useful for quickly finding takeoffs within a driving range from your location."
+        "titulo": "🚗🚶 Time to take-off",
+        "descripcion": "Filters take-offs by how long it takes you to get there:<br><br>🚗 By car from a point you choose (or 🚗+🚶 adding the walk).<br>🚶 On foot from the road to the take-off: time, distance or climb.<br><br>💡 Useful to quickly find the take-offs you can reach in the time you have."
       },
       "sliderDistancia": {
-        "titulo": "Distance Radius",
-        "descripcion": "Drag this slider to choose the maximum distance.<br><br>The table will show only takeoffs within that radius."
+        "titulo": "🚗 Driving time",
+        "descripcion": "Drag this slider to choose the maximum time to reach the take-off: by car only (🚗) or adding the walk (🚗+🚶).<br><br>Until real driving times are available, it is estimated from the straight-line distance."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Walk",
+        "descripcion": "Filters by the walking access from the road to the take-off: choose minutes (⏱️), kilometres (↔) or climb (↑).<br><br>With «0 min» only the take-offs you can drive to are shown."
       },
       "navMap": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Map</span></div>",
@@ -384,16 +388,20 @@
         "descripcion": "Search for takeoffs by typing the region, province, or name. You can type without accents for speed."
       },
       "filtroDistancia": {
-        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distance</span></div>",
-        "descripcion": "This is a filter that allows you to show only takeoffs around a specific point.<br><br>💡 It can help you quickly find takeoffs within a distance radius of your choice around a point."
+        "titulo": "🚗🚶 Time to take-off",
+        "descripcion": "Filters take-offs by how long it takes you to get there:<br><br>🚗 By car from a point you choose (or 🚗+🚶 adding the walk).<br>🚶 On foot from the road to the take-off: time, distance or climb.<br><br>💡 Useful to quickly find the take-offs you can reach in the time you have."
       },
       "btnOrigen": {
         "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Origin point",
-        "descripcion": "With this button, you choose the center of the distance search radius.<br><br>You can select the point using a map or your current location."
+        "descripcion": "Here you choose the starting point of the driving-time filter.<br><br>You can pick the point on a map or use your current location."
       },
       "sliderDistancia": {
-        "titulo": "Distance to point",
-        "descripcion": "By dragging this slider, you choose the maximum distance in kilometers."
+        "titulo": "🚗 Driving time",
+        "descripcion": "Drag this slider to choose the maximum time to reach the take-off: by car only (🚗) or adding the walk (🚗+🚶).<br><br>Until real driving times are available, it is estimated from the straight-line distance."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Walk",
+        "descripcion": "Filters by the walking access from the road to the take-off: choose minutes (⏱️), kilometres (↔) or climb (↑).<br><br>With «0 min» only the take-offs you can drive to are shown."
       },
       "btnVerSoloFavs": {
         "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Show Only Favorites",
@@ -455,7 +463,7 @@
     },
     "panelFiltros": {
       "titulo": "Filters",
-      "descripcion": "Filter map information according to your needs. You can show or hide only your favorite or tracked takeoffs and beacons. Furthermore, you can filter takeoffs by orientation, activity level or volume of flights registered in XContest, and filter beacons according to their altitude."
+      "descripcion": "Filter map information according to your needs. You can show or hide only your favorite or tracked takeoffs and beacons. Furthermore, you can filter takeoffs by orientation, activity level or volume of flights registered in XContest, and filter beacons according to their altitude. You can also filter take-offs by driving time from a point and by the walk to the take-off (time, distance or climb)."
     },
     "btnPlaneo": {
       "titulo": "Glide calculation",

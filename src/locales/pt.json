@@ -302,7 +302,7 @@
       },
       "btnOrigen": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Ponto de origem",
-        "descripcion": "Aqui escolhe o ponto de origem para o filtro de distância.<br><br>Pode selecionar o ponto utilizando um mapa ou a sua localização atual."
+        "descripcion": "Aqui escolhes o ponto de origem do filtro de tempo de carro.<br><br>Podes escolher o ponto num mapa ou com a tua localização atual."
       },
       "btnIncNoFavs": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Incluir não favoritos",
@@ -325,16 +325,20 @@
         "descripcion": "Pesquisa aqui descolagens pelo seu nome ou província.<br><br>💡 Podes escrever sem acentos para maior agilidade."
       },
       "navDistance": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distância</span></div>",
-        "descripcion": "Mostra um controlo deslizante para filtrar as descolagens num raio à volta de um ponto.<br><br>👉🏽 Agora vou pressionar este botão para abrir o filtro."
+        "titulo": "🚗🚶 Tempo até à descolagem",
+        "descripcion": "Abre os filtros de tempo: de carro desde um ponto e a pé desde a estrada até à descolagem.<br><br>👉🏽 Vou agora carregar nesse botão para abrir o filtro."
       },
       "filtroDistancia": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distância</span></div>",
-        "descripcion": "Este filtro permite-lhe ver apenas as descolagens à volta de um ponto específico.<br><br>💡 Útil para encontrar rapidamente descolagens a uma distância de carro a partir da sua localização."
+        "titulo": "🚗🚶 Tempo até à descolagem",
+        "descripcion": "Filtra as descolagens pelo tempo que demoras a chegar:<br><br>🚗 De carro desde um ponto que escolhes (ou 🚗+🚶 somando o troço a pé).<br>🚶 A pé desde a estrada até à descolagem: tempo, distância ou desnível.<br><br>💡 Serve para encontrar rapidamente as descolagens a que chegas com o tempo que tens."
       },
       "sliderDistancia": {
-        "titulo": "Raio de distância",
-        "descripcion": "Mova este controlo deslizante para escolher a distância máxima.<br><br>A tabela mostrará apenas as descolagens dentro desse raio."
+        "titulo": "🚗 Tempo de carro",
+        "descripcion": "Arrastando este controlo escolhes o tempo máximo para chegar à descolagem: só de carro (🚗) ou somando o troço a pé (🚗+🚶).<br><br>Enquanto não houver tempos reais de carro, é estimado com a distância em linha reta."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Troço a pé",
+        "descripcion": "Filtra pelo acesso a pé desde a estrada até à descolagem: escolhe minutos (⏱️), quilómetros (↔) ou desnível de subida (↑).<br><br>Com «0 min» só são mostradas as descolagens a que se chega de carro."
       },
       "navMap": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
@@ -384,16 +388,20 @@
         "descripcion": "Procure descolagens digitando a região, a província ou o nome. Pode escrever sem acentos para ser mais rápido."
       },
       "filtroDistancia": {
-        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distância</span></div>",
-        "descripcion": "Este é um filtro que lhe permite visualizar apenas as descolagens à volta de um ponto específico.<br><br>💡 Isto pode ajudá-lo a encontrar rapidamente descolagens num raio de distância à sua escolha à volta de um ponto."
+        "titulo": "🚗🚶 Tempo até à descolagem",
+        "descripcion": "Filtra as descolagens pelo tempo que demoras a chegar:<br><br>🚗 De carro desde um ponto que escolhes (ou 🚗+🚶 somando o troço a pé).<br>🚶 A pé desde a estrada até à descolagem: tempo, distância ou desnível.<br><br>💡 Serve para encontrar rapidamente as descolagens a que chegas com o tempo que tens."
       },
       "btnOrigen": {
         "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Ponto de origem",
-        "descripcion": "Aqui escolhe o ponto de origem para o filtro de distância acima.<br><br>Pode selecionar o ponto utilizando um mapa ou a sua localização atual."
+        "descripcion": "Aqui escolhes o ponto de origem do filtro de tempo de carro.<br><br>Podes escolher o ponto num mapa ou com a tua localização atual."
       },
       "sliderDistancia": {
-        "titulo": "Distância ao ponto",
-        "descripcion": "Ao arrastar este controlo deslizante, escolhe a distância máxima em quilómetros."
+        "titulo": "🚗 Tempo de carro",
+        "descripcion": "Arrastando este controlo escolhes o tempo máximo para chegar à descolagem: só de carro (🚗) ou somando o troço a pé (🚗+🚶).<br><br>Enquanto não houver tempos reais de carro, é estimado com a distância em linha reta."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Troço a pé",
+        "descripcion": "Filtra pelo acesso a pé desde a estrada até à descolagem: escolhe minutos (⏱️), quilómetros (↔) ou desnível de subida (↑).<br><br>Com «0 min» só são mostradas as descolagens a que se chega de carro."
       },
       "btnVerSoloFavs": {
         "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Ver apenas favoritos",
@@ -455,7 +463,7 @@
     },
     "panelFiltros": {
       "titulo": "Filtros",
-      "descripcion": "Filtre a informação do mapa de acordo com as suas necessidades. Pode mostrar ou ocultar apenas as suas descolagens e balizas favoritas ou em seguimento. Além disso, pode filtrar descolagens por orientação, nível de atividade ou volume de voos registados no XContest, e filtrar balizas de acordo com a sua altitude."
+      "descripcion": "Filtre a informação do mapa de acordo com as suas necessidades. Pode mostrar ou ocultar apenas as suas descolagens e balizas favoritas ou em seguimento. Além disso, pode filtrar descolagens por orientação, nível de atividade ou volume de voos registados no XContest, e filtrar balizas de acordo com a sua altitude. Também podes filtrar descolagens por tempo de carro desde um ponto e pelo troço a pé até à descolagem (tempo, distância ou desnível)."
     },
     "btnPlaneo": {
       "titulo": "Cálculo de planeio",

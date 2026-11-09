@@ -302,7 +302,7 @@
       },
       "btnOrigen": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Ursprungspunkt",
-        "descripcion": "Hier wählst du den Ursprungspunkt für den Entfernungsfilter.<br><br>Du kannst den Punkt mithilfe einer Karte oder deines aktuellen Standorts auswählen."
+        "descripcion": "Hier wählst du den Ausgangspunkt für den Filter nach Fahrzeit.<br><br>Du kannst den Punkt auf einer Karte oder mit deinem aktuellen Standort wählen."
       },
       "btnIncNoFavs": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Nicht-Favoriten einbeziehen",
@@ -325,16 +325,20 @@
         "descripcion": "Suche hier nach Startplätzen über ihren Namen oder ihre Region.<br><br>💡 Für eine schnellere Suche kannst du ohne Akzente schreiben."
       },
       "navDistance": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Entfernung</span></div>",
-        "descripcion": "Zeigt einen Schieberegler an, um Startplätze in einem Radius um einen Punkt zu filtern.<br><br>👉🏽 Ich werde diese Schaltfläche jetzt drücken, um den Filter zu öffnen."
+        "titulo": "🚗🚶 Zeit zum Startplatz",
+        "descripcion": "Öffnet die Zeitfilter: mit dem Auto von einem Punkt aus und zu Fuß von der Straße bis zum Startplatz.<br><br>👉🏽 Ich tippe jetzt auf diese Schaltfläche, um den Filter zu öffnen."
       },
       "filtroDistancia": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Entfernung</span></div>",
-        "descripcion": "Mit diesem Filter kannst du nur die Startplätze um einen bestimmten Punkt herum anzeigen.<br><br>💡 Nützlich, um schnell Startplätze zu finden, die von deinem Standort aus mit dem Auto erreichbar sind."
+        "titulo": "🚗🚶 Zeit zum Startplatz",
+        "descripcion": "Filtert die Startplätze danach, wie lange du bis dorthin brauchst:<br><br>🚗 Mit dem Auto von einem Punkt deiner Wahl (oder 🚗+🚶 inklusive Fußweg).<br>🚶 Zu Fuß von der Straße bis zum Startplatz: Zeit, Strecke oder Höhenmeter.<br><br>💡 So findest du schnell die Startplätze, die du in deiner verfügbaren Zeit erreichst."
       },
       "sliderDistancia": {
-        "titulo": "Entfernungsradius",
-        "descripcion": "Bewege diesen Schieberegler, um die maximale Entfernung zu wählen.<br><br>Die Tabelle zeigt nur Startplätze innerhalb dieses Radius an."
+        "titulo": "🚗 Fahrzeit",
+        "descripcion": "Mit diesem Schieberegler wählst du die maximale Zeit bis zum Startplatz: nur mit dem Auto (🚗) oder inklusive Fußweg (🚗+🚶).<br><br>Solange es keine echten Fahrzeiten gibt, wird sie aus der Luftlinie geschätzt."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Fußweg",
+        "descripcion": "Filtert nach dem Fußweg von der Straße zum Startplatz: wähle Minuten (⏱️), Kilometer (↔) oder Höhenmeter (↑).<br><br>Mit «0 min» werden nur Startplätze angezeigt, die man mit dem Auto erreicht."
       },
       "navMap": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Karte</span></div>",
@@ -384,16 +388,20 @@
         "descripcion": "Suche nach Startplätzen durch Eingabe der Region, Provinz oder des Namens. Du kannst für mehr Geschwindigkeit ohne Akzente tippen."
       },
       "filtroDistancia": {
-        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Entfernung</span></div>",
-        "descripcion": "Dies ist ein Filter, der es dir ermöglicht, nur Startplätze um einen bestimmten Punkt herum anzuzeigen.<br><br>💡 Dies kann dir helfen, schnell Startplätze innerhalb eines Entfernungsradius deiner Wahl um einen Punkt zu finden."
+        "titulo": "🚗🚶 Zeit zum Startplatz",
+        "descripcion": "Filtert die Startplätze danach, wie lange du bis dorthin brauchst:<br><br>🚗 Mit dem Auto von einem Punkt deiner Wahl (oder 🚗+🚶 inklusive Fußweg).<br>🚶 Zu Fuß von der Straße bis zum Startplatz: Zeit, Strecke oder Höhenmeter.<br><br>💡 So findest du schnell die Startplätze, die du in deiner verfügbaren Zeit erreichst."
       },
       "btnOrigen": {
         "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Ursprungspunkt",
-        "descripcion": "Hier wählst du den Ursprungspunkt für den obigen Entfernungsfilter aus.<br><br>Du kannst den Punkt mithilfe einer Karte oder deines aktuellen Standorts auswählen."
+        "descripcion": "Hier wählst du den Ausgangspunkt für den Filter nach Fahrzeit.<br><br>Du kannst den Punkt auf einer Karte oder mit deinem aktuellen Standort wählen."
       },
       "sliderDistancia": {
-        "titulo": "Entfernung zum Punkt",
-        "descripcion": "Durch Ziehen dieses Schiebereglers wählst du die maximale Entfernung in Kilometern aus."
+        "titulo": "🚗 Fahrzeit",
+        "descripcion": "Mit diesem Schieberegler wählst du die maximale Zeit bis zum Startplatz: nur mit dem Auto (🚗) oder inklusive Fußweg (🚗+🚶).<br><br>Solange es keine echten Fahrzeiten gibt, wird sie aus der Luftlinie geschätzt."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Fußweg",
+        "descripcion": "Filtert nach dem Fußweg von der Straße zum Startplatz: wähle Minuten (⏱️), Kilometer (↔) oder Höhenmeter (↑).<br><br>Mit «0 min» werden nur Startplätze angezeigt, die man mit dem Auto erreicht."
       },
       "btnVerSoloFavs": {
         "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Nur Favoriten anzeigen",
@@ -455,7 +463,7 @@
     },
     "panelFiltros": {
       "titulo": "Filter",
-      "descripcion": "Filtern Sie die Karteninformationen nach Ihren Bedürfnissen. Sie können nur Ihre favorisierten oder verfolgten Startplätze und Baken ein- oder ausblenden. Außerdem können Sie Startplätze nach Ausrichtung, Aktivitätsniveau oder Volumen der in XContest registrierten Flüge filtern sowie Baken nach ihrer Höhe filtern."
+      "descripcion": "Filtern Sie die Karteninformationen nach Ihren Bedürfnissen. Sie können nur Ihre favorisierten oder verfolgten Startplätze und Baken ein- oder ausblenden. Außerdem können Sie Startplätze nach Ausrichtung, Aktivitätsniveau oder Volumen der in XContest registrierten Flüge filtern sowie Baken nach ihrer Höhe filtern. Du kannst Startplätze auch nach Fahrzeit von einem Punkt aus und nach dem Fußweg zum Startplatz filtern (Zeit, Strecke oder Höhenmeter)."
     },
     "btnPlaneo": {
       "titulo": "Gleitberechnung",

@@ -302,7 +302,7 @@
       },
       "btnOrigen": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Punto de origen",
-        "descripcion": "Aquí eliges el punto de origen del filtro de distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
+        "descripcion": "Aquí eliges el punto de origen del filtro de tiempo en coche.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
       },
       "btnIncNoFavs": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Incluir no favoritos",
@@ -325,16 +325,20 @@
         "descripcion": "Busca aquí despegues por su nombre o su provincia.<br><br>💡 Puedes escribir sin tildes para mayor agilidad."
       },
       "navDistance": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
-        "descripcion": "Muestra un deslizador que permite filtrar solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro."
+        "titulo": "🚗🚶 Tiempo al despegue",
+        "descripcion": "Abre los filtros de tiempo: en coche desde un punto y a pie desde la carretera hasta el despegue.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro."
       },
       "filtroDistancia": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
-        "descripcion": "Es un filtro que te permite mostrar solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para encontrar rápidamente los despegues que estén en un radio de distancia que elijas alrededor de un punto."
+        "titulo": "🚗🚶 Tiempo al despegue",
+        "descripcion": "Filtra los despegues por lo que tardas en llegar:<br><br>🚗 En coche desde un punto que eliges (o 🚗+🚶 sumando el tramo a pie).<br>🚶 A pie desde la carretera hasta el despegue: tiempo, distancia o desnivel.<br><br>💡 Sirve para encontrar rápido los despegues a los que llegas con el tiempo que tienes."
       },
       "sliderDistancia": {
-        "titulo": "Distancia al punto",
-        "descripcion": "Arrastrando este deslizador eliges los kilómetros de distancia.<br><br>La tabla mostrará solo los despegues que estén dentro de ese radio de distancia."
+        "titulo": "🚗 Tiempo en coche",
+        "descripcion": "Arrastrando este deslizador eliges el tiempo máximo para llegar al despegue: solo en coche (🚗) o sumando el tramo a pie (🚗+🚶).<br><br>Mientras no haya tiempos reales en coche, se estima con la distancia en línea recta."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Tramo a pie",
+        "descripcion": "Filtra por el acceso andando desde la carretera hasta el despegue: elige minutos (⏱️), kilómetros (↔) o desnivel de subida (↑).<br><br>Con «0 min» se muestran solo los despegues a los que se llega en coche."
       },
       "navMap": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
@@ -384,16 +388,20 @@
         "descripcion": "Busca despegues escribiendo su región, su provincia o su nombre. Puedes escribir sin tildes para mayor agilidad."
       },
       "filtroDistancia": {
-        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distancia</span></div>",
-        "descripcion": "Es un filtro que te permite mostrar solo despegues alrededor de un punto.<br><br>💡 Puede servirte para encontrar rápidamente los despegues que estén en un radio de distancia que elijas alrededor de un punto."
+        "titulo": "🚗🚶 Tiempo al despegue",
+        "descripcion": "Filtra los despegues por lo que tardas en llegar:<br><br>🚗 En coche desde un punto que eliges (o 🚗+🚶 sumando el tramo a pie).<br>🚶 A pie desde la carretera hasta el despegue: tiempo, distancia o desnivel.<br><br>💡 Sirve para encontrar rápido los despegues a los que llegas con el tiempo que tienes."
       },
       "btnOrigen": {
         "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Punto de origen",
-        "descripcion": "Con este botón eliges el centro del radio de búsqueda por distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
+        "descripcion": "Aquí eliges el punto de origen del filtro de tiempo en coche.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
       },
       "sliderDistancia": {
-        "titulo": "Distancia al punto",
-        "descripcion": "Arrastrando este deslizador eliges los kilómetros de distancia máxima."
+        "titulo": "🚗 Tiempo en coche",
+        "descripcion": "Arrastrando este deslizador eliges el tiempo máximo para llegar al despegue: solo en coche (🚗) o sumando el tramo a pie (🚗+🚶).<br><br>Mientras no haya tiempos reales en coche, se estima con la distancia en línea recta."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Tramo a pie",
+        "descripcion": "Filtra por el acceso andando desde la carretera hasta el despegue: elige minutos (⏱️), kilómetros (↔) o desnivel de subida (↑).<br><br>Con «0 min» se muestran solo los despegues a los que se llega en coche."
       },
       "btnVerSoloFavs": {
         "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Ver solo favoritos",
@@ -455,7 +463,7 @@
       },
       "panelFiltros": {
         "titulo": "Filtros",
-        "descripcion": "Filtra la información del mapa según tus necesidades. Puedes mostrar u ocultar únicamente tus despegues y balizas favoritas o en seguimiento. Además, puedes filtrar despegues por orientación, nivel de actividad o volumen de vuelos registrados en XContest, y filtrar balizas según su altitud."
+        "descripcion": "Filtra la información del mapa según tus necesidades. Puedes mostrar u ocultar únicamente tus despegues y balizas favoritas o en seguimiento. Además, puedes filtrar despegues por orientación, nivel de actividad o volumen de vuelos registrados en XContest, y filtrar balizas según su altitud. También puedes filtrar despegues por tiempo en coche desde un punto y por el tramo a pie hasta el despegue (tiempo, distancia o desnivel)."
       },
       "btnPlaneo": {
         "titulo": "Cálculo de planeo",

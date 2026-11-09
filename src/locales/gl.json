@@ -302,7 +302,7 @@
       },
       "btnOrigen": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Punto de orixe",
-        "descripcion": "Aquí elixes o punto de orixe para o filtro de distancia.<br><br>Podes seleccionar o punto utilizando un mapa ou a túa localización actual."
+        "descripcion": "Aquí elixes o punto de orixe do filtro de tempo en coche.<br><br>Poderás elixir o punto cun mapa ou coa túa localización actual."
       },
       "btnIncNoFavs": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Incluír non favoritos",
@@ -325,16 +325,20 @@
         "descripcion": "Busca aquí despegues polo seu nome ou a súa provincia.<br><br>💡 Podes escribir sen tiles para maior axilidade."
       },
       "navDistance": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
-        "descripcion": "Mostra un control desprazable para filtrar as engalaxes nun radio ao redor dun punto.<br><br>👉🏽 Agora premerei este botón para abrir o filtro."
+        "titulo": "🚗🚶 Tempo ata a engalaxe",
+        "descripcion": "Abre os filtros de tempo: en coche desde un punto e a pé desde a estrada ata a engalaxe.<br><br>👉🏽 Agora vou premer ese botón para abrir o filtro."
       },
       "filtroDistancia": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
-        "descripcion": "Este filtro permíteche ver só as engalaxes ao redor dun punto específico.<br><br>💡 Útil para atopar rapidamente engalaxes a unha distancia en coche desde a túa localización."
+        "titulo": "🚗🚶 Tempo ata a engalaxe",
+        "descripcion": "Filtra as engalaxes polo que tardas en chegar:<br><br>🚗 En coche desde un punto que elixes (ou 🚗+🚶 sumando o tramo a pé).<br>🚶 A pé desde a estrada ata a engalaxe: tempo, distancia ou desnivel.<br><br>💡 Serve para atopar axiña as engalaxes ás que chegas co tempo que tes."
       },
       "sliderDistancia": {
-        "titulo": "Radio de distancia",
-        "descripcion": "Move este control desprazable para elixir a distancia máxima.<br><br>A táboa só mostrará as engalaxes dentro dese radio."
+        "titulo": "🚗 Tempo en coche",
+        "descripcion": "Arrastrando este control elixes o tempo máximo para chegar á engalaxe: só en coche (🚗) ou sumando o tramo a pé (🚗+🚶).<br><br>Mentres non haxa tempos reais en coche, estímase coa distancia en liña recta."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Tramo a pé",
+        "descripcion": "Filtra polo acceso camiñando desde a estrada ata a engalaxe: elixe minutos (⏱️), quilómetros (↔) ou desnivel de subida (↑).<br><br>Con «0 min» só se amosan as engalaxes ás que se chega en coche."
       },
       "navMap": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
@@ -384,16 +388,20 @@
         "descripcion": "Busca engalaxes escribindo a rexión, a provincia ou o nome. Podes escribir sen acentos para ir máis rápido."
       },
       "filtroDistancia": {
-        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distancia</span></div>",
-        "descripcion": "Este é un filtro que che permite visualizar só as engalaxes ao redor dun punto específico.<br><br>💡 Isto pode axudarche a atopar rapidamente engalaxes nun radio de distancia que elixas ao redor dun punto."
+        "titulo": "🚗🚶 Tempo ata a engalaxe",
+        "descripcion": "Filtra as engalaxes polo que tardas en chegar:<br><br>🚗 En coche desde un punto que elixes (ou 🚗+🚶 sumando o tramo a pé).<br>🚶 A pé desde a estrada ata a engalaxe: tempo, distancia ou desnivel.<br><br>💡 Serve para atopar axiña as engalaxes ás que chegas co tempo que tes."
       },
       "btnOrigen": {
         "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Punto de orixe",
-        "descripcion": "Aquí elixes o punto de orixe para o filtro de distancia de arriba.<br><br>Podes seleccionar o punto utilizando un mapa ou a túa localización actual."
+        "descripcion": "Aquí elixes o punto de orixe do filtro de tempo en coche.<br><br>Poderás elixir o punto cun mapa ou coa túa localización actual."
       },
       "sliderDistancia": {
-        "titulo": "Distancia ao punto",
-        "descripcion": "Ao mover este control desprazable, elixes a distancia máxima en quilómetros."
+        "titulo": "🚗 Tempo en coche",
+        "descripcion": "Arrastrando este control elixes o tempo máximo para chegar á engalaxe: só en coche (🚗) ou sumando o tramo a pé (🚗+🚶).<br><br>Mentres non haxa tempos reais en coche, estímase coa distancia en liña recta."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Tramo a pé",
+        "descripcion": "Filtra polo acceso camiñando desde a estrada ata a engalaxe: elixe minutos (⏱️), quilómetros (↔) ou desnivel de subida (↑).<br><br>Con «0 min» só se amosan as engalaxes ás que se chega en coche."
       },
       "btnVerSoloFavs": {
         "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Ver só favoritos",
@@ -455,7 +463,7 @@
     },
     "panelFiltros": {
       "titulo": "Filtros",
-      "descripcion": "Filtra a información do mapa segundo as túas necesidades. Podes mostrar ou ocultar unicamente as túas engalaxes e balizas favoritas ou en seguimento. Ademais, podes filtrar engalaxes por orientación, nivel de actividade ou volume de voos rexistrados en XContest, e filtrar balizas segundo a súa altitude."
+      "descripcion": "Filtra a información do mapa segundo as túas necesidades. Podes mostrar ou ocultar unicamente as túas engalaxes e balizas favoritas ou en seguimento. Ademais, podes filtrar engalaxes por orientación, nivel de actividade ou volume de voos rexistrados en XContest, e filtrar balizas segundo a súa altitude. Tamén podes filtrar engalaxes por tempo en coche desde un punto e polo tramo a pé ata a engalaxe (tempo, distancia ou desnivel)."
     },
     "btnPlaneo": {
       "titulo": "Cálculo de planeo",
