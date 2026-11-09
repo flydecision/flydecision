@@ -2616,6 +2616,8 @@ function iniciarGuiaMapa(forzar = false) {
 
     // Título con el icono SVG real del botón (copiado del propio botón), como en la guía de la tabla
     const tituloConIcono = (selectorOHtml, texto) => {
+        // <icon-despegue> ya trae su propio tamaño y alineación: igual que en la guía de la tabla, sin envolver
+        if (selectorOHtml.startsWith('<icon-')) return selectorOHtml + texto;
         let svg = '';
         if (selectorOHtml.startsWith('<')) svg = selectorOHtml;
         else {
