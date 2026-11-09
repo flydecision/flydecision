@@ -3651,7 +3651,7 @@ details.config-accordion .accordion-content {
 	padding-left: 10px;
 	/* box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); */
 	z-index: 2000; 
-	width: 270px;
+	width: 285px;
 	max-width: 500px;
 	display: none; /* Ocultar por defecto. Si este index.html se está mostrando en el iframe de la página /mapa no quiero que se muestre este infopanel (el enlace a hikefly.es del mapa). Hay un javascript al final(document.addEventListener) que lo oculta si la URL no contiene https://hikefly.es/mapa/ */
 	transition: all 0.2s ease;
