@@ -688,6 +688,7 @@ input[type="search"]::-webkit-search-cancel-button {
     max-height: 400px; /* Un valor superior al contenido real (con las tarjetas mide ~310 px) */
     opacity: 1;
     margin-top: -15px;
+    margin-bottom: 4px; /* el estado oculto usa -10px; abierto, la tarjeta de abajo se salía del recuadro blanco */
     padding: 4px;
 }
 
