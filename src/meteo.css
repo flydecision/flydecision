@@ -2186,7 +2186,8 @@ span.grados {
 #pie-slider-mapa.noUi-horizontal {
 	--franja-filtro-tiempo: #0078d4;
 	padding: 0 14px;
-	background: linear-gradient(to right, #FAFAFA calc(100% - 14px), var(--franja-filtro-tiempo) calc(100% - 14px));
+	/* corte al 50 %: la zona útil (.noUi-base, opaca) tapa el centro; así no queda rayita en la unión con decimales de píxel */
+	background: linear-gradient(to right, #FAFAFA 50%, var(--franja-filtro-tiempo) 50%);
 	box-shadow: 0 3px 6px -5px #BBB; /* sin la sombra interior: se notaba en el trozo de la derecha */
 }
 #distancia-slider.sin-limite,
@@ -2200,6 +2201,12 @@ span.grados {
 #pie-slider .noUi-connects,
 #pie-slider-mapa .noUi-connects {
 	border-radius: 0;
+}
+#distancia-slider .noUi-base,
+#distancia-slider-mapa .noUi-base,
+#pie-slider .noUi-base,
+#pie-slider-mapa .noUi-base {
+	background: #FAFAFA;
 }
 /* Sin filtro («Sin límite»): la franja se ve en azul pálido; al filtrar pasa a azul fuerte */
 #distancia-slider.sin-limite .noUi-connect,
@@ -5339,7 +5346,7 @@ body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa .leaflet-top {
    Esos 14 px los pinta la barra: a la izquierda blanco (como el tramo antes del tirador) y a la derecha el último verde */
 #puntuacion-mapa-slider.noUi-horizontal {
     padding: 0 14px;
-    background: linear-gradient(to right, #fff 14px, #6befaf 14px);
+    background: linear-gradient(to right, #fff 50%, #6befaf 50%); /* corte al 50 %: el centro lo tapa .noUi-base; sin rayita en la unión */
 }
 #puntuacion-mapa-slider .noUi-connects {
     border-radius: 0;
