@@ -122,7 +122,8 @@ body.modo-simple #floating-search-container {
     margin-bottom: 2px; /* 12px normales - 10px */
 }
 
-body.modo-simple #infoPanelPlaneo {
+body.modo-simple #infoPanelPlaneo,
+body.modo-simple .leaflet-control-infopanel-planeo { /* también su caja de Leaflet, que dejaba su margen como hueco */
     display: none !important;
 }
 
