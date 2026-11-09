@@ -11215,7 +11215,7 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
     // 3. Mini-contador (Cabecera Tabla)
     const miniCounter = document.getElementById('header-contador-mini');
     if (miniCounter && !modoEdicionFavoritos) {
-        const hayFiltros = filtroLimpio.length > 0 || distanciaLimite < 9999;
+        const hayFiltros = filtroLimpio.length > 0 || hayFiltroTiempo; // incluye el filtro de tramo a pie
         
         if (soloSeguimiento) {
             const totalSeg = obtenerSeguimientos().length;
