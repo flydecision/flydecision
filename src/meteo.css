@@ -2498,6 +2498,7 @@ body.modo-edicion-tabla #nav-distance {
 #nav-distance.filtrado {
     box-shadow: inset 0 0 0 3px red, inset 1px 1px 3px rgba(0, 0, 0, .4) !important;
     border: none !important;
+    background-color: #ff000042 !important; /* mismo fondo «hundido» que el 👁 de seguimiento con filtro */
 }
 
 #nav-distance .emoji-nav-distancia {
