@@ -579,7 +579,7 @@ function textoAccesoPieDespegue(id) {
     const pie = window.datosAccesoPie[Number(id)];
     if (!pie || !Number.isFinite(Number(pie.min))) return '';
     let datos;
-    // ✅ = verificado a mano (pie.c), 🤖 = cálculo automático: «A pie 🚶 (✅):»
+    // ✅ = ruta comprobada (pie.c), 🤖 = cálculo automático: «A pie 🚶 (✅):»
     const titulo = t('popupDespegue.aPie').replace(/\s*:\s*$/, '') + ` (${pie.c ? '✅' : '🤖'}):`;
     if (Number(pie.min) === 0 && !Number(pie.km)) {
         datos = t('popupDespegue.enCocheHastaDespegue');
