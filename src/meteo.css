@@ -2157,6 +2157,13 @@ span.grados {
 #pie-slider-mapa .noUi-connect {
 	background: #0078d4;
 }
+/* Sin filtro («Sin límite»): la franja se ve en azul pálido; al filtrar pasa a azul fuerte */
+#distancia-slider.sin-limite .noUi-connect,
+#distancia-slider-mapa.sin-limite .noUi-connect,
+#pie-slider.sin-limite .noUi-connect,
+#pie-slider-mapa.sin-limite .noUi-connect {
+	background: #c7dcf0;
+}
 
 #distancia-slider .noUi-pips-horizontal,
 #distancia-slider-mapa .noUi-pips-horizontal,

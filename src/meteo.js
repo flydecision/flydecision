@@ -11741,7 +11741,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         noUiSlider.create(distanciaSlider, {
             handleAttributes: [{ 'aria-label': 'Distancia' }],
             start: MAX_INDEX,    
-            direction: 'rtl',    
+            // ltr (por defecto): 0 a la izquierda, «Sin límite» a la derecha; el azul ('lower') es lo que se ve, como en el rango horario
             step: 1,             
             connect: 'lower',    
             tooltips:[{
@@ -11875,7 +11875,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
 	const opcionesSliderPie = () => ({
 		handleAttributes: [{ 'aria-label': 'A pie' }],
 		start: maxIndicePie(),
-		direction: 'rtl',
 		step: 1,
 		connect: 'lower',
 		tooltips: [{ to: (index) => formatearTooltipFiltroTiempo(CORTES_PIE_GLOBAL[unidadFiltroPie][Math.round(index)], unidadFiltroPie) }],
@@ -11887,7 +11886,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		noUiSlider.create(distanciaSliderMapa, {
 			handleAttributes: [{ 'aria-label': 'Distancia' }],
 			start: indiceSlider(distanciaSlider),
-			direction: 'rtl',
 			step: 1,
 			connect: 'lower',
 			tooltips: [{ to: (index) => formatearTooltipFiltroTiempo(CORTES_DISTANCIA_GLOBAL[Math.round(index)], 'min') }],
@@ -11955,6 +11953,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		const html = formatearTooltipFiltroTiempo(valor, esPie ? unidadFiltroPie : 'min');
 		caja.innerHTML = html || t('html.sinLimite');
 		caja.classList.toggle('sin-limite', !html);
+		el.classList.toggle('sin-limite', !html); // barra en azul pálido mientras no filtra
 	};
 	window.pintarValoresFiltroTiempo = () => [distanciaSlider, distanciaSliderMapa, pieSlider, pieSliderMapa].forEach(pintarValorFiltroTiempo);
 	[distanciaSlider, distanciaSliderMapa, pieSlider, pieSliderMapa].forEach(el => {
