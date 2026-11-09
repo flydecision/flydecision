@@ -579,6 +579,8 @@ function textoAccesoPieDespegue(id) {
     const pie = window.datosAccesoPie[Number(id)];
     if (!pie || !Number.isFinite(Number(pie.min))) return '';
     let datos;
+    // ✅ = verificado a mano (pie.c), 🤖 = cálculo automático: «A pie 🚶 (✅):»
+    const titulo = t('popupDespegue.aPie').replace(/\s*:\s*$/, '') + ` (${pie.c ? '✅' : '🤖'}):`;
     if (Number(pie.min) === 0 && !Number(pie.km)) {
         datos = t('popupDespegue.enCocheHastaDespegue');
     } else {
@@ -590,10 +592,10 @@ function textoAccesoPieDespegue(id) {
         if (typeof pie.r === 'string' && /^[-0-9.,;]+$/.test(pie.r)) {
             const fin = pie.r.split(';').pop().split(',');
             const url = `https://brouter.de/brouter-web/#map=14/${fin[1]}/${fin[0]}/OpenTopoMap&lonlats=${pie.r}&profile=hiking-mountain`;
-            return `${t('popupDespegue.aPie')}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'><b>${datos}</b></a>`;
+            return `${titulo}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'><b>${datos}</b></a>`;
         }
     }
-    return `${t('popupDespegue.aPie')}<br><b>${datos}</b>`;
+    return `${titulo}<br><b>${datos}</b>`;
 }
 
 // Texto del tooltip de los deslizadores de tiempo / a pie (∞, "45 min", "1 h 30 min", "0,5 km", "200 m")
