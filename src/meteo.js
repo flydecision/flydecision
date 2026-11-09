@@ -2704,7 +2704,7 @@ function iniciarGuiaMapa(forzar = false) {
                 element: '#infoPanel2',
                 popover: { 
                     title: tituloConIcono('#labelMostrarOpciones2 svg', t('guiaMapa.pasos.panelFiltros.titulo')), 
-                    description: t('guiaMapa.pasos.panelFiltros.descripcion')
+                    description: document.body.classList.contains('modo-simple') ? t('guiaMapa.pasos.panelFiltros.descripcionSimple') : t('guiaMapa.pasos.panelFiltros.descripcion')
                 } 
             },
             { 
@@ -2735,7 +2735,7 @@ function iniciarGuiaMapa(forzar = false) {
                     description: t('guiaMapa.pasos.controlCapas.descripcion')
                 } 
             }
-        ].filter(paso => !(paso.element === '#infoPanel' && document.body.classList.contains('modo-simple'))), // en simple no hay panel de capas de despegues
+        ].filter(paso => !(['#infoPanel', '#infoPanelPlaneo'].includes(paso.element) && document.body.classList.contains('modo-simple'))), // en simple no hay panel de capas de despegues ni de planeo
         
         onDestroyStarted: () => {
             localStorage.setItem('METEO_GUIA_MAPA_VISTA', 'true'); 

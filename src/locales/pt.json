@@ -464,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Filtros",
-      "descripcion": "Filtre a informação do mapa de acordo com as suas necessidades. Pode mostrar ou ocultar apenas as suas descolagens e balizas favoritas ou em seguimento. Além disso, pode filtrar descolagens por orientação, nível de atividade ou volume de voos registados no XContest, e filtrar balizas de acordo com a sua altitude. Também podes filtrar descolagens por tempo de carro desde um ponto e pelo troço a pé até à descolagem (tempo, distância ou desnível)."
+      "descripcion": "Filtre a informação do mapa de acordo com as suas necessidades. Pode mostrar ou ocultar apenas as suas descolagens e balizas favoritas ou em seguimento. Além disso, pode filtrar descolagens por orientação, nível de atividade ou volume de voos registados no XContest, e filtrar balizas de acordo com a sua altitude. Também podes filtrar descolagens por tempo de carro desde um ponto e pelo troço a pé até à descolagem (tempo, distância ou desnível).",
+      "descripcionSimple": "Filtra as descolagens do mapa: podes mostrar só as tuas descolagens favoritas ou filtrá-las pelo seu nível de atividade."
     },
     "btnPlaneo": {
       "titulo": "Cálculo de planeio",

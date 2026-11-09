@@ -464,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Filtres",
-      "descripcion": "Filtra la informació del mapa segons les teves necessitats. Pots mostrar o ocultar únicament els teus enlairaments i balises favorites o en seguiment. A més, pots filtrar enlairaments per orientació, nivell d'activitat o volum de vols registrats a XContest, i filtrar balises segons la seva altitud. També pots filtrar enlairaments per temps en cotxe des d'un punt i pel tram a peu fins a l'enlairament (temps, distància o desnivell)."
+      "descripcion": "Filtra la informació del mapa segons les teves necessitats. Pots mostrar o ocultar únicament els teus enlairaments i balises favorites o en seguiment. A més, pots filtrar enlairaments per orientació, nivell d'activitat o volum de vols registrats a XContest, i filtrar balises segons la seva altitud. També pots filtrar enlairaments per temps en cotxe des d'un punt i pel tram a peu fins a l'enlairament (temps, distància o desnivell).",
+      "descripcionSimple": "Filtra els enlairaments del mapa: pots mostrar només els teus enlairaments preferits o filtrar-los pel seu nivell d'activitat."
     },
     "btnPlaneo": {
       "titulo": "Càlcul de planeig",

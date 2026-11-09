@@ -464,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Iragazkiak",
-      "descripcion": "Iragazi mapako informazioa zure beharren arabera. Zure gogoko edo jarraipeneko aireratzeak eta balizak soilik erakutsi edo ezkutatu ditzakezu. Gainera, aireratzeak orientazioaren, jarduera-mailaren edo XContest-en erregistratutako hegaldi bolumenaren arabera iragazi ditzakezu, eta balizak altueraren arabera. Aireratze-guneak puntu batetik autoz behar den denboraren arabera eta aireratze-guneraino oinezko zatiaren arabera ere iragaz ditzakezu (denbora, distantzia edo desnibela)."
+      "descripcion": "Iragazi mapako informazioa zure beharren arabera. Zure gogoko edo jarraipeneko aireratzeak eta balizak soilik erakutsi edo ezkutatu ditzakezu. Gainera, aireratzeak orientazioaren, jarduera-mailaren edo XContest-en erregistratutako hegaldi bolumenaren arabera iragazi ditzakezu, eta balizak altueraren arabera. Aireratze-guneak puntu batetik autoz behar den denboraren arabera eta aireratze-guneraino oinezko zatiaren arabera ere iragaz ditzakezu (denbora, distantzia edo desnibela).",
+      "descripcionSimple": "Iragazi maparen aireratzeak: zure aireratze gogokoak bakarrik erakuts ditzakezu edo jarduera-mailaren arabera iragazi."
     },
     "btnPlaneo": {
       "titulo": "Planeamendu-kalkulua",

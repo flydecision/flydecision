@@ -464,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Filtros",
-      "descripcion": "Filtra a información do mapa segundo as túas necesidades. Podes mostrar ou ocultar unicamente as túas engalaxes e balizas favoritas ou en seguimento. Ademais, podes filtrar engalaxes por orientación, nivel de actividade ou volume de voos rexistrados en XContest, e filtrar balizas segundo a súa altitude. Tamén podes filtrar engalaxes por tempo en coche desde un punto e polo tramo a pé ata a engalaxe (tempo, distancia ou desnivel)."
+      "descripcion": "Filtra a información do mapa segundo as túas necesidades. Podes mostrar ou ocultar unicamente as túas engalaxes e balizas favoritas ou en seguimento. Ademais, podes filtrar engalaxes por orientación, nivel de actividade ou volume de voos rexistrados en XContest, e filtrar balizas segundo a súa altitude. Tamén podes filtrar engalaxes por tempo en coche desde un punto e polo tramo a pé ata a engalaxe (tempo, distancia ou desnivel).",
+      "descripcionSimple": "Filtra as engalaxes do mapa: podes amosar só as túas engalaxes favoritas ou filtralas polo seu nivel de actividade."
     },
     "btnPlaneo": {
       "titulo": "Cálculo de planeo",

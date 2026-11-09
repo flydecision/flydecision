@@ -464,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Filtres",
-      "descripcion": "Filtrez les informations de la carte selon vos besoins. Vous pouvez afficher ou masquer uniquement vos décollages et balises favoris ou suivis. De plus, vous pouvez filtrer les décollages par orientation, niveau d'activité ou volume de vols enregistrés sur XContest, et filtrer les balises selon leur altitude. Tu peux aussi filtrer les décollages par temps en voiture depuis un point et par la marche jusqu'au décollage (temps, distance ou dénivelé)."
+      "descripcion": "Filtrez les informations de la carte selon vos besoins. Vous pouvez afficher ou masquer uniquement vos décollages et balises favoris ou suivis. De plus, vous pouvez filtrer les décollages par orientation, niveau d'activité ou volume de vols enregistrés sur XContest, et filtrer les balises selon leur altitude. Tu peux aussi filtrer les décollages par temps en voiture depuis un point et par la marche jusqu'au décollage (temps, distance ou dénivelé).",
+      "descripcionSimple": "Filtre les décollages de la carte : tu peux afficher uniquement tes décollages favoris ou les filtrer selon leur niveau d'activité."
     },
     "btnPlaneo": {
       "titulo": "Calcul de finesse",

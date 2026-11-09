@@ -464,7 +464,8 @@
       },
       "panelFiltros": {
         "titulo": "Filtros",
-        "descripcion": "Filtra la información del mapa según tus necesidades. Puedes mostrar u ocultar únicamente tus despegues y balizas favoritas o en seguimiento. Además, puedes filtrar despegues por orientación, nivel de actividad o volumen de vuelos registrados en XContest, y filtrar balizas según su altitud. También puedes filtrar despegues por tiempo en coche desde un punto y por el tramo a pie hasta el despegue (tiempo, distancia o desnivel)."
+        "descripcion": "Filtra la información del mapa según tus necesidades. Puedes mostrar u ocultar únicamente tus despegues y balizas favoritas o en seguimiento. Además, puedes filtrar despegues por orientación, nivel de actividad o volumen de vuelos registrados en XContest, y filtrar balizas según su altitud. También puedes filtrar despegues por tiempo en coche desde un punto y por el tramo a pie hasta el despegue (tiempo, distancia o desnivel).",
+        "descripcionSimple": "Filtra los despegues del mapa: puedes mostrar solo tus despegues favoritos o filtrarlos por su nivel de actividad."
       },
       "btnPlaneo": {
         "titulo": "Cálculo de planeo",

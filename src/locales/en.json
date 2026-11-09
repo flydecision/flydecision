@@ -464,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Filters",
-      "descripcion": "Filter map information according to your needs. You can show or hide only your favorite or tracked takeoffs and beacons. Furthermore, you can filter takeoffs by orientation, activity level or volume of flights registered in XContest, and filter beacons according to their altitude. You can also filter takeoffs by driving time from a point and by the walk to the takeoff (time, distance or climb)."
+      "descripcion": "Filter map information according to your needs. You can show or hide only your favorite or tracked takeoffs and beacons. Furthermore, you can filter takeoffs by orientation, activity level or volume of flights registered in XContest, and filter beacons according to their altitude. You can also filter takeoffs by driving time from a point and by the walk to the takeoff (time, distance or climb).",
+      "descripcionSimple": "Filter the takeoffs on the map: you can show only your favorite takeoffs or filter them by activity level."
     },
     "btnPlaneo": {
       "titulo": "Glide calculation",

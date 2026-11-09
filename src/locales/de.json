@@ -464,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Filter",
-      "descripcion": "Filtern Sie die Karteninformationen nach Ihren Bedürfnissen. Sie können nur Ihre favorisierten oder verfolgten Startplätze und Baken ein- oder ausblenden. Außerdem können Sie Startplätze nach Ausrichtung, Aktivitätsniveau oder Volumen der in XContest registrierten Flüge filtern sowie Baken nach ihrer Höhe filtern. Du kannst Startplätze auch nach Fahrzeit von einem Punkt aus und nach dem Fußweg zum Startplatz filtern (Zeit, Strecke oder Höhenmeter)."
+      "descripcion": "Filtern Sie die Karteninformationen nach Ihren Bedürfnissen. Sie können nur Ihre favorisierten oder verfolgten Startplätze und Baken ein- oder ausblenden. Außerdem können Sie Startplätze nach Ausrichtung, Aktivitätsniveau oder Volumen der in XContest registrierten Flüge filtern sowie Baken nach ihrer Höhe filtern. Du kannst Startplätze auch nach Fahrzeit von einem Punkt aus und nach dem Fußweg zum Startplatz filtern (Zeit, Strecke oder Höhenmeter).",
+      "descripcionSimple": "Filtere die Startplätze auf der Karte: Du kannst nur deine favorisierten Startplätze anzeigen oder sie nach Aktivitätsniveau filtern."
     },
     "btnPlaneo": {
       "titulo": "Gleitberechnung",
