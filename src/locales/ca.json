@@ -434,7 +434,7 @@
   "preguntaVerGuia": "Vols veure una guia visual del Mapa?",
   "pasos": {
     "intro": {
-      "titulo": "🗺️ Mapa",
+      "titulo": "Mapa",
       "descripcion": "Explora enlairaments de parapent i avalua les seves condicions segons el pronòstic per hores.<br><br>Pots filtrar enlairaments per la seva puntuació meteo, orientació o nivell d'activitat, consultar balises de vent en temps real amb gràfics de tendències, veure mapes de calor d'enlairaments XContest i seleccionar diversos tipus de mapes."
     },
     "filtroHorarioMeteo": {
@@ -450,27 +450,27 @@
       "descripcion": "Tanca aquest panell, de manera que ja no s'acoloreixen els enlairaments en funció de la seva meteo i es mostren en color blanc.<br><br>Pot ser útil per explorar enlairaments o balises de vent amb el màxim d'espai a la pantalla."
     },
     "buscadorMapa": {
-      "titulo": "🔍 Cercador d'Enlairaments",
+      "titulo": "Cercador d'Enlairaments",
       "descripcion": "Escriu el nom de qualsevol enlairament per trobar-lo i centrar-lo ràpidament al mapa.<br><br>Es desplegarà una petita finestra amb molta informació sobre ell."
     },
     "panelDespegues": {
-      "titulo": "🪂 Capes d'Enlairaments",
+      "titulo": "Capes d'Enlairaments",
       "descripcion": "Gestiona la visibilitat dels enlairaments, dels mapes de calor (punts d'enlairament reals registrats) o notes addicionals sobre punts d'enlairament i aterratges."
     },
     "panelBalizas": {
-      "titulo": "🌬️ Balises de vent",
+      "titulo": "Balises de vent",
       "descripcion": "Activa o desactiva diverses xarxes d'estacions meteorològiques que transmeten dades de vent en temps real (balises)."
     },
     "panelFiltros": {
-      "titulo": "🎚️ Filtres",
+      "titulo": "Filtres",
       "descripcion": "Filtra la informació del mapa segons les teves necessitats. Pots mostrar o ocultar únicament els teus enlairaments i balises favorites o en seguiment. A més, pots filtrar enlairaments per orientació, nivell d'activitat o volum de vols registrats a XContest, i filtrar balises segons la seva altitud. També pots filtrar enlairaments per temps en cotxe des d'un punt i pel tram a peu fins a l'enlairament (temps, distància o desnivell)."
     },
     "btnPlaneo": {
-      "titulo": "📐 Càlcul de planeig",
+      "titulo": "Càlcul de planeig",
       "descripcion": "Calcula a quines zones pots arribar amb un planeig fix des d'un lloc d'enlairament.<br><br>Mostra un gradient de colors superposat per indicar el planeig necessari per arribar a cada zona i informació completa del planeig entre els punts d'origen i destinació que seleccionis (altura d'arribada, planeig necessari, desnivell,...).<br><br>La trajectòria intenta esquivar crestes amb un punt de gir intermedi si el relleu ho permet.<br><br>Si la destinació és inabastable, les dades es mostren en vermell i una ✕ a la trajectòria si xoca amb algun relleu.<br><br>A <i>Ajustos > Altres opcions > Planeig de la vela</i> pots configurar el valor de planeig que desitgis per a aquests càlculs."
     },
     "btnGps": {
-      "titulo": "📍 La Meva Ubicació",
+      "titulo": "La Meva Ubicació",
       "descripcion": "Centra el mapa en la teva posició actual."
     },
     "btnGeocoder": {
@@ -478,7 +478,7 @@
       "descripcion": "Cerca qualsevol ciutat, municipi, muntanya o zona geogràfica per navegar ràpidament cap a ella.<br><br>També pots escriure directament coordenades en format decimal (ex: 42.734 -1.990) per centrar el mapa en un punt exacte."
     },
     "controlCapas": {
-      "titulo": "🗂️ Mapes base",
+      "titulo": "Mapes base",
       "descripcion": "Tria el tipus de mapa de fons que prefereixis: topogràfics, fotos aèries, de relleu, àrees de tèrmiques i rutes (skyways i thermals KK7) i capes aeronàutiques/restriccions."
     },
     "btnFiltrosMeteo": {

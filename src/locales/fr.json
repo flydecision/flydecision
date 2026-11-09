@@ -434,7 +434,7 @@
   "preguntaVerGuia": "Voulez-vous voir un guide visuel de la Carte ?",
   "pasos": {
     "intro": {
-      "titulo": "🗺️ Carte",
+      "titulo": "Carte",
       "descripcion": "Explorez les décollages de parapente et évaluez leurs conditions selon les prévisions horaires.<br><br>Vous pouvez filtrer les décollages par leur score météo, orientation ou niveau d'activité, consulter les balises de vent en temps réel avec des graphiques de tendances, voir les cartes de chaleur des décollages XContest et sélectionner différents types de cartes."
     },
     "filtroHorarioMeteo": {
@@ -450,27 +450,27 @@
       "descripcion": "Ferme ce panneau, de sorte que les décollages ne soient plus colorés en fonction de leur météo et s'affichent en blanc.<br><br>Cela peut être utile pour explorer les décollages ou les balises de vent avec un maximum d'espace à l'écran."
     },
     "buscadorMapa": {
-      "titulo": "🔍 Recherche de décollages",
+      "titulo": "Recherche de décollages",
       "descripcion": "Tapez le nom de n'importe quel décollage pour le trouver et le centrer rapidement sur la carte.<br><br>Une petite fenêtre se déploiera avec beaucoup d'informations à son sujet."
     },
     "panelDespegues": {
-      "titulo": "🪂 Couches de décollages",
+      "titulo": "Couches de décollages",
       "descripcion": "Gérez la visibilité des décollages, des cartes de chaleur (points de décollage réels enregistrés) ou des notes supplémentaires sur les points de décollage et d'atterrissage."
     },
     "panelBalizas": {
-      "titulo": "🌬️ Balises de vent",
+      "titulo": "Balises de vent",
       "descripcion": "Activez ou désactivez divers réseaux de stations météorologiques qui transmettent des données de vent en temps réel (balises)."
     },
     "panelFiltros": {
-      "titulo": "🎚️ Filtres",
+      "titulo": "Filtres",
       "descripcion": "Filtrez les informations de la carte selon vos besoins. Vous pouvez afficher ou masquer uniquement vos décollages et balises favoris ou suivis. De plus, vous pouvez filtrer les décollages par orientation, niveau d'activité ou volume de vols enregistrés sur XContest, et filtrer les balises selon leur altitude. Tu peux aussi filtrer les décollages par temps en voiture depuis un point et par la marche jusqu'au décollage (temps, distance ou dénivelé)."
     },
     "btnPlaneo": {
-      "titulo": "📐 Calcul de finesse",
+      "titulo": "Calcul de finesse",
       "descripcion": "Calcule les zones que vous pouvez atteindre avec une finesse fixe depuis un lieu de décollage.<br><br>Affiche un dégradé de couleurs superposé pour indiquer la finesse requise pour atteindre chaque zone et des informations complètes sur le plané entre les points d'origine et de destination que vous sélectionnez (hauteur d'arrivée, finesse requise, dénivelé,...).<br><br>La trajectoire tente d'esquiver les crêtes avec un point de contournement intermédiaire si le relief le permet.<br><br>Si la destination est inatteignable, les données s'affichent en rouge et un ✕ sur la trajectoire si elle entre en collision avec un relief.<br><br>Dans <i>Paramètres > Autres options > Finesse de la voile</i>, vous pouvez configurer la valeur de finesse que vous souhaitez pour ces calculs."
     },
     "btnGps": {
-      "titulo": "📍 Ma position",
+      "titulo": "Ma position",
       "descripcion": "Centre la carte sur votre position actuelle."
     },
     "btnGeocoder": {
@@ -478,7 +478,7 @@
       "descripcion": "Recherchez n'importe quelle ville, municipalité, montagne ou zone géographique pour y naviguer rapidement.<br><br>Vous pouvez également taper directement les coordonnées au format décimal (ex: 42.734 -1.990) pour centrer la carte sur un point précis."
     },
     "controlCapas": {
-      "titulo": "🗂️ Cartes de base",
+      "titulo": "Cartes de base",
       "descripcion": "Choisissez le type de carte de fond que vous préférez : topographique, photos aériennes, relief, zones thermiques et itinéraires (skyways et thermals KK7) et couches aéronautiques/restrictions."
     },
     "btnFiltrosMeteo": {

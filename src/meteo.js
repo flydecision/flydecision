@@ -2614,6 +2614,18 @@ function iniciarGuiaMapa(forzar = false) {
         window.activarMenuInferior(btnNavMap);
     }
 
+    // Título con el icono SVG real del botón (copiado del propio botón), como en la guía de la tabla
+    const tituloConIcono = (selectorOHtml, texto) => {
+        let svg = '';
+        if (selectorOHtml.startsWith('<')) svg = selectorOHtml;
+        else {
+            const el = document.querySelector(selectorOHtml);
+            if (el) { const c = el.cloneNode(true); c.removeAttribute('style'); c.setAttribute('width', '20'); c.setAttribute('height', '20'); svg = c.outerHTML; }
+        }
+        return svg ? `<div style='display: flex; align-items: center; gap: 8px;'><span style='display: inline-flex; flex: none; width: 20px; height: 20px;'>${svg}</span><span>${texto}</span></div>` : texto;
+    };
+    const SVG_LUPA_GUIA = "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg>";
+
     const driverObj = window.driver.js.driver({
 
         showProgress: true, 
@@ -2632,7 +2644,7 @@ function iniciarGuiaMapa(forzar = false) {
         steps: [
             { 
                 popover: { 
-                    title: t('guiaMapa.pasos.intro.titulo'), 
+                    title: tituloConIcono('#nav-map svg', t('guiaMapa.pasos.intro.titulo')), 
                     description: t('guiaMapa.pasos.intro.descripcion') 
                 } 
             },
@@ -2668,42 +2680,42 @@ function iniciarGuiaMapa(forzar = false) {
             { 
                 element: '.leaflet-text-search-input',
                 popover: { 
-                    title: t('guiaMapa.pasos.buscadorMapa.titulo'), 
+                    title: tituloConIcono(SVG_LUPA_GUIA, t('guiaMapa.pasos.buscadorMapa.titulo')), 
                     description: t('guiaMapa.pasos.buscadorMapa.descripcion')
                 } 
             },
             { 
                 element: '#infoPanel',
                 popover: { 
-                    title: t('guiaMapa.pasos.panelDespegues.titulo'), 
+                    title: tituloConIcono('<icon-despegue></icon-despegue>', t('guiaMapa.pasos.panelDespegues.titulo')), 
                     description: t('guiaMapa.pasos.panelDespegues.descripcion')
                 } 
             },
             { 
                 element: '#infoPanel3',
                 popover: { 
-                    title: t('guiaMapa.pasos.panelBalizas.titulo'), 
+                    title: tituloConIcono('#labelMostrarOpciones3 svg', t('guiaMapa.pasos.panelBalizas.titulo')), 
                     description: t('guiaMapa.pasos.panelBalizas.descripcion')
                 } 
             },
             { 
                 element: '#infoPanel2',
                 popover: { 
-                    title: t('guiaMapa.pasos.panelFiltros.titulo'), 
+                    title: tituloConIcono('#labelMostrarOpciones2 svg', t('guiaMapa.pasos.panelFiltros.titulo')), 
                     description: t('guiaMapa.pasos.panelFiltros.descripcion')
                 } 
             },
             { 
                 element: '#infoPanelPlaneo',
                 popover: { 
-                    title: t('guiaMapa.pasos.btnPlaneo.titulo'), 
+                    title: tituloConIcono('#labelMostrarOpcionesPlaneo svg', t('guiaMapa.pasos.btnPlaneo.titulo')), 
                     description: t('guiaMapa.pasos.btnPlaneo.descripcion')
                 } 
             },
             { 
                 element: '.leaflet-control-locate',
                 popover: { 
-                    title: t('guiaMapa.pasos.btnGps.titulo'), 
+                    title: tituloConIcono('.leaflet-control-locate svg', t('guiaMapa.pasos.btnGps.titulo')), 
                     description: t('guiaMapa.pasos.btnGps.descripcion')
                 } 
             },
@@ -2717,7 +2729,7 @@ function iniciarGuiaMapa(forzar = false) {
             { 
                 element: '.leaflet-control-layers',
                 popover: { 
-                    title: t('guiaMapa.pasos.controlCapas.titulo'), 
+                    title: tituloConIcono('#nav-map svg', t('guiaMapa.pasos.controlCapas.titulo')), 
                     description: t('guiaMapa.pasos.controlCapas.descripcion')
                 } 
             }
