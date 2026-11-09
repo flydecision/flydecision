@@ -116,6 +116,12 @@ body.modo-simple .solo-modo-avanzado {
     display: none !important;
 }
 
+/* En modo simple no está el panel de tiempo/a pie, cuyo margin-bottom: -10px (cerrado) ajustaba el hueco bajo el buscador:
+   se aplica aquí para que quede el mismo espacio que en modo avanzado */
+body.modo-simple #floating-search-container {
+    margin-bottom: 2px; /* 12px normales - 10px */
+}
+
 body.modo-simple #infoPanelPlaneo {
     display: none !important;
 }
