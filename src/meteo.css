@@ -5491,3 +5491,49 @@ td[data-v-raw][style*="italic"], td[data-r-raw][style*="italic"] {
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
+
+/* 🟡 Sliders antiguos del panel Filtros del mapa: azul = lo que se ve (del tirador a la derecha), pálido sin filtro.
+   --relleno lo pone meteo.js. Colores iguales que los filtros de tiempo (#0078d4 / #c7dcf0). */
+input[type="range"].slider-filtro-mapa {
+	-webkit-appearance: none;
+	appearance: none;
+	height: 24px;
+	background: transparent;
+	cursor: pointer;
+	--color-franja: #0078d4;
+	--corte: calc(11px + (100% - 22px) * var(--relleno, 0)); /* centro del tirador (22 px) */
+}
+input[type="range"].slider-filtro-mapa.sin-filtro {
+	--color-franja: #c7dcf0;
+}
+input[type="range"].slider-filtro-mapa::-webkit-slider-runnable-track {
+	height: 8px;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	background: linear-gradient(to right, #fff var(--corte), var(--color-franja) var(--corte));
+}
+input[type="range"].slider-filtro-mapa::-moz-range-track {
+	height: 8px;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	background: linear-gradient(to right, #fff var(--corte), var(--color-franja) var(--corte));
+}
+input[type="range"].slider-filtro-mapa::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 22px;
+	height: 22px;
+	margin-top: -8px; /* centra el tirador en la pista de 8 px (+ borde) */
+	border-radius: 50%;
+	background: #fff;
+	border: 1px solid #bbb;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+input[type="range"].slider-filtro-mapa::-moz-range-thumb {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: #fff;
+	border: 1px solid #bbb;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}

@@ -21889,3 +21889,35 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(programar, 60000); // se desplaza dentro de la hora cada minuto
     programar();
 });
+// 🟡 SLIDERS ANTIGUOS DEL PANEL FILTROS DEL MAPA (Actividad, Vuelos, Actualización y Altitud de balizas)
+// Mismo criterio que el rango horario y los filtros de tiempo: azul = lo que se ve (del tirador a la derecha);
+// en el mínimo (sin filtro) la franja va en azul pálido. Se pinta con --relleno (0-1) y la clase .sin-filtro.
+(function () {
+	const IDS = ['sliderActividad', 'sliderVuelos', 'sliderTiempoBalizas', 'sliderAltitudBalizas'];
+	const pintar = (el) => {
+		const min = parseFloat(el.min) || 0, max = parseFloat(el.max) || 100, v = parseFloat(el.value) || 0;
+		const pct = max > min ? ((v - min) / (max - min)) * 100 : 0;
+		el.style.setProperty('--relleno', (pct / 100).toFixed(4)); // fracción 0-1: el CSS la lleva al centro del tirador
+		el.classList.toggle('sin-filtro', v <= min);
+	};
+	const iniciar = () => {
+		const desc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+		IDS.forEach(id => {
+			const el = document.getElementById(id);
+			if (!el || el.dataset.rellenoFiltro) return;
+			el.dataset.rellenoFiltro = '1';
+			el.classList.add('slider-filtro-mapa');
+			// Los valores también se ponen por código (recordar filtros, reset…): repintamos en cada asignación
+			Object.defineProperty(el, 'value', {
+				configurable: true,
+				get() { return desc.get.call(this); },
+				set(v) { desc.set.call(this, v); pintar(this); }
+			});
+			el.addEventListener('input', () => pintar(el));
+			el.addEventListener('change', () => pintar(el));
+			pintar(el);
+		});
+	};
+	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+	else iniciar();
+})();
