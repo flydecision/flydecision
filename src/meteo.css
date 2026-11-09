@@ -2320,6 +2320,11 @@ span.grados {
 .leaflet-bar .btn-alterno.hundido {
     background-color: #007aff !important;
 }
+/* Fila «🚶 A pie»: separación con el deslizador del coche (antes la daba la nota de estimación, ya quitada) */
+#distancia-slider ~ .fila-filtro-tiempo,
+#distancia-slider-mapa ~ .fila-filtro-tiempo {
+    margin-top: 20px;
+}
 .nota-estimado-recta {
     font-size: 13px; /* excepción pedida por Alberto: aviso provisional hasta tener tiempos reales */
     color: #888;
