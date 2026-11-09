@@ -2139,9 +2139,9 @@ span.grados {
 #div-filtro-distancia-interno #distancia-slider.noUi-horizontal,
 #div-filtro-distancia-interno #pie-slider.noUi-horizontal {
     margin-top: 30px !important;
-    width: auto !important; /* misma anchura que el deslizador del rango horario (todo el panel) */
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    width: auto !important; /* misma anchura que el deslizador del rango horario (18 px por lado, como .noUi-horizontal) */
+    margin-left: 18px !important;
+    margin-right: 18px !important;
 }
 
 #distancia-slider .noUi-connect,
