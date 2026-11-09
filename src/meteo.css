@@ -685,7 +685,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .div-filtro-distancia.activo {
-    max-height: 300px; /* Un valor superior al contenido real */
+    max-height: 400px; /* Un valor superior al contenido real (con las tarjetas mide ~310 px) */
     opacity: 1;
     margin-top: -15px;
     padding: 4px;
@@ -2410,7 +2410,7 @@ span.grados {
     padding: 0;
 }
 #div-filtro-distancia-interno #pie-slider {
-    margin-bottom: 14px;
+    margin-bottom: 0; /* el espacio inferior lo da la tarjeta (.tarjeta-filtro), igual que en el del coche */
 }
 
 /* Filtro de distancia en el panel de filtros del mapa (mismo filtro que la tabla) */
