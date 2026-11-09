@@ -11179,6 +11179,8 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
     }
 
     // 2. Contadores Superiores
+    // Con un filtro de tiempo o de tramo a pie activo se muestra siempre «filtrados / total», aunque no oculte ninguno
+    const hayFiltroTiempo = distanciaLimite < 9999 || (typeof window.hayFiltroTiempoActivo === 'function' && window.hayFiltroTiempoActivo());
     const divContador = document.getElementById('contador-despegues');
     if (divContador) {
         const iconoFiltro = `<img src="/icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">`;
@@ -11189,7 +11191,7 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
         if (modoEdicionFavoritos) {
             if (soloFavoritos) {
                 divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesFavoritosEdicion', { n: heartRed, total: totalDespeguesDisponibles })}`;
-            } else if (visibles < totalDespeguesDisponibles) {
+            } else if (visibles < totalDespeguesDisponibles || hayFiltroTiempo) {
                 divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesDisponiblesFiltrados', { total: totalDespeguesDisponibles })}`;
             } else {
                 divContador.innerHTML = t('contador.despeguesDisponibles', { n: totalDespeguesDisponibles });
@@ -11201,7 +11203,7 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
             } else if (totalFavoritos === 0) {
                 divContador.innerHTML = t('contador.totalDisponibles', { n: totalDespeguesDisponibles });
             } else {
-                if (visibles < totalFavoritos || distanciaLimite < 9999) {
+                if (visibles < totalFavoritos || hayFiltroTiempo) {
                     divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesFavoritosFiltrados', { total: totalFavoritos })} (${heartRed})`;
                 } else {
                     divContador.innerHTML = `${t('contador.despeguesFavoritos', { n: visibles })} (${heartRed})`;
