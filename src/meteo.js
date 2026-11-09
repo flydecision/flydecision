@@ -11741,7 +11741,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         noUiSlider.create(distanciaSlider, {
             handleAttributes: [{ 'aria-label': 'Distancia' }],
             start: MAX_INDEX,    
-            // ltr (por defecto): 0 a la izquierda, «Sin límite» a la derecha; el azul ('lower') es lo que se ve, como en el rango horario
+            direction: 'rtl', // como Actividad, Vuelos…: sin filtro a la izquierda y más restrictivo hacia la derecha; el azul (del tirador a la derecha) es lo que se ve
             step: 1,             
             connect: 'lower',    
             // Sin tooltip sobre el tirador: el valor va fijo encima, en la tarjeta (.valor-filtro-tiempo)
@@ -11871,6 +11871,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 	const opcionesSliderPie = () => ({
 		handleAttributes: [{ 'aria-label': 'A pie' }],
 		start: maxIndicePie(),
+		direction: 'rtl', // igual que #distancia-slider
 		step: 1,
 		connect: 'lower',
 		range: { 'min': 0, 'max': maxIndicePie() }
@@ -11881,6 +11882,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		noUiSlider.create(distanciaSliderMapa, {
 			handleAttributes: [{ 'aria-label': 'Distancia' }],
 			start: indiceSlider(distanciaSlider),
+			direction: 'rtl', // igual que #distancia-slider
 			step: 1,
 			connect: 'lower',
 			range: { 'min': 0, 'max': MAX_INDEX }
