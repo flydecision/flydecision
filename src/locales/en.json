@@ -334,7 +334,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Driving time",
-        "descripcion": "Drag this slider to choose the maximum time to reach the takeoff: by car only (🚗) or adding the walk (🚗+🚶).<br><br>Until real driving times are available, it is estimated from the straight-line distance."
+        "descripcion": "Drag this slider to choose the maximum time to reach the takeoff: by car only (🚗) or adding the walk (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Walk",
@@ -397,7 +397,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Driving time",
-        "descripcion": "Drag this slider to choose the maximum time to reach the takeoff: by car only (🚗) or adding the walk (🚗+🚶).<br><br>Until real driving times are available, it is estimated from the straight-line distance."
+        "descripcion": "Drag this slider to choose the maximum time to reach the takeoff: by car only (🚗) or adding the walk (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Walk",

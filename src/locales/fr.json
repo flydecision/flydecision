@@ -334,7 +334,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Temps en voiture",
-        "descripcion": "En faisant glisser ce curseur, tu choisis le temps maximum pour arriver au décollage : en voiture seulement (🚗) ou en ajoutant la marche (🚗+🚶).<br><br>Tant qu'il n'y a pas de vrais temps en voiture, il est estimé avec la distance à vol d'oiseau."
+        "descripcion": "En faisant glisser ce curseur, tu choisis le temps maximum pour arriver au décollage : en voiture seulement (🚗) ou en ajoutant la marche (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Marche d'approche",
@@ -397,7 +397,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Temps en voiture",
-        "descripcion": "En faisant glisser ce curseur, tu choisis le temps maximum pour arriver au décollage : en voiture seulement (🚗) ou en ajoutant la marche (🚗+🚶).<br><br>Tant qu'il n'y a pas de vrais temps en voiture, il est estimé avec la distance à vol d'oiseau."
+        "descripcion": "En faisant glisser ce curseur, tu choisis le temps maximum pour arriver au décollage : en voiture seulement (🚗) ou en ajoutant la marche (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Marche d'approche",

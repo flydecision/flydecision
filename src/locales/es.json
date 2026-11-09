@@ -334,7 +334,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Tiempo en coche",
-        "descripcion": "Arrastrando este deslizador eliges el tiempo máximo para llegar al despegue: solo en coche (🚗) o sumando el tramo a pie (🚗+🚶).<br><br>Mientras no haya tiempos reales en coche, se estima con la distancia en línea recta."
+        "descripcion": "Arrastrando este deslizador eliges el tiempo máximo para llegar al despegue: solo en coche (🚗) o sumando el tramo a pie (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Tramo a pie",
@@ -397,7 +397,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Tiempo en coche",
-        "descripcion": "Arrastrando este deslizador eliges el tiempo máximo para llegar al despegue: solo en coche (🚗) o sumando el tramo a pie (🚗+🚶).<br><br>Mientras no haya tiempos reales en coche, se estima con la distancia en línea recta."
+        "descripcion": "Arrastrando este deslizador eliges el tiempo máximo para llegar al despegue: solo en coche (🚗) o sumando el tramo a pie (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Tramo a pie",

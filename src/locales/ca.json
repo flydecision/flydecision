@@ -334,7 +334,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Temps en cotxe",
-        "descripcion": "Arrossegant aquest control lliscant tries el temps màxim per arribar a l'enlairament: només en cotxe (🚗) o sumant-hi el tram a peu (🚗+🚶).<br><br>Mentre no hi hagi temps reals en cotxe, s'estima amb la distància en línia recta."
+        "descripcion": "Arrossegant aquest control lliscant tries el temps màxim per arribar a l'enlairament: només en cotxe (🚗) o sumant-hi el tram a peu (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Tram a peu",
@@ -397,7 +397,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Temps en cotxe",
-        "descripcion": "Arrossegant aquest control lliscant tries el temps màxim per arribar a l'enlairament: només en cotxe (🚗) o sumant-hi el tram a peu (🚗+🚶).<br><br>Mentre no hi hagi temps reals en cotxe, s'estima amb la distància en línia recta."
+        "descripcion": "Arrossegant aquest control lliscant tries el temps màxim per arribar a l'enlairament: només en cotxe (🚗) o sumant-hi el tram a peu (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Tram a peu",

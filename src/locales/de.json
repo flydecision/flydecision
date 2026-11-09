@@ -334,7 +334,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Fahrzeit",
-        "descripcion": "Mit diesem Schieberegler wählst du die maximale Zeit bis zum Startplatz: nur mit dem Auto (🚗) oder inklusive Fußweg (🚗+🚶).<br><br>Solange es keine echten Fahrzeiten gibt, wird sie aus der Luftlinie geschätzt."
+        "descripcion": "Mit diesem Schieberegler wählst du die maximale Zeit bis zum Startplatz: nur mit dem Auto (🚗) oder inklusive Fußweg (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Fußweg",
@@ -397,7 +397,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Fahrzeit",
-        "descripcion": "Mit diesem Schieberegler wählst du die maximale Zeit bis zum Startplatz: nur mit dem Auto (🚗) oder inklusive Fußweg (🚗+🚶).<br><br>Solange es keine echten Fahrzeiten gibt, wird sie aus der Luftlinie geschätzt."
+        "descripcion": "Mit diesem Schieberegler wählst du die maximale Zeit bis zum Startplatz: nur mit dem Auto (🚗) oder inklusive Fußweg (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Fußweg",

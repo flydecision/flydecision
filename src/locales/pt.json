@@ -334,7 +334,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Tempo de carro",
-        "descripcion": "Arrastando este controlo escolhes o tempo máximo para chegar à descolagem: só de carro (🚗) ou somando o troço a pé (🚗+🚶).<br><br>Enquanto não houver tempos reais de carro, é estimado com a distância em linha reta."
+        "descripcion": "Arrastando este controlo escolhes o tempo máximo para chegar à descolagem: só de carro (🚗) ou somando o troço a pé (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Troço a pé",
@@ -397,7 +397,7 @@
       },
       "sliderDistancia": {
         "titulo": "🚗 Tempo de carro",
-        "descripcion": "Arrastando este controlo escolhes o tempo máximo para chegar à descolagem: só de carro (🚗) ou somando o troço a pé (🚗+🚶).<br><br>Enquanto não houver tempos reais de carro, é estimado com a distância em linha reta."
+        "descripcion": "Arrastando este controlo escolhes o tempo máximo para chegar à descolagem: só de carro (🚗) ou somando o troço a pé (🚗+🚶)."
       },
       "sliderPie": {
         "titulo": "🚶 Troço a pé",
