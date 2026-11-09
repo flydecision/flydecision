@@ -7730,6 +7730,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         </div>
 
                         ${t('mapa.labelVuelos')} <b>${d.Vuelos}</b><br>
+                        <div class='acceso-pie-popup' data-id-desp='${d.ID}' style='display: none;'></div>
 
                         <br>🗺️ <a href='https://maps.google.com/?q=${Number(latitud).toFixed(4)},${Number(longitud).toFixed(4)}' onclick='abrirLinkExterno(this.href); return false;'>Google Maps</a><br>
                         🗺️ <a href='https://brouter.de/brouter-web/#map=15/${Number(latitud).toFixed(4)}/${Number(longitud).toFixed(4)}/OpenTopoMap&pois=${Number(longitud).toFixed(4)},${Number(latitud).toFixed(4)}' onclick='abrirLinkExterno(this.href); return false;'>Brouter</a><br>
@@ -13077,6 +13078,14 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 fragment.appendChild(scrollArea);
 
                 instance.setContent(fragment);
+            },
+            onShow(instance) {
+                // Tramo a pie en el popup de despegue de la tabla (se rellena al abrir, por si acceso-pie.json llegó después de pintar la tabla)
+                instance.popper.querySelectorAll('.acceso-pie-popup[data-id-desp]').forEach(divPie => {
+                    const txtPie = textoAccesoPieDespegue(Number(divPie.dataset.idDesp));
+                    divPie.innerHTML = txtPie;
+                    divPie.style.display = txtPie ? 'block' : 'none';
+                });
             },
             onHidden(instance) {
                 instance.popper.querySelectorAll('.linea-limites-efectivos').forEach(l => {
