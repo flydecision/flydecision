@@ -5553,3 +5553,8 @@ input[type="range"].slider-filtro-mapa::-moz-range-thumb {
 	border: 1px solid #bbb;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
+
+/* Modo simple: sin la columna de balizas, la de despegues no necesita la raya separadora */
+body.modo-simple .columna-filtros-despegues-mapa {
+    border-right: none !important;
+}

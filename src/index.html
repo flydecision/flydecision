@@ -1216,7 +1216,7 @@ setTimeout(function () {
 			<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 8px; margin-bottom: 8px;">
 
 				<!-- COLUMNA IZQUIERDA: DESPEGUES -->
-				<div style="display: flex; flex-direction: column; flex: 1; border-right: 1px solid #ccc; padding-right: 10px;">
+				<div class="columna-filtros-despegues-mapa" style="display: flex; flex-direction: column; flex: 1; border-right: 1px solid #ccc; padding-right: 10px;">
 					
 					<!-- Filtro Favoritos Despegues -->
 					<div id="control-favoritos-mapa-container" class="linea-con-bt-info" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
@@ -1244,8 +1244,8 @@ setTimeout(function () {
 
 				</div>
 
-				<!-- COLUMNA DERECHA: BALIZAS -->
-				<div style="display: flex; flex-direction: column; flex: 1; padding-left: 10px;">
+				<!-- COLUMNA DERECHA: BALIZAS (entera solo en modo avanzado: en simple sobraba el ❤️ de balizas) -->
+				<div class="solo-modo-avanzado" style="display: flex; flex-direction: column; flex: 1; padding-left: 10px;">
 					
 					<!-- Filtro Balizas Favoritas -->
 					<div id="control-favoritos-balizas-mapa-container" class="linea-con-bt-info" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
