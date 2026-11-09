@@ -5558,3 +5558,8 @@ input[type="range"].slider-filtro-mapa::-moz-range-thumb {
 body.modo-simple .columna-filtros-despegues-mapa {
     border-right: none !important;
 }
+
+/* Modo simple: sin panel de capas de despegues (solo tenía el checkbox «Despegues»; la capa queda siempre visible) */
+body.modo-simple #infoPanel {
+    display: none !important;
+}

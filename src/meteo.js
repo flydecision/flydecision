@@ -10243,6 +10243,14 @@ function resetearOpcionesAvanzadas(evitarRecarga = false) {
         filtroVerSoloSeguimiento(); 
     }
 
+    // En simple no hay panel de capas: la capa de despegues tiene que quedar visible
+    localStorage.setItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE', 'true');
+    const chkDespSimple = document.getElementById('checkboxDespegues');
+    if (chkDespSimple && !chkDespSimple.checked && !window.esModoBalizasDirecto) {
+        chkDespSimple.checked = true;
+        chkDespSimple.dispatchEvent(new Event('change')); // añade la capa al mapa (si ya existe)
+    }
+
     // Limpiamos los estados de filtros del mapa
     localStorage.removeItem('METEO_MAPA_MINIMOVUELOS');
     localStorage.removeItem('METEO_MINIMO_ANO_ULTIMO_VUELO');
@@ -17176,7 +17184,8 @@ function inicializarMapaLeaflet() {
                 // Restaurar el estado de visibilidad si el check de "Recordar capas activas" está ON
                 const recordarCapas = localStorage.getItem('METEO_RECORDAR_CAPAS_ACTIVAS') === 'true';
                 const chkDespeguesPersist = document.getElementById('checkboxDespegues');
-                let despeguesDebenVerse = window.esModoBalizasDirecto ? false : (recordarCapas ? (localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false') : true);
+                const enModoSimple = localStorage.getItem('METEO_MODO_SIMPLE') === 'true'; // en simple no hay panel de capas: despegues siempre visibles
+                let despeguesDebenVerse = window.esModoBalizasDirecto ? false : ((recordarCapas && !enModoSimple) ? (localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false') : true);
 
                 if (chkDespeguesPersist) chkDespeguesPersist.checked = despeguesDebenVerse;
 
