@@ -694,7 +694,7 @@ input[type="search"]::-webkit-search-cancel-button {
     max-height: 400px; /* Un valor superior al contenido real (con las tarjetas mide ~310 px) */
     opacity: 1;
     margin-top: -15px;
-    margin-bottom: 4px; /* el estado oculto usa -10px; abierto, la tarjeta de abajo se salía del recuadro blanco */
+    margin-bottom: -3px; /* el estado oculto usa -10px. Con -10 la tarjeta se salía del recuadro blanco; -3 deja sitio al borde rojo (3 px) dentro del padding de 4 px */
     padding: 4px;
 }
 
@@ -1025,7 +1025,7 @@ input[type="search"]::-webkit-search-cancel-button {
 #div-filtro-distancia .div-paneles-controles-transparente {
     padding-bottom: 0;      /* sin hueco: el borde rojo (filtro activo) rodea las tarjetas, como en el mapa */
     margin-top: 8px;        /* antes lo daba el margen de la 1.ª tarjeta */
-    margin-bottom: 5px;     /* antes padding-bottom */
+    margin-bottom: 0;       /* abajo, mitad de hueco blanco hasta el borde del panel (Alberto 2026-11-09) */
 }
 #div-filtro-distancia .div-paneles-controles-transparente > .tarjeta-filtro:first-of-type {
     margin-top: 0;
