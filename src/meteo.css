@@ -2359,17 +2359,28 @@ span.grados {
     padding-left: 0px !important;  /* para que la fila «⏱️ Desde · 🚗 · 🚗+🚶 ⓘ» quepa en una línea */
     padding-right: 0px !important;
 }
-/* Botón 📍 igual que en la tabla (el panel del mapa pone fondo blanco a sus botones) */
+/* Botón 📍 de origen (tabla y mapa): misma forma que los botones 🚗 / 🚗+🚶 (.btn-alterno), pero solo de clic */
+#btn-abrir-geo-menu,
 #btn-abrir-geo-menu-mapa {
-    background-color: #f0f0f0 !important;
-    border: 1px solid #333 !important;
-    border-radius: 50% !important;
-    width: 24px !important;
+    background-color: #fff !important;
+    color: #222;
+    border: 1.5px solid #ccc !important;
+    border-radius: 8px !important;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    width: 32px !important;
     height: 24px !important;
     padding: 0 !important;
     display: inline-flex !important;
     align-items: center;
     justify-content: center;
+}
+#btn-abrir-geo-menu:active,
+#btn-abrir-geo-menu-mapa:active {
+    background-color: #e6f0ff !important;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+#btn-abrir-geo-menu svg {
+    margin-top: 0 !important;
 }
 /* Misma separación «Desde»–origen que en la tabla (#titulo-distancia-slider usa gap 10px) */
 #titulo-distancia-slider-mapa #btn-abrir-geo-menu-mapa {
