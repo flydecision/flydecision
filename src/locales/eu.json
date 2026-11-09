@@ -434,59 +434,59 @@
   "preguntaVerGuia": "Maparen gida bisual bat ikusi nahi duzu?",
   "pasos": {
     "intro": {
-      "titulo": "Mapa",
+      "titulo": "🗺️ Mapa",
       "descripcion": "Parapente aireratzeak esploratu eta haien baldintzak ebaluatu orduz orduko iragarpenaren arabera.<br><br>Aireratzeak iragazi ditzakezu beren puntuazio meteorologikoaren, orientazioaren edo jarduera-mailaren arabera; denbora errealeko haize-balizak kontsultatu joera-grafikoekin; XContest aireratzeen bero-mapak ikusi eta hainbat mapa mota hautatu."
     },
     "filtroHorarioMeteo": {
-      "titulo": "Denbora-tartea eta iragazkia",
+      "titulo": "🕐–🕕 Denbora-tartea eta iragazkia",
       "descripcion": "Hautatu eguna eta nahi duzun hegaldiaren denbora-tartea.<br><br>Mapako ikonoak gorritik berdera doan 10 urratseko gradazio batekin koloreztatuko dira 🟥🟧🟩 ordutegi horretako baldintzen kalitatearen arabera, taulan bezala."
     },
     "filtroPuntuacion": {
-      "titulo": "Puntuazioaren araberako iragazkia",
+      "titulo": "⭐ Puntuazioaren araberako iragazkia",
       "descripcion": "Iragazi aireratzeak beren iragarpen meteorologikoaren puntuazioaren arabera eta hautatutako denbora-tartearentzat.<br><br>Irristatu kontrol hau gutxieneko nota bat (0tik 10 izarrera) zehazteko, eta horrela, hautatutako ordutegian zure exijentzia-mailara iristen ez diren ebaluazioak dituzten aireratzeak ezkutatuko dira.<br><br>Gogoratu puntuaziorako muga hauek guztiak <i>Ezarpenak</i> atalean doitu ditzakezula zure lehentasunen arabera."
     },
     "btnCerrarFiltroMeteo": {
-      "titulo": "Itxi ordu-kontrola eta meteo iragazkia",
+      "titulo": "❌ Itxi ordu-kontrola eta meteo iragazkia",
       "descripcion": "Itxi panel hau; horrela, aireratzeak ez dira gehiago beren meteoaren arabera koloreztatuko eta kolore zurian erakutsiko dira.<br><br>Erabilgarria izan daiteke pantailan ahalik eta leku gehien izanda aireratzeak edo haize-balizak esploratzeko."
     },
     "buscadorMapa": {
-      "titulo": "Aireratzeen bilatzailea",
+      "titulo": "🔍 Aireratzeen bilatzailea",
       "descripcion": "Idatzi edozein aireratzeren izena hura aurkitzeko eta mapan azkar zentratzeko.<br><br>Bere inguruko informazio asko duen leiho txiki bat zabalduko da."
     },
     "panelDespegues": {
-      "titulo": "Aireratzeen geruzak",
+      "titulo": "🪂 Aireratzeen geruzak",
       "descripcion": "Kudeatu aireratzeen, bero-mapen (erregistratutako benetako aireratze-puntuak) edo aireratze- eta lurreratze-puntuen ohar gehigarrien ikusgaitasuna."
     },
     "panelBalizas": {
-      "titulo": "Haize-balizak",
+      "titulo": "🌬️ Haize-balizak",
       "descripcion": "Aktibatu edo desgaitu denbora errealean haize-datuak transmititzen dituzten estazio meteorologikoen hainbat sare (balizak)."
     },
     "panelFiltros": {
-      "titulo": "Iragazkiak",
+      "titulo": "🎚️ Iragazkiak",
       "descripcion": "Iragazi mapako informazioa zure beharren arabera. Zure gogoko edo jarraipeneko aireratzeak eta balizak soilik erakutsi edo ezkutatu ditzakezu. Gainera, aireratzeak orientazioaren, jarduera-mailaren edo XContest-en erregistratutako hegaldi bolumenaren arabera iragazi ditzakezu, eta balizak altueraren arabera. Aireratze-guneak puntu batetik autoz behar den denboraren arabera eta aireratze-guneraino oinezko zatiaren arabera ere iragaz ditzakezu (denbora, distantzia edo desnibela)."
     },
     "btnPlaneo": {
-      "titulo": "Planeamendu-kalkulua",
+      "titulo": "📐 Planeamendu-kalkulua",
       "descripcion": "Kalkulatu zer eremutara irits zaitezkeen aireratze-leku batetik planeamendu finko batekin.<br><br>Gainjarritako kolore-gradiente bat erakusten du eremu bakoitzera iristeko beharrezkoa den planeamendua adierazteko, eta planeamenduari buruzko informazio osoa hautatzen dituzun jatorri- eta helmuga-puntuen artean (iritsiera-altuera, beharrezko planeamendua, desnibela,...).<br><br>Ibilbidea gandorrak saihesten saiatzen da tarteko biraketa-puntu batekin, erliebeak ahalbidetzen badu.<br><br>Helmuga eskuraezina bada, datuak gorriz erakusten dira, eta ✕ bat ibilbidean erlieberen batekin talka egiten badu.<br><br><i>Ezarpenak > Beste aukera batzuk > Belaren planeamendua</i> atalean kalkulu hauetarako nahi duzun planeamendu-balioa konfigura dezakezu."
     },
     "btnGps": {
-      "titulo": "Nire kokapena",
+      "titulo": "📍 Nire kokapena",
       "descripcion": "Zentratu mapa zure egungo posizioan."
     },
     "btnGeocoder": {
-      "titulo": "Bilatzaile orokorra",
+      "titulo": "🌍 Bilatzaile orokorra",
       "descripcion": "Bilatu edozein hiri, udalerri, mendi edo eremu geografiko bertara azkar nabigatzeko.<br><br>Koordenatuak ere idatz ditzakezu zuzenean formatu hamartarrean (adibidez: 42.734 -1.990) mapa puntu zehatz batean zentratzeko."
     },
     "controlCapas": {
-      "titulo": "Oinarrizko mapak",
+      "titulo": "🗂️ Oinarrizko mapak",
       "descripcion": "Aukeratu nahiago duzun atzeko planoko mapa mota: topografikoak, aireko argazkiak, erliebekoak, termika-eremuak eta ibilbideak (skyways eta thermals KK7) eta geruza aeronautikoak/murrizketak."
     },
     "btnFiltrosMeteo": {
-      "titulo": "Meteo botoia",
+      "titulo": "⛅ Meteo botoia",
       "descripcion": "Ireki barra meteorologikoa orduz edo asteko egunez mapan zuzenean iragazteko."
     },
     "navTabla": {
-      "titulo": "Taula ikuspegia",
+      "titulo": "📋 Taula ikuspegia",
       "descripcion": "Sartu orduz orduko taula meteorologiko zehatzera. Hemen ikusiko duzu aireratze bakoitzaren iragarpen osoa (haizea hainbat altueratan, boladak, norabidea, zizailadura, XC sabai termikoa, euria eta tenperatura) koloreekin ebaluatuta zure segurtasun-mugen arabera.<br><br>Hegaldi-ordutegiaren arabera iragazi ahal izango duzu, probintziaren edo distantziaren arabera aireratzeak bilatu, zure gogokoak kudeatu eta berehalako iragarpena (nowcasting) Arome 15 minutuko tartean ikusi."
     }
   }

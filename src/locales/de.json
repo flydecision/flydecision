@@ -434,59 +434,59 @@
   "preguntaVerGuia": "Möchten Sie eine visuelle Anleitung zur Karte sehen?",
   "pasos": {
     "intro": {
-      "titulo": "Karte",
+      "titulo": "🗺️ Karte",
       "descripcion": "Erkunden Sie Gleitschirm-Startplätze und bewerten Sie deren Bedingungen anhand der stündlichen Vorhersage.<br><br>Sie können Startplätze nach ihrem Meteo-Score, ihrer Ausrichtung oder ihrem Aktivitätsniveau filtern, Windbaken in Echtzeit mit Trenddiagrammen abfragen, Heatmaps von XContest-Startplätzen anzeigen und verschiedene Kartentypen auswählen."
     },
     "filtroHorarioMeteo": {
-      "titulo": "Zeitfenster und Filter",
+      "titulo": "🕐–🕕 Zeitfenster und Filter",
       "descripcion": "Wählen Sie den Tag und das gewünschte Flugzeitfenster aus.<br><br>Die Kartensymbole werden mit einer 10-stufigen Abstufung von Rot nach Grün 🟥🟧🟩 eingefärbt, je nach Qualität der Bedingungen zu dieser Zeit, genau wie in der Tabelle."
     },
     "filtroPuntuacion": {
-      "titulo": "Filter nach Punktzahl",
+      "titulo": "⭐ Filter nach Punktzahl",
       "descripcion": "Filtern Sie Startplätze nach der Punktzahl ihrer Wettervorhersage und für das ausgewählte Zeitfenster.<br><br>Schieben Sie diesen Regler, um eine Mindestnote (von 0 bis 10 Sternen) festzulegen, wodurch die Startplätze ausgeblendet werden, deren Bewertung Ihr Anspruchsniveau in der gewählten Zeit nicht erreicht.<br><br>Denken Sie daran, dass Sie all diese Grenzwerte für die Punktzahl unter <i>Einstellungen</i> nach Ihren Wünschen anpassen können."
     },
     "btnCerrarFiltroMeteo": {
-      "titulo": "Zeitsteuerung und Meteo-Filter schließen",
+      "titulo": "❌ Zeitsteuerung und Meteo-Filter schließen",
       "descripcion": "Schließt dieses Panel, sodass Startplätze nicht mehr nach ihrem Wetter eingefärbt werden und in Weiß angezeigt werden.<br><br>Es kann nützlich sein, um Startplätze oder Windbaken mit maximalem Platz auf dem Bildschirm zu erkunden."
     },
     "buscadorMapa": {
-      "titulo": "Startplatzsuche",
+      "titulo": "🔍 Startplatzsuche",
       "descripcion": "Geben Sie den Namen eines beliebigen Startplatzes ein, um ihn zu finden und schnell auf der Karte zu zentrieren.<br><br>Es öffnet sich ein kleines Fenster mit vielen Informationen dazu."
     },
     "panelDespegues": {
-      "titulo": "Startplatz-Ebenen",
+      "titulo": "🪂 Startplatz-Ebenen",
       "descripcion": "Verwalten Sie die Sichtbarkeit von Startplätzen, Heatmaps (tatsächlich registrierte Startpunkte) oder zusätzlichen Hinweisen zu Start- und Landeplätzen."
     },
     "panelBalizas": {
-      "titulo": "Windbaken",
+      "titulo": "🌬️ Windbaken",
       "descripcion": "Aktivieren oder deaktivieren Sie verschiedene Netzwerke von Wetterstationen, die Echtzeit-Winddaten übertragen (Baken)."
     },
     "panelFiltros": {
-      "titulo": "Filter",
+      "titulo": "🎚️ Filter",
       "descripcion": "Filtern Sie die Karteninformationen nach Ihren Bedürfnissen. Sie können nur Ihre favorisierten oder verfolgten Startplätze und Baken ein- oder ausblenden. Außerdem können Sie Startplätze nach Ausrichtung, Aktivitätsniveau oder Volumen der in XContest registrierten Flüge filtern sowie Baken nach ihrer Höhe filtern. Du kannst Startplätze auch nach Fahrzeit von einem Punkt aus und nach dem Fußweg zum Startplatz filtern (Zeit, Strecke oder Höhenmeter)."
     },
     "btnPlaneo": {
-      "titulo": "Gleitberechnung",
+      "titulo": "📐 Gleitberechnung",
       "descripcion": "Berechnet, welche Gebiete Sie mit einem festen Gleitflug von einem Startplatz aus erreichen können.<br><br>Zeigt einen überlagerten Farbverlauf an, um die erforderliche Gleitzahl zum Erreichen jedes Gebiets anzugeben, sowie vollständige Gleitfluginformationen zwischen den von Ihnen ausgewählten Start- und Zielpunkten (Ankunftshöhe, erforderliche Gleitzahl, Höhenunterschied,...).<br><br>Die Flugbahn versucht, Kämme mit einem dazwischenliegenden Wendepunkt zu umfliegen, wenn das Gelände dies zulässt.<br><br>Wenn das Ziel unerreichbar ist, werden die Daten in Rot und ein ✕ auf der Flugbahn angezeigt, wenn sie mit dem Gelände kollidiert.<br><br>Unter <i>Einstellungen > Weitere Optionen > Gleitzahl des Schirms</i> können Sie den gewünschten Gleitwert für diese Berechnungen konfigurieren."
     },
     "btnGps": {
-      "titulo": "Mein Standort",
+      "titulo": "📍 Mein Standort",
       "descripcion": "Zentriert die Karte auf Ihre aktuelle Position."
     },
     "btnGeocoder": {
-      "titulo": "Allgemeine Suche",
+      "titulo": "🌍 Allgemeine Suche",
       "descripcion": "Suchen Sie nach einer Stadt, Gemeinde, einem Berg oder einem geografischen Gebiet, um schnell dorthin zu navigieren.<br><br>Sie können auch Koordinaten im Dezimalformat direkt eingeben (z. B. 42.734 -1.990), um die Karte auf einem exakten Punkt zu zentrieren."
     },
     "controlCapas": {
-      "titulo": "Basiskarten",
+      "titulo": "🗂️ Basiskarten",
       "descripcion": "Wählen Sie den gewünschten Hintergrundkartentyp: topografische Karten, Luftbilder, Reliefkarten, Thermikgebiete und -routen (Skyways und Thermals KK7) sowie Luftfahrt-/Beschränkungsebenen."
     },
     "btnFiltrosMeteo": {
-      "titulo": "Meteo-Taste",
+      "titulo": "⛅ Meteo-Taste",
       "descripcion": "Öffnet die Wetterleiste, um direkt auf der Karte nach Stunden oder Wochentagen zu filtern."
     },
     "navTabla": {
-      "titulo": "Tabellenansicht",
+      "titulo": "📋 Tabellenansicht",
       "descripcion": "Greifen Sie auf die detaillierte stündliche Wettertabelle zu. Hier sehen Sie die vollständige Vorhersage für jeden Startplatz (Wind in verschiedenen Höhen, Böen, Richtung, Scherung, XC-Thermikbasis, Regen und Temperatur), farblich bewertet nach Ihren Sicherheitsgrenzen.<br><br>Sie können nach Flugplan filtern, Startplätze nach Provinz oder Entfernung suchen, Ihre Favoriten verwalten und die sofortige Arome-Vorhersage (Nowcasting) in 15-Minuten-Intervallen ansehen."
     }
   }

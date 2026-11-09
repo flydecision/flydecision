@@ -434,59 +434,59 @@
   "preguntaVerGuia": "Do you want to see a visual guide of the Map?",
   "pasos": {
     "intro": {
-      "titulo": "Map",
+      "titulo": "🗺️ Map",
       "descripcion": "Explore paragliding takeoffs and evaluate their conditions according to the hourly forecast.<br><br>You can filter takeoffs by their meteo score, orientation or activity level, check real-time wind beacons with trend graphs, view XContest takeoff heatmaps and select various types of maps."
     },
     "filtroHorarioMeteo": {
-      "titulo": "Time range and filter",
+      "titulo": "🕐–🕕 Time range and filter",
       "descripcion": "Select the day and desired flight time range.<br><br>The map icons will be colored with a 10-step gradation from red to green 🟥🟧🟩 according to the quality of the conditions at that time, just like in the table."
     },
     "filtroPuntuacion": {
-      "titulo": "Filter by score",
+      "titulo": "⭐ Filter by score",
       "descripcion": "Filter takeoffs according to the score of their meteorological forecast and for the selected time range.<br><br>Slide this control to set a minimum grade (from 0 to 10 stars) and this will hide the takeoffs whose evaluation does not meet your demanding level in the selected schedule.<br><br>Remember that you can adjust all these limits for the score in <i>Settings</i> according to your preferences."
     },
     "btnCerrarFiltroMeteo": {
-      "titulo": "Close time control and meteo filter",
+      "titulo": "❌ Close time control and meteo filter",
       "descripcion": "Closes this panel, so takeoffs are no longer colored based on their weather and are shown in white.<br><br>It can be useful for exploring takeoffs or wind beacons with maximum screen space."
     },
     "buscadorMapa": {
-      "titulo": "Takeoff Search",
+      "titulo": "🔍 Takeoff Search",
       "descripcion": "Type the name of any takeoff to find it and center it quickly on the map.<br><br>A small window will unfold with plenty of information about it."
     },
     "panelDespegues": {
-      "titulo": "Takeoff Layers",
+      "titulo": "🪂 Takeoff Layers",
       "descripcion": "Manage the visibility of takeoffs, heatmaps (actual registered takeoff points) or additional notes on takeoff and landing points."
     },
     "panelBalizas": {
-      "titulo": "Wind beacons",
+      "titulo": "🌬️ Wind beacons",
       "descripcion": "Enable or disable various networks of meteorological stations that transmit real-time wind data (beacons)."
     },
     "panelFiltros": {
-      "titulo": "Filters",
+      "titulo": "🎚️ Filters",
       "descripcion": "Filter map information according to your needs. You can show or hide only your favorite or tracked takeoffs and beacons. Furthermore, you can filter takeoffs by orientation, activity level or volume of flights registered in XContest, and filter beacons according to their altitude. You can also filter take-offs by driving time from a point and by the walk to the take-off (time, distance or climb)."
     },
     "btnPlaneo": {
-      "titulo": "Glide calculation",
+      "titulo": "📐 Glide calculation",
       "descripcion": "Calculates which areas you can reach with a fixed glide from a takeoff location.<br><br>It shows an overlaid color gradient to indicate the glide required to reach each area and complete glide information between the origin and destination points you select (arrival height, required glide, elevation difference,...).<br><br>The path attempts to avoid ridges with an intermediate turn point if the terrain allows it.<br><br>If the destination is unreachable, the data is shown in red and an ✕ on the path if it collides with any terrain.<br><br>In <i>Settings > Other options > Glider glide ratio</i> you can configure the glide value you want for these calculations."
     },
     "btnGps": {
-      "titulo": "My Location",
+      "titulo": "📍 My Location",
       "descripcion": "Centers the map on your current position."
     },
     "btnGeocoder": {
-      "titulo": "General Search",
+      "titulo": "🌍 General Search",
       "descripcion": "Search for any city, municipality, mountain or geographic area to navigate to it quickly.<br><br>You can also directly type coordinates in decimal format (e.g. 42.734 -1.990) to center the map on an exact point."
     },
     "controlCapas": {
-      "titulo": "Base maps",
+      "titulo": "🗂️ Base maps",
       "descripcion": "Choose the type of background map you prefer: topographic, aerial photos, relief, thermal areas and routes (skyways and thermals KK7) and aeronautical/restriction layers."
     },
     "btnFiltrosMeteo": {
-      "titulo": "Meteo Button",
+      "titulo": "⛅ Meteo Button",
       "descripcion": "Opens the meteorological bar to filter by hours or day of the week directly on the map."
     },
     "navTabla": {
-      "titulo": "Table View",
+      "titulo": "📋 Table View",
       "descripcion": "Access the detailed hourly meteorological table. Here you will see the complete forecast for each takeoff (wind at various heights, gusts, direction, shear, XC thermal ceiling, rain and temperature) evaluated with colors according to your safety limits.<br><br>You will be able to filter by flight schedule, search for takeoffs by province or distance, manage your favorites and view the immediate forecast (nowcasting) Arome at 15-minute intervals."
     }
   }
