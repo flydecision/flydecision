@@ -300,6 +300,10 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
         inset 1px 1px 3px rgba(0,0,0,0.4) !important;
     background-color: #ff000042 !important;
 }
+/* Resplandor blanco en el ojo con filtro, igual que los emojis del botón de filtros de acceso */
+#btn-filtro-seguimiento-toggle.filtro-aplicado svg {
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff);
+}
 #btn-filtro-seguimiento-toggle.filtro-aplicado .ojo-exterior {
     fill: #16a34a !important;
     stroke: none !important;
