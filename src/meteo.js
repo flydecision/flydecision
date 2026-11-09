@@ -540,7 +540,7 @@ const FACTOR_MIN_POR_KM_RECTA = 1;
 const CORTES_PIE_GLOBAL = {
     min: [0, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 9999],
     km:  [0, 0.2, 0.5, 1, 2, 3, 5, 8, 9999],
-    m:   [0, 50, 100, 200, 300, 500, 700, 1000, 1500, 9999]
+    m:   [0, 50, 100, 150, 200, 300, 500, 700, 1000, 1500, 9999]
 };
 let modoTiempoDespegue = 'coche'; // 'coche' | 'total' (coche + tramo a pie)
 let unidadFiltroPie = 'min';      // 'min' | 'km' | 'm'
