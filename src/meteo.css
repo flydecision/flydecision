@@ -694,7 +694,7 @@ input[type="search"]::-webkit-search-cancel-button {
     max-height: 400px; /* Un valor superior al contenido real (con las tarjetas mide ~310 px) */
     opacity: 1;
     margin-top: -15px;
-    margin-bottom: -3px; /* el estado oculto usa -10px. Con -10 la tarjeta se salía del recuadro blanco; -3 deja sitio al borde rojo (3 px) dentro del padding de 4 px */
+    margin-bottom: 3px; /* el estado oculto usa -10px; con -10 la tarjeta se salía del recuadro blanco. Ajustado a ojo por Alberto (2026-11-09) */
     padding: 4px;
 }
 
