@@ -2425,10 +2425,14 @@ span.grados {
 #control-distancia-mapa-container {
     margin-top: 14px !important;
     margin-bottom: 8px;
-    padding-top: 4px !important;
-    padding-bottom: 8px !important;
+    padding-top: 0 !important;     /* sin hueco blanco: el borde rojo (filtro activo) rodea las tarjetas */
+    padding-bottom: 0 !important;
     padding-left: 0px !important;  /* para que la fila «⏱️ Desde · 🚗 · 🚗+🚶 ⓘ» quepa en una línea */
     padding-right: 0px !important;
+    border-radius: 10px;           /* igual que las tarjetas */
+}
+#control-distancia-mapa-container .tarjeta-filtro:first-child {
+    margin-top: 0;
 }
 /* Botón 📍 de origen (tabla y mapa): misma forma que los botones 🚗 / 🚗+🚶 (.btn-alterno), pero solo de clic */
 #btn-abrir-geo-menu,
