@@ -21878,6 +21878,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // en el mínimo (sin filtro) la franja va en azul pálido. Se pinta con --relleno (0-1) y la clase .sin-filtro.
 (function () {
 	const IDS = ['sliderActividad', 'sliderVuelos', 'sliderTiempoBalizas', 'sliderAltitudBalizas'];
+	const IDS_AJUSTE = ['slider-offset-termica', 'slider-transparencia-planeo']; // planeo: solo el aspecto (azul del inicio al tirador)
 	const pintar = (el) => {
 		const min = parseFloat(el.min) || 0, max = parseFloat(el.max) || 100, v = parseFloat(el.value) || 0;
 		const pct = max > min ? ((v - min) / (max - min)) * 100 : 0;
@@ -21886,11 +21887,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	};
 	const iniciar = () => {
 		const desc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
-		IDS.forEach(id => {
+		IDS.concat(IDS_AJUSTE).forEach(id => {
 			const el = document.getElementById(id);
 			if (!el || el.dataset.rellenoFiltro) return;
 			el.dataset.rellenoFiltro = '1';
-			el.classList.add('slider-filtro-mapa');
+			el.classList.add(IDS.includes(id) ? 'slider-filtro-mapa' : 'slider-ajuste-nativo');
 			// Los valores también se ponen por código (recordar filtros, reset…): repintamos en cada asignación
 			Object.defineProperty(el, 'value', {
 				configurable: true,

@@ -5509,50 +5509,75 @@ td[data-v-raw][style*="italic"], td[data-r-raw][style*="italic"] {
     animation: spin 0.8s linear infinite;
 }
 
-/* 🟡 Sliders antiguos del panel Filtros del mapa: azul = lo que se ve (del tirador a la derecha), pálido sin filtro.
-   --relleno lo pone meteo.js. Colores iguales que los filtros de tiempo (#0078d4 / #c7dcf0). */
-input[type="range"].slider-filtro-mapa {
+/* 🟡 Deslizadores nativos (input range): mismo aspecto que los noUiSlider (barra de 17 px y tirador 28x28 con dos rayitas).
+   - Filtros del mapa (.slider-filtro-mapa: Actividad, Vuelos, balizas): azul = lo que se ve (del tirador a la derecha), pálido sin filtro.
+   - Planeo (.slider-ajuste-nativo: térmica, transparencia): azul del inicio al tirador, como un ajuste normal.
+   --relleno (0-1) lo pone meteo.js. Colores iguales que los filtros de tiempo (#0078d4 / #c7dcf0). */
+input[type="range"].slider-filtro-mapa,
+input[type="range"].slider-ajuste-nativo {
 	-webkit-appearance: none;
 	appearance: none;
-	height: 24px;
+	height: 30px;
 	background: transparent;
 	cursor: pointer;
 	--color-franja: #0078d4;
-	--corte: calc(11px + (100% - 22px) * var(--relleno, 0)); /* centro del tirador (22 px) */
+	--color-vacio: #FAFAFA;
+	--corte: calc(14px + (100% - 28px) * var(--relleno, 0)); /* centro del tirador (28 px) */
+	--fondo-pista: linear-gradient(to right, var(--color-vacio) var(--corte), var(--color-franja) var(--corte));
+}
+input[type="range"].slider-ajuste-nativo {
+	--fondo-pista: linear-gradient(to right, var(--color-franja) var(--corte), var(--color-vacio) var(--corte));
 }
 input[type="range"].slider-filtro-mapa.sin-filtro {
 	--color-franja: #c7dcf0;
 }
-input[type="range"].slider-filtro-mapa::-webkit-slider-runnable-track {
-	height: 8px;
+input[type="range"].slider-filtro-mapa::-webkit-slider-runnable-track,
+input[type="range"].slider-ajuste-nativo::-webkit-slider-runnable-track {
+	height: 17px;
+	box-sizing: border-box;
 	border-radius: 4px;
-	border: 1px solid #ccc;
-	background: linear-gradient(to right, #fff var(--corte), var(--color-franja) var(--corte));
+	border: 1px solid #D3D3D3;
+	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
+	background: var(--fondo-pista);
 }
-input[type="range"].slider-filtro-mapa::-moz-range-track {
-	height: 8px;
+input[type="range"].slider-filtro-mapa::-moz-range-track,
+input[type="range"].slider-ajuste-nativo::-moz-range-track {
+	height: 17px;
+	box-sizing: border-box;
 	border-radius: 4px;
-	border: 1px solid #ccc;
-	background: linear-gradient(to right, #fff var(--corte), var(--color-franja) var(--corte));
+	border: 1px solid #D3D3D3;
+	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
+	background: var(--fondo-pista);
 }
-input[type="range"].slider-filtro-mapa::-webkit-slider-thumb {
+/* Tirador como el de noUiSlider: blanco, borde gris, esquinas de 6 px y dos rayitas verticales */
+input[type="range"].slider-filtro-mapa::-webkit-slider-thumb,
+input[type="range"].slider-ajuste-nativo::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	appearance: none;
-	width: 22px;
-	height: 22px;
-	margin-top: -8px; /* centra el tirador en la pista de 8 px (+ borde) */
-	border-radius: 50%;
-	background: #fff;
-	border: 1px solid #bbb;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+	box-sizing: border-box;
+	width: 28px;
+	height: 28px;
+	margin-top: -6.5px; /* centrado sobre la pista de 17 px (con borde) */
+	border: 1px solid #999;
+	border-radius: 6px;
+	background:
+		linear-gradient(#E8E7E6, #E8E7E6) 9px 6px / 2px 14px no-repeat,
+		linear-gradient(#E8E7E6, #E8E7E6) 14px 6px / 2px 14px no-repeat,
+		#fff;
+	box-shadow: inset 0 0 1px #FFF, inset 0 1px 7px #EBEBEB, 0 2px 4px rgba(0, 0, 0, 0.2);
 }
-input[type="range"].slider-filtro-mapa::-moz-range-thumb {
-	width: 22px;
-	height: 22px;
-	border-radius: 50%;
-	background: #fff;
-	border: 1px solid #bbb;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+input[type="range"].slider-filtro-mapa::-moz-range-thumb,
+input[type="range"].slider-ajuste-nativo::-moz-range-thumb {
+	box-sizing: border-box;
+	width: 28px;
+	height: 28px;
+	border: 1px solid #999;
+	border-radius: 6px;
+	background:
+		linear-gradient(#E8E7E6, #E8E7E6) 9px 6px / 2px 14px no-repeat,
+		linear-gradient(#E8E7E6, #E8E7E6) 14px 6px / 2px 14px no-repeat,
+		#fff;
+	box-shadow: inset 0 0 1px #FFF, inset 0 1px 7px #EBEBEB, 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Modo simple: sin la columna de balizas, la de despegues no necesita la raya separadora */
