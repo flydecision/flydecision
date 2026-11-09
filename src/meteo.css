@@ -2167,6 +2167,30 @@ span.grados {
 #pie-slider-mapa .noUi-connect {
 	background: #0078d4;
 }
+/* El tirador no sobresale de la barra (como en los deslizadores nativos de Actividad, Vuelos…): la zona útil (.noUi-base)
+   se mete 14 px (medio tirador) por cada lado. Esos 14 px los pinta el fondo de la barra: a la izquierda vacío y a la derecha
+   del color de la franja, porque con direction 'rtl' el azul siempre llega hasta el extremo derecho. */
+#distancia-slider.noUi-horizontal,
+#distancia-slider-mapa.noUi-horizontal,
+#pie-slider.noUi-horizontal,
+#pie-slider-mapa.noUi-horizontal {
+	--franja-filtro-tiempo: #0078d4;
+	padding: 0 14px;
+	background: linear-gradient(to right, #FAFAFA calc(100% - 14px), var(--franja-filtro-tiempo) calc(100% - 14px));
+	box-shadow: 0 3px 6px -5px #BBB; /* sin la sombra interior: se notaba en el trozo de la derecha */
+}
+#distancia-slider.sin-limite,
+#distancia-slider-mapa.sin-limite,
+#pie-slider.sin-limite,
+#pie-slider-mapa.sin-limite {
+	--franja-filtro-tiempo: #c7dcf0;
+}
+#distancia-slider .noUi-connects,
+#distancia-slider-mapa .noUi-connects,
+#pie-slider .noUi-connects,
+#pie-slider-mapa .noUi-connects {
+	border-radius: 0;
+}
 /* Sin filtro («Sin límite»): la franja se ve en azul pálido; al filtrar pasa a azul fuerte */
 #distancia-slider.sin-limite .noUi-connect,
 #distancia-slider-mapa.sin-limite .noUi-connect,
