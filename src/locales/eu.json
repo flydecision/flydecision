@@ -900,7 +900,7 @@
   "html": {
     "verTodosDiasTitle": "Egun guztiak ikusi",
     "distanciaDesde": "Distantzia hemendik:",
-    "tiempoDesde": "🚗 Hemendik",
+    "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> Hemendik",
     "modoCoche": "🚗 Autoa",
     "modoTotal": "🚗+🚶 Guztira",
     "estimadoLineaRecta": "Denbora/distantzia daturik ez. Gutxi gorabeherako kalkulua.",

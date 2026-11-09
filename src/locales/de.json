@@ -900,7 +900,7 @@
   "html": {
     "verTodosDiasTitle": "Alle Tage ansehen",
     "distanciaDesde": "Entfernung von:",
-    "tiempoDesde": "🚗 Ab",
+    "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> Ab",
     "modoCoche": "🚗 Auto",
     "modoTotal": "🚗+🚶 Gesamt",
     "estimadoLineaRecta": "Keine Zeit-/Entfernungsdaten. Ungefähre Schätzung.",

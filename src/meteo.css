@@ -2243,6 +2243,11 @@ span.grados {
 .fila-filtro-tiempo > span {
     white-space: nowrap;
 }
+/* El emoji 🚗 es más bajo que 🚶 y quedaba por debajo de «Desde»: se sube para centrarlo */
+.emoji-titulo-coche {
+    position: relative;
+    top: -2px;
+}
 /* «⏱️ Desde» y «🚶 A pie» en negrita, como los títulos del resto de filtros */
 .fila-filtro-tiempo > span[data-i18n] {
     font-weight: bold;

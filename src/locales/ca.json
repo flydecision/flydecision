@@ -900,7 +900,7 @@
   "html": {
     "verTodosDiasTitle": "Veure tots els dies",
     "distanciaDesde": "Distància des de:",
-    "tiempoDesde": "🚗 Des de",
+    "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> Des de",
     "modoCoche": "🚗 Cotxe",
     "modoTotal": "🚗+🚶 Total",
     "estimadoLineaRecta": "Sense dades temps/distància. Estimació aproximada.",

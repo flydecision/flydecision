@@ -900,7 +900,7 @@
   "html": {
     "verTodosDiasTitle": "Ver todos os días",
     "distanciaDesde": "Distancia desde:",
-    "tiempoDesde": "🚗 Desde",
+    "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> Desde",
     "modoCoche": "🚗 Coche",
     "modoTotal": "🚗+🚶 Total",
     "estimadoLineaRecta": "Sen datos tempo/distancia. Estimación aproximada.",
