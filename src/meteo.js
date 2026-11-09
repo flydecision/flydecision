@@ -11744,11 +11744,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // ltr (por defecto): 0 a la izquierda, «Sin límite» a la derecha; el azul ('lower') es lo que se ve, como en el rango horario
             step: 1,             
             connect: 'lower',    
-            tooltips:[{
-                to: function (index) {
-                    return formatearTooltipFiltroTiempo(CORTES_DISTANCIA_GLOBAL[Math.round(index)], 'min');
-                }
-            }],
+            // Sin tooltip sobre el tirador: el valor va fijo encima, en la tarjeta (.valor-filtro-tiempo)
             range: {
                 'min': 0,        // Índice del primer elemento (5 km)
                 'max': MAX_INDEX // Índice del último elemento (Todo)
@@ -11877,7 +11873,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		start: maxIndicePie(),
 		step: 1,
 		connect: 'lower',
-		tooltips: [{ to: (index) => formatearTooltipFiltroTiempo(CORTES_PIE_GLOBAL[unidadFiltroPie][Math.round(index)], unidadFiltroPie) }],
 		range: { 'min': 0, 'max': maxIndicePie() }
 	});
 
@@ -11888,7 +11883,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
 			start: indiceSlider(distanciaSlider),
 			step: 1,
 			connect: 'lower',
-			tooltips: [{ to: (index) => formatearTooltipFiltroTiempo(CORTES_DISTANCIA_GLOBAL[Math.round(index)], 'min') }],
 			range: { 'min': 0, 'max': MAX_INDEX }
 		});
 		distanciaSliderMapa.noUiSlider.on('slide', function () { window.vibrarDispositivo(); });
