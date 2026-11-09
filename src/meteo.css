@@ -5560,6 +5560,7 @@ body.modo-simple .columna-filtros-despegues-mapa {
 }
 
 /* Modo simple: sin panel de capas de despegues (solo tenía el checkbox «Despegues»; la capa queda siempre visible) */
-body.modo-simple #infoPanel {
+body.modo-simple #infoPanel,
+body.modo-simple .leaflet-control-infopanel1 { /* se oculta también su caja de Leaflet: si no, quedaba su margen como hueco */
     display: none !important;
 }
