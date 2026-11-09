@@ -2298,6 +2298,13 @@ span.grados {
     margin-left: 0px;
     font-size: 14px; /* excepción pedida por Alberto (min, km, m) para que quepa el grupo «A pie» en el mapa */
 }
+/* Flechas ↔ y ↑ de los botones km / m: SVG (las de texto salían finas y descentradas según la fuente) */
+.flecha-unidad {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    margin-right: 3px;
+}
 .signo-mas {
     margin: 0 -3px;
     margin-right: -6px; /* 🚗+🚶 más juntos */
