@@ -2306,8 +2306,7 @@ span.grados {
     margin-right: 3px;
 }
 .signo-mas {
-    margin: 0 -3px;
-    margin-right: -6px; /* 🚗+🚶 más juntos */
+    margin: 0 -5px 0 -2px; /* 🚗+🚶 juntos (derecha -5, izquierda -2) */
 }
 .btn-alterno.hundido .emoji-boton {
     text-shadow: 0 0 2px #fff, 0 0 2px #fff;
