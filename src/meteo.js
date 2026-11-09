@@ -586,6 +586,12 @@ function textoAccesoPieDespegue(id) {
         if (Number.isFinite(Number(pie.km))) partes.push(`${String(Number(pie.km)).replace('.', ',')} km`);
         if (Number.isFinite(Number(pie.m)) && Number(pie.m) > 0) partes.push(`↑${Number(pie.m)} m`);
         datos = partes.join(' · ');
+        // Enlace a la ruta en BRouter: pie.r = "lon,lat;lon,lat[;…]" (de la carretera al despegue)
+        if (typeof pie.r === 'string' && /^[-0-9.,;]+$/.test(pie.r)) {
+            const fin = pie.r.split(';').pop().split(',');
+            const url = `https://brouter.de/brouter-web/#map=14/${fin[1]}/${fin[0]}/OpenTopoMap&lonlats=${pie.r}&profile=hiking-mountain`;
+            return `${t('popupDespegue.aPie')}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'><b>${datos}</b></a>`;
+        }
     }
     return `${t('popupDespegue.aPie')}<br><b>${datos}</b>`;
 }
