@@ -2735,7 +2735,7 @@ function iniciarGuiaMapa(forzar = false) {
                     description: t('guiaMapa.pasos.controlCapas.descripcion')
                 } 
             }
-        ],
+        ].filter(paso => !(paso.element === '#infoPanel' && document.body.classList.contains('modo-simple'))), // en simple no hay panel de capas de despegues
         
         onDestroyStarted: () => {
             localStorage.setItem('METEO_GUIA_MAPA_VISTA', 'true'); 
