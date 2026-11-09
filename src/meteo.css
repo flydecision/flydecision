@@ -2518,6 +2518,12 @@ body.modo-edicion-tabla #nav-distance {
 #nav-distance.filtrado .distancia-x {
     display: inline;
 }
+/* Con el fondo rojizo, resplandor blanco en 🚗🚶 y ❌ (igual que los botones 🚗 / 🚗+🚶 hundidos) */
+#nav-distance.filtrado .emoji-nav-distancia,
+#nav-distance.filtrado .distancia-x {
+    text-shadow: 0 0 2px #fff, 0 0 2px #fff;
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff); /* por si el emoji se pinta como imagen */
+}
 
 /* 🟡 SLIDERS. Personalizados. Distancia. Botones localización origen -------------------------------- */
 
