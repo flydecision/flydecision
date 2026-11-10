@@ -13979,6 +13979,33 @@ function comprobarAvisoCambiosPuntuacionXC() {
     // ---------------------------------------------------------------
     // 🔴 FUNCIÓN PARA ABRIR LA TABLA Y FILTRAR EL DESPEGUE DESDE EL POPUP DEL MAPA
     // ---------------------------------------------------------------
+    // Master de un despegue secundario (Master_meteo = «no»): el despegue de la tabla más cercano en 5 km,
+    // priorizando los que comparten nombre (base antes de «(» o alguna parte entre paréntesis).
+    window.buscarMasterDeSecundario = function(nombre, lat, lon) {
+        if (!window.bdGlobalDespegues) return null;
+        const norm = (txt) => String(txt || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+        const n = norm(nombre);
+        const base = n.split('(')[0].trim();
+        const partes = ((n.match(/\(([^)]*)\)/) || [])[1] || '').split(/[\/,]/).map(x => x.trim()).filter(x => x.length > 2);
+        const radio = Math.PI / 180;
+        let mejor = null, mejorPuntos = -Infinity;
+        for (const d of window.bdGlobalDespegues) {
+            const dLat = parseFloat(d.Latitud), dLon = parseFloat(d.Longitud);
+            if (isNaN(dLat) || isNaN(dLon)) continue;
+            const x = (dLon - lon) * radio * Math.cos((dLat + lat) / 2 * radio);
+            const y = (dLat - lat) * radio;
+            const km = Math.sqrt(x * x + y * y) * 6371;
+            if (km > 5) continue;
+            const nd = norm(d.Despegue);
+            let coincidencia = 0;
+            if (base && nd.split('(')[0].trim() === base) coincidencia++;
+            if (partes.some(p => nd.includes(p))) coincidencia += 2;
+            const puntos = coincidencia * 100 - km; // primero el nombre, luego la distancia
+            if (puntos > mejorPuntos) { mejorPuntos = puntos; mejor = d; }
+        }
+        return mejor;
+    };
+
     window.verMeteoEnTabla = function(idDespegue) {
 
         window.vibrarDispositivo();
@@ -16993,10 +17020,11 @@ function inicializarMapaLeaflet() {
                             parseFloat(d.Latitud).toFixed(4) === lat.toFixed(4) &&
                             parseFloat(d.Longitud).toFixed(4) === lon.toFixed(4)
                         );
-                        // Despegue secundario (Master_meteo = «no»): no está en la tabla con sus coordenadas, pero comparte ID
-                        // con su master de despegues-operativos.csv. «Ver en tabla» (y ❤️/👁) llevan a ese master.
-                        const esSecundario = !matchTabla && row.Master_meteo && row.Master_meteo.trim().toLowerCase() === 'no' && row.ID;
-                        if (esSecundario) matchTabla = window.bdGlobalDespegues.find(d => String(d.ID) === String(row.ID).trim());
+                        // Despegue secundario (Master_meteo = «no»): no está en la tabla. Su master es el despegue de la tabla
+                        // más cercano (máx. 5 km), dando preferencia al que comparte nombre (p. ej. «Anboto (Azkillar)» →
+                        // «Anboto (cima / Azkillar / Elgoin / Frailia)»). «Ver en tabla» (y ❤️/👁) llevan a ese master.
+                        const esSecundario = !matchTabla && row.Master_meteo && row.Master_meteo.trim().toLowerCase() === 'no';
+                        if (esSecundario) matchTabla = window.buscarMasterDeSecundario(row.Despegue || '', lat, lon);
 
                         if (matchTabla) {
                             //despegue = matchTabla.Despegue;
