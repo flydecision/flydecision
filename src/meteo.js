@@ -13080,7 +13080,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
             allowHTML: true,
             interactive: true,
             placement: 'auto',
-            appendTo: document.body,
+            // Un globo dentro de otro (p. ej. el 🤖 del tramo a pie dentro del popup de la tabla) se mete en el globo padre:
+            // así pulsar en él no cuenta como «clic fuera» del padre (no lo cierra) y desaparece con él. El resto, al body.
+            appendTo: (ref) => (ref.closest && ref.closest('[data-tippy-root]')) || document.body,
             maxWidth: 400, // Dejamos que CSS limite el ancho real
             hideOnClick: true, // <--- 1. Cierra automáticamente al hacer clic fuera
 
