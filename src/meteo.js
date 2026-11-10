@@ -16989,15 +16989,19 @@ function inicializarMapaLeaflet() {
                     let botonesAccionPopupHTML = '';
 
                     if (window.bdGlobalDespegues) {
-                        const matchTabla = window.bdGlobalDespegues.find(d =>
+                        let matchTabla = window.bdGlobalDespegues.find(d =>
                             parseFloat(d.Latitud).toFixed(4) === lat.toFixed(4) &&
                             parseFloat(d.Longitud).toFixed(4) === lon.toFixed(4)
                         );
+                        // Despegue secundario (Master_meteo = «no»): no está en la tabla con sus coordenadas, pero comparte ID
+                        // con su master de despegues-operativos.csv. «Ver en tabla» (y ❤️/👁) llevan a ese master.
+                        const esSecundario = !matchTabla && row.Master_meteo && row.Master_meteo.trim().toLowerCase() === 'no' && row.ID;
+                        if (esSecundario) matchTabla = window.bdGlobalDespegues.find(d => String(d.ID) === String(row.ID).trim());
 
                         if (matchTabla) {
                             //despegue = matchTabla.Despegue;
                             idDespegue = matchTabla.ID;
-                            actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla
+                            if (!esSecundario) actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla (el secundario conserva la suya)
 
                             const esFavoritoPopup  = obtenerFavoritos().map(Number).includes(Number(idDespegue));
                             const esSeguimientoPopup = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
