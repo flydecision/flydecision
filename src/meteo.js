@@ -16987,6 +16987,7 @@ function inicializarMapaLeaflet() {
                     const info = row.Más_información || '';
 
                     let idDespegue = row.ID || '';
+                    const idPropio = idDespegue; // el ID del propio despegue (tramo a pie, filtros del mapa…), aunque sea secundario
                     let botonesAccionPopupHTML = '';
 
                     if (window.bdGlobalDespegues) {
@@ -17002,7 +17003,7 @@ function inicializarMapaLeaflet() {
 
                         if (matchTabla) {
                             //despegue = matchTabla.Despegue;
-                            idDespegue = matchTabla.ID;
+                            idDespegue = matchTabla.ID; // en un secundario, el de su master (botones); el suyo propio sigue en idPropio
                             if (!esSecundario) actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla (el secundario conserva la suya)
 
                             const esFavoritoPopup  = obtenerFavoritos().map(Number).includes(Number(idDespegue));
@@ -17128,7 +17129,7 @@ function inicializarMapaLeaflet() {
 
                     // Regeneramos el popup por si venimos de consultarlo en la tabla o hemos cambiado estados.
                     marker.on('popupopen', function() {
-                        registrarUso('despegue', idDespegue);
+                        registrarUso('despegue', idPropio);
                         const popupEl = this.getPopup().getElement();
                         if (!popupEl) return;
                         
@@ -17138,7 +17139,7 @@ function inicializarMapaLeaflet() {
                         // Tramo a pie (acceso-pie.json): se pinta al abrir porque los datos pueden llegar después de crear el popup
                         const divPie = popupEl.querySelector('.acceso-pie-popup');
                         if (divPie) {
-                            const txtPie = textoAccesoPieDespegue(idDespegue);
+                            const txtPie = textoAccesoPieDespegue(idPropio);
                             divPie.innerHTML = txtPie;
                             divPie.style.display = txtPie ? 'block' : 'none';
                         }
@@ -17187,7 +17188,7 @@ function inicializarMapaLeaflet() {
                         ajustarPopupDespegueMinimo(this.getPopup());
                     });
 
-                    marker.metadata = { id: idDespegue, despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividadScore, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
+                    marker.metadata = { id: idPropio, despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividadScore, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
                     markersDespegues.push(marker); //inserta marker al grupo markersDespegues
                     clustergroupDespegues.addLayer(marker);
                 });
