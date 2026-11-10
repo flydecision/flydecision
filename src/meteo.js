@@ -580,7 +580,8 @@ function textoAccesoPieDespegue(id) {
     if (!pie || !Number.isFinite(Number(pie.min))) return '';
     let datos;
     // Solo se marca lo NO revisado: 🤖 = cálculo automático, «A pie 🚶 (🤖):». Las revisadas (pie.c) van sin marca.
-    const marca = pie.c ? '' : ` (<span title="${t('popupDespegue.rutaAutomatica')}" style="cursor: help;">🤖</span>)`;
+    // El texto sale en un globo Tippy al pulsar (data-tippy-content, delegado en body): así se ve también en móvil
+    const marca = pie.c ? '' : ` (<span data-tippy-content="${t('popupDespegue.rutaAutomatica').replace(/"/g, '&quot;')}" style="cursor: pointer;">🤖</span>)`;
     const titulo = t('popupDespegue.aPie').replace(/\s*:\s*$/, '') + `${marca}:`;
     if (Number(pie.min) === 0 && !Number(pie.km)) {
         datos = t('popupDespegue.enCocheHastaDespegue');
