@@ -2201,6 +2201,7 @@ span.grados {
 #pie-slider .noUi-connects,
 #pie-slider-mapa .noUi-connects {
 	border-radius: 0;
+	width: calc(100% + 1px); /* 1 px de más a la derecha: en móvil (píxeles fraccionarios) quedaba una rayita blanca en la unión */
 }
 #distancia-slider .noUi-base,
 #distancia-slider-mapa .noUi-base,
@@ -2376,7 +2377,7 @@ span.grados {
     margin-right: 3px;
 }
 .signo-mas {
-    margin: 0 -5px 0 -2px; /* 🚗+🚶 juntos (derecha -5, izquierda -2) */
+    margin: 0px -5px 0 -1px; /* 🚗+🚶 juntos (derecha -5, izquierda -1) */
 }
 .btn-alterno.hundido .emoji-boton {
     text-shadow: 0 0 2px #fff, 0 0 2px #fff;
