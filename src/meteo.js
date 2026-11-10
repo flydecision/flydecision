@@ -547,14 +547,15 @@ let unidadFiltroPie = 'min';      // 'min' | 'km' | 'm'
 // Datos del tramo a pie por ID de despegue: { min, km, m }. Precalculados en el servidor (INTERNO_acceso_pie_generador.php → acceso-pie.json)
 window.datosAccesoPie = window.datosAccesoPie || {};
 
-// Carga acceso-pie.json (~40 KB, cambia muy poco): primero lo guardado en localStorage y luego la versión del servidor (1 vez al día)
+// Carga acceso-pie.json (~40 KB, cambia poco): primero lo guardado en localStorage y luego la versión del servidor
+// (clave de caché por hora: las correcciones del visor llegan a la app en menos de 1 h)
 function cargarDatosAccesoPie() {
     try {
         const guardado = JSON.parse(localStorage.getItem('METEO_ACCESO_PIE_CACHE') || 'null');
         if (guardado && guardado.despegues) window.datosAccesoPie = guardado.despegues;
     } catch (e) { /* caché corrupta: se ignora */ }
-    const dia = new Date().toISOString().slice(0, 10);
-    fetchConTimeout(`https://flydecision.com/acceso-pie.json?d=${dia}`, {}, TIMEOUT_DESCARGA_DATOS_MS)
+    const hora = new Date().toISOString().slice(0, 13);
+    fetchConTimeout(`https://flydecision.com/acceso-pie.json?d=${hora}`, {}, TIMEOUT_DESCARGA_DATOS_MS)
         .then(res => {
             if (!res.ok) throw new Error(`⚠️ Error al cargar acceso-pie.json (HTTP ${res.status})`);
             return res.json();
