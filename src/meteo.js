@@ -7291,8 +7291,62 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             return (i <= 48) ? "Arome-HD" : "ICON-EU";
         };
 
+        // ⚡ Selección previa (fuera de edición de favoritos): se puntúan todos los despegues, se filtran por buscador y distancia,
+        // se ordenan, y solo se construyen las filas de los que se van a mostrar (paginación). Antes se construían las filas de
+        // todos (p. ej. los ~1.000 con «incluir no favoritos») para acabar mostrando 10.
+        let indicesAMostrar = null;      // null = se construyen todos (edición de favoritos)
+        let totalFilasValidasPrevio = 0; // Cuántos pasan los filtros (para «Mostrar todos (N)» y los contadores)
+        if (!modoEdicionFavoritos) {
+            const inputBusquedaPrevio = document.getElementById('buscador-despegues-provincias');
+            const filtroTextoPrevio = inputBusquedaPrevio ? inputBusquedaPrevio.value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+            const centroLatPrevio = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) || null;
+            const centroLonPrevio = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL')) || null;
+            const candidatos = [];
+            for (let idx = 0; idx < despegues.length; idx++) {
+                const d = despegues[idx];
+                if (filtroTextoPrevio !== "" && !String(d.Despegue).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(filtroTextoPrevio)) continue;
+                // Mismo filtro que se aplica después del bucle (paso 2): si existe el de tiempo al despegue, manda ese
+                if (typeof window.pasaFiltroTiempoDespegue === 'function') {
+                    if (!window.pasaFiltroTiempoDespegue(d.ID, parseFloat(d.Latitud), parseFloat(d.Longitud))) continue;
+                } else if (distanciaLimite < 9999 && centroLatPrevio !== null && centroLonPrevio !== null) {
+                    const lat = parseFloat(d.Latitud);
+                    const lon = parseFloat(d.Longitud);
+                    if (!isNaN(lat) && !isNaN(lon) && obtenerDistanciaKm(centroLatPrevio, centroLonPrevio, lat, lon) > distanciaLimite) continue;
+                }
+                let nota = -1, notaXC = -1;
+                const hourlyPrevio = respuestas[idx] ? respuestas[idx].hourly : null;
+                if (hourlyPrevio !== null) {
+                    try {
+                        const ev = calcularPuntuacionesDespegue(d, hourlyPrevio, respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null, indicesEvaluacionTabla);
+                        if (ev.horasValidas > 0) nota = ev.notaCondiciones !== null ? ev.notaCondiciones : 0;
+                        if (ev.horasValidasXC > 0) notaXC = ev.notaXC !== null ? ev.notaXC : 0;
+                    } catch (error) {
+                        indicesAMostrar = null; // Que lo gestione el bucle principal como hasta ahora
+                        candidatos.length = 0;
+                        totalFilasValidasPrevio = -1;
+                        break;
+                    }
+                }
+                candidatos.push({ idx, nota, notaXC });
+            }
+            if (totalFilasValidasPrevio !== -1) {
+                candidatos.sort((a, b) => {
+                    if (chkOrdenarPorXC && chkMostrarXC) {
+                        if (b.notaXC === a.notaXC) return b.nota - a.nota;
+                        return b.notaXC - a.notaXC;
+                    } else {
+                        if (b.nota === a.nota) return b.notaXC - a.notaXC;
+                        return b.nota - a.nota;
+                    }
+                });
+                totalFilasValidasPrevio = candidatos.length;
+                indicesAMostrar = new Set(candidatos.slice(0, window.limitePaginacionMeteo || 10).map(c => c.idx));
+            }
+        }
+
         // 🔃 Bucle principal que recorre cada despegue
         for (let idx = 0; idx < despegues.length; idx++) {
+            if (indicesAMostrar && !indicesAMostrar.has(idx)) continue; // No se va a mostrar: no se construyen sus filas
             const d = despegues[idx];
 
             // Ajuste límites para este despegue concreto
@@ -9355,6 +9409,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             });
         }
 
+        // Total de despegues que pasan los filtros (con la selección previa, filasValidas solo trae los que se van a mostrar)
+        const totalFilasValidas = indicesAMostrar ? totalFilasValidasPrevio : filasValidas.length;
+
         // 4. PAGINACIÓN ("MOSTRAR TODOS")
         const LIMITE_INICIAL = 10;
         
@@ -9380,7 +9437,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         }
 
         // Si quedan despegues sin mostrar y la paginación está activa, añadimos el botón final
-        if (usarPaginacion && maxMostrar < filasValidas.length) {
+        if (usarPaginacion && maxMostrar < totalFilasValidas) {
             const trBtn = document.createElement("tr");
             const tdBtn = document.createElement("td");
             tdBtn.colSpan = 100; // Ocupa todo el ancho de la tabla
@@ -9392,8 +9449,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const btn = document.createElement("button");
             
             const textoTraducido = t('botones.mostrarTodos', { 
-                n: filasValidas.length, 
-                defaultValue: `Mostrar todos (${filasValidas.length})` 
+                n: totalFilasValidas, 
+                defaultValue: `Mostrar todos (${totalFilasValidas})` 
             });
 
             btn.innerHTML = `
@@ -9460,7 +9517,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
         // 6. Actualizamos los contadores visuales
         if (typeof window.actualizarContadoresVisualesRapidos === 'function') {
-            window.actualizarContadoresVisualesRapidos(filasValidas.length, filtroTexto, distanciaLimite);
+            window.actualizarContadoresVisualesRapidos(totalFilasValidas, filtroTexto, distanciaLimite);
         }
 
 		if (soloHorasDeLuz) {
