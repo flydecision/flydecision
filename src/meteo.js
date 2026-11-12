@@ -7498,7 +7498,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 } catch (error) {
                     console.error(`💥 ERROR CRÍTICO en despegue ${d.Despegue}:`, error);
-                    return; 
+                    continue; 
                 }
             }
 
@@ -8215,11 +8215,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tdBoton.addEventListener("mousedown", (e) => {
                         if (e.button !== 0) return; // Solo botón izquierdo
                         alPulsar(e);
-                    });
-
-                    // El mouseup en window asegura soltar aunque el cursor salga de la celda
-                    window.addEventListener("mouseup", () => {
-                        if (presionado) alSoltar();
+                        // El mouseup en window asegura soltar aunque el cursor salga de la celda (se quita solo al soltar)
+                        window.addEventListener("mouseup", alSoltar, { once: true });
                     });
 
                     // --- ELIMINAR MENÚ Y CLIC RESIDUAL ---
@@ -15481,19 +15478,6 @@ const ESCALA_TIEMPO_BALIZAS = [
     { texto: '30 min', minutos: 30 },
     { texto: '15 min', minutos: 15 }
 ];
-
-function obtenerMinAltitudBalizas() {
-    const slider = document.getElementById('sliderAltitudBalizas');
-    if (!slider) return 0;
-    const indice = parseInt(slider.value, 10);
-    const val = ESCALA_ALTITUD_BALIZAS[indice] || 0;
-    const textSpan = document.getElementById('valorAltitudBalizasTexto');
-    if (textSpan) {
-        const maxIndice = ESCALA_ALTITUD_BALIZAS.length - 1; // 30
-        textSpan.textContent = (indice === maxIndice) ? `>= 3000 m` : `${val} m`;
-    }
-    return val;
-}
 
 function obtenerMaxTiempoBalizas() {
     const slider = document.getElementById('sliderTiempoBalizas');
