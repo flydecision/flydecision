@@ -19125,6 +19125,28 @@ function inicializarMapaLeaflet() {
 
         const zoomActual = map.getZoom();
 
+        // Datos comunes a todas las balizas de la red: se leen una sola vez por repintado
+        // (antes se leían de localStorage y del DOM una vez por cada baliza)
+        const clavesFavBalizas = new Set(obtenerBalizasFavoritas().filter(f => f.redId === redId).map(f => String(f.id)));
+        const clavesSegBalizas = new Set(obtenerBalizasSeguimiento().filter(s => s.redId === redId).map(s => String(s.id)));
+        const minAltitud = obtenerMinAltitudBalizas();
+        const maxTiempo = obtenerMaxTiempoBalizas();
+
+        // Pinta el icono solo si ha cambiado respecto al último pintado (al hacer zoom casi nunca cambia)
+        const ponerIconoBaliza = (marker, html, iconAnchor) => {
+            if (marker._htmlIconoBaliza !== html) {
+                marker._htmlIconoBaliza = html;
+                marker.setIcon(L.divIcon({
+                    html: html,
+                    className: 'custom-div-icon',
+                    iconAnchor: iconAnchor,
+                    popupAnchor: [0, 25]
+                }));
+                if (marker._icon) marker._icon.innerHTML = html;
+            }
+            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+        };
+
         Object.values(red.marcadores).forEach(marker => {
             let d = red.datosCache[marker.stationId];
 
@@ -19175,17 +19197,15 @@ function inicializarMapaLeaflet() {
 
             // 3. EVALUACIÓN DE FILTROS
             // A) Favoritos y Seguimiento
-            const esFavBaliza = obtenerBalizasFavoritas().some(f => f.redId === redId && f.id === marker.stationId);
-            const esSegBaliza = obtenerBalizasSeguimiento().some(s => s.redId === redId && s.id === marker.stationId);
+            const esFavBaliza = clavesFavBalizas.has(String(marker.stationId));
+            const esSegBaliza = clavesSegBalizas.has(String(marker.stationId));
             const passFav = (filtroFavoritosBalizasMapa === 0) || (filtroFavoritosBalizasMapa === 1 && esFavBaliza);
             const passSeg = (filtroSeguimientoBalizasMapa === 0) || (filtroSeguimientoBalizasMapa === 1 && esSegBaliza);
 
             // B) Altitud
-            const minAltitud = obtenerMinAltitudBalizas();
             const passAltitud = (minAltitud === 0) || (marker.stationAltitude >= minAltitud);
 
             // C) Tiempo de actualización
-            const maxTiempo = obtenerMaxTiempoBalizas();
             let passTiempo = true;
             if (maxTiempo.minutos !== Infinity) {
                 // Si el filtro de tiempo está activo, NINGUNA baliza inoperativa / sin viento puede pasar
@@ -19224,15 +19244,7 @@ function inicializarMapaLeaflet() {
                         ${svgPuntoGris}
                     </div>`;
 
-                marker.setIcon(L.divIcon({ 
-                    html: htmlObsoleto, 
-                    className: 'custom-div-icon', 
-                    iconAnchor: [40, 23], 
-                    popupAnchor: [0, 25] 
-                }));
-
-                if (marker._icon) marker._icon.innerHTML = htmlObsoleto;
-                if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+                ponerIconoBaliza(marker, htmlObsoleto, [40, 23]);
                 return; 
             }
 
@@ -19244,15 +19256,7 @@ function inicializarMapaLeaflet() {
                         ${svgPuntoRojo}
                     </div>`;
 
-                marker.setIcon(L.divIcon({ 
-                    html: htmlSinDatos, 
-                    className: 'custom-div-icon', 
-                    iconAnchor: [40, 23], 
-                    popupAnchor: [0, 25] 
-                }));
-
-                if (marker._icon) marker._icon.innerHTML = htmlSinDatos;
-                if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+                ponerIconoBaliza(marker, htmlSinDatos, [40, 23]);
                 return;
             }
 
@@ -19299,15 +19303,7 @@ function inicializarMapaLeaflet() {
                     </div>`;
             }
 
-            marker.setIcon(L.divIcon({ 
-                html: htmlBaliza, 
-                className: 'custom-div-icon', 
-                iconAnchor: [40, 40], 
-                popupAnchor: [0, 25] 
-            }));
-
-            if (marker._icon) marker._icon.innerHTML = htmlBaliza;
-            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+            ponerIconoBaliza(marker, htmlBaliza, [40, 40]);
         });
 
         if (red.layerGroup && typeof red.layerGroup.refreshClusters === 'function' && map.hasLayer(red.layerGroup)) {
