@@ -724,7 +724,7 @@ function textoAccesoPieDespegue(id) {
         if (typeof pie.r === 'string' && /^[-0-9.,;]+$/.test(pie.r)) {
             const fin = pie.r.split(';').pop().split(',');
             const url = `https://brouter.de/brouter-web/#map=14/${fin[1]}/${fin[0]}/OpenTopoMap&lonlats=${pie.r}&profile=hiking-mountain`;
-            return `${titulo}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'><b>${datos}</b></a>`;
+            return `${titulo}<br>🗺️ <a href='${url}' onclick='abrirLinkExterno(this.href); return false;'><b>${datos}</b></a>`;
         }
     }
     return `${titulo}<br><b>${datos}</b>`;
