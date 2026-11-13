@@ -2439,10 +2439,15 @@ span.grados {
 .tarjeta-filtro .grupo-botones-alternos .btn-alterno.hundido {
     box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
 }
-/* Ficha del despegue: «En coche / A pie», con una línea gris que lo separa de los enlaces de debajo (Google Maps, Brouter…) */
+/* Ficha del despegue: «En coche / A pie», con una línea gris que lo separa de los enlaces de debajo (Google Maps, Brouter…).
+   Mismo espacio arriba y abajo de la línea. Con el bloque visible sobra el <br> que va justo detrás (si está oculto, el <br> se queda). */
 .acceso-pie-popup {
-    padding-bottom: 8px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
     border-bottom: 1px solid rgba(128, 128, 128, 0.5);
+}
+.acceso-pie-popup:not([style*="none"]) + br {
+    display: none;
 }
 .nota-estimado-recta {
     font-size: 13px; /* excepción pedida por Alberto: aviso provisional hasta tener tiempos reales */
