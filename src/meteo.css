@@ -2535,7 +2535,7 @@ span.grados {
 }
 /* Misma separación «Desde»–origen que en la tabla (#titulo-distancia-slider usa gap 10px) */
 #titulo-distancia-slider-mapa #btn-abrir-geo-menu-mapa {
-    margin-left: 6px !important;
+    margin-left: 2px !important;
 }
 #btn-abrir-geo-menu-mapa svg {
     margin-top: 0 !important;
