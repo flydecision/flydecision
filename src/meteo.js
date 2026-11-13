@@ -16003,6 +16003,10 @@ function inicializarMapaLeaflet() {
         // -----------------------------------------------------------------------
         // FUNCIÓN AUXILIAR DE FILTRADO (Lógica central reutilizable)
         // Se extrae la lógica de filtrado para aplicarla dos veces sin repetir código.
+        // Favoritos y seguimientos se leen una sola vez por filtrado (antes, una vez por cada marcador)
+        const idsFavoritosMapa = new Set(obtenerFavoritos().map(Number));
+        const idsSeguimientoMapa = new Set(obtenerSeguimientos().map(s => Number(s.id)));
+
         const pasaFiltros = (marker, esDespegueMundo = false) => {
 
             // --- FILTRO DE TIEMPO AL DESPEGUE Y TRAMO A PIE (el mismo de la tabla, también para despegues del mundo) ---
@@ -16017,13 +16021,13 @@ function inicializarMapaLeaflet() {
 
                 // --- 0b. NUEVO FILTRO DE FAVORITOS (Corazón) ---
                 const idMarcador = Number(marker.metadata.id);
-                const esFav = idMarcador ? obtenerFavoritos().map(Number).includes(idMarcador) : false;
+                const esFav = idMarcador ? idsFavoritosMapa.has(idMarcador) : false;
                 
                 if (filtroFavoritosMapa === 1 && !esFav) return false; // Solo favoritos
                 if (filtroFavoritosMapa === 2 && esFav) return false;  // Solo NO favoritos
 
                 // --- 0c. NUEVO FILTRO DE SEGUIMIENTO (Ojo - 2 Estados) ---
-                const esSeg = idMarcador ? obtenerSeguimientos().map(s => Number(s.id)).includes(idMarcador) : false;
+                const esSeg = idMarcador ? idsSeguimientoMapa.has(idMarcador) : false;
                 if (filtroSeguimientoMapa === 1 && !esSeg) return false; 
 
                 // Como el valor inicial es 1 (Todos), solo ocultamos si la actividad mínima exigida es > 1
