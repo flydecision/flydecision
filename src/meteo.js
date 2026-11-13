@@ -644,28 +644,52 @@ function cargarTiemposCoche(soloLocal = false) {
 window.cargarTiemposCoche = cargarTiemposCoche;
 window.addEventListener('DOMContentLoaded', () => cargarTiemposCoche(true));
 
-// Tiempo en coche para la ficha del despegue: "En coche 🚗:" y debajo "1 h 05 min · 82 km" ('' si no hay origen o aún no hay tiempos reales)
-function textoTiempoCocheDespegue(id) {
+// Tiempo en coche para la ficha del despegue: "En coche 🚗:" y debajo "1 h 05 min · 82 km" ('' si no hay origen o aún no hay tiempos reales).
+// El dato enlaza a la ruta en Google Maps: del origen exacto al punto de carretera donde empieza el tramo a pie
+// (pie.r) o, si no lo hay, al propio despegue (latDesp, lonDesp).
+function textoTiempoCocheDespegue(id, latDesp, lonDesp) {
     const celda = celdaOrigenCoche();
     if (!celda || window.tiemposCoche.celda !== celda.clave) return '';
     const coche = window.tiemposCoche.t[String(id)];
     if (!Array.isArray(coche) || !Number.isFinite(Number(coche[0]))) return '';
     const partes = [formatearTooltipFiltroTiempo(Number(coche[0]), 'min').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim() || '0 min'];
     if (Number.isFinite(Number(coche[1]))) partes.push(`${Number(coche[1])} km`);
-    return `${t('popupDespegue.enCoche')}<br><b>${partes.join(' · ')}</b>`;
+    const datos = partes.join(' · ');
+
+    let destino = '';
+    const pie = window.datosAccesoPie[Number(id)];
+    if (pie && typeof pie.r === 'string' && /^[-0-9.,;]+$/.test(pie.r)) {
+        const inicio = pie.r.split(';')[0].split(','); // lon,lat del punto de carretera
+        if (inicio.length >= 2) destino = `${inicio[1]},${inicio[0]}`;
+    }
+    if (!destino && Number.isFinite(latDesp) && Number.isFinite(lonDesp)) destino = `${latDesp},${lonDesp}`;
+    const latO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL'));
+    const lonO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL'));
+    if (!destino || isNaN(latO) || isNaN(lonO)) return `${t('popupDespegue.enCoche')}<br><b>${datos}</b>`;
+
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${latO},${lonO}&destination=${destino}&travelmode=driving`;
+    // Icono de «cómo llegar» (rombo azul con flecha)
+    const icono = "<svg viewBox='0 0 24 24' width='18' height='18' style='vertical-align: middle; margin: -2px 4px 0 0;'><rect x='4.5' y='4.5' width='15' height='15' rx='2.5' transform='rotate(45 12 12)' fill='#1a73e8'/><path d='M9.2 15v-3.4a1.6 1.6 0 0 1 1.6-1.6h3.4M12.4 7.8l2.2 2.2-2.2 2.2' fill='none' stroke='#fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>";
+    return `${t('popupDespegue.enCoche')}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'>${icono}<b>${datos}</b></a>`;
 }
 
 // Ficha del despegue: tiempo en coche (si hay origen) y, debajo, el tramo a pie. Si hay origen pero aún no se han pedido
 // sus tiempos en coche, se piden ahora (al llegar, refrescarTrasTiemposCoche repinta las fichas abiertas).
-function textoAccesoDespegue(id) {
+function textoAccesoDespegue(id, latDesp, lonDesp) {
     cargarTiemposCoche();
-    return [textoTiempoCocheDespegue(id), textoAccesoPieDespegue(id)].filter(Boolean).join('<br>');
+    return [textoTiempoCocheDespegue(id, latDesp, lonDesp), textoAccesoPieDespegue(id)].filter(Boolean).join('<br>');
 }
 
 // Rellena un <div class="acceso-pie-popup" data-id-desp="…"> de una ficha
 function pintarAccesoDespegue(div) {
     if (!div || !div.dataset.idDesp) return;
-    const txt = textoAccesoDespegue(Number(div.dataset.idDesp));
+    // Coordenadas del despegue (destino del enlace en coche si no hay punto de carretera): del propio div o de la tabla
+    let lat = parseFloat(div.dataset.lat), lon = parseFloat(div.dataset.lon);
+    if ((isNaN(lat) || isNaN(lon)) && window.bdGlobalDespegues) {
+        const d = window.bdGlobalDespegues.find(x => String(x.ID) === String(div.dataset.idDesp));
+        if (d) { lat = parseFloat(d.Latitud); lon = parseFloat(d.Longitud); }
+    }
+    const txt = textoAccesoDespegue(Number(div.dataset.idDesp), lat, lon);
     div.innerHTML = txt;
     div.style.display = txt ? 'block' : 'none';
 }
@@ -17294,6 +17318,8 @@ function inicializarMapaLeaflet() {
                         const divPie = popupEl.querySelector('.acceso-pie-popup');
                         if (divPie) {
                             divPie.dataset.idDesp = idPropio;
+                            divPie.dataset.lat = lat;
+                            divPie.dataset.lon = lon;
                             pintarAccesoDespegue(divPie);
                         }
 
