@@ -888,8 +888,9 @@
   },
 
   "popupDespegue": {
-    "enCoche": "(voiture)",
-    "aPie": "(marche)",
+    "enCoche": "En voiture 🚗 :",
+    "elegirOrigen": "Choisir l'origine",
+    "aPie": "À pied 🚶 :",
     "rutaVerificada": "Itinéraire vérifié manuellement",
     "rutaAutomatica": "Itinéraire calculé automatiquement (peut contenir des erreurs)",
     "enCocheHastaDespegue": "Accessible en voiture",

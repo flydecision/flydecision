@@ -888,8 +888,9 @@
   },
 
   "popupDespegue": {
-    "enCoche": "(coche)",
-    "aPie": "(andar)",
+    "enCoche": "En coche 🚗:",
+    "elegirOrigen": "Elixir orixe",
+    "aPie": "A pé 🚶:",
     "rutaVerificada": "Ruta verificada manualmente",
     "rutaAutomatica": "Ruta calculada automaticamente (pode conter erros)",
     "enCocheHastaDespegue": "Chégase en coche á engalaxe",

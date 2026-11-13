@@ -888,8 +888,9 @@
   },
 
   "popupDespegue": {
-    "enCoche": "(car)",
-    "aPie": "(walk)",
+    "enCoche": "By car 🚗:",
+    "elegirOrigen": "Choose origin",
+    "aPie": "On foot 🚶:",
     "rutaVerificada": "Route manually verified",
     "rutaAutomatica": "Route calculated automatically (may contain errors)",
     "enCocheHastaDespegue": "You can drive to the takeoff",
