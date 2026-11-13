@@ -4866,6 +4866,7 @@ body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para el
 /* /balizas: sin la columna de despegues, la de balizas (❤️/👁) se alinea a la izquierda */
 body.modo-balizas-directo .columna-filtros-despegues-mapa + div {
     padding-left: 0 !important;
+    margin-left: 8px;
 }
 
 /* /balizas: la barra solo tiene el botón "Ajustes", así que se estrecha */
