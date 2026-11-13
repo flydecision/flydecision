@@ -891,6 +891,7 @@
   },
 
   "popupDespegue": {
+    "enCoche": "En coche 🚗:",
     "aPie": "A pie 🚶:",
     "rutaVerificada": "Ruta verificada manualmente",
     "rutaAutomatica": "Ruta calculada automáticamente (puede contener errores)",

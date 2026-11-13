@@ -597,6 +597,7 @@ function celdaOrigenCoche() {
 
 // Vuelve a filtrar (tabla y mapa) cuando llegan o cambian los tiempos en coche
 function refrescarTrasTiemposCoche() {
+    document.querySelectorAll('.leaflet-popup .acceso-pie-popup[data-id-desp], [data-tippy-root] .acceso-pie-popup[data-id-desp]').forEach(pintarAccesoDespegue); // fichas abiertas
     if (typeof window.hayFiltroTiempoActivo === 'function' && window.hayFiltroTiempoActivo()) {
         if (typeof window.aplicarFiltrosVisuales === 'function') ejecutarOperacionPesada(() => { window.aplicarFiltrosVisuales(); });
     }
@@ -642,6 +643,32 @@ function cargarTiemposCoche(soloLocal = false) {
 }
 window.cargarTiemposCoche = cargarTiemposCoche;
 window.addEventListener('DOMContentLoaded', () => cargarTiemposCoche(true));
+
+// Tiempo en coche para la ficha del despegue: "En coche 🚗:" y debajo "1 h 05 min · 82 km" ('' si no hay origen o aún no hay tiempos reales)
+function textoTiempoCocheDespegue(id) {
+    const celda = celdaOrigenCoche();
+    if (!celda || window.tiemposCoche.celda !== celda.clave) return '';
+    const coche = window.tiemposCoche.t[String(id)];
+    if (!Array.isArray(coche) || !Number.isFinite(Number(coche[0]))) return '';
+    const partes = [formatearTooltipFiltroTiempo(Number(coche[0]), 'min').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim() || '0 min'];
+    if (Number.isFinite(Number(coche[1]))) partes.push(`${Number(coche[1])} km`);
+    return `${t('popupDespegue.enCoche')}<br><b>${partes.join(' · ')}</b>`;
+}
+
+// Ficha del despegue: tiempo en coche (si hay origen) y, debajo, el tramo a pie. Si hay origen pero aún no se han pedido
+// sus tiempos en coche, se piden ahora (al llegar, refrescarTrasTiemposCoche repinta las fichas abiertas).
+function textoAccesoDespegue(id) {
+    cargarTiemposCoche();
+    return [textoTiempoCocheDespegue(id), textoAccesoPieDespegue(id)].filter(Boolean).join('<br>');
+}
+
+// Rellena un <div class="acceso-pie-popup" data-id-desp="…"> de una ficha
+function pintarAccesoDespegue(div) {
+    if (!div || !div.dataset.idDesp) return;
+    const txt = textoAccesoDespegue(Number(div.dataset.idDesp));
+    div.innerHTML = txt;
+    div.style.display = txt ? 'block' : 'none';
+}
 
 // Tramo a pie para la ficha del despegue: "A pie 🚶:" y debajo "25 min · 1,2 km · ↑300 m" ('' si no hay dato)
 function textoAccesoPieDespegue(id) {
@@ -13302,12 +13329,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 instance.setContent(fragment);
             },
             onShow(instance) {
-                // Tramo a pie en el popup de despegue de la tabla (se rellena al abrir, por si acceso-pie.json llegó después de pintar la tabla)
-                instance.popper.querySelectorAll('.acceso-pie-popup[data-id-desp]').forEach(divPie => {
-                    const txtPie = textoAccesoPieDespegue(Number(divPie.dataset.idDesp));
-                    divPie.innerHTML = txtPie;
-                    divPie.style.display = txtPie ? 'block' : 'none';
-                });
+                // Tiempo en coche y tramo a pie en el popup de despegue de la tabla (se rellena al abrir, por si los datos llegaron después de pintar la tabla)
+                instance.popper.querySelectorAll('.acceso-pie-popup[data-id-desp]').forEach(pintarAccesoDespegue);
             },
             onHidden(instance) {
                 instance.popper.querySelectorAll('.linea-limites-efectivos').forEach(l => {
@@ -17267,12 +17290,11 @@ function inicializarMapaLeaflet() {
                         const btn = popupEl.querySelector('.btn-accion');
                         if (btn) btn.innerHTML = `${t('mapa.verEnTabla')}`;
 
-                        // Tramo a pie (acceso-pie.json): se pinta al abrir porque los datos pueden llegar después de crear el popup
+                        // Tiempo en coche y tramo a pie: se pintan al abrir porque los datos pueden llegar después de crear el popup
                         const divPie = popupEl.querySelector('.acceso-pie-popup');
                         if (divPie) {
-                            const txtPie = textoAccesoPieDespegue(idPropio);
-                            divPie.innerHTML = txtPie;
-                            divPie.style.display = txtPie ? 'block' : 'none';
+                            divPie.dataset.idDesp = idPropio;
+                            pintarAccesoDespegue(divPie);
                         }
 
                         // Actualizar estado del botón Favorito dinámicamente

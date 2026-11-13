@@ -888,6 +888,7 @@
   },
 
   "popupDespegue": {
+    "enCoche": "En cotxe 🚗:",
     "aPie": "A peu 🚶:",
     "rutaVerificada": "Ruta verificada manualment",
     "rutaAutomatica": "Ruta calculada automàticament (pot contenir errors)",

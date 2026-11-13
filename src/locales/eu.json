@@ -888,6 +888,7 @@
   },
 
   "popupDespegue": {
+    "enCoche": "Autoz 🚗:",
     "aPie": "Oinez 🚶:",
     "rutaVerificada": "Eskuz egiaztatutako ibilbidea",
     "rutaAutomatica": "Automatikoki kalkulatutako ibilbidea (akatsak izan ditzake)",
