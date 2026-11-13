@@ -3203,14 +3203,7 @@ function _activarEdicionFavoritosSync(irAlMapa = false) {
         btnFavsTog.classList.remove('filtro-aplicado', 'activo');
     }
 
-    const panelDistancia = document.getElementById("div-filter-distancia") || document.getElementById("div-filtro-distancia");
-    if (panelDistancia) {
-        panelDistancia.classList.add("activo");
-        setTimeout(() => {
-            const sliderDist = document.getElementById('distancia-slider');
-            if (sliderDist && sliderDist.noUiSlider) sliderDist.noUiSlider.updateOptions({}, true);
-        }, 50);
-    }
+    // Los filtros de tiempo de acceso ya no se abren solos al editar favoritos: se abren con el botón 🚗🚶 (como en la tabla)
 
     const searchContainer = document.getElementById('floating-search-container');
     // Si vamos al mapa, no hace falta forzar la apertura del buscador de texto
@@ -14268,8 +14261,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const panelHorario = document.querySelector('.div-filtro-horario');
         if (panelHorario) panelHorario.style.display = 'none';
 
-        const panelDistancia = document.getElementById("div-filtro-distancia");
-        if (panelDistancia) panelDistancia.classList.add("activo");
+        // Los filtros de tiempo de acceso no se abren solos: se abren con el botón 🚗🚶 (como en la tabla)
 
         if (window.onboardingMapaActivo) {
             cambiarVista('mapa');

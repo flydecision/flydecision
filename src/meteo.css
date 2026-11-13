@@ -2544,9 +2544,26 @@ span.grados {
     margin-right: 0 !important;
 }
 
-/* MODO EDICIÓN FAVORITOS: Bloquear cierre del panel de distancia */
+/* MODO EDICIÓN FAVORITOS: el buscador (ancho, por su texto) alineado a la izquierda con el ❤️ de arriba
+   y el botón 🚗🚶 de los filtros de tiempo a la derecha, bajo el botón de la guía */
+body.modo-edicion-tabla #floating-search-container {
+    justify-content: flex-start;
+    padding-left: 8px;
+    padding-right: 4px; /* medido: así coinciden los bordes con el ❤️ y la guía de la fila de arriba */
+    box-sizing: border-box;
+}
+body.modo-edicion-tabla #buscador-wrapper {
+    width: 100%;
+}
+body.modo-edicion-tabla .buscador-con-boton {
+    flex: 0 1 300px !important; /* 300 px, pero encoge si no cabe junto al botón 🚗🚶 */
+    min-width: 0;
+}
+body.modo-edicion-tabla #buscador-wrapper #buscador-despegues-provincias {
+    width: 100% !important;
+}
 body.modo-edicion-tabla #nav-distance {
-    display: none !important;
+    margin-left: auto;
 }
 
 #nav-distance {
