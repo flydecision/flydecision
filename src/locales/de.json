@@ -919,7 +919,7 @@
     "modoCoche": "🚗 Auto",
     "modoTotal": "🚗+🚶 Gesamt",
     "estimadoLineaRecta": "Keine Zeit-/Entfernungsdaten. Ungefähre Schätzung.",
-    "aPie": "🚶 Zu Fuß",
+    "aPie": "Zu Fuß",
     "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
     "unidadPieKm": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4\"/></svg><span class=\"texto-unidad\">km</span>",
     "unidadPieM": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 20V4M7 9l5-5 5 5\"/></svg><span class=\"texto-unidad\">m</span>",
