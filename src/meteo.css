@@ -2525,6 +2525,9 @@ span.grados {
     align-items: center;
     justify-content: center;
 }
+#btn-abrir-geo-menu {
+    margin-left: -2px;
+}
 #btn-abrir-geo-menu:active,
 #btn-abrir-geo-menu-mapa:active {
     background-color: #e6f0ff !important;
