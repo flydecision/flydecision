@@ -273,8 +273,8 @@ setTimeout(function () {
 			<div class="valor-filtro-tiempo"></div>
 				<div id="distancia-slider"></div>
 			</div>
-			<!-- Aviso de estimación en línea recta: oculto hasta la fase 3 (se mostrará solo si faltan tiempos reales en coche) -->
-			<!-- <div class="nota-estimado-recta" data-i18n="html.estimadoLineaRecta">Sin datos tiempo/distancia. Estimación aproximada.</div> -->
+			<!-- Aviso de estimación en línea recta: solo se muestra si faltan los tiempos reales en coche (lo decide sincronizarFiltroDistanciaMapa) -->
+			<div class="nota-estimado-recta" style="display: none;" data-i18n="html.estimadoLineaRecta">Sin datos tiempo/distancia. Estimación aproximada.</div>
 			<div class="tarjeta-filtro">
 			<!-- Fila 3: tramo a pie (min / km / ↑m) -->
 			<div class="fila-filtro-tiempo">
@@ -1186,8 +1186,8 @@ setTimeout(function () {
 				<div class="valor-filtro-tiempo"></div>
 					<div id="distancia-slider-mapa"></div>
 				</div>
-				<!-- Aviso de estimación en línea recta: oculto hasta la fase 3 (se mostrará solo si faltan tiempos reales en coche) -->
-			<!-- <div class="nota-estimado-recta" data-i18n="html.estimadoLineaRecta">Sin datos tiempo/distancia. Estimación aproximada.</div> -->
+				<!-- Aviso de estimación en línea recta: solo se muestra si faltan los tiempos reales en coche (lo decide sincronizarFiltroDistanciaMapa) -->
+				<div class="nota-estimado-recta" style="display: none;" data-i18n="html.estimadoLineaRecta">Sin datos tiempo/distancia. Estimación aproximada.</div>
 				<div class="tarjeta-filtro">
 				<!-- Fila 3: tramo a pie (min / km / ↑m) -->
 				<div class="fila-filtro-tiempo">

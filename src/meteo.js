@@ -575,6 +575,74 @@ function cargarDatosAccesoPie() {
 }
 window.addEventListener('DOMContentLoaded', cargarDatosAccesoPie);
 
+// ---------------------------------------------------------------
+// 🚗 Tiempos reales en coche desde el origen a cada despegue (tiempos-coche.php → OpenRouteService, con caché en el servidor)
+// ---------------------------------------------------------------
+const CELDA_ORIGEN_COCHE = 0.03;        // cuadrícula del origen (~3 km). Igual que CELDA_GRADOS en tiempos-coche.php
+const DIAS_CACHE_TIEMPOS_COCHE = 30;    // validez de la copia guardada en el dispositivo
+const MIN_REINTENTO_TIEMPOS_COCHE = 10; // tras un fallo (sin red, tope diario…) no se vuelve a pedir la misma celda en estos minutos
+// celda = «lat_lon» del origen redondeado · t[ID] = [minutos, km] · null = no se llega en coche · sin ID = sin dato (se estima en línea recta)
+window.tiemposCoche = { celda: null, t: {} };
+let celdaTiemposCochePidiendo = null;
+let falloTiemposCoche = { celda: null, hora: 0 };
+
+// Celda del origen guardado: { lat, lon, clave } (null si aún no hay origen)
+function celdaOrigenCoche() {
+    const lat = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL'));
+    const lon = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL'));
+    if (isNaN(lat) || isNaN(lon)) return null;
+    const redondear = v => (Math.round(v / CELDA_ORIGEN_COCHE) * CELDA_ORIGEN_COCHE).toFixed(2);
+    return { lat: redondear(lat), lon: redondear(lon), clave: `${redondear(lat)}_${redondear(lon)}` };
+}
+
+// Vuelve a filtrar (tabla y mapa) cuando llegan o cambian los tiempos en coche
+function refrescarTrasTiemposCoche() {
+    if (typeof window.hayFiltroTiempoActivo === 'function' && window.hayFiltroTiempoActivo()) {
+        if (typeof window.aplicarFiltrosVisuales === 'function') ejecutarOperacionPesada(() => { window.aplicarFiltrosVisuales(); });
+    }
+    if (typeof window.sincronizarFiltroDistanciaMapa === 'function') window.sincronizarFiltroDistanciaMapa();
+}
+
+// Carga los tiempos en coche de la celda del origen: primero la copia del dispositivo y, si no vale, el servidor.
+// soloLocal = true → no pide nada al servidor (arranque). Se llama al aplicar el filtro de tiempo y al cambiar el origen.
+function cargarTiemposCoche(soloLocal = false) {
+    const c = celdaOrigenCoche();
+    if (!c || window.tiemposCoche.celda === c.clave) return;
+    try {
+        const guardado = JSON.parse(localStorage.getItem('METEO_TIEMPOS_COCHE_CACHE') || 'null');
+        if (guardado && guardado.celda === c.clave && guardado.t && Date.now() - guardado.guardado < DIAS_CACHE_TIEMPOS_COCHE * 86400000) {
+            window.tiemposCoche = { celda: guardado.celda, t: guardado.t };
+            refrescarTrasTiemposCoche();
+            return;
+        }
+    } catch (e) { /* caché corrupta: se ignora */ }
+    if (soloLocal || celdaTiemposCochePidiendo === c.clave) return;
+    if (falloTiemposCoche.celda === c.clave && Date.now() - falloTiemposCoche.hora < MIN_REINTENTO_TIEMPOS_COCHE * 60000) return;
+
+    celdaTiemposCochePidiendo = c.clave;
+    fetchConTimeout(`https://flydecision.com/tiempos-coche.php?lat=${c.lat}&lon=${c.lon}`, {}, TIMEOUT_DESCARGA_DATOS_MS)
+        .then(res => {
+            // 429/503 = tope o cuota del día: es lo previsto, no un error (se sigue estimando en línea recta)
+            if (res.status === 429 || res.status === 503) return null;
+            if (!res.ok) throw new Error(`⚠️ Error al cargar tiempos-coche.php (HTTP ${res.status})`);
+            return res.json();
+        })
+        .then(datos => {
+            celdaTiemposCochePidiendo = null;
+            if (!datos || !datos.t) { falloTiemposCoche = { celda: c.clave, hora: Date.now() }; return; }
+            window.tiemposCoche = { celda: c.clave, t: datos.t };
+            try { localStorage.setItem('METEO_TIEMPOS_COCHE_CACHE', JSON.stringify({ celda: c.clave, guardado: Date.now(), t: datos.t })); } catch (e) { /* sin espacio: da igual */ }
+            refrescarTrasTiemposCoche();
+        })
+        .catch(error => {
+            celdaTiemposCochePidiendo = null;
+            falloTiemposCoche = { celda: c.clave, hora: Date.now() };
+            registrarError('carga', error, 'tiempos-coche');
+        });
+}
+window.cargarTiemposCoche = cargarTiemposCoche;
+window.addEventListener('DOMContentLoaded', () => cargarTiemposCoche(true));
+
 // Tramo a pie para la ficha del despegue: "A pie 🚶:" y debajo "25 min · 1,2 km · ↑300 m" ('' si no hay dato)
 function textoAccesoPieDespegue(id) {
     const pie = window.datosAccesoPie[Number(id)];
@@ -12064,17 +12132,23 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		if (habiaFiltroPie) ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
 	});
 
-	// Minutos al despegue: { min, estimado }. De momento siempre estimado en línea recta (fase 3: tiempos reales en coche)
+	// Minutos al despegue: { min, estimado }. Tiempo real en coche (window.tiemposCoche) si lo hay para el origen actual;
+	// si no (aún no ha llegado, tope diario, despegue sin dato), estimado en línea recta (1 km ≈ 1 min)
 	window.obtenerMinutosAlDespegue = function (id, lat, lon) {
 		const latO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL'));
 		const lonO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL'));
 		if (isNaN(latO) || isNaN(lonO) || isNaN(lat) || isNaN(lon)) return null;
-		let min = obtenerDistanciaKm(latO, lonO, lat, lon) * FACTOR_MIN_POR_KM_RECTA;
+		let min, estimado = true;
+		const celda = celdaOrigenCoche();
+		const coche = (celda && window.tiemposCoche.celda === celda.clave) ? window.tiemposCoche.t[String(id)] : undefined;
+		if (coche === null) return { min: Infinity, estimado: false }; // no se llega en coche
+		if (Array.isArray(coche) && Number.isFinite(Number(coche[0]))) { min = Number(coche[0]); estimado = false; }
+		else min = obtenerDistanciaKm(latO, lonO, lat, lon) * FACTOR_MIN_POR_KM_RECTA;
 		if (modoTiempoDespegue === 'total') {
 			const pie = window.datosAccesoPie[Number(id)];
 			if (pie && Number.isFinite(Number(pie.min))) min += Number(pie.min); // sin dato a pie: cuenta 0
 		}
-		return { min, estimado: true };
+		return { min, estimado };
 	};
 
 	// ¿Hay algún filtro de tiempo / a pie aplicado?
@@ -12117,6 +12191,13 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		if (distanciaSliderMapa && distanciaSliderMapa.noUiSlider && indiceSlider(distanciaSliderMapa) !== idx) distanciaSliderMapa.noUiSlider.set(idx);
 		if (idxPie !== null && pieSliderMapa && pieSliderMapa.noUiSlider && indiceSlider(pieSliderMapa) !== idxPie) pieSliderMapa.noUiSlider.set(idxPie);
 		sincronizandoDistanciaMapa = false;
+
+		// Tiempos reales en coche: se piden al aplicar el filtro de tiempo; mientras no estén, aviso de estimación en línea recta
+		const celdaOrigen = celdaOrigenCoche();
+		const hayFiltroCoche = idx < MAX_INDEX && celdaOrigen !== null;
+		if (hayFiltroCoche) cargarTiemposCoche();
+		const sinTiemposReales = hayFiltroCoche && window.tiemposCoche.celda !== celdaOrigen.clave;
+		document.querySelectorAll('.nota-estimado-recta').forEach(nota => { nota.style.display = sinTiemposReales ? '' : 'none'; });
 
 		const hayFiltro = window.hayFiltroTiempoActivo();
 		// Si se filtra desde el mapa, el panel de la tabla queda abierto para verlo al volver
