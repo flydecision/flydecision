@@ -9868,6 +9868,12 @@ function alternardivConfiguracion(event, forzarCierreAcordeones = false) {
         const acordeones = divconfiguracion.querySelectorAll('details.config-accordion');
         acordeones.forEach(acc => acc.removeAttribute('open'));
     }
+
+    // /balizas: al abrir Ajustes, el acordeón «Mapa» ya desplegado (es casi lo único que hay)
+    if (!estabaActivo && window.esModoBalizasDirecto) {
+        const accMapa = document.querySelector('#mapa details.config-accordion');
+        if (accMapa) accMapa.open = true;
+    }
     
     const btnConfigAntiguo = document.getElementById("btn-div-configuracion-toggle");
     if (btnConfigAntiguo) btnConfigAntiguo.classList.toggle("activo", !estabaActivo);
