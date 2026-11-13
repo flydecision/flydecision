@@ -5398,6 +5398,9 @@ body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa .leaflet-top {
 /* El tirador no sobresale de la barra: zona útil 14 px (medio tirador) hacia dentro por cada lado.
    Esos 14 px los pinta la barra: a la izquierda blanco (como el tramo antes del tirador) y a la derecha el último verde */
 #puntuacion-mapa-slider.noUi-horizontal {
+    /* Misma anchura que el selector de rango horario de encima (mismos márgenes que #horario-slider) */
+    margin-left: calc((min(345px, 100vw - 30px) - min(345px, 100vw - 38px)) / 2 - 1px) !important;
+    margin-right: calc((min(345px, 100vw - 30px) - min(345px, 100vw - 38px)) / 2 - 1px) !important;
     padding: 0 14px;
     background: linear-gradient(to right, #fff 50%, #6befaf 50%); /* corte al 50 %: el centro lo tapa .noUi-base; sin rayita en la unión */
 }
