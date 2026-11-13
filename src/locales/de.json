@@ -888,8 +888,8 @@
   },
 
   "popupDespegue": {
-    "enCoche": "Mit dem Auto 🚗:",
-    "aPie": "Zu Fuß 🚶:",
+    "enCoche": "(Auto)",
+    "aPie": "(zu Fuß)",
     "rutaVerificada": "Route manuell überprüft",
     "rutaAutomatica": "Route automatisch berechnet (kann Fehler enthalten)",
     "enCocheHastaDespegue": "Mit dem Auto erreichbar",

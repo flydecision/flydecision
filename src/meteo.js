@@ -644,6 +644,9 @@ function cargarTiemposCoche(soloLocal = false) {
 window.cargarTiemposCoche = cargarTiemposCoche;
 window.addEventListener('DOMContentLoaded', () => cargarTiemposCoche(true));
 
+// Chincheta del origen (la misma del botón «Desde») para los títulos de la ficha
+const ICONO_ORIGEN_FICHA = "<svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -2px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg>";
+
 // Tiempo en coche para la ficha del despegue: "En coche 🚗:" y debajo "1 h 05 min · 82 km" ('' si no hay origen o aún no hay tiempos reales).
 // El dato enlaza a la ruta en Google Maps: del origen exacto al punto de carretera donde empieza el tramo a pie
 // (pie.r) o, si no lo hay, al propio despegue (latDesp, lonDesp).
@@ -658,6 +661,9 @@ function textoTiempoCocheDespegue(id, latDesp, lonDesp) {
 
     let destino = '';
     const pie = window.datosAccesoPie[Number(id)];
+    // Título con el recorrido: origen → coche → a pie (o → despegue si se llega en coche) «(coche):»
+    const hayTramoAPie = pie && (Number(pie.min) > 0 || Number(pie.km) > 0);
+    const titulo = `${ICONO_ORIGEN_FICHA} → 🚗 → ${hayTramoAPie ? '🚶' : '<icon-despegue></icon-despegue>'} ${t('popupDespegue.enCoche')}:`;
     if (pie && typeof pie.r === 'string' && /^[-0-9.,;]+$/.test(pie.r)) {
         const inicio = pie.r.split(';')[0].split(','); // lon,lat del punto de carretera
         if (inicio.length >= 2) destino = `${inicio[1]},${inicio[0]}`;
@@ -665,12 +671,12 @@ function textoTiempoCocheDespegue(id, latDesp, lonDesp) {
     if (!destino && Number.isFinite(latDesp) && Number.isFinite(lonDesp)) destino = `${latDesp},${lonDesp}`;
     const latO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL'));
     const lonO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL'));
-    if (!destino || isNaN(latO) || isNaN(lonO)) return `${t('popupDespegue.enCoche')}<br><b>${datos}</b>`;
+    if (!destino || isNaN(latO) || isNaN(lonO)) return `${titulo}<br><b>${datos}</b>`;
 
     const url = `https://www.google.com/maps/dir/?api=1&origin=${latO},${lonO}&destination=${destino}&travelmode=driving`;
     // Icono de «cómo llegar» (rombo azul con flecha)
-    const icono = "<svg viewBox='0 0 24 24' width='18' height='18' style='vertical-align: middle; margin: -2px 4px 0 0;'><rect x='4.5' y='4.5' width='15' height='15' rx='2.5' transform='rotate(45 12 12)' fill='#1a73e8'/><path d='M9.2 15v-3.4a1.6 1.6 0 0 1 1.6-1.6h3.4M12.4 7.8l2.2 2.2-2.2 2.2' fill='none' stroke='#fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>";
-    return `${t('popupDespegue.enCoche')}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'>${icono}<b>${datos}</b></a>`;
+    const icono = "<svg viewBox='0 0 24 24' width='16' height='16' style='vertical-align: middle; margin: -2px 4px 0 0;'><rect x='4.5' y='4.5' width='15' height='15' rx='2.5' transform='rotate(45 12 12)' fill='#1a73e8'/><path d='M9.2 15v-3.4a1.6 1.6 0 0 1 1.6-1.6h3.4M12.4 7.8l2.2 2.2-2.2 2.2' fill='none' stroke='#fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>";
+    return `${titulo}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'>${icono}<b>${datos}</b></a>`;
 }
 
 // Ficha del despegue: tiempo en coche (si hay origen) y, debajo, el tramo a pie. Si hay origen pero aún no se han pedido
@@ -702,9 +708,10 @@ function textoAccesoPieDespegue(id) {
     // Solo se marca lo NO revisado: 🤖 = cálculo automático, «A pie 🚶 (🤖):». Las revisadas (pie.c) van sin marca.
     // El texto sale en un globo Tippy al pulsar (data-tippy-content, delegado en body): así se ve también en móvil
     const marca = pie.c ? '' : ` (<span data-tippy-content="${t('popupDespegue.rutaAutomatica').replace(/"/g, '&quot;')}" style="cursor: pointer;">🤖</span>)`;
-    const titulo = t('popupDespegue.aPie').replace(/\s*:\s*$/, '') + `${marca}:`;
+    // Título con el recorrido: a pie → despegue «(andar):»
+    const titulo = `🚶 → <icon-despegue></icon-despegue> ${t('popupDespegue.aPie')}${marca}:`;
     if (Number(pie.min) === 0 && !Number(pie.km)) {
-        datos = t('popupDespegue.enCocheHastaDespegue');
+        return `<b>${t('popupDespegue.enCocheHastaDespegue')}</b>${marca}`; // sin tramo a pie: sin título de recorrido
     } else {
         const partes = [formatearTooltipFiltroTiempo(Number(pie.min), 'min').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()];
         if (Number.isFinite(Number(pie.km))) partes.push(`${String(Number(pie.km)).replace('.', ',')} km`);

@@ -888,8 +888,8 @@
   },
 
   "popupDespegue": {
-    "enCoche": "Autoz 🚗:",
-    "aPie": "Oinez 🚶:",
+    "enCoche": "(autoz)",
+    "aPie": "(oinez)",
     "rutaVerificada": "Eskuz egiaztatutako ibilbidea",
     "rutaAutomatica": "Automatikoki kalkulatutako ibilbidea (akatsak izan ditzake)",
     "enCocheHastaDespegue": "Autoz iristen da aireratze-guneraino",
