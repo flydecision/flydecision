@@ -678,9 +678,7 @@ function textoTiempoCocheDespegue(id, latDesp, lonDesp) {
     if (!destino || isNaN(latO) || isNaN(lonO)) return `${t('popupDespegue.enCoche')}<br><b>${datos}</b>`;
 
     const url = `https://www.google.com/maps/dir/?api=1&origin=${latO},${lonO}&destination=${destino}&travelmode=driving`;
-    // Icono de «cómo llegar» (rombo azul con flecha)
-    const icono = "<svg viewBox='0 0 24 24' width='16' height='16' style='vertical-align: middle; margin: -2px 4px 0 0;'><rect x='4.5' y='4.5' width='15' height='15' rx='2.5' transform='rotate(45 12 12)' fill='#1a73e8'/><path d='M9.2 15v-3.4a1.6 1.6 0 0 1 1.6-1.6h3.4M12.4 7.8l2.2 2.2-2.2 2.2' fill='none' stroke='#fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>";
-    return `${t('popupDespegue.enCoche')}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'>${icono}<b>${datos}</b></a>`;
+    return `${t('popupDespegue.enCoche')}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'><b>${datos}</b></a>`;
 }
 
 // Ficha del despegue: tiempo en coche (si hay origen) y, debajo, el tramo a pie. Si hay origen pero aún no se han pedido
@@ -724,7 +722,7 @@ function textoAccesoPieDespegue(id) {
         if (typeof pie.r === 'string' && /^[-0-9.,;]+$/.test(pie.r)) {
             const fin = pie.r.split(';').pop().split(',');
             const url = `https://brouter.de/brouter-web/#map=14/${fin[1]}/${fin[0]}/OpenTopoMap&lonlats=${pie.r}&profile=hiking-mountain`;
-            return `${titulo}<br>🗺️ <a href='${url}' onclick='abrirLinkExterno(this.href); return false;'><b>${datos}</b></a>`;
+            return `${titulo}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'><b>${datos}</b></a>`;
         }
     }
     return `${titulo}<br><b>${datos}</b>`;
