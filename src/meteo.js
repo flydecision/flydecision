@@ -581,7 +581,7 @@ window.addEventListener('DOMContentLoaded', cargarDatosAccesoPie);
 const CELDA_ORIGEN_COCHE = 0.03;        // cuadrícula del origen (~3 km). Igual que CELDA_GRADOS en tiempos-coche.php
 const DIAS_CACHE_TIEMPOS_COCHE = 30;    // validez de la copia guardada en el dispositivo
 const MIN_REINTENTO_TIEMPOS_COCHE = 10; // tras un fallo (sin red, tope diario…) no se vuelve a pedir la misma celda en estos minutos
-// celda = «lat_lon» del origen redondeado · t[ID] = [minutos, km] · null = no se llega en coche · sin ID = sin dato (se estima en línea recta)
+// celda = «lat_lon» del origen redondeado · t[ID] = [minutos, km] · null o sin ID = ORS no da ruta en coche (Aneto, Zermatt…): se estima en línea recta
 window.tiemposCoche = { celda: null, t: {} };
 let celdaTiemposCochePidiendo = null;
 let falloTiemposCoche = { celda: null, hora: 0 };
@@ -12141,7 +12141,6 @@ function comprobarAvisoCambiosPuntuacionXC() {
 		let min, estimado = true;
 		const celda = celdaOrigenCoche();
 		const coche = (celda && window.tiemposCoche.celda === celda.clave) ? window.tiemposCoche.t[String(id)] : undefined;
-		if (coche === null) return { min: Infinity, estimado: false }; // no se llega en coche
 		if (Array.isArray(coche) && Number.isFinite(Number(coche[0]))) { min = Number(coche[0]); estimado = false; }
 		else min = obtenerDistanciaKm(latO, lonO, lat, lon) * FACTOR_MIN_POR_KM_RECTA;
 		if (modoTiempoDespegue === 'total') {
