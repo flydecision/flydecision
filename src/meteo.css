@@ -4838,6 +4838,8 @@ body.modo-balizas-directo .control-vuelos-container,
 body.modo-balizas-directo .control-actividad-mapa-container,
 body.modo-balizas-directo #control-seguimiento-mapa-container,
 body.modo-balizas-directo #control-favoritos-mapa-container,
+body.modo-balizas-directo #control-distancia-mapa-container, /* Filtros de tiempo de acceso (solo despegues) */
+body.modo-balizas-directo .columna-filtros-despegues-mapa,  /* Columna de despegues (vacía): las balizas quedan a la izquierda */
 body.modo-balizas-directo .leaflet-control-guia-mapa,
 body.modo-balizas-directo .leaflet-control-infopanel-planeo,
 body.modo-balizas-directo #infoPanelPlaneo,
@@ -4859,6 +4861,11 @@ body.modo-balizas-directo .linea-con-bt-info:has(#chkAbrirMapaInicio),
 body.modo-balizas-directo .linea-con-bt-info:has(#chkRecordarEstadoFiltroHorario),
 body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para elementos sin ID */
     display: none !important;
+}
+
+/* /balizas: sin la columna de despegues, la de balizas (❤️/👁) se alinea a la izquierda */
+body.modo-balizas-directo .columna-filtros-despegues-mapa + div {
+    padding-left: 0 !important;
 }
 
 /* /balizas: la barra solo tiene el botón "Ajustes", así que se estrecha */
