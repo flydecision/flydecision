@@ -5261,12 +5261,9 @@ body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa {
    debajo de la X de cerrar. Se reserva el hueco de la X a la derecha y se aprovecha el margen
    izquierdo; los días se siguen centrando en el espacio que queda. */
 @media (max-width: 399px) {
-    #div-filtro-horario.flotando-en-mapa #botones-dias-slider {
-        margin-left: 0 !important;
-        margin-right: 34px !important;
-    }
-    /* En la tabla pasa lo mismo con el botón del calendario (solo en modo avanzado, que es cuando se ve) */
-    body:not(.modo-simple) #div-filtro-horario:not(.flotando-en-mapa) #botones-dias-slider {
+    /* Mismo hueco en la tabla (botón del calendario) y en el mapa (X de cerrar), también en modo sencillo:
+       así los botones de los días no se mueven al pasar de la tabla al mapa (antes 38 px en la tabla y 34 px en el mapa) */
+    #div-filtro-horario #botones-dias-slider {
         margin-left: 0 !important;
         margin-right: 38px !important;
     }
