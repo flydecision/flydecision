@@ -2596,6 +2596,18 @@ body.modo-edicion-tabla #nav-distance {
     flex: none;
 }
 
+/* Con los filtros de tiempo abiertos: hundido con fondo azul (como el 🗓️ de «ver todos los días») y resplandor blanco en 🚗🚶.
+   Con filtro aplicado manda el estilo rojo de .filtrado (va después y con !important) */
+body:has(#div-filtro-distancia.activo) #nav-distance {
+    background-color: #007aff;
+    border-color: #007aff;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+body:has(#div-filtro-distancia.activo) #nav-distance .emoji-nav-distancia {
+    text-shadow: 0 0 2px #fff, 0 0 2px #fff;
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff);
+}
+
 #nav-distance.filtrado {
     box-shadow: inset 0 0 0 3px red, inset 1px 1px 3px rgba(0, 0, 0, .4) !important;
     border: none !important;
