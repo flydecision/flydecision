@@ -1028,6 +1028,7 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 #div-filtro-distancia .div-paneles-controles-transparente {
+    border-radius: 8px;     /* como los demás recuadros de filtro con borde rojo */
     padding-bottom: 0;      /* sin hueco: el borde rojo (filtro activo) rodea las tarjetas, como en el mapa */
     margin-top: 8px;        /* antes lo daba el margen de la 1.ª tarjeta */
     margin-bottom: 0;       /* abajo, mitad de hueco blanco hasta el borde del panel (Alberto 2026-11-09) */
@@ -2594,6 +2595,14 @@ body.modo-edicion-tabla #nav-distance {
     height: 37px;
     box-sizing: border-box;
     flex: none;
+}
+
+/* Borde rojo de los filtros de tiempo de la tabla POR DENTRO (como el buscador y el 🚗🚶 de arriba), para que sus bordes
+   coincidan con los de esa fila. Con box-shadow inset lo taparían las tarjetas; el outline con desplazamiento negativo va encima */
+#div-filtro-distancia-interno.borde-rojo-externo {
+    box-shadow: none !important;
+    outline: 3px solid #ff0000;
+    outline-offset: -3px;
 }
 
 /* Con los filtros de tiempo abiertos: hundido con fondo azul (como el 🗓️ de «ver todos los días») y resplandor blanco en 🚗🚶.
