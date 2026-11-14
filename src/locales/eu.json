@@ -14,6 +14,7 @@
     "tabla": "Taula",
     "buscar": "Bilatu",
     "distancia": "Distantzia",
+    "filtroTiemposAcceso": "Sarbide-denboren iragazkia",
     "mapa": "Mapa",
     "ajustes": "Ezarpenak"
   },
@@ -302,7 +303,7 @@
       },
       "btnOrigen": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Jatorri-puntua",
-        "descripcion": "Hemen distantzia-iragazkirako jatorri-puntua aukeratzen duzu.<br><br>Puntua mapa baten laguntzaz edo zure uneko kokapena erabiliz hauta dezakezu."
+        "descripcion": "Hemen autoko denbora-iragazkiaren jatorri-puntua aukeratzen duzu.<br><br>Puntua mapa batekin edo zure uneko kokapenarekin aukeratu ahal izango duzu."
       },
       "btnIncNoFavs": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Gogoko ez direnak sartu",
@@ -325,16 +326,20 @@
         "descripcion": "Bilatu hemen aireratzeak izenaren edo probintziaren arabera.<br><br>💡 Tilderik gabe idatz dezakezu azkarrago ibiltzeko."
       },
       "navDistance": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distantzia</span></div>",
-        "descripcion": "Puntu baten inguruko erradio batean aireratzeak iragazteko graduatzaile bat erakusten du.<br><br>👉🏽 Orain botoi hau sakatuko dut iragazkia irekitzeko."
+        "titulo": "🚗🚶 Aireratze-gunerako denbora",
+        "descripcion": "Denbora-iragazkiak irekitzen ditu: autoz puntu batetik eta oinez errepidetik aireratze-guneraino.<br><br>👉🏽 Orain botoi hori sakatuko dut iragazkia irekitzeko."
       },
       "filtroDistancia": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distantzia</span></div>",
-        "descripcion": "Iragazki honek puntu zehatz baten inguruko aireratzeak soilik ikusteko aukera ematen dizu.<br><br>💡 Oso erabilgarria zure kokapenetik autoz joateko distantziara dauden aireratzeak azkar aurkitzeko."
+        "titulo": "🚗🚶 Aireratze-gunerako denbora",
+        "descripcion": "Aireratze-guneak iristeko behar duzun denboraren arabera iragazten ditu:<br><br>🚗 Autoz aukeratzen duzun puntu batetik (edo 🚗+🚶 oinezko zatia gehituta).<br>🚶 Oinez errepidetik aireratze-guneraino: denbora, distantzia edo desnibela.<br><br>💡 Duzun denborarekin iristen zaren aireratze-guneak azkar aurkitzeko balio du."
       },
       "sliderDistancia": {
-        "titulo": "Distantziaren erradioa",
-        "descripcion": "Mugitu graduatzaile hau gehienezko distantzia aukeratzeko.<br><br>Taulak erradio horren barruan dauden aireratzeak soilik erakutsiko ditu."
+        "titulo": "🚗 Autoko denbora",
+        "descripcion": "Graduatzaile hau arrastatuz aireratze-gunera iristeko gehienezko denbora aukeratzen duzu: autoz soilik (🚗) edo oinezko zatia gehituta (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Oinezko zatia",
+        "descripcion": "Errepidetik aireratze-guneraino oinez egiteko sarbidearen arabera iragazten du: aukeratu minutuak (⏱️), kilometroak (↔) edo igoera (↑).<br><br>«0 min» hautatuta, autoz iristen diren aireratze-guneak bakarrik erakusten dira."
       },
       "navMap": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
@@ -384,16 +389,20 @@
         "descripcion": "Bilatu aireratzeak eskualdea, probintzia edo izena idatziz. Azkarrago idazteko azenturik gabe idatz dezakezu."
       },
       "filtroDistancia": {
-        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distantzia</span></div>",
-        "descripcion": "Hau iragazki bat da, puntu zehatz baten inguruko aireratzeak soilik bistaratzeko aukera ematen dizuna.<br><br>💡 Honek puntu baten inguruan zuk aukeratutako distantzia-erradio batean dauden aireratzeak azkar aurkitzen lagun diezazuke."
+        "titulo": "🚗🚶 Aireratze-gunerako denbora",
+        "descripcion": "Aireratze-guneak iristeko behar duzun denboraren arabera iragazten ditu:<br><br>🚗 Autoz aukeratzen duzun puntu batetik (edo 🚗+🚶 oinezko zatia gehituta).<br>🚶 Oinez errepidetik aireratze-guneraino: denbora, distantzia edo desnibela.<br><br>💡 Duzun denborarekin iristen zaren aireratze-guneak azkar aurkitzeko balio du."
       },
       "btnOrigen": {
         "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Jatorri-puntua",
-        "descripcion": "Hemen goiko distantzia-iragazkirako jatorri-puntua aukeratzen duzu.<br><br>Puntua mapa baten laguntzaz edo zure uneko kokapena erabiliz hauta dezakezu."
+        "descripcion": "Hemen autoko denbora-iragazkiaren jatorri-puntua aukeratzen duzu.<br><br>Puntua mapa batekin edo zure uneko kokapenarekin aukeratu ahal izango duzu."
       },
       "sliderDistancia": {
-        "titulo": "Punturako distantzia",
-        "descripcion": "Graduatzaile hau mugituz, gehienezko distantzia kilometrotan aukeratzen duzu."
+        "titulo": "🚗 Autoko denbora",
+        "descripcion": "Graduatzaile hau arrastatuz aireratze-gunera iristeko gehienezko denbora aukeratzen duzu: autoz soilik (🚗) edo oinezko zatia gehituta (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Oinezko zatia",
+        "descripcion": "Errepidetik aireratze-guneraino oinez egiteko sarbidearen arabera iragazten du: aukeratu minutuak (⏱️), kilometroak (↔) edo igoera (↑).<br><br>«0 min» hautatuta, autoz iristen diren aireratze-guneak bakarrik erakusten dira."
       },
       "btnVerSoloFavs": {
         "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Gogokoak bakarrik erakutsi",
@@ -430,15 +439,15 @@
       "descripcion": "Parapente aireratzeak esploratu eta haien baldintzak ebaluatu orduz orduko iragarpenaren arabera.<br><br>Aireratzeak iragazi ditzakezu beren puntuazio meteorologikoaren, orientazioaren edo jarduera-mailaren arabera; denbora errealeko haize-balizak kontsultatu joera-grafikoekin; XContest aireratzeen bero-mapak ikusi eta hainbat mapa mota hautatu."
     },
     "filtroHorarioMeteo": {
-      "titulo": "Denbora-tartea eta iragazkia",
+      "titulo": "🕐–🕕 Denbora-tartea eta iragazkia",
       "descripcion": "Hautatu eguna eta nahi duzun hegaldiaren denbora-tartea.<br><br>Mapako ikonoak gorritik berdera doan 10 urratseko gradazio batekin koloreztatuko dira 🟥🟧🟩 ordutegi horretako baldintzen kalitatearen arabera, taulan bezala."
     },
     "filtroPuntuacion": {
-      "titulo": "Puntuazioaren araberako iragazkia",
+      "titulo": "⭐ Puntuazioaren araberako iragazkia",
       "descripcion": "Iragazi aireratzeak beren iragarpen meteorologikoaren puntuazioaren arabera eta hautatutako denbora-tartearentzat.<br><br>Irristatu kontrol hau gutxieneko nota bat (0tik 10 izarrera) zehazteko, eta horrela, hautatutako ordutegian zure exijentzia-mailara iristen ez diren ebaluazioak dituzten aireratzeak ezkutatuko dira.<br><br>Gogoratu puntuaziorako muga hauek guztiak <i>Ezarpenak</i> atalean doitu ditzakezula zure lehentasunen arabera."
     },
     "btnCerrarFiltroMeteo": {
-      "titulo": "Itxi ordu-kontrola eta meteo iragazkia",
+      "titulo": "❌ Itxi ordu-kontrola eta meteo iragazkia",
       "descripcion": "Itxi panel hau; horrela, aireratzeak ez dira gehiago beren meteoaren arabera koloreztatuko eta kolore zurian erakutsiko dira.<br><br>Erabilgarria izan daiteke pantailan ahalik eta leku gehien izanda aireratzeak edo haize-balizak esploratzeko."
     },
     "buscadorMapa": {
@@ -455,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Iragazkiak",
-      "descripcion": "Iragazi mapako informazioa zure beharren arabera. Zure gogoko edo jarraipeneko aireratzeak eta balizak soilik erakutsi edo ezkutatu ditzakezu. Gainera, aireratzeak orientazioaren, jarduera-mailaren edo XContest-en erregistratutako hegaldi bolumenaren arabera iragazi ditzakezu, eta balizak altueraren arabera."
+      "descripcion": "Iragazi mapako informazioa zure beharren arabera. Zure gogoko edo jarraipeneko aireratzeak eta balizak soilik erakutsi edo ezkutatu ditzakezu. Gainera, aireratzeak orientazioaren, jarduera-mailaren edo XContest-en erregistratutako hegaldi bolumenaren arabera iragazi ditzakezu, eta balizak altueraren arabera. Aireratze-guneak puntu batetik autoz behar den denboraren arabera eta aireratze-guneraino oinezko zatiaren arabera ere iragaz ditzakezu (denbora, distantzia edo desnibela).",
+      "descripcionSimple": "Iragazi maparen aireratzeak: zure aireratze gogokoak bakarrik erakuts ditzakezu edo jarduera-mailaren arabera iragazi."
     },
     "btnPlaneo": {
       "titulo": "Planeamendu-kalkulua",
@@ -466,7 +476,7 @@
       "descripcion": "Zentratu mapa zure egungo posizioan."
     },
     "btnGeocoder": {
-      "titulo": "Bilatzaile orokorra",
+      "titulo": "🌍 Bilatzaile orokorra",
       "descripcion": "Bilatu edozein hiri, udalerri, mendi edo eremu geografiko bertara azkar nabigatzeko.<br><br>Koordenatuak ere idatz ditzakezu zuzenean formatu hamartarrean (adibidez: 42.734 -1.990) mapa puntu zehatz batean zentratzeko."
     },
     "controlCapas": {
@@ -474,11 +484,11 @@
       "descripcion": "Aukeratu nahiago duzun atzeko planoko mapa mota: topografikoak, aireko argazkiak, erliebekoak, termika-eremuak eta ibilbideak (skyways eta thermals KK7) eta geruza aeronautikoak/murrizketak."
     },
     "btnFiltrosMeteo": {
-      "titulo": "Meteo botoia",
+      "titulo": "⛅ Meteo botoia",
       "descripcion": "Ireki barra meteorologikoa orduz edo asteko egunez mapan zuzenean iragazteko."
     },
     "navTabla": {
-      "titulo": "Taula ikuspegia",
+      "titulo": "📋 Taula ikuspegia",
       "descripcion": "Sartu orduz orduko taula meteorologiko zehatzera. Hemen ikusiko duzu aireratze bakoitzaren iragarpen osoa (haizea hainbat altueratan, boladak, norabidea, zizailadura, XC sabai termikoa, euria eta tenperatura) koloreekin ebaluatuta zure segurtasun-mugen arabera.<br><br>Hegaldi-ordutegiaren arabera iragazi ahal izango duzu, probintziaren edo distantziaren arabera aireratzeak bilatu, zure gogokoak kudeatu eta berehalako iragarpena (nowcasting) Arome 15 minutuko tartean ikusi."
     }
   }
@@ -673,7 +683,7 @@
     "recordarEstadoFiltroHorario": "Gogoratu meteo-iragazkiaren egoera (irekita/itxita)",
     "recordarCapasActivas": "Gogoratu geruza aktiboak",
     "recordarTipoMapa": "Gogoratu mapa mota",
-    "recordarFiltrosMapa": "Gogoratu iragazkiak",
+    "recordarFiltrosMapa": "Gogoratu aireratze gogokoen iragazkia",
     "guia": "Gida",
     "ayuda": "Laguntza",
     "legal": "Legezkoa",
@@ -878,6 +888,12 @@
   },
 
   "popupDespegue": {
+    "enCoche": "Autoz 🚗:",
+    "elegirOrigen": "Aukeratu jatorria",
+    "aPie": "Oinez 🚶:",
+    "rutaVerificada": "Eskuz egiaztatutako ibilbidea",
+    "rutaAutomatica": "Automatikoki kalkulatutako ibilbidea (akatsak izan ditzake)",
+    "enCocheHastaDespegue": "Autoz iristen da aireratze-guneraino",
     "region": "Eskualdea:",
     "provincia": "Probintzia:",
     "orientacion": "Norabidea:",
@@ -898,6 +914,15 @@
   "html": {
     "verTodosDiasTitle": "Egun guztiak ikusi",
     "distanciaDesde": "Distantzia hemendik:",
+    "sinLimite": "Mugarik gabe",
+    "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> hemendik",
+    "modoCoche": "🚗 Autoa",
+    "modoTotal": "🚗+🚶 Guztira",
+    "estimadoLineaRecta": "Denbora/distantzia daturik ez. Gutxi gorabeherako kalkulua.",
+    "aPie": "Oinez",
+    "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
+    "unidadPieKm": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4\"/></svg><span class=\"texto-unidad\">km</span>",
+    "unidadPieM": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 20V4M7 9l5-5 5 5\"/></svg><span class=\"texto-unidad\">m</span>",
     "seleccionarOrigen": "Hautatu jatorria",
     "incluirNoFavs": "Sartu gogoko ez direnak iragazkian",
     "resetFiltroDistancia": "Berrezarri eta ezkutatu distantziaren iragazkia",
@@ -970,6 +995,8 @@
   "btn_info": {
     "tooltipVientoLimites": "<b>Gutxieneko batez besteko haizea, ideala eta gehienezkoa (km/h):</b><br><br>Baldintzen ebaluazio automatizatuko sistemak balio horiek kontuan hartuko ditu.<br><br>Taulako datuen koloreak baldintzen analisia ikusmenean adierazten du, hemen ezartzen dituzun balioetan oinarrituta (Gutxienekoa, Ideala eta Gehienezkoa).<br><br>🟧 Laranja: haize ahula zure Gutxieneko haizearen azpitik (normalean 0, hegaldi dinamikorako edo beste arrazoi batzuengatik haize zehatz bat behar ez baduzu behintzat).<br>🟩 Berdea: Haize ideala, gutxienekotik gehienezkoaren aurreko segurtasun marjinaraino.<br>🟧 Laranja: gehienezko mugara hurbiltzen ari den haize indartsuagoa (gehienezko mugara iritsi aurreko azken herena).<br>🟥 Gorria: zure Gehienezko haizearen muga gainditzen duen haize oso indartsua.<br><br><b>WMOren (Munduko Erakunde Meteorologikoa) 10 metroko batez besteko abiaduraren definizio tekniko estandarra</b>:<br><br>Adierazitako orduaren aurreko azken 10 minutuetan mantendutako batez besteko haizearen abiadura da. Lurretik 10 metroko altuera estandarrean neurtzen da (lurzoruarekiko berehalako marruskadura saihesteko). Fluxu laminarra edo oinarrizkoa irudikatzen du.",
     "filtroDistanciaCompleto": "<b>Aireratzeen distantziaren iragazkia:</b><br><br>Hautatzen duzun distantzia-erradioaren barruan dauden aireratzeak soilik erakusten ditu.<br><br>Erabili <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 50%; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> botoia jatorriaren posizioa ezartzeko. Mapa edo zure gailuaren uneko kokapena erabil dezakezu.<span class='texto-oculto-en-edicion'><br><br>Erabili <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> botoia iragazkian gogoko ez diren aireratzeak sartzeko, hau da, datu-basean dauden <b>aireratze guztiak aldi baterako sartzeko</b>.<br><br>Aktibatuta dagoenean, hasierako 100 km-ko iragazki bat aplikatzen da taula ez gainkargatzeko. Zure beharren eta gailuaren errendimenduaren arabera doi dezakezu.</span>",
+    "filtroTiempoDespegue": "<b>Aireratze-gunerako denbora:</b><br><br>Zure jatorritik aukeratzen duzun denboran iristen zaren aireratze-guneak bakarrik erakusten ditu.<br><br>Erabili <span style='background-color: #fff; border: 1.5px solid #ccc; border-radius: 8px; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); display: inline-block; padding: 0 8px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -2px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> botoia jatorria mapan edo zure gailuaren kokapenarekin aukeratzeko.<br><br><b>🚗 Autoa:</b> autoz aireratze-gunetik hurbilen dagoen errepideraino behar den denbora.<br><b>🚗+🚶 Guztira:</b> autoa gehi aireratze-guneraino oinezko zatia.<br><br>Iragazki bera da taulan eta mapan.",
+    "filtroAPie": "<b>Oinezko zatia:</b><br><br>Autoz iristeko punturik errazenetik aireratze-guneraino oinez egin behar denaren arabera erakusten ditu aireratze-guneak. Denbora, distantzia edo igoera aukera ditzakezu. «0 min» hautatzen baduzu, autoz iristen diren aireratze-guneak bakarrik erakusten dira.<br><br>OpenStreetMap-eko oinezko ibilbidearekin kalkulatua, errepideko punturik logikoenetik: 4,5 km/h lautadan eta 450 m/h igoeran. Kalkulu orokorra da. Berrikusi zure egoerara edo beste sarbide batzuetara egokitzeko.<br><br>Aireratze-gune bakoitzaren <svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='#555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle;'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='7' x2='12' y2='7' stroke-width='3'></line><polyline points='10.5 11 12 11 12 17'></polyline></svg> (Informazioa) botoian (edo mapako leihoan) oinezko sarbidearen datuak eta ibilbiderako esteka bat adierazten dira. (🤖) bat agertzen bada, ibilbidea automatikoki kalkulatu delako da (akatsak izan ditzake).",
     "tooltipRachaMaxima": "<b>Gehienezko bolada (km/h):</b><br><br>Baldintzen ebaluazio automatizatuko sistemak balio horiek kontuan hartuko ditu.<br><br>Taulako datuen koloreak baldintzen analisia ikusmenean adierazten du, hemen ezartzen duzun balioan oinarrituta.<br><br>🟩 Berdea: gehienezko bolada segurua, mugatik urrun.<br>🟧 Laranja: gehienezko bolada zure Gehienezko boladaren mugara hurbiltzen.<br>🟥 Gorria: zure Gehienezko boladaren muga gainditzen duen bolada.<br><br><b>WMOren (Munduko Erakunde Meteorologikoa) 10 metroko gehienezko boladaren definizio tekniko estandarra</b>:<br><br>Aurreko orduko epean edonoiz erregistratutako bat-bateko abiaduraren (3 segundoko iraupenekoa) gehienezko gailurra da. Batez besteko haizeari gainjartzen zaizkion gorabehera labur eta intentsiboak irudikatzen ditu, turbulentzia mekaniko edo termikoarekin (konbekzioarekin) erlazionatuta.",
     "tooltipResetearEnlaces": "<b>Esteken portaera berrezarri</b><br><br>Aplikazioan, instalatutako aplikazio natibo bat izan dezakeen esteka bat lehenengo aldiz irekitzean, webgunean (Fly Decision barruan) edo aplikazioan ireki nahi duzun galdetzen zaizu. <i>Gogoratu nire aukera</i> markatu bazenuen, ez da gehiago galdetuko.<br><br>Botoi honek aukera horiek ezabatzen ditu berriro galdetu ahal izateko.",
     "tooltipEdicionLimites": "<b>Editatu muga edo orientazio pertsonalizatuak dituzten aireratzeak</b><br><br>Taulan haize- eta bolada-mugak doitu dizkiezun (% 100 ez dena) edo orientazio ideal bat markatu diozun aireratzeak soilik erakusten ditu.<br><br>Sakatu ↺ aireratze batean berrezartzeko: % 100era itzultzen da (goiko muga orokorrak) eta orientazio idealik gabe gelditzen da. Goiburuko ↺-ak guztiak berrezartzen ditu. Ehunekoa edo orientazio ideala aldatzeko, erabili aireratze bakoitzeko ⓘ botoia. Hemen, Taulan edo Mapan egin dezakezu.<br><br>Botoi hau desgaituta dago pertsonalizatutako aireratzerik ez baduzu.",
@@ -1014,8 +1041,8 @@
     "tooltipcheckboxBalizasWeatherUnderground": "<b>WeatherUnderground haize-balizak</b><br><br>ℹ️ <b>FlyDecision-en integratu gabeko sarea.</b> Grisez agertzen da balizak non dauden bakarrik erakusten dugulako, ez haien haize-datuak. Datuak ikusteko, baliza bakoitzaren fitxan WeatherUnderground webgunerako eta <b>Tolomet-erako (gomendatua)</b> esteka zuzenak daude.<br><br><ul style='margin:0; padding-left:18px;'><li><b>Jabetza</b>: WeatherUnderground</li><li><b>Estaldura geografikoa</b>: Mundu mailakoa</li><li><b>Erakutsitako balizen gutxi gorabeherako kopurua</b>: 5000</li><li><b>Datuen gutxi gorabeherako eguneratze-maiztasuna</b>: 15 minutu (aldakorra estazioaren arabera)</li><li><b>Webgunea</b>: <a href='https://www.wunderground.com/wundermap' target='_blank' style='color: #007bff; text-decoration: underline;'>WeatherUnderground</a></li></ul>",
     "tooltipFiltroFavoritosMapa": "<b>Aireratze gogokoen iragazkia</b><br><br><i>Gogoko</i> gisa markatutako aireratzeak soilik erakusten ditu eta gainerakoak ezkutatzen ditu.<br><br>Bigarren aldiz hautatzen bada, gogokoak ez direnak bakarrik erakusten ditu. Modu hau erabilgarria da zure inguru gogokoenean datu-basean sartutako aireratze berriak aurkitzeko edo oraindik gogoko gisa markatu ez dituzunak berrikusteko.<br><br>Hirugarren aldiz hautatzen denean iragazkia desgaitzen da.<br><br>Kontsultatu <i>Ezarpenak > Gidak</i> atalean Gogokoen eta Jarraipenaren markatzearen deskribapena.",
     "tooltipFiltroSeguimientoMapa": "<b>Jarraipeneko aireratzeen iragazkia</b><br><br><i>Jarraipenean</i> gisa markatutako aireratzeak soilik erakusten ditu eta gainerakoak ezkutatzen ditu.<br><br>Kontsultatu <i>Ezarpenak > Gidak</i> atalean Gogokoen eta Jarraipenaren markatzearen deskribapena.",
-    "tooltipFiltroFavoritosBalizasMapa": "<b>Baliza gogokoen iragazkia</b><br><br><i>Gogoko</i> gisa markatutako balizak soilik erakusten ditu eta gainerakoak ezkutatzen ditu.<br><br>Kontsultatu <i>Ezarpenak > Gidak</i> atalean Gogokoen eta Jarraipenaren markatzearen deskribapena.",
-    "tooltipFiltroSeguimientoBalizasMapa": "<b>Jarraipeneko balizen iragazkia</b><br><br><i>Jarraipenean</i> gisa markatutako balizak soilik erakusten ditu eta gainerakoak ezkutatzen ditu.<br><br>Kontsultatu <i>Ezarpenak > Gidak</i> atalean Gogokoen eta Jarraipenaren markatzearen deskribapena.",
+    "tooltipFiltroFavoritosBalizasMapa": "<b>Baliza gogokoen iragazkia</b><br><br><i>Gogoko</i> gisa markatutako balizak soilik erakusten ditu eta gainerakoak ezkutatzen ditu.<span class='ocultar-en-balizas'><br><br>Kontsultatu <i>Ezarpenak > Gidak</i> atalean Gogokoen eta Jarraipenaren markatzearen deskribapena.</span>",
+    "tooltipFiltroSeguimientoBalizasMapa": "<b>Jarraipeneko balizen iragazkia</b><br><br><i>Jarraipenean</i> gisa markatutako balizak soilik erakusten ditu eta gainerakoak ezkutatzen ditu.<span class='ocultar-en-balizas'><br><br>Kontsultatu <i>Ezarpenak > Gidak</i> atalean Gogokoen eta Jarraipenaren markatzearen deskribapena.</span>",
     "tooltipFiltroActividad": "<b>Aireratzearen jarduera-mailaren iragazkia</b><br><br>Hautatutakoa baino jarduera-maila bera edo handiagoa duten aireratzeak soilik erakusten ditu<br><br>Jarduera-mailak nota batekin (1etik 5era) leku horretan zenbat hegan egiten den puntuatzen du, XContest-en erregistratutako hegaldi kopuruaren arabera (ospe-maila).<br><br>20 urtetan XContest-en erregistratutako hegaldien bolumen historikoan oinarritzen da, azkenaldiko jardueragatik (+1 azken hilabeteetan hegaldiak izan badira) edo luzaroko inaktibitateagatik (-1 duela 2 urte baino gehiagoz hegaldian egon ez badira) doituta. Logikoki, ideia orokor bat emateko puntuazioa da eta ez du balio erreal kuantifikagarria izan nahi.<br><br>Kontsultatu <i>Ezarpenak > Gidak</i> atalean Jardueraren araberako puntuazio-sistemaren deskribapena.",
     "tooltipFiltroVuelos": "<b>XContest-en erregistratutako hegaldi kopuruaren iragazkia</b><br><br>XContest-en erregistratutako hegaldi kopurua hautatutako zenbakia baino handiagoa edo berdina duten aireratzeak soilik erakusten ditu. Balio hauek azken 20 urteetan XContest-en izandako hegaldien erregistro historikoan oinarritzen dira. Kontuan izan analisia 2026ra arte egina dagoela eta datu oso orokorra dela, benetako gaurkotasuna isla ez dezakeena."
   },

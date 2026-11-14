@@ -116,7 +116,14 @@ body.modo-simple .solo-modo-avanzado {
     display: none !important;
 }
 
-body.modo-simple #infoPanelPlaneo {
+/* En modo simple no está el panel de tiempo/a pie, cuyo margin-bottom: -10px (cerrado) ajustaba el hueco bajo el buscador:
+   se aplica aquí para que quede el mismo espacio que en modo avanzado */
+body.modo-simple #floating-search-container {
+    margin-bottom: 2px; /* 12px normales - 10px */
+}
+
+body.modo-simple #infoPanelPlaneo,
+body.modo-simple .leaflet-control-infopanel-planeo { /* también su caja de Leaflet, que dejaba su margen como hueco */
     display: none !important;
 }
 
@@ -293,6 +300,10 @@ body:not(.modo-edicion-tabla) .contenedor-principal-controles {
         inset 0 0 0 2px #ff0000,
         inset 1px 1px 3px rgba(0,0,0,0.4) !important;
     background-color: #ff000042 !important;
+}
+/* Resplandor blanco en el ojo con filtro, igual que los emojis del botón de filtros de acceso */
+#btn-filtro-seguimiento-toggle.filtro-aplicado svg {
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff);
 }
 #btn-filtro-seguimiento-toggle.filtro-aplicado .ojo-exterior {
     fill: #16a34a !important;
@@ -652,7 +663,7 @@ input[type="search"]::-webkit-search-cancel-button {
 /* 🔴 FILTRO DISTANCIA -------------------------------- */
 
 .div-filtro-distancia {
-    height: 99px;
+    height: auto; /* antes 99px: ahora tiene 4 filas (tiempo + a pie) */
     z-index: 9998;
     display: flex; 
     flex-wrap: wrap;
@@ -685,9 +696,10 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 .div-filtro-distancia.activo {
-    max-height: 120px; /* Un valor superior al contenido real */
+    max-height: 400px; /* Un valor superior al contenido real (con las tarjetas mide ~310 px) */
     opacity: 1;
     margin-top: -15px;
+    margin-bottom: 1px; /* el estado oculto usa -10px; con -10 la tarjeta se salía del recuadro blanco. Ajustado a ojo por Alberto (2026-11-09) */
     padding: 4px;
 }
 
@@ -1016,7 +1028,13 @@ input[type="search"]::-webkit-search-cancel-button {
 }
 
 #div-filtro-distancia .div-paneles-controles-transparente {
-    padding-bottom: 5px;
+    border-radius: 8px;     /* como los demás recuadros de filtro con borde rojo */
+    padding-bottom: 0;      /* sin hueco: el borde rojo (filtro activo) rodea las tarjetas, como en el mapa */
+    margin-top: 8px;        /* antes lo daba el margen de la 1.ª tarjeta */
+    margin-bottom: 0;       /* abajo, mitad de hueco blanco hasta el borde del panel (Alberto 2026-11-09) */
+}
+#div-filtro-distancia .div-paneles-controles-transparente > .tarjeta-filtro:first-of-type {
+    margin-top: 0;
 }
 
 .div-paneles-controles-botones {
@@ -1105,9 +1123,7 @@ details.config-accordion .accordion-content {
     z-index: 15;             /* Asegura que quede por encima si roza algo */
 }
 #titulo-distancia-slider {
-    position: absolute !important;
-    top: 55px; 
-    left: 0 !important;    /* Pegado a la izquierda del contenedor */
+    position: static !important; /* antes absolute bajo el deslizador; ahora es la fila 1 */
     width: 100%;           /* Forzamos que la caja ocupe el 100% de ancho */
     display: flex !important;
     justify-content: center;
@@ -1957,6 +1973,23 @@ span.grados {
 #horario-slider .noUi-connect {
 	background: #0078d4;
 }
+/* El tirador no sobresale de la barra (como en los demás deslizadores): la zona útil se mete 14 px (medio tirador)
+   por cada lado; esos 14 px quedan del color vacío porque la franja azul va entre los dos tiradores */
+#horario-slider.noUi-horizontal {
+	padding: 0 14px;
+	background: #FAFAFA;
+	box-shadow: 0 3px 6px -5px #BBB;
+}
+#horario-slider .noUi-connects {
+	border-radius: 0;
+}
+/* Los bordes exteriores de los tiradores coinciden con los de las tarjetas de filtro de debajo (el tirador queda 1 px hacia dentro).
+   Panel horario = min(345 px, 100vw − 30 px); tarjetas = min(345 px, 100vw − 38 px) (el panel de distancia tiene 4 px de relleno):
+   el tirador se mete la mitad de la diferencia (0 en pantallas anchas, 4 px en estrechas) */
+#horario-slider.noUi-horizontal {
+	margin-left: calc((min(345px, 100vw - 30px) - min(345px, 100vw - 38px)) / 2 - 1px) !important;
+	margin-right: calc((min(345px, 100vw - 30px) - min(345px, 100vw - 38px)) / 2 - 1px) !important;
+}
 /* Hide the first and last pip markers while keeping labels */
 #horario-slider .noUi-pips .noUi-marker:first-of-type,
 #horario-slider .noUi-pips .noUi-marker:last-of-type {
@@ -2138,45 +2171,109 @@ span.grados {
 /* 🟡 SLIDERS. Personalizados. Distancia -------------------------------- */
 
 
-#div-filtro-distancia-interno #distancia-slider.noUi-horizontal {
-    margin-top: 30px !important;
-    width: 247px !important; /* Deja unos 25px por lado respecto a los 365px del contenedor */
-    margin-left: auto !important;
-    margin-right: auto !important;
+#div-filtro-distancia-interno #distancia-slider.noUi-horizontal,
+#div-filtro-distancia-interno #pie-slider.noUi-horizontal {
+    margin-top: 12px !important; /* el valor va fijo encima (.valor-filtro-tiempo) */
+    width: auto !important; /* misma anchura que el deslizador del rango horario: 10 px de la tarjeta + 8 px = 18 px por lado */
+    margin-left: 8px !important;
+    margin-right: 8px !important;
 }
 
-#distancia-slider .noUi-connect {
+#distancia-slider .noUi-connect,
+#distancia-slider-mapa .noUi-connect,
+#pie-slider .noUi-connect,
+#pie-slider-mapa .noUi-connect {
 	background: #0078d4;
 }
+/* El tirador no sobresale de la barra (como en los deslizadores nativos de Actividad, Vuelos…): la zona útil (.noUi-base)
+   se mete 14 px (medio tirador) por cada lado. Esos 14 px los pinta el fondo de la barra: a la izquierda vacío y a la derecha
+   del color de la franja, porque con direction 'rtl' el azul siempre llega hasta el extremo derecho. */
+#distancia-slider.noUi-horizontal,
+#distancia-slider-mapa.noUi-horizontal,
+#pie-slider.noUi-horizontal,
+#pie-slider-mapa.noUi-horizontal {
+	--franja-filtro-tiempo: #0078d4;
+	padding: 0 14px;
+	/* corte al 50 %: la zona útil (.noUi-base, opaca) tapa el centro; así no queda rayita en la unión con decimales de píxel */
+	background: linear-gradient(to right, #FAFAFA 50%, var(--franja-filtro-tiempo) 50%);
+	box-shadow: 0 3px 6px -5px #BBB; /* sin la sombra interior: se notaba en el trozo de la derecha */
+}
+#distancia-slider.sin-limite,
+#distancia-slider-mapa.sin-limite,
+#pie-slider.sin-limite,
+#pie-slider-mapa.sin-limite {
+	--franja-filtro-tiempo: #c7dcf0;
+}
+#distancia-slider .noUi-connects,
+#distancia-slider-mapa .noUi-connects,
+#pie-slider .noUi-connects,
+#pie-slider-mapa .noUi-connects {
+	border-radius: 0;
+	width: calc(100% + 1px); /* 1 px de más a la derecha: en móvil (píxeles fraccionarios) quedaba una rayita blanca en la unión */
+}
+#distancia-slider .noUi-base,
+#distancia-slider-mapa .noUi-base,
+#pie-slider .noUi-base,
+#pie-slider-mapa .noUi-base {
+	background: #FAFAFA;
+}
+/* Sin filtro («Sin límite»): la franja se ve en azul pálido; al filtrar pasa a azul fuerte */
+#distancia-slider.sin-limite .noUi-connect,
+#distancia-slider-mapa.sin-limite .noUi-connect,
+#pie-slider.sin-limite .noUi-connect,
+#pie-slider-mapa.sin-limite .noUi-connect {
+	background: #c7dcf0;
+}
 
-#distancia-slider .noUi-pips-horizontal {
+#distancia-slider .noUi-pips-horizontal,
+#distancia-slider-mapa .noUi-pips-horizontal,
+#pie-slider .noUi-pips-horizontal,
+#pie-slider-mapa .noUi-pips-horizontal {
     padding: 0px !important;
     height: 45px !important;
     top: 100% !important;
     left: 0 !important;
     width: 100% !important;
 }
-#distancia-slider .noUi-value {
+#distancia-slider .noUi-value,
+#distancia-slider-mapa .noUi-value,
+#pie-slider .noUi-value,
+#pie-slider-mapa .noUi-value {
     margin-top: -62px;   /* separación pips y su texto*/
 	color: black;
 	padding-left: 0px;
 }
-#distancia-slider {
+#distancia-slider,
+#distancia-slider-mapa,
+#pie-slider,
+#pie-slider-mapa {
     border: none;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
 }
 
 #distancia-slider .noUi-marker,
-#distancia-slider .noUi-marker-large {
+#distancia-slider .noUi-marker-large,
+#distancia-slider-mapa .noUi-marker,
+#distancia-slider-mapa .noUi-marker-large,
+#pie-slider .noUi-marker,
+#pie-slider .noUi-marker-large,
+#pie-slider-mapa .noUi-marker,
+#pie-slider-mapa .noUi-marker-large {
     height: 6px;
 }
-#distancia-slider .noUi-tooltip {
+#distancia-slider .noUi-tooltip,
+#distancia-slider-mapa .noUi-tooltip,
+#pie-slider .noUi-tooltip,
+#pie-slider-mapa .noUi-tooltip {
 	background: transparent;
 	border: none;
 }
 /* Añadimos la "km" automáticamente detrás del número */
-#distancia-slider.noUi-horizontal .noUi-tooltip::after {
-    content: " km";
+#distancia-slider.noUi-horizontal .noUi-tooltip::after,
+#distancia-slider-mapa.noUi-horizontal .noUi-tooltip::after,
+#pie-slider.noUi-horizontal .noUi-tooltip::after,
+#pie-slider-mapa.noUi-horizontal .noUi-tooltip::after {
+    content: ""; /* la unidad la pone el JS (formatearTooltipFiltroTiempo) */
     font-weight: normal;
     font-size: 0.85em;
     margin-left: 2px;
@@ -2185,18 +2282,312 @@ span.grados {
     top: 1px;
 }
 /* Que desaparezca el cuadro y también el "km" cuando la función devuelve "" */
-#distancia-slider.noUi-horizontal .noUi-tooltip:empty {
+#distancia-slider.noUi-horizontal .noUi-tooltip:empty,
+#distancia-slider-mapa.noUi-horizontal .noUi-tooltip:empty,
+#pie-slider.noUi-horizontal .noUi-tooltip:empty,
+#pie-slider-mapa.noUi-horizontal .noUi-tooltip:empty {
     display: none !important;
 }
 
 /* Oculta las letras "km" únicamente cuando el tooltip muestra el símbolo de infinito */
-#distancia-slider.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after {
+#distancia-slider.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after,
+#distancia-slider-mapa.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after,
+#pie-slider.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after,
+#pie-slider-mapa.noUi-horizontal .noUi-tooltip:has(.simbolo-infinito)::after {
     content: "" !important;
 }
 
-/* MODO EDICIÓN FAVORITOS: Bloquear cierre del panel de distancia */
-body.modo-edicion-tabla #nav-distance {
+/* Filas de los filtros de tiempo al despegue y tramo a pie (tabla y mapa) */
+.fila-filtro-tiempo {
+    display: flex;
+    flex-wrap: wrap; /* en el panel del mapa (más estrecho) los botones bajan a otra línea */
+    align-items: center;
+    row-gap: 4px;
+    column-gap: 4px;
+    width: 100%;
+    margin-top: 4px;
+    font-size: 16px;
+}
+.grupo-botones-alternos {
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr; /* todos los botones del grupo con la misma anchura */
+    gap: 4px;
+}
+.fila-filtro-tiempo > span {
+    white-space: nowrap;
+}
+/* El emoji 🚗 es más bajo que 🚶 y quedaba por debajo de «Desde»: se sube para centrarlo */
+.emoji-titulo-coche {
+    position: relative;
+    top: -2px;
+}
+/* «⏱️ Desde» y «🚶 A pie» en negrita, como los títulos del resto de filtros */
+.fila-filtro-tiempo > span[data-i18n] {
+    font-weight: bold;
+}
+/* En el panel del mapa el tooltip heredaba line-height 16px y quedaba más pegado al handle que en la tabla */
+#distancia-slider-mapa .noUi-tooltip,
+#pie-slider-mapa .noUi-tooltip {
+    line-height: normal;
+}
+.btn-alterno {
+    height: 24px; /* igual que el botón de origen */
+    display: inline-flex;
+    justify-content: center; /* contenido centrado en botones de igual anchura */
+    align-items: center;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 1.2;
+    border: 1.5px solid #ccc; /* mismo estilo que los botones de los días (.pip-dia-btn) */
+    border-radius: 8px;
+    background: #fff;
+    color: #222;
+    cursor: pointer;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+}
+/* Misma anchura para los botones de los dos grupos (🚗 / 🚗+🚶 y min / km / m) */
+.grupo-botones-alternos .btn-alterno {
+    width: 55px;
+    padding: 0;
+}
+/* Panel del mapa (más estrecho): huecos mínimos para que la fila 1 quepa en una línea */
+#control-distancia-mapa-container .fila-filtro-tiempo {
+    column-gap: 4px; /* igual que en la tabla: «Desde» separado del botón de origen */
+}
+#control-distancia-mapa-container .grupo-con-info {
+    gap: 2px;
+}
+/* En el mapa no caben botones de 58 px ni 20 px hasta la ⓘ: más estrechos y 6 px */
+#control-distancia-mapa-container .grupo-botones-alternos .btn-alterno {
+    width: 50px;
+}
+#control-distancia-mapa-container .grupo-con-info .grupo-botones-alternos {
+    margin-right: 6px;
+}
+.btn-alterno.hundido {
+    background: #007aff; /* igual que .pip-dia-btn.pip-activo */
+    color: #fff;
+    border-color: #007aff;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+/* Resplandor blanco fino alrededor de los emojis para que se distingan sobre el azul */
+.texto-unidad {
+    margin-left: 0px;
+    font-size: 14px; /* excepción pedida por Alberto (min, km, m) para que quepa el grupo «A pie» en el mapa */
+}
+/* Flechas ↔ y ↑ de los botones km / m: SVG (las de texto salían finas y descentradas según la fuente) */
+.flecha-unidad {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    margin-right: 3px;
+}
+.signo-mas {
+    margin: 0px -5px 0 -1px; /* 🚗+🚶 juntos (derecha -5, izquierda -1) */
+}
+.btn-alterno.hundido .emoji-boton {
+    text-shadow: 0 0 2px #fff, 0 0 2px #fff;
+}
+/* En el panel del mapa, .leaflet-bar button fuerza fondo blanco con !important */
+.leaflet-bar .btn-alterno.hundido {
+    background-color: #007aff !important;
+}
+/* Tarjetas: cada filtro (🚗 tiempo / 🚶 a pie) en su caja con fondo suave, para leerlos como dos bloques */
+.tarjeta-filtro {
+    background: #f3f5f9;
+    border-radius: 10px;
+    padding: 8px 10px 14px 10px;
+    margin-top: 8px;
+}
+.tarjeta-filtro .fila-filtro-tiempo {
+    margin-top: 0;
+}
+/* Valor elegido, fijo encima del deslizador («1 h 30 min», «Sin límite»): sustituye a la etiqueta que seguía al tirador */
+.valor-filtro-tiempo {
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #222;
+    margin-top: 8px;
+    min-height: 20px;
+}
+.valor-filtro-tiempo.sin-limite {
+    font-weight: normal;
+    color: #777;
+}
+.valor-filtro-tiempo .unidad-tooltip {
+    margin: 0 0 0 2px !important;
+    padding: 0 !important;
+}
+.tarjeta-filtro .noUi-tooltip {
     display: none !important;
+}
+/* Botones de opciones unidos en un solo control (🚗 | 🚗+🚶 y min | km | m) */
+.tarjeta-filtro .grupo-botones-alternos {
+    gap: 0;
+    border-radius: 8px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+.tarjeta-filtro .grupo-botones-alternos .btn-alterno {
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+}
+.tarjeta-filtro .grupo-botones-alternos .btn-alterno + .btn-alterno {
+    border-left-width: 0;
+}
+.tarjeta-filtro .grupo-botones-alternos .btn-alterno:first-child {
+    border-radius: 8px 0 0 8px;
+}
+.tarjeta-filtro .grupo-botones-alternos .btn-alterno:last-child {
+    border-radius: 0 8px 8px 0;
+}
+.tarjeta-filtro .grupo-botones-alternos .btn-alterno.hundido {
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+/* Ficha del despegue: «En coche / A pie», con una línea gris que lo separa de los enlaces de debajo (Google Maps, Brouter…).
+   Mismo espacio arriba y abajo de la línea. Con el bloque visible sobra el <br> que va justo detrás (si está oculto, el <br> se queda). */
+.acceso-pie-popup {
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.5);
+}
+.acceso-pie-popup:not([style*="none"]) + br {
+    display: none;
+}
+.nota-estimado-recta {
+    font-size: 13px; /* excepción pedida por Alberto: aviso provisional hasta tener tiempos reales */
+    color: #888;
+    text-align: center;
+    margin-top: 8px;
+}
+.unidad-tooltip {
+    font-weight: normal;
+    color: #555;
+    margin-left: 2px;
+    font-size: 16px;
+}
+#div-filtro-distancia-interno .fila-filtro-tiempo {
+    box-sizing: border-box;
+}
+/* Botones + ⓘ van juntos: si no caben, bajan los dos a la línea siguiente (nunca la ⓘ sola) */
+.grupo-con-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1 0 auto;
+    white-space: nowrap;
+}
+/* Grupo de botones alineado a la derecha, a 20 px de la ⓘ */
+.grupo-con-info .grupo-botones-alternos {
+    margin-left: auto;
+    margin-right: 20px;
+}
+.grupo-con-info .btn-info {
+    margin-left: 0; /* ⓘ pegada a la derecha */
+    margin-right: 2px;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+}
+#div-filtro-distancia-interno #pie-slider {
+    margin-bottom: 0; /* el espacio inferior lo da la tarjeta (.tarjeta-filtro), igual que en el del coche */
+}
+
+/* Filtro de distancia en el panel de filtros del mapa (mismo filtro que la tabla) */
+/* (ancho 96% y padding lateral en el grupo .control-actividad-mapa-container...; aquí solo lo propio) */
+#control-distancia-mapa-container {
+    margin-top: 14px !important;
+    margin-bottom: 8px;
+    padding-top: 0 !important;     /* sin hueco blanco: el borde rojo (filtro activo) rodea las tarjetas */
+    padding-bottom: 0 !important;
+    padding-left: 0px !important;  /* para que la fila «⏱️ Desde · 🚗 · 🚗+🚶 ⓘ» quepa en una línea */
+    padding-right: 0px !important;
+    border-radius: 10px;           /* igual que las tarjetas */
+}
+#control-distancia-mapa-container .tarjeta-filtro:first-child {
+    margin-top: 0;
+}
+/* Botón 📍 de origen (tabla y mapa): misma forma que los botones 🚗 / 🚗+🚶 (.btn-alterno), pero solo de clic */
+#btn-abrir-geo-menu,
+#btn-abrir-geo-menu-mapa {
+    background-color: #fff !important;
+    color: #222;
+    border: 1.5px solid #ccc !important;
+    border-radius: 8px !important;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    width: 32px !important;
+    height: 24px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+#btn-abrir-geo-menu {
+    margin-left: -2px;
+}
+#btn-abrir-geo-menu:active,
+#btn-abrir-geo-menu-mapa:active {
+    background-color: #e6f0ff !important;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+#btn-abrir-geo-menu svg {
+    margin-top: 0 !important;
+}
+/* Misma separación «Desde»–origen que en la tabla (#titulo-distancia-slider usa gap 10px) */
+#titulo-distancia-slider-mapa #btn-abrir-geo-menu-mapa {
+    margin-left: 2px !important;
+}
+#btn-abrir-geo-menu-mapa svg {
+    margin-top: 0 !important;
+}
+#distancia-slider-mapa.noUi-horizontal,
+#pie-slider-mapa.noUi-horizontal {
+    margin-top: 12px !important; /* .noUi-horizontal general pone 40px !important; el valor va fijo encima */
+    /* Misma anchura y posición que los deslizadores nativos del panel: width 98% de su caja, que tiene 6 px de padding
+       por lado (+2 px de margen del navegador). Aquí la tarjeta tiene 10 px de padding y su caja 0, así que la caja de los
+       nativos mide (100% + 20 - 12) = 100% + 8 px, y el borde izquierdo queda en 6 + 2 - 10 = -2 px */
+    width: calc((100% + 8px) * 0.98) !important;
+    margin-left: -2px !important;
+    margin-right: 0 !important;
+}
+
+/* Fuera de la edición: la fila buscador + 🚗🚶 + 👁 ocupa el mismo ancho que las tarjetas de filtro,
+   con el buscador estirado para que su borde izquierdo y el derecho del 👁 coincidan con los de las tarjetas */
+body:not(.modo-edicion-tabla) #buscador-wrapper {
+    width: min(345px, calc(100% - 8px)); /* igual que las tarjetas (el panel de distancia tiene 4 px de relleno) */
+}
+body:not(.modo-edicion-tabla) #buscador-wrapper .buscador-con-boton {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+body:not(.modo-edicion-tabla) #buscador-wrapper #buscador-despegues-provincias {
+    width: 100%;
+}
+
+/* MODO EDICIÓN FAVORITOS: el buscador (ancho, por su texto) alineado a la izquierda con el ❤️ de arriba
+   y el botón 🚗🚶 de los filtros de tiempo a la derecha, bajo el botón de la guía */
+body.modo-edicion-tabla #floating-search-container {
+    justify-content: flex-start;
+    padding-left: 8px;
+    padding-right: 4px; /* medido: así coinciden los bordes con el ❤️ y la guía de la fila de arriba */
+    box-sizing: border-box;
+}
+body.modo-edicion-tabla #buscador-wrapper {
+    width: 100%;
+}
+body.modo-edicion-tabla .buscador-con-boton {
+    flex: 0 1 300px !important; /* 300 px, pero encoge si no cabe junto al botón 🚗🚶 */
+    min-width: 0;
+}
+body.modo-edicion-tabla #buscador-wrapper #buscador-despegues-provincias {
+    width: 100% !important;
+}
+body.modo-edicion-tabla #nav-distance {
+    margin-left: auto;
 }
 
 #nav-distance {
@@ -2206,9 +2597,37 @@ body.modo-edicion-tabla #nav-distance {
     flex: none;
 }
 
+/* Borde rojo de los filtros de tiempo de la tabla POR DENTRO (como el buscador y el 🚗🚶 de arriba), para que sus bordes
+   coincidan con los de esa fila. Con box-shadow inset lo taparían las tarjetas; el outline con desplazamiento negativo va encima */
+#div-filtro-distancia-interno.borde-rojo-externo {
+    box-shadow: none !important;
+    outline: 3px solid #ff0000;
+    outline-offset: -3px;
+}
+
+/* Con los filtros de tiempo abiertos: hundido con fondo azul (como el 🗓️ de «ver todos los días») y resplandor blanco en 🚗🚶.
+   Con filtro aplicado manda el estilo rojo de .filtrado (va después y con !important) */
+body:has(#div-filtro-distancia.activo) #nav-distance {
+    background-color: #007aff;
+    border-color: #007aff;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.4);
+}
+body:has(#div-filtro-distancia.activo) #nav-distance .emoji-nav-distancia {
+    text-shadow: 0 0 2px #fff, 0 0 2px #fff;
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff);
+}
+
 #nav-distance.filtrado {
     box-shadow: inset 0 0 0 3px red, inset 1px 1px 3px rgba(0, 0, 0, .4) !important;
     border: none !important;
+    background-color: #ff000042 !important; /* mismo fondo «hundido» que el 👁 de seguimiento con filtro */
+}
+
+#nav-distance .emoji-nav-distancia {
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: -2px;
+    white-space: nowrap;
 }
 
 #nav-distance .distancia-x {
@@ -2220,6 +2639,12 @@ body.modo-edicion-tabla #nav-distance {
 
 #nav-distance.filtrado .distancia-x {
     display: inline;
+}
+/* Con el fondo rojizo, resplandor blanco en 🚗🚶 y ❌ (igual que los botones 🚗 / 🚗+🚶 hundidos) */
+#nav-distance.filtrado .emoji-nav-distancia,
+#nav-distance.filtrado .distancia-x {
+    text-shadow: 0 0 2px #fff, 0 0 2px #fff;
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff); /* por si el emoji se pinta como imagen */
 }
 
 /* 🟡 SLIDERS. Personalizados. Distancia. Botones localización origen -------------------------------- */
@@ -3360,7 +3785,7 @@ details.config-accordion .accordion-content {
 	padding-left: 10px;
 	/* box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); */
 	z-index: 2000; 
-	width: 270px;
+	width: 285px;
 	max-width: 500px;
 	display: none; /* Ocultar por defecto. Si este index.html se está mostrando en el iframe de la página /mapa no quiero que se muestre este infopanel (el enlace a hikefly.es del mapa). Hay un javascript al final(document.addEventListener) que lo oculta si la URL no contiene https://hikefly.es/mapa/ */
 	transition: all 0.2s ease;
@@ -4406,6 +4831,7 @@ body:not(.modo-simple) .control-orientacion-container {
 .control-vuelos-container,
 .control-ultimovuelo-container,
 .control-actividad-mapa-container,
+.control-distancia-mapa-container,
 .control-altitudbalizas-container,
 .control-tiempobalizas-container,
 .control-orientacion-container {  
@@ -4483,6 +4909,8 @@ body.modo-balizas-directo .control-vuelos-container,
 body.modo-balizas-directo .control-actividad-mapa-container,
 body.modo-balizas-directo #control-seguimiento-mapa-container,
 body.modo-balizas-directo #control-favoritos-mapa-container,
+body.modo-balizas-directo #control-distancia-mapa-container, /* Filtros de tiempo de acceso (solo despegues) */
+body.modo-balizas-directo .columna-filtros-despegues-mapa,  /* Columna de despegues (vacía): las balizas quedan a la izquierda */
 body.modo-balizas-directo .leaflet-control-guia-mapa,
 body.modo-balizas-directo .leaflet-control-infopanel-planeo,
 body.modo-balizas-directo #infoPanelPlaneo,
@@ -4504,6 +4932,12 @@ body.modo-balizas-directo .linea-con-bt-info:has(#chkAbrirMapaInicio),
 body.modo-balizas-directo .linea-con-bt-info:has(#chkRecordarEstadoFiltroHorario),
 body.modo-balizas-directo .ocultar-en-balizas {        /* Clase comodín para elementos sin ID */
     display: none !important;
+}
+
+/* /balizas: sin la columna de despegues, la de balizas (❤️/👁) se alinea a la izquierda */
+body.modo-balizas-directo .columna-filtros-despegues-mapa + div {
+    padding-left: 0 !important;
+    margin-left: 8px;
 }
 
 /* /balizas: la barra solo tiene el botón "Ajustes", así que se estrecha */
@@ -4851,12 +5285,9 @@ body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa {
    debajo de la X de cerrar. Se reserva el hueco de la X a la derecha y se aprovecha el margen
    izquierdo; los días se siguen centrando en el espacio que queda. */
 @media (max-width: 399px) {
-    #div-filtro-horario.flotando-en-mapa #botones-dias-slider {
-        margin-left: 0 !important;
-        margin-right: 34px !important;
-    }
-    /* En la tabla pasa lo mismo con el botón del calendario (solo en modo avanzado, que es cuando se ve) */
-    body:not(.modo-simple) #div-filtro-horario:not(.flotando-en-mapa) #botones-dias-slider {
+    /* Mismo hueco en la tabla (botón del calendario) y en el mapa (X de cerrar), también en modo sencillo:
+       así los botones de los días no se mueven al pasar de la tabla al mapa (antes 38 px en la tabla y 34 px en el mapa) */
+    #div-filtro-horario #botones-dias-slider {
         margin-left: 0 !important;
         margin-right: 38px !important;
     }
@@ -4986,7 +5417,19 @@ body.modo-android-manual.vista-mapa-statusbar-transp #vista-mapa .leaflet-top {
         #fb796e, #f9876d, #f7966c, #f4a46c, #f2b36b,
         #f0c16a, #d5ca78, #bbd386, #a0dd93, #86e6a1, #6befaf
     );
-    border-radius: 3px;
+    border-radius: 0;
+}
+/* El tirador no sobresale de la barra: zona útil 14 px (medio tirador) hacia dentro por cada lado.
+   Esos 14 px los pinta la barra: a la izquierda blanco (como el tramo antes del tirador) y a la derecha el último verde */
+#puntuacion-mapa-slider.noUi-horizontal {
+    /* Misma anchura que el selector de rango horario de encima (mismos márgenes que #horario-slider) */
+    margin-left: calc((min(345px, 100vw - 30px) - min(345px, 100vw - 38px)) / 2 - 1px) !important;
+    margin-right: calc((min(345px, 100vw - 30px) - min(345px, 100vw - 38px)) / 2 - 1px) !important;
+    padding: 0 14px;
+    background: linear-gradient(to right, #fff 50%, #6befaf 50%); /* corte al 50 %: el centro lo tapa .noUi-base; sin rayita en la unión */
+}
+#puntuacion-mapa-slider .noUi-connects {
+    border-radius: 0;
 }
 
 /* ==========================================================================
@@ -5198,4 +5641,86 @@ td[data-v-raw][style*="italic"], td[data-r-raw][style*="italic"] {
     border-top-color: #0078d4;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
+}
+
+/* 🟡 Deslizadores nativos (input range): mismo aspecto que los noUiSlider (barra de 17 px y tirador 28x28 con dos rayitas).
+   - Filtros del mapa (.slider-filtro-mapa: Actividad, Vuelos, balizas): azul = lo que se ve (del tirador a la derecha), pálido sin filtro.
+   - Planeo (.slider-ajuste-nativo: térmica, transparencia): azul del inicio al tirador, como un ajuste normal.
+   --relleno (0-1) lo pone meteo.js. Colores iguales que los filtros de tiempo (#0078d4 / #c7dcf0). */
+input[type="range"].slider-filtro-mapa,
+input[type="range"].slider-ajuste-nativo {
+	-webkit-appearance: none;
+	appearance: none;
+	height: 30px;
+	background: transparent;
+	cursor: pointer;
+	--color-franja: #0078d4;
+	--color-vacio: #FAFAFA;
+	--corte: calc(14px + (100% - 28px) * var(--relleno, 0)); /* centro del tirador (28 px) */
+	--fondo-pista: linear-gradient(to right, var(--color-vacio) var(--corte), var(--color-franja) var(--corte));
+}
+input[type="range"].slider-ajuste-nativo {
+	--fondo-pista: linear-gradient(to right, var(--color-franja) var(--corte), var(--color-vacio) var(--corte));
+}
+input[type="range"].slider-filtro-mapa.sin-filtro {
+	--color-franja: #c7dcf0;
+}
+input[type="range"].slider-filtro-mapa::-webkit-slider-runnable-track,
+input[type="range"].slider-ajuste-nativo::-webkit-slider-runnable-track {
+	height: 17px;
+	box-sizing: border-box;
+	border-radius: 4px;
+	border: 1px solid #D3D3D3;
+	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
+	background: var(--fondo-pista);
+}
+input[type="range"].slider-filtro-mapa::-moz-range-track,
+input[type="range"].slider-ajuste-nativo::-moz-range-track {
+	height: 17px;
+	box-sizing: border-box;
+	border-radius: 4px;
+	border: 1px solid #D3D3D3;
+	box-shadow: inset 0 1px 1px #F0F0F0, 0 3px 6px -5px #BBB;
+	background: var(--fondo-pista);
+}
+/* Tirador como el de noUiSlider: blanco, borde gris, esquinas de 6 px y dos rayitas verticales */
+input[type="range"].slider-filtro-mapa::-webkit-slider-thumb,
+input[type="range"].slider-ajuste-nativo::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	box-sizing: border-box;
+	width: 28px;
+	height: 28px;
+	margin-top: -6.5px; /* centrado sobre la pista de 17 px (con borde) */
+	border: 1px solid #999;
+	border-radius: 6px;
+	background:
+		linear-gradient(#E8E7E6, #E8E7E6) 9px 6px / 2px 14px no-repeat,
+		linear-gradient(#E8E7E6, #E8E7E6) 14px 6px / 2px 14px no-repeat,
+		#fff;
+	box-shadow: inset 0 0 1px #FFF, inset 0 1px 7px #EBEBEB, 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+input[type="range"].slider-filtro-mapa::-moz-range-thumb,
+input[type="range"].slider-ajuste-nativo::-moz-range-thumb {
+	box-sizing: border-box;
+	width: 28px;
+	height: 28px;
+	border: 1px solid #999;
+	border-radius: 6px;
+	background:
+		linear-gradient(#E8E7E6, #E8E7E6) 9px 6px / 2px 14px no-repeat,
+		linear-gradient(#E8E7E6, #E8E7E6) 14px 6px / 2px 14px no-repeat,
+		#fff;
+	box-shadow: inset 0 0 1px #FFF, inset 0 1px 7px #EBEBEB, 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Modo simple: sin la columna de balizas, la de despegues no necesita la raya separadora */
+body.modo-simple .columna-filtros-despegues-mapa {
+    border-right: none !important;
+}
+
+/* Modo simple: sin panel de capas de despegues (solo tenía el checkbox «Despegues»; la capa queda siempre visible) */
+body.modo-simple #infoPanel,
+body.modo-simple .leaflet-control-infopanel1 { /* se oculta también su caja de Leaflet: si no, quedaba su margen como hueco */
+    display: none !important;
 }

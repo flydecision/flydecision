@@ -14,6 +14,7 @@
     "tabla": "Tabla",
     "buscar": "Buscar",
     "distancia": "Distancia",
+    "filtroTiemposAcceso": "Filtro de tiempos de acceso",
     "mapa": "Mapa",
     "ajustes": "Ajustes"
   },
@@ -302,7 +303,7 @@
       },
       "btnOrigen": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Punto de origen",
-        "descripcion": "Aquí eliges el punto de origen del filtro de distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
+        "descripcion": "Aquí eliges el punto de origen del filtro de tiempo en coche.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
       },
       "btnIncNoFavs": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Incluir no favoritos",
@@ -325,16 +326,20 @@
         "descripcion": "Busca aquí despegues por su nombre o su provincia.<br><br>💡 Puedes escribir sin tildes para mayor agilidad."
       },
       "navDistance": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
-        "descripcion": "Muestra un deslizador que permite filtrar solo los despegues alrededor de un punto.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro."
+        "titulo": "🚗🚶 Tiempo al despegue",
+        "descripcion": "Abre los filtros de tiempo: en coche desde un punto y a pie desde la carretera hasta el despegue.<br><br>👉🏽 Voy a pulsar ahora ese botón para abrir el filtro."
       },
       "filtroDistancia": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distancia</span></div>",
-        "descripcion": "Es un filtro que te permite mostrar solo los despegues alrededor de un punto.<br><br>💡 Puede servirte para encontrar rápidamente los despegues que estén en un radio de distancia que elijas alrededor de un punto."
+        "titulo": "🚗🚶 Tiempo al despegue",
+        "descripcion": "Filtra los despegues por lo que tardas en llegar:<br><br>🚗 En coche desde un punto que eliges (o 🚗+🚶 sumando el tramo a pie).<br>🚶 A pie desde la carretera hasta el despegue: tiempo, distancia o desnivel.<br><br>💡 Sirve para encontrar rápido los despegues a los que llegas con el tiempo que tienes."
       },
       "sliderDistancia": {
-        "titulo": "Distancia al punto",
-        "descripcion": "Arrastrando este deslizador eliges los kilómetros de distancia.<br><br>La tabla mostrará solo los despegues que estén dentro de ese radio de distancia."
+        "titulo": "🚗 Tiempo en coche",
+        "descripcion": "Arrastrando este deslizador eliges el tiempo máximo para llegar al despegue: solo en coche (🚗) o sumando el tramo a pie (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Tramo a pie",
+        "descripcion": "Filtra por el acceso andando desde la carretera hasta el despegue: elige minutos (⏱️), kilómetros (↔) o desnivel de subida (↑).<br><br>Con «0 min» se muestran solo los despegues a los que se llega en coche."
       },
       "navMap": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
@@ -384,16 +389,20 @@
         "descripcion": "Busca despegues escribiendo su región, su provincia o su nombre. Puedes escribir sin tildes para mayor agilidad."
       },
       "filtroDistancia": {
-        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distancia</span></div>",
-        "descripcion": "Es un filtro que te permite mostrar solo despegues alrededor de un punto.<br><br>💡 Puede servirte para encontrar rápidamente los despegues que estén en un radio de distancia que elijas alrededor de un punto."
+        "titulo": "🚗🚶 Tiempo al despegue",
+        "descripcion": "Filtra los despegues por lo que tardas en llegar:<br><br>🚗 En coche desde un punto que eliges (o 🚗+🚶 sumando el tramo a pie).<br>🚶 A pie desde la carretera hasta el despegue: tiempo, distancia o desnivel.<br><br>💡 Sirve para encontrar rápido los despegues a los que llegas con el tiempo que tienes."
       },
       "btnOrigen": {
         "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Punto de origen",
-        "descripcion": "Con este botón eliges el centro del radio de búsqueda por distancia.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
+        "descripcion": "Aquí eliges el punto de origen del filtro de tiempo en coche.<br><br>Podrás elegir el punto con un mapa o con tu ubicación actual."
       },
       "sliderDistancia": {
-        "titulo": "Distancia al punto",
-        "descripcion": "Arrastrando este deslizador eliges los kilómetros de distancia máxima."
+        "titulo": "🚗 Tiempo en coche",
+        "descripcion": "Arrastrando este deslizador eliges el tiempo máximo para llegar al despegue: solo en coche (🚗) o sumando el tramo a pie (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Tramo a pie",
+        "descripcion": "Filtra por el acceso andando desde la carretera hasta el despegue: elige minutos (⏱️), kilómetros (↔) o desnivel de subida (↑).<br><br>Con «0 min» se muestran solo los despegues a los que se llega en coche."
       },
       "btnVerSoloFavs": {
         "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Ver solo favoritos",
@@ -430,15 +439,15 @@
         "descripcion": "Explora despegues de parapente y evalúa sus condiciones según el pronóstico por horas.<br><br>Puedes filtrar despegues por su puntuación meteo, orientación o nivel de actividad, consultar balizas de viento en tiempo real con gráficos de tendencias, ver mapas de calor de despegues XContest y seleccionar diversos tipos de mapas."
       },
       "filtroHorarioMeteo": {
-        "titulo": "Rango horario y filtro",
+        "titulo": "🕐–🕕 Rango horario y filtro",
         "descripcion": "Selecciona el día y el rango horario de vuelo deseado.<br><br>Los iconos del mapa se colorearán con una gradación de 10 pasos de rojo a verde 🟥🟧🟩 según la calidad de las condiciones en ese horario, al igual que en la tabla.<br><br><b>Semáforo de puntuación general del día</b>: La barra bajo cada día resume de un vistazo las posibilidades de volar en tus despegues favoritos.<br><br>Cada barra se divide en dos mitades: la izquierda para la mañana (hasta las 14:00 h) y la derecha para la tarde. El color (de rojo 🟥 a verde 🟩) se calcula promediando el 20% de tus mejores despegues favoritos para esa franja horaria."
       },
       "filtroPuntuacion": {
-        "titulo": "Filtro por puntuación",
+        "titulo": "⭐ Filtro por puntuación",
         "descripcion": "Filtra los despegues según la puntuación de su pronóstico meteorológico y para el rango horario seleccionado.<br><br>Desliza este control para fijar una nota mínima (de 0 a 10 estrellas) y así se ocultarán los despegues cuya evaluación no alcance tu nivel de exigencia en el horario seleccionado.<br><br>Recuerda que todos estas límites para la puntuación los puedes ajustar en <i>Ajustes</i> según tus preferencias."
       },
       "btnCerrarFiltroMeteo": {
-        "titulo": "Cerrar control horario y filtro meteo",
+        "titulo": "❌ Cerrar control horario y filtro meteo",
         "descripcion": "Cierra este panel, de forma que ya no se colorean los despegues en función de su meteo y se muestran en color blanco.<br><br>Puede ser útil para explorar despegues o balizas de viento con el máximo de espacio en pantalla."
       },
       "buscadorMapa": {
@@ -455,7 +464,8 @@
       },
       "panelFiltros": {
         "titulo": "Filtros",
-        "descripcion": "Filtra la información del mapa según tus necesidades. Puedes mostrar u ocultar únicamente tus despegues y balizas favoritas o en seguimiento. Además, puedes filtrar despegues por orientación, nivel de actividad o volumen de vuelos registrados en XContest, y filtrar balizas según su altitud."
+        "descripcion": "Filtra la información del mapa según tus necesidades. Puedes mostrar u ocultar únicamente tus despegues y balizas favoritas o en seguimiento. Además, puedes filtrar despegues por orientación, nivel de actividad o volumen de vuelos registrados en XContest, y filtrar balizas según su altitud. También puedes filtrar despegues por tiempo en coche desde un punto y por el tramo a pie hasta el despegue (tiempo, distancia o desnivel).",
+        "descripcionSimple": "Filtra los despegues del mapa: puedes mostrar solo tus despegues favoritos o filtrarlos por su nivel de actividad."
       },
       "btnPlaneo": {
         "titulo": "Cálculo de planeo",
@@ -466,7 +476,7 @@
         "descripcion": "Centra el mapa en tu posición actual."
       },
       "btnGeocoder": {
-        "titulo": "Buscador general",
+        "titulo": "🌍 Buscador general",
         "descripcion": "Busca cualquier ciudad, municipio, montaña o zona geográfica para navegar rápidamente a ella.<br><br>También puedes escribir directamente coordenadas en formato decimal (ej: 42.734 -1.990) para centrar el mapa en un punto exacto."
       },
       "controlCapas": {
@@ -474,11 +484,11 @@
         "descripcion": "Elige el tipo de mapa de fondo que prefieras: topográficos, fotos aéreas, de relieve, areas de térmicas y rutas (skyways y thermals KK7) y capas aeronáuticas/restricciones."
       },
       "btnFiltrosMeteo": {
-        "titulo": "Botón Meteo",
+        "titulo": "⛅ Botón Meteo",
         "descripcion": "Abre la barra meteorológica para filtrar por horas o día de la semana directamente sobre el mapa."
       },
       "navTabla": {
-        "titulo": "Vista Tabla",
+        "titulo": "📋 Vista Tabla",
         "descripcion": "Accede a la tabla meteorológica detallada por horas. Aquí verás la predicción completa de cada despegue (viento a varias alturas, rachas, dirección, cizalladura, techo térmico XC, lluvia y temperatura) evaluada con colores según tus límites de seguridad.<br><br>Podrás filtrar por horario de vuelo, buscar despegues por provincia o distancia, gestionar tus favoritos y ver la previsión inmediata (nocasting) Arome de intervalo 15 minutos."
       }
     }
@@ -674,7 +684,7 @@
     "recordarEstadoFiltroHorario": "Recordar estado del filtro meteo (abierto/cerrado)",
     "recordarCapasActivas": "Recordar capas activas",
     "recordarTipoMapa": "Recordar tipo de mapa",
-    "recordarFiltrosMapa": "Recordar filtros",
+    "recordarFiltrosMapa": "Recordar filtro de despegues favoritos",
     "guia": "Guía",
     "ayuda": "Ayuda",
     "legal": "Legal",
@@ -881,6 +891,12 @@
   },
 
   "popupDespegue": {
+    "enCoche": "En coche 🚗:",
+    "elegirOrigen": "Elegir origen",
+    "aPie": "A pie 🚶:",
+    "rutaVerificada": "Ruta verificada manualmente",
+    "rutaAutomatica": "Ruta calculada automáticamente (puede contener errores)",
+    "enCocheHastaDespegue": "Se llega en coche al despegue",
     "region": "Región:",
     "provincia": "Provincia:",
     "orientacion": "Orientación:",
@@ -901,6 +917,15 @@
   "html": {
     "verTodosDiasTitle": "Ver todos los días",
     "distanciaDesde": "Distancia desde:",
+    "sinLimite": "Sin límite",
+    "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> desde",
+    "modoCoche": "🚗 Coche",
+    "modoTotal": "🚗+🚶 Total",
+    "estimadoLineaRecta": "Sin datos tiempo/distancia. Estimación aproximada.",
+    "aPie": "A pie",
+    "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
+    "unidadPieKm": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4\"/></svg><span class=\"texto-unidad\">km</span>",
+    "unidadPieM": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 20V4M7 9l5-5 5 5\"/></svg><span class=\"texto-unidad\">m</span>",
     "seleccionarOrigen": "Seleccionar origen",
     "incluirNoFavs": "Incluir despegues no favoritos en el filtro",
     "resetFiltroDistancia": "Restablecer y ocultar filtro de distancia",
@@ -973,6 +998,8 @@
   "btn_info": {
     "tooltipVientoLimites": "<b>Viento medio mínimo, ideal y máximo (km/h):</b><br><br>El sistema automático de puntuación de condiciones tendrá en cuenta estos valores.<br><br>El color del dato en la tabla indica visualmente el análisis de las condiciones para estos valores que configures aquí (Mín, Ideal y Máx).<br><br>🟧 Naranja: viento flojo por debajo de tu viento Mínimo (normalmente será 0, salvo que precises cierto viento para vuelo dinámico u otra razón).<br>🟩 Verde: viento Ideal, desde mínimo hasta un margen de seguridad antes del Máximo.<br>🟧 Naranja: viento más fuerte acercándose al Máximo (último tercio antes del Máximo).<br>🟥 Rojo: viento muy fuerte que supera tu viento Máximo.<br><br><b>Definición técnica estándar OMM (Organización Meteorológica Mundial) de la Velocidad media 10 m</b>:<br><br>Es la velocidad promedio del viento sostenido durante los últimos 10 minutos antes de la hora indicada. Se mide a una altura estándar de 10 metros sobre el suelo (evitando el rozamiento inmediato del terreno). Representa el flujo laminar o base.",
     "filtroDistanciaCompleto": "<b>Filtro de distancia al despegue:</b><br><br>Muestra solo despegues dentro del radio de distancia que selecciones.<br><br>Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 50%; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> para establecer la posición de origen. Puedes usar el mapa o la ubicación actual de tu dispositivo.<span class='texto-oculto-en-edicion'><br><br>Usa el botón <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> para incluir despegues no favoritos en el filtro, es decir, para <b>incluir temporalmente todos los despegues</b> disponibles en la base de datos.<br><br>Al activarlo, se aplica un filtro inicial de 100 km para evitar sobrecargar la tabla. Puedes ajustarlo según tus necesidades y el rendimiento de tu dispositivo.</span>",
+    "filtroTiempoDespegue": "<b>Tiempo al despegue:</b><br><br>Muestra solo los despegues a los que llegas en el tiempo que elijas desde tu origen.<br><br>Usa el botón <span style='background-color: #fff; border: 1.5px solid #ccc; border-radius: 8px; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); display: inline-block; padding: 0 8px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -2px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> para elegir el origen en el mapa o con la ubicación de tu dispositivo.<br><br><b>🚗 Coche:</b> tiempo en coche hasta la carretera más cercana al despegue.<br><b>🚗+🚶 Total:</b> coche más el tramo a pie hasta el despegue.<br><br>Es el mismo filtro en la tabla y en el mapa.",
+    "filtroAPie": "<b>Tramo a pie:</b><br><br>Muestra solo los despegues según lo que sea necesario andar desde el punto más accesible en coche hasta el despegue. Puedes elegir entre tiempo, distancia o desnivel de subida. Si seleccionas «0 min» se muestran solo los despegues a los que se llega en coche.<br><br>Calculado con la ruta a pie de OpenStreetMap desde el punto de carretera más lógico, 4,5 km/h en llano y 450 m/h de subida. Es un cálculo general. Revísalo para adaptarlo a tu realidad u otros accesos.<br><br>En el botón <svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='#555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle;'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='7' x2='12' y2='7' stroke-width='3'></line><polyline points='10.5 11 12 11 12 17'></polyline></svg> de «Información» de cada despegue (o en su popup del mapa) se indican los datos del acceso a pie y un enlace a la ruta. Si se muestra un (🤖), es porque la ruta se ha calculado automáticamente (puede contener errores).",
     "tooltipRachaMaxima": "<b>Racha máxima (km/h):</b><br><br>El sistema automático de puntuación de condiciones tendrá en cuenta estos valores.<br><br>El color del dato en la tabla indica visualmente el análisis de las condiciones para el valor que configures aquí.<br><br>🟩 Verde: racha máxima segura, lejos del límite.<br>🟧 Naranja: racha máxima acercándose a tu racha Máxima.<br>🟥 Rojo: racha superando tu racha Máxima.<br><br><b>Definición técnica estándar OMM (Organización Meteorológica Mundial) de la Racha máxima 10 m</b>:<br><br>Es el pico máximo de velocidad instantánea (con una duración de 3 segundos) registrado en cualquier momento dentro del periodo de la hora anterior. Representa las fluctuaciones breves e intensas superpuestas al viento medio, asociada a turbulencia mecánica o térmica (convección).",
     "tooltipResetearEnlaces": "<b>Resetear comportamiento de enlaces</b><br><br>En la app, al abrir por primera vez un enlace que pueda tener una app nativa instalada, se te pregunta si quieres abrirlo en la web (dentro de Fly Decision) o en la app. Si marcaste <i>Recordar mi elección</i>, ya no se pregunta más.<br><br>Este botón borra esas elecciones para que se vuelva a preguntar.",
     "tooltipEdicionLimites": "<b>Editar despegues con límites u orientación personalizados</b><br><br>Muestra en la tabla solo los despegues a los que has ajustado los límites de viento y racha (distinto de 100%) o marcado una orientación ideal.<br><br>Pulsa ↺ en un despegue para resetearlo: vuelve al 100% (los límites generales de arriba) y sin orientación ideal. El ↺ de la cabecera los resetea todos. Para cambiar el porcentaje o la orientación ideal, usa el botón ⓘ de cada despegue. Puedes hacerlo aquí, en la Tabla o en el Mapa.<br><br>El botón está desactivado si no tienes ningún despegue personalizado.",
@@ -1017,8 +1044,8 @@
     "tooltipcheckboxBalizasWeatherUnderground": "<b>Balizas de viento WeatherUnderground</b><br><br>ℹ️ <b>Red no integrada en FlyDecision.</b> Aparece en gris porque solo mostramos dónde están las balizas, no sus datos de viento. Para verlos, cada baliza tiene en su ficha enlaces directos a la web de WeatherUnderground y a <b>Tolomet (recomendado)</b>.<br><br><ul style='margin:0; padding-left:18px;'><li><b>Propiedad</b>: WeatherUnderground</li><li><b>Cobertura geográfica</b>: Mundial</li><li><b>Número aproximado de balizas mostradas</b>: 5000</li><li><b>Frecuencia aproximada de actualización de los datos</b>: 15 minutos (variable según estación)</li><li><b>Web</b>: <a href='https://www.wunderground.com/wundermap' target='_blank' style='color: #007bff; text-decoration: underline;'>WeatherUnderground</a></li></ul>",
     "tooltipFiltroFavoritosMapa": "<b>Filtro de despegues favoritos</b><br><br>Muestra únicamente los despegues marcados como <i>favoritos</i> y oculta el resto.<br><br>Si se vuelve a seleccionar una segunda vez, muestra únicamente los que no son favoritos. Este modo resulta útil para localizar en tu área preferida despegues nuevos introducidos en la base de datos o para revisar cuáles aún no has marcado como favoritos.<br><br>La tercera vez que se selecciona se desactiva el filtro.<br><br>Consulta en <i>Ajustes > Guías</i> la descripción del marcaje de Favoritos y Seguimiento.",
     "tooltipFiltroSeguimientoMapa": "<b>Filtro de despegues en seguimiento</b><br><br>Muestra únicamente los despegues marcados como <i>en seguimiento</i> y oculta el resto.<br><br>Consulta en <i>Ajustes > Guías</i> la descripción del marcaje de Favoritos y Seguimiento.",
-    "tooltipFiltroFavoritosBalizasMapa": "<b>Filtro de balizas favoritas</b><br><br>Muestra únicamente las balizas marcadas como <i>favoritas</i> y oculta el resto.<br><br>Consulta en <i>Ajustes > Guías</i> la descripción del marcaje de Favoritos y Seguimiento.",
-    "tooltipFiltroSeguimientoBalizasMapa": "<b>Filtro de balizas en seguimiento</b><br><br>Muestra únicamente las balizas marcadas como <i>en seguimiento</i> y oculta el resto.<br><br>Consulta en <i>Ajustes > Guías</i> la descripción del marcaje de Favoritos y Seguimiento.",
+    "tooltipFiltroFavoritosBalizasMapa": "<b>Filtro de balizas favoritas</b><br><br>Muestra únicamente las balizas marcadas como <i>favoritas</i> y oculta el resto.<span class='ocultar-en-balizas'><br><br>Consulta en <i>Ajustes > Guías</i> la descripción del marcaje de Favoritos y Seguimiento.</span>",
+    "tooltipFiltroSeguimientoBalizasMapa": "<b>Filtro de balizas en seguimiento</b><br><br>Muestra únicamente las balizas marcadas como <i>en seguimiento</i> y oculta el resto.<span class='ocultar-en-balizas'><br><br>Consulta en <i>Ajustes > Guías</i> la descripción del marcaje de Favoritos y Seguimiento.</span>",
     "tooltipFiltroActividad": "<b>Filtro de nivel de actividad del despegue</b><br><br>Muestra únicamente los despegues con un nivel de actividad igual o mayor al seleccionado<br><br>El nivel de actividad puntúa con una nota (de 1 a 5) cuánto se vuela en este lugar según el número de vuelos registrados en XContest (el nivel de popularidad).<br><br>Se basa en el volumen histórico de vuelos registrados en XContest durante 20 años, con ajustes por actividad reciente (+1 si ha habido vuelos en los últimos meses) o inactividad prolongada (-1 si no hay vuelos desde hace más de 2 años). Lógicamente es una puntuación para dar una idea general y no pretende ser un valor real cuantificable.<br><br>Consulta en <i>Ajustes > Guías</i> la descripción del sistema de puntuación por Actividad.",
     "tooltipFiltroVuelos": "<b>Filtro de número de vuelos registrados en XContest</b><br><br>Muestra solo los despegues que tengan un número de vuelos registrados en XContest mayor o igual al número seleccionado. Estos valores se basan en el registro histórico de vuelos en XContest durante los últimos 20 años. Ten en cuenta que el análisis está realizado hasta 2026 y que es un dato muy general que puede no reflejar la actualidad real."
   },

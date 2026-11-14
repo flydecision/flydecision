@@ -14,6 +14,7 @@
     "tabla": "Tabela",
     "buscar": "Procurar",
     "distancia": "Distância",
+    "filtroTiemposAcceso": "Filtro de tempos de acesso",
     "mapa": "Mapa",
     "ajustes": "Definições"
   },
@@ -302,7 +303,7 @@
       },
       "btnOrigen": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Ponto de origem",
-        "descripcion": "Aqui escolhe o ponto de origem para o filtro de distância.<br><br>Pode selecionar o ponto utilizando um mapa ou a sua localização atual."
+        "descripcion": "Aqui escolhes o ponto de origem do filtro de tempo de carro.<br><br>Podes escolher o ponto num mapa ou com a tua localização atual."
       },
       "btnIncNoFavs": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Incluir não favoritos",
@@ -325,16 +326,20 @@
         "descripcion": "Pesquisa aqui descolagens pelo seu nome ou província.<br><br>💡 Podes escrever sem acentos para maior agilidade."
       },
       "navDistance": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distância</span></div>",
-        "descripcion": "Mostra um controlo deslizante para filtrar as descolagens num raio à volta de um ponto.<br><br>👉🏽 Agora vou pressionar este botão para abrir o filtro."
+        "titulo": "🚗🚶 Tempo até à descolagem",
+        "descripcion": "Abre os filtros de tempo: de carro desde um ponto e a pé desde a estrada até à descolagem.<br><br>👉🏽 Vou agora carregar nesse botão para abrir o filtro."
       },
       "filtroDistancia": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distância</span></div>",
-        "descripcion": "Este filtro permite-lhe ver apenas as descolagens à volta de um ponto específico.<br><br>💡 Útil para encontrar rapidamente descolagens a uma distância de carro a partir da sua localização."
+        "titulo": "🚗🚶 Tempo até à descolagem",
+        "descripcion": "Filtra as descolagens pelo tempo que demoras a chegar:<br><br>🚗 De carro desde um ponto que escolhes (ou 🚗+🚶 somando o troço a pé).<br>🚶 A pé desde a estrada até à descolagem: tempo, distância ou desnível.<br><br>💡 Serve para encontrar rapidamente as descolagens a que chegas com o tempo que tens."
       },
       "sliderDistancia": {
-        "titulo": "Raio de distância",
-        "descripcion": "Mova este controlo deslizante para escolher a distância máxima.<br><br>A tabela mostrará apenas as descolagens dentro desse raio."
+        "titulo": "🚗 Tempo de carro",
+        "descripcion": "Arrastando este controlo escolhes o tempo máximo para chegar à descolagem: só de carro (🚗) ou somando o troço a pé (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Troço a pé",
+        "descripcion": "Filtra pelo acesso a pé desde a estrada até à descolagem: escolhe minutos (⏱️), quilómetros (↔) ou desnível de subida (↑).<br><br>Com «0 min» só são mostradas as descolagens a que se chega de carro."
       },
       "navMap": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
@@ -384,16 +389,20 @@
         "descripcion": "Procure descolagens digitando a região, a província ou o nome. Pode escrever sem acentos para ser mais rápido."
       },
       "filtroDistancia": {
-        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distância</span></div>",
-        "descripcion": "Este é um filtro que lhe permite visualizar apenas as descolagens à volta de um ponto específico.<br><br>💡 Isto pode ajudá-lo a encontrar rapidamente descolagens num raio de distância à sua escolha à volta de um ponto."
+        "titulo": "🚗🚶 Tempo até à descolagem",
+        "descripcion": "Filtra as descolagens pelo tempo que demoras a chegar:<br><br>🚗 De carro desde um ponto que escolhes (ou 🚗+🚶 somando o troço a pé).<br>🚶 A pé desde a estrada até à descolagem: tempo, distância ou desnível.<br><br>💡 Serve para encontrar rapidamente as descolagens a que chegas com o tempo que tens."
       },
       "btnOrigen": {
         "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Ponto de origem",
-        "descripcion": "Aqui escolhe o ponto de origem para o filtro de distância acima.<br><br>Pode selecionar o ponto utilizando um mapa ou a sua localização atual."
+        "descripcion": "Aqui escolhes o ponto de origem do filtro de tempo de carro.<br><br>Podes escolher o ponto num mapa ou com a tua localização atual."
       },
       "sliderDistancia": {
-        "titulo": "Distância ao ponto",
-        "descripcion": "Ao arrastar este controlo deslizante, escolhe a distância máxima em quilómetros."
+        "titulo": "🚗 Tempo de carro",
+        "descripcion": "Arrastando este controlo escolhes o tempo máximo para chegar à descolagem: só de carro (🚗) ou somando o troço a pé (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Troço a pé",
+        "descripcion": "Filtra pelo acesso a pé desde a estrada até à descolagem: escolhe minutos (⏱️), quilómetros (↔) ou desnível de subida (↑).<br><br>Com «0 min» só são mostradas as descolagens a que se chega de carro."
       },
       "btnVerSoloFavs": {
         "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Ver apenas favoritos",
@@ -430,15 +439,15 @@
       "descripcion": "Explore descolagens de parapente e avalie as suas condições de acordo com a previsão horária.<br><br>Pode filtrar as descolagens pela sua pontuação meteo, orientação ou nível de atividade, consultar balizas de vento em tempo real com gráficos de tendências, ver mapas de calor de descolagens XContest e selecionar vários tipos de mapas."
     },
     "filtroHorarioMeteo": {
-      "titulo": "Intervalo horário e filtro",
+      "titulo": "🕐–🕕 Intervalo horário e filtro",
       "descripcion": "Selecione o dia e o intervalo horário de voo desejado.<br><br>Os ícones do mapa serão coloridos com uma gradação de 10 passos de vermelho a verde 🟥🟧🟩 de acordo com a qualidade das condições nesse horário, tal como na tabela."
     },
     "filtroPuntuacion": {
-      "titulo": "Filtro por pontuação",
+      "titulo": "⭐ Filtro por pontuação",
       "descripcion": "Filtre as descolagens de acordo com a pontuação da sua previsão meteorológica e para o intervalo de tempo selecionado.<br><br>Deslize este controlo para definir uma nota mínima (de 0 a 10 estrelas) e assim ocultarão as descolagens cuja avaliação não atinja o seu nível de exigência no horário selecionado.<br><br>Lembre-se de que todos estes limites para a pontuação podem ser ajustados em <i>Definições</i> de acordo com as suas preferências."
     },
     "btnCerrarFiltroMeteo": {
-      "titulo": "Fechar controlo horário e filtro meteo",
+      "titulo": "❌ Fechar controlo horário e filtro meteo",
       "descripcion": "Fecha este painel, de modo que as descolagens deixam de ser coloridas em função da sua meteo e são mostradas em branco.<br><br>Pode ser útil para explorar descolagens ou balizas de vento com o máximo de espaço no ecrã."
     },
     "buscadorMapa": {
@@ -455,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Filtros",
-      "descripcion": "Filtre a informação do mapa de acordo com as suas necessidades. Pode mostrar ou ocultar apenas as suas descolagens e balizas favoritas ou em seguimento. Além disso, pode filtrar descolagens por orientação, nível de atividade ou volume de voos registados no XContest, e filtrar balizas de acordo com a sua altitude."
+      "descripcion": "Filtre a informação do mapa de acordo com as suas necessidades. Pode mostrar ou ocultar apenas as suas descolagens e balizas favoritas ou em seguimento. Além disso, pode filtrar descolagens por orientação, nível de atividade ou volume de voos registados no XContest, e filtrar balizas de acordo com a sua altitude. Também podes filtrar descolagens por tempo de carro desde um ponto e pelo troço a pé até à descolagem (tempo, distância ou desnível).",
+      "descripcionSimple": "Filtra as descolagens do mapa: podes mostrar só as tuas descolagens favoritas ou filtrá-las pelo seu nível de atividade."
     },
     "btnPlaneo": {
       "titulo": "Cálculo de planeio",
@@ -466,7 +476,7 @@
       "descripcion": "Centra o mapa na sua posição atual."
     },
     "btnGeocoder": {
-      "titulo": "Pesquisa geral",
+      "titulo": "🌍 Pesquisa geral",
       "descripcion": "Procure por qualquer cidade, município, montanha ou área geográfica para navegar rapidamente até ela.<br><br>Também pode escrever diretamente as coordenadas em formato decimal (ex: 42.734 -1.990) para centrar o mapa num ponto exato."
     },
     "controlCapas": {
@@ -474,11 +484,11 @@
       "descripcion": "Escolha o tipo de mapa de fundo que prefere: topográficos, fotografias aéreas, de relevo, áreas de térmicas e rotas (skyways e thermals KK7) e camadas aeronáuticas/restrições."
     },
     "btnFiltrosMeteo": {
-      "titulo": "Botão Meteo",
+      "titulo": "⛅ Botão Meteo",
       "descripcion": "Abre a barra meteorológica para filtrar por horas ou dias da semana diretamente no mapa."
     },
     "navTabla": {
-      "titulo": "Vista Tabela",
+      "titulo": "📋 Vista Tabela",
       "descripcion": "Aceda à tabela meteorológica detalhada por horas. Aqui verá a previsão completa de cada descolagem (vento a várias alturas, rajadas, direção, cisalhamento, teto térmico XC, chuva e temperatura) avaliada com cores de acordo com os seus limites de segurança.<br><br>Poderá filtrar por horário de voo, pesquisar descolagens por província ou distância, gerir os seus favoritos e ver a previsão imediata (nowcasting) Arome em intervalos de 15 minutos."
     }
   }
@@ -673,7 +683,7 @@
     "recordarEstadoFiltroHorario": "Lembrar estado do filtro meteo (aberto/fechado)",
     "recordarCapasActivas": "Lembrar camadas ativas",
     "recordarTipoMapa": "Lembrar tipo de mapa",
-    "recordarFiltrosMapa": "Lembrar filtros",
+    "recordarFiltrosMapa": "Lembrar filtro de descolagens favoritas",
     "guia": "Guia",
     "ayuda": "Ajuda",
     "legal": "Legal",
@@ -877,6 +887,12 @@
   },
 
   "popupDespegue": {
+    "enCoche": "De carro 🚗:",
+    "elegirOrigen": "Escolher origem",
+    "aPie": "A pé 🚶:",
+    "rutaVerificada": "Percurso verificado manualmente",
+    "rutaAutomatica": "Percurso calculado automaticamente (pode conter erros)",
+    "enCocheHastaDespegue": "Chega-se de carro à descolagem",
     "region": "Região:",
     "provincia": "Província:",
     "orientacion": "Orientação:",
@@ -897,6 +913,15 @@
   "html": {
     "verTodosDiasTitle": "Ver todos os dias",
     "distanciaDesde": "Distância desde:",
+    "sinLimite": "Sem limite",
+    "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> desde",
+    "modoCoche": "🚗 Carro",
+    "modoTotal": "🚗+🚶 Total",
+    "estimadoLineaRecta": "Sem dados tempo/distância. Estimativa aproximada.",
+    "aPie": "A pé",
+    "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
+    "unidadPieKm": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4\"/></svg><span class=\"texto-unidad\">km</span>",
+    "unidadPieM": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 20V4M7 9l5-5 5 5\"/></svg><span class=\"texto-unidad\">m</span>",
     "seleccionarOrigen": "Selecionar origem",
     "incluirNoFavs": "Incluir não favoritos no filtro",
     "resetFiltroDistancia": "Repor e ocultar filtro de distância",
@@ -969,6 +994,8 @@
   "btn_info": {
     "tooltipVientoLimites": "<b>Vento médio mínimo, ideal e máximo:</b><br><br>O sistema automatizado de avaliação de condições terá em conta estes valores.<br><br>A cor dos dados na tabela indica visualmente a análise das condições com base nos valores que definir aqui (Mínimo, Ideal e Máximo).<br><br>🟧 Laranja: vento fraco abaixo do seu vento mínimo (normalmente 0, a menos que precise de vento específico para voo de encosta ou outros motivos).<br>🟩 Verde: Vento ideal, desde o mínimo até a uma margem de segurança antes do máximo.<br>🟧 Laranja: vento mais forte que se aproxima do máximo (o último terço antes de atingir o máximo).<br>🟥 Vermelho: vento muito forte que excede o seu limite de vento máximo.<br><br><b>Definição técnica padrão da OMM (Organização Meteorológica Mundial) da velocidade média a 10m</b>:<br><br>É a velocidade média do vento sustentado durante os últimos 10 minutos antes da hora indicada. É medido a uma altura padrão de 10 metros acima do solo (para evitar a fricção imediata do terreno). Representa o fluxo laminar ou base.",
     "filtroDistanciaCompleto": "<b>Filtro de distância de descolagens:</b><br><br>Mostra apenas as descolagens dentro do raio de distância que selecionar.<br><br>Utilize o botão <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 50%; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> para definir a posição de origem. Pode utilizar o mapa ou a localização atual do seu dispositivo.<span class='texto-oculto-en-edicion'><br><br>Utilize o botão <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> para incluir descolagens não favoritas no filtro, o que significa <b>incluir temporariamente todas as descolagens</b> disponíveis na base de dados.<br><br>Quando ativado, é aplicado um filtro inicial de 100 km para evitar sobrecarregar a tabela. Pode ajustá-lo consoante as suas necessidades e o desempenho do seu dispositivo.</span>",
+    "filtroTiempoDespegue": "<b>Tempo até à descolagem:</b><br><br>Mostra apenas as descolagens a que chegas no tempo que escolheres a partir da tua origem.<br><br>Usa o botão <span style='background-color: #fff; border: 1.5px solid #ccc; border-radius: 8px; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); display: inline-block; padding: 0 8px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -2px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> para escolher a origem no mapa ou com a localização do teu dispositivo.<br><br><b>🚗 Carro:</b> tempo de carro até à estrada mais próxima da descolagem.<br><b>🚗+🚶 Total:</b> carro mais o troço a pé até à descolagem.<br><br>É o mesmo filtro na tabela e no mapa.",
+    "filtroAPie": "<b>Troço a pé:</b><br><br>Mostra só as descolagens segundo o que for preciso caminhar desde o ponto mais acessível de carro até à descolagem. Podes escolher entre tempo, distância ou desnível de subida. Se selecionares «0 min» só são mostradas as descolagens a que se chega de carro.<br><br>Calculado com o percurso a pé do OpenStreetMap a partir do ponto da estrada mais lógico, 4,5 km/h em plano e 450 m/h de subida. É um cálculo geral. Revê-o para o adaptares à tua realidade ou a outros acessos.<br><br>No botão <svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='#555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle;'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='7' x2='12' y2='7' stroke-width='3'></line><polyline points='10.5 11 12 11 12 17'></polyline></svg> de «Informação» de cada descolagem (ou na sua janela do mapa) indicam-se os dados do acesso a pé e uma ligação para o percurso. Se aparecer um (🤖), é porque o percurso foi calculado automaticamente (pode conter erros).",
     "tooltipRachaMaxima": "<b>Rajada máxima:</b><br><br>O sistema automatizado de avaliação de condições terá em conta estes valores.<br><br>A cor dos dados na tabela indica visualmente a análise das condições com base no valor que definir aqui.<br><br>🟩 Verde: rajada máxima segura, longe do limite.<br>🟧 Laranja: rajada máxima que se aproxima do seu limite de rajada máxima.<br>🟥 Vermelho: rajada que excede o seu limite de rajada máxima.<br><br><b>Definição técnica padrão da OMM (Organização Meteorológica Mundial) da rajada máxima a 10m</b>:<br><br>É o pico máximo de velocidade instantânea (com uma duração de 3 segundos) registado em qualquer momento dentro do período da hora anterior. Representa as flutuações curtas e intensas sobrepostas ao vento médio, associadas à turbulência mecânica ou térmica (convecção).",
     "tooltipResetearEnlaces": "<b>Repor comportamento dos links</b><br><br>Na app, ao abrir pela primeira vez um link que possa ter uma app nativa instalada, é-lhe perguntado se deseja abri-lo na web (dentro do Fly Decision) ou na app. Se marcou <i>Lembrar a minha escolha</i>, já não será perguntado novamente.<br><br>Este botão apaga essas escolhas para que seja perguntado novamente.",
     "tooltipEdicionLimites": "<b>Editar descolagens com limites ou orientação personalizados</b><br><br>Mostra na tabela apenas as descolagens às quais ajustou os limites de vento e rajada (diferente de 100%) ou marcou uma orientação ideal.<br><br>Prima ↺ numa descolagem para a repor: volta aos 100% (os limites gerais acima) e sem orientação ideal. O ↺ do cabeçalho repõe todos. Para alterar a percentagem ou a orientação ideal, utilize o botão ⓘ de cada descolagem. Pode fazê-lo aqui, na Tabela ou no Mapa.<br><br>O botão está desativado se não tiver nenhuma descolagem personalizada.",
@@ -1013,8 +1040,8 @@
     "tooltipcheckboxBalizasWeatherUnderground": "<b>Balizas de vento WeatherUnderground</b><br><br>ℹ️ <b>Rede não integrada no FlyDecision.</b> Aparece a cinzento porque só mostramos onde estão as balizas, não os seus dados de vento. Para os ver, cada baliza tem na sua ficha ligações diretas ao site da WeatherUnderground e ao <b>Tolomet (recomendado)</b>.<br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriedade</b>: WeatherUnderground</li><li><b>Cobertura geográfica</b>: Mundial</li><li><b>Número aproximado de balizas mostradas</b>: 5000</li><li><b>Frequência aproximada de atualização dos dados</b>: 15 minutos (variável consoante a estação)</li><li><b>Web</b>: <a href='https://www.wunderground.com/wundermap' target='_blank' style='color: #007bff; text-decoration: underline;'>WeatherUnderground</a></li></ul>",
     "tooltipFiltroFavoritosMapa": "<b>Filtro de descolagens favoritas</b><br><br>Mostra apenas as descolagens marcadas como <i>favoritas</i> e oculta o resto.<br><br>Se for selecionado uma segunda vez, mostra apenas as que não são favoritas. Este modo é útil para localizar na sua área preferida novas descolagens introduzidas na base de dados ou para rever quais ainda não marcou como favoritas.<br><br>A terceira vez que é selecionado, o filtro é desativado.<br><br>Consulte em <i>Definições > Guias</i> a descrição da marcação de Favoritos e Seguimento.",
     "tooltipFiltroSeguimientoMapa": "<b>Filtro de descolagens em seguimento</b><br><br>Mostra apenas as descolagens marcadas como <i>em seguimento</i> e oculta o resto.<br><br>Consulte em <i>Definições > Guias</i> a descrição da marcação de Favoritos e Seguimento.",
-    "tooltipFiltroFavoritosBalizasMapa": "<b>Filtro de balizas favoritas</b><br><br>Mostra apenas as balizas marcadas como <i>favoritas</i> e oculta o resto.<br><br>Consulte em <i>Definições > Guias</i> a descrição da marcação de Favoritos e Seguimento.",
-    "tooltipFiltroSeguimientoBalizasMapa": "<b>Filtro de balizas em seguimento</b><br><br>Mostra apenas as balizas marcadas como <i>em seguimento</i> e oculta o resto.<br><br>Consulte em <i>Definições > Guias</i> a descrição da marcação de Favoritos e Seguimento.",
+    "tooltipFiltroFavoritosBalizasMapa": "<b>Filtro de balizas favoritas</b><br><br>Mostra apenas as balizas marcadas como <i>favoritas</i> e oculta o resto.<span class='ocultar-en-balizas'><br><br>Consulte em <i>Definições > Guias</i> a descrição da marcação de Favoritos e Seguimento.</span>",
+    "tooltipFiltroSeguimientoBalizasMapa": "<b>Filtro de balizas em seguimento</b><br><br>Mostra apenas as balizas marcadas como <i>em seguimento</i> e oculta o resto.<span class='ocultar-en-balizas'><br><br>Consulte em <i>Definições > Guias</i> a descrição da marcação de Favoritos e Seguimento.</span>",
     "tooltipFiltroActividad": "<b>Filtro de nível de atividade da descolagem</b><br><br>Mostra apenas as descolagens com um nível de atividade igual ou superior ao selecionado<br><br>O nível de atividade pontua com uma nota (de 1 a 5) o quanto se voa neste local segundo o número de voos registados no XContest (o nível de popularidade).<br><br>Baseia-se no volume histórico de voos registados no XContest durante 20 anos, com ajustes para atividade recente (+1 se houve voos nos últimos meses) ou inatividade prolongada (-1 se não há voos há mais de 2 anos). Logicamente é uma pontuação para dar uma ideia geral e não pretende ser um valor real quantificável.<br><br>Consulte em <i>Definições > Guias</i> a descrição do sistema de pontuação por Atividade.",
     "tooltipFiltroVuelos": "<b>Filtro do número de voos registados no XContest</b><br><br>Mostra apenas as descolagens que tenham um número de voos registados no XContest maior ou igual ao número selecionado. Estes valores baseiam-se no registo histórico de voos no XContest durante os últimos 20 anos. Tenha em conta que a análise está realizada até 2026 e que é um dado muito geral que pode não refletir a atualidade real."
   },

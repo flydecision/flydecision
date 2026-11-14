@@ -14,6 +14,7 @@
     "tabla": "Taula",
     "buscar": "Cercar",
     "distancia": "Distància",
+    "filtroTiemposAcceso": "Filtre de temps d'accés",
     "mapa": "Mapa",
     "ajustes": "Ajustos"
   },
@@ -302,7 +303,7 @@
       },
       "btnOrigen": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Punt d'origen",
-        "descripcion": "Aquí tries el punt d'origen per al filtre de distància.<br><br>Pots seleccionar el punt utilitzant un mapa o la teva ubicació actual."
+        "descripcion": "Aquí tries el punt d'origen del filtre de temps en cotxe.<br><br>Podràs triar el punt amb un mapa o amb la teva ubicació actual."
       },
       "btnIncNoFavs": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Incloure no preferits",
@@ -325,16 +326,20 @@
         "descripcion": "Cerca aquí enlairaments pel seu nom o la seva província.<br><br>💡 Pots escriure sense accents per a més agilitat."
       },
       "navDistance": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distància</span></div>",
-        "descripcion": "Mostra un control lliscant per filtrar els enlairaments en un radi al voltant d'un punt.<br><br>👉🏽 Ara premeré aquest botó per obrir el filtre."
+        "titulo": "🚗🚶 Temps fins a l'enlairament",
+        "descripcion": "Obre els filtres de temps: en cotxe des d'un punt i a peu des de la carretera fins a l'enlairament.<br><br>👉🏽 Ara premeré aquest botó per obrir el filtre."
       },
       "filtroDistancia": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distància</span></div>",
-        "descripcion": "Aquest filtre et permet veure només els enlairaments al voltant d'un punt específic.<br><br>💡 Útil per trobar ràpidament enlairaments a una distància en cotxe des de la teva ubicació."
+        "titulo": "🚗🚶 Temps fins a l'enlairament",
+        "descripcion": "Filtra els enlairaments pel que trigues a arribar-hi:<br><br>🚗 En cotxe des d'un punt que tries (o 🚗+🚶 sumant-hi el tram a peu).<br>🚶 A peu des de la carretera fins a l'enlairament: temps, distància o desnivell.<br><br>💡 Serveix per trobar ràpidament els enlairaments on arribes amb el temps que tens."
       },
       "sliderDistancia": {
-        "titulo": "Radi de distància",
-        "descripcion": "Mou aquest control lliscant per triar la distància màxima.<br><br>La taula només mostrarà els enlairaments dins d'aquest radi."
+        "titulo": "🚗 Temps en cotxe",
+        "descripcion": "Arrossegant aquest control lliscant tries el temps màxim per arribar a l'enlairament: només en cotxe (🚗) o sumant-hi el tram a peu (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Tram a peu",
+        "descripcion": "Filtra per l'accés caminant des de la carretera fins a l'enlairament: tria minuts (⏱️), quilòmetres (↔) o desnivell de pujada (↑).<br><br>Amb «0 min» només es mostren els enlairaments on s'arriba en cotxe."
       },
       "navMap": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Mapa</span></div>",
@@ -384,16 +389,20 @@
         "descripcion": "Cerca enlairaments escrivint la regió, la província o el nom. Pots escriure sense accents per anar més ràpid."
       },
       "filtroDistancia": {
-        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distància</span></div>",
-        "descripcion": "Aquest és un filtre que et permet visualitzar només els enlairaments al voltant d'un punt específic.<br><br>💡 Això et pot ajudar a trobar ràpidament enlairaments en un radi de distància que triïs al voltant d'un punt."
+        "titulo": "🚗🚶 Temps fins a l'enlairament",
+        "descripcion": "Filtra els enlairaments pel que trigues a arribar-hi:<br><br>🚗 En cotxe des d'un punt que tries (o 🚗+🚶 sumant-hi el tram a peu).<br>🚶 A peu des de la carretera fins a l'enlairament: temps, distància o desnivell.<br><br>💡 Serveix per trobar ràpidament els enlairaments on arribes amb el temps que tens."
       },
       "btnOrigen": {
         "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Punt d'origen",
-        "descripcion": "Aquí tries el punt d'origen per al filtre de distància de dalt.<br><br>Pots seleccionar el punt utilitzant un mapa o la teva ubicació actual."
+        "descripcion": "Aquí tries el punt d'origen del filtre de temps en cotxe.<br><br>Podràs triar el punt amb un mapa o amb la teva ubicació actual."
       },
       "sliderDistancia": {
-        "titulo": "Distància al punt",
-        "descripcion": "En moure aquest control lliscant, tries la distància màxima en quilòmetres."
+        "titulo": "🚗 Temps en cotxe",
+        "descripcion": "Arrossegant aquest control lliscant tries el temps màxim per arribar a l'enlairament: només en cotxe (🚗) o sumant-hi el tram a peu (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Tram a peu",
+        "descripcion": "Filtra per l'accés caminant des de la carretera fins a l'enlairament: tria minuts (⏱️), quilòmetres (↔) o desnivell de pujada (↑).<br><br>Amb «0 min» només es mostren els enlairaments on s'arriba en cotxe."
       },
       "btnVerSoloFavs": {
         "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Veure només preferits",
@@ -430,15 +439,15 @@
       "descripcion": "Explora enlairaments de parapent i avalua les seves condicions segons el pronòstic per hores.<br><br>Pots filtrar enlairaments per la seva puntuació meteo, orientació o nivell d'activitat, consultar balises de vent en temps real amb gràfics de tendències, veure mapes de calor d'enlairaments XContest i seleccionar diversos tipus de mapes."
     },
     "filtroHorarioMeteo": {
-      "titulo": "Rang horari i filtre",
+      "titulo": "🕐–🕕 Rang horari i filtre",
       "descripcion": "Selecciona el dia i el rang horari de vol desitjat.<br><br>Els icones del mapa s'acoloriran amb una gradació de 10 passos de vermell a verd 🟥🟧🟩 segons la qualitat de les condicions en aquest horari, igual que a la taula."
     },
     "filtroPuntuacion": {
-      "titulo": "Filtre per puntuació",
+      "titulo": "⭐ Filtre per puntuació",
       "descripcion": "Filtra els enlairaments segons la puntuació del seu pronòstic meteorològic i per al rang horari seleccionat.<br><br>Llisca aquest control per fixar una nota mínima (de 0 a 10 estrelles) i així s'ocultaran els enlairaments l'avaluació dels quals no assoleixi el teu nivell d'exigència en l'horari seleccionat.<br><br>Recorda que tots aquests límits per a la puntuació els pots ajustar a <i>Ajustos</i> segons les teves preferències."
     },
     "btnCerrarFiltroMeteo": {
-      "titulo": "Tancar control horari i filtre meteo",
+      "titulo": "❌ Tancar control horari i filtre meteo",
       "descripcion": "Tanca aquest panell, de manera que ja no s'acoloreixen els enlairaments en funció de la seva meteo i es mostren en color blanc.<br><br>Pot ser útil per explorar enlairaments o balises de vent amb el màxim d'espai a la pantalla."
     },
     "buscadorMapa": {
@@ -455,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Filtres",
-      "descripcion": "Filtra la informació del mapa segons les teves necessitats. Pots mostrar o ocultar únicament els teus enlairaments i balises favorites o en seguiment. A més, pots filtrar enlairaments per orientació, nivell d'activitat o volum de vols registrats a XContest, i filtrar balises segons la seva altitud."
+      "descripcion": "Filtra la informació del mapa segons les teves necessitats. Pots mostrar o ocultar únicament els teus enlairaments i balises favorites o en seguiment. A més, pots filtrar enlairaments per orientació, nivell d'activitat o volum de vols registrats a XContest, i filtrar balises segons la seva altitud. També pots filtrar enlairaments per temps en cotxe des d'un punt i pel tram a peu fins a l'enlairament (temps, distància o desnivell).",
+      "descripcionSimple": "Filtra els enlairaments del mapa: pots mostrar només els teus enlairaments preferits o filtrar-los pel seu nivell d'activitat."
     },
     "btnPlaneo": {
       "titulo": "Càlcul de planeig",
@@ -466,7 +476,7 @@
       "descripcion": "Centra el mapa en la teva posició actual."
     },
     "btnGeocoder": {
-      "titulo": "Cercador general",
+      "titulo": "🌍 Cercador general",
       "descripcion": "Cerca qualsevol ciutat, municipi, muntanya o zona geogràfica per navegar ràpidament cap a ella.<br><br>També pots escriure directament coordenades en format decimal (ex: 42.734 -1.990) per centrar el mapa en un punt exacte."
     },
     "controlCapas": {
@@ -474,11 +484,11 @@
       "descripcion": "Tria el tipus de mapa de fons que prefereixis: topogràfics, fotos aèries, de relleu, àrees de tèrmiques i rutes (skyways i thermals KK7) i capes aeronàutiques/restriccions."
     },
     "btnFiltrosMeteo": {
-      "titulo": "Botó Meteo",
+      "titulo": "⛅ Botó Meteo",
       "descripcion": "Obre la barra meteorològica per filtrar per hores o dia de la setmana directament sobre el mapa."
     },
     "navTabla": {
-      "titulo": "Vista Taula",
+      "titulo": "📋 Vista Taula",
       "descripcion": "Accedeix a la taula meteorològica detallada per hores. Aquí veuràs la predicció completa de cada enlairament (vent a diverses altures, ratxes, direcció, cisallament, sostre tèrmic XC, pluja i temperatura) avaluada amb colors segons els teus límits de seguretat.<br><br>Podràs filtrar per horari de vol, buscar enlairaments per província o distància, gestionar els teus favorits i veure la previsió immediata (nowcasting) Arome d'interval 15 minuts."
     }
   }
@@ -673,7 +683,7 @@
     "recordarEstadoFiltroHorario": "Recordar estat del filtre meteo (obert/tancat)",
     "recordarCapasActivas": "Recordar capes actives",
     "recordarTipoMapa": "Recordar tipus de mapa",
-    "recordarFiltrosMapa": "Recordar filtres",
+    "recordarFiltrosMapa": "Recordar filtre de enlairaments preferits",
     "guia": "Guia",
     "ayuda": "Ajuda",
     "legal": "Legal",
@@ -878,6 +888,12 @@
   },
 
   "popupDespegue": {
+    "enCoche": "En cotxe 🚗:",
+    "elegirOrigen": "Triar origen",
+    "aPie": "A peu 🚶:",
+    "rutaVerificada": "Ruta verificada manualment",
+    "rutaAutomatica": "Ruta calculada automàticament (pot contenir errors)",
+    "enCocheHastaDespegue": "S'hi arriba en cotxe",
     "region": "Regió:",
     "provincia": "Província:",
     "orientacion": "Orientació:",
@@ -898,6 +914,15 @@
   "html": {
     "verTodosDiasTitle": "Veure tots els dies",
     "distanciaDesde": "Distància des de:",
+    "sinLimite": "Sense límit",
+    "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> des de",
+    "modoCoche": "🚗 Cotxe",
+    "modoTotal": "🚗+🚶 Total",
+    "estimadoLineaRecta": "Sense dades temps/distància. Estimació aproximada.",
+    "aPie": "A peu",
+    "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
+    "unidadPieKm": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4\"/></svg><span class=\"texto-unidad\">km</span>",
+    "unidadPieM": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 20V4M7 9l5-5 5 5\"/></svg><span class=\"texto-unidad\">m</span>",
     "seleccionarOrigen": "Seleccionar origen",
     "incluirNoFavs": "Incloure no preferits al filtre",
     "resetFiltroDistancia": "Restablir i amagar filtre de distància",
@@ -970,6 +995,8 @@
   "btn_info": {
     "tooltipVientoLimites": "<b>Vent mitjà mínim, ideal i màxim (km/h):</b><br><br>El sistema automatitzat d'avaluació de condicions tindrà en compte aquests valors.<br><br>El color de les dades a la taula indica visualment l'anàlisi de les condicions en funció dels valors que estableixis aquí (Mínim, Ideal i Màxim).<br><br>🟧 Taronja: vent fluix per sota del teu vent mínim (normalment 0, a menys que necessitis vent específic per a vol de vessant o altres motius).<br>🟩 Verd: Vent ideal, des del mínim fins a un marge de seguretat abans del màxim.<br>🟧 Taronja: vent més fort que s'acosta al màxim (l'últim terç abans d'arribar al màxim).<br>🟥 Vermell: vent molt fort que supera el teu límit de vent màxim.<br><br><b>Definició tècnica estàndard de l'OMM (Organització Meteorològica Mundial) de la velocitat mitjana a 10m</b>:<br><br>És la velocitat mitjana del vent sostingut durant els últims 10 minuts abans de l'hora indicada. Es mesura a una alçada estàndard de 10 metres sobre el terra (per evitar la fricció immediata del terreny). Representa el flux laminar o base.",
     "filtroDistanciaCompleto": "<b>Filtre de distància d'enlairaments:</b><br><br>Mostra només els enlairaments dins del radi de distància que seleccionis.<br><br>Utilitza el botó <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 50%; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> per establir la posició d'origen. Pots utilitzar el mapa o la ubicació actual del teu dispositiu.<span class='texto-oculto-en-edicion'><br><br>Utilitza el botó <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> per incloure enlairaments no preferits al filtre, la qual cosa significa <b>incloure temporalment tots els enlairaments</b> disponibles a la base de dades.<br><br>Quan està activat, s'aplica un filtre inicial de 100 km per evitar sobrecarregar la taula. Pots ajustar-ho segons les teves necessitats i el rendiment del teu dispositiu.</span>",
+    "filtroTiempoDespegue": "<b>Temps fins a l'enlairament:</b><br><br>Mostra només els enlairaments als quals arribes en el temps que triïs des del teu origen.<br><br>Utilitza el botó <span style='background-color: #fff; border: 1.5px solid #ccc; border-radius: 8px; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); display: inline-block; padding: 0 8px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -2px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> per triar l'origen al mapa o amb la ubicació del teu dispositiu.<br><br><b>🚗 Cotxe:</b> temps en cotxe fins a la carretera més propera a l'enlairament.<br><b>🚗+🚶 Total:</b> cotxe més el tram a peu fins a l'enlairament.<br><br>És el mateix filtre a la taula i al mapa.",
+    "filtroAPie": "<b>Tram a peu:</b><br><br>Mostra només els enlairaments segons el que calgui caminar des del punt més accessible en cotxe fins a l'enlairament. Pots triar entre temps, distància o desnivell de pujada. Si selecciones «0 min» només es mostren els enlairaments on s'arriba en cotxe.<br><br>Calculat amb la ruta a peu d'OpenStreetMap des del punt de carretera més lògic, 4,5 km/h en pla i 450 m/h de pujada. És un càlcul general. Revisa'l per adaptar-lo a la teva realitat o a altres accessos.<br><br>Al botó <svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='#555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle;'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='7' x2='12' y2='7' stroke-width='3'></line><polyline points='10.5 11 12 11 12 17'></polyline></svg> d'«Informació» de cada enlairament (o a la seva finestra del mapa) s'indiquen les dades de l'accés a peu i un enllaç a la ruta. Si es mostra un (🤖), és perquè la ruta s'ha calculat automàticament (pot contenir errors).",
     "tooltipRachaMaxima": "<b>Ratxa màxima (km/h):</b><br><br>El sistema automatitzat d'avaluació de condicions tindrà en compte aquests valors.<br><br>El color de les dades a la taula indica visualment l'anàlisi de les condicions en funció del valor que estableixis aquí.<br><br>🟩 Verd: ratxa màxima segura, lluny del límit.<br>🟧 Taronja: ratxa màxima que s'acosta al teu límit de ratxa màxima.<br>🟥 Vermell: ratxa que supera el teu límit de ratxa màxima.<br><br><b>Definició tècnica estàndard de l'OMM (Organització Meteorològica Mundial) de la ratxa màxima a 10m</b>:<br><br>És el pic màxim de velocitat instantània (amb una durada de 3 segons) registrat en qualsevol moment dins del període de l'hora anterior. Representa les fluctuacions breus i intenses superposades al vent mitjà, associades a la turbulència mecànica o tèrmica (convecció).",
     "tooltipResetearEnlaces": "<b>Restablir el comportament dels enllaços</b><br><br>A l'app, en obrir per primera vegada un enllaç que pugui tenir una app nativa instal·lada, se't pregunta si vols obrir-ho a la web (dins de Fly Decision) o a l'app. Si vas marcar <i>Recordar la meva elecció</i>, ja no es pregunta més.<br><br>Aquest botó esborra aquestes eleccions perquè es torni a preguntar.",
     "tooltipEdicionLimites": "<b>Editar enlairaments amb límits o orientació personalitzats</b><br><br>Mostra a la taula només els enlairaments als quals has ajustat els límits de vent i ratxa (diferent del 100%) o marcat una orientació ideal.<br><br>Prem ↺ en un enlairament per a restejar-lo: torna al 100% (els límits generals de dalt) i sense orientació ideal. El ↺ de la capçalera els resteja tots. Per canviar el percentatge o l'orientació ideal, utilitza el botó ⓘ de cada enlairament. Pots fer-ho aquí, a la Taula o al Mapa.<br><br>El botó està desactivat si no tens cap enlairament personalitzat.",
@@ -1014,8 +1041,8 @@
     "tooltipcheckboxBalizasWeatherUnderground": "<b>Balises de vent WeatherUnderground</b><br><br>ℹ️ <b>Xarxa no integrada a FlyDecision.</b> Apareix en gris perquè només mostrem on són les balises, no les seves dades de vent. Per veure-les, cada balisa té a la seva fitxa enllaços directes al web de WeatherUnderground i a <b>Tolomet (recomanat)</b>.<br><br><ul style='margin:0; padding-left:18px;'><li><b>Propietat</b>: WeatherUnderground</li><li><b>Cobertura geogràfica</b>: Mundial</li><li><b>Nombre aproximat de balises mostrades</b>: 5000</li><li><b>Freqüència aproximada d'actualització de les dades</b>: 15 minuts (variable segons estació)</li><li><b>Web</b>: <a href='https://www.wunderground.com/wundermap' target='_blank' style='color: #007bff; text-decoration: underline;'>WeatherUnderground</a></li></ul>",
     "tooltipFiltroFavoritosMapa": "<b>Filtre d'enlairaments favorits</b><br><br>Mostra únicament els enlairaments marcats com a <i>favorits</i> i oculta la resta.<br><br>Si es torna a seleccionar una segona vegada, mostra únicament els que no són favorits. Aquest mode resulta útil per localitzar a la teva àrea preferida enlairaments nous introduïts a la base de dades o per revisar quins encara no has marcat com a favorits.<br><br>La tercera vegada que se selecciona es desactiva el filtre.<br><br>Consulta a <i>Ajustos > Guies</i> la descripció del marcatge de Favorits i Seguiment.",
     "tooltipFiltroSeguimientoMapa": "<b>Filtre d'enlairaments en seguiment</b><br><br>Mostra únicament els enlairaments marcats com a <i>en seguiment</i> i oculta la resta.<br><br>Consulta a <i>Ajustos > Guies</i> la descripció del marcatge de Favorits i Seguiment.",
-    "tooltipFiltroFavoritosBalizasMapa": "<b>Filtre de balises favorites</b><br><br>Mostra únicament les balises marcades com a <i>favorites</i> i oculta la resta.<br><br>Consulta a <i>Ajustos > Guies</i> la descripció del marcatge de Favorits i Seguiment.",
-    "tooltipFiltroSeguimientoBalizasMapa": "<b>Filtre de balises en seguiment</b><br><br>Mostra únicament les balises marcades com a <i>en seguiment</i> i oculta la resta.<br><br>Consulta a <i>Ajustos > Guies</i> la descripció del marcatge de Favorits i Seguiment.",
+    "tooltipFiltroFavoritosBalizasMapa": "<b>Filtre de balises favorites</b><br><br>Mostra únicament les balises marcades com a <i>favorites</i> i oculta la resta.<span class='ocultar-en-balizas'><br><br>Consulta a <i>Ajustos > Guies</i> la descripció del marcatge de Favorits i Seguiment.</span>",
+    "tooltipFiltroSeguimientoBalizasMapa": "<b>Filtre de balises en seguiment</b><br><br>Mostra únicament les balises marcades com a <i>en seguiment</i> i oculta la resta.<span class='ocultar-en-balizas'><br><br>Consulta a <i>Ajustos > Guies</i> la descripció del marcatge de Favorits i Seguiment.</span>",
     "tooltipFiltroActividad": "<b>Filtre de nivell d'activitat de l'enlairament</b><br><br>Mostra únicament els enlairaments amb un nivell d'activitat igual o major al seleccionat<br><br>El nivell d'activitat puntua amb una nota (d'1 a 5) quant es vola en aquest lloc segons el nombre de vols registrats a XContest (el nivell de popularitat).<br><br>Es basa en el volum històric de vols registrats a XContest durant 20 anys, amb ajustos per activitat recent (+1 si hi ha hagut vols en els últims mesos) o inactivitat prolongada (-1 si no hi ha vols des de fa més de 2 anys). Lògicament és una puntuació per donar una idea general i no pretén ser un valor real quantificable.<br><br>Consulta a <i>Ajustos > Guies</i> la descripció del sistema de puntuació per Activitat.",
     "tooltipFiltroVuelos": "<b>Filtre de nombre de vols registrats a XContest</b><br><br>Mostra només els enlairaments que tinguin un nombre de vols registrats a XContest major o igual al nombre seleccionat. Aquests valors es basen en el registre històric de vols a XContest durant els últims 20 anys. Tingues en compte que l'anàlisi està realitzada fins al 2026 i que és una dada molt general que pot no reflectir l'actualitat real."
   },

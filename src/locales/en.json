@@ -14,6 +14,7 @@
     "tabla": "Table",
     "buscar": "Search",
     "distancia": "Distance",
+    "filtroTiemposAcceso": "Access time filter",
     "mapa": "Map",
     "ajustes": "Settings"
   },
@@ -281,11 +282,11 @@
         "descripcion": "The system calculates two scores (0 to 10) for each takeoff and for the selected time range: Takeoff Conditions and Conditions for maintaining thermals or starting Cross Country (XC).<br><br>Takeoffs are automatically reordered by Takeoff Condition score.<br><br>In ⚙️ Settings, you can customize your limits for the calculation."
       },
       "rosaVientos": {
-        "titulo": "🧭 Take-off orientation",
-        "descripcion": "Indicates the orientation or orientations of the take-off. The scoring system takes into account the forecasted wind direction and cross-checks it with these possible orientations."
+        "titulo": "🧭 Takeoff orientation",
+        "descripcion": "Indicates the orientation or orientations of the takeoff. The scoring system takes into account the forecasted wind direction and cross-checks it with these possible orientations."
       },
       "nivelActividad": {
-        "titulo": "📶 Take-off activity level",
+        "titulo": "📶 Takeoff activity level",
         "descripcion": "Indicates with bars (from 1 to 5) the popularity level.<br><br>It is based on the number of flights logged in XContest over 20 years, adjusted for recent activity (+1 if there have been flights in recent months) or prolonged inactivity (-1 if there have been no flights for more than 2 years)."
       },
       "btnMinutely15": {
@@ -302,7 +303,7 @@
       },
       "btnOrigen": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Origin Point",
-        "descripcion": "Here you choose the origin point for the distance filter.<br><br>You can choose the point using a map or your current location."
+        "descripcion": "Here you choose the starting point of the driving-time filter.<br><br>You can pick the point on a map or use your current location."
       },
       "btnIncNoFavs": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Include non-favorites",
@@ -325,16 +326,20 @@
         "descripcion": "Search here for takeoffs by name or province.<br><br>💡 You can type without accents for faster searching."
       },
       "navDistance": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",
-        "descripcion": "Shows a slider to filter takeoffs within a radius around a point.<br><br>👉🏽 I will press this button now to open the filter."
+        "titulo": "🚗🚶 Time to takeoff",
+        "descripcion": "Opens the time filters: by car from a point, and on foot from the road to the takeoff.<br><br>👉🏽 I will now tap that button to open the filter."
       },
       "filtroDistancia": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",
-        "descripcion": "This filter lets you see only the takeoffs around a specific point.<br><br>💡 Useful for quickly finding takeoffs within a driving range from your location."
+        "titulo": "🚗🚶 Time to takeoff",
+        "descripcion": "Filters takeoffs by how long it takes you to get there:<br><br>🚗 By car from a point you choose (or 🚗+🚶 adding the walk).<br>🚶 On foot from the road to the takeoff: time, distance or climb.<br><br>💡 Useful to quickly find the takeoffs you can reach in the time you have."
       },
       "sliderDistancia": {
-        "titulo": "Distance Radius",
-        "descripcion": "Drag this slider to choose the maximum distance.<br><br>The table will show only takeoffs within that radius."
+        "titulo": "🚗 Driving time",
+        "descripcion": "Drag this slider to choose the maximum time to reach the takeoff: by car only (🚗) or adding the walk (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Walk",
+        "descripcion": "Filters by the walking access from the road to the takeoff: choose minutes (⏱️), kilometres (↔) or climb (↑).<br><br>With «0 min» only the takeoffs you can drive to are shown."
       },
       "navMap": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Map</span></div>",
@@ -384,16 +389,20 @@
         "descripcion": "Search for takeoffs by typing the region, province, or name. You can type without accents for speed."
       },
       "filtroDistancia": {
-        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distance</span></div>",
-        "descripcion": "This is a filter that allows you to show only takeoffs around a specific point.<br><br>💡 It can help you quickly find takeoffs within a distance radius of your choice around a point."
+        "titulo": "🚗🚶 Time to takeoff",
+        "descripcion": "Filters takeoffs by how long it takes you to get there:<br><br>🚗 By car from a point you choose (or 🚗+🚶 adding the walk).<br>🚶 On foot from the road to the takeoff: time, distance or climb.<br><br>💡 Useful to quickly find the takeoffs you can reach in the time you have."
       },
       "btnOrigen": {
         "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Origin point",
-        "descripcion": "With this button, you choose the center of the distance search radius.<br><br>You can select the point using a map or your current location."
+        "descripcion": "Here you choose the starting point of the driving-time filter.<br><br>You can pick the point on a map or use your current location."
       },
       "sliderDistancia": {
-        "titulo": "Distance to point",
-        "descripcion": "By dragging this slider, you choose the maximum distance in kilometers."
+        "titulo": "🚗 Driving time",
+        "descripcion": "Drag this slider to choose the maximum time to reach the takeoff: by car only (🚗) or adding the walk (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Walk",
+        "descripcion": "Filters by the walking access from the road to the takeoff: choose minutes (⏱️), kilometres (↔) or climb (↑).<br><br>With «0 min» only the takeoffs you can drive to are shown."
       },
       "btnVerSoloFavs": {
         "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Show Only Favorites",
@@ -430,15 +439,15 @@
       "descripcion": "Explore paragliding takeoffs and evaluate their conditions according to the hourly forecast.<br><br>You can filter takeoffs by their meteo score, orientation or activity level, check real-time wind beacons with trend graphs, view XContest takeoff heatmaps and select various types of maps."
     },
     "filtroHorarioMeteo": {
-      "titulo": "Time range and filter",
+      "titulo": "🕐–🕕 Time range and filter",
       "descripcion": "Select the day and desired flight time range.<br><br>The map icons will be colored with a 10-step gradation from red to green 🟥🟧🟩 according to the quality of the conditions at that time, just like in the table."
     },
     "filtroPuntuacion": {
-      "titulo": "Filter by score",
+      "titulo": "⭐ Filter by score",
       "descripcion": "Filter takeoffs according to the score of their meteorological forecast and for the selected time range.<br><br>Slide this control to set a minimum grade (from 0 to 10 stars) and this will hide the takeoffs whose evaluation does not meet your demanding level in the selected schedule.<br><br>Remember that you can adjust all these limits for the score in <i>Settings</i> according to your preferences."
     },
     "btnCerrarFiltroMeteo": {
-      "titulo": "Close time control and meteo filter",
+      "titulo": "❌ Close time control and meteo filter",
       "descripcion": "Closes this panel, so takeoffs are no longer colored based on their weather and are shown in white.<br><br>It can be useful for exploring takeoffs or wind beacons with maximum screen space."
     },
     "buscadorMapa": {
@@ -455,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Filters",
-      "descripcion": "Filter map information according to your needs. You can show or hide only your favorite or tracked takeoffs and beacons. Furthermore, you can filter takeoffs by orientation, activity level or volume of flights registered in XContest, and filter beacons according to their altitude."
+      "descripcion": "Filter map information according to your needs. You can show or hide only your favorite or tracked takeoffs and beacons. Furthermore, you can filter takeoffs by orientation, activity level or volume of flights registered in XContest, and filter beacons according to their altitude. You can also filter takeoffs by driving time from a point and by the walk to the takeoff (time, distance or climb).",
+      "descripcionSimple": "Filter the takeoffs on the map: you can show only your favorite takeoffs or filter them by activity level."
     },
     "btnPlaneo": {
       "titulo": "Glide calculation",
@@ -466,7 +476,7 @@
       "descripcion": "Centers the map on your current position."
     },
     "btnGeocoder": {
-      "titulo": "General Search",
+      "titulo": "🌍 General Search",
       "descripcion": "Search for any city, municipality, mountain or geographic area to navigate to it quickly.<br><br>You can also directly type coordinates in decimal format (e.g. 42.734 -1.990) to center the map on an exact point."
     },
     "controlCapas": {
@@ -474,11 +484,11 @@
       "descripcion": "Choose the type of background map you prefer: topographic, aerial photos, relief, thermal areas and routes (skyways and thermals KK7) and aeronautical/restriction layers."
     },
     "btnFiltrosMeteo": {
-      "titulo": "Meteo Button",
+      "titulo": "⛅ Meteo Button",
       "descripcion": "Opens the meteorological bar to filter by hours or day of the week directly on the map."
     },
     "navTabla": {
-      "titulo": "Table View",
+      "titulo": "📋 Table View",
       "descripcion": "Access the detailed hourly meteorological table. Here you will see the complete forecast for each takeoff (wind at various heights, gusts, direction, shear, XC thermal ceiling, rain and temperature) evaluated with colors according to your safety limits.<br><br>You will be able to filter by flight schedule, search for takeoffs by province or distance, manage your favorites and view the immediate forecast (nowcasting) Arome at 15-minute intervals."
     }
   }
@@ -673,7 +683,7 @@
     "recordarEstadoFiltroHorario": "Remember meteo filter state (open/closed)",
     "recordarCapasActivas": "Remember active layers",
     "recordarTipoMapa": "Remember map type",
-    "recordarFiltrosMapa": "Remember filters",
+    "recordarFiltrosMapa": "Remember favorite takeoffs filter",
     "guia": "Guide",
     "ayuda": "Help",
     "legal": "Legal",
@@ -723,7 +733,7 @@
       "reseteoHecho": "Done. The next time you open a link with an installed app, you will be asked again if you want to open it in the web or in the app."
     },
     "sinDespeguesConLimites": "There are no longer any takeoffs with custom limits.",
-    "confirmarResetTodosLimites": "Reset custom limits and ideal orientations for all take-offs?<br><br>This action will configure all take-offs with the original 100% limit, that is, with the general limits configured in <i>Settings > Wind and gust limits</i>, and without ideal orientation.",
+    "confirmarResetTodosLimites": "Reset custom limits and ideal orientations for all takeoffs?<br><br>This action will configure all takeoffs with the original 100% limit, that is, with the general limits configured in <i>Settings > Wind and gust limits</i>, and without ideal orientation.",
     "resetearTodosLimites": "Reset all limits and ideal orientations",
     "finalizarEdicionLimites": "Finish editing custom takeoffs",
     "resetearLimite": "Return to 100% (general limits) and remove ideal orientation",
@@ -878,6 +888,12 @@
   },
 
   "popupDespegue": {
+    "enCoche": "By car 🚗:",
+    "elegirOrigen": "Choose origin",
+    "aPie": "On foot 🚶:",
+    "rutaVerificada": "Route manually verified",
+    "rutaAutomatica": "Route calculated automatically (may contain errors)",
+    "enCocheHastaDespegue": "You can drive to the takeoff",
     "region": "Region:",
     "provincia": "Province:",
     "orientacion": "Orientation:",
@@ -888,16 +904,25 @@
     "titleAjusteLimites": "Custom wind limits adjustment",
     "limitesEfectivos": "Max wind: {{vel}} km/h<br>Max gust: {{racha}} km/h",
     "orientacionIdeal": "Ideal orientation: {{ori}}",
-    "tooltipOrientacionIdeal": "Ideal orientation: tap or drag over a gray sector to mark it green. Tap it again to remove it. Hours with wind from this sector score higher than those from the other orientations of the take-off.",
-    "tooltipOrientacionUnica": "This take-off only has one possible orientation, so it cannot be customized.",
+    "tooltipOrientacionIdeal": "Ideal orientation: tap or drag over a gray sector to mark it green. Tap it again to remove it. Hours with wind from this sector score higher than those from the other orientations of the takeoff.",
+    "tooltipOrientacionUnica": "This takeoff only has one possible orientation, so it cannot be customized.",
     "personalizacion": "Customization:",
-    "tooltipPersonalizacion": "Limits: adjust the general wind and gust limits for this take-off. Below 100% is more restrictive (we want less wind at this take-off) and above 100% is more tolerant (we accept more wind). Orientation rose: tap a gray orientation to mark it as ideal (green); tap it again to remove it. The red border of Customizations indicates that this take-off has something customized; ↺ removes the customizations.",
-    "resetearPersonalizacion": "Removes the customization of this take-off (limits at 100% and no ideal orientation)"    
+    "tooltipPersonalizacion": "Limits: adjust the general wind and gust limits for this takeoff. Below 100% is more restrictive (we want less wind at this takeoff) and above 100% is more tolerant (we accept more wind). Orientation rose: tap a gray orientation to mark it as ideal (green); tap it again to remove it. The red border of Customizations indicates that this takeoff has something customized; ↺ removes the customizations.",
+    "resetearPersonalizacion": "Removes the customization of this takeoff (limits at 100% and no ideal orientation)"    
   },
 
   "html": {
     "verTodosDiasTitle": "View all days",
     "distanciaDesde": "Distance from:",
+    "sinLimite": "No limit",
+    "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> from",
+    "modoCoche": "🚗 Car",
+    "modoTotal": "🚗+🚶 Total",
+    "estimadoLineaRecta": "No time/distance data. Approximate estimate.",
+    "aPie": "On foot",
+    "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
+    "unidadPieKm": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4\"/></svg><span class=\"texto-unidad\">km</span>",
+    "unidadPieM": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 20V4M7 9l5-5 5 5\"/></svg><span class=\"texto-unidad\">m</span>",
     "seleccionarOrigen": "Select origin",
     "incluirNoFavs": "Include non-favorites in filter",
     "resetFiltroDistancia": "Reset and hide distance filter",
@@ -970,11 +995,13 @@
   "btn_info": {
     "tooltipVientoLimites": "<b>Minimum, ideal, and maximum mean wind (km/h):</b><br><br>The automated condition scoring system will take these values into account.<br><br>The color of the data in the table visually indicates the condition analysis based on the values you set here (Min, Ideal, and Max).<br><br>🟧 Orange: light wind below your Minimum wind (usually 0, unless you require specific wind for ridge soaring or other reasons).<br>🟩 Green: Ideal wind, from minimum up to a safety margin before the Maximum.<br>🟧 Orange: stronger wind approaching the Maximum (the last third before reaching the Maximum).<br>🟥 Red: very strong wind exceeding your Maximum wind limit.<br><br><b>WMO (World Meteorological Organization) standard technical definition of 10m Mean Speed</b>:<br><br>It is the average sustained wind speed over the last 10 minutes before the indicated time. It is measured at a standard height of 10 meters above the ground (avoiding immediate terrain friction). It represents the laminar or base flow.",
     "filtroDistanciaCompleto": "<b>Takeoff distance filter:</b><br><br>Shows only takeoffs within the distance radius you select.<br><br>Use the button <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 50%; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> to set the origin position. You can use the map or your device's current location.<span class='texto-oculto-en-edicion'><br><br>Use the button <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> to include non-favorite takeoffs in the filter, meaning to <b>temporarily include all takeoffs</b> available in the database.<br><br>When activated, an initial 100 km filter is applied to avoid overloading the table. You can adjust it based on your needs and device performance.</span>",
+    "filtroTiempoDespegue": "<b>Time to takeoff:</b><br><br>Shows only the takeoffs you can reach within the time you choose from your origin.<br><br>Use the <span style='background-color: #fff; border: 1.5px solid #ccc; border-radius: 8px; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); display: inline-block; padding: 0 8px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -2px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> button to choose the origin on the map or with your device's location.<br><br><b>🚗 Car:</b> driving time to the road closest to the takeoff.<br><b>🚗+🚶 Total:</b> car plus the walk to the takeoff.<br><br>It is the same filter in the table and on the map.",
+    "filtroAPie": "<b>Walk:</b><br><br>Shows only the takeoffs according to how much you need to walk from the closest point you can reach by car to the takeoff. You can choose between time, distance or climb. If you select «0 min» only the takeoffs you can drive to are shown.<br><br>Calculated with the OpenStreetMap walking route from the most sensible point on the road, 4.5 km/h on the flat and 450 m/h of climb. It is a general calculation. Check it to adapt it to your situation or other access routes.<br><br>The <svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='#555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle;'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='7' x2='12' y2='7' stroke-width='3'></line><polyline points='10.5 11 12 11 12 17'></polyline></svg> (Information) button of each takeoff (or its popup on the map) shows the walking access data and a link to the route. If a (🤖) is shown, the route was calculated automatically (may contain errors).",
     "tooltipRachaMaxima": "<b>Maximum gust (km/h):</b><br><br>The automated condition scoring system will take these values into account.<br><br>The color of the data in the table visually indicates the condition analysis based on the value you set here.<br><br>🟩 Green: safe maximum gust, far from the limit.<br>🟧 Orange: maximum gust approaching your Maximum gust limit.<br>🟥 Red: gust exceeding your Maximum gust limit.<br><br><b>WMO (World Meteorological Organization) standard technical definition of 10m Maximum Gust</b>:<br><br>It is the maximum peak of instantaneous speed (with a duration of 3 seconds) recorded at any time within the previous hour period. It represents the brief and intense fluctuations superimposed on the mean wind, associated with mechanical or thermal turbulence (convection).",
     "tooltipResetearEnlaces": "<b>Reset link behavior</b><br><br>In the app, when opening for the first time a link that may have a native app installed, you are asked if you want to open it in the web (within Fly Decision) or in the app. If you checked <i>Remember my choice</i>, it will not be asked again.<br><br>This button clears those choices so that you are asked again.",
-    "tooltipEdicionLimites": "<b>Edit take-offs with custom limits or orientation</b><br><br>Shows in the table only the take-offs for which you have adjusted the wind and gust limits (different from 100%) or marked an ideal orientation.<br><br>Click ↺ on a take-off to reset it: it returns to 100% (the general limits above) and without ideal orientation. The ↺ in the header resets them all. To change the percentage or the ideal orientation, use the ⓘ button for each take-off. You can do it here, in the Table or on the Map.<br><br>The button is disabled if you do not have any customized take-offs.",
+    "tooltipEdicionLimites": "<b>Edit takeoffs with custom limits or orientation</b><br><br>Shows in the table only the takeoffs for which you have adjusted the wind and gust limits (different from 100%) or marked an ideal orientation.<br><br>Click ↺ on a takeoff to reset it: it returns to 100% (the general limits above) and without ideal orientation. The ↺ in the header resets them all. To change the percentage or the ideal orientation, use the ⓘ button for each takeoff. You can do it here, in the Table or on the Map.<br><br>The button is disabled if you do not have any customized takeoffs.",
     "tooltipPenalizarVientoAltura": "<b>Penalise hours with strong wind aloft (ECMWF)</b><br><br>Arome and ICON sometimes miss the strong wind at takeoff altitude when the wind increases a lot with height. That is why, hour by hour, the ECMWF mean wind interpolated to the takeoff altitude is compared with your maximum speed (including the takeoff's personal adjustment, if any).<br><br>If that wind reaches your maximum and is also higher than the model's, the hour scores 20% less; if it reaches 1.5 times your maximum, 40% less. The speed cell keeps the model's colour and is marked with an orange and black striped band at the top; its tooltip shows the wind aloft.<br><div style='text-align:center;margin:2px 0;'><span style='display:inline-block;width:24px;height:22px;line-height:22px;text-align:center;font-weight:bold;font-size:16px;color:#000;background-color:#6befaf;border:1px solid #999;margin-left:-1px;'>8</span><span style='display:inline-block;width:24px;height:22px;line-height:22px;text-align:center;font-weight:bold;font-size:16px;color:#000;background-color:#6befaf;background-image:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);background-size:100% 3px;background-repeat:no-repeat;background-position:top;border:1px solid #999;margin-left:-1px;'>9</span><span style='display:inline-block;width:24px;height:22px;line-height:22px;text-align:center;font-weight:bold;font-size:16px;color:#000;background-color:#6befaf;background-image:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);background-size:100% 3px;background-repeat:no-repeat;background-position:top;border:1px solid #999;margin-left:-1px;'>10</span><span style='display:inline-block;width:24px;height:22px;line-height:22px;text-align:center;font-weight:bold;font-size:16px;color:#000;background-color:#f0c16a;background-image:repeating-linear-gradient(135deg,#ff9800 0 3px,#000 3px 5px);background-size:100% 3px;background-repeat:no-repeat;background-position:top;border:1px solid #999;margin-left:-1px;'>14</span><span style='display:inline-block;width:24px;height:22px;line-height:22px;text-align:center;font-weight:bold;font-size:16px;color:#000;background-color:#6befaf;border:1px solid #999;margin-left:-1px;'>9</span></div><br>According to the FlyDecision study, in those hours the beacon exceeded the limits about 3-4 times more often than in green hours without a warning.<br><br>Enabled by default.",
-    "tooltipVientoFlojoCruzado": "<b>Allow unsuitable orientation with light wind</b><br><br>If enabled, an hour whose wind orientation forecast is not suitable for the possible orientations of a take-off is not penalized for this reason when the mean wind is ≤ 3 km/h and the gust ≤ 8 km/h.<br><br>In this case, the direction cell, instead of red, is painted orange and the score for that hour is calculated as if the direction were orange (crosswind but acceptable).<br><br>Useful, for example, on south-facing take-offs with very light north meteo wind, where the breeze will likely end up prevailing, or when the forecast may fail in the direction of such light wind, or because the take-off is very good and allows launching with light tailwind.<br><br>Disabled by default.",
+    "tooltipVientoFlojoCruzado": "<b>Allow unsuitable orientation with light wind</b><br><br>If enabled, an hour whose wind orientation forecast is not suitable for the possible orientations of a takeoff is not penalized for this reason when the mean wind is ≤ 3 km/h and the gust ≤ 8 km/h.<br><br>In this case, the direction cell, instead of red, is painted orange and the score for that hour is calculated as if the direction were orange (crosswind but acceptable).<br><br>Useful, for example, on south-facing takeoffs with very light north meteo wind, where the breeze will likely end up prevailing, or when the forecast may fail in the direction of such light wind, or because the takeoff is very good and allows launching with light tailwind.<br><br>Disabled by default.",
     "tooltipProbPrecipitacion": "<b>Precipitation Probability (%)</b><br><br>Probability (%) that precipitation exceeds 0.1 mm (liters/m²).<br><br>Original data from the ECMWF model.",
     "tooltipBaseNube": "<b>Cu · Fair-weather cumulus</b><br><br>Shows whether thermals will form fair-weather cumulus, also called <i>Cumulus humilis</i>: small, flat-based clouds with little vertical growth, typical of a fine day with a well-mixed boundary layer. They give moderate thermals and mark where they are, which makes them ideal for cross-country (XC) flying.<br><br>White cell: no cumulus expected (blue thermals). Green cell: there could be the odd isolated cumulus. Green cell with “Cu”: cumulus likely. Tap the cell to see the figures.<br><br>It is calculated by comparing the maximum altitude of the boundary layer with the theoretical cumulus base (ECMWF 2 m temperature and dew point, 125 m/°C). It is a rough estimate.<br><br>⚠️ If the atmosphere is unstable (high CAPE), cumulus can grow into <i>Cumulus congestus</i> (dangerous, strong vertical growth and strong thermals) or <i>Cumulonimbus</i> (thunderstorm clouds, very dangerous). Always check CAPE.<br><br>Fog, stratus and orographic clouds are not shown here: that is what the ☁️↥ Cloud base row is for.",
     "tooltipBaseNubeHumedad": "<b>Cloud base (km MSL)</b><br><br>Shows a row with the estimated altitude of the base of any type of cloud (stratus, fog, orographic or frontal clouds, not only convective ones), calculated from the relative humidity on pressure levels of the ICON-EU model (cloud is assumed from 95%).<br><br>Red: the takeoff is inside the cloud. Orange: the base is less than 300 m above the takeoff. Green: higher base or no low clouds (&gt;3).<br><br>In the score, hours with the takeoff inside the cloud are heavily penalised, and somewhat less if the base is less than 300 m above. For XC, the usable ceiling cannot exceed the cloud base.<br><br>It is an estimate with 7 km cells and levels every 250-500 m: it may miss very thin fog or clouds stuck to a specific slope.<br><br>Days 1 to 5 are calculated with ICON-EU. Days 6 and 7, beyond ICON-EU's range, with ECMWF: it is an approximate value (fewer humidity levels and cells of about 25 km) and is shown in italics.",
@@ -1014,8 +1041,8 @@
     "tooltipcheckboxBalizasWeatherUnderground": "<b>WeatherUnderground wind beacons</b><br><br>ℹ️ <b>Network not integrated into FlyDecision.</b> It is shown in grey because we only display where the beacons are, not their wind data. To see it, each beacon's card has direct links to the WeatherUnderground website and to <b>Tolomet (recommended)</b>.<br><br><ul style='margin:0; padding-left:18px;'><li><b>Ownership</b>: WeatherUnderground</li><li><b>Geographic coverage</b>: Worldwide</li><li><b>Approximate number of beacons shown</b>: 5000</li><li><b>Approximate data update frequency</b>: 15 minutes (varies by station)</li><li><b>Web</b>: <a href='https://www.wunderground.com/wundermap' target='_blank' style='color: #007bff; text-decoration: underline;'>WeatherUnderground</a></li></ul>",
     "tooltipFiltroFavoritosMapa": "<b>Favorite takeoffs filter</b><br><br>Shows only the takeoffs marked as <i>favorites</i> and hides the rest.<br><br>If selected a second time, it shows only those that are not favorites. This mode is useful for locating new takeoffs introduced in the database in your preferred area or to review which ones you have not yet marked as favorites.<br><br>The third time it is selected, the filter is deactivated.<br><br>Check <i>Settings > Guides</i> for the description of Favorites and Tracking marking.",
     "tooltipFiltroSeguimientoMapa": "<b>Tracked takeoffs filter</b><br><br>Shows only the takeoffs marked as <i>tracked</i> and hides the rest.<br><br>Check <i>Settings > Guides</i> for the description of Favorites and Tracking marking.",
-    "tooltipFiltroFavoritosBalizasMapa": "<b>Favorite beacons filter</b><br><br>Shows only the beacons marked as <i>favorites</i> and hides the rest.<br><br>Check <i>Settings > Guides</i> for the description of Favorites and Tracking marking.",
-    "tooltipFiltroSeguimientoBalizasMapa": "<b>Tracked beacons filter</b><br><br>Shows only the beacons marked as <i>tracked</i> and hides the rest.<br><br>Check <i>Settings > Guides</i> for the description of Favorites and Tracking marking.",
+    "tooltipFiltroFavoritosBalizasMapa": "<b>Favorite beacons filter</b><br><br>Shows only the beacons marked as <i>favorites</i> and hides the rest.<span class='ocultar-en-balizas'><br><br>Check <i>Settings > Guides</i> for the description of Favorites and Tracking marking.</span>",
+    "tooltipFiltroSeguimientoBalizasMapa": "<b>Tracked beacons filter</b><br><br>Shows only the beacons marked as <i>tracked</i> and hides the rest.<span class='ocultar-en-balizas'><br><br>Check <i>Settings > Guides</i> for the description of Favorites and Tracking marking.</span>",
     "tooltipFiltroActividad": "<b>Takeoff activity level filter</b><br><br>Shows only takeoffs with an activity level equal to or greater than the selected one<br><br>The activity level scores with a grade (from 1 to 5) how much is flown in this place according to the number of flights registered in XContest (the popularity level).<br><br>It is based on the historical volume of flights registered in XContest over 20 years, with adjustments for recent activity (+1 if there have been flights in recent months) or prolonged inactivity (-1 if there are no flights for more than 2 years). Logically, it is a score to give a general idea and is not intended to be a quantifiable real value.<br><br>Check <i>Settings > Guides</i> for the description of the Activity scoring system.",
     "tooltipFiltroVuelos": "<b>Filter for number of registered flights in XContest</b><br><br>Shows only takeoffs that have a number of registered flights in XContest greater than or equal to the selected number. These values are based on the historical record of flights in XContest over the last 20 years. Please note that the analysis is performed up to 2026 and that it is very general data that may not reflect the real current situation."
   },

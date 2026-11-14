@@ -14,6 +14,7 @@
     "tabla": "Tableau",
     "buscar": "Rechercher",
     "distancia": "Distance",
+    "filtroTiemposAcceso": "Filtre des temps d'accès",
     "mapa": "Carte",
     "ajustes": "Paramètres"
   },
@@ -302,7 +303,7 @@
       },
       "btnOrigen": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> Point d'origine",
-        "descripcion": "Ici, vous choisissez le point d'origine pour le filtre de distance.<br><br>Vous pouvez choisir le point à l'aide d'une carte ou de votre position actuelle."
+        "descripcion": "Ici tu choisis le point de départ du filtre de temps en voiture.<br><br>Tu pourras choisir le point sur une carte ou avec ta position actuelle."
       },
       "btnIncNoFavs": {
         "titulo": "<span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> Inclure les non-favoris",
@@ -325,16 +326,20 @@
         "descripcion": "Recherchez ici des décollages par leur nom ou leur province.<br><br>💡 Vous pouvez écrire sans accents pour plus de rapidité."
       },
       "navDistance": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",
-        "descripcion": "Affiche un curseur pour filtrer les décollages dans un rayon autour d'un point.<br><br>👉🏽 Je vais appuyer sur ce bouton maintenant pour ouvrir le filtre."
+        "titulo": "🚗🚶 Temps jusqu'au décollage",
+        "descripcion": "Ouvre les filtres de temps : en voiture depuis un point et à pied depuis la route jusqu'au décollage.<br><br>👉🏽 Je vais maintenant appuyer sur ce bouton pour ouvrir le filtre."
       },
       "filtroDistancia": {
-        "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg><span>Distance</span></div>",
-        "descripcion": "Ce filtre vous permet de voir uniquement les décollages autour d'un point spécifique.<br><br>💡 Utile pour trouver rapidement des décollages à une distance de conduite depuis votre position."
+        "titulo": "🚗🚶 Temps jusqu'au décollage",
+        "descripcion": "Filtre les décollages selon le temps qu'il te faut pour y arriver :<br><br>🚗 En voiture depuis un point que tu choisis (ou 🚗+🚶 en ajoutant la marche).<br>🚶 À pied depuis la route jusqu'au décollage : temps, distance ou dénivelé.<br><br>💡 Pratique pour trouver vite les décollages accessibles avec le temps dont tu disposes."
       },
       "sliderDistancia": {
-        "titulo": "Rayon de distance",
-        "descripcion": "Faites glisser ce curseur pour choisir la distance maximale.<br><br>Le tableau n'affichera que les décollages dans ce rayon."
+        "titulo": "🚗 Temps en voiture",
+        "descripcion": "En faisant glisser ce curseur, tu choisis le temps maximum pour arriver au décollage : en voiture seulement (🚗) ou en ajoutant la marche (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Marche d'approche",
+        "descripcion": "Filtre selon l'accès à pied depuis la route jusqu'au décollage : choisis minutes (⏱️), kilomètres (↔) ou dénivelé positif (↑).<br><br>Avec « 0 min », seuls les décollages accessibles en voiture sont affichés."
       },
       "navMap": {
         "titulo": "<div style='display: flex; align-items: center; gap: 8px;'><svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><polygon points='1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6'></polygon><line x1='8' y1='2' x2='8' y2='18'></line><line x1='16' y1='6' x2='16' y2='22'></line></svg><span>Carte</span></div>",
@@ -384,16 +389,20 @@
         "descripcion": "Recherchez des décollages en tapant la région, la province ou le nom. Vous pouvez taper sans accents pour plus de rapidité."
       },
       "filtroDistancia": {
-        "titulo": "<div style=\"display: flex; align-items: center; gap: 8px;\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg><span>Distance</span></div>",
-        "descripcion": "Ceci est un filtre qui vous permet d'afficher uniquement les décollages autour d'un point spécifique.<br><br>💡 Cela peut vous aider à trouver rapidement des décollages dans un rayon de distance de votre choix autour d'un point."
+        "titulo": "🚗🚶 Temps jusqu'au décollage",
+        "descripcion": "Filtre les décollages selon le temps qu'il te faut pour y arriver :<br><br>🚗 En voiture depuis un point que tu choisis (ou 🚗+🚶 en ajoutant la marche).<br>🚶 À pied depuis la route jusqu'au décollage : temps, distance ou dénivelé.<br><br>💡 Pratique pour trouver vite les décollages accessibles avec le temps dont tu disposes."
       },
       "btnOrigen": {
         "titulo": "<span style=\"background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding: 0 2px;\"><svg viewBox=\"0 0 24 24\" width=\"1em\" height=\"1em\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"vertical-align: -0.125em;\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></span> Point d'origine",
-        "descripcion": "Avec ce bouton, vous choisissez le centre du rayon de recherche de distance.<br><br>Vous pouvez sélectionner le point à l'aide d'une carte ou de votre position actuelle."
+        "descripcion": "Ici tu choisis le point de départ du filtre de temps en voiture.<br><br>Tu pourras choisir le point sur une carte ou avec ta position actuelle."
       },
       "sliderDistancia": {
-        "titulo": "Distance au point",
-        "descripcion": "En faisant glisser ce curseur, vous choisissez la distance maximale en kilomètres."
+        "titulo": "🚗 Temps en voiture",
+        "descripcion": "En faisant glisser ce curseur, tu choisis le temps maximum pour arriver au décollage : en voiture seulement (🚗) ou en ajoutant la marche (🚗+🚶)."
+      },
+      "sliderPie": {
+        "titulo": "🚶 Marche d'approche",
+        "descripcion": "Filtre selon l'accès à pied depuis la route jusqu'au décollage : choisis minutes (⏱️), kilomètres (↔) ou dénivelé positif (↑).<br><br>Avec « 0 min », seuls les décollages accessibles en voiture sont affichés."
       },
       "btnVerSoloFavs": {
         "titulo": "<img src=\"icons/white_heart_48.webp\" class=\"icono-emoji\" alt=\"🤍\"> ↔ <img src=\"icons/red_heart_48.webp\" class=\"icono-emoji\" alt=\"❤️\"> Afficher uniquement les favoris",
@@ -430,15 +439,15 @@
       "descripcion": "Explorez les décollages de parapente et évaluez leurs conditions selon les prévisions horaires.<br><br>Vous pouvez filtrer les décollages par leur score météo, orientation ou niveau d'activité, consulter les balises de vent en temps réel avec des graphiques de tendances, voir les cartes de chaleur des décollages XContest et sélectionner différents types de cartes."
     },
     "filtroHorarioMeteo": {
-      "titulo": "Plage horaire et filtre",
+      "titulo": "🕐–🕕 Plage horaire et filtre",
       "descripcion": "Sélectionnez le jour et la plage horaire de vol souhaitée.<br><br>Les icônes de la carte seront colorées avec une gradation en 10 étapes du rouge au vert 🟥🟧🟩 selon la qualité des conditions à cette heure, tout comme dans le tableau."
     },
     "filtroPuntuacion": {
-      "titulo": "Filtre par score",
+      "titulo": "⭐ Filtre par score",
       "descripcion": "Filtrez les décollages selon le score de leurs prévisions météorologiques et pour la plage horaire sélectionnée.<br><br>Faites glisser ce contrôle pour fixer une note minimale (de 0 à 10 étoiles) et masquer ainsi les décollages dont l'évaluation n'atteint pas votre niveau d'exigence dans l'horaire sélectionné.<br><br>N'oubliez pas que vous pouvez ajuster toutes ces limites pour le score dans <i>Paramètres</i> selon vos préférences."
     },
     "btnCerrarFiltroMeteo": {
-      "titulo": "Fermer le contrôle horaire et le filtre météo",
+      "titulo": "❌ Fermer le contrôle horaire et le filtre météo",
       "descripcion": "Ferme ce panneau, de sorte que les décollages ne soient plus colorés en fonction de leur météo et s'affichent en blanc.<br><br>Cela peut être utile pour explorer les décollages ou les balises de vent avec un maximum d'espace à l'écran."
     },
     "buscadorMapa": {
@@ -455,7 +464,8 @@
     },
     "panelFiltros": {
       "titulo": "Filtres",
-      "descripcion": "Filtrez les informations de la carte selon vos besoins. Vous pouvez afficher ou masquer uniquement vos décollages et balises favoris ou suivis. De plus, vous pouvez filtrer les décollages par orientation, niveau d'activité ou volume de vols enregistrés sur XContest, et filtrer les balises selon leur altitude."
+      "descripcion": "Filtrez les informations de la carte selon vos besoins. Vous pouvez afficher ou masquer uniquement vos décollages et balises favoris ou suivis. De plus, vous pouvez filtrer les décollages par orientation, niveau d'activité ou volume de vols enregistrés sur XContest, et filtrer les balises selon leur altitude. Tu peux aussi filtrer les décollages par temps en voiture depuis un point et par la marche jusqu'au décollage (temps, distance ou dénivelé).",
+      "descripcionSimple": "Filtre les décollages de la carte : tu peux afficher uniquement tes décollages favoris ou les filtrer selon leur niveau d'activité."
     },
     "btnPlaneo": {
       "titulo": "Calcul de finesse",
@@ -466,7 +476,7 @@
       "descripcion": "Centre la carte sur votre position actuelle."
     },
     "btnGeocoder": {
-      "titulo": "Recherche générale",
+      "titulo": "🌍 Recherche générale",
       "descripcion": "Recherchez n'importe quelle ville, municipalité, montagne ou zone géographique pour y naviguer rapidement.<br><br>Vous pouvez également taper directement les coordonnées au format décimal (ex: 42.734 -1.990) pour centrer la carte sur un point précis."
     },
     "controlCapas": {
@@ -474,11 +484,11 @@
       "descripcion": "Choisissez le type de carte de fond que vous préférez : topographique, photos aériennes, relief, zones thermiques et itinéraires (skyways et thermals KK7) et couches aéronautiques/restrictions."
     },
     "btnFiltrosMeteo": {
-      "titulo": "Bouton Météo",
+      "titulo": "⛅ Bouton Météo",
       "descripcion": "Ouvre la barre météorologique pour filtrer par heures ou jour de la semaine directement sur la carte."
     },
     "navTabla": {
-      "titulo": "Vue Tableau",
+      "titulo": "📋 Vue Tableau",
       "descripcion": "Accédez au tableau météorologique horaire détaillé. Vous y verrez les prévisions complètes de chaque décollage (vent à différentes hauteurs, rafales, direction, cisaillement, plafond thermique XC, pluie et température) évaluées avec des couleurs selon vos limites de sécurité.<br><br>Vous pourrez filtrer par horaire de vol, rechercher des décollages par province ou distance, gérer vos favoris et voir les prévisions immédiates (nowcasting) Arome par intervalles de 15 minutes."
     }
   }
@@ -673,7 +683,7 @@
     "recordarEstadoFiltroHorario": "Mémoriser l'état du filtre météo (ouvert/fermé)",
     "recordarCapasActivas": "Mémoriser les couches actives",
     "recordarTipoMapa": "Mémoriser le type de carte",
-    "recordarFiltrosMapa": "Mémoriser les filtres",
+    "recordarFiltrosMapa": "Mémoriser le filtre des décollages favoris",
     "guia": "Guide",
     "ayuda": "Aide",
     "legal": "Légal",
@@ -878,6 +888,12 @@
   },
 
   "popupDespegue": {
+    "enCoche": "En voiture 🚗 :",
+    "elegirOrigen": "Choisir l'origine",
+    "aPie": "À pied 🚶 :",
+    "rutaVerificada": "Itinéraire vérifié manuellement",
+    "rutaAutomatica": "Itinéraire calculé automatiquement (peut contenir des erreurs)",
+    "enCocheHastaDespegue": "Accessible en voiture",
     "region": "Région :",
     "provincia": "Province :",
     "orientacion": "Orientation :",
@@ -898,6 +914,15 @@
   "html": {
     "verTodosDiasTitle": "Voir tous les jours",
     "distanciaDesde": "Distance depuis :",
+    "sinLimite": "Sans limite",
+    "tiempoDesde": "<span class=\"emoji-titulo-coche\">🚗</span> depuis",
+    "modoCoche": "🚗 Voiture",
+    "modoTotal": "🚗+🚶 Total",
+    "estimadoLineaRecta": "Sans données temps/distance. Estimation approximative.",
+    "aPie": "À pied",
+    "unidadPieMin": "<span class=\"emoji-boton\">⏱️</span><span class=\"texto-unidad\">min</span>",
+    "unidadPieKm": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4\"/></svg><span class=\"texto-unidad\">km</span>",
+    "unidadPieM": "<svg class=\"flecha-unidad\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 20V4M7 9l5-5 5 5\"/></svg><span class=\"texto-unidad\">m</span>",
     "seleccionarOrigen": "Sélectionner l'origine",
     "incluirNoFavs": "Inclure les non-favoris dans le filtre",
     "resetFiltroDistancia": "Réinitialiser et masquer le filtre de distance",
@@ -970,6 +995,8 @@
   "btn_info": {
     "tooltipVientoLimites": "<b>Vent moyen minimum, idéal et maximum (km/h) :</b><br><br>Le système automatisé d'évaluation des conditions prendra ces valeurs en compte.<br><br>La couleur des données dans le tableau indique visuellement l'analyse des conditions basée sur les valeurs que vous définissez ici (Min, Idéal et Max).<br><br>🟧 Orange : vent faible inférieur à votre vent minimum (généralement 0, sauf si vous avez besoin d'un vent spécifique pour le vol de pente ou d'autres raisons).<br>🟩 Vert : vent idéal, du minimum jusqu'à une marge de sécurité avant le maximum.<br>🟧 Orange : vent plus fort approchant le maximum (le dernier tiers avant d'atteindre le maximum).<br>🟥 Rouge : vent très fort dépassant votre limite de vent maximum.<br><br><b>Définition technique standard de l'OMM (Organisation Météorologique Mondiale) de la vitesse moyenne à 10 m</b> :<br><br>C'est la vitesse moyenne du vent soutenu au cours des 10 dernières minutes avant l'heure indiquée. Elle est mesurée à une hauteur standard de 10 mètres au-dessus du sol (évitant la friction immédiate du terrain). Elle représente le flux laminaire ou de base.",
     "filtroDistanciaCompleto": "<b>Filtre de distance des décollages :</b><br><br>N'affiche que les décollages dans le rayon de distance que vous sélectionnez.<br><br>Utilisez le bouton <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 50%; display: inline-block; padding: 0 2px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -3px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> pour définir la position d'origine. Vous pouvez utiliser la carte ou la position actuelle de votre appareil.<span class='texto-oculto-en-edicion'><br><br>Utilisez le bouton <span style='background-color: #f0f0f0; border: 1px solid #a0a0a0; border-radius: 4px; display: inline-block; padding-left: 5px; padding-right: 5px;'><img src='icons/red_heart_48.webp' class='icono-emoji' alt='❤️'>+<img src='icons/white_heart_48.webp' class='icono-emoji' alt='🤍'></span> pour inclure les décollages non favoris dans le filtre, ce qui signifie <b>inclure temporairement tous les décollages</b> disponibles dans la base de données.<br><br>Lorsqu'il est activé, un filtre initial de 100 km est appliqué pour éviter de surcharger le tableau. Vous pouvez l'ajuster en fonction de vos besoins et des performances de votre appareil.</span>",
+    "filtroTiempoDespegue": "<b>Temps jusqu'au décollage :</b><br><br>N'affiche que les décollages que vous atteignez dans le temps choisi depuis votre origine.<br><br>Utilisez le bouton <span style='background-color: #fff; border: 1.5px solid #ccc; border-radius: 8px; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); display: inline-block; padding: 0 8px;'><svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin-top: -2px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg></span> pour choisir l'origine sur la carte ou avec la position de votre appareil.<br><br><b>🚗 Voiture :</b> temps en voiture jusqu'à la route la plus proche du décollage.<br><b>🚗+🚶 Total :</b> voiture plus la marche jusqu'au décollage.<br><br>C'est le même filtre dans le tableau et sur la carte.",
+    "filtroAPie": "<b>Marche d'approche :</b><br><br>N'affiche que les décollages selon la marche nécessaire depuis le point le plus accessible en voiture jusqu'au décollage. Vous pouvez choisir entre temps, distance ou dénivelé positif. Si vous sélectionnez « 0 min », seuls les décollages accessibles en voiture sont affichés.<br><br>Calculé avec l'itinéraire à pied d'OpenStreetMap depuis le point de la route le plus logique, 4,5 km/h sur le plat et 450 m/h de montée. C'est un calcul général. Vérifiez-le pour l'adapter à votre situation ou à d'autres accès.<br><br>Le bouton <svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='#555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle;'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='7' x2='12' y2='7' stroke-width='3'></line><polyline points='10.5 11 12 11 12 17'></polyline></svg> (Information) de chaque décollage (ou sa fenêtre sur la carte) indique les données de la marche d'approche et un lien vers l'itinéraire. Si un (🤖) s'affiche, c'est que l'itinéraire a été calculé automatiquement (peut contenir des erreurs).",
     "tooltipRachaMaxima": "<b>Rafale maximale (km/h) :</b><br><br>Le système automatisé d'évaluation des conditions prendra ces valeurs en compte.<br><br>La couleur des données dans le tableau indique visuellement l'analyse des conditions basée sur la valeur que vous définissez ici.<br><br>🟩 Vert : rafale maximale sûre, loin de la limite.<br>🟧 Orange : rafale maximale approchant de votre limite de rafale maximale.<br>🟥 Rouge : rafale dépassant votre limite de rafale maximale.<br><br><b>Définition technique standard de l'OMM (Organisation Météorologique Mondiale) de la rafale maximale à 10 m</b> :<br><br>C'est le pic maximum de vitesse instantanée (d'une durée de 3 secondes) enregistré à n'importe quel moment au cours de la période d'une heure précédente. Elle représente les fluctuations brèves et intenses superposées au vent moyen, associées à la turbulence mécanique ou thermique (convection).",
     "tooltipResetearEnlaces": "<b>Réinitialiser le comportement des liens</b><br><br>Dans l'application, lors de la première ouverture d'un lien pouvant avoir une application native installée, il vous est demandé si vous souhaitez l'ouvrir sur le web (dans Fly Decision) ou dans l'application. Si vous avez coché <i>Se souvenir de mon choix</i>, la question ne sera plus posée.<br><br>Ce bouton efface ces choix pour que la question vous soit à nouveau posée.",
     "tooltipEdicionLimites": "<b>Éditer les décollages avec des limites ou une orientation personnalisées</b><br><br>Affiche dans le tableau uniquement les décollages pour lesquels vous avez ajusté les limites de vent et de rafale (différent de 100 %) ou marqué une orientation idéale.<br><br>Cliquez sur ↺ sur un décollage pour le réinitialiser : il revient à 100 % (les limites générales ci-dessus) et sans orientation idéale. Le ↺ dans l'en-tête les réinitialise tous. Pour modifier le pourcentage ou l'orientation idéale, utilisez le bouton ⓘ de chaque décollage. Vous pouvez le faire ici, dans le Tableau ou sur la Carte.<br><br>Le bouton est désactivé si vous n'avez aucun décollage personnalisé.",
@@ -1014,8 +1041,8 @@
     "tooltipcheckboxBalizasWeatherUnderground": "<b>Balises de vent WeatherUnderground</b><br><br>ℹ️ <b>Réseau non intégré à FlyDecision.</b> Il apparaît en gris car nous n'affichons que l'emplacement des balises, pas leurs données de vent. Pour les consulter, la fiche de chaque balise propose des liens directs vers le site de WeatherUnderground et vers <b>Tolomet (recommandé)</b>.<br><br><ul style='margin:0; padding-left:18px;'><li><b>Propriété</b>: WeatherUnderground</li><li><b>Couverture géographique</b>: Mondiale</li><li><b>Nombre approximatif de balises affichées</b>: 5000</li><li><b>Fréquence approximative de mise à jour des données</b>: 15 minutes (variable selon la station)</li><li><b>Web</b>: <a href='https://www.wunderground.com/wundermap' target='_blank' style='color: #007bff; text-decoration: underline;'>WeatherUnderground</a></li></ul>",
     "tooltipFiltroFavoritosMapa": "<b>Filtre des décollages favoris</b><br><br>Affiche uniquement les décollages marqués comme <i>favoris</i> et masque le reste.<br><br>S'il est sélectionné une deuxième fois, il n'affiche que ceux qui ne sont pas des favoris. Ce mode est utile pour localiser dans votre zone préférée de nouveaux décollages introduits dans la base de données ou pour revoir ceux que vous n'avez pas encore marqués comme favoris.<br><br>La troisième fois qu'il est sélectionné, le filtre est désactivé.<br><br>Consultez <i>Paramètres > Guides</i> pour la description du marquage des Favoris et Suivi.",
     "tooltipFiltroSeguimientoMapa": "<b>Filtre des décollages suivis</b><br><br>Affiche uniquement les décollages marqués comme <i>en suivi</i> et masque le reste.<br><br>Consultez <i>Paramètres > Guides</i> pour la description du marquage des Favoris et Suivi.",
-    "tooltipFiltroFavoritosBalizasMapa": "<b>Filtre des balises favorites</b><br><br>Affiche uniquement les balises marquées comme <i>favorites</i> et masque le reste.<br><br>Consultez <i>Paramètres > Guides</i> pour la description du marquage des Favoris et Suivi.",
-    "tooltipFiltroSeguimientoBalizasMapa": "<b>Filtre des balises en suivi</b><br><br>Affiche uniquement les balises marquées comme <i>en suivi</i> et masque le reste.<br><br>Consultez <i>Paramètres > Guides</i> pour la description du marquage des Favoris et Suivi.",
+    "tooltipFiltroFavoritosBalizasMapa": "<b>Filtre des balises favorites</b><br><br>Affiche uniquement les balises marquées comme <i>favorites</i> et masque le reste.<span class='ocultar-en-balizas'><br><br>Consultez <i>Paramètres > Guides</i> pour la description du marquage des Favoris et Suivi.</span>",
+    "tooltipFiltroSeguimientoBalizasMapa": "<b>Filtre des balises en suivi</b><br><br>Affiche uniquement les balises marquées comme <i>en suivi</i> et masque le reste.<span class='ocultar-en-balizas'><br><br>Consultez <i>Paramètres > Guides</i> pour la description du marquage des Favoris et Suivi.</span>",
     "tooltipFiltroActividad": "<b>Filtre du niveau d'activité du décollage</b><br><br>Affiche uniquement les décollages avec un niveau d'activité égal ou supérieur à celui sélectionné<br><br>Le niveau d'activité note (de 1 à 5) la fréquence des vols à cet endroit selon le nombre de vols enregistrés sur XContest (le niveau de popularité).<br><br>Il est basé sur le volume historique des vols enregistrés sur XContest sur 20 ans, avec des ajustements pour l'activité récente (+1 s'il y a eu des vols ces derniers mois) ou l'inactivité prolongée (-1 s'il n'y a pas eu de vols depuis plus de 2 ans). Logiquement, c'est une note pour donner une idée générale et ne prétend pas être une valeur réelle quantifiable.<br><br>Consultez <i>Paramètres > Guides</i> pour la description du système de notation par Activité.",
     "tooltipFiltroVuelos": "<b>Filtre du nombre de vols enregistrés sur XContest</b><br><br>Affiche uniquement les décollages qui ont un nombre de vols enregistrés sur XContest supérieur ou égal au nombre sélectionné. Ces valeurs sont basées sur l'enregistrement historique des vols sur XContest au cours des 20 dernières années. Veuillez noter que l'analyse est réalisée jusqu'en 2026 et qu'il s'agit d'une donnée très générale qui peut ne pas refléter la situation actuelle réelle."
   },
