@@ -532,7 +532,214 @@ function cargarSinopticoEcmwf(dataEcmwf) {
         .finally(() => { descargaSinopticoEcmwfEnCurso = null; });
 }
 
-const CORTES_DISTANCIA_GLOBAL =[5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 9999];
+// Cortes del deslizador de tiempo al despegue, en MINUTOS (desde 2026-11; el nombre es histórico, antes eran km en línea recta)
+const CORTES_DISTANCIA_GLOBAL =[10, 15, 20, 25, 30, 40, 50, 60, 75, 90, 105, 120, 150, 180, 240, 300, 9999];
+// Mientras no haya tiempos reales en coche: minutos estimados = km en línea recta × este factor (1 km ≈ 1 min)
+const FACTOR_MIN_POR_KM_RECTA = 1;
+// Cortes del deslizador del tramo a pie, según la unidad elegida (0 = se llega en coche al despegue)
+const CORTES_PIE_GLOBAL = {
+    min: [0, 5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 9999],
+    km:  [0, 0.2, 0.5, 1, 2, 3, 5, 8, 9999],
+    m:   [0, 50, 100, 150, 200, 300, 500, 700, 1000, 1500, 9999]
+};
+let modoTiempoDespegue = 'coche'; // 'coche' | 'total' (coche + tramo a pie)
+let unidadFiltroPie = 'min';      // 'min' | 'km' | 'm'
+// Datos del tramo a pie por ID de despegue: { min, km, m }. Precalculados en el servidor (INTERNO_acceso_pie_generador.php → acceso-pie.json)
+window.datosAccesoPie = window.datosAccesoPie || {};
+
+// Carga acceso-pie.json (~40 KB, cambia poco): primero lo guardado en localStorage y luego la versión del servidor
+// (clave de caché por hora: las correcciones del visor llegan a la app en menos de 1 h)
+function cargarDatosAccesoPie() {
+    try {
+        const guardado = JSON.parse(localStorage.getItem('METEO_ACCESO_PIE_CACHE') || 'null');
+        if (guardado && guardado.despegues) window.datosAccesoPie = guardado.despegues;
+    } catch (e) { /* caché corrupta: se ignora */ }
+    const hora = new Date().toISOString().slice(0, 13);
+    fetchConTimeout(`https://flydecision.com/acceso-pie.json?d=${hora}`, {}, TIMEOUT_DESCARGA_DATOS_MS)
+        .then(res => {
+            if (!res.ok) throw new Error(`⚠️ Error al cargar acceso-pie.json (HTTP ${res.status})`);
+            return res.json();
+        })
+        .then(datos => {
+            if (!datos || !datos.despegues) return;
+            const cambia = JSON.stringify(datos.despegues) !== JSON.stringify(window.datosAccesoPie);
+            window.datosAccesoPie = datos.despegues;
+            try { localStorage.setItem('METEO_ACCESO_PIE_CACHE', JSON.stringify(datos)); } catch (e) { /* sin espacio: da igual */ }
+            // Si ya hay un filtro de tiempo/a pie aplicado, se vuelve a filtrar con los datos nuevos
+            if (cambia && typeof window.hayFiltroTiempoActivo === 'function' && window.hayFiltroTiempoActivo()) {
+                if (typeof window.aplicarFiltrosVisuales === 'function') ejecutarOperacionPesada(() => { window.aplicarFiltrosVisuales(); });
+                if (typeof window.sincronizarFiltroDistanciaMapa === 'function') window.sincronizarFiltroDistanciaMapa();
+            }
+        })
+        .catch(error => registrarError('carga', error, 'acceso-pie'));
+}
+window.addEventListener('DOMContentLoaded', cargarDatosAccesoPie);
+
+// ---------------------------------------------------------------
+// 🚗 Tiempos reales en coche desde el origen a cada despegue (tiempos-coche.php → OpenRouteService, con caché en el servidor)
+// ---------------------------------------------------------------
+const CELDA_ORIGEN_COCHE = 0.03;        // cuadrícula del origen (~3 km). Igual que CELDA_GRADOS en tiempos-coche.php
+const DIAS_CACHE_TIEMPOS_COCHE = 30;    // validez de la copia guardada en el dispositivo
+const MIN_REINTENTO_TIEMPOS_COCHE = 10; // tras un fallo (sin red, tope diario…) no se vuelve a pedir la misma celda en estos minutos
+// celda = «lat_lon» del origen redondeado · t[ID] = [minutos, km] · null o sin ID = ORS no da ruta en coche (Aneto, Zermatt…): se estima en línea recta
+window.tiemposCoche = { celda: null, t: {} };
+let celdaTiemposCochePidiendo = null;
+let falloTiemposCoche = { celda: null, hora: 0 };
+
+// Celda del origen guardado: { lat, lon, clave } (null si aún no hay origen)
+function celdaOrigenCoche() {
+    const lat = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL'));
+    const lon = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL'));
+    if (isNaN(lat) || isNaN(lon)) return null;
+    const redondear = v => (Math.round(v / CELDA_ORIGEN_COCHE) * CELDA_ORIGEN_COCHE).toFixed(2);
+    return { lat: redondear(lat), lon: redondear(lon), clave: `${redondear(lat)}_${redondear(lon)}` };
+}
+
+// Repinta «En coche / A pie» en las fichas de despegue que estén abiertas (mapa y tabla): al llegar los tiempos o al elegir origen
+function repintarFichasAbiertasAcceso() {
+    document.querySelectorAll('.leaflet-popup .acceso-pie-popup[data-id-desp], [data-tippy-root] .acceso-pie-popup[data-id-desp]').forEach(pintarAccesoDespegue);
+}
+
+// Vuelve a filtrar (tabla y mapa) cuando llegan o cambian los tiempos en coche
+function refrescarTrasTiemposCoche() {
+    repintarFichasAbiertasAcceso();
+    if (typeof window.hayFiltroTiempoActivo === 'function' && window.hayFiltroTiempoActivo()) {
+        if (typeof window.aplicarFiltrosVisuales === 'function') ejecutarOperacionPesada(() => { window.aplicarFiltrosVisuales(); });
+    }
+    if (typeof window.sincronizarFiltroDistanciaMapa === 'function') window.sincronizarFiltroDistanciaMapa();
+}
+
+// Carga los tiempos en coche de la celda del origen: primero la copia del dispositivo y, si no vale, el servidor.
+// soloLocal = true → no pide nada al servidor (arranque). Se llama al aplicar el filtro de tiempo y al cambiar el origen.
+function cargarTiemposCoche(soloLocal = false) {
+    const c = celdaOrigenCoche();
+    if (!c || window.tiemposCoche.celda === c.clave) return;
+    try {
+        const guardado = JSON.parse(localStorage.getItem('METEO_TIEMPOS_COCHE_CACHE') || 'null');
+        if (guardado && guardado.celda === c.clave && guardado.t && Date.now() - guardado.guardado < DIAS_CACHE_TIEMPOS_COCHE * 86400000) {
+            window.tiemposCoche = { celda: guardado.celda, t: guardado.t };
+            refrescarTrasTiemposCoche();
+            return;
+        }
+    } catch (e) { /* caché corrupta: se ignora */ }
+    if (soloLocal || celdaTiemposCochePidiendo === c.clave) return;
+    if (falloTiemposCoche.celda === c.clave && Date.now() - falloTiemposCoche.hora < MIN_REINTENTO_TIEMPOS_COCHE * 60000) return;
+
+    celdaTiemposCochePidiendo = c.clave;
+    fetchConTimeout(`https://flydecision.com/tiempos-coche.php?lat=${c.lat}&lon=${c.lon}`, {}, TIMEOUT_DESCARGA_DATOS_MS)
+        .then(res => {
+            // 429/503 = tope o cuota del día: es lo previsto, no un error (se sigue estimando en línea recta)
+            if (res.status === 429 || res.status === 503) return null;
+            if (!res.ok) throw new Error(`⚠️ Error al cargar tiempos-coche.php (HTTP ${res.status})`);
+            return res.json();
+        })
+        .then(datos => {
+            celdaTiemposCochePidiendo = null;
+            if (!datos || !datos.t) { falloTiemposCoche = { celda: c.clave, hora: Date.now() }; return; }
+            window.tiemposCoche = { celda: c.clave, t: datos.t };
+            try { localStorage.setItem('METEO_TIEMPOS_COCHE_CACHE', JSON.stringify({ celda: c.clave, guardado: Date.now(), t: datos.t })); } catch (e) { /* sin espacio: da igual */ }
+            refrescarTrasTiemposCoche();
+        })
+        .catch(error => {
+            celdaTiemposCochePidiendo = null;
+            falloTiemposCoche = { celda: c.clave, hora: Date.now() };
+            registrarError('carga', error, 'tiempos-coche');
+        });
+}
+window.cargarTiemposCoche = cargarTiemposCoche;
+window.addEventListener('DOMContentLoaded', () => cargarTiemposCoche(true));
+
+// Tiempo en coche para la ficha del despegue: "En coche 🚗:" y debajo "1 h 05 min · 82 km" ('' si no hay origen o aún no hay tiempos reales).
+// El dato enlaza a la ruta en Google Maps: del origen exacto al punto de carretera donde empieza el tramo a pie
+// (pie.r) o, si no lo hay, al propio despegue (latDesp, lonDesp).
+function textoTiempoCocheDespegue(id, latDesp, lonDesp) {
+    const celda = celdaOrigenCoche();
+    // Sin origen: «Elegir origen 📍» abre el mismo selector que el botón del filtro (el origen queda guardado igual)
+    if (!celda) {
+        const chincheta = "<svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='vertical-align: middle; margin: -2px 0 0 4px;'><path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'></path><circle cx='12' cy='10' r='3'></circle></svg>";
+        return `${t('popupDespegue.enCoche')}<br><a href='#' onclick="if(event){event.stopPropagation(); event.preventDefault();} document.getElementById('btn-abrir-geo-menu')?.click(); return false;"><b>${t('popupDespegue.elegirOrigen')}</b>${chincheta}</a>`;
+    }
+    if (window.tiemposCoche.celda !== celda.clave) return '';
+    const coche = window.tiemposCoche.t[String(id)];
+    if (!Array.isArray(coche) || !Number.isFinite(Number(coche[0]))) return '';
+    const partes = [formatearTooltipFiltroTiempo(Number(coche[0]), 'min').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim() || '0 min'];
+    if (Number.isFinite(Number(coche[1]))) partes.push(`${Number(coche[1])} km`);
+    const datos = partes.join(' · ');
+
+    let destino = '';
+    const pie = window.datosAccesoPie[Number(id)];
+    if (pie && typeof pie.r === 'string' && /^[-0-9.,;]+$/.test(pie.r)) {
+        const inicio = pie.r.split(';')[0].split(','); // lon,lat del punto de carretera
+        if (inicio.length >= 2) destino = `${inicio[1]},${inicio[0]}`;
+    }
+    if (!destino && Number.isFinite(latDesp) && Number.isFinite(lonDesp)) destino = `${latDesp},${lonDesp}`;
+    const latO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL'));
+    const lonO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL'));
+    if (!destino || isNaN(latO) || isNaN(lonO)) return `${t('popupDespegue.enCoche')}<br><b>${datos}</b>`;
+
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${latO},${lonO}&destination=${destino}&travelmode=driving`;
+    return `${t('popupDespegue.enCoche')}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'><b>${datos}</b></a>`;
+}
+
+// Ficha del despegue: tiempo en coche (si hay origen) y, debajo, el tramo a pie. Si hay origen pero aún no se han pedido
+// sus tiempos en coche, se piden ahora (al llegar, refrescarTrasTiemposCoche repinta las fichas abiertas).
+function textoAccesoDespegue(id, latDesp, lonDesp) {
+    cargarTiemposCoche();
+    return [textoTiempoCocheDespegue(id, latDesp, lonDesp), textoAccesoPieDespegue(id)].filter(Boolean).join('<br>');
+}
+
+// Rellena un <div class="acceso-pie-popup" data-id-desp="…"> de una ficha
+function pintarAccesoDespegue(div) {
+    if (!div || !div.dataset.idDesp) return;
+    // Coordenadas del despegue (destino del enlace en coche si no hay punto de carretera): del propio div o de la tabla
+    let lat = parseFloat(div.dataset.lat), lon = parseFloat(div.dataset.lon);
+    if ((isNaN(lat) || isNaN(lon)) && window.bdGlobalDespegues) {
+        const d = window.bdGlobalDespegues.find(x => String(x.ID) === String(div.dataset.idDesp));
+        if (d) { lat = parseFloat(d.Latitud); lon = parseFloat(d.Longitud); }
+    }
+    const txt = textoAccesoDespegue(Number(div.dataset.idDesp), lat, lon);
+    div.innerHTML = txt;
+    div.style.display = txt ? 'block' : 'none';
+}
+
+// Tramo a pie para la ficha del despegue: "A pie 🚶:" y debajo "25 min · 1,2 km · ↑300 m" ('' si no hay dato)
+function textoAccesoPieDespegue(id) {
+    const pie = window.datosAccesoPie[Number(id)];
+    if (!pie || !Number.isFinite(Number(pie.min))) return '';
+    let datos;
+    // Solo se marca lo NO revisado: 🤖 = cálculo automático, «A pie 🚶 (🤖):». Las revisadas (pie.c) van sin marca.
+    // El texto sale en un globo Tippy al pulsar (data-tippy-content, delegado en body): así se ve también en móvil
+    const marca = pie.c ? '' : ` (<span data-tippy-content="${t('popupDespegue.rutaAutomatica').replace(/"/g, '&quot;')}" style="cursor: pointer;">🤖</span>)`;
+    const titulo = t('popupDespegue.aPie').replace(/\s*:\s*$/, '') + `${marca}:`;
+    if (Number(pie.min) === 0 && !Number(pie.km)) {
+        datos = t('popupDespegue.enCocheHastaDespegue');
+    } else {
+        const partes = [formatearTooltipFiltroTiempo(Number(pie.min), 'min').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()];
+        if (Number.isFinite(Number(pie.km))) partes.push(`${String(Number(pie.km)).replace('.', ',')} km`);
+        if (Number.isFinite(Number(pie.m)) && Number(pie.m) > 0) partes.push(`↑${Number(pie.m)} m`);
+        datos = partes.join(' · ');
+        // Enlace a la ruta en BRouter: pie.r = "lon,lat;lon,lat[;…]" (de la carretera al despegue)
+        if (typeof pie.r === 'string' && /^[-0-9.,;]+$/.test(pie.r)) {
+            const fin = pie.r.split(';').pop().split(',');
+            const url = `https://brouter.de/brouter-web/#map=14/${fin[1]}/${fin[0]}/OpenTopoMap&lonlats=${pie.r}&profile=hiking-mountain`;
+            return `${titulo}<br><a href='${url}' onclick='abrirLinkExterno(this.href); return false;'><b>${datos}</b></a>`;
+        }
+    }
+    return `${titulo}<br><b>${datos}</b>`;
+}
+
+// Texto del tooltip de los deslizadores de tiempo / a pie (∞, "45 min", "1 h 30 min", "0,5 km", "200 m")
+function formatearTooltipFiltroTiempo(val, unidad) {
+    if (val >= 9999) return ''; // sin filtro: no se muestra nada (el CSS oculta el tooltip vacío)
+    const u = (txt) => `<span class="unidad-tooltip">${txt}</span>`;
+    if (unidad === 'km') return `${String(val).replace('.', ',')}${u('km')}`;
+    if (unidad === 'm') return `↑${val}${u('m')}`;
+    if (val >= 60) {
+        const h = Math.floor(val / 60), m = val % 60;
+        return m ? `${h}${u('h')}&nbsp;${m}${u('min')}` : `${h}${u('h')}`;
+    }
+    return `${val}${u('min')}`;
+}
 
 let guiaActiva = false;
 let actualizacionesPendientes = [];
@@ -1216,6 +1423,8 @@ function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
     
     if(modalMapa) modalMapa.style.display = 'none';
 
+    repintarFichasAbiertasAcceso(); // si se eligió desde «Elegir origen» de una ficha, pide y muestra su tiempo en coche
+
     // RESTAURAR LA INTENCIÓN DE LA USUARIA SI EXISTE
     const sliderDistElem = document.getElementById('distancia-slider');
     if (window.distanciaPendienteFiltro !== undefined && window.distanciaPendienteFiltro !== null) {
@@ -1228,6 +1437,8 @@ function seleccionarUbicacionYFiltrar(lat, lng, metodo) {
     } else {
         // Si no había intención previa, solo aplicamos filtros normales
         ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
+        // El mapa usa el mismo origen: refrescamos sus marcadores
+        if (typeof window.sincronizarFiltroDistanciaMapa === 'function') window.sincronizarFiltroDistanciaMapa();
     }
 }
 
@@ -2012,18 +2223,26 @@ function iniciarGuiaPrincipal(forzar = false) {
                     description: t('guiaPrincipal.pasos.btnOrigen.descripcion')
                 }
             }] : []),
-            ...(!esModoSimple ? [{ 
-                element: '#btn-incluir-no-favs-distancia',
-                popover: { 
-                    title: t('guiaPrincipal.pasos.btnIncNoFavs.titulo'), 
-                    description: t('guiaPrincipal.pasos.btnIncNoFavs.descripcion')
-                }
-            }] : []),
+            // Botón ❤️+🤍 desactivado (2026-11): paso de la guía comentado
+            // ...(!esModoSimple ? [{ 
+            //     element: '#btn-incluir-no-favs-distancia',
+            //     popover: { 
+            //         title: t('guiaPrincipal.pasos.btnIncNoFavs.titulo'), 
+            //         description: t('guiaPrincipal.pasos.btnIncNoFavs.descripcion')
+            //     }
+            // }] : []),
             ...(!esModoSimple ? [{ 
                 element: '#distancia-slider',
                 popover: { 
                     title: t('guiaPrincipal.pasos.sliderDistancia.titulo'), 
                     description: t('guiaPrincipal.pasos.sliderDistancia.descripcion') 
+                }
+            }] : []),
+            ...(!esModoSimple ? [{ 
+                element: '#pie-slider',
+                popover: { 
+                    title: t('guiaPrincipal.pasos.sliderPie.titulo'), 
+                    description: t('guiaPrincipal.pasos.sliderPie.descripcion') 
                 },
                 onDeselected: () => {
                     const panel = document.getElementById('div-filtro-distancia');
@@ -2382,6 +2601,14 @@ function iniciarGuiaFavoritos(forzar = false) {
                 } 
             }] : []),
 
+            ...(!esModoSimple ? [{ 
+                element: '#pie-slider',
+                popover: { 
+                    title: t('guiaFavoritos.pasos.sliderPie.titulo'), 
+                    description: t('guiaFavoritos.pasos.sliderPie.descripcion')
+                } 
+            }] : []),
+
             { 
                 element: '#btn-filtro-favoritos-toggle',
                 popover: { 
@@ -2518,6 +2745,20 @@ function iniciarGuiaMapa(forzar = false) {
         window.activarMenuInferior(btnNavMap);
     }
 
+    // Título con el icono SVG real del botón (copiado del propio botón), como en la guía de la tabla
+    const tituloConIcono = (selectorOHtml, texto) => {
+        // <icon-despegue> ya trae su propio tamaño y alineación: igual que en la guía de la tabla, sin envolver
+        if (selectorOHtml.startsWith('<icon-')) return selectorOHtml + texto;
+        let svg = '';
+        if (selectorOHtml.startsWith('<')) svg = selectorOHtml;
+        else {
+            const el = document.querySelector(selectorOHtml);
+            if (el) { const c = el.cloneNode(true); c.removeAttribute('style'); c.setAttribute('width', '20'); c.setAttribute('height', '20'); svg = c.outerHTML; }
+        }
+        return svg ? `<div style='display: flex; align-items: center; gap: 8px;'><span style='display: inline-flex; flex: none; width: 20px; height: 20px;'>${svg}</span><span>${texto}</span></div>` : texto;
+    };
+    const SVG_LUPA_GUIA = "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg>";
+
     const driverObj = window.driver.js.driver({
 
         showProgress: true, 
@@ -2536,7 +2777,7 @@ function iniciarGuiaMapa(forzar = false) {
         steps: [
             { 
                 popover: { 
-                    title: t('guiaMapa.pasos.intro.titulo'), 
+                    title: tituloConIcono('#nav-map svg', t('guiaMapa.pasos.intro.titulo')), 
                     description: t('guiaMapa.pasos.intro.descripcion') 
                 } 
             },
@@ -2572,42 +2813,42 @@ function iniciarGuiaMapa(forzar = false) {
             { 
                 element: '.leaflet-text-search-input',
                 popover: { 
-                    title: t('guiaMapa.pasos.buscadorMapa.titulo'), 
+                    title: tituloConIcono(SVG_LUPA_GUIA, t('guiaMapa.pasos.buscadorMapa.titulo')), 
                     description: t('guiaMapa.pasos.buscadorMapa.descripcion')
                 } 
             },
             { 
                 element: '#infoPanel',
                 popover: { 
-                    title: t('guiaMapa.pasos.panelDespegues.titulo'), 
+                    title: tituloConIcono('<icon-despegue></icon-despegue>', t('guiaMapa.pasos.panelDespegues.titulo')), 
                     description: t('guiaMapa.pasos.panelDespegues.descripcion')
                 } 
             },
             { 
                 element: '#infoPanel3',
                 popover: { 
-                    title: t('guiaMapa.pasos.panelBalizas.titulo'), 
+                    title: tituloConIcono('#labelMostrarOpciones3 svg', t('guiaMapa.pasos.panelBalizas.titulo')), 
                     description: t('guiaMapa.pasos.panelBalizas.descripcion')
                 } 
             },
             { 
                 element: '#infoPanel2',
                 popover: { 
-                    title: t('guiaMapa.pasos.panelFiltros.titulo'), 
-                    description: t('guiaMapa.pasos.panelFiltros.descripcion')
+                    title: tituloConIcono('#labelMostrarOpciones2 svg', t('guiaMapa.pasos.panelFiltros.titulo')), 
+                    description: document.body.classList.contains('modo-simple') ? t('guiaMapa.pasos.panelFiltros.descripcionSimple') : t('guiaMapa.pasos.panelFiltros.descripcion')
                 } 
             },
             { 
                 element: '#infoPanelPlaneo',
                 popover: { 
-                    title: t('guiaMapa.pasos.btnPlaneo.titulo'), 
+                    title: tituloConIcono('#labelMostrarOpcionesPlaneo svg', t('guiaMapa.pasos.btnPlaneo.titulo')), 
                     description: t('guiaMapa.pasos.btnPlaneo.descripcion')
                 } 
             },
             { 
                 element: '.leaflet-control-locate',
                 popover: { 
-                    title: t('guiaMapa.pasos.btnGps.titulo'), 
+                    title: tituloConIcono('.leaflet-control-locate svg', t('guiaMapa.pasos.btnGps.titulo')), 
                     description: t('guiaMapa.pasos.btnGps.descripcion')
                 } 
             },
@@ -2621,11 +2862,11 @@ function iniciarGuiaMapa(forzar = false) {
             { 
                 element: '.leaflet-control-layers',
                 popover: { 
-                    title: t('guiaMapa.pasos.controlCapas.titulo'), 
+                    title: tituloConIcono('#nav-map svg', t('guiaMapa.pasos.controlCapas.titulo')), 
                     description: t('guiaMapa.pasos.controlCapas.descripcion')
                 } 
             }
-        ],
+        ].filter(paso => !(['#infoPanel', '#infoPanelPlaneo'].includes(paso.element) && document.body.classList.contains('modo-simple'))), // en simple no hay panel de capas de despegues ni de planeo
         
         onDestroyStarted: () => {
             localStorage.setItem('METEO_GUIA_MAPA_VISTA', 'true'); 
@@ -2962,14 +3203,7 @@ function _activarEdicionFavoritosSync(irAlMapa = false) {
         btnFavsTog.classList.remove('filtro-aplicado', 'activo');
     }
 
-    const panelDistancia = document.getElementById("div-filter-distancia") || document.getElementById("div-filtro-distancia");
-    if (panelDistancia) {
-        panelDistancia.classList.add("activo");
-        setTimeout(() => {
-            const sliderDist = document.getElementById('distancia-slider');
-            if (sliderDist && sliderDist.noUiSlider) sliderDist.noUiSlider.updateOptions({}, true);
-        }, 50);
-    }
+    // Los filtros de tiempo de acceso ya no se abren solos al editar favoritos: se abren con el botón 🚗🚶 (como en la tabla)
 
     const searchContainer = document.getElementById('floating-search-container');
     // Si vamos al mapa, no hace falta forzar la apertura del buscador de texto
@@ -7291,8 +7525,62 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             return (i <= 48) ? "Arome-HD" : "ICON-EU";
         };
 
+        // ⚡ Selección previa (fuera de edición de favoritos): se puntúan todos los despegues, se filtran por buscador y distancia,
+        // se ordenan, y solo se construyen las filas de los que se van a mostrar (paginación). Antes se construían las filas de
+        // todos (p. ej. los ~1.000 con «incluir no favoritos») para acabar mostrando 10.
+        let indicesAMostrar = null;      // null = se construyen todos (edición de favoritos)
+        let totalFilasValidasPrevio = 0; // Cuántos pasan los filtros (para «Mostrar todos (N)» y los contadores)
+        if (!modoEdicionFavoritos) {
+            const inputBusquedaPrevio = document.getElementById('buscador-despegues-provincias');
+            const filtroTextoPrevio = inputBusquedaPrevio ? inputBusquedaPrevio.value.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+            const centroLatPrevio = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL')) || null;
+            const centroLonPrevio = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL')) || null;
+            const candidatos = [];
+            for (let idx = 0; idx < despegues.length; idx++) {
+                const d = despegues[idx];
+                if (filtroTextoPrevio !== "" && !String(d.Despegue).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes(filtroTextoPrevio)) continue;
+                // Mismo filtro que se aplica después del bucle (paso 2): si existe el de tiempo al despegue, manda ese
+                if (typeof window.pasaFiltroTiempoDespegue === 'function') {
+                    if (!window.pasaFiltroTiempoDespegue(d.ID, parseFloat(d.Latitud), parseFloat(d.Longitud))) continue;
+                } else if (distanciaLimite < 9999 && centroLatPrevio !== null && centroLonPrevio !== null) {
+                    const lat = parseFloat(d.Latitud);
+                    const lon = parseFloat(d.Longitud);
+                    if (!isNaN(lat) && !isNaN(lon) && obtenerDistanciaKm(centroLatPrevio, centroLonPrevio, lat, lon) > distanciaLimite) continue;
+                }
+                let nota = -1, notaXC = -1;
+                const hourlyPrevio = respuestas[idx] ? respuestas[idx].hourly : null;
+                if (hourlyPrevio !== null) {
+                    try {
+                        const ev = calcularPuntuacionesDespegue(d, hourlyPrevio, respuestasEcmwf[idx] ? respuestasEcmwf[idx].hourly : null, indicesEvaluacionTabla);
+                        if (ev.horasValidas > 0) nota = ev.notaCondiciones !== null ? ev.notaCondiciones : 0;
+                        if (ev.horasValidasXC > 0) notaXC = ev.notaXC !== null ? ev.notaXC : 0;
+                    } catch (error) {
+                        indicesAMostrar = null; // Que lo gestione el bucle principal como hasta ahora
+                        candidatos.length = 0;
+                        totalFilasValidasPrevio = -1;
+                        break;
+                    }
+                }
+                candidatos.push({ idx, nota, notaXC });
+            }
+            if (totalFilasValidasPrevio !== -1) {
+                candidatos.sort((a, b) => {
+                    if (chkOrdenarPorXC && chkMostrarXC) {
+                        if (b.notaXC === a.notaXC) return b.nota - a.nota;
+                        return b.notaXC - a.notaXC;
+                    } else {
+                        if (b.nota === a.nota) return b.notaXC - a.notaXC;
+                        return b.nota - a.nota;
+                    }
+                });
+                totalFilasValidasPrevio = candidatos.length;
+                indicesAMostrar = new Set(candidatos.slice(0, window.limitePaginacionMeteo || 10).map(c => c.idx));
+            }
+        }
+
         // 🔃 Bucle principal que recorre cada despegue
         for (let idx = 0; idx < despegues.length; idx++) {
+            if (indicesAMostrar && !indicesAMostrar.has(idx)) continue; // No se va a mostrar: no se construyen sus filas
             const d = despegues[idx];
 
             // Ajuste límites para este despegue concreto
@@ -7332,7 +7620,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 } catch (error) {
                     console.error(`💥 ERROR CRÍTICO en despegue ${d.Despegue}:`, error);
-                    return; 
+                    continue; 
                 }
             }
 
@@ -7658,6 +7946,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         </div>
 
                         ${t('mapa.labelVuelos')} <b>${d.Vuelos}</b><br>
+                        <div class='acceso-pie-popup' data-id-desp='${d.ID}' style='display: none;'></div>
 
                         <br>🗺️ <a href='https://maps.google.com/?q=${Number(latitud).toFixed(4)},${Number(longitud).toFixed(4)}' onclick='abrirLinkExterno(this.href); return false;'>Google Maps</a><br>
                         🗺️ <a href='https://brouter.de/brouter-web/#map=15/${Number(latitud).toFixed(4)}/${Number(longitud).toFixed(4)}/OpenTopoMap&pois=${Number(longitud).toFixed(4)},${Number(latitud).toFixed(4)}' onclick='abrirLinkExterno(this.href); return false;'>Brouter</a><br>
@@ -8048,11 +8337,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                     tdBoton.addEventListener("mousedown", (e) => {
                         if (e.button !== 0) return; // Solo botón izquierdo
                         alPulsar(e);
-                    });
-
-                    // El mouseup en window asegura soltar aunque el cursor salga de la celda
-                    window.addEventListener("mouseup", () => {
-                        if (presionado) alSoltar();
+                        // El mouseup en window asegura soltar aunque el cursor salga de la celda (se quita solo al soltar)
+                        window.addEventListener("mouseup", alSoltar, { once: true });
                     });
 
                     // --- ELIMINAR MENÚ Y CLIC RESIDUAL ---
@@ -9328,16 +9614,10 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             txtCelda = txtCelda.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
             const pasaTexto = filtroTexto === "" || txtCelda.includes(filtroTexto);
 
-            // Comprobar Distancia usando 'distanciaLimite'
+            // Comprobar tiempo al despegue y tramo a pie (mismo filtro que el mapa)
             let pasaDistancia = true;
-            if (distanciaLimite < 9999 && centroLatFiltro !== null && centroLonFiltro !== null) {
-                const lat = parseFloat(filaPrincipal.dataset.lat);
-                const lon = parseFloat(filaPrincipal.dataset.lon);
-                if (!isNaN(lat) && !isNaN(lon)) {
-                    if (obtenerDistanciaKm(centroLatFiltro, centroLonFiltro, lat, lon) > distanciaLimite) {
-                        pasaDistancia = false;
-                    }
-                }
+            if (typeof window.pasaFiltroTiempoDespegue === 'function') {
+                pasaDistancia = window.pasaFiltroTiempoDespegue(filaPrincipal.dataset.idDesp, parseFloat(filaPrincipal.dataset.lat), parseFloat(filaPrincipal.dataset.lon));
             }
             return pasaTexto && pasaDistancia;
         });
@@ -9354,6 +9634,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 }
             });
         }
+
+        // Total de despegues que pasan los filtros (con la selección previa, filasValidas solo trae los que se van a mostrar)
+        const totalFilasValidas = indicesAMostrar ? totalFilasValidasPrevio : filasValidas.length;
 
         // 4. PAGINACIÓN ("MOSTRAR TODOS")
         const LIMITE_INICIAL = 10;
@@ -9380,7 +9663,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         }
 
         // Si quedan despegues sin mostrar y la paginación está activa, añadimos el botón final
-        if (usarPaginacion && maxMostrar < filasValidas.length) {
+        if (usarPaginacion && maxMostrar < totalFilasValidas) {
             const trBtn = document.createElement("tr");
             const tdBtn = document.createElement("td");
             tdBtn.colSpan = 100; // Ocupa todo el ancho de la tabla
@@ -9392,8 +9675,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const btn = document.createElement("button");
             
             const textoTraducido = t('botones.mostrarTodos', { 
-                n: filasValidas.length, 
-                defaultValue: `Mostrar todos (${filasValidas.length})` 
+                n: totalFilasValidas, 
+                defaultValue: `Mostrar todos (${totalFilasValidas})` 
             });
 
             btn.innerHTML = `
@@ -9460,7 +9743,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
         // 6. Actualizamos los contadores visuales
         if (typeof window.actualizarContadoresVisualesRapidos === 'function') {
-            window.actualizarContadoresVisualesRapidos(filasValidas.length, filtroTexto, distanciaLimite);
+            window.actualizarContadoresVisualesRapidos(totalFilasValidas, filtroTexto, distanciaLimite);
         }
 
 		if (soloHorasDeLuz) {
@@ -9706,6 +9989,12 @@ function alternardivConfiguracion(event, forzarCierreAcordeones = false) {
     if (estabaActivo && forzarCierreAcordeones) {
         const acordeones = divconfiguracion.querySelectorAll('details.config-accordion');
         acordeones.forEach(acc => acc.removeAttribute('open'));
+    }
+
+    // /balizas: al abrir Ajustes, el acordeón «Mapa» ya desplegado (es casi lo único que hay)
+    if (!estabaActivo && window.esModoBalizasDirecto) {
+        const accMapa = document.querySelector('#mapa details.config-accordion');
+        if (accMapa) accMapa.open = true;
     }
     
     const btnConfigAntiguo = document.getElementById("btn-div-configuracion-toggle");
@@ -10138,6 +10427,14 @@ function resetearOpcionesAvanzadas(evitarRecarga = false) {
         filtroVerSoloSeguimiento(); 
     }
 
+    // En simple no hay panel de capas: la capa de despegues tiene que quedar visible
+    localStorage.setItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE', 'true');
+    const chkDespSimple = document.getElementById('checkboxDespegues');
+    if (chkDespSimple && !chkDespSimple.checked && !window.esModoBalizasDirecto) {
+        chkDespSimple.checked = true;
+        chkDespSimple.dispatchEvent(new Event('change')); // añade la capa al mapa (si ya existe)
+    }
+
     // Limpiamos los estados de filtros del mapa
     localStorage.removeItem('METEO_MAPA_MINIMOVUELOS');
     localStorage.removeItem('METEO_MINIMO_ANO_ULTIMO_VUELO');
@@ -10216,15 +10513,7 @@ window.resetearFiltrosMapaEnVivo = function() {
 
     // Si recordar filtros está activo, vaciamos también la memoria de esta sesión
     if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-        localStorage.setItem('METEO_MAPA_MINIMOVUELOS', '0');
-        localStorage.setItem('METEO_MINIMO_ANO_ULTIMO_VUELO', '0');
-        localStorage.setItem('METEO_MAPA_FILTRO_FAV', '0');
-        localStorage.setItem('METEO_MAPA_FILTRO_SEG', '0');
-        localStorage.setItem('METEO_MAPA_FILTRO_FAV_BALIZAS', '0');
-        localStorage.setItem('METEO_MAPA_FILTRO_SEG_BALIZAS', '0');
-        localStorage.setItem('METEO_MAPA_FILTRO_ACT', '1');
-        localStorage.setItem('METEO_MAPA_FILTRO_ORI', '[]');
-        localStorage.setItem('METEO_MAPA_FILTRO_TIEMPO_BALIZAS', '0'); 
+        localStorage.setItem('METEO_MAPA_FILTRO_FAV', '0'); // el único filtro del mapa que se recuerda
     }
 
     // 2. Resetear Sliders visuales del mapa
@@ -10267,6 +10556,9 @@ window.resetearFiltrosMapaEnVivo = function() {
     const orientaciones = document.querySelectorAll('.filtro-orientacion-checkbox');
     orientaciones.forEach(chk => chk.checked = false);
     if (typeof actualizarEstadoMaestro === 'function') actualizarEstadoMaestro();
+
+    // 4b. Filtro de distancia (compartido con la tabla; la tabla se regenera al volver)
+    if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(false);
 
     // 5. Re-calcular el mapa al instante con los filtros limpios
     if (typeof actualizarFiltrosMapa === 'function') actualizarFiltrosMapa();
@@ -11101,6 +11393,8 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
     }
 
     // 2. Contadores Superiores
+    // Con un filtro de tiempo o de tramo a pie activo se muestra siempre «filtrados / total», aunque no oculte ninguno
+    const hayFiltroTiempo = distanciaLimite < 9999 || (typeof window.hayFiltroTiempoActivo === 'function' && window.hayFiltroTiempoActivo());
     const divContador = document.getElementById('contador-despegues');
     if (divContador) {
         const iconoFiltro = `<img src="/icons/icono_filtro_39.webp" width="13" height="13" alt="Filtro">`;
@@ -11111,7 +11405,7 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
         if (modoEdicionFavoritos) {
             if (soloFavoritos) {
                 divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesFavoritosEdicion', { n: heartRed, total: totalDespeguesDisponibles })}`;
-            } else if (visibles < totalDespeguesDisponibles) {
+            } else if (visibles < totalDespeguesDisponibles || hayFiltroTiempo) {
                 divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesDisponiblesFiltrados', { total: totalDespeguesDisponibles })}`;
             } else {
                 divContador.innerHTML = t('contador.despeguesDisponibles', { n: totalDespeguesDisponibles });
@@ -11123,7 +11417,7 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
             } else if (totalFavoritos === 0) {
                 divContador.innerHTML = t('contador.totalDisponibles', { n: totalDespeguesDisponibles });
             } else {
-                if (visibles < totalFavoritos || distanciaLimite < 9999) {
+                if (visibles < totalFavoritos || hayFiltroTiempo) {
                     divContador.innerHTML = `${htmlNumeroFiltrado} ${t('contador.despeguesFavoritosFiltrados', { total: totalFavoritos })} (${heartRed})`;
                 } else {
                     divContador.innerHTML = `${t('contador.despeguesFavoritos', { n: visibles })} (${heartRed})`;
@@ -11135,7 +11429,7 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
     // 3. Mini-contador (Cabecera Tabla)
     const miniCounter = document.getElementById('header-contador-mini');
     if (miniCounter && !modoEdicionFavoritos) {
-        const hayFiltros = filtroLimpio.length > 0 || distanciaLimite < 9999;
+        const hayFiltros = filtroLimpio.length > 0 || hayFiltroTiempo; // incluye el filtro de tramo a pie
         
         if (soloSeguimiento) {
             const totalSeg = obtenerSeguimientos().length;
@@ -11181,14 +11475,9 @@ window.actualizarContadoresVisualesRapidos = function(visibles, filtroLimpio, di
             const yaEsFavorito = favoritos.includes(Number(d.ID));
             if (yaEsFavorito || !nombreSolo.includes(filtroLimpio)) return false;
 
-            if (distanciaLimite < 9999 && centroLatFiltro !== null && centroLonFiltro !== null) {
-                const latSpot = parseFloat(d.Latitud);
-                const lonSpot = parseFloat(d.Longitud);
-                if (!isNaN(latSpot) && !isNaN(lonSpot)) {
-                    if (obtenerDistanciaKm(centroLatFiltro, centroLonFiltro, latSpot, lonSpot) > distanciaLimite) {
-                        return false; 
-                    }
-                }
+            if (typeof window.pasaFiltroTiempoDespegue === 'function' &&
+                !window.pasaFiltroTiempoDespegue(d.ID, parseFloat(d.Latitud), parseFloat(d.Longitud))) {
+                return false;
             }
             return true;
         });
@@ -11636,16 +11925,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
         noUiSlider.create(distanciaSlider, {
             handleAttributes: [{ 'aria-label': 'Distancia' }],
             start: MAX_INDEX,    
-            direction: 'rtl',    
+            direction: 'rtl', // como Actividad, Vuelos…: sin filtro a la izquierda y más restrictivo hacia la derecha; el azul (del tirador a la derecha) es lo que se ve
             step: 1,             
             connect: 'lower',    
-            tooltips:[{
-                to: function (index) {
-                    const val = CORTES_DISTANCIA_GLOBAL[Math.round(index)];
-                    if (val >= 9999) return '<span class="simbolo-infinito" style="font-size: 1.4em; line-height: 1; vertical-align: -2px; display: inline-block;">∞</span>';
-                    return `${val}`; 
-                }
-            }],
+            // Sin tooltip sobre el tirador: el valor va fijo encima, en la tarjeta (.valor-filtro-tiempo)
             range: {
                 'min': 0,        // Índice del primer elemento (5 km)
                 'max': MAX_INDEX // Índice del último elemento (Todo)
@@ -11740,11 +12023,253 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     // if (panelDistancia) panelDistancia.classList.remove('borde-rojo-externo'); // Comentado
                 }
 
-				ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); }); 
+				ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
 			}
 		});
 	}
-	
+
+	// ---------------------------------------------------------------
+	// 🔴 SLIDERS. TIEMPO AL DESPEGUE + TRAMO A PIE (tabla y panel de filtros del mapa)
+	// El valor "de verdad" vive en los deslizadores de la tabla (#distancia-slider y #pie-slider).
+	// Los del mapa (#distancia-slider-mapa y #pie-slider-mapa) son copias sincronizadas.
+	// ---------------------------------------------------------------
+	const distanciaSliderMapa = document.getElementById('distancia-slider-mapa');
+	const pieSlider = document.getElementById('pie-slider');
+	const pieSliderMapa = document.getElementById('pie-slider-mapa');
+	let sincronizandoDistanciaMapa = false;
+
+	const maxIndicePie = () => CORTES_PIE_GLOBAL[unidadFiltroPie].length - 1;
+	const indiceSlider = (el) => Math.round(parseFloat(el.noUiSlider.get()));
+
+	// Filtrado en vivo del mapa mientras se arrastra su deslizador: valor provisional que manda sobre el de la tabla
+	// hasta soltar (al soltar, 'set' lo borra y sincroniza tabla y mapa como siempre). Solo repinta al cambiar de paso.
+	window.filtroMapaEnVivo = null;
+	function filtrarMapaEnVivo(tipo, idx) {
+		if (typeof mapaInicializado === 'undefined' || !mapaInicializado || typeof window.actualizarFiltrosMapa !== 'function') return;
+		window.filtroMapaEnVivo = window.filtroMapaEnVivo || {};
+		if (window.filtroMapaEnVivo[tipo] === idx) return;
+		window.filtroMapaEnVivo[tipo] = idx;
+		window.actualizarFiltrosMapa();
+	}
+
+	const opcionesSliderPie = () => ({
+		handleAttributes: [{ 'aria-label': 'A pie' }],
+		start: maxIndicePie(),
+		direction: 'rtl', // igual que #distancia-slider
+		step: 1,
+		connect: 'lower',
+		range: { 'min': 0, 'max': maxIndicePie() }
+	});
+
+	// Deslizador de minutos del mapa (copia de #distancia-slider)
+	if (distanciaSlider && distanciaSlider.noUiSlider && distanciaSliderMapa) {
+		noUiSlider.create(distanciaSliderMapa, {
+			handleAttributes: [{ 'aria-label': 'Distancia' }],
+			start: indiceSlider(distanciaSlider),
+			direction: 'rtl', // igual que #distancia-slider
+			step: 1,
+			connect: 'lower',
+			range: { 'min': 0, 'max': MAX_INDEX }
+		});
+		distanciaSliderMapa.noUiSlider.on('slide', function () { window.vibrarDispositivo(); });
+		// Mientras se arrastra: filtra los marcadores en vivo (solo con origen elegido; la tabla espera a soltar)
+		distanciaSliderMapa.noUiSlider.on('slide.vivo', function (values) {
+			if (localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL') === null) return;
+			filtrarMapaEnVivo('coche', Math.round(values[0]));
+		});
+
+		// Al soltar en el mapa: se lo pasamos al de la tabla, que decide (origen, aviso, filtrado)
+		distanciaSliderMapa.noUiSlider.on('set', function (values) {
+			window.filtroMapaEnVivo = null;
+			if (sincronizandoDistanciaMapa) return;
+			const idx = Math.round(values[0]);
+			if (idx !== indiceSlider(distanciaSlider)) {
+				distanciaSlider.noUiSlider.set(idx); // dispara 'set' de la tabla y, tras él, 'set.mapa'
+			} else {
+				window.sincronizarFiltroDistanciaMapa();
+			}
+		});
+
+		// Cualquier cambio del de la tabla (incluido resetFiltroDistancia) se refleja en el mapa
+		distanciaSlider.noUiSlider.on('set.mapa', function () {
+			window.sincronizarFiltroDistanciaMapa();
+		});
+	}
+
+	// Deslizadores del tramo a pie (no necesitan origen)
+	if (pieSlider) {
+		noUiSlider.create(pieSlider, opcionesSliderPie());
+		pieSlider.noUiSlider.on('slide', function () { window.vibrarDispositivo(); });
+		let ultimoPieConfirmado = maxIndicePie();
+		pieSlider.noUiSlider.on('set', function (values) {
+			const idx = Math.round(values[0]);
+			if (idx === ultimoPieConfirmado) { window.sincronizarFiltroDistanciaMapa(); return; }
+			ultimoPieConfirmado = idx;
+			window.sincronizarFiltroDistanciaMapa();
+			if (!window.reseteandoFiltroPie) ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
+		});
+		window.resetUltimoPieConfirmado = () => { ultimoPieConfirmado = maxIndicePie(); };
+	}
+	if (pieSlider && pieSlider.noUiSlider && pieSliderMapa) {
+		noUiSlider.create(pieSliderMapa, opcionesSliderPie());
+		pieSliderMapa.noUiSlider.on('slide', function () { window.vibrarDispositivo(); });
+		pieSliderMapa.noUiSlider.on('slide.vivo', function (values) { filtrarMapaEnVivo('pie', Math.round(values[0])); });
+		pieSliderMapa.noUiSlider.on('set', function (values) {
+			window.filtroMapaEnVivo = null;
+			if (sincronizandoDistanciaMapa) return;
+			const idx = Math.round(values[0]);
+			if (idx !== indiceSlider(pieSlider)) pieSlider.noUiSlider.set(idx);
+		});
+	}
+
+	// Valor elegido, fijo encima de cada deslizador (en su tarjeta): «1 h 30 min», «500 m»… o «Sin límite»
+	const pintarValorFiltroTiempo = (el) => {
+		if (!el || !el.noUiSlider) return;
+		const caja = el.parentElement && el.parentElement.querySelector('.valor-filtro-tiempo');
+		if (!caja) return;
+		const idx = indiceSlider(el);
+		const esPie = el === pieSlider || el === pieSliderMapa;
+		const valor = esPie ? CORTES_PIE_GLOBAL[unidadFiltroPie][idx] : CORTES_DISTANCIA_GLOBAL[idx];
+		const html = formatearTooltipFiltroTiempo(valor, esPie ? unidadFiltroPie : 'min');
+		caja.innerHTML = html || t('html.sinLimite');
+		caja.classList.toggle('sin-limite', !html);
+		el.classList.toggle('sin-limite', !html); // barra en azul pálido mientras no filtra
+	};
+	window.pintarValoresFiltroTiempo = () => [distanciaSlider, distanciaSliderMapa, pieSlider, pieSliderMapa].forEach(pintarValorFiltroTiempo);
+	[distanciaSlider, distanciaSliderMapa, pieSlider, pieSliderMapa].forEach(el => {
+		if (el && el.noUiSlider) el.noUiSlider.on('update.valor', () => pintarValorFiltroTiempo(el));
+	});
+	window.pintarValoresFiltroTiempo();
+
+	// Pone el deslizador de a pie a ∞ (sin refiltrar: lo hace quien llama)
+	window.resetFiltroPie = function () {
+		if (!pieSlider || !pieSlider.noUiSlider) return;
+		window.reseteandoFiltroPie = true;
+		if (typeof window.resetUltimoPieConfirmado === 'function') window.resetUltimoPieConfirmado();
+		pieSlider.noUiSlider.set(maxIndicePie());
+		window.reseteandoFiltroPie = false;
+	};
+
+	// Botones alternos 🚗 Coche / 🚗+🚶 Total y ⏱️ min / ↔︎ km / ↑ m (tabla y mapa a la vez)
+	const pintarBotonesAlternos = () => {
+		document.querySelectorAll('.btn-modo-tiempo').forEach(b => b.classList.toggle('hundido', b.dataset.modo === modoTiempoDespegue));
+		document.querySelectorAll('.btn-unidad-pie').forEach(b => b.classList.toggle('hundido', b.dataset.unidad === unidadFiltroPie));
+	};
+	document.addEventListener('click', function (e) {
+		const btnModo = e.target.closest('.btn-modo-tiempo');
+		const btnUnidad = e.target.closest('.btn-unidad-pie');
+		if (!btnModo && !btnUnidad) return;
+		e.preventDefault();
+		e.stopPropagation();
+		window.vibrarDispositivo();
+
+		if (btnModo) {
+			if (btnModo.dataset.modo === modoTiempoDespegue) return;
+			modoTiempoDespegue = btnModo.dataset.modo;
+			pintarBotonesAlternos();
+			if (indiceSlider(distanciaSlider) < MAX_INDEX) ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
+			window.sincronizarFiltroDistanciaMapa();
+			return;
+		}
+
+		if (btnUnidad.dataset.unidad === unidadFiltroPie) return;
+		const habiaFiltroPie = pieSlider && pieSlider.noUiSlider && indiceSlider(pieSlider) < maxIndicePie();
+		unidadFiltroPie = btnUnidad.dataset.unidad;
+		pintarBotonesAlternos();
+		// Escala distinta: los dos deslizadores de a pie se rehacen y vuelven a ∞
+		window.reseteandoFiltroPie = true;
+		[pieSlider, pieSliderMapa].forEach(el => { if (el && el.noUiSlider) el.noUiSlider.updateOptions(opcionesSliderPie(), false); });
+		if (typeof window.resetUltimoPieConfirmado === 'function') window.resetUltimoPieConfirmado();
+		window.reseteandoFiltroPie = false;
+		window.pintarValoresFiltroTiempo();
+		window.sincronizarFiltroDistanciaMapa();
+		if (habiaFiltroPie) ejecutarOperacionPesada(() => { aplicarFiltrosVisuales(); });
+	});
+
+	// Minutos al despegue: { min, estimado }. Tiempo real en coche (window.tiemposCoche) si lo hay para el origen actual;
+	// si no (aún no ha llegado, tope diario, despegue sin dato), estimado en línea recta (1 km ≈ 1 min)
+	window.obtenerMinutosAlDespegue = function (id, lat, lon) {
+		const latO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL'));
+		const lonO = parseFloat(localStorage.getItem('METEO_FILTRO_DISTANCIA_LON_INICIAL'));
+		if (isNaN(latO) || isNaN(lonO) || isNaN(lat) || isNaN(lon)) return null;
+		let min, estimado = true;
+		const celda = celdaOrigenCoche();
+		const coche = (celda && window.tiemposCoche.celda === celda.clave) ? window.tiemposCoche.t[String(id)] : undefined;
+		if (Array.isArray(coche) && Number.isFinite(Number(coche[0]))) { min = Number(coche[0]); estimado = false; }
+		else min = obtenerDistanciaKm(latO, lonO, lat, lon) * FACTOR_MIN_POR_KM_RECTA;
+		if (modoTiempoDespegue === 'total') {
+			const pie = window.datosAccesoPie[Number(id)];
+			if (pie && Number.isFinite(Number(pie.min))) min += Number(pie.min); // sin dato a pie: cuenta 0
+		}
+		return { min, estimado };
+	};
+
+	// ¿Hay algún filtro de tiempo / a pie aplicado?
+	window.hayFiltroTiempoActivo = function () {
+		const vivo = window.filtroMapaEnVivo || {}; // valor provisional mientras se arrastra el deslizador del mapa
+		const hayTiempo = distanciaSlider && distanciaSlider.noUiSlider && (vivo.coche ?? indiceSlider(distanciaSlider)) < MAX_INDEX &&
+			localStorage.getItem('METEO_FILTRO_DISTANCIA_LAT_INICIAL') !== null;
+		const hayPie = pieSlider && pieSlider.noUiSlider && (vivo.pie ?? indiceSlider(pieSlider)) < maxIndicePie();
+		return !!(hayTiempo || hayPie);
+	};
+
+	// ¿Pasa el despegue los filtros de tiempo al despegue y de tramo a pie? (tabla, sugerencias y mapa)
+	window.pasaFiltroTiempoDespegue = function (id, lat, lon) {
+		const vivo = window.filtroMapaEnVivo || {};
+		if (distanciaSlider && distanciaSlider.noUiSlider) {
+			const limiteMin = CORTES_DISTANCIA_GLOBAL[vivo.coche ?? indiceSlider(distanciaSlider)];
+			if (limiteMin < 9999) {
+				const t = window.obtenerMinutosAlDespegue(id, lat, lon);
+				if (t && t.min > limiteMin) return false;
+			}
+		}
+		if (pieSlider && pieSlider.noUiSlider) {
+			const limitePie = CORTES_PIE_GLOBAL[unidadFiltroPie][vivo.pie ?? indiceSlider(pieSlider)];
+			if (limitePie < 9999) {
+				const pie = window.datosAccesoPie[Number(id)];
+				const valor = pie ? Number(pie[unidadFiltroPie]) : NaN;
+				if (Number.isFinite(valor) && valor > limitePie) return false; // sin dato a pie: nunca se oculta
+			}
+		}
+		return true;
+	};
+
+	// Copia los valores de la tabla a los deslizadores del mapa, pinta indicadores y refresca los marcadores
+	window.sincronizarFiltroDistanciaMapa = function () {
+		if (!distanciaSlider || !distanciaSlider.noUiSlider) return;
+		const idx = indiceSlider(distanciaSlider);
+		const idxPie = (pieSlider && pieSlider.noUiSlider) ? indiceSlider(pieSlider) : null;
+
+		sincronizandoDistanciaMapa = true;
+		if (distanciaSliderMapa && distanciaSliderMapa.noUiSlider && indiceSlider(distanciaSliderMapa) !== idx) distanciaSliderMapa.noUiSlider.set(idx);
+		if (idxPie !== null && pieSliderMapa && pieSliderMapa.noUiSlider && indiceSlider(pieSliderMapa) !== idxPie) pieSliderMapa.noUiSlider.set(idxPie);
+		sincronizandoDistanciaMapa = false;
+
+		// Tiempos reales en coche: se piden al aplicar el filtro de tiempo; mientras no estén, aviso de estimación en línea recta
+		const celdaOrigen = celdaOrigenCoche();
+		const hayFiltroCoche = idx < MAX_INDEX && celdaOrigen !== null;
+		if (hayFiltroCoche) cargarTiemposCoche();
+		const sinTiemposReales = hayFiltroCoche && window.tiemposCoche.celda !== celdaOrigen.clave;
+		document.querySelectorAll('.nota-estimado-recta').forEach(nota => { nota.style.display = sinTiemposReales ? '' : 'none'; });
+
+		const hayFiltro = window.hayFiltroTiempoActivo();
+		// Si se filtra desde el mapa, el panel de la tabla queda abierto para verlo al volver
+		if (hayFiltro) {
+			const divDistancia = document.getElementById('div-filtro-distancia');
+			if (divDistancia) divDistancia.classList.add('activo');
+		}
+		const navDistance = document.getElementById('nav-distance');
+		if (navDistance) navDistance.classList.toggle('filtrado', hayFiltro);
+		// Borde rojo alrededor de los dos filtros de la tabla (igual que en el mapa)
+		const contFiltrosTabla = document.getElementById('div-filtro-distancia-interno');
+		if (contFiltrosTabla) contFiltrosTabla.classList.toggle('borde-rojo-externo', hayFiltro);
+
+		if (typeof mapaInicializado !== 'undefined' && mapaInicializado) {
+			if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
+			if (typeof window.actualizarEstadoVisualFiltros === 'function') window.actualizarEstadoVisualFiltros();
+		}
+	};
+
 	// ---------------------------------------------------------------
 	// 🔴 SLIDERS. VELOCIDAD y RACHA. Construcción
 	// ---------------------------------------------------------------
@@ -12750,7 +13275,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
             allowHTML: true,
             interactive: true,
             placement: 'auto',
-            appendTo: document.body,
+            // Un globo dentro de otro (p. ej. el 🤖 del tramo a pie dentro del popup de la tabla) se mete en el globo padre:
+            // así pulsar en él no cuenta como «clic fuera» del padre (no lo cierra) y desaparece con él. El resto, al body.
+            appendTo: (ref) => (ref.closest && ref.closest('[data-tippy-root]')) || document.body,
             maxWidth: 400, // Dejamos que CSS limite el ancho real
             hideOnClick: true, // <--- 1. Cierra automáticamente al hacer clic fuera
 
@@ -12827,6 +13354,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
                 fragment.appendChild(scrollArea);
 
                 instance.setContent(fragment);
+            },
+            onShow(instance) {
+                // Tiempo en coche y tramo a pie en el popup de despegue de la tabla (se rellena al abrir, por si los datos llegaron después de pintar la tabla)
+                instance.popper.querySelectorAll('.acceso-pie-popup[data-id-desp]').forEach(pintarAccesoDespegue);
             },
             onHidden(instance) {
                 instance.popper.querySelectorAll('.linea-limites-efectivos').forEach(l => {
@@ -12913,6 +13444,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
         if (typeof distanciaSlider !== 'undefined' && distanciaSlider.noUiSlider) {
             distanciaSlider.noUiSlider.set(MAX_INDEX);
         }
+        // A2. Resetear también el tramo a pie
+        if (typeof window.resetFiltroPie === 'function') window.resetFiltroPie();
+        if (typeof window.sincronizarFiltroDistanciaMapa === 'function') window.sincronizarFiltroDistanciaMapa();
 
         // --- NUEVO: Desmarcar botón de "incluir no favoritos" al resetear ---
         const btnIncNoFavs = document.getElementById('btn-incluir-no-favs-distancia');
@@ -13203,6 +13737,8 @@ function comprobarAvisoCambiosPuntuacionXC() {
                     const currentValue = Math.round(parseFloat(sliderDistancia.noUiSlider.get()));
                     if (currentValue < maxIndex) filtrandoCosas = true;
                 }
+                // El tramo a pie también cuenta como filtro aplicado
+                if (typeof window.hayFiltroTiempoActivo === 'function' && window.hayFiltroTiempoActivo()) filtrandoCosas = true;
 
                 if (filtrandoCosas) {
                     if (typeof resetFiltroDistancia === 'function') resetFiltroDistancia(); 
@@ -13725,8 +14261,7 @@ function comprobarAvisoCambiosPuntuacionXC() {
         const panelHorario = document.querySelector('.div-filtro-horario');
         if (panelHorario) panelHorario.style.display = 'none';
 
-        const panelDistancia = document.getElementById("div-filtro-distancia");
-        if (panelDistancia) panelDistancia.classList.add("activo");
+        // Los filtros de tiempo de acceso no se abren solos: se abren con el botón 🚗🚶 (como en la tabla)
 
         if (window.onboardingMapaActivo) {
             cambiarVista('mapa');
@@ -14498,10 +15033,11 @@ window.evaluarEstadoNuevosUsuarios = function() {
 const recordarFiltros = localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true';
 
 let filtroFavoritosMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_FAV') || '0') : 0; // 0 = Todos, 1 = Solo Favoritos, 2 = Solo No Favoritos
-let filtroSeguimientoMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_SEG') || '0') : 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
-let filtroFavoritosBalizasMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_FAV_BALIZAS') || '0') : 0;
-let filtroSeguimientoBalizasMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_SEG_BALIZAS') || '0') : 0;
-let filtroActividadMapa = recordarFiltros ? parseInt(localStorage.getItem('METEO_MAPA_FILTRO_ACT') || '1') : 1; // El valor inicial de actividad mínima es 1 (Todos)
+// «Recordar filtro de despegues favoritos» (Ajustes) solo afecta al ❤️ de despegues; el resto de filtros del mapa son temporales
+let filtroSeguimientoMapa = 0; // 0 = Todos, 1 = Solo Seguimiento (2 estados: activo/desactivo)
+let filtroFavoritosBalizasMapa = 0;
+let filtroSeguimientoBalizasMapa = 0;
+let filtroActividadMapa = 1; // El valor inicial de actividad mínima es 1 (Todos)
 
 // SVGs del Botón Favorito (Todos / Solo Favs / Excluir Favs)
 const SVG_FAV_TODOS = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
@@ -14539,10 +15075,6 @@ window.actualizarBotonFavoritosMapa = function() {
 window.ciclarFiltroSeguimientoMapa = function() {
     filtroSeguimientoMapa = (filtroSeguimientoMapa + 1) % 2; 
 
-    // Si la opción de recordar filtros está activa, guardamos el estado (0 o 1)
-    if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-        localStorage.setItem('METEO_MAPA_FILTRO_SEG', filtroSeguimientoMapa);
-    }
 
     actualizarBotonSeguimientoMapa();
     actualizarFiltrosMapa();
@@ -14645,9 +15177,6 @@ window.toggleBalizaSeguimientoDesdeMapa = function(redId, id, btnElement) {
 
 window.ciclarFiltroFavoritosBalizasMapa = function() {
     filtroFavoritosBalizasMapa = (filtroFavoritosBalizasMapa === 1) ? 0 : 1;
-    if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-        localStorage.setItem('METEO_MAPA_FILTRO_FAV_BALIZAS', filtroFavoritosBalizasMapa);
-    }
     actualizarBotonFavoritosBalizasMapa();
     Object.keys(REDES_BALIZAS).forEach(redId => {
         actualizarIconosBalizas(redId);
@@ -14669,9 +15198,6 @@ window.actualizarBotonFavoritosBalizasMapa = function() {
 
 window.ciclarFiltroSeguimientoBalizasMapa = function() {
     filtroSeguimientoBalizasMapa = (filtroSeguimientoBalizasMapa + 1) % 2;
-    if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-        localStorage.setItem('METEO_MAPA_FILTRO_SEG_BALIZAS', filtroSeguimientoBalizasMapa);
-    }
     actualizarBotonSeguimientoBalizasMapa();
     Object.keys(REDES_BALIZAS).forEach(redId => {
         actualizarIconosBalizas(redId);
@@ -14942,6 +15468,7 @@ function inicializarSliderPuntuacionMapa() {
         tooltips: [{
             to: function(val) {
                 const num = Math.round(val);
+                if (num >= 10) return `=${num}⭐`; // 10 es el máximo: «igual», no «mayor o igual»
                 return num >= 0 ? `≥${num}⭐` : '⭐';
             }
         }],
@@ -15086,19 +15613,6 @@ const ESCALA_TIEMPO_BALIZAS = [
     { texto: '30 min', minutos: 30 },
     { texto: '15 min', minutos: 15 }
 ];
-
-function obtenerMinAltitudBalizas() {
-    const slider = document.getElementById('sliderAltitudBalizas');
-    if (!slider) return 0;
-    const indice = parseInt(slider.value, 10);
-    const val = ESCALA_ALTITUD_BALIZAS[indice] || 0;
-    const textSpan = document.getElementById('valorAltitudBalizasTexto');
-    if (textSpan) {
-        const maxIndice = ESCALA_ALTITUD_BALIZAS.length - 1; // 30
-        textSpan.textContent = (indice === maxIndice) ? `>= 3000 m` : `${val} m`;
-    }
-    return val;
-}
 
 function obtenerMaxTiempoBalizas() {
     const slider = document.getElementById('sliderTiempoBalizas');
@@ -15604,6 +16118,9 @@ function inicializarMapaLeaflet() {
         const chkDespegues = document.getElementById('checkboxDespegues');
         const mostrarDespegues = chkDespegues ? chkDespegues.checked : true;
         
+        // Filtro de tiempo al despegue / tramo a pie compartido con la tabla
+        const hayFiltroTiempoMapa = (typeof window.hayFiltroTiempoActivo === 'function') && window.hayFiltroTiempoActivo();
+
         // C. PREPARAR PATRONES DE BÚSQUEDA (OPTIMIZACIÓN)
         // -------------------------------------------------------
         // Solo generamos los patrones si hay filtro de orientación activo
@@ -15621,7 +16138,17 @@ function inicializarMapaLeaflet() {
         // -----------------------------------------------------------------------
         // FUNCIÓN AUXILIAR DE FILTRADO (Lógica central reutilizable)
         // Se extrae la lógica de filtrado para aplicarla dos veces sin repetir código.
+        // Favoritos y seguimientos se leen una sola vez por filtrado (antes, una vez por cada marcador)
+        const idsFavoritosMapa = new Set(obtenerFavoritos().map(Number));
+        const idsSeguimientoMapa = new Set(obtenerSeguimientos().map(s => Number(s.id)));
+
         const pasaFiltros = (marker, esDespegueMundo = false) => {
+
+            // --- FILTRO DE TIEMPO AL DESPEGUE Y TRAMO A PIE (el mismo de la tabla, también para despegues del mundo) ---
+            if (hayFiltroTiempoMapa && marker.getLatLng) {
+                const ll = marker.getLatLng();
+                if (!window.pasaFiltroTiempoDespegue(marker.metadata ? marker.metadata.id : null, ll.lat, ll.lng)) return false;
+            }
 
             // Los despegues del mundo NO tienen pronóstico meteo, por lo que 
             // ignoramos los filtros de puntuación y operatividad para ellos.
@@ -15629,13 +16156,13 @@ function inicializarMapaLeaflet() {
 
                 // --- 0b. NUEVO FILTRO DE FAVORITOS (Corazón) ---
                 const idMarcador = Number(marker.metadata.id);
-                const esFav = idMarcador ? obtenerFavoritos().map(Number).includes(idMarcador) : false;
+                const esFav = idMarcador ? idsFavoritosMapa.has(idMarcador) : false;
                 
                 if (filtroFavoritosMapa === 1 && !esFav) return false; // Solo favoritos
                 if (filtroFavoritosMapa === 2 && esFav) return false;  // Solo NO favoritos
 
                 // --- 0c. NUEVO FILTRO DE SEGUIMIENTO (Ojo - 2 Estados) ---
-                const esSeg = idMarcador ? obtenerSeguimientos().map(s => Number(s.id)).includes(idMarcador) : false;
+                const esSeg = idMarcador ? idsSeguimientoMapa.has(idMarcador) : false;
                 if (filtroSeguimientoMapa === 1 && !esSeg) return false; 
 
                 // Como el valor inicial es 1 (Todos), solo ocultamos si la actividad mínima exigida es > 1
@@ -15884,8 +16411,13 @@ function inicializarMapaLeaflet() {
             }
         }
 
+        // Contenedor Distancia (mismo filtro que la tabla)
+        const hayFiltroDistancia = (typeof window.hayFiltroTiempoActivo === 'function') && window.hayFiltroTiempoActivo();
+        const contDistancia = document.getElementById('control-distancia-mapa-container');
+        if (contDistancia) contDistancia.classList.toggle('borde-rojo-externo', hayFiltroDistancia);
+
         // 6. ACTUALIZAR PANEL GLOBAL (Borde rojo externo al estar retraído)
-        const hayCualquierFiltro = hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos || filtroFavoritosBalizasMapa !== 0 || filtroSeguimientoBalizasMapa !== 0 || hayFiltroAltitudBalizas || hayFiltroTiempoBalizas;
+        const hayCualquierFiltro = hayFiltroDistancia || hayFiltroOrientacion || hayFiltroVuelos || hayFiltroAnio || hayFiltroRapidos || filtroFavoritosBalizasMapa !== 0 || filtroSeguimientoBalizasMapa !== 0 || hayFiltroAltitudBalizas || hayFiltroTiempoBalizas;
         const infoPanelFiltros = document.getElementById('infoPanel2');
         
         if (infoPanelFiltros) {
@@ -16635,18 +17167,24 @@ function inicializarMapaLeaflet() {
                     const info = row.Más_información || '';
 
                     let idDespegue = row.ID || '';
+                    const idPropio = idDespegue; // el ID del propio despegue (tramo a pie, filtros del mapa…), aunque sea secundario
                     let botonesAccionPopupHTML = '';
 
                     if (window.bdGlobalDespegues) {
-                        const matchTabla = window.bdGlobalDespegues.find(d =>
+                        let matchTabla = window.bdGlobalDespegues.find(d =>
                             parseFloat(d.Latitud).toFixed(4) === lat.toFixed(4) &&
                             parseFloat(d.Longitud).toFixed(4) === lon.toFixed(4)
                         );
+                        // Despegue secundario: en Master_meteo lleva el ID de su master (despegues-operativos.csv).
+                        // «Ver en tabla» (y ❤️/👁) llevan a ese master.
+                        const idMaster = (row.Master_meteo || '').trim();
+                        const esSecundario = !matchTabla && /^[1-9]\d*$/.test(idMaster);
+                        if (esSecundario) matchTabla = window.bdGlobalDespegues.find(d => String(d.ID).trim() === idMaster);
 
                         if (matchTabla) {
                             //despegue = matchTabla.Despegue;
-                            idDespegue = matchTabla.ID;
-                            actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla
+                            idDespegue = matchTabla.ID; // en un secundario, el de su master (botones); el suyo propio sigue en idPropio
+                            if (!esSecundario) actividadScore = matchTabla.Actividad; // Extraemos el valor 1-5 de la tabla (el secundario conserva la suya)
 
                             const esFavoritoPopup  = obtenerFavoritos().map(Number).includes(Number(idDespegue));
                             const esSeguimientoPopup = obtenerSeguimientos().map(s => Number(s.id)).includes(Number(idDespegue));
@@ -16702,7 +17240,7 @@ function inicializarMapaLeaflet() {
                     const marker = L.marker([lat, lon], { icon: icon, riseOnHover: true, title: 'Lugar de despegue' });
 
                     marker._esMasterMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'sí' || row.Master_meteo.trim().toLowerCase() === 'si'));
-                    marker._esSecundarioMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'no'));
+                    marker._esSecundarioMeteo = (row.Master_meteo && (row.Master_meteo.trim().toLowerCase() === 'no' || /^[1-9]\d*$/.test(row.Master_meteo.trim()))); // «no» o el ID de su master
 
                     // 1. Traducimos el nombre largo (noroeste -> northwest)
                     const nombreLargoOriTraducido = t(`orientaciones.${row.Orientación.toLowerCase()}`);
@@ -16749,6 +17287,7 @@ function inicializarMapaLeaflet() {
                                 </div>
                                 
                                 ${t('mapa.labelVuelos')} <b>${escapeHtml(vuelos)}</b><br>
+                                <div class="acceso-pie-popup" style="display: none;"></div>
 
                                 <br>🗺️ <a href='https://maps.google.com/?q=${escapeHtml(lat.toFixed(4))},${escapeHtml(lon.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Google Maps</a><br>
                                 🗺️ <a href='https://brouter.de/brouter-web/#map=15/${escapeHtml(lat.toFixed(4))}/${escapeHtml(lon.toFixed(4))}/OpenTopoMap&pois=${escapeHtml(lon.toFixed(4))},${escapeHtml(lat.toFixed(4))}' onclick='abrirLinkExterno(this.href); return false;'>Brouter</a><br>
@@ -16770,12 +17309,21 @@ function inicializarMapaLeaflet() {
 
                     // Regeneramos el popup por si venimos de consultarlo en la tabla o hemos cambiado estados.
                     marker.on('popupopen', function() {
-                        registrarUso('despegue', idDespegue);
+                        registrarUso('despegue', idPropio);
                         const popupEl = this.getPopup().getElement();
                         if (!popupEl) return;
                         
                         const btn = popupEl.querySelector('.btn-accion');
                         if (btn) btn.innerHTML = `${t('mapa.verEnTabla')}`;
+
+                        // Tiempo en coche y tramo a pie: se pintan al abrir porque los datos pueden llegar después de crear el popup
+                        const divPie = popupEl.querySelector('.acceso-pie-popup');
+                        if (divPie) {
+                            divPie.dataset.idDesp = idPropio;
+                            divPie.dataset.lat = lat;
+                            divPie.dataset.lon = lon;
+                            pintarAccesoDespegue(divPie);
+                        }
 
                         // Actualizar estado del botón Favorito dinámicamente
                         const btnFav = popupEl.querySelector('.btn-favorito-tabla');
@@ -16821,7 +17369,7 @@ function inicializarMapaLeaflet() {
                         ajustarPopupDespegueMinimo(this.getPopup());
                     });
 
-                    marker.metadata = { id: idDespegue, despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividadScore, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
+                    marker.metadata = { id: idPropio, despegue: despegue, orientacion: orientacion, orientaciones: orientaciones, OrientacionesGrados: OrientacionesGrados, actividad: actividadScore, kmax: kmmax, vuelos: vuelos, ultimovuelo: ultimovuelo }; 
                     markersDespegues.push(marker); //inserta marker al grupo markersDespegues
                     clustergroupDespegues.addLayer(marker);
                 });
@@ -16829,7 +17377,8 @@ function inicializarMapaLeaflet() {
                 // Restaurar el estado de visibilidad si el check de "Recordar capas activas" está ON
                 const recordarCapas = localStorage.getItem('METEO_RECORDAR_CAPAS_ACTIVAS') === 'true';
                 const chkDespeguesPersist = document.getElementById('checkboxDespegues');
-                let despeguesDebenVerse = window.esModoBalizasDirecto ? false : (recordarCapas ? (localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false') : true);
+                const enModoSimple = localStorage.getItem('METEO_MODO_SIMPLE') === 'true'; // en simple no hay panel de capas: despegues siempre visibles
+                let despeguesDebenVerse = window.esModoBalizasDirecto ? false : ((recordarCapas && !enModoSimple) ? (localStorage.getItem('METEO_MAPA_CAPA_DESPEGUES_VISIBLE') !== 'false') : true);
 
                 if (chkDespeguesPersist) chkDespeguesPersist.checked = despeguesDebenVerse;
 
@@ -18154,20 +18703,20 @@ function inicializarMapaLeaflet() {
     }
 
     // --- SINCRONIZACIÓN INICIAL DEL PANEL INTERNO DEL MAPA ---
-    const recordarFiltrosMapa = localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true';
-
+    // Filtros temporales: se ponen a cero al arrancar (el navegador, al recargar, restaura por su cuenta
+    // checkboxes y sliders; por eso orientación y altitud de balizas parecían «recordarse»)
     const sliderVuelosFiltro = document.getElementById('sliderVuelos');
     const textoVuelosFiltro = document.getElementById('valorVuelosTexto');
     const sliderUltimoVueloFiltro = document.getElementById('sliderUltimoVuelo');
     const textoUltimoVueloFiltro = document.getElementById('valorUltimoVueloTexto');
 
-    const indiceVuelos = recordarFiltrosMapa ? (localStorage.getItem('METEO_MAPA_MINIMOVUELOS') || '0') : '0';
+    const indiceVuelos = '0';
     if (sliderVuelosFiltro && textoVuelosFiltro) {
         sliderVuelosFiltro.value = indiceVuelos;
         textoVuelosFiltro.innerText = ESCALA_VUELOS[parseInt(indiceVuelos, 10)] || 0;
     }
 
-    const indiceUltimoVuelo = recordarFiltrosMapa ? (localStorage.getItem('METEO_MINIMO_ANO_ULTIMO_VUELO') || '0') : '0';
+    const indiceUltimoVuelo = '0';
     if (sliderUltimoVueloFiltro && textoUltimoVueloFiltro) {
         sliderUltimoVueloFiltro.value = indiceUltimoVuelo;
         let val = ESCALA_ULTIMO_VUELO[parseInt(indiceUltimoVuelo, 10)] || ESCALA_ULTIMO_VUELO[0];
@@ -18175,11 +18724,19 @@ function inicializarMapaLeaflet() {
     }
 
     const sliderTiempoFiltro = document.getElementById('sliderTiempoBalizas');
-    const indiceTiempo = recordarFiltrosMapa ? (localStorage.getItem('METEO_MAPA_FILTRO_TIEMPO_BALIZAS') || '0') : '0';
+    const indiceTiempo = '0';
     if (sliderTiempoFiltro) {
         sliderTiempoFiltro.value = indiceTiempo;
         obtenerMaxTiempoBalizas(); // Lee el valor e inyecta el texto ("Todas", "1 h", etc.)
     }
+
+    const sliderAltitudInicial = document.getElementById('sliderAltitudBalizas');
+    if (sliderAltitudInicial) {
+        sliderAltitudInicial.value = '0';
+        obtenerMinAltitudBalizas(); // pone el texto «0 m»
+    }
+    document.querySelectorAll('.filtro-orientacion-checkbox').forEach(cb => { cb.checked = false; });
+    if (typeof actualizarEstadoMaestro === 'function') actualizarEstadoMaestro();
 
     // Ejecutamos el motor de filtros y la interfaz para aplicar los datos recién leídos
     if (typeof window.actualizarFiltrosMapa === 'function') window.actualizarFiltrosMapa();
@@ -18332,10 +18889,6 @@ function inicializarMapaLeaflet() {
             // Usamos 'input' para que filtre en tiempo real mientras arrastras
             // Si va muy lento el mapa, cámbialo por 'change' (filtra al soltar el ratón)
             sliderVuelos.addEventListener('input', function() {
-                // Guardamos la posición del slider de vuelos si recordar filtros está activo
-                if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-                    localStorage.setItem('METEO_MAPA_MINIMOVUELOS', this.value);
-                }
                 ejecutarOperacionPesada(() => {
                     actualizarFiltrosMapa();
                     actualizarEstadoVisualFiltros();
@@ -18347,10 +18900,6 @@ function inicializarMapaLeaflet() {
         const sliderUltimoVuelo = document.getElementById('sliderUltimoVuelo');
         if(sliderUltimoVuelo) {
             sliderUltimoVuelo.addEventListener('input', function() {
-                // Guardamos la posición del slider de último vuelo si recordar filtros está activo
-                if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-                    localStorage.setItem('METEO_MINIMO_ANO_ULTIMO_VUELO', this.value);
-                }
                 // Se actualiza el texto y se llama al filtro principal
                 obtenerMinAnioUltimoVuelo(); 
                 actualizarFiltrosMapa();
@@ -18385,9 +18934,6 @@ function inicializarMapaLeaflet() {
         const sliderTiempoBalizas = document.getElementById('sliderTiempoBalizas');
         if (sliderTiempoBalizas) {
             sliderTiempoBalizas.addEventListener('input', function() {
-                if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-                    localStorage.setItem('METEO_MAPA_FILTRO_TIEMPO_BALIZAS', this.value);
-                }
                 obtenerMaxTiempoBalizas();
                 Object.keys(REDES_BALIZAS).forEach(redId => {
                     actualizarIconosBalizas(redId);
@@ -18425,10 +18971,6 @@ function inicializarMapaLeaflet() {
         sliderAct.addEventListener('input', function() {
             filtroActividadMapa = parseInt(this.value, 10);
 
-            // Si la opción de recordar filtros está activa, guardamos el nivel seleccionado (1 a 5)
-            if (localStorage.getItem('METEO_RECORDAR_FILTROS_MAPA') === 'true') {
-                localStorage.setItem('METEO_MAPA_FILTRO_ACT', filtroActividadMapa);
-            }
 
             // Inyectamos el HTML de las barras + el texto
             txtAct.innerHTML = renderizarTextoActividad(filtroActividadMapa);
@@ -19125,6 +19667,28 @@ function inicializarMapaLeaflet() {
 
         const zoomActual = map.getZoom();
 
+        // Datos comunes a todas las balizas de la red: se leen una sola vez por repintado
+        // (antes se leían de localStorage y del DOM una vez por cada baliza)
+        const clavesFavBalizas = new Set(obtenerBalizasFavoritas().filter(f => f.redId === redId).map(f => String(f.id)));
+        const clavesSegBalizas = new Set(obtenerBalizasSeguimiento().filter(s => s.redId === redId).map(s => String(s.id)));
+        const minAltitud = obtenerMinAltitudBalizas();
+        const maxTiempo = obtenerMaxTiempoBalizas();
+
+        // Pinta el icono solo si ha cambiado respecto al último pintado (al hacer zoom casi nunca cambia)
+        const ponerIconoBaliza = (marker, html, iconAnchor) => {
+            if (marker._htmlIconoBaliza !== html) {
+                marker._htmlIconoBaliza = html;
+                marker.setIcon(L.divIcon({
+                    html: html,
+                    className: 'custom-div-icon',
+                    iconAnchor: iconAnchor,
+                    popupAnchor: [0, 25]
+                }));
+                if (marker._icon) marker._icon.innerHTML = html;
+            }
+            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+        };
+
         Object.values(red.marcadores).forEach(marker => {
             let d = red.datosCache[marker.stationId];
 
@@ -19175,17 +19739,15 @@ function inicializarMapaLeaflet() {
 
             // 3. EVALUACIÓN DE FILTROS
             // A) Favoritos y Seguimiento
-            const esFavBaliza = obtenerBalizasFavoritas().some(f => f.redId === redId && f.id === marker.stationId);
-            const esSegBaliza = obtenerBalizasSeguimiento().some(s => s.redId === redId && s.id === marker.stationId);
+            const esFavBaliza = clavesFavBalizas.has(String(marker.stationId));
+            const esSegBaliza = clavesSegBalizas.has(String(marker.stationId));
             const passFav = (filtroFavoritosBalizasMapa === 0) || (filtroFavoritosBalizasMapa === 1 && esFavBaliza);
             const passSeg = (filtroSeguimientoBalizasMapa === 0) || (filtroSeguimientoBalizasMapa === 1 && esSegBaliza);
 
             // B) Altitud
-            const minAltitud = obtenerMinAltitudBalizas();
             const passAltitud = (minAltitud === 0) || (marker.stationAltitude >= minAltitud);
 
             // C) Tiempo de actualización
-            const maxTiempo = obtenerMaxTiempoBalizas();
             let passTiempo = true;
             if (maxTiempo.minutos !== Infinity) {
                 // Si el filtro de tiempo está activo, NINGUNA baliza inoperativa / sin viento puede pasar
@@ -19224,15 +19786,7 @@ function inicializarMapaLeaflet() {
                         ${svgPuntoGris}
                     </div>`;
 
-                marker.setIcon(L.divIcon({ 
-                    html: htmlObsoleto, 
-                    className: 'custom-div-icon', 
-                    iconAnchor: [40, 23], 
-                    popupAnchor: [0, 25] 
-                }));
-
-                if (marker._icon) marker._icon.innerHTML = htmlObsoleto;
-                if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+                ponerIconoBaliza(marker, htmlObsoleto, [40, 23]);
                 return; 
             }
 
@@ -19244,15 +19798,7 @@ function inicializarMapaLeaflet() {
                         ${svgPuntoRojo}
                     </div>`;
 
-                marker.setIcon(L.divIcon({ 
-                    html: htmlSinDatos, 
-                    className: 'custom-div-icon', 
-                    iconAnchor: [40, 23], 
-                    popupAnchor: [0, 25] 
-                }));
-
-                if (marker._icon) marker._icon.innerHTML = htmlSinDatos;
-                if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+                ponerIconoBaliza(marker, htmlSinDatos, [40, 23]);
                 return;
             }
 
@@ -19299,15 +19845,7 @@ function inicializarMapaLeaflet() {
                     </div>`;
             }
 
-            marker.setIcon(L.divIcon({ 
-                html: htmlBaliza, 
-                className: 'custom-div-icon', 
-                iconAnchor: [40, 40], 
-                popupAnchor: [0, 25] 
-            }));
-
-            if (marker._icon) marker._icon.innerHTML = htmlBaliza;
-            if (marker.isPopupOpen()) pintarPopupBaliza(marker);
+            ponerIconoBaliza(marker, htmlBaliza, [40, 40]);
         });
 
         if (red.layerGroup && typeof red.layerGroup.refreshClusters === 'function' && map.hasLayer(red.layerGroup)) {
@@ -21522,3 +22060,36 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(programar, 60000); // se desplaza dentro de la hora cada minuto
     programar();
 });
+// 🟡 SLIDERS ANTIGUOS DEL PANEL FILTROS DEL MAPA (Actividad, Vuelos, Actualización y Altitud de balizas)
+// Mismo criterio que el rango horario y los filtros de tiempo: azul = lo que se ve (del tirador a la derecha);
+// en el mínimo (sin filtro) la franja va en azul pálido. Se pinta con --relleno (0-1) y la clase .sin-filtro.
+(function () {
+	const IDS = ['sliderActividad', 'sliderVuelos', 'sliderTiempoBalizas', 'sliderAltitudBalizas'];
+	const IDS_AJUSTE = ['slider-offset-termica', 'slider-transparencia-planeo']; // planeo: solo el aspecto (azul del inicio al tirador)
+	const pintar = (el) => {
+		const min = parseFloat(el.min) || 0, max = parseFloat(el.max) || 100, v = parseFloat(el.value) || 0;
+		const pct = max > min ? ((v - min) / (max - min)) * 100 : 0;
+		el.style.setProperty('--relleno', (pct / 100).toFixed(4)); // fracción 0-1: el CSS la lleva al centro del tirador
+		el.classList.toggle('sin-filtro', v <= min);
+	};
+	const iniciar = () => {
+		const desc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+		IDS.concat(IDS_AJUSTE).forEach(id => {
+			const el = document.getElementById(id);
+			if (!el || el.dataset.rellenoFiltro) return;
+			el.dataset.rellenoFiltro = '1';
+			el.classList.add(IDS.includes(id) ? 'slider-filtro-mapa' : 'slider-ajuste-nativo');
+			// Los valores también se ponen por código (recordar filtros, reset…): repintamos en cada asignación
+			Object.defineProperty(el, 'value', {
+				configurable: true,
+				get() { return desc.get.call(this); },
+				set(v) { desc.set.call(this, v); pintar(this); }
+			});
+			el.addEventListener('input', () => pintar(el));
+			el.addEventListener('change', () => pintar(el));
+			pintar(el);
+		});
+	};
+	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+	else iniciar();
+})();

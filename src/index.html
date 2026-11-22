@@ -64,7 +64,6 @@
 <link rel="stylesheet" href="/css/leaflet.css" />
 <link rel="stylesheet" href="/css/MarkerCluster.css" />
 <link rel="stylesheet" href="/css/MarkerCluster.Default.css" />
-<link rel="stylesheet" href="/css/choices.min.css" />
 <link rel="stylesheet" href="/css/Control.Geocoder.css" />
 
 <!-- Leaflet JSs: -->
@@ -73,9 +72,7 @@
 <script src="/js/leaflet.markercluster.js" defer></script>
 <script src="/js/Leaflet.GoogleMutant.js" defer></script>
 <script src="/js/supercluster.min.js" defer></script>
-<script src="/js/choices.min.js" defer></script>
 <script src="/js/Control.Geocoder.js" defer></script>
-<script src="/js/togeojson.js" defer></script>
 <script src="/js/papaparse.min.js" defer></script>
 <script src="/js/esri-leaflet.min.js" defer></script>
 
@@ -230,8 +227,9 @@ setTimeout(function () {
 				autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 				<button id="limpiar-buscador" class="div-mapa-close-btn" type="button" style="display: none; box-shadow: none; background: none; backdrop-filter: none;">❌</button>
 			</div>
-			<button id="nav-distance" onclick="clicBotonDistancia()" class="btn-distancia-buscador solo-modo-avanzado" data-i18n="[title]menu.distancia">
-				<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+			<button id="nav-distance" onclick="clicBotonDistancia()" class="btn-distancia-buscador solo-modo-avanzado" data-i18n="[title]menu.filtroTiemposAcceso">
+				<!-- <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg> -->
+				<span class="emoji-nav-distancia">🚗🚶</span>
 				<span class="distancia-x">❌</span>
 			</button>
 			<button id="btn-filtro-seguimiento-toggle" class="btn-distancia-buscador solo-modo-avanzado" data-i18n="[title]seguimiento.filtroTitle" onclick="filtroVerSoloSeguimiento()">
@@ -248,25 +246,54 @@ setTimeout(function () {
 	<div id="div-filtro-distancia" class="div-filtro-distancia solo-modo-avanzado">
 
 		<div id="div-filtro-distancia-interno" class="div-paneles-controles-transparente" style="position: relative;">
-		
-			<!-- Fila de título y botones unificada -->
-			<div id="titulo-distancia-slider" style="display: flex; align-items: center; gap: 7px; margin-bottom: 5px; width: 100%;">
-				<span style="cursor: pointer;" data-i18n="html.distanciaDesde">Distancia desde:</span>
-				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" data-i18n="[title]html.seleccionarOrigen">
-					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-				</button>
-				
+
+			<!-- Botón ❤️+🤍 (incluir no favoritos) desactivado 2026-11: se deja comentado por si se reutiliza.
+			     Su JS sigue en meteo.js protegido con if (btnIncNoFavsDistancia).
 				<button id="btn-incluir-no-favs-distancia" class="btn-icon-trigger" style="width: auto; margin-left: 21px; margin-right: 7px;font-size: 16px; height: 26px; line-height: 1; transition: all 0.2s;" data-i18n="[title]html.incluirNoFavs"><img src="/icons/red_heart_48.webp" class="icono-emoji" alt="❤️">+<img src="/icons/white_heart_48.webp" class="icono-emoji" alt="🤍"></button>
-				
-				<!-- Botón "i" integrado con margin-left: auto para alineación vertical perfecta -->
-				<button class="btn-info btn-inline"
-						style="margin-left: 20px; background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; align-items: center;"
-						data-tippy-content-i18n="btn_info.filtroDistanciaCompleto">
-					<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+			-->
+
+			<div class="tarjeta-filtro">
+			<!-- Fila 1: tiempo al despegue (🚗 Coche / 🚗+🚶 Total) -->
+			<div id="titulo-distancia-slider" class="fila-filtro-tiempo">
+				<span data-i18n="html.tiempoDesde"><span class="emoji-titulo-coche">🚗</span> desde</span>
+				<button id="btn-abrir-geo-menu" class="btn-icon-trigger" data-i18n="[title]html.seleccionarOrigen">
+					<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -5px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
 				</button>
-			</div>	
-			
-			<div id="distancia-slider"></div>
+				<span class="grupo-con-info">
+					<span class="grupo-botones-alternos">
+						<button type="button" class="btn-alterno btn-modo-tiempo hundido" data-modo="coche" data-i18n="[title]html.modoCoche" title="🚗 Coche"><span class="emoji-boton">🚗</span></button>
+						<button type="button" class="btn-alterno btn-modo-tiempo" data-modo="total" data-i18n="[title]html.modoTotal" title="🚗+🚶 Total"><span class="emoji-boton">🚗</span><span class="signo-mas">+</span><span class="emoji-boton">🚶</span></button>
+					</span>
+					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.filtroTiempoDespegue">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
+				</span>
+			</div>
+			<!-- Fila 2: deslizador de minutos -->
+			<div class="valor-filtro-tiempo"></div>
+				<div id="distancia-slider"></div>
+			</div>
+			<!-- Aviso de estimación en línea recta: solo se muestra si faltan los tiempos reales en coche (lo decide sincronizarFiltroDistanciaMapa) -->
+			<div class="nota-estimado-recta" style="display: none;" data-i18n="html.estimadoLineaRecta">Sin datos tiempo/distancia. Estimación aproximada.</div>
+			<div class="tarjeta-filtro">
+			<!-- Fila 3: tramo a pie (min / km / ↑m) -->
+			<div class="fila-filtro-tiempo">
+				<span data-i18n="[title]html.aPie" title="A pie">🚶</span>
+				<span class="grupo-con-info">
+					<span class="grupo-botones-alternos">
+						<button type="button" class="btn-alterno btn-unidad-pie hundido" data-unidad="min" data-i18n="html.unidadPieMin"><span class="emoji-boton">⏱️</span><span class="texto-unidad">min</span></button>
+						<button type="button" class="btn-alterno btn-unidad-pie" data-unidad="km" data-i18n="html.unidadPieKm"><svg class="flecha-unidad" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></svg><span class="texto-unidad">km</span></button>
+						<button type="button" class="btn-alterno btn-unidad-pie" data-unidad="m" data-i18n="html.unidadPieM"><svg class="flecha-unidad" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4M7 9l5-5 5 5"/></svg><span class="texto-unidad">m</span></button>
+					</span>
+					<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.filtroAPie">
+						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+					</button>
+				</span>
+			</div>
+			<!-- Fila 4: deslizador del tramo a pie -->
+			<div class="valor-filtro-tiempo"></div>
+				<div id="pie-slider"></div>
+			</div>
 
 		</div>
 			
@@ -647,7 +674,7 @@ setTimeout(function () {
 				<div class="linea-con-bt-info" style="margin-bottom: 12px;">
 					<label for="chkRecordarFiltrosMapa" class="custom-checkbox">
 						<input type="checkbox" id="chkRecordarFiltrosMapa" onclick="alternarAjusteMemoriaMapa('chkRecordarFiltrosMapa', 'METEO_RECORDAR_FILTROS_MAPA')"> 
-						<span data-i18n="ajustes.recordarFiltrosMapa">Recordar los filtros (favoritos, seguimiento, actividad...)</span>
+						<span data-i18n="ajustes.recordarFiltrosMapa">Recordar filtro de despegues favoritos</span>
 					</label>
 				</div>
 				
@@ -816,7 +843,7 @@ setTimeout(function () {
 				<span class="separador" style="color: #ccc;">|</span>
 				<span id="web-version-text" style="font-size: 12px; color: #666;"></span>
 				<!-- Estudio -->
-				<a href="https://flydecision.com/estudio" onclick="abrirLinkExterno(this.href); return false;" style="display: flex; align-items: center; margin-left: 10px; text-decoration: none;">
+				<a href="https://flydecision.com/estudio" class="solo-modo-avanzado" onclick="abrirLinkExterno(this.href); return false;" style="display: flex; align-items: center; margin-left: 10px; text-decoration: none;">
 					<img src="/icons/study.webp" alt="Estudio estadístico comparativo de acierto de modelos meteorológicos" style="height: 24px; width: auto; border-radius: 4px;">
 				</a>
 				<!-- Logo de Google Play -->
@@ -1135,11 +1162,58 @@ setTimeout(function () {
 			
 			<!-- Contenido con scroll si no cabe en pantalla (alto fijado en ajustarAlturaListaPanel) -->
 			<div id="contenidoFiltrosMapa">
+
+			<!-- Filtro Distancia (el mismo filtro que la tabla: se sincroniza con #distancia-slider) -->
+			<div id="control-distancia-mapa-container" class="control-distancia-mapa-container solo-modo-avanzado">
+				<div class="tarjeta-filtro">
+				<!-- Fila 1: tiempo al despegue (🚗 Coche / 🚗+🚶 Total) -->
+				<div id="titulo-distancia-slider-mapa" class="fila-filtro-tiempo">
+					<span data-i18n="html.tiempoDesde"><span class="emoji-titulo-coche">🚗</span> desde</span>
+					<button id="btn-abrir-geo-menu-mapa" class="btn-icon-trigger" data-i18n="[title]html.seleccionarOrigen" onclick="if(event){event.stopPropagation(); event.preventDefault();} document.getElementById('btn-abrir-geo-menu')?.click();">
+						<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-top: -3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+					</button>
+					<span class="grupo-con-info">
+						<span class="grupo-botones-alternos">
+							<button type="button" class="btn-alterno btn-modo-tiempo hundido" data-modo="coche" data-i18n="[title]html.modoCoche" title="🚗 Coche"><span class="emoji-boton">🚗</span></button>
+							<button type="button" class="btn-alterno btn-modo-tiempo" data-modo="total" data-i18n="[title]html.modoTotal" title="🚗+🚶 Total"><span class="emoji-boton">🚗</span><span class="signo-mas">+</span><span class="emoji-boton">🚶</span></button>
+						</span>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.filtroTiempoDespegue">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</span>
+				</div>
+				<!-- Fila 2: deslizador de minutos -->
+				<div class="valor-filtro-tiempo"></div>
+					<div id="distancia-slider-mapa"></div>
+				</div>
+				<!-- Aviso de estimación en línea recta: solo se muestra si faltan los tiempos reales en coche (lo decide sincronizarFiltroDistanciaMapa) -->
+				<div class="nota-estimado-recta" style="display: none;" data-i18n="html.estimadoLineaRecta">Sin datos tiempo/distancia. Estimación aproximada.</div>
+				<div class="tarjeta-filtro">
+				<!-- Fila 3: tramo a pie (min / km / ↑m) -->
+				<div class="fila-filtro-tiempo">
+					<span data-i18n="[title]html.aPie" title="A pie">🚶</span>
+					<span class="grupo-con-info">
+						<span class="grupo-botones-alternos">
+							<button type="button" class="btn-alterno btn-unidad-pie hundido" data-unidad="min" data-i18n="html.unidadPieMin"><span class="emoji-boton">⏱️</span><span class="texto-unidad">min</span></button>
+							<button type="button" class="btn-alterno btn-unidad-pie" data-unidad="km" data-i18n="html.unidadPieKm"><svg class="flecha-unidad" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></svg><span class="texto-unidad">km</span></button>
+							<button type="button" class="btn-alterno btn-unidad-pie" data-unidad="m" data-i18n="html.unidadPieM"><svg class="flecha-unidad" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4M7 9l5-5 5 5"/></svg><span class="texto-unidad">m</span></button>
+						</span>
+						<button class="btn-info btn-inline" data-tippy-content-i18n="btn_info.filtroAPie">
+							<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
+						</button>
+					</span>
+				</div>
+				<!-- Fila 4: deslizador del tramo a pie -->
+				<div class="valor-filtro-tiempo"></div>
+					<div id="pie-slider-mapa"></div>
+				</div>
+			</div>
+
 			<!-- Contenedor Principal en 2 Columnas -->
 			<div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 8px; margin-bottom: 8px;">
 
 				<!-- COLUMNA IZQUIERDA: DESPEGUES -->
-				<div style="display: flex; flex-direction: column; flex: 1; border-right: 1px solid #ccc; padding-right: 10px;">
+				<div class="columna-filtros-despegues-mapa" style="display: flex; flex-direction: column; flex: 1; border-right: 1px solid #ccc; padding-right: 10px;">
 					
 					<!-- Filtro Favoritos Despegues -->
 					<div id="control-favoritos-mapa-container" class="linea-con-bt-info" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
@@ -1167,8 +1241,8 @@ setTimeout(function () {
 
 				</div>
 
-				<!-- COLUMNA DERECHA: BALIZAS -->
-				<div style="display: flex; flex-direction: column; flex: 1; padding-left: 10px;">
+				<!-- COLUMNA DERECHA: BALIZAS (entera solo en modo avanzado: en simple sobraba el ❤️ de balizas) -->
+				<div class="solo-modo-avanzado" style="display: flex; flex-direction: column; flex: 1; padding-left: 10px;">
 					
 					<!-- Filtro Balizas Favoritas -->
 					<div id="control-favoritos-balizas-mapa-container" class="linea-con-bt-info" style="display:flex; align-items:center; gap:10px; padding:4px 6px; border-radius:8px; box-sizing:border-box; transition:border-color 0.2s; margin-bottom: 1px; padding-left: 5px;">
@@ -1206,7 +1280,7 @@ setTimeout(function () {
 						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-				<input type="range" id="sliderActividad" min="1" max="5" value="1" step="1" style="width:98%;">
+				<input type="range" id="sliderActividad" autocomplete="off" min="1" max="5" value="1" step="1" style="width:98%;">
 			</div>
 
 			<div class="control-vuelos-container solo-modo-avanzado" style="margin-bottom:9px;" title="Mostrar solo los despegues con un número de vuelos registrados en XContest mayor o igual a la cifra seleccionada. El valor de referencia está tomado en nov-2025">
@@ -1216,7 +1290,7 @@ setTimeout(function () {
 						<img src="/icons/info.svg" alt="Más información" style="width: 20px; height: 20px; vertical-align: middle;">
 					</button>
 				</div>
-				<input type="range" id="sliderVuelos" min="0" max="9" value="0" step="1" style="width:98%;">
+				<input type="range" id="sliderVuelos" autocomplete="off" min="0" max="9" value="0" step="1" style="width:98%;">
 			</div>
 
 			<!-- <div class="control-ultimovuelo-container solo-modo-avanzado" style="margin-bottom:9px;" title="Mostrar solo los despegues que tengan al menos un vuelo registrado en XContest en el año seleccionado o en años posteriores. El valor de referencia está tomado en nov-2025">
@@ -1230,7 +1304,7 @@ setTimeout(function () {
 			     data-i18n="[title]mapa.titleTiempoBalizas" 
 			     title="Mostrar solo las balizas con datos actualizados dentro del tiempo seleccionado">
 				<label for="sliderTiempoBalizas" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.TiempoBalizas">Actualización balizas &lt;= </label><span id="valorTiempoBalizasTexto">Todas</span>
-				<input type="range" id="sliderTiempoBalizas" min="0" max="7" value="0" step="1" style="width:98%;">
+				<input type="range" id="sliderTiempoBalizas" autocomplete="off" min="0" max="7" value="0" step="1" style="width:98%;">
 			</div>
 
 			<!-- 2. Filtro Altitud Balizas (Volátil / Sesión) -->
@@ -1238,11 +1312,7 @@ setTimeout(function () {
 			     style="margin-bottom:9px;" 
 			     title="Mostrar solo las balizas con una altitud mayor o igual a la cifra seleccionada">
 				<label for="sliderAltitudBalizas" style="font-weight:bold; line-height:1.2;" data-i18n="mapa.AltitudBalizas">Altitud balizas >= </label><span id="valorAltitudBalizasTexto">0 m</span>
-				<span class="chip-sesion-volatil" 
-				      style="font-weight:normal; font-size:0.75em; color:#6c757d; background:#eef1f4; border:1px solid #dce1e6; padding:1px 0px; border-radius:10px; margin-left:0px; vertical-align:1px;" 
-				      data-i18n="[title]mapa.titleSesion;mapa.sesion" 
-				      title="Filtro no memorizado: no se guarda aunque tengas activado recordar filtros">(sesión)</span>
-				<input type="range" id="sliderAltitudBalizas" min="0" max="30" value="0" step="1" style="width:98%;">
+				<input type="range" id="sliderAltitudBalizas" autocomplete="off" min="0" max="30" value="0" step="1" style="width:98%;">
 			</div>
 
 			<!-- 3. Rosa de los vientos (Volátil / Sesión) -->
@@ -1252,25 +1322,21 @@ setTimeout(function () {
 				<!-- Columna Izquierda -->
 				<div style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; padding-right: 8px !important;">
 					<span style="font-weight: bold; line-height: 1.2;" data-i18n="mapa.orientacion">Orientación:</span>
-					<span class="chip-sesion-volatil" 
-						style="font-weight: normal; font-size: 0.75em; color: #6c757d; background: #eef1f4; border: 1px solid #dce1e6; padding: 1px 0px; border-radius: 10px; margin-top: 3px;" 
-						data-i18n="[title]mapa.titleSesion;mapa.sesion" 
-						title="Filtro no memorizado: no se guarda aunque tengas activado recordar filtros">(sesión)</span>
 				</div>
 
 				<!-- Columna Derecha: Rosa -->
 				<div id="rosaDeLosVientos" style="margin: 0 !important; align-self: center !important;">
-					<label class="filtro-orientacion" data-orientacion="NO" data-i18n="[title]orientaciones.noroeste"><input type="checkbox" class="filtro-orientacion-checkbox" value="NO"><span data-i18n="orientaciones.NO">NO</span></label>
-					<label class="filtro-orientacion" data-orientacion="N"  data-i18n="[title]orientaciones.norte">  <input type="checkbox" class="filtro-orientacion-checkbox" value="N"> <span data-i18n="orientaciones.N">N</span></label>
-					<label class="filtro-orientacion" data-orientacion="NE" data-i18n="[title]orientaciones.noreste"><input type="checkbox" class="filtro-orientacion-checkbox" value="NE"><span data-i18n="orientaciones.NE">NE</span></label>
-					<label class="filtro-orientacion" data-orientacion="O"  data-i18n="[title]orientaciones.oeste">  <input type="checkbox" class="filtro-orientacion-checkbox" value="O"> <span data-i18n="orientaciones.O">O</span></label>
+					<label class="filtro-orientacion" data-orientacion="NO" data-i18n="[title]orientaciones.noroeste"><input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="NO"><span data-i18n="orientaciones.NO">NO</span></label>
+					<label class="filtro-orientacion" data-orientacion="N"  data-i18n="[title]orientaciones.norte">  <input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="N"> <span data-i18n="orientaciones.N">N</span></label>
+					<label class="filtro-orientacion" data-orientacion="NE" data-i18n="[title]orientaciones.noreste"><input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="NE"><span data-i18n="orientaciones.NE">NE</span></label>
+					<label class="filtro-orientacion" data-orientacion="O"  data-i18n="[title]orientaciones.oeste">  <input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="O"> <span data-i18n="orientaciones.O">O</span></label>
 					<label class="centro-rosa filtro-maestro" data-i18n="[title]orientaciones.todos_title">
-						<input type="checkbox" id="filtroMaestroOrientacion" class="filtro-orientacion-checkbox" value="TODOS">
+						<input type="checkbox" id="filtroMaestroOrientacion" class="filtro-orientacion-checkbox" autocomplete="off" value="TODOS">
 					</label>
-					<label class="filtro-orientacion" data-orientacion="E"  data-i18n="[title]orientaciones.este">    <input type="checkbox" class="filtro-orientacion-checkbox" value="E"> <span data-i18n="orientaciones.E">E</span></label>
-					<label class="filtro-orientacion" data-orientacion="SO" data-i18n="[title]orientaciones.suroeste"><input type="checkbox" class="filtro-orientacion-checkbox" value="SO"><span data-i18n="orientaciones.SO">SO</span></label>
-					<label class="filtro-orientacion" data-orientacion="S"  data-i18n="[title]orientaciones.sur">    <input type="checkbox" class="filtro-orientacion-checkbox" value="S"> <span data-i18n="orientaciones.S">S</span></label>
-					<label class="filtro-orientacion" data-orientacion="SE" data-i18n="[title]orientaciones.sureste"> <input type="checkbox" class="filtro-orientacion-checkbox" value="SE"><span data-i18n="orientaciones.SE">SE</span></label>
+					<label class="filtro-orientacion" data-orientacion="E"  data-i18n="[title]orientaciones.este">    <input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="E"> <span data-i18n="orientaciones.E">E</span></label>
+					<label class="filtro-orientacion" data-orientacion="SO" data-i18n="[title]orientaciones.suroeste"><input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="SO"><span data-i18n="orientaciones.SO">SO</span></label>
+					<label class="filtro-orientacion" data-orientacion="S"  data-i18n="[title]orientaciones.sur">    <input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="S"> <span data-i18n="orientaciones.S">S</span></label>
+					<label class="filtro-orientacion" data-orientacion="SE" data-i18n="[title]orientaciones.sureste"> <input type="checkbox" class="filtro-orientacion-checkbox" autocomplete="off" value="SE"><span data-i18n="orientaciones.SE">SE</span></label>
 				</div>
 
 			</div>
