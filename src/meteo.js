@@ -4249,7 +4249,9 @@ window.alternarMostrarBaseNubeHumedad = alternarMostrarBaseNubeHumedad;
 // hourly.base_nube de meteo-datos.json: altitud MSL (m) de la base; <= altitud del despegue si el despegue está dentro
 // de la nube; -1 si no hay nubes bajas (hasta ~3000 m); null sin dato.
 const MARGEN_BASE_NUBE_NARANJA = 300; // m por encima del despegue por debajo de los cuales la base sale en naranja
-const MARGEN_RANGO_BASE_NUBE = 100;    // m arriba y abajo del valor estimado en el tooltip de «Base de nube» (rango de 200 m)
+const MARGEN_RANGO_BASE_NUBE_ABAJO = 100;  // m por debajo del valor estimado en el globo de «Base de nube»
+const MARGEN_RANGO_BASE_NUBE_ARRIBA = 400; // m por encima: el estudio frente al METAR (nov 2026) da la base real de media ~150 m más alta y con errores de ~300 m
+const HORA_INICIO_BASE_NUBE_LEJANA = 72;   // índice de hora (desde las 00:00 UTC de hoy) a partir del cual ICON-EU (días 4 y 5) va en cursiva y con aviso
 const MARGEN_TERMICA_AZUL = 200;       // m: margen entre la cima de la capa límite y la base convectiva teórica para los cúmulos de buen tiempo
 const BONUS_XC_CUMULOS_PROBABLES = 10;  // puntos XC (sobre 100) en horas con cúmulos de buen tiempo probables
 const BONUS_XC_CUMULOS_DUDOSOS = 5;     // puntos XC en horas con posibilidad de algún cúmulo aislado
@@ -8674,12 +8676,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                 if (Number(v) < 0) return t('tabla.tooltips.baseNubeHumedadSinNubes', { defaultValue: 'Sin nubes bajas (hasta unos 3000 m)' });
                                 const base = Number(v);
                                 // La base sale de interpolar entre niveles de presión separados 250-1000 m: se muestra como rango
-                                // de ±MARGEN_RANGO_BASE_NUBE (redondeado a 100 m) para no dar una precisión falsa
+                                // (redondeado a 100 m) de −MARGEN_RANGO_BASE_NUBE_ABAJO a +MARGEN_RANGO_BASE_NUBE_ARRIBA, porque el modelo suele quedarse corto
                                 const centro = Math.round(base / 100) * 100;
-                                const rango = (c) => `${Math.max(0, c - MARGEN_RANGO_BASE_NUBE)}-${c + MARGEN_RANGO_BASE_NUBE}`;
-                                // Dentro de la nube se redondea hacia abajo (la base está en el despegue o por debajo), para que el rango no acabe justo en su altitud
+                                const rango = (c, arriba = MARGEN_RANGO_BASE_NUBE_ARRIBA) => `${Math.max(0, c - MARGEN_RANGO_BASE_NUBE_ABAJO)}-${c + arriba}`;
+                                // Dentro de la nube se redondea hacia abajo y el rango es simétrico, para que no contradiga a la celda roja
                                 if (base <= altDespNube) {
-                                    return t('tabla.tooltips.baseNubeHumedadDentro', { base_m: rango(Math.floor(base / 100) * 100), altitud_despegue: altDespNube,
+                                    return t('tabla.tooltips.baseNubeHumedadDentro', { base_m: rango(Math.floor(base / 100) * 100, MARGEN_RANGO_BASE_NUBE_ABAJO), altitud_despegue: altDespNube,
                                         defaultValue: '<b>☁️ Despegue dentro de la nube</b><ul style="margin: 4px 0; padding-left: 16px; text-align: left;"><li>Base de nube estimada: <b>{{base_m}} m</b> MSL</li><li>Altitud del despegue: <b>{{altitud_despegue}} m</b> MSL</li></ul>' });
                                 }
                                 return t('tabla.tooltips.baseNubeHumedadValor', { base_m: rango(centro), altitud_despegue: altDespNube, margen: rango(Math.round((base - altDespNube) / 100) * 100),
@@ -8688,10 +8690,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                         );
                         // Días 6-7 (ECMWF): cursiva y aviso de dato aproximado en el globo
                         const avisoEcmwf = `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #ccc; font-style: italic; text-align: left;">${t('tabla.tooltips.baseNubeEcmwf', { defaultValue: 'Dato aproximado procedente del modelo ECMWF para los días 6 y 7, con malla de 25 km y menos niveles verticales de cálculo que los días anteriores.' })}</div>`;
+                        // Días 4-5 (ICON-EU a partir de +72 h): también en cursiva, con su propio aviso (el estudio frente al METAR muestra que pierde fiabilidad)
+                        const avisoLejano = `<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #ccc; font-style: italic; text-align: left;">${t('tabla.tooltips.baseNubeLejana', { defaultValue: 'Dato aproximado: para los días 4 y 5 la previsión de la base de nube pierde fiabilidad.' })}</div>`;
                         Array.from(filaBaseNubeHumedad.children).slice(numCeldasAntes).forEach((td, k) => {
-                            if (!baseNubeEsEcmwf[indiceInicioRangoHorario + k]) return;
+                            const i = indiceInicioRangoHorario + k;
+                            const lejana = !baseNubeEsEcmwf[i] && arrBaseNube[i] !== null && i >= HORA_INICIO_BASE_NUBE_LEJANA;
+                            if (!baseNubeEsEcmwf[i] && !lejana) return;
                             td.style.fontStyle = 'italic';
-                            if (td.dataset.tippyContent) td.setAttribute('data-tippy-content', td.dataset.tippyContent + avisoEcmwf);
+                            if (td.dataset.tippyContent) td.setAttribute('data-tippy-content', td.dataset.tippyContent + (lejana ? avisoLejano : avisoEcmwf));
                         });
                     }
 
