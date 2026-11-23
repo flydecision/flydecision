@@ -19511,6 +19511,26 @@ function inicializarMapaLeaflet() {
             umbralRojoMin: 90,
             urlWeb: (id) => `https://suremet.es/estacion.php?id=${id}`
         },
+        'valledemena': {
+            id: 'valledemena',
+            nombre: 'Valle de Mena',
+            estaciones: [],
+            urlCache: 'https://flydecision.com/balizas_valledemena_cache.json',
+            url6h:    'https://flydecision.com/balizas_valledemena_6h.json',
+            checkboxId: 'checkboxBalizasValleDeMena',
+            lsKey: 'METEO_MAPA_CAPA_BALIZAS_VALLEDEMENA_VISIBLE',
+            layerGroup: L.markerClusterGroup(opcionesClusterBalizas),
+            marcadores: {},
+            dibujadas: false,
+            datosCache: {},
+            ultimoJsonRaw: null,
+            datos6h: null,
+            fetched6hAt: 0,
+            intervalo: null,
+            umbralAmarilloMin: 60,
+            umbralRojoMin: 90,
+            urlWeb: (id) => `https://meteorologia.valledemena.es/station/${id}`
+        },
         'weatherunderground': {
             id: 'weatherunderground',
             nombre: 'WeatherUnderground',
