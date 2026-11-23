@@ -5586,14 +5586,40 @@ tr.ecmwf-oculto-temp {
 /* 🕒 Línea "ahora" en la tabla de pronóstico */
 .tabla-wrapper { position: relative; } /* para que la línea absoluta se desplace con la tabla */
 
+:root {
+    --linea-tabla-color: rgba(90, 0, 0, 0.55);
+    --linea-tabla-grosor: 1.5px;
+    --linea-tabla-trazo: 5px;
+    --linea-tabla-hueco: 4px;
+}
+
 #linea-ahora-tabla {
     position: absolute;
     display: none;
-    width: 0;
-    margin-left: -1px;
-    border-left: 1.5px dashed rgba(220, 38, 38, 0.7);
+    width: var(--linea-tabla-grosor);
+    margin-left: calc(var(--linea-tabla-grosor) / -2);
+    background: repeating-linear-gradient(to bottom,
+        var(--linea-tabla-color) 0 var(--linea-tabla-trazo),
+        transparent var(--linea-tabla-trazo) calc(var(--linea-tabla-trazo) + var(--linea-tabla-hueco)));
     pointer-events: none;
     z-index: 22; /* sobre la fila de horas (20), bajo la de días (25) y las columnas fijas visibles */
+}
+
+/* ➖ Línea a la altitud del despegue en las filas de viento sinóptico ECMWF (mismo trazo que la línea "ahora") */
+td.linea-altitud-despegue { position: relative; }
+
+td.linea-altitud-despegue::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--top-linea-despegue, 50%);
+    height: var(--linea-tabla-grosor);
+    margin-top: calc(var(--linea-tabla-grosor) / -2);
+    background: repeating-linear-gradient(to right,
+        var(--linea-tabla-color) 0 var(--linea-tabla-trazo),
+        transparent var(--linea-tabla-trazo) calc(var(--linea-tabla-trazo) + var(--linea-tabla-hueco)));
+    pointer-events: none;
 }
 
 /* Popup de baliza mientras llega el dato live (clase puesta en el popupopen) */
