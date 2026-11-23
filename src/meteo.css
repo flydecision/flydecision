@@ -1704,6 +1704,38 @@ tr.fila-inicio-despegue.favorito td {
     border-top: 1px solid #000 !important;
 }
 
+/* Hueco azul entre despegues: cada despegue se ve como una tarjeta (no en editar favoritos) */
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td {
+    border-top: 8px solid transparent !important;
+    background-clip: padding-box;
+    box-shadow: inset 0 2px 0 #000;
+}
+/* En la primera fila los bordes laterales se pintan con sombra para que no asomen dentro del hueco */
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.borde-grueso-izquierda {
+    border-left-width: 0 !important;
+    box-shadow: inset 0 2px 0 #000, inset 2px 0 0 #000;
+}
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.borde-grueso-derecha {
+    border-right-width: 0 !important;
+    box-shadow: inset 0 2px 0 #000, inset -2px 0 0 #000;
+}
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.borde-grueso-izquierda.borde-grueso-derecha {
+    box-shadow: inset 0 2px 0 #000, inset 2px 0 0 #000, inset -2px 0 0 #000;
+}
+/* Esquinas superiores redondeadas por debajo del hueco */
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-despegue {
+    border-top-left-radius: 10px 18px;
+}
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.celda-condiciones-inicio {
+    border-top-right-radius: 10px 18px;
+}
+/* El fondo gris de los botones no tapa el borde izquierdo de la tarjeta */
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-despegue::before {
+    left: 2px;
+    width: calc(100% - 2px);
+    border-bottom-left-radius: 8px;
+}
+
 /* Fechas */
 .orientaciones-svg {
     display: flex; /* Convierte el contenedor en un Flex Container */
