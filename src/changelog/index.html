@@ -150,6 +150,34 @@ footer { text-align: center; font-size: 0.8rem; color: #777; margin-top: 20px; m
 
 <!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
 <div class="release">
+<div class="v-header"><span class="v-number">v6.0.0</span><span class="v-date">23 Nov 2026</span></div>
+
+<div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
+<ul class="lista">
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Filtro 🚗🚶 Tiempo al despegue</b> en tabla y mapa: en coche desde un punto de origen personalizable y filtro del tramo a pie desde la carretera (para seleccionar el máximo deseado de tiempo, km o desnivel). La ficha del despegue incluye ahora los datos del tramo a pie hasta el despegue con enlace a la ruta. Guías actualizadas con la nueva funcionalidad. Nota: los datos de acceso están inicialmente calculados de forma automática y luego se han revisado aproximadamente 150 manualmente; se irán actualizando progresivamente.</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Red de balizas meteorológicas Valle de Mena (Burgos)</b>. Son 9 balizas con actualización muy frecuente.</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Los despegues "secundarios" de un despegue principal (máster) ahora también muestran el botón <i>Ver en tabla</i></b>, que lleva a la meteo de su despegue "Máster".</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc"><b>Viento sinóptico ECMWF con más información</b>. Nueva fila de 2500 m, línea discontinua a la altitud del despegue y celdas coloreadas según los límites de viento y la orientación del despegue.</span></li>
+<li><span class="badge novedad">Novedad</span><span class="desc">Se ha incluido en el mapa del estudio comparativo una casilla de verificación para visualizar qué modelo es el ganador global en cada despegue analizado, con diversos filtros para personalizar el análisis.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc"><b>La opción Recordar filtros (de Ajustes > Mapa) ahora es Recordar filtro de despegues favoritos</b>. Los filtros son ahora siempre temporales (se desactivan al recargar la página o entrar de nuevo a la app), salvo el filtro de Despegues favoritos (❤️), que queda permanente si se ha activado esa opción en Ajustes. Realmente era el único filtro que merece la pena poder tener activo de forma permanente si se desea, mostrando solo los despegues que usamos y así se simplifica el uso de los filtros.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">Base de nube actualizada. El globo muestra ahora un rango asimétrico (100 m por debajo y 400 m por encima del valor), porque la comparación estadística tras varias semanas con los METAR de los aeropuertos indica que la base real suele estar algo más alta que la prevista. Los días 4 y 5 aparecen en cursiva con un aviso de menor fiabilidad.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">Al volver a la aplicación otro día se mantiene el día que estaba seleccionado la última vez. Si ese día ya pasó, se selecciona hoy.</span></li>
+<li><span class="badge cambio">Cambio</span><span class="desc">En la tabla, cada despegue se muestra ahora como una tarjeta separada por un pequeño hueco, para ver mejor dónde acaba uno y empieza el siguiente.</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">Numerosos ajustes estéticos, de usabilidad, optimización en velocidad de ejecución, de repintado de balizas y de documentación en guías y botones de ayudas.</span></li>
+<li><span class="badge correccion">Corrección</span><span class="desc">Si los datos principales tenían más de 2h de antigüedad, al abrir un enlace del botón "info" y volver a la tabla, se cerraba la ventana de info.</span></li>
+</ul>
+</div>
+
+<div class="platform-group"><div class="platform-label">📱 App</div>
+<ul class="lista">
+<li><span class="badge correccion">Corrección</span><span class="desc">En Android horizontal, se mostraban incorrectamente los botones de fijar paneles y además se cerraban los popups de despegues o balizas si no había suficiente espacio vertical en la pantalla.</span></li>
+</ul>
+</div>
+
+</div>
+
+<!-- 🟥🟥🟥🟥🟥🟥🟥 NUEVA VERSIÓN -->
+<div class="release">
 <div class="v-header"><span class="v-number">v5.14.0</span><span class="v-date">6 Nov 2026</span></div>
 
 <div class="platform-group"><div class="platform-label">🌐 Web y 📱 App</div>
