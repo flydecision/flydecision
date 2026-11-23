@@ -5596,6 +5596,19 @@ tr.ecmwf-oculto-temp {
     z-index: 22; /* sobre la fila de horas (20), bajo la de días (25) y las columnas fijas visibles */
 }
 
+/* ➖ Línea a la altitud del despegue en las filas de viento sinóptico ECMWF (mismo trazo que la línea "ahora") */
+td.linea-altitud-despegue { position: relative; }
+td.linea-altitud-despegue::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--top-linea-despegue, 50%);
+    margin-top: -1px;
+    border-top: 1.5px dashed rgba(220, 38, 38, 0.7);
+    pointer-events: none;
+}
+
 /* Popup de baliza mientras llega el dato live (clase puesta en el popupopen) */
 .baliza-actualizando .baliza-datos { opacity: 0.4; transition: opacity 0.2s; }
 .baliza-actualizando .baliza-live-time::after {

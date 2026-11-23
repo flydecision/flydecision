@@ -7477,6 +7477,8 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
         const tituloTemperatura = t('tabla.tooltips.temperatura');
         const tituloEcmwf3000 = t('tabla.tooltips.3000mECMWF');
         const tituloEcmwfDir3000 = t('tabla.tooltips.Direccion3000mECMWF');
+        const tituloEcmwf2500 = t('tabla.tooltips.2500mECMWF');
+        const tituloEcmwfDir2500 = t('tabla.tooltips.Direccion2500mECMWF');
         const tituloEcmwf2000 = t('tabla.tooltips.2000mECMWF');
         const tituloEcmwfDir2000 = t('tabla.tooltips.Direccion2000mECMWF');
         const tituloEcmwf1500 = t('tabla.tooltips.1500mECMWF');
@@ -7672,12 +7674,14 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             // GRUPO: Viento ECMWF. Evaluamos si debemos crear las filas en el DOM
             const mostrarEcmwfDOM = chkMostrarVientoEcmwf || chkMostrarVientoEcmwfDesplegable;
 
-            let filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel2000, filaEcmwfDir2000, filaEcmwfVel1500, filaEcmwfDir1500, filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500;
+            let filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel2500, filaEcmwfDir2500, filaEcmwfVel2000, filaEcmwfDir2000, filaEcmwfVel1500, filaEcmwfDir1500, filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500;
             let filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10;
             
             if (mostrarEcmwfDOM) {
                 filaEcmwfVel3000  = document.createElement("tr");
                 filaEcmwfDir3000  = document.createElement("tr");
+                filaEcmwfVel2500  = document.createElement("tr");
+                filaEcmwfDir2500  = document.createElement("tr");
                 filaEcmwfVel2000  = document.createElement("tr");
                 filaEcmwfDir2000  = document.createElement("tr"); 
                 filaEcmwfVel1500  = document.createElement("tr");
@@ -7692,7 +7696,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                 filaEcmwfDir10    = document.createElement("tr");
 
                 [
-                    filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel2000, filaEcmwfDir2000, filaEcmwfVel1500, filaEcmwfDir1500, 
+                    filaEcmwfVel3000, filaEcmwfDir3000, filaEcmwfVel2500, filaEcmwfDir2500, filaEcmwfVel2000, filaEcmwfDir2000, filaEcmwfVel1500, filaEcmwfDir1500, 
                     filaEcmwfVel1000, filaEcmwfDir1000, filaEcmwfVel500, filaEcmwfDir500,
                     filaEcmwfVel10, filaEcmwfRacha10, filaEcmwfDir10
                 ].forEach(f => {
@@ -7711,6 +7715,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
             const rowsGroup1 =[filaNubesTotal, filaTemperatura, filaPreci, filaProbPreci, filaBaseNubeHumedad, fila100, fila50, fila20, filaVel, filaRacha, filaDir, filaCizalladura].filter(Boolean);
             const rowsEcmwfWind = [
                 filaEcmwfVel3000, filaEcmwfDir3000, 
+                filaEcmwfVel2500, filaEcmwfDir2500,
                 filaEcmwfVel2000, filaEcmwfDir2000,
                 filaEcmwfVel1500, filaEcmwfDir1500, 
                 filaEcmwfVel1000, filaEcmwfDir1000, 
@@ -8405,6 +8410,9 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                 addIconCellEcmwf(filaEcmwfVel3000, "<span style='position: relative; top: -1px; display: inline-block;'>3000 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf3000, "1px solid #000");
                 addIconCellEcmwf(filaEcmwfDir3000, '<img src="/icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir3000, null, "1px solid #000");
+
+                addIconCellEcmwf(filaEcmwfVel2500, "<span style='position: relative; top: -1px; display: inline-block;'>2500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf2500);
+                addIconCellEcmwf(filaEcmwfDir2500, '<img src="/icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir2500, null, "1px solid #000");
 
                 addIconCellEcmwf(filaEcmwfVel1500, "<span style='position: relative; top: -1px; display: inline-block;'>1500 m<span style='display:block; font-size:8px; line-height:8px; margin-top:-5px;'>MSL</span></span>", tituloEcmwf1500);
                 addIconCellEcmwf(filaEcmwfDir1500, '<img src="/icons/icono_direccion_45.webp" width="15" height="15" style="position: relative;">', tituloEcmwfDir1500, null, "1px solid #000");
@@ -9312,6 +9320,17 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         const altReal = Number(d.Altitud) || 0;
 
+                        // ➖ Línea discontinua a la altitud del despegue (como la línea vertical de la hora actual).
+                        // Cada altitud fija (3000…500 m, cada 500 m) ocupa 2 filas (velocidad + dirección) y su altitud exacta
+                        // es la raya entre ambas; entre dos altitudes se interpola. Fuera del rango se queda en el borde del grupo.
+                        const posLinea = (3000 - Math.min(3250, Math.max(250, altReal))) / 500;     // 0 = 3000 m … 5 = 500 m
+                        const kLinea = Math.min(5, Math.max(0, Math.floor(posLinea + 0.5)));        // par de filas donde cae
+                        const lineaAltitudDespegue = {
+                            alt: 3000 - kLinea * 500,
+                            enFilaVel: posLinea < kLinea,                                             // mitad superior del par
+                            top: Math.min(96, Math.max(0, Math.round((posLinea < kLinea ? posLinea - (kLinea - 0.5) : posLinea - kLinea) * 200)))
+                        };
+
                         // Helper para instanciar las celdas de interpolación buscando por la hora real (capas de altura neutras)
                         const crearCeldasInterpoladas = (trVel, trDir, altObj, altInfo, indiceHoraArome, bordeTopVel, bordeBottomDirPx) => {
                             const tdVel = document.createElement("td");
@@ -9327,6 +9346,12 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                             if (setInicioDia.has(indiceHoraArome)) tdDir.classList.add("borde-grueso-izquierda");
                             tdDir.style.fontSize = "12px";
                             if (bordeBottomDirPx) tdDir.style.borderBottom = bordeBottomDirPx;
+
+                            if (altObj === lineaAltitudDespegue.alt) {
+                                const tdLinea = lineaAltitudDespegue.enFilaVel ? tdVel : tdDir;
+                                tdLinea.classList.add("linea-altitud-despegue");
+                                tdLinea.style.setProperty("--top-linea-despegue", lineaAltitudDespegue.top + "%");
+                            }
 
                             // Buscamos la posición coincidente en ECMWF
                             const idxEcmwf = ecmwfTimeMap.get(horas[indiceHoraArome]);
@@ -9384,6 +9409,26 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
                                     tdVel.textContent = vRound;
                                     tdVel.title = `${vRound} km/h (Velocidad interpolada verticalmente para la altura de ${altInfo} m MSL)`;
 
+                                    // 🎨 Mismos colores que el viento y la dirección de la tabla normal (quita el blanco fijo de .ecmwf-neutral)
+                                    tdVel.classList.remove("ecmwf-neutral");
+                                    tdDir.classList.remove("ecmwf-neutral");
+                                    if (vRound < velMinDespegue) {
+                                        tdVel.classList.add("fondo-naranja");
+                                    } else if (vRound <= velocidadTolerableSuperior) {
+                                        tdVel.classList.add("fondo-verde");
+                                    } else if (vRound < velMaxDespegue) {
+                                        tdVel.classList.add("fondo-naranja");
+                                    } else {
+                                        tdVel.classList.add("fondo-rojo");
+                                    }
+                                    tdVel.dataset.lim10 = 'v'; // para que refrescarDespegueEnTabla lo repinte si cambian los límites en vivo
+
+                                    let minDiffAlt = 180;
+                                    if (orientaciones && orientaciones.length > 0) {
+                                        minDiffAlt = Math.min(...orientaciones.map(o => diferenciaAngular(dRound, o)));
+                                    }
+                                    tdDir.classList.add(colorPorDiferencia(minDiffAlt));
+
                                     tdDir.appendChild(crearFlechaViento(dRound));
                                     tdDir.title = `${dRound}º (Dirección interpolada verticalmente para la altura de ${altInfo} m MSL)`;
                                 }
@@ -9396,6 +9441,7 @@ async function construir_tabla(forzarRecarga = false, silencioso = false, skipMa
 
                         for (let i = indiceInicioRangoHorario; i <= limiteFin; i++) {
                             crearCeldasInterpoladas(filaEcmwfVel3000, filaEcmwfDir3000, 3000, 3000, i, true,  "1px solid #000");
+                            crearCeldasInterpoladas(filaEcmwfVel2500, filaEcmwfDir2500, 2500, 2500, i, false, "1px solid #000");
                             crearCeldasInterpoladas(filaEcmwfVel2000, filaEcmwfDir2000, 2000, 2000, i, false, "1px solid #000");
                             crearCeldasInterpoladas(filaEcmwfVel1500, filaEcmwfDir1500, 1500, 1500, i, false, "1px solid #000");
                             crearCeldasInterpoladas(filaEcmwfVel1000, filaEcmwfDir1000, 1000, 1000, i, false, "1px solid #000");
