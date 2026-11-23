@@ -4061,6 +4061,14 @@ details.config-accordion .accordion-content {
     display: none !important;
 }
 
+/* Panel retraído: ocultar 📌 y 🔄 (con la muesca de Android en horizontal asomaban por la izquierda) */
+.info-panel.retraido #buttonFijar,
+.info-panel.retraido #buttonFijar3,
+.info-panel.retraido #buttonFijar2,
+.info-panel.retraido #buttonResetFiltros2 {
+    display: none !important;
+}
+
 .info-panel:not(.retraido) #buttonCerrar, 
 .info-panel:not(.retraido) #buttonCerrar3,
 .info-panel:not(.retraido) #buttonCerrar2,
