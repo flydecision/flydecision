@@ -13920,7 +13920,10 @@ function comprobarAvisoCambiosPuntuacionXC() {
             // 2 horas
             const UMBRAL_RECARGA = 7200000; 
 
-            if (antiguedad > UMBRAL_RECARGA) { 
+            // Ausencia corta (abrir un enlace y volver): no se reconstruye la tabla, para no cerrar popups ni subir el scroll
+            const ausenciaCorta = window.momentoPaginaOculta && (ahora - window.momentoPaginaOculta) < 15 * 60000;
+
+            if (antiguedad > UMBRAL_RECARGA && !ausenciaCorta) { 
                 
                 statusActualizaciónEnCurso = false; 
 
@@ -14007,7 +14010,9 @@ function comprobarAvisoCambiosPuntuacionXC() {
         // B. DETECCIÓN WEB (PC / Móvil navegador)
         // Esto cubre el caso de cambiar de pestaña y volver horas después
         document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === 'visible') {
+            if (document.visibilityState === 'hidden') {
+                window.momentoPaginaOculta = Date.now();
+            } else if (document.visibilityState === 'visible') {
                 checkResume();
             }
         });
