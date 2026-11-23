@@ -15752,6 +15752,12 @@ function ajustarPopupDespegueMinimo(popup) {
         if (r.right > limiteDer) dx = r.right - limiteDer;
         if (r.left - dx < limiteIzq) dx = r.left - limiteIzq;
     }
+    // El punto del popup (marcador) no puede salir del mapa: en móvil markercluster quita los marcadores
+    // fuera de la vista y su popup se cierra (pasaba en horizontal, con poco alto libre)
+    const punto = map.latLngToContainerPoint(popup.getLatLng());
+    const tam = map.getSize();
+    dx = Math.min(Math.max(dx, punto.x - (tam.x - MARGEN)), punto.x - MARGEN);
+    dy = Math.min(Math.max(dy, punto.y - (tam.y - MARGEN)), punto.y - MARGEN);
     if (dx || dy) map.panBy([dx, dy]);
 }
 
