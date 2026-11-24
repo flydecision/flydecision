@@ -1700,13 +1700,14 @@ tbody td.cursor-pointer:hover {
 .borde-grueso-arriba { border-top: 2px solid #000 !important; }
 tr.fila-separador td, tr.fila-separador th { border-bottom: 2px solid #000 !important; }
 
-tr.fila-inicio-despegue.favorito td {
+tr.fila-inicio-despegue td {
     border-top: 1px solid #000 !important;
 }
 
 /* Hueco azul entre despegues: cada despegue se ve como una tarjeta (no en editar favoritos) */
 body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td {
     border-top: 8px solid transparent !important;
+    padding-top: 2px; /* el contenido empieza bajo la línea negra: los emojis no se cortan */
     background-clip: padding-box;
     box-shadow: inset 0 2px 0 #000;
 }
@@ -1719,21 +1720,53 @@ body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.borde-grue
     border-right-width: 0 !important;
     box-shadow: inset 0 2px 0 #000, inset -2px 0 0 #000;
 }
-body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.borde-grueso-izquierda.borde-grueso-derecha {
-    box-shadow: inset 0 2px 0 #000, inset 2px 0 0 #000, inset -2px 0 0 #000;
+/* Esquinas: la celda del nombre y la de la nota se recortan con clip-path (sin el hueco y con las esquinas redondas)
+   y su contorno negro lo dibuja ::after con bordes normales, igual en web y en Android */
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-despegue,
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.celda-condiciones-inicio {
+    border-radius: 0 !important;
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+    border-bottom-width: 0 !important;
+    box-shadow: none;
 }
-/* Esquinas superiores redondeadas por debajo del hueco */
 body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-despegue {
-    border-top-left-radius: 10px 18px;
+    clip-path: inset(8px 0 0 0 round 10px 0 0 10px);
 }
 body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.celda-condiciones-inicio {
-    border-top-right-radius: 10px 18px;
+    position: relative;
+    clip-path: inset(8px 0 0 0 round 0 10px 0 0);
+}
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.celda-condiciones-inicio.celda-condiciones-final {
+    clip-path: inset(8px 0 0 0 round 0 10px 10px 0);
+}
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-despegue::after,
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.celda-condiciones-inicio::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 2px solid #000;
+    pointer-events: none;
+    z-index: 2;
+}
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-despegue::after {
+    border-right-width: 0;
+    border-radius: 10px 0 0 10px;
+}
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.celda-condiciones-inicio::after {
+    border-radius: 0 10px 0 0;
+}
+body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.celda-condiciones-inicio.celda-condiciones-final::after {
+    border-radius: 0 10px 10px 0;
 }
 /* El fondo gris de los botones no tapa el borde izquierdo de la tarjeta */
 body:not(.modo-edicion-tabla) #tabla tbody tr.fila-inicio-despegue td.columna-despegue::before {
     left: 2px;
     width: calc(100% - 2px);
-    border-bottom-left-radius: 8px;
+    bottom: 2px;
 }
 
 /* Fechas */
